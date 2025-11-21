@@ -176,6 +176,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="2977506796191543575">Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
 <translation id="2981563588585023386">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, melde dich in Chromium an</translation>
 <translation id="3003694935412297923">Alle Tasks</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="3013473503895162900"><ph name="URL" /> in einem neuen Tab in Chromium öffnen.</translation>
 <translation id="3032706164202344641">Chromium kann deine Passwörter nicht prüfen. Versuche es später noch einmal.</translation>
 <translation id="3032787606318309379">Wird zu Chromium hinzugefügt...</translation>
@@ -492,6 +493,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="6729124504294600478">Zur Personalisierung und für andere Funktionen musst du Chromium in die Web- &amp; App-Aktivitäten und in die verknüpften Google-Dienste aufnehmen</translation>
 <translation id="6734291798041940871">Chromium ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6751374565094704799">Websites werden mit der V8-Engine von Chromium beschleunigt, Chromium wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist aktiviert.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="67706546131546258">Chromium empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>
 <translation id="6779406956731413166">ChromiumOS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>

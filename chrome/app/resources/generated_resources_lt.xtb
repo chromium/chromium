@@ -1777,6 +1777,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2192505247865591433">Iš:</translation>
 <translation id="219283042927675668">Skirtukai grupėje</translation>
 <translation id="2192881772486983655">„<ph name="THIRD_PARTY_NTP_MANAGER" />“ tvarko jūsų naujo skirtuko puslapį (atidaroma naujame skirtuke)</translation>
+<translation id="2192982266585216032">&amp;Mokėjimai</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2195331105963583686">Po to vis tiek galėsite naudoti „<ph name="DEVICE_TYPE" />“, bet nebebus teikiami automatiniai programinės įrangos ir saugos naujiniai</translation>
 <translation id="2195729137168608510">El. pašto apsauga</translation>
@@ -3007,6 +3008,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3022072018423103125">Aukštumos</translation>
 <translation id="3022361196600037287">„<ph name="DEVICE" />“ bus pašalintas iš šio „Chromebook“ ir nebus išsaugotas adresu <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nepavyko suprasti.</translation>
+<translation id="3023204744987201088">&amp;Kontaktinė informacija</translation>
 <translation id="3023464535986383522">Teksto ištarimas</translation>
 <translation id="3024374909719388945">Naudoti 24 val. laikrodį</translation>
 <translation id="3027296729579831126">Įjungti Bendrinimo netoliese funkciją</translation>
@@ -7949,6 +7951,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6495261233408033662">Uždaryti atidarytus skirtukus</translation>
 <translation id="6495266441917713704">Nepavyko perkelti naudojant „Wi-Fi“</translation>
 <translation id="6495453178162183932">Tema atnaujinta į „Numatytoji „Chrome“</translation>
+<translation id="6496641546298525838">Jūsų įrenginys</translation>
 <translation id="6497784818439587832">Pakeiskite ekrano dydį, kad sumažintumėte ar padidintumėte ekrane rodomus elementus</translation>
 <translation id="6497789971060331894">Atvirkštinis slinkimas pele</translation>
 <translation id="6498249116389603658">&amp;Visos jūsų kalbos</translation>
@@ -9778,6 +9781,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7760176388948986635">Leiskite „ChromeOS“ ir „Android“ programoms, svetainėms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti šio įrenginio vietovės informaciją. Vietovės nustatymo tikslumo funkcija „Android“ programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš šio įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jokio asmens, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius.</translation>
 <translation id="7762024824096060040">Negalima naudoti šios paskyros</translation>
+<translation id="776324966908034528">Naršyklės tarpinio serverio nustatymus valdo keli šaltiniai</translation>
 <translation id="7764225426217299476">Pridėti adresą</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> iš <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Atidaryti grupę naujame lange</translation>
@@ -10929,7 +10933,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8535005006684281994">„Netscape“ sertifikato atnaujinimo URL</translation>
 <translation id="8536810348276651776">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, kad būtų taikomi „Chrome“ skirti „Family Link“ nustatymai.</translation>
 <translation id="8536956381488731905">Garsas paspaudus klavišą</translation>
-<translation id="8537854269962256103">„Gemini“ pokalbis yra iššokančiame pokalbyje. Spustelėkite bet kur šoniniame skydelyje, kad perkeltumėte jį čia.</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8539766201049804895">Naujovinti</translation>
 <translation id="8540136935098276800">Įveskite tinkamo formato URL</translation>
@@ -11032,6 +11035,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8616441548384109662">Įtraukti asmenį <ph name="CONTACT_NAME" /> į jūsų kontaktus</translation>
 <translation id="8617601976406256334">Ištrinti svetainės <ph name="SITE_NAME" /> duomenis ir leidimus?</translation>
 <translation id="8617748779076050570">Saugaus ryšio ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Kontaktinė informacija</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Neleidžiama įdiegti žiniatinklio programų įrenginyje</translation>
 <translation id="8619803522055190423">Krintantis šešėlis</translation>
@@ -11636,6 +11640,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="90033698482696970">Automatiškai nuskaityti, ar yra pasiekiamų „eSIM“ kortelės profilių?</translation>
 <translation id="9003647077635673607">Leisti visose svetainėse</translation>
 <translation id="9005774573776346118">Jei norite pasiekti slaptažodžius, žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Jūsų organizacija</translation>
 <translation id="9008133509889712539">„<ph name="ORIGIN" />“ nori atidaryti šią nuorodą programoje.</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> puslapio „Išsami informacija“ mygtukas „Atgal“</translation>

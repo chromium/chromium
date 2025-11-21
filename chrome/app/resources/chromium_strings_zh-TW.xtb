@@ -176,6 +176,7 @@
 <translation id="2977506796191543575">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能</translation>
 <translation id="2981563588585023386">為確保家長監護設定可以進一步守護你的上網安全，請登入 Chromium</translation>
 <translation id="3003694935412297923">所有工作</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料 (1 個項目)。}other{Chromium 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料 ({count} 個項目)。}}</translation>
 <translation id="3013473503895162900">在 Chromium 的新分頁中開啟 <ph name="URL" />。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查你的密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium...</translation>
@@ -492,6 +493,7 @@
 <translation id="6729124504294600478">如要享有個人化服務和其他功能，請在「網路和應用程式活動」與「已連結的 Google 服務」中納入 Chromium</translation>
 <translation id="6734291798041940871">電腦上的所有使用者都已經安裝 Chromium 了。</translation>
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防範攻擊的能力會稍微降低。這項設定已開啟。</translation>
+<translation id="6754665438209053659">{count,plural, =1{部分 Chromium 資料尚未儲存到 Google 帳戶，請稍候幾分鐘再登出。如果現在登出，系統將刪除這類資料 (1 個項目)。}other{部分 Chromium 資料尚未儲存到 Google 帳戶，請稍候幾分鐘再登出。如果現在登出，系統將刪除這類資料 ({count} 個項目)。}}</translation>
 <translation id="67706546131546258">這個檔案可能有危險內容，因此 Chromium 建議掃描檔案。</translation>
 <translation id="6779406956731413166">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="6831043979455480757">翻譯</translation>

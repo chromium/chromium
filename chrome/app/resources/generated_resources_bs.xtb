@@ -1068,6 +1068,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
     prihvatate da Google može koristiti povratne informacije koje pošaljete za poboljšanje
     bilo kojeg Googleovog proizvoda ili usluge.</translation>
 <translation id="17081583771848899">pokretač + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Sačuvaj u pohranu u oblaku</translation>
 <translation id="1708291623166985230">Pristupna tačka je onemogućena</translation>
 <translation id="1708338024780164500">(Neaktivan)</translation>
 <translation id="1708563369218024896">Nije odabran nijedan sakupljač podataka Odaberite barem jedan sakupljač podataka.</translation>
@@ -6675,6 +6676,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5585912436068747822">Formatiranje nije uspjelo</translation>
 <translation id="5587765208077583036">Da dijelite, desnim klikom kliknite na folder u aplikaciji Fajlovi, a zatim odaberite "Dijeli s uređajem <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrirajte web lokacije na stranici</translation>
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
 <translation id="5590418976913374224">Reproduciraj zvuk nakon pokretanja uređaja</translation>
 <translation id="5591465468509111843">Veoma široko</translation>
@@ -8065,6 +8067,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - dijeli se sadržaj radne površine</translation>
 <translation id="6580060371127789208">Završeno je <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Brzina skeniranja</translation>
+<translation id="6580676117087365538">Potvrdite identitet da dobijete ovu ekstenziju na svim računarima</translation>
 <translation id="6581356304040102696">Nije moguće uvesti lozinke. Fajl treba biti manji od 1 MB.</translation>
 <translation id="6582080224869403177">Vratite <ph name="DEVICE_TYPE" /> na zadane postavke zbog nadogradnje sigurnosti.</translation>
 <translation id="6582274660680936615">Pregledate kao gost</translation>
@@ -9590,6 +9593,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7647403192093989392">Nema nedavnih aktivnosti</translation>
 <translation id="7648023614017258011">Chrome potvrđuje instalacijski paket</translation>
 <translation id="7648048654005891115">Stil Keymap</translation>
+<translation id="7648180062672842917">Ovaj fajl ima osjetljive ili opasne podatke. Vaša organizacija će vam omogućiti da ga sačuvate u pohranu u oblaku ili da ga odbacite</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7649954700951153978">Podsjeti me u iOS-u</translation>
 <translation id="7650141368285545431">Upotrijebite pristupni ključ s drugog uređaja</translation>
@@ -11165,6 +11169,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8703766890819308134">Prikaži prečice pretraživanja</translation>
 <translation id="8704662571571150811">Domene</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
+<translation id="870536819717176711">Kada podijelite trenutnu karticu s Geminijem, sav sadržaj, mediji i URL kartice se šalju Googleu.</translation>
 <translation id="8705580154597116082">WiFi je dostupan putem telefona</translation>
 <translation id="8705629851992224300">Očitavanje vašeg sigurnosnog ključa nije uspjelo</translation>
 <translation id="8706111173576263877">QR kôd je skeniran.</translation>

@@ -179,6 +179,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
 <translation id="2981563588585023386">Meld aan by Chromium om met jou ouers se keuses veiliger aanlyn te bly</translation>
 <translation id="3003694935412297923">Alle take</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data (1 item) uitgevee word.}other{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data ({count} items) uitgevee word.}}</translation>
 <translation id="3013473503895162900">Maak <ph name="URL" /> in 'n nuwe oortjie in Chromium oop.</translation>
 <translation id="3032706164202344641">Chromium kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="3032787606318309379">Voeg tans by Chromium …</translation>
@@ -495,6 +496,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6729124504294600478">Sluit Chromium by Web- en Appaktiwiteit en gekoppelde Google-dienste in om personalisering en ander kenmerke te kry</translation>
 <translation id="6734291798041940871">Chromium is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="6751374565094704799">Maak werwe vinniger met Chromium se V8-enjin, maar maak Chromium effens minder bestand teen aanvalle. Hierdie instelling is aan.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data (1 item) uitgevee word.}other{Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data ({count} items) uitgevee word.}}</translation>
 <translation id="67706546131546258">Chromium beveel aan dat hierdie lêer geskandeer word omdat dit gevaarlik kan wees.</translation>
 <translation id="6779406956731413166">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Vertaal</translation>

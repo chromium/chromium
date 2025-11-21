@@ -1061,6 +1061,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
 <translation id="170658918174941828">Nous recevrons la version de Chrome, la version de votre système d'exploitation, les paramètres Cast, les statistiques des performances de duplication d'écran et les journaux des diagnostics de votre canal de communication, ainsi que toute autre information que vous choisirez d'inclure ci-dessus. Vos commentaires nous servent à diagnostiquer les problèmes et à améliorer la fonctionnalité. Toute information personnelle que vous nous envoyez, de manière explicite ou tacite, est protégée conformément à nos règles de confidentialité. En nous envoyant ces informations, vous acceptez que nous les utilisions pour améliorer tout produit ou service Google.</translation>
 <translation id="17081583771848899">lanceur d'applications+Alt+<ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Enregistrer dans le cloud</translation>
 <translation id="1708291623166985230">Point d'accès désactivé</translation>
 <translation id="1708338024780164500">(Inactive)</translation>
 <translation id="1708563369218024896">Aucun collecteur de données sélectionné. Veuillez en sélectionner au moins un.</translation>
@@ -6660,6 +6661,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5585912436068747822">Échec du formatage</translation>
 <translation id="5587765208077583036">Pour partager un dossier, faites un clic droit sur le dossier concerné dans l'appli Fichiers, puis sélectionnez "Partager avec <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrer les sites sur la page</translation>
 <translation id="558918721941304263">Chargement des applications…</translation>
 <translation id="5590418976913374224">Émettre un son au démarrage de l'appareil</translation>
 <translation id="5591465468509111843">Très large</translation>
@@ -8051,6 +8053,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Contenu du bureau partagé</translation>
 <translation id="6580060371127789208">Progression : <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Vitesse d'exploration</translation>
+<translation id="6580676117087365538">Pour obtenir cette extension sur tous vos ordinateurs, confirmez votre identité</translation>
 <translation id="6581356304040102696">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 1 Mo.</translation>
 <translation id="6582080224869403177">Réinitialisez votre appareil <ph name="DEVICE_TYPE" /> pour procéder à la mise à niveau de sécurité.</translation>
 <translation id="6582274660680936615">Vous naviguez en tant qu'invité</translation>
@@ -9574,6 +9577,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7647403192093989392">Aucune activité récente.</translation>
 <translation id="7648023614017258011">Chrome valide le package d'installation</translation>
 <translation id="7648048654005891115">Style de mappage du clavier</translation>
+<translation id="7648180062672842917">Ce fichier contient des données sensibles ou dangereuses. Votre organisation vous permettra de l'enregistrer dans le cloud ou de le supprimer.</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7649954700951153978">Me le rappeler sur iOS</translation>
 <translation id="7650141368285545431">Utiliser la clé d'accès d'un autre appareil</translation>
@@ -11149,6 +11153,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8703766890819308134">Afficher les raccourcis de recherche</translation>
 <translation id="8704662571571150811">Domaines</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
+<translation id="870536819717176711">Lorsque vous choisissez de partager l'onglet actuel avec Gemini, son URL et tout son contenu, y compris le contenu multimédia, sont envoyés à Google.</translation>
 <translation id="8705580154597116082">Wi-Fi disponible via le téléphone</translation>
 <translation id="8705629851992224300">Impossible de lire votre clé de sécurité</translation>
 <translation id="8706111173576263877">QR code scanné.</translation>

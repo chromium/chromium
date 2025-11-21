@@ -1060,6 +1060,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1706586824377653884">Afegida per l'administrador</translation>
 <translation id="170658918174941828">La teva versió de Chrome, la versió del sistema operatiu, la configuració de Cast, les estadístiques de rendiment de les duplicacions i els registres de diagnòstic dels canals de comunicació s'enviaran juntament amb la informació que vulguis incloure de la secció anterior. Aquests suggeriments es fan servir per diagnosticar problemes i per ajudar a millorar la funció. La informació personal que enviïs, ja sigui de manera explícita o implícita, es protegirà d'acord amb les nostres polítiques de privadesa. En enviar aquests suggeriments, acceptes que Google els utilitzi per millorar els seus productes o serveis.</translation>
 <translation id="17081583771848899">menú d'aplicacions+Alt+<ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Desa a l'emmagatzematge al núvol</translation>
 <translation id="1708291623166985230">Punt d'accés Wi‐Fi desactivat</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708563369218024896">No s'ha seleccionat cap recollidor de dades. Selecciona'n com a mínim un.</translation>
@@ -6659,6 +6660,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5585912436068747822">La formatació ha fallat</translation>
 <translation id="5587765208077583036">Per compartir una carpeta de l'aplicació Fitxers, fes-hi clic amb el botó dret i selecciona Comparteix amb <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtra els llocs web de la pàgina</translation>
 <translation id="558918721941304263">S'estan carregant les aplicacions...</translation>
 <translation id="5590418976913374224">Reprodueix un so en iniciar el dispositiu</translation>
 <translation id="5591465468509111843">Molt ample</translation>
@@ -8047,6 +8049,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: el contingut de l'escriptori es comparteix</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completat</translation>
 <translation id="6580203076670148210">Velocitat de cerca</translation>
+<translation id="6580676117087365538">Per obtenir aquesta extensió en tots els teus ordinadors, verifica la teva identitat</translation>
 <translation id="6581356304040102696">Les contrasenyes no es poden importar. La mida del fitxer ha de ser inferior a 1 MB.</translation>
 <translation id="6582080224869403177">Restableix el dispositiu <ph name="DEVICE_TYPE" /> per actualitzar-ne el sistema de seguretat.</translation>
 <translation id="6582274660680936615">Estàs navegant com a convidat</translation>
@@ -9568,6 +9571,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7647403192093989392">No hi ha cap activitat recent</translation>
 <translation id="7648023614017258011">Chrome està verificant el paquet d'instal·lació</translation>
 <translation id="7648048654005891115">Estil del mapa de tecles</translation>
+<translation id="7648180062672842917">Aquest fitxer inclou dades sensibles o perilloses. La teva organització et permetrà desar-lo a l'emmagatzematge al núvol o descartar-lo.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7649954700951153978">Recorda-m'ho a iOS</translation>
 <translation id="7650141368285545431">Utilitza la clau d'accés d'un altre dispositiu</translation>
@@ -11144,6 +11148,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8703766890819308134">Mostra les dreceres de cerca</translation>
 <translation id="8704662571571150811">Dominis</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
+<translation id="870536819717176711">Quan decideixes compartir la pestanya actual amb Gemini, s'envien a Google l'URL, el contingut multimèdia i tot el contingut de la pestanya.</translation>
 <translation id="8705580154597116082">Wi-Fi disponible mitjançant el telèfon</translation>
 <translation id="8705629851992224300">La clau de seguretat no s'ha pogut llegir</translation>
 <translation id="8706111173576263877">S'ha escanejat el codi QR.</translation>

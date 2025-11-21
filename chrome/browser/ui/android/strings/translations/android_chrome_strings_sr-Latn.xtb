@@ -1502,6 +1502,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, izabrana zakačena kartica za deljenje</translation>
 <translation id="7304072650267745798">Android uređaj može da ima slično podešavanje. Ako je ovo podešavanje uključeno u Chrome-u i na Android uređaju, kompanija možda može da meri efikasnost oglasa na svim veb-sajtovima koje posećujete i u aplikacijama koje koristite.</translation>
+<translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7313188324932846546">Dodirnite da biste podesili sinhronizaciju</translation>
 <translation id="7314734791127433392">Provera lozinki nije uspela</translation>
 <translation id="7324354302972299151">Pošaljite zahtev „Do Not Track“</translation>
@@ -1927,6 +1928,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
 <translation id="9086302186042011942">Sinhronizovanje</translation>
 <translation id="9086455579313502267">Ne možemo da pristupimo mreži</translation>
+<translation id="9093915805850895575">Otvori u Chrome prozoru</translation>
 <translation id="909756639352028172">Da biste imali najpersonalizovaniji doživljaj, uvrstite Chrome u aktivnosti na vebu i u aplikacijama i povezane Google usluge</translation>
 <translation id="9099220545925418560">Na osnovu istorije pregledanja. Ovo podešavanje je isključeno.</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>

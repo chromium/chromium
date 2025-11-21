@@ -1069,6 +1069,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
     stem jy in dat Google terugvoer wat jy bied, mag gebruik om enige Google-produk of -diens
     te verbeter.</translation>
 <translation id="17081583771848899">lanseerder + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Stoor in wolkberging</translation>
 <translation id="1708291623166985230">Warmkol is gedeaktiveer</translation>
 <translation id="1708338024780164500">(Onaktief)</translation>
 <translation id="1708563369218024896">Geen dataversamelaar gekies nie. Kies asseblief ten minste een dataversamelaar.</translation>
@@ -6676,6 +6677,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5585912436068747822">Kon nie formateer nie</translation>
 <translation id="5587765208077583036">Regsklik op ’n vouer in Lêers-app en kies dan “Deel met <ph name="SPECIFIC_NAME" />” as jy wil deel.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtreer werwe op bladsy</translation>
 <translation id="558918721941304263">Laai tans programme …</translation>
 <translation id="5590418976913374224">Speel klank wanneer toestel begin</translation>
 <translation id="5591465468509111843">Baie breed</translation>
@@ -8067,6 +8069,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Werkskerminhoud gedeel</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% voltooi</translation>
 <translation id="6580203076670148210">Skandeerspoed</translation>
+<translation id="6580676117087365538">Verifieer dat dit jy is om hierdie uitbreiding op al jou rekenaars te kry</translation>
 <translation id="6581356304040102696">Kan nie wagwoorde invoer nie. Die lêergrootte moet kleiner as 1 MB wees.</translation>
 <translation id="6582080224869403177">Stel <ph name="DEVICE_TYPE" /> terug om jou sekuriteit op te gradeer.</translation>
 <translation id="6582274660680936615">Jy blaai tans as 'n gas</translation>
@@ -9587,6 +9590,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7647403192093989392">Geen onlangse aktiwiteite nie</translation>
 <translation id="7648023614017258011">Chrome verifieer tans die installasiebondel</translation>
 <translation id="7648048654005891115">Sleutelkaartstyl</translation>
+<translation id="7648180062672842917">Hierdie lêer het sensitiewe of gevaarlike data. Jou organisasie sal jou toelaat om dit in wolkberging te stoor of dit weg te gooi</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7649954700951153978">Herinner my op iOS</translation>
 <translation id="7650141368285545431">Gebruik toegangsleutel van ’n ander toestel</translation>
@@ -11161,6 +11165,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8703766890819308134">Wys soekkortpaaie</translation>
 <translation id="8704662571571150811">Domeine</translation>
 <translation id="8705331520020532516">Reeksnommer</translation>
+<translation id="870536819717176711">Wanneer jy kies om die huidige oortjie met Gemini te deel, word die oortjie se volle inhoud, media en URL na Google toe gestuur.</translation>
 <translation id="8705580154597116082">Wi-Fi beskikbaar via foon</translation>
 <translation id="8705629851992224300">Jou sekuriteitsleutel kon nie gelees word nie</translation>
 <translation id="8706111173576263877">QR-kode is geskandeer.</translation>

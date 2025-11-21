@@ -1072,6 +1072,7 @@
     використовувати його, щоб покращувати будь-які
     продукти чи сервіси Google.</translation>
 <translation id="17081583771848899">клавіша Панелі запуску + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Зберегти в хмарному сховищі</translation>
 <translation id="1708291623166985230">Точку доступу вимкнено</translation>
 <translation id="1708338024780164500">(Неактивне)</translation>
 <translation id="1708563369218024896">Не вибрано жодного інструмента збирання даних. Виберіть принаймні один.</translation>
@@ -6677,6 +6678,7 @@
 <translation id="5585912436068747822">Помилка форматування</translation>
 <translation id="5587765208077583036">Щоб надіслати папку, натисніть її в додатку Файли правою кнопкою миші й виберіть "Поділитися з <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Фільтрувати сайти на сторінці</translation>
 <translation id="558918721941304263">Завантаження додатків…</translation>
 <translation id="5590418976913374224">Відтворювати звук під час запуску пристрою</translation>
 <translation id="5591465468509111843">Дуже великий</translation>
@@ -8064,6 +8066,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – надано доступ до вмісту на робочому столі</translation>
 <translation id="6580060371127789208">Виконано <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Швидкість сканування</translation>
+<translation id="6580676117087365538">Щоб отримати доступ до цього розширення на всіх комп’ютерах, підтвердьте свою особу</translation>
 <translation id="6581356304040102696">Не вдалось імпортувати паролі. Розмір файлу не має перевищувати 1 МБ.</translation>
 <translation id="6582080224869403177">Щоб оновити систему безпеки, скиньте налаштування пристрою <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6582274660680936615">Ви переглядаєте в гостьовому режимі</translation>
@@ -9590,6 +9593,7 @@
 <translation id="7647403192093989392">Немає останніх дій</translation>
 <translation id="7648023614017258011">Chrome перевіряє пакет встановлення</translation>
 <translation id="7648048654005891115">Стиль таблиці клавіш</translation>
+<translation id="7648180062672842917">Цей файл містить конфіденційні або небезпечні дані. Адміністратор вашої організації дозволить зберегти його в хмарному сховищі або видалить його.</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7649954700951153978">Нагадати на пристрої iOS</translation>
 <translation id="7650141368285545431">Використовувати ключ доступу з іншого пристрою</translation>
@@ -11165,6 +11169,7 @@
 <translation id="8703766890819308134">Показати ярлики для пошуку</translation>
 <translation id="8704662571571150811">Домени</translation>
 <translation id="8705331520020532516">Серійний номер</translation>
+<translation id="870536819717176711">Коли ви ділитеся поточною вкладкою з Gemini, у Google надсилаються її URL-адреса й весь контент, включно з мультимедійним.</translation>
 <translation id="8705580154597116082">Доступне з’єднання Wi-Fi через телефон</translation>
 <translation id="8705629851992224300">Не вдалося прочитати ключ безпеки</translation>
 <translation id="8706111173576263877">QR-код зіскановано.</translation>

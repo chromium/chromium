@@ -1070,6 +1070,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     você concorda que o Google possa usá-lo para melhorar
     nossos produtos ou serviços.</translation>
 <translation id="17081583771848899">Acesso rápido + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Salvar no armazenamento em nuvem</translation>
 <translation id="1708291623166985230">Ponto de acesso desativado</translation>
 <translation id="1708338024780164500">(inativa)</translation>
 <translation id="1708563369218024896">Nenhum coletor de dados selecionado. Selecione pelo menos um coletor de dados.</translation>
@@ -6677,6 +6678,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5587765208077583036">Para compartilhar, clique com o botão direito do mouse no app Arquivos e selecione "Compartilhar com o <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrar sites na página</translation>
 <translation id="558918721941304263">Carregando apps…</translation>
 <translation id="5590418976913374224">Tocar som na inicialização do dispositivo</translation>
 <translation id="5591465468509111843">Muito espaçadas</translation>
@@ -8068,6 +8070,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Conteúdo da área de trabalho compartilhado</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% concluído</translation>
 <translation id="6580203076670148210">Velocidade da verificação</translation>
+<translation id="6580676117087365538">Para acessar essa extensão em todos os seus computadores, confirme sua identidade</translation>
 <translation id="6581356304040102696">Não é possível importar as senhas. O arquivo precisa ter menos de 1 MB.</translation>
 <translation id="6582080224869403177">Redefina seu <ph name="DEVICE_TYPE" /> para aumentar a segurança.</translation>
 <translation id="6582274660680936615">Você está navegando como visitante</translation>
@@ -9591,6 +9594,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7647403192093989392">Nenhuma atividade recente</translation>
 <translation id="7648023614017258011">O Chrome está verificando o pacote de instalação</translation>
 <translation id="7648048654005891115">Estilo do mapa de teclado</translation>
+<translation id="7648180062672842917">Este arquivo tem dados sensíveis ou perigosos. Sua organização vai permitir que você o salve no armazenamento em nuvem ou descarte</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7649954700951153978">Lembrar no iOS</translation>
 <translation id="7650141368285545431">Usar a chave de acesso de outro dispositivo</translation>
@@ -11166,6 +11170,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8703766890819308134">Mostrar atalhos de pesquisa</translation>
 <translation id="8704662571571150811">Domínios</translation>
 <translation id="8705331520020532516">Número de série</translation>
+<translation id="870536819717176711">Se você compartilhar a guia atual com o Gemini, o conteúdo, as mídias e o URL dela serão enviados ao Google.</translation>
 <translation id="8705580154597116082">Wi-Fi disponível via smartphone</translation>
 <translation id="8705629851992224300">Não foi possível ler a chave de segurança</translation>
 <translation id="8706111173576263877">Leitura do QR code realizada.</translation>

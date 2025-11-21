@@ -622,6 +622,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3710560693796335511">Samarbete</translation>
 <translation id="3718765429352682176">Du kan se historiken från andra appar som öppnar länkar i Chrome.</translation>
 <translation id="3721119614952978349">Du och Google</translation>
+<translation id="3727000368239390918">Logga in om du vill ha dina flikar med mera på alla dina enheter</translation>
 <translation id="3737319253362202215">Inställningar för översättning</translation>
 <translation id="3738139272394829648">Tryck för att söka</translation>
 <translation id="3739455665973395693">Inga utsatta lösenord i Google-kontot</translation>
@@ -1502,6 +1503,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vald fäst flik som delas</translation>
 <translation id="7304072650267745798">En liknande inställning kan finnas på Android-enheten. Om den här inställningen är aktiverad i Chrome och på Android-enheten kan ett företag mäta hur effektiv en annons är på alla webbplatser du besöker och i appar som du använder.</translation>
+<translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
 <translation id="7314734791127433392">Det går inte att kontrollera lösenorden</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>

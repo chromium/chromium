@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">محفوظ کریں…</translation>
 <translation id="2088913896151127116">ٹیکسٹ شامل کریں</translation>
 <translation id="2090451897496479509">مزید معلومات کیلئے فراہم کنندہ سے رابطہ کریں</translation>
+<translation id="2090686487550343086">‫IBANs</translation>
 <translation id="2091887806945687916">آواز</translation>
 <translation id="2093184051799735948">‏<ph name="ENGINE_NAME" /> تلاش یا URL ٹائپ کریں</translation>
 <translation id="2093982008204312032">‏Google Chrome پاس ورڈز پُر کرنے کے لیے Windows Hello کو آف کرنے کی کوشش کر رہا ہے۔</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">پتوں کو محفوظ کریں اور بھریں</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' حذف کیا گيا</translation>
 <translation id="2283599456633275070">سفر</translation>
+<translation id="2285709459648658719">پاسپورٹز</translation>
 <translation id="2286383991450886080">‏‎34 x 44 انچ</translation>
 <translation id="2288422996159078444">آپ جو بھی ٹائپ کرتے ہیں، جو بھی صفحات آپ دیکھتے ہیں، یا ویب پر دیکھی جانے والی کوئی بھی دوسری سرگرمی، اور سائٹس پر موجود کسی بھی مواد کو آپ کی معلومات کے بغیر تبدیل کیا جا سکتا ہے۔</translation>
 <translation id="2289385804009217824">تراشیں</translation>
@@ -2552,6 +2554,7 @@
 <translation id="5137761395480718572">‏یہ ایپ Wi-Fi اسناد کو انسٹال کرنے کی اجازت کی درخواست کر رہی ہے۔ سیٹ اپ کے بعد، آپ کا <ph name="DEVICE_TYPE" /> خودکار طور پر شرکت کرنے والے WiFi نیٹ ورکس سے منسلک ہو جائے گا۔ ان اسناد کو ہٹانے کے لیے، ایپ کو اَن انسٹال کریں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ورچوئل کارڈ ابھی دستیاب نہیں ہے، براہ کرم اپنے بینک سے رابطہ کریں</translation>
 <translation id="5138227688689900538">کم دکھائیں</translation>
+<translation id="5140155249377545621">ڈرائیونگ لائسنسز</translation>
 <translation id="5144613843429436866">آپ نے اس سائٹ کے لیے <ph name="PERMISSION" /> کو اجازت دی ہے</translation>
 <translation id="5145883236150621069">خرابی کوڈ پالیسی جواب میں موجود ہے</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> کیلئے اطلاعات مسدود ہیں</translation>
@@ -3143,6 +3146,7 @@
 <translation id="6124058285696691147">منسلکہ ڈاؤن لوڈ کریں</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6124996493718543728">ابھی خریدیں، ادائیگی بعد میں کریں کی پیشرفت اسکرین پوری کھلی ہے۔</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />مزید تفصیلات<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">‏Chinese #2 لفافہ</translation>
 <translation id="6131824478727057281">مقام</translation>
 <translation id="6133320744616005677">اجازت دینا جاری رکھیں</translation>
@@ -4238,6 +4242,7 @@
 <translation id="7886897188117641322">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
+<translation id="7888367499748383555">‏کوئی فیس نہیں، کم از کم ‎0% APR (اہلیت کے ساتھ مشروط)</translation>
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
 <translation id="7890748547282909375">‏اسکرین شاٹ محفوظ کرنے کے لیے Microsoft OneDrive میں سائن ان کریں</translation>
 <translation id="7890755620327858054">بعد میں ادائیگی کریں اس وقت دستیاب نہیں ہے۔ دوبارہ کوشش کریں یا ادائیگی کا کوئی دوسرا طریقہ منتخب کریں۔</translation>
@@ -4401,6 +4406,7 @@
 <translation id="8163866351304776260">بائیں طرف مستطیل سوراخ</translation>
 <translation id="8164078261547504572">قیمتیں گرنے پر ای میلز چاہتے ہیں؟</translation>
 <translation id="8169175551046720804">کلیدیں "<ph name="DATA_CONTROLS_KEYS" />" ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
+<translation id="8174047975335711832">آلہ کی معلومات</translation>
 <translation id="8175053171643471349">لائلٹی کارڈز کا نظم کریں</translation>
 <translation id="8175796834047840627">‏آپ کے سائن ان ہونے کی وجہ سے Chrome آپ کے کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کرنے کی پیشکش کر رہا ہے۔ آپ اس برتاؤ کو ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8176440868214972690">اس آلہ کے منتظم نے کچھ معلومات جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹ پر بھیجی ہیں۔</translation>

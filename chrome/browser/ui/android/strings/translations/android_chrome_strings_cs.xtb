@@ -622,6 +622,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3710560693796335511">Spolupráce</translation>
 <translation id="3718765429352682176">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu.</translation>
 <translation id="3721119614952978349">Vy a Google</translation>
+<translation id="3727000368239390918">Přihlaste se a používejte karty a další obsah na všech svých zařízeních</translation>
 <translation id="3737319253362202215">Nastavení překladu</translation>
 <translation id="3738139272394829648">Vyhledání klepnutím</translation>
 <translation id="3739455665973395693">V účtu Google nemáte žádná prolomená hesla</translation>
@@ -1501,6 +1502,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná připnutá sdílející karta</translation>
 <translation id="7304072650267745798">Zařízení Android může obsahovat podobné nastavení. Pokud je toto nastavení zapnuto v Chromu a na vašem zařízení Android, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
+<translation id="7311244614769792472">Žádné výsledky</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>

@@ -176,6 +176,7 @@
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="2981563588585023386">Anne veya babanızın seçimleriyle internette daha güvende olmak için Chromium'da oturum açın</translation>
 <translation id="3003694935412297923">Tüm görevler</translation>
+<translation id="3012615494352020668">{count,plural, =1{Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chromium'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler (1 öğe) silinir.}other{Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chromium'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler ({count} öğe) silinir.}}</translation>
 <translation id="3013473503895162900"><ph name="URL" /> adresini Chromium'da yeni bir sekmede açar.</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3032787606318309379">Chromium'a ekleniyor ...</translation>
@@ -490,6 +491,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6729124504294600478">Kişiselleştirme ve diğer özelliklerden yararlanmak için Chromium'u Web ve Uygulama Etkinliği'nin yanı sıra bağlı Google hizmetlerine ekleyin</translation>
 <translation id="6734291798041940871">Chromium zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6751374565094704799">Chromium'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chromium, saldırılara karşı biraz daha dirençsiz hale gelir. Bu ayar açık.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler (1 öğe) silinir.}other{Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler ({count} öğe) silinir.}}</translation>
 <translation id="67706546131546258">Chromium, tehlikeli olabileceği için bu dosyanın taranmasını öneriyor.</translation>
 <translation id="6779406956731413166">Chromium OS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlar<ph name="END_LINK_CROS_OSS" /> ile hazırlanmıştır.</translation>
 <translation id="6831043979455480757">Çevir</translation>

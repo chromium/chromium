@@ -1060,6 +1060,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1706586824377653884">Administrator tərəfindən əlavə edildi</translation>
 <translation id="170658918174941828">Chrome versiyanız, əməliyyat sistemi versiyanız, Yayım ayarları, əks etdirmə məhsuldarlığı statistikaları və kommunikasiya kanalının diaqnostika qeydləri yuxarıda daxil etmək üçün seçdiyiniz istənilən məlumata əlavə olaraq göndəriləcək. Bu rəy problemləri müəyyən etmək və funksiyanı təkmilləşdirməyə yardım etmək üçün istifadə edilir. Göndərdiyiniz istənilən şəxsi məlumat, açıq şəkildə və ya təsadüfi məxfilik siyasətimizə əsasən qorunacaq. Bu rəyi təqdim etməklə, Google'un verdiyiniz rəyi istənilən Google məhsulu və ya xidmətini təkmilləşdirmək üçün istifadə edə biləcəyi ilə razılaşırsınız.</translation>
 <translation id="17081583771848899">başladıcı + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Bulud yaddaşında yadda saxlayın</translation>
 <translation id="1708291623166985230">Hotspot deaktiv edilib</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708563369218024896">Data kontrolleri seçilməyib. Ən azı bir data kontrolleri seçin.</translation>
@@ -6664,6 +6665,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5585912436068747822">Formatlama alınmadı</translation>
 <translation id="5587765208077583036">Paylaşmaq üçün Fayllar tətbiqində qovluğa sağ düymə ilə klikləyin və "<ph name="SPECIFIC_NAME" /> ilə paylaşın" seçin.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Səhifədəki saytları filtrləyin</translation>
 <translation id="558918721941304263">Tətbiqlər yüklənir...</translation>
 <translation id="5590418976913374224">Cihaz işə salındıqda səs oxudulsun</translation>
 <translation id="5591465468509111843">Çox geniş</translation>
@@ -8052,6 +8054,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Masaüstü kontent paylaşıldı</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% tamamlanıb</translation>
 <translation id="6580203076670148210">Skan sürəti</translation>
+<translation id="6580676117087365538">Bu artırmanı bütün kompüterlərinizdə əldə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6581356304040102696">Parolları import etmək olmur. Faylın ölçüsü 1 MB-dan az olmalıdır.</translation>
 <translation id="6582080224869403177">Təhlükəsizliyi yeniləmək üçün <ph name="DEVICE_TYPE" /> cihazını sıfırlayın.</translation>
 <translation id="6582274660680936615">Qonaq kimi baxırsınız</translation>
@@ -9572,6 +9575,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7647403192093989392">Ən son fəaliyyət yoxdur</translation>
 <translation id="7648023614017258011">Chrome quraşdırma paketini doğrulayır</translation>
 <translation id="7648048654005891115">Keymap üslubu</translation>
+<translation id="7648180062672842917">Bu faylda həssas və ya təhlükəli data var. Təşkilatınız onu bulud yaddaşında yadda saxlamağa və ya ləğv etməyə icazə verəcək</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7649954700951153978">Mənə iOS-da xatırladın</translation>
 <translation id="7650141368285545431">Başqa cihazın giriş açarından istifadə edin</translation>
@@ -11146,6 +11150,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8703766890819308134">Axtarış qısayollarını göstərin</translation>
 <translation id="8704662571571150811">Domenlər</translation>
 <translation id="8705331520020532516">Seriya Nömrəsi</translation>
+<translation id="870536819717176711">Cari tabı Gemini ilə paylaşmağı seçdiyiniz zaman tabın tam kontenti media və URL Google-a göndərilir.</translation>
 <translation id="8705580154597116082">Wi-Fi telefon üzərindən əlçatandır</translation>
 <translation id="8705629851992224300">Təhlükəsizlik açarınız oxunmadı</translation>
 <translation id="8706111173576263877">QR kodu skanlanıb.</translation>

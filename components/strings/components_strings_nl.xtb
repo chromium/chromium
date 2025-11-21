@@ -662,6 +662,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2085876078937250610">Opslaan…</translation>
 <translation id="2088913896151127116">Tekst toevoegen</translation>
 <translation id="2090451897496479509">Neem voor meer informatie contact op met de provider</translation>
+<translation id="2090686487550343086">IBAN's</translation>
 <translation id="2091887806945687916">Geluid</translation>
 <translation id="2093184051799735948">Zoek op <ph name="ENGINE_NAME" /> of typ een URL</translation>
 <translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
@@ -799,6 +800,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2283340219607151381">Adressen opslaan en invullen</translation>
 <translation id="2283447177162560884"><ph name="PAGE_TITLE" /> verwijderd</translation>
 <translation id="2283599456633275070">Reizen</translation>
+<translation id="2285709459648658719">Paspoorten</translation>
 <translation id="2286383991450886080">34 x 44 inch</translation>
 <translation id="2288422996159078444">Alles wat je typt, pagina's die je bekijkt en andere activiteiten op internet worden in de gaten gehouden. Content op sites kan zonder jouw medeweten worden gewijzigd.</translation>
 <translation id="2289385804009217824">Bijsnijden</translation>
@@ -2545,6 +2547,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5137761395480718572">Deze app wil rechten om wifi-inloggegevens te installeren. Na het instellen maakt je <ph name="DEVICE_TYPE" /> automatisch verbinding met deelnemende wifi-netwerken. Verwijder de app om deze inloggegevens te verwijderen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuele kaart nu niet beschikbaar, neem contact op met je bank</translation>
 <translation id="5138227688689900538">Minder bekijken</translation>
+<translation id="5140155249377545621">Rijbewijzen</translation>
 <translation id="5144613843429436866">Je hebt <ph name="PERMISSION" /> toegestaan voor deze site</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
 <translation id="5146995429444047494">Meldingen voor <ph name="ORIGIN" /> zijn geblokkeerd</translation>
@@ -3136,6 +3139,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6124058285696691147">De bijlage downloaden</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6124996493718543728">Voortgangsscherm voor Koop nu, betaal later is op volledige hoogte geopend.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Envelop Chinees #2</translation>
 <translation id="6131824478727057281">locatie</translation>
 <translation id="6133320744616005677">Blijven toestaan</translation>
@@ -4230,6 +4234,7 @@ Aanvullende informatie:
 <translation id="7886897188117641322">Kies welke brede onderwerpcategorieën kunnen worden gebruikt om advertenties te personaliseren</translation>
 <translation id="7887683347370398519">Controleer je CVC-code en probeer het opnieuw</translation>
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
+<translation id="7888367499748383555">Geen kosten, jaarlijkse rentevoet van 0% (als je hiervoor in aanmerking komt)</translation>
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
 <translation id="7890748547282909375">Log in bij Microsoft OneDrive om het screenshot op te slaan</translation>
 <translation id="7890755620327858054">Achteraf betalen is op dit moment niet beschikbaar. Probeer het opnieuw of kies een andere betaalmethode.</translation>
@@ -4393,6 +4398,7 @@ Aanvullende informatie:
 <translation id="8163866351304776260">Vier perforaties links</translation>
 <translation id="8164078261547504572">Wil je e-mail ontvangen als de prijzen dalen?</translation>
 <translation id="8169175551046720804">De sleutels '<ph name="DATA_CONTROLS_KEYS" />' kunnen niet in hetzelfde woordenboek worden ingesteld</translation>
+<translation id="8174047975335711832">Apparaatgegevens</translation>
 <translation id="8175053171643471349">Klantenkaarten beheren</translation>
 <translation id="8175796834047840627">Chrome biedt aan je passen in je Google-account op te slaan omdat je bent ingelogd. Je kunt dit wijzigen in de instellingen.</translation>
 <translation id="8176440868214972690">De beheerder van dit apparaat heeft bepaalde gegevens gestuurd naar de volgende websites, zoals instellingen of beleidsregels.</translation>

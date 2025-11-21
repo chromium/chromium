@@ -118,7 +118,7 @@
 <translation id="107022587824771715">Рекомендации по группировке вкладок недоступны. <ph name="BEGIN_LINK" />Обновите страницу<ph name="END_LINK" /> или повторите попытку позже.</translation>
 <translation id="1070357312245925724">Быстрые клавиши для перехода к Gemini</translation>
 <translation id="1070705170564860382">Страница откроется в альтернативном браузере через <ph name="COUNTDOWN_SECONDS" /> сек.</translation>
-<translation id="1071661533099313342">Разделить окна</translation>
+<translation id="1071661533099313342">Выйти из параллельного просмотра</translation>
 <translation id="1071917609930274619">Шифрование данных</translation>
 <translation id="1072700771426194907">Обнаружено USB-устройство</translation>
 <translation id="107278043869924952">Использовать PIN-код вместе с паролем</translation>
@@ -380,7 +380,7 @@
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1241381048229838873">Показать все закладки</translation>
-<translation id="1241968867980182121">Закрыть верхнее окно</translation>
+<translation id="1241968867980182121">Закрыть верхнюю вкладку</translation>
 <translation id="1242044645101871359">Повторите вход</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает сбросить настройки</translation>
 <translation id="1243002225871118300">Размер изображения и текста на дисплее</translation>
@@ -1312,7 +1312,7 @@
 <translation id="1878477879455105085">Открытая</translation>
 <translation id="1878885068166344708">Объект выделяется, когда вы перемещаете на него фокус. Для этого достаточно нажать на объект или перейти к нему с помощью клавиши Tab.</translation>
 <translation id="1879000426787380528">Войти как</translation>
-<translation id="1880214489933905933">Расположить окна в обратном порядке</translation>
+<translation id="1880214489933905933">Поменять местами</translation>
 <translation id="1880618477732738742">Предоставление и изменение доступа для сайтов и расширений (в том числе для этого расширения) к таким функциям, как геолокация, использование микрофона, камеры и файлов cookie</translation>
 <translation id="1881445033931614352">Раскладка клавиатуры</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
@@ -1705,7 +1705,7 @@
 <translation id="2147402320887035428">Этот файл может оказаться вредоносным ПО.<ph name="LINE_BREAK" />Он проверяется на наличие угроз Google Безопасным просмотром. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Ошибка. Не удалось найти указанный ресурс в сети.</translation>
-<translation id="2148248734299717598">Закрыть левое окно</translation>
+<translation id="2148248734299717598">Закрыть левую вкладку</translation>
 <translation id="2148756636027685713">Форматирование завершено</translation>
 <translation id="2148892889047469596">Трансляция содержимого вкладки</translation>
 <translation id="2149973817440762519">Закладка</translation>
@@ -1766,6 +1766,7 @@
 <translation id="2192505247865591433">Из:</translation>
 <translation id="219283042927675668">Вкладки в группе</translation>
 <translation id="2192881772486983655">Вашей страницей быстрого доступа управляет сервис "<ph name="THIRD_PARTY_NTP_MANAGER" />". Ссылка откроется в новой вкладке.</translation>
+<translation id="2192982266585216032">&amp;Платежные данные</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2195331105963583686">После этого срока вы по-прежнему сможете пользоваться устройством <ph name="DEVICE_TYPE" />, но оно больше не будет получать обновления ПО и безопасности.</translation>
 <translation id="2195729137168608510">Защита электронной почты</translation>
@@ -2793,7 +2794,7 @@
 <translation id="2891922230654533301">Использовать устройство для входа на сайте <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Браузер по умолчанию</translation>
 <translation id="2893180576842394309">Google может использовать вашу историю, чтобы персонализировать Поиск и другие сервисы.</translation>
-<translation id="2893318819023133318">Расположить окна в обратном порядке</translation>
+<translation id="2893318819023133318">Поменять местами</translation>
 <translation id="2893701697603065178">Управляемая среда разработки</translation>
 <translation id="2894757982205307093">Добавить вкладку в группу</translation>
 <translation id="289695669188700754">Идентификатор ключа: <ph name="KEY_ID" /></translation>
@@ -2993,6 +2994,7 @@
 <translation id="3022072018423103125">Высокогорье</translation>
 <translation id="3022361196600037287">Устройство "<ph name="DEVICE" />" будет удалено с этого Chromebook и не сохранится в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Повторите ещё раз.</translation>
+<translation id="3023204744987201088">&amp;Контактная информация</translation>
 <translation id="3023464535986383522">Озвучивание при нажатии</translation>
 <translation id="3024374909719388945">Использовать 24-часовой формат</translation>
 <translation id="3027296729579831126">Включить Обмен с окружением</translation>
@@ -4518,7 +4520,7 @@
 <translation id="406213378265872299">Специальные настройки</translation>
 <translation id="4062561150282203854">Синхронизируйте приложения, настройки и другие данные на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Возможно, вам нужно перейти на страницу входа сети <ph name="NETWORK_ID" />.</translation>
-<translation id="4065910654823040256">Закрыть правое окно</translation>
+<translation id="4065910654823040256">Закрыть правую вкладку</translation>
 <translation id="4065931125325392744">Скоро мы можем прекратить поддержку этого расширения</translation>
 <translation id="4066207411788646768">Чтобы увидеть принтеры, доступные в вашей сети, подключитесь к Интернету.</translation>
 <translation id="4067839975993712852">Отметить текущую вкладку как прочитанную</translation>
@@ -4601,7 +4603,7 @@
 <translation id="412730574613779332">Супергерой</translation>
 <translation id="4130199216115862831">Журнал устройства</translation>
 <translation id="4130877444234883490">Чтобы нажать и удерживать кнопку мыши, используйте клавишу M.</translation>
-<translation id="4130948219446157616">Закрыть нижнее окно</translation>
+<translation id="4130948219446157616">Закрыть нижнюю вкладку</translation>
 <translation id="413121957363593859">Компоненты</translation>
 <translation id="4131283654370308898">Разрешить расширение "<ph name="EXTENSION_NAME" />" на этом сайте</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
@@ -7327,7 +7329,7 @@
 <translation id="6066649679804058181">Преобразовать группу закладок в папку</translation>
 <translation id="6066794465984119824">Хеш изображения не задан.</translation>
 <translation id="6069464830445383022">Для входа в Chromebook используется ваш обычный аккаунт Google</translation>
-<translation id="6069799426896362048">Разделить окна</translation>
+<translation id="6069799426896362048">Выйти из параллельного просмотра</translation>
 <translation id="6071181508177083058">подтвердите пароль</translation>
 <translation id="6071576563962215370">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
 <translation id="6071938745001252305">Освобождено ресурсов памяти: <ph name="MEMORY_VALUE" /></translation>
@@ -7933,6 +7935,7 @@
 <translation id="6495261233408033662">Закрыть вкладки</translation>
 <translation id="6495266441917713704">Не удалось перенести данные Wi-Fi</translation>
 <translation id="6495453178162183932">Установлена тема Chrome по умолчанию</translation>
+<translation id="6496641546298525838">Ваше устройство</translation>
 <translation id="6497784818439587832">Изменить масштаб изображения, чтобы увеличить или уменьшить объекты на экране</translation>
 <translation id="6497789971060331894">Обратное направление прокрутки мышью</translation>
 <translation id="6498249116389603658">&amp;Все языки</translation>
@@ -8125,7 +8128,7 @@
 <translation id="6621391692573306628">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chrome.</translation>
 <translation id="6622980291894852883">Всегда блокировать изображения</translation>
 <translation id="6624036901798307345">В режиме планшета нажмите кнопку с числом вкладок на панели инструментов, чтобы открыть новую панель с уменьшенными изображениями всех вкладок.</translation>
-<translation id="6624538059730609162">Закрыть правое окно</translation>
+<translation id="6624538059730609162">Закрыть правую вкладку</translation>
 <translation id="6624687053722465643">Пирожное</translation>
 <translation id="6626581113916585374">Эффекты</translation>
 <translation id="6627743754845412571">Запрещено отслеживать движения рук</translation>
@@ -9254,7 +9257,7 @@
 <translation id="7412226954991670867">Память графического процессора</translation>
 <translation id="741370456693729525">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами</translation>
 <translation id="7414464185801331860">18x</translation>
-<translation id="7414622565840501288">Закрыть левое окно</translation>
+<translation id="7414622565840501288">Закрыть левую вкладку</translation>
 <translation id="7415454883318062233">Настройка завершена</translation>
 <translation id="7415884723030194001">Десерты</translation>
 <translation id="7415997299997664304">Распознавать смысл визуального контекста</translation>
@@ -9761,6 +9764,7 @@
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7760176388948986635">Разрешите использовать геолокацию этого устройства сайтам, приложениям и сервисам (в ChromeOS и Android), у которых есть доступ к данным о местоположении. Функция "Точность геолокации" позволяет приложениям и сервисам получать более корректную информацию о местоположении. Для этого Google собирает общую базу местоположений беспроводных сигналов, используя периодически получаемые с устройств данные о датчиках и беспроводной связи. Эти анонимные сведения позволяют повышать точность геолокации и улучшать работу сервисов, использующих информацию о местоположении, а также совершенствовать, предоставлять и поддерживать наши сервисы в соответствии с законными интересами Google и третьих лиц для удовлетворения потребностей пользователей.</translation>
 <translation id="7762024824096060040">Не удается использовать этот аккаунт</translation>
+<translation id="776324966908034528">Настройки прокси-сервера в браузере управляются из нескольких источников</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> с сайта <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Открыть группу в новом окне</translation>
@@ -9860,7 +9864,7 @@
 <translation id="7826174860695147464">Поддержка альтернативного браузера – внутренние настройки</translation>
 <translation id="7826249772873145665">Отладка с ADB отключена</translation>
 <translation id="7826254698725248775">Конфликт идентификаторов устройств.</translation>
-<translation id="7826838152281937785">Закрыть нижнее окно</translation>
+<translation id="7826838152281937785">Закрыть нижнюю вкладку</translation>
 <translation id="7828642077514646543">Ошибка: не удалось расшифровать сертификат.</translation>
 <translation id="7829877209233347340">Попросите родителя войти в систему, чтобы дать вам разрешение на добавление учебного аккаунта.</translation>
 <translation id="7830276128493844263">Геолокация выключена в системных настройках</translation>
@@ -10612,7 +10616,7 @@
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
 <translation id="8327386430364625757">Математический шрифт</translation>
 <translation id="8327490658947427005">Язык выбранного текста не <ph name="LANGUAGE" /></translation>
-<translation id="8327544198829180337">Закрыть это окно</translation>
+<translation id="8327544198829180337">Закрыть эту вкладку</translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>
 <translation id="8328228852664998535">Если вы продолжите, пароли, ключи доступа и другие данные будут безвозвратно удалены из сервиса "<ph name="BRAND" />". Аккаунты, созданные вами на сайтах и в приложениях, будут сохранены.</translation>
 <translation id="8328777765163860529">Закрыть все</translation>
@@ -10886,7 +10890,7 @@
 <translation id="8515580632187889788">Продолжая, вы разрешаете третьим лицам проверять информацию, идентифицирующую это устройство в сети. Если вы не хотите разрешать третьим лицам доступ к сведениям об устройстве, то можете настроить профиль eSIM <ph name="BEGIN_LINK" />вручную<ph name="END_LINK" />.</translation>
 <translation id="8516472100141530292">Нажмите на группу правой кнопкой мыши.</translation>
 <translation id="8517759303731677493">Изменить…</translation>
-<translation id="8518809011298357036">Закрыть верхнее окно</translation>
+<translation id="8518809011298357036">Закрыть верхнюю вкладку</translation>
 <translation id="8518942514525208851">Скрывать непристойную лексику</translation>
 <translation id="8520238089740349550">Ошибка: скачивание на устройство заблокировано</translation>
 <translation id="8523493869875972733">Закрыть</translation>
@@ -10912,7 +10916,6 @@
 <translation id="8535005006684281994">URL обновления сертификатов Netscape</translation>
 <translation id="8536810348276651776">Вы автоматически выйдете из аккаунтов на большинстве сайтов, но останетесь в аккаунте Google. Настройки Family Link для Chrome не изменятся.</translation>
 <translation id="8536956381488731905">Звук клавиш</translation>
-<translation id="8537854269962256103">Ваш разговор с Gemini открыт в отдельном окне. Чтобы переместить его сюда, нажмите в любом месте на боковой панели.</translation>
 <translation id="8539727552378197395">Нет (HttpOnly)</translation>
 <translation id="8539766201049804895">Обновить</translation>
 <translation id="8540136935098276800">Введите URL в правильном формате.</translation>
@@ -10997,7 +11000,7 @@
 <translation id="8601206103050338563">Клиентская аутентификация TLS WWW</translation>
 <translation id="8602674530529411098">Приложения (бета-версия)</translation>
 <translation id="8602851771975208551">Одна из программ на вашем компьютере установила приложение, которое может влиять на работу Chrome.</translation>
-<translation id="860399903490378651">Закрыть это окно</translation>
+<translation id="860399903490378651">Закрыть эту вкладку</translation>
 <translation id="8605428685123651449">Память SQLite</translation>
 <translation id="8607171490667464784">Когда устройство неактивно и работает от батареи</translation>
 <translation id="8607661817136110841">Ваши группы вкладок</translation>
@@ -11015,6 +11018,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />: добавить в контакты</translation>
 <translation id="8617601976406256334">Удалить данные и разрешения сайта <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Код безопасного подключения: <ph name="CONNECTION_ID" />.</translation>
+<translation id="8618586951885164886">&amp;Контактная информация</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Не могут устанавливать веб-приложения на вашем устройстве</translation>
 <translation id="8619803522055190423">С тенью</translation>
@@ -11619,6 +11623,7 @@
 <translation id="90033698482696970">Выполнить автоматический поиск доступных профилей eSIM?</translation>
 <translation id="9003647077635673607">Разрешить на всех сайтах</translation>
 <translation id="9005774573776346118">Чтобы синхронизировать пароли, закладки и другие данные на всех устройствах, войдите в аккаунт <ph name="EMAIL" />.</translation>
+<translation id="9006511997799670136">Ваша организация</translation>
 <translation id="9008133509889712539">Выберите приложение, чтобы открыть эту ссылку с сайта <ph name="ORIGIN" />.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на странице сведений <ph name="SUBPAGE_TITLE" /></translation>

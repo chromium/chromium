@@ -1169,6 +1169,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2922792708490674">{0,plural, =1{Fail disekat daripada dimuat turun}other{<ph name="FILE_COUNT" /> fail disekat daripada dimuat turun}}</translation>
 <translation id="2923275635648511531">Produk Perlindungan Matahari &amp; Persamakan</translation>
 <translation id="292371311537977079">Tetapan Chrome</translation>
+<translation id="2925032407415783182">Simpan tiket acara pada Wallet</translation>
 <translation id="2925454999967523701">Butang buat dokumen, aktifkan untuk membuat Google Docs baharu dengan pantas</translation>
 <translation id="2925673989565098301">Kaedah Penghantaran</translation>
 <translation id="2928426578619531300">Gabungan pengguna</translation>
@@ -3146,6 +3147,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6124058285696691147">Muat turun lampiran</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Skrin kemajuan Beli Sekarang, Bayar Kemudian dibuka pada ketinggian penuh.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Lagi butiran<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Sampul Cina #2</translation>
 <translation id="6131824478727057281">lokasi</translation>
 <translation id="6133320744616005677">Teruskan tindakan membenarkan</translation>
@@ -4405,6 +4407,7 @@ Butiran tambahan:
 <translation id="8163866351304776260">Empat tebukan kiri</translation>
 <translation id="8164078261547504572">Mahu dimaklumkan melalui e-mel apabila terdapat penurunan harga?</translation>
 <translation id="8169175551046720804">Kekunci "<ph name="DATA_CONTROLS_KEYS" />" tidak boleh ditetapkan dalam kamus yang sama</translation>
+<translation id="8174047975335711832">Maklumat peranti</translation>
 <translation id="8175053171643471349">Urus kad kesetiaan</translation>
 <translation id="8175796834047840627">Chrome menawarkan penyimpanan kad dalam Google Account anda kerana anda log masuk. Anda boleh menukar gelagat ini dalam tetapan.</translation>
 <translation id="8176440868214972690">Pentadbir peranti ini telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>

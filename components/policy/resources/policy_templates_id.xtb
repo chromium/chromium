@@ -2369,13 +2369,6 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 
       Pengguna tidak dapat mengubah folder lokasi bookmark (meskipun pengguna dapat menyembunyikannya dari kolom bookmark). Nama folder default untuk bookmark terkelola adalah "Bookmark terkelola (Managed bookmarks)", tetapi dapat diubah dengan menambahkan sub-kamus baru ke kebijakan dengan kunci tunggal bernama "<ph name="TOPLEVEL_NAME" />" yang berisi nama folder yang diinginkan sebagai nilainya. Bookmark terkelola tidak disinkronkan ke akun pengguna dan ekstensi tidak dapat mengubahnya.</translation>
 <translation id="2552966063069741410">Zona Waktu</translation>
-<translation id="2554010621206996293">Kebijakan ini memungkinkan Anda mengontrol pengaktifan fitur Set Situs Terkait.
-
-Kebijakan ini menggantikan kebijakan <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel atau disetel ke Benar (True), fitur Set Situs Terkait akan diaktifkan.
-
-Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinonaktifkan.</translation>
 <translation id="2555244983262829274">Sembunyikan tombol Layar Utama dari toolbar</translation>
 <translation id="2558154810835597313">Mengaktifkan penyediaan sertifikat klien untuk profil atau pengguna terkelola</translation>
 <translation id="2559274305158103883">Nonaktifkan perjanjian kunci pasca-kuantum untuk WebRTC</translation>
@@ -11062,42 +11055,6 @@ Jika nilai disetel ke salah (false), pengguna dapat bergabung tanpa harus berada
 <translation id="8199823751103472868">Menyetel kebijakan ini akan mengaktifkan Tata Letak Inscript Hindi di <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak akan tersedia.</translation>
 <translation id="8202566089100454374">Google Maps (didukung sejak versi 135)</translation>
 <translation id="8202834945144737726">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di layar login</translation>
-<translation id="8210117014924235250">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Situs Terkait.
-
-Kebijakan ini menggantikan kebijakan <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Setiap set dalam daftar Set Situs Terkait browser harus memenuhi persyaratan Set Situs Terkait.
-Set Situs Terkait harus berisi situs utama dan satu atau beberapa situs anggota.
-Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
-Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait cara <ph name="PRODUCT_NAME" /> menggunakan Set Situs Terkait.
-
-
-Semua situs dalam Set Situs Terkait harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Situs Terkait juga harus unik.
-Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Situs Terkait.
-
-Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Situs Terkait publik.
-
-Untuk semua situs dalam Set Situs Terkait dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
-di Set Situs Terkait di daftar browser, situs tersebut akan dihapus dari Set Situs Terkait browser.
-Setelahnya, Set Situs Terkait kebijakan akan ditambahkan ke daftar Set Situs Terkait browser.
-
-Untuk semua situs dalam Set Situs Terkait dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
-di Set Situs Terkait di daftar browser, Set Situs Terkait browser akan diperbarui sehingga
-Set Situs Terkait baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
-Set Situs Terkait kebijakan akan ditambahkan ke daftar Set Situs Terkait browser.
-
-Daftar Set Situs Terkait browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
-lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
-dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
-<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
-
-Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Situs Terkait dalam daftar ini.
-
-Semua set yang disediakan oleh kebijakan harus berupa Set Situs Terkait yang valid. Jika kumpulan tidak valid, error yang sesuai akan ditampilkan.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Jika ditetapkan, kebijakan ini akan menentukan tindakan yang diambil <ph name="PRODUCT_OS_NAME" /> saat pengguna tetap tidak beraktivitas selama durasi waktu yang ditentukan oleh penundaan waktu tidak ada aktivitas, yang dapat dikonfigurasi secara terpisah.

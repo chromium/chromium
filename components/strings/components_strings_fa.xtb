@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">ذخیره کردن…</translation>
 <translation id="2088913896151127116">افزودن نوشتار</translation>
 <translation id="2090451897496479509">برای اطلاعات بیشتر با ارائه‌دهنده تماس بگیرید</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">صدا</translation>
 <translation id="2093184051799735948">‫<ph name="ENGINE_NAME" /> را جستجو کنید یا نشانی وب را تایپ کنید</translation>
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">ذخیره و تکمیل نشانی</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» حذف شد</translation>
 <translation id="2283599456633275070">سفر</translation>
+<translation id="2285709459648658719">گذرنامه</translation>
 <translation id="2286383991450886080">۴۴ × ۳۴ اینچ</translation>
 <translation id="2288422996159078444">هرچه تایپ می‌کنید، هر صفحه‌ای که می‌ببینید، یا هر فعالیتی که در وب تماشا می‌شود. محتوای سایت‌ها ممکن است بدون اطلاع شما تغییر کند.</translation>
 <translation id="2289385804009217824">برش دادن</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً با بانکتان تماس بگیرید</translation>
 <translation id="5138227688689900538">نمایش کمتر</translation>
+<translation id="5140155249377545621">گواهینامه رانندگی</translation>
 <translation id="5144613843429436866">شما <ph name="PERMISSION" /> را برای این سایت مجاز کرده‌اید</translation>
 <translation id="5145883236150621069">کد خطا در پاسخ خط‌مشی موجود است</translation>
 <translation id="5146995429444047494">اعلان‌های مربوط به <ph name="ORIGIN" /> مسدود شده‌اند</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6124058285696691147">بارگیری پیوست</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6124996493718543728">صفحه پیشرفت «حالا خرید کنید، بعداً بپردازید» به‌صورت کامل باز شده است.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
 <translation id="6131824478727057281">مکان</translation>
 <translation id="6133320744616005677">دسترسی ادامه یابد</translation>
@@ -4237,6 +4241,7 @@
 <translation id="7886897188117641322">انتخاب کنید کدام دسته‌های گسترده از موضوع‌ها می‌توانند برای کمک به شخصی‌سازی کردن آگهی‌ها استفاده شوند</translation>
 <translation id="7887683347370398519">‏CVC را بررسی کرده و دوباره امتحان کنید</translation>
 <translation id="7887885240995164102">ورود به تصویر در تصویر</translation>
+<translation id="7888367499748383555">‏بدون کارمزد، با نرخ درصدی سالانه ۰٪‎ (مشروط به واجدشرایط بودن)</translation>
 <translation id="7888575728750733395">هدف پرداز چاپ</translation>
 <translation id="7890748547282909375">‏برای ذخیره کردن نماگرفت، به سیستم Microsoft OneDrive وارد شوید</translation>
 <translation id="7890755620327858054">«حالا خرید کنید، بعداً بپردازید» درحال‌حاضر دردسترس نیست. دوباره امتحان کنید یا روش پرداخت دیگری را انتخاب کنید.</translation>
@@ -4400,6 +4405,7 @@
 <translation id="8163866351304776260">چهار سوراخ در چپ</translation>
 <translation id="8164078261547504572">می‌خواهید هنگام کاهش یافتن قیمت‌ها، ایمیل دریافت کنید؟</translation>
 <translation id="8169175551046720804">کلیدهای «<ph name="DATA_CONTROLS_KEYS" />» را نمی‌توان در واژه‌نامه یکسان تنظیم کرد</translation>
+<translation id="8174047975335711832">اطلاعات دستگاه</translation>
 <translation id="8175053171643471349">مدیریت کردن کارت وفاداری</translation>
 <translation id="8175796834047840627">‏چون به سیستم وارد شده‌اید، Chrome پیشنهاد می‌کند کارت‌ها را در حساب Google ذخیره کنید. در تنظیمات می‌توانید این رفتار را تغییر دهید.</translation>
 <translation id="8176440868214972690">سرپرست این دستگاه اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>

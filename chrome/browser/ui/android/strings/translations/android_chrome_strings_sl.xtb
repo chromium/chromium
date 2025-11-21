@@ -622,6 +622,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3710560693796335511">Sodelovanje</translation>
 <translation id="3718765429352682176">Morda bo prikazana zgodovina drugih aplikacij, ki odpirajo povezave v Chromu.</translation>
 <translation id="3721119614952978349">Vi in Google</translation>
+<translation id="3727000368239390918">Prijavite se, da boste lahko dostopali do zavihkov in drugih podatkov v vseh napravah</translation>
 <translation id="3737319253362202215">Nastavitve prevajanja</translation>
 <translation id="3738139272394829648">Dotaknite se za iskanje</translation>
 <translation id="3739455665973395693">V računu Google ni ogroženih gesel</translation>
@@ -1501,6 +1502,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, izbrani pripeti zavihek za deljenje</translation>
 <translation id="7304072650267745798">Naprava Android morda vsebuje podobno nastavitev. Če je ta nastavitev vklopljena v Chromu in napravi Android, lahko podjetje meri uspešnost oglasa na spletnih mestih, ki jih obiščete, in v aplikacijah, ki jih uporabljate.</translation>
+<translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7313188324932846546">Dotaknite se, če želite nastaviti sinhronizacijo.</translation>
 <translation id="7314734791127433392">Gesel ni mogoče preveriti</translation>
 <translation id="7324354302972299151">Pošlji zahtevo »Do Not Track«</translation>
@@ -1926,6 +1928,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9081543426177426948">Spletna mesta, ki jih obiščete v anonimnem načinu, se ne shranijo.</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9086455579313502267">Dostop do omrežja ni mogoč</translation>
+<translation id="9093915805850895575">Odpri v oknu Chroma</translation>
 <translation id="909756639352028172">Če si želite zagotoviti najbolj osebno prilagojeno izkušnjo, vključite Chrome v dejavnost v spletu in aplikacijah ter povezane Googlove storitve</translation>
 <translation id="9099220545925418560">Na podlagi zgodovine brskanja. Ta nastavitev je izklopljena.</translation>
 <translation id="9100610230175265781">Zahtevano je geslo</translation>

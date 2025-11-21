@@ -2273,13 +2273,6 @@ Lưu ý: Việc bạn bỏ qua một trường nghĩa là mọi giá trị đề
 
       Người dùng không thể thay đổi thư mục có chứa dấu trang (nhưng họ có thể ẩn thư mục đó khỏi thanh dấu trang). Thư mục mặc định cho dấu trang được quản lý là "Dấu trang được quản lý". Tuy nhiên, bạn có thể thay đổi bằng cách thêm vào chính sách một từ điển con mới chứa một khóa duy nhất là "<ph name="TOPLEVEL_NAME" />" với giá trị là tên thư mục mong muốn. Dấu trang được quản lý sẽ không đồng bộ hóa với tài khoản người dùng và các tiện ích không có quyền sửa đổi các dấu trang đó.</translation>
 <translation id="2552966063069741410">Múi giờ</translation>
-<translation id="2554010621206996293">Chính sách này cho phép kiểm soát việc bật tính năng Nhóm trang web có liên quan.
-
-Chính sách này ghi đè chính sách <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Khi bạn không đặt chính sách này hoặc đặt thành True, tính năng Nhóm trang web có liên quan sẽ bật.
-
-Khi bạn đặt chính sách này thành False, tính năng Nhóm trang web có liên quan sẽ tắt.</translation>
 <translation id="2555244983262829274">Ẩn nút Màn hình chính trên thanh công cụ</translation>
 <translation id="2558154810835597313">Bật tính năng cấp chứng chỉ máy khách cho người dùng hoặc hồ sơ được quản lý</translation>
 <translation id="2559274305158103883">Không cho phép thoả thuận về khoá hậu lượng tử đối với WebRTC</translation>
@@ -9667,6 +9660,15 @@ Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết c
 <translation id="7341773449551289679">Danh sách bộ nhớ ngoài được phép</translation>
 <translation id="7343004974628511824">Áp dụng các tùy chọn kiểm tra chặn hệ thống tên miền (DNS)</translation>
 <translation id="7343497214039883642">Tệp cấu hình máy dành cho in doanh nghiệp cho các thiết bị</translation>
+<translation id="7344533124201531786">Thiết lập danh sách các miền mà <ph name="PRODUCT_NAME" /> sẽ vô hiệu hoá <ph name="PASSWORD_MANAGER_NAME" />. Nói cách khác, quy trình Lưu và điền sẽ bị vô hiệu hoá, đảm bảo rằng hệ thống không thể lưu hoặc tự động điền mật khẩu cho những trang web đó vào các biểu mẫu web.
+
+Nếu miền có trong danh sách thì <ph name="PASSWORD_MANAGER_NAME" /> sẽ bị vô hiệu hoá đối với miền đó.
+
+Nếu miền không có trong danh sách thì <ph name="PASSWORD_MANAGER_NAME" /> sẽ hoạt động đối với miền đó.
+
+Nếu bạn không đặt chính sách này thì <ph name="PASSWORD_MANAGER_NAME" /> sẽ hoạt động đối với tất cả các miền.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Tắt đầu vào âm thanh</translation>
 <translation id="7358299261566939984">Bật ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Bật <ph name="LACROS_NAME" /></translation>
@@ -10771,43 +10773,6 @@ Nếu bạn đặt giá trị thành false (sai), thì người dùng có thể 
 <translation id="8199823751103472868">Nếu bạn đặt chính sách này thì hệ thống sẽ bật bố cục Hindi Inscript trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng.</translation>
 <translation id="8202566089100454374">Google Maps (được hỗ trợ kể từ phiên bản 135)</translation>
 <translation id="8202834945144737726">Bật quy trình chứng thực <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL trên màn hình đăng nhập</translation>
-<translation id="8210117014924235250">Chính sách này cung cấp một cách ghi đè danh sách các bộ mà trình duyệt dùng cho các tính năng của Bộ trang web có liên quan.
-
-Chính sách này ghi đè chính sách <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Mỗi bộ trong danh sách Bộ trang web có liên quan của trình duyệt đều phải đáp ứng các yêu cầu của Bộ trang web có liên quan.
-Bộ trang web có liên quan phải chứa một trang web chính và tối thiểu một trang web thành viên.
-Một bộ cũng có thể chứa danh sách trang web dịch vụ thuộc sở hữu của bộ đó và bản đồ từ một trang web đến tất cả biến thể ccTLD (miền cấp cao nhất theo mã quốc gia) của trang web đó.
-Hãy truy cập https://github.com/WICG/first-party-sets để biết thêm thông tin về cách <ph name="PRODUCT_NAME" /> sử dụng Bộ trang web có liên quan.
-
-
-Tất cả trang web trong một Bộ trang web có liên quan đều phải là miền có thể đăng ký và được phân phát qua HTTPS. Mỗi trang web trong một Bộ trang web có liên quan cũng phải là duy nhất,
-nghĩa là mỗi trang web chỉ được liệt kê một lần trong một Bộ trang web có liên quan.
-
-Khi bạn cung cấp một từ điển trống cho chính sách này, trình duyệt sẽ sử dụng danh sách Bộ trang web có liên quan công khai.
-
-Đối với mọi trang web ở Bộ trang web có liên quan trong danh sách <ph name="REPLACEMENTS" />, nếu một trang web cũng xuất hiện
-trong Bộ trang web có liên quan thuộc danh sách của trình duyệt thì trang web đó sẽ bị loại bỏ khỏi Bộ trang web có liên quan của trình duyệt.
-Sau đó, Bộ trang web có liên quan của chính sách sẽ được thêm vào danh sách Bộ trang web có liên quan của trình duyệt.
-
-Đối với mọi trang web ở Bộ trang web có liên quan trong danh sách <ph name="ADDITIONS" />, nếu một trang web cũng xuất hiện
-trong Bộ trang web có liên quan thuộc danh sách của trình duyệt thì Bộ trang web có liên quan của trình duyệt sẽ được cập nhật sao cho
-có thể thêm Bộ trang web có liên quan mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt được cập nhật,
-Bộ trang web có liên quan của chính sách sẽ được thêm vào danh sách Bộ trang web có liên quan của trình duyệt.
-
-Danh sách Bộ trang web có liên quan của trình duyệt yêu cầu mỗi trang web thuộc danh sách này
-chỉ được xuất hiện trong một bộ. Đây cũng là yêu cầu đối với cả danh sách <ph name="REPLACEMENTS" />
-và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, một trang web không được xuất hiện trong cả
-danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
-
-Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi Bộ trang web có liên quan thuộc những danh sách này.
-
-Mọi bộ mà chính sách cung cấp đều phải là Bộ trang web có liên quan hợp lệ. Nếu không,
-lỗi tương ứng sẽ xảy ra.
-
-Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Khi bạn đặt, chính sách này sẽ chỉ định hành động mà <ph name="PRODUCT_OS_NAME" /> thực hiện khi người dùng tạm vắng trong khoảng thời gian cho trước theo thời gian chờ khi tạm vắng. Bạn có thể định cấu hình riêng biệt khoảng thời gian này.

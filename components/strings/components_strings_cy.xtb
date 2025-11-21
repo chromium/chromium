@@ -662,6 +662,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2085876078937250610">Cadw…</translation>
 <translation id="2088913896151127116">Ychwanegu testun</translation>
 <translation id="2090451897496479509">Cysylltwch â'r darparwr am ragor o wybodaeth</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Sain</translation>
 <translation id="2093184051799735948">Chwiliwch <ph name="ENGINE_NAME" /> neu teipiwch URL</translation>
 <translation id="2093982008204312032">Mae Google Chrome yn ceisio diffodd Windows Hello ar gyfer llenwi cyfrineiriau.</translation>
@@ -799,6 +800,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2283340219607151381">Cadw a llenwi cyfeiriadau</translation>
 <translation id="2283447177162560884">Dilëwyd '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2283599456633275070">Teithio</translation>
+<translation id="2285709459648658719">Pasbortau</translation>
 <translation id="2286383991450886080">34 x 44 modfedd</translation>
 <translation id="2288422996159078444">Mae unrhyw beth rydych yn ei deipio, unrhyw dudalennau rydych yn edrych arnyn nhw, neu unrhyw weithgarwch arall ar y we yn cael ei wylio. Gellir newid cynnwys ar wefannau heb i chi wybod.</translation>
 <translation id="2289385804009217824">Tocio</translation>
@@ -2551,6 +2553,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5137761395480718572">Mae'r ap hwn yn gofyn am ganiatâd i osod manylion Wi-Fi. Ar ôl gosod, bydd eich <ph name="DEVICE_TYPE" /> yn cysylltu'n awtomatig â'r rhwydweithiau Wi-Fi sy'n cymryd rhan. I dynnu'r manylion hyn, dadosodwch yr ap. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Nid yw'r cerdyn rhithwir ar gael ar hyn o bryd. Cysylltwch â'ch banc</translation>
 <translation id="5138227688689900538">Dangos llai</translation>
+<translation id="5140155249377545621">Trwyddedau gyrru</translation>
 <translation id="5144613843429436866">Rydych wedi caniatáu <ph name="PERMISSION" /> ar gyfer y wefan hon</translation>
 <translation id="5145883236150621069">Mae cod gwall yn yr ymateb polisi</translation>
 <translation id="5146995429444047494">Rhwystrir hysbysiadau ar gyfer <ph name="ORIGIN" /></translation>
@@ -3142,6 +3145,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6124058285696691147">Lawrlwytho'r atodiad</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Mae sgrîn cynnydd Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i hagor ar uchder llawn.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Rhagor o fanylion<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Amlen Chinese #2</translation>
 <translation id="6131824478727057281">lleoliad</translation>
 <translation id="6133320744616005677">Parhau i ganiatáu</translation>
@@ -4236,6 +4240,7 @@ Manylion ychwanegol:
 <translation id="7886897188117641322">Dewiswch pa gategorïau eang o bynciau y gellir eu defnyddio i helpu i bersonoleiddio hysbysebion</translation>
 <translation id="7887683347370398519">Gwiriwch eich CVC a rhowch gynnig arall arni</translation>
 <translation id="7887885240995164102">Dechrau llun-mewn-llun</translation>
+<translation id="7888367499748383555">Dim ffioedd, mor isel â 0% APR (yn amodol ar gymhwysedd)</translation>
 <translation id="7888575728750733395">Argraffu bwriad rendro</translation>
 <translation id="7890748547282909375">Mewngofnodwch i Microsoft OneDrive i gadw sgrinlun</translation>
 <translation id="7890755620327858054">Nid yw talu'n ddiweddarach ar gael ar hyn o bryd. Rhowch gynnig arall arni neu dewiswch ddull talu arall.</translation>
@@ -4399,6 +4404,7 @@ Manylion ychwanegol:
 <translation id="8163866351304776260">Pedwar twll ar y chwith</translation>
 <translation id="8164078261547504572">Eisiau e-byst pan fydd prisiau yn gostwng?</translation>
 <translation id="8169175551046720804">Ni ellir gosod bysellau "<ph name="DATA_CONTROLS_KEYS" />" yn yr un geiriadur</translation>
+<translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
 <translation id="8175053171643471349">Rheoli cardiau teyrngarwch</translation>
 <translation id="8175796834047840627">Mae Chrome yn cynnig cadw eich cardiau yn eich Cyfrif Google oherwydd eich bod wedi mewngofnodi. Gallwch newid yr ymddygiad hwn yn y gosodiadau.</translation>
 <translation id="8176440868214972690">Mae gweinyddwr y ddyfais hon wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>

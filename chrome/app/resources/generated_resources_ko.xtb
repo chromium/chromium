@@ -1069,6 +1069,7 @@
     제품 또는 서비스 개선을 위해 사용하는 데
     동의하는 것으로 간주됩니다.</translation>
 <translation id="17081583771848899">런처 + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">클라우드 스토리지에 저장</translation>
 <translation id="1708291623166985230">핫스팟 사용 중지됨</translation>
 <translation id="1708338024780164500">(비활성)</translation>
 <translation id="1708563369218024896">선택한 데이터 수집기가 없습니다. 데이터 수집기를 하나 이상 선택하세요.</translation>
@@ -6677,6 +6678,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5585912436068747822">포맷 실패</translation>
 <translation id="5587765208077583036">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 '<ph name="SPECIFIC_NAME" />과 공유'를 선택하세요.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />개)</translation>
+<translation id="5588712142463367677">페이지에서 사이트 필터링</translation>
 <translation id="558918721941304263">앱 로드 중...</translation>
 <translation id="5590418976913374224">기기 시작 시 소리 재생</translation>
 <translation id="5591465468509111843">매우 넓음</translation>
@@ -7608,7 +7610,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6248988683584659830">설정 검색</translation>
 <translation id="6249200942125593849">접근성 관리</translation>
 <translation id="6250186368828697007">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
-<translation id="6250887692313997958">분할 보기에 추가할 탭을 선택하세요</translation>
+<translation id="6250887692313997958">분할 뷰에 추가할 탭을 선택하세요</translation>
 <translation id="6251870443722440887">GDI 핸들</translation>
 <translation id="6251924700383757765">개인정보처리방침</translation>
 <translation id="625369703868467034">네트워크 상태</translation>
@@ -8067,6 +8069,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 데스크톱 콘텐츠 공유됨</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 완료됨</translation>
 <translation id="6580203076670148210">검색 속도</translation>
+<translation id="6580676117087365538">모든 컴퓨터에서 이 확장 프로그램을 사용하려면 본인 인증을 진행하세요.</translation>
 <translation id="6581356304040102696">비밀번호를 가져올 수 없습니다. 파일 크기는 1MB 미만이어야 합니다.</translation>
 <translation id="6582080224869403177"><ph name="DEVICE_TYPE" />을(를) 재설정하여 보안을 업그레이드하세요.</translation>
 <translation id="6582274660680936615">게스트로 탐색 중</translation>
@@ -9587,6 +9590,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7647403192093989392">최근 활동이 없음</translation>
 <translation id="7648023614017258011">Chrome에서 설치 번들을 확인하는 중입니다</translation>
 <translation id="7648048654005891115">키맵 스타일</translation>
+<translation id="7648180062672842917">민감하거나 위험한 데이터가 있는 파일입니다. 조직에서 클라우드 스토리지에 저장하거나 삭제하도록 허용합니다</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7649954700951153978">iOS에서 알림 받기</translation>
 <translation id="7650141368285545431">다른 기기의 패스키 사용</translation>
@@ -10465,7 +10469,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> 삭제</translation>
 <translation id="8230446983261649357">사이트의 이미지 표시 허용 안함</translation>
-<translation id="8231438895476693774">새 분할 보기에 탭 추가</translation>
+<translation id="8231438895476693774">새 분할 뷰에 탭 추가</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> 데이터 삭제</translation>
 <translation id="8233028084277069927">지금 열기</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
@@ -11163,6 +11167,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8703766890819308134">검색 바로가기 표시</translation>
 <translation id="8704662571571150811">도메인</translation>
 <translation id="8705331520020532516">일련번호</translation>
+<translation id="870536819717176711">Gemini와 현재 탭을 공유하도록 선택하면 탭의 전체 콘텐츠와 미디어 및 URL이 Google로 전송됩니다.</translation>
 <translation id="8705580154597116082">휴대전화를 통해 Wi-Fi 사용 가능</translation>
 <translation id="8705629851992224300">보안 키를 읽을 수 없습니다.</translation>
 <translation id="8706111173576263877">QR 코드가 스캔되었습니다.</translation>

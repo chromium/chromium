@@ -662,6 +662,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2085876078937250610">Stoor …</translation>
 <translation id="2088913896151127116">Voeg teks by</translation>
 <translation id="2090451897496479509">Kontak die verskaffer vir meer inligting</translation>
+<translation id="2090686487550343086">IBAN’s</translation>
 <translation id="2091887806945687916">Klank</translation>
 <translation id="2093184051799735948">Deursoek <ph name="ENGINE_NAME" /> of tik URL in</translation>
 <translation id="2093982008204312032">Google Chrome probeer tans om Windows Hello vir die invul van wagwoorde af te skakel.</translation>
@@ -799,6 +800,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2283340219607151381">Stoor en vul adresse in</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" is uitgevee</translation>
 <translation id="2283599456633275070">Reis</translation>
+<translation id="2285709459648658719">Paspoorte</translation>
 <translation id="2286383991450886080">34x44 dm.</translation>
 <translation id="2288422996159078444">Enigiets wat jy tik, enige bladsye wat jy bekyk of enige ander aktiwiteit op die web word dopgehou. Inhoud op werwe kan sonder jou wete verander word.</translation>
 <translation id="2289385804009217824">Knip</translation>
@@ -2551,6 +2553,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5137761395480718572">Hierdie app versoek toestemming om wi-fi-eiebewyse te installeer. Jou <ph name="DEVICE_TYPE" /> sal ná die opstelling outomaties aan deelnemende wi-fi-netwerke koppel. Deïnstalleer die app om hierdie eiebewyse te verwyder. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuele kaart is nie op die oomblik beskikbaar nie. Kontak asseblief jou bank</translation>
 <translation id="5138227688689900538">Wys minder</translation>
+<translation id="5140155249377545621">Rybewyse</translation>
 <translation id="5144613843429436866">Jy het <ph name="PERMISSION" /> vir hierdie webwerf toegelaat</translation>
 <translation id="5145883236150621069">Foutkode kom voor in die beleidantwoord</translation>
 <translation id="5146995429444047494">Kennisgewings vir <ph name="ORIGIN" /> word geblokkeer</translation>
@@ -3142,6 +3145,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6124058285696691147">Laai die aanhegsel af</translation>
 <translation id="6124432979022149706">Chrome Enterprise-verbinders</translation>
 <translation id="6124996493718543728">Koop Nou, Betaal Later-vorderingskerm is teen volle hoogte oopgemaak.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer besonderhede<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Koevert Chinees #2</translation>
 <translation id="6131824478727057281">ligging</translation>
 <translation id="6133320744616005677">Gaan voort om toe te laat</translation>
@@ -4236,6 +4240,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7886897188117641322">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer</translation>
 <translation id="7887683347370398519">Gaan jou CVC na en probeer weer</translation>
 <translation id="7887885240995164102">Gaan na prent-in-prent</translation>
+<translation id="7888367499748383555">Geen fooie nie, so laag as 0% JPK (onderworpe aan geskiktheid)</translation>
 <translation id="7888575728750733395">Drukleweringvoorneme</translation>
 <translation id="7890748547282909375">Meld by Microsoft Onedrive aan om jou skermskoot te stoor</translation>
 <translation id="7890755620327858054">Betaal Later is tans onbeskikbaar. Probeer weer of kies ’n ander betaalmetode.</translation>
@@ -4399,6 +4404,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8163866351304776260">Vierpons links</translation>
 <translation id="8164078261547504572">Wil jy e-posse ontvang wanneer pryse daal?</translation>
 <translation id="8169175551046720804">Sleutels “<ph name="DATA_CONTROLS_KEYS" />” kan nie in dieselfde woordeboek gestel word nie</translation>
+<translation id="8174047975335711832">Toestelinligting</translation>
 <translation id="8175053171643471349">Bestuur lojaliteitskaarte</translation>
 <translation id="8175796834047840627">Chrome bied aan om jou kaarte in jou Google-rekening te stoor omdat jy aangemeld is. Jy kan hierdie gedrag in instellings verander.</translation>
 <translation id="8176440868214972690">Die administrateur van hierdie toestel het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>

@@ -622,6 +622,7 @@
 <translation id="3710560693796335511">सहयोग</translation>
 <translation id="3718765429352682176">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो.</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
+<translation id="3727000368239390918">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="3737319253362202215">भाषांतराची सेटिंग्ज</translation>
 <translation id="3738139272394829648">शोधण्यासाठी स्विच करा</translation>
 <translation id="3739455665973395693">तुमच्या Google खाते मध्ये धोक्यात असलेले पासवर्ड नाहीत</translation>
@@ -1501,6 +1502,7 @@
 <translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, निवडलेला पिन केलेला शेअर करत असलेला टॅब</translation>
 <translation id="7304072650267745798">तुमच्या Android डिव्हाइसमध्ये यासारखे सेटिंग समाविष्ट असू शकते. Chrome मध्ये आणि तुमच्या Android डिव्हाइसवर हे सेटिंग सुरू केले असल्यास, एखादी कंपनी तुम्ही भेट देत असलेल्या वेबसाइट आणि तुम्ही वापरत असलेल्या ॲप्सवर जाहिरातीची परिणामकारकता मोजू शकते.</translation>
+<translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7313188324932846546">सिंक सेट करण्यासाठी टॅप करा</translation>
 <translation id="7314734791127433392">पासवर्ड तपासू शकत नाही</translation>
 <translation id="7324354302972299151">“Do Not Track” विनंती पाठवा</translation>
@@ -1662,7 +1664,7 @@
 <translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
 <translation id="7969391000881506217">एक्स्पायरीची तारीख*</translation>
-<translation id="7971136598759319605">एका दिवसापूर्वी ॲक्टिव्ह होते</translation>
+<translation id="7971136598759319605">१ दिवसापूर्वी ॲक्टिव्ह होते</translation>
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> तुम्ही अलीकडे भेट न दिल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>

@@ -6677,6 +6677,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5585912436068747822">Formatting failed</translation>
 <translation id="5587765208077583036">To share, right-click on a folder in the Files app, then select 'Share with <ph name="SPECIFIC_NAME" />'.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filter sites on page</translation>
 <translation id="558918721941304263">Loading apps...</translation>
 <translation id="5590418976913374224">Play sound on device start-up</translation>
 <translation id="5591465468509111843">Very wide</translation>
@@ -10918,7 +10919,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536810348276651776">Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.</translation>
 <translation id="8536956381488731905">Sound on key-press</translation>
-<translation id="8537854269962256103">Your Gemini conversation is in a pop-out chat. Click anywhere on this side panel to move it here.</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgrade</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>

@@ -1059,6 +1059,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1706586824377653884">Engadido polo administrador</translation>
 <translation id="170658918174941828">Enviaranse a versión de Chrome, a versión do sistema operativo, as opcións de configuración de Cast, as estatísticas de rendemento de proxección e os rexistros de diagnóstico de canles de comunicación, así como a información que seleccionases máis arriba. Estes comentarios utilízanse para diagnosticar problemas e axudar a mellorar a función. A información persoal que envíes, de forma explícita ou ben por erro, protexerase de acordo coas nosas políticas de privacidade. Ao enviar estes comentarios, aceptas que Google poida utilizalos para mellorar os seus produtos ou servizos.</translation>
 <translation id="17081583771848899">menú de aplicacións + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Gardar no almacenamento na nube</translation>
 <translation id="1708291623166985230">A zona wifi está desactivada</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708563369218024896">Non se seleccionou ningún recompilador de datos. Selecciona polo menos un.</translation>
@@ -6665,6 +6666,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5585912436068747822">Erro de formato</translation>
 <translation id="5587765208077583036">Para compartir contidos, fai clic co botón dereito do rato nun cartafol da aplicación Ficheiros e, a continuación, selecciona Compartir con <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtra os sitios na páxina</translation>
 <translation id="558918721941304263">Cargando aplicacións...</translation>
 <translation id="5590418976913374224">Reproducir son ao iniciar o dispositivo</translation>
 <translation id="5591465468509111843">Moi amplo</translation>
@@ -8052,6 +8054,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: compartindo contido do ordenador</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % completado</translation>
 <translation id="6580203076670148210">Velocidade de exploración</translation>
+<translation id="6580676117087365538">Para poder acceder a esta extensión en todos os teus ordenadores, verifica a túa identidade</translation>
 <translation id="6581356304040102696">Non se puideron importar os contrasinais. O ficheiro debe ocupar menos de 1 MB.</translation>
 <translation id="6582080224869403177">Restablece o dispositivo <ph name="DEVICE_TYPE" /> para actualizar a seguranza.</translation>
 <translation id="6582274660680936615">Estás navegando como invitado</translation>
@@ -9572,6 +9575,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7647403192093989392">Non hai actividades recentes</translation>
 <translation id="7648023614017258011">Chrome está verificando o paquete de instalación</translation>
 <translation id="7648048654005891115">Estilo do mapa de teclas</translation>
+<translation id="7648180062672842917">Este ficheiro inclúe datos confidenciais ou perigosos. A túa organización permitirache gardalo no almacenamento na nube ou descartalo</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7649954700951153978">Lembrarme en iOS</translation>
 <translation id="7650141368285545431">Usar clave de acceso doutro dispositivo</translation>
@@ -11146,6 +11150,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8703766890819308134">Mostrar atallos de busca</translation>
 <translation id="8704662571571150811">Dominios</translation>
 <translation id="8705331520020532516">Número de serie</translation>
+<translation id="870536819717176711">Cando decides compartir a pestana actual con Gemini, todo o contido, os elementos multimedia e o URL da pestana envíanse a Google.</translation>
 <translation id="8705580154597116082">Unha wifi está dispoñible a través do teléfono</translation>
 <translation id="8705629851992224300">Non se puido ler a túa chave de seguranza</translation>
 <translation id="8706111173576263877">Escaneouse o código QR.</translation>

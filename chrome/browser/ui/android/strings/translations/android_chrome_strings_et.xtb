@@ -622,6 +622,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3710560693796335511">Koostöö</translation>
 <translation id="3718765429352682176">Võite näha ajalugu muudest rakendustest, mis avavad linke Chrome'is.</translation>
 <translation id="3721119614952978349">Teie ja Google</translation>
+<translation id="3727000368239390918">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma vahelehtedele ja muule.</translation>
 <translation id="3737319253362202215">Tõlke seaded</translation>
 <translation id="3738139272394829648">Puudutage otsimiseks</translation>
 <translation id="3739455665973395693">Teie Google'i kontol ei ole ohustatud paroole</translation>
@@ -1501,6 +1502,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7293429513719260019">Valige keel</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valitud kinnitatud jagav vaheleht</translation>
 <translation id="7304072650267745798">Teie Android-seadmes võib olla sarnane seade. Kui see seade on Chrome’is ja teie Android-seadmes sisse lülitatud, võib ettevõttel olla võimalik mõõta reklaami tõhusust veebisaitidel, mida külastate, ja rakendustes, mida kasutate.</translation>
+<translation id="7311244614769792472">Tulemusi ei leitud</translation>
 <translation id="7313188324932846546">Puudutage sünkroonimise seadistamiseks</translation>
 <translation id="7314734791127433392">Paroole ei saa kontrollida</translation>
 <translation id="7324354302972299151">„Do Not Track” taotluse saatmine</translation>

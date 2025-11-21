@@ -2312,13 +2312,6 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 
       Gli utenti non possono modificare le cartelle in cui vengono inseriti i preferiti (ma possono nasconderle dalla barra dei preferiti). Il nome predefinito della cartella per i preferiti gestiti è "Preferiti gestiti", ma può essere modificato aggiungendo un nuovo dizionario secondario alla policy con una chiave unica chiamata "<ph name="TOPLEVEL_NAME" />" e il nome della cartella che preferiscono gli utenti come valore. I preferiti gestiti non vengono sincronizzati con l'account utente e le estensioni non possono modificarli.</translation>
 <translation id="2552966063069741410">Fuso orario</translation>
-<translation id="2554010621206996293">Questa policy consente di controllare l'abilitazione della funzionalità di insiemi di siti web correlati.
-
-Questa policy esegue l'override di<ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Se questa policy non viene configurata o se viene impostata su True, la funzionalità di insiemi di siti web correlati viene attivata.
-
-Se questa policy viene impostata su False, la funzionalità di insiemi di siti web correlati viene disattivata.</translation>
 <translation id="2555244983262829274">Nascondi il pulsante Pagina iniziale dalla barra degli strumenti</translation>
 <translation id="2558154810835597313">Attiva il provisioning dei certificati client per un utente o un profilo gestito</translation>
 <translation id="2559274305158103883">Disattiva l'accordo chiave post-quantistico per WebRTC</translation>
@@ -10814,43 +10807,6 @@ Se questa policy non viene impostata, verrà applicato il comportamento predefin
 <translation id="8199823751103472868">Se la policy viene impostata, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />. Se viene impostata su False o se non viene configurata, il layout non è disponibile.</translation>
 <translation id="8202566089100454374">Google Maps (supportato dalla versione 135)</translation>
 <translation id="8202834945144737726">Attiva il flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL nella schermata di accesso</translation>
-<translation id="8210117014924235250">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
-
-Questa policy esegue l'override della policy <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Ogni insieme nell'elenco di insiemi di siti web correlati del browser deve soddisfare i requisiti di un insieme di siti web correlati.
-Un insieme di siti web correlati deve contenere un sito principale e uno o più siti membri.
-Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-Visita la pagina https://github.com/WICG/first-party-sets per maggiori informazioni su come <ph name="PRODUCT_NAME" /> utilizza gli insiemi di siti web correlati.
-
-
-Tutti i siti di un insieme di siti web correlati devono avere un dominio registrabile pubblicato tramite HTTPS. Inoltre, ogni sito di un insieme di siti web correlati deve essere univoco,
-ovvero non può essere elencato più di una volta in un insieme di siti web correlati.
-
-Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi di siti web correlati.
-
-Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente
-anche in un insieme di siti web correlati nell'elenco del browser, quel sito verrà rimosso dall'insieme di siti web correlati del browser.
-Dopodiché, l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
-
-Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="ADDITIONS" />, se un sito è presente
-anche in un insieme di siti web correlati nell'elenco del browser, l'insieme di siti web correlati del browser verrà aggiornato in modo che
-il nuovo insieme di siti web correlati possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
-l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
-
-L'elenco di insiemi di siti web correlati del browser richiede che nessuno dei siti al suo
-interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi
-<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
-<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-I caratteri jolly (*) non sono supportati come valore della policy, né all'interno di alcun insieme di siti web correlati in questi elenchi.
-
-Tutti gli insiemi forniti dalla policy devono essere insiemi di siti web correlati validi. Qualora non lo fossero,
-verrà segnalato un errore appropriato.
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Se viene impostata, questa policy specifica l'azione compiuta da <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per il periodo di tempo indicato dal ritardo di inattività, che può essere configurato separatamente.

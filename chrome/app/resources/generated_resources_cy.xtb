@@ -1072,6 +1072,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
     rydych yn cytuno y gall Google ddefnyddio adborth rydych yn ei ddarparu i wella
     unrhyw gynnyrch neu wasanaeth Google.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Cadw i storfa cwmwl</translation>
 <translation id="1708291623166985230">Poethfan wedi'i analluogi</translation>
 <translation id="1708338024780164500">(Anweithredol)</translation>
 <translation id="1708563369218024896">Dim casglwr data wedi'i ddewis. Dewiswch o leiaf un casglwr data.</translation>
@@ -6679,6 +6680,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5585912436068747822">Wedi methu â fformatio</translation>
 <translation id="5587765208077583036">I rannu, de-gliciwch ar ffolder yn yr ap Ffeiliau, yna dewiswch "Rhannu â <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Hidlo gwefannau ar y dudalen</translation>
 <translation id="558918721941304263">Wrthi'n llwytho apiau...</translation>
 <translation id="5590418976913374224">Chwarae sain wrth gychwyn dyfais</translation>
 <translation id="5591465468509111843">Llydan iawn</translation>
@@ -8069,6 +8071,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Rhannwyd cynnwys bwrdd gwaith</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% wedi'i gwblhau</translation>
 <translation id="6580203076670148210">Cyflymder sganio</translation>
+<translation id="6580676117087365538">I gael yr estyniad hwn ar eich holl gyfrifiaduron, cadarnhewch mai chi sydd yno</translation>
 <translation id="6581356304040102696">Methu â mewnforio cyfrineiriau. Dylai maint y ffeil fod yn llai na 1 MB.</translation>
 <translation id="6582080224869403177">Ailosod eich <ph name="DEVICE_TYPE" /> i uwchraddio eich diogelwch.</translation>
 <translation id="6582274660680936615">Rydych yn pori fel Gwestai</translation>
@@ -9597,6 +9600,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7647403192093989392">Dim gweithgareddau diweddar</translation>
 <translation id="7648023614017258011">Mae Chrome yn gwirio'r bwndel gosod</translation>
 <translation id="7648048654005891115">Arddull map bysellau</translation>
+<translation id="7648180062672842917">Mae gan y ffeil hon ddata sensitif neu beryglus. Bydd eich sefydliad yn gadael i chi ei gadw i storfa cwmwl neu ei daflu</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7649954700951153978">Atgoffa fi ar iOS</translation>
 <translation id="7650141368285545431">Defnyddio cod pas o ddyfais arall</translation>
@@ -11171,6 +11175,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8703766890819308134">Dangos llwybrau byr chwilio</translation>
 <translation id="8704662571571150811">Parthau</translation>
 <translation id="8705331520020532516">Rhif Cyfresol</translation>
+<translation id="870536819717176711">Pan fyddwch yn dewis rhannu'r tab cyfredol gyda Gemini, anfonir y cyfryngau, cynnwys llawn ac URL y tab at Google.</translation>
 <translation id="8705580154597116082">Mae Wi-Fi ar gael drwy ffôn</translation>
 <translation id="8705629851992224300">Ni ellid darllen eich allwedd ddiogelwch</translation>
 <translation id="8706111173576263877">Mae'r Cod QR wedi'i sganio.</translation>

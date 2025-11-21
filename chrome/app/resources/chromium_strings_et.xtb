@@ -177,6 +177,7 @@
 <translation id="2977506796191543575">Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
 <translation id="2981563588585023386">Selleks et end veebis vanema valikute abil kaitata, logi Chromiumisse sisse</translation>
 <translation id="3003694935412297923">Kõik ülesanded</translation>
+<translation id="3012615494352020668">{count,plural, =1{Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chromium teie isiku kinnitama. Kui logite kohe välja, siis need andmed (üks üksus) kustutatakse.}other{Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chromium teie isiku kinnitama. Kui logite kohe välja, siis need andmed ({count} üksust) kustutatakse.}}</translation>
 <translation id="3013473503895162900">Avage <ph name="URL" /> Chromiumis uuel vahelehel.</translation>
 <translation id="3032706164202344641">Chromium ei saa teie paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="3032787606318309379">Chromiumi lisamine ...</translation>
@@ -493,6 +494,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6729124504294600478">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chromium veebi- ja rakendustegevustesse ning lingitud Google'i teenustesse</translation>
 <translation id="6734291798041940871">Chromium on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="6751374565094704799">Kiirendab Chromiumi V8 mootoriga saite, kuid muudab Chromiumi rünnetele veidi vähem vastupidavaks. See seade on sisse lülitatud.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Teatud Chromiumi andmeid pole veel teie Google'i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed (üks üksus) kustutatakse.}other{Teatud Chromiumi andmeid pole veel teie Google'i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed ({count} üksust) kustutatakse.}}</translation>
 <translation id="67706546131546258">Chromium soovitab seda faili skannida, kuna see võib olla ohtlik.</translation>
 <translation id="6779406956731413166">Chromium OS-i aluseks on täiendav <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Tõlgi</translation>

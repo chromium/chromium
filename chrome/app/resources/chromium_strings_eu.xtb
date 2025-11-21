@@ -178,6 +178,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2977506796191543575">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="2981563588585023386">Gurasoen aukerekin sarean seguruago egoteko, hasi saioa Chromium-en</translation>
 <translation id="3003694935412297923">Zeregin guztiak</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="3013473503895162900">Ireki <ph name="URL" /> Chromium-eko fitxa berri batean.</translation>
 <translation id="3032706164202344641">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu geroago.</translation>
 <translation id="3032787606318309379">Chromium-era gehitzen…</translation>
@@ -494,6 +495,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6729124504294600478">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chromium sareko eta aplikazioetako jardueretan eta lotutako Google-ren zerbitzuetan</translation>
 <translation id="6734291798041940871">Ordenagailuko erabiltzaile guztientzat dago instalatuta Chromium.</translation>
 <translation id="6751374565094704799">Webguneen abiadura handitzen du Chromium-en V8 motorrarekin, baina erasoen aurrean Chromium apur bat ahulagoa da. Aktibatuta dago ezarpena.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="67706546131546258">Chromium-ek fitxategia aztertzea gomendatzen du, agian arriskutsua delako.</translation>
 <translation id="6779406956731413166"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS.</translation>
 <translation id="6831043979455480757">Itzuli</translation>

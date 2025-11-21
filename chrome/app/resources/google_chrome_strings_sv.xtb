@@ -154,6 +154,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2712141162840347885">Välj vad du vill söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2742320827292110288">Varning! Google Chrome kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du detta alternativ.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data (1 objekt).}other{Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data ({count} objekt).}}</translation>
 <translation id="2753623023919742414">Klicka för att söka</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Avancerat skydd kräver att du startar om Chrome så att en uppdatering tillämpas}=1{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. Inkognitofönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="2765403129283291972">Du behöver ge Chrome behörighet att använda mikrofonen på webbplatsen</translation>
@@ -513,6 +514,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
 <translation id="6679975945624592337">Låt Google Chrome köras i bakgrunden</translation>
 <translation id="6696915334902295848">Du behöver ge Chrome mikrofonbehörighet för den här webbplatsen</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data (1 objekt).}other{Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data ({count} objekt).}}</translation>
 <translation id="6712881677154121168">Nedladdningsfel: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Gör Chrome snabbare</translation>
 <translation id="6734827584173583205">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="COUNT" /> till.</translation>

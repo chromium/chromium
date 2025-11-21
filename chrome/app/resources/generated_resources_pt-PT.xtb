@@ -1417,6 +1417,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1949980990364952348">Nome da app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Encontrar alternativa</translation>
+<translation id="1953626242273481999">Permitir depuração remota?</translation>
 <translation id="1953796913175502363">Configure o seu perfil de trabalho</translation>
 <translation id="1954597385941141174">Os sites podem solicitar a ligação a dispositivos USB</translation>
 <translation id="1954813140452229842">Erro ao montar a partilha. Verifique as suas credenciais e tente novamente.</translation>
@@ -1764,6 +1765,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Separadores no grupo</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> está a gerir a página Novo separador, abre num novo separador</translation>
+<translation id="2192982266585216032">&amp;Pagamentos</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2195331105963583686">Vai continuar a poder utilizar este <ph name="DEVICE_TYPE" /> após essa data, mas deixará de receber atualizações de software e de segurança automáticas.</translation>
 <translation id="2195729137168608510">Protecção de email</translation>
@@ -1799,6 +1801,9 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="222115440608612541">Mude de tema ao nascer e pôr do sol</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Uma app externa quer ter controlo total sobre esta sessão do Chrome para a depurar. Isto inclui o acesso aos seus dados guardados, cookies e dados de sites, e a capacidade de navegar para qualquer URL.
+
+Apenas os programadores Web devem ativar esta funcionalidade e usá-la apenas com apps fidedignas.</translation>
 <translation id="222201875806112242">Origem multimédia sem nome</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2224444042887712269">Esta definição pertence a <ph name="OWNER_EMAIL" />.</translation>
@@ -1904,6 +1909,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2294081976975808113">Privacidade do ecrã</translation>
 <translation id="2294358108254308676">Instalar o <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Reveja as definições</translation>
+<translation id="229524410604268773">Desativar nas definições</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
 <translation id="2296022312651137376">O domínio <ph name="DOMAIN_NAME" /> requer que o dispositivo esteja online ao iniciar sessão em <ph name="EMAIL" />.</translation>
 <translation id="2296218178174497398">Deteção de Dispositivos</translation>
@@ -2992,6 +2998,7 @@ Quer pará-lo?</translation>
 <translation id="3022072018423103125">Terras altas</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não vai ser guardado em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendido.</translation>
+<translation id="3023204744987201088">&amp;Informações de contacto</translation>
 <translation id="3023464535986383522">Selecionar para falar</translation>
 <translation id="3024374909719388945">Usar relógio de 24h</translation>
 <translation id="3027296729579831126">Ativar a funcionalidade Partilhar na proximidade</translation>
@@ -7934,6 +7941,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6495261233408033662">Fechar separadores abertos</translation>
 <translation id="6495266441917713704">Não é possível transferir o Wi-Fi</translation>
 <translation id="6495453178162183932">O tema foi atualizado para o Chrome predefinido</translation>
+<translation id="6496641546298525838">O seu dispositivo</translation>
 <translation id="6497784818439587832">Altere o tamanho da visualização para diminuir ou aumentar o tamanho dos itens no ecrã</translation>
 <translation id="6497789971060331894">Deslocamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
@@ -9757,6 +9765,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7760176388948986635">Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização deste dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios deste dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar nenhum indivíduo para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores.</translation>
 <translation id="7762024824096060040">Não é possível usar esta conta</translation>
+<translation id="776324966908034528">As definições de proxy do navegador são controladas por várias fontes</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Abrir o grupo numa nova janela</translation>
@@ -10908,7 +10917,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8535005006684281994">URL de renovação de certificado Netscape</translation>
 <translation id="8536810348276651776">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para que se apliquem as definições do Family Link para o Chrome.</translation>
 <translation id="8536956381488731905">Som ao premir as teclas</translation>
-<translation id="8537854269962256103">A sua conversa do Gemini está num chat numa nova janela. Clique em qualquer parte deste painel lateral para o mover para aqui.</translation>
 <translation id="8539727552378197395">Não (HttpOnly)</translation>
 <translation id="8539766201049804895">Atualizar</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>
@@ -11011,6 +11019,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8616441548384109662">Adicionar <ph name="CONTACT_NAME" /> aos seus contactos</translation>
 <translation id="8617601976406256334">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">ID de ligação segura: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Informações de contacto</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Sem autorização para instalar apps Web no seu dispositivo</translation>
 <translation id="8619803522055190423">Sombra</translation>
@@ -11612,6 +11621,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="90033698482696970">Procurar automaticamente os perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>
 <translation id="9005774573776346118">Para aceder às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">A sua organização</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> quer abrir este link numa app.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botão anterior da página de detalhes <ph name="SUBPAGE_TITLE" /></translation>

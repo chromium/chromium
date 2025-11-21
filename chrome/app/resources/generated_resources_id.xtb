@@ -1069,6 +1069,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
     Anda menyetujui bahwa Google dapat menggunakan masukan yang Anda berikan untuk meningkatkan
     layanan atau produk Google apa pun.</translation>
 <translation id="17081583771848899">peluncur + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Simpan ke penyimpanan cloud</translation>
 <translation id="1708291623166985230">Hotspot dinonaktifkan</translation>
 <translation id="1708338024780164500">(Tidak aktif)</translation>
 <translation id="1708563369218024896">Tidak ada pengumpul data yang dipilih. Pilih minimal satu pengumpul data.</translation>
@@ -6676,6 +6677,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5585912436068747822">Pemformatan gagal</translation>
 <translation id="5587765208077583036">Untuk berbagi, klik kanan pada folder di aplikasi File, lalu pilih "Bagikan ke <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filter situs di halaman</translation>
 <translation id="558918721941304263">Memuat aplikasi...</translation>
 <translation id="5590418976913374224">Putar suara saat perangkat dinyalakan</translation>
 <translation id="5591465468509111843">Sangat lebar</translation>
@@ -8066,6 +8068,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Konten desktop dibagikan</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% selesai</translation>
 <translation id="6580203076670148210">Kecepatan pemindaian</translation>
+<translation id="6580676117087365538">Untuk mendapatkan ekstensi ini di semua komputer Anda, verifikasi diri Anda</translation>
 <translation id="6581356304040102696">Tidak dapat mengimpor sandi. Ukuran file tidak boleh lebih dari 1 MB.</translation>
 <translation id="6582080224869403177">Reset <ph name="DEVICE_TYPE" /> untuk mengupgrade keamanan Anda.</translation>
 <translation id="6582274660680936615">Anda menjelajah sebagai Tamu</translation>
@@ -9586,6 +9589,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7647403192093989392">Tidak ada aktivitas terbaru</translation>
 <translation id="7648023614017258011">Chrome sedang memverifikasi paket penginstalan</translation>
 <translation id="7648048654005891115">Gaya keymap</translation>
+<translation id="7648180062672842917">File ini berisi konten sensitif atau berbahaya. Organisasi Anda akan mengizinkan Anda menyimpannya ke penyimpanan cloud atau menghapusnya</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7649954700951153978">Ingatkan saya di iOS</translation>
 <translation id="7650141368285545431">Gunakan kunci sandi dari perangkat lain</translation>
@@ -11161,6 +11165,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8703766890819308134">Tampilkan pintasan penelusuran</translation>
 <translation id="8704662571571150811">Domain</translation>
 <translation id="8705331520020532516">Nomor Seri</translation>
+<translation id="870536819717176711">Saat Anda memilih untuk membagikan tab saat ini kepada Gemini, URL, media, dan konten lengkap tab tersebut akan dikirim ke Google.</translation>
 <translation id="8705580154597116082">Wi-Fi tersedia melalui ponsel</translation>
 <translation id="8705629851992224300">Kunci keamanan Anda tidak dapat dibaca</translation>
 <translation id="8706111173576263877">Kode QR sudah dipindai.</translation>

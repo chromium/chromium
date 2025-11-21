@@ -201,7 +201,7 @@
 <translation id="1129348283834595293">サイバーパンク</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
-<translation id="1130116586186908674">分割表示を作成</translation>
+<translation id="1130116586186908674">分割ビューを作成</translation>
 <translation id="1130430615924359526">{0,plural, =1{シークレット モードを終了}other{シークレット モードを終了（# 個のウィンドウ）}}</translation>
 <translation id="113050636487300043">各プロフィールを区別できるように名前と色のテーマを選択してください</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
@@ -1761,6 +1761,7 @@
 <translation id="2192505247865591433">取得先:</translation>
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2192881772486983655">新しいタブページは <ph name="THIRD_PARTY_NTP_MANAGER" /> によって管理されています。新しいタブで開きます</translation>
+<translation id="2192982266585216032">お支払い方法(&amp;P)</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2195331105963583686">この期限を過ぎても <ph name="DEVICE_TYPE" /> は使用できますが、ソフトウェアとセキュリティは自動更新されなくなります。</translation>
 <translation id="2195729137168608510">電子メールの保護</translation>
@@ -2986,6 +2987,7 @@
 <translation id="3022072018423103125">高原</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> がこの Chromebook から削除され、<ph name="PRIMARY_EMAIL" /> には保存されません。</translation>
 <translation id="3022978424994383087">聞き取れませんでした。</translation>
+<translation id="3023204744987201088">連絡先情報(&amp;C)</translation>
 <translation id="3023464535986383522">選択して読み上げ</translation>
 <translation id="3024374909719388945">24 時間形式を使用する</translation>
 <translation id="3027296729579831126">ニアバイシェアをオンにする</translation>
@@ -7581,7 +7583,7 @@
 <translation id="6248988683584659830">設定項目を検索</translation>
 <translation id="6249200942125593849">ユーザー補助設定の管理</translation>
 <translation id="6250186368828697007">画面の共有中は詳細が表示されません</translation>
-<translation id="6250887692313997958">分割表示に追加するタブを選択</translation>
+<translation id="6250887692313997958">分割ビューに追加するタブを選択</translation>
 <translation id="6251870443722440887">GDI ハンドル</translation>
 <translation id="6251924700383757765">プライバシー ポリシー</translation>
 <translation id="625369703868467034">ネットワークの健全性</translation>
@@ -7917,6 +7919,7 @@
 <translation id="6495261233408033662">開いているタブを閉じる</translation>
 <translation id="6495266441917713704">Wi-Fi で転送できません</translation>
 <translation id="6495453178162183932">テーマが Chrome のデフォルトに更新されました</translation>
+<translation id="6496641546298525838">デバイス</translation>
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
@@ -9737,6 +9740,7 @@
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7760176388948986635">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
+<translation id="776324966908034528">ブラウザのプロキシ設定は複数のソースによって制御されています</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
 <translation id="7764527477537408401">新しいウィンドウでグループを開く</translation>
@@ -10437,7 +10441,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> を削除</translation>
 <translation id="8230446983261649357">サイトに画像の表示を許可しない</translation>
-<translation id="8231438895476693774">新しい分割表示にタブを追加</translation>
+<translation id="8231438895476693774">新しい分割ビューにタブを追加</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> のデータを削除</translation>
 <translation id="8233028084277069927">開く</translation>
 <translation id="8234795456569844941">問題解決の手がかりとして、具体的にどのような操作を行ったときにプロフィール エラーのメッセージが表示されたかをお知らせください。</translation>
@@ -10450,7 +10454,7 @@
 <translation id="8239932336306009582">通知の送信を許可しないサイト</translation>
 <translation id="8241040075392580210">シェイディ</translation>
 <translation id="8241338426526905580">証明書がありません</translation>
-<translation id="8241650983304689286">新しい分割表示にタブを追加</translation>
+<translation id="8241650983304689286">新しい分割ビューにタブを追加</translation>
 <translation id="8241806945692107836">デバイスの設定を確認しています...</translation>
 <translation id="8241868517363889229">ブックマークの読み取りと変更</translation>
 <translation id="8242273718576931540">お使いのデバイスはこのネットワークに接続できません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10888,7 +10892,6 @@
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
 <translation id="8536810348276651776">ほとんどのサイトからログアウトします。ただし、Google アカウントへのログイン状態は維持されるため、Chrome のファミリー リンクの設定は適用されます。</translation>
 <translation id="8536956381488731905">キー操作音</translation>
-<translation id="8537854269962256103">Gemini との会話はポップアウト チャットに表示されます。このサイドパネルの任意の場所をクリックすると、チャットをここに移動します。</translation>
 <translation id="8539727552378197395">いいえ（HTTP のみ）</translation>
 <translation id="8539766201049804895">アップグレード</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
@@ -10991,6 +10994,7 @@
 <translation id="8616441548384109662">連絡先に <ph name="CONTACT_NAME" /> さんを追加する</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> のサイトデータと権限を削除しますか？</translation>
 <translation id="8617748779076050570">安全な接続 ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">連絡先情報(&amp;C)</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">デバイスへのウェブアプリのインストールを許可しないサイト</translation>
 <translation id="8619803522055190423">ドロップ シャドウ</translation>
@@ -11592,6 +11596,7 @@
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9005774573776346118">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
+<translation id="9006511997799670136">あなたの組織</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> がこのリンクをアプリで開く許可を求めています。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> の詳細ページの戻るボタン</translation>

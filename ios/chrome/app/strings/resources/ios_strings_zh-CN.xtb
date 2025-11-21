@@ -39,7 +39,7 @@
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1118569444314402022">欢迎回来，<ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">照片和图片</translation>
-<translation id="1122068467107743258">工作单位</translation>
+<translation id="1122068467107743258">工作地点</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1126809382673880764">不会防范危险的网站、下载内容和扩展程序。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1133418583142946603">添加当前标签页</translation>
@@ -512,7 +512,6 @@
 <translation id="2918688092312652908">标为未读</translation>
 <translation id="2922210239002704889">打开首页或键盘</translation>
 <translation id="2924940770243654951">在新的无痕式标签页中打开</translation>
-<translation id="2931440415625410757">显示说明</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
 <translation id="2965594942405840553">此操作无法撤销</translation>
@@ -1151,7 +1150,7 @@
 <translation id="5447973833955560753">恢复密码</translation>
 <translation id="5452354193031718372">使用安全系数高的密码：</translation>
 <translation id="5454211924362324495">为防止他人使用您的密码，请<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 更改密码<ph name="END_LINK" /></translation>
-<translation id="5457082343331641453">添加到您的搜索内容中</translation>
+<translation id="5457082343331641453">添加更多搜索条件</translation>
 <translation id="5457226814769348910">打开离线版</translation>
 <translation id="5467163657366219870">关闭地图预览</translation>
 <translation id="5474397204728336997">家庭密码、全新自定义功能等。点按即可了解详情。</translation>

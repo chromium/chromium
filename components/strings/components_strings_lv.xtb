@@ -662,6 +662,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2085876078937250610">Saglabāt…</translation>
 <translation id="2088913896151127116">Pievienot tekstu</translation>
 <translation id="2090451897496479509">Sazinieties ar pakalpojumu sniedzēju, lai iegūtu plašāku informāciju.</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Signāls</translation>
 <translation id="2093184051799735948">Meklēt <ph name="ENGINE_NAME" /> tīklā vai ievadīt URL</translation>
 <translation id="2093982008204312032">Google Chrome mēģina izslēgt funkciju Windows Hello, kas paredzēta paroļu aizpildei.</translation>
@@ -799,6 +800,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2283340219607151381">Saglabāt un aizpildīt adreses</translation>
 <translation id="2283447177162560884">Lapa “<ph name="PAGE_TITLE" />” ir izdzēsta no vēstures</translation>
 <translation id="2283599456633275070">Ceļojumi</translation>
+<translation id="2285709459648658719">Pases</translation>
 <translation id="2286383991450886080">34 x 44 collas</translation>
 <translation id="2288422996159078444">Tiek skatīts viss, ko jūs rakstāt, visas lapas, kuras skatāt, vai jebkura cita darbība tīmeklī. Vietņu saturs var tikt mainīts, jūs neinformējot.</translation>
 <translation id="2289385804009217824">Apgriešana</translation>
@@ -2549,6 +2551,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5137761395480718572">Šī lietotne pieprasa atļauju instalēt Wi-Fi akreditācijas datus. Pēc iestatīšanas jūsu ierīcē (<ph name="DEVICE_TYPE" />) tiks automātiski izveidots savienojums ar iestatītajiem Wi-Fi tīkliem. Lai noņemtu šos akreditācijas datus, atinstalējiet lietotni. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuālā karte pašlaik nav pieejama. Lūdzu, sazinieties ar savu banku.</translation>
 <translation id="5138227688689900538">Rādīt mazāk</translation>
+<translation id="5140155249377545621">Autovadītāju apliecības</translation>
 <translation id="5144613843429436866">Jūs esat piešķīris tālāk norādīto atļauju šai vietnei: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Politikas atbildē ir kļūdas kods.</translation>
 <translation id="5146995429444047494">Vietnes <ph name="ORIGIN" /> paziņojumi ir bloķēti</translation>
@@ -3140,6 +3143,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6124058285696691147">Lejupielādēt pielikumu</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
 <translation id="6124996493718543728">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” norises ekrāns ir atvērts pilnā augstumā.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plašāka informācija<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Ķīniešu aploksne 2</translation>
 <translation id="6131824478727057281">atrašanās vieta</translation>
 <translation id="6133320744616005677">Atļaut arī turpmāk</translation>
@@ -4235,6 +4239,7 @@ Papildu informācija:
 <translation id="7886897188117641322">Izvēlieties, kuras plašās tēmu kategorijas drīkst izmantot, lai personalizētu reklāmas.</translation>
 <translation id="7887683347370398519">Pārbaudiet CVC kodu un mēģiniet vēlreiz.</translation>
 <translation id="7887885240995164102">Atvērt režīmu “attēls attēlā”</translation>
+<translation id="7888367499748383555">Nav maksu; GPL, sākot no 0% (tiek pārbaudīta piemērotība)</translation>
 <translation id="7888575728750733395">Drukāšanas krāsu atveide</translation>
 <translation id="7890748547282909375">Lai saglabātu ekrānuzņēmumu, pierakstieties pakalpojumā Microsoft OneDrive</translation>
 <translation id="7890755620327858054">Pašlaik nav pieejama iespēja maksāt vēlāk. Mēģiniet vēlreiz vai izvēlieties citu maksājuma veidu.</translation>
@@ -4398,6 +4403,7 @@ Papildu informācija:
 <translation id="8163866351304776260">Četri caurumi kreisajā malā</translation>
 <translation id="8164078261547504572">Vai vēlaties saņemt e-pasta ziņojumus par cenu kritumu?</translation>
 <translation id="8169175551046720804">Atslēgas “<ph name="DATA_CONTROLS_KEYS" />” nevar iestatīt vienā vārdnīcā</translation>
+<translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8175053171643471349">Pārvaldīt lojalitātes kartes</translation>
 <translation id="8175796834047840627">Pārlūkprogrammā Chrome tiek piedāvāts saglabāt jūsu kartes Google kontā, jo esat pierakstījies. Varat mainīt šo darbību iestatījumos.</translation>
 <translation id="8176440868214972690">Šīs ierīces administrators ir nosūtījis informāciju, piemēram, iestatījumus vai politikas, uz tālāk norādītajām vietnēm.</translation>

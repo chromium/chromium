@@ -1062,6 +1062,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1706586824377653884">Pievienoja administrators</translation>
 <translation id="170658918174941828">Papildus informācijai, ko esat jau norādījis, tiks iesniegti arī dati par izmantoto pārlūka Chrome versiju, operētājsistēmas versiju, Cast iestatījumiem, spoguļošanas veiktspējas statistika, kā arī saziņas kanālu diagnostikas žurnāli. Iesniegtās atsauksmes tiek izmantotas, lai diagnosticētu problēmas un uzlabotu funkcijas darbību. Jebkāda personas informācija, kas iesniegta tieši vai papildus, tiks aizsargāta saskaņā ar mūsu konfidencialitātes politikām. Iesniedzot atsauksmes, jūs piekrītat, ka Google drīkst tās izmantot, lai uzlabotu jebkuru Google produktu vai pakalpojumu.</translation>
 <translation id="17081583771848899">palaidēja taustiņš + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Saglabāt mākoņa krātuvē</translation>
 <translation id="1708291623166985230">Tīklājs atspējots</translation>
 <translation id="1708338024780164500">(Neaktīva)</translation>
 <translation id="1708563369218024896">Nav atlasīts neviens datu vācējs. Lūdzu, atlasiet vismaz vienu datu vācēju.</translation>
@@ -6662,6 +6663,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5585912436068747822">Formatēšana neizdevās</translation>
 <translation id="5587765208077583036">Lai kopīgotu mapi, lietotnē Faili noklikšķiniet ar peles labo pogu uz mapes un pēc tam atlasiet vienumu “Kopīgot ar <ph name="SPECIFIC_NAME" />”.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrēt vietnes lapā</translation>
 <translation id="558918721941304263">Notiek lietotņu ielāde...</translation>
 <translation id="5590418976913374224">Atskaņot signālu ierīces palaišanas laikā</translation>
 <translation id="5591465468509111843">Ļoti plata</translation>
@@ -8049,6 +8051,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> — tiek kopīgots darbvirsmas saturs</translation>
 <translation id="6580060371127789208">Pabeigta: <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Meklēšanas ātrums</translation>
+<translation id="6580676117087365538">Lai varētu izmantot šo paplašinājumu visos savos datoros, apstipriniet savu identitāti.</translation>
 <translation id="6581356304040102696">Nevar importēt paroles. Faila lielums nedrīkst pārsniegt 1 MB.</translation>
 <translation id="6582080224869403177">Lai uzlabotu drošību, atiestatiet ierīci <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6582274660680936615">Jūs veicat pārlūkošanu viesa režīmā</translation>
@@ -9574,6 +9577,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7647403192093989392">Nav nesen veiktu darbību</translation>
 <translation id="7648023614017258011">Pārlūkā Chrome tiek verificēts instalēšanas komplekts</translation>
 <translation id="7648048654005891115">Taustiņu piesaistes stils</translation>
+<translation id="7648180062672842917">Šis fails ietver sensitīvus vai bīstamus datus. Jūsu organizācija ļaus jums to saglabāt mākoņa krātuvē vai atmest.</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7649954700951153978">Atgādināt man iOS ierīcē</translation>
 <translation id="7650141368285545431">Izmantot piekļuves atslēgu no citas ierīces</translation>
@@ -11149,6 +11153,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8703766890819308134">Rādīt meklēšanas saīsnes</translation>
 <translation id="8704662571571150811">Domēni</translation>
 <translation id="8705331520020532516">Sērijas numurs</translation>
+<translation id="870536819717176711">Kad izvēlaties kopīgot pašreizējo cilni ar Gemini, Google serveriem tiek nosūtīts cilnes pilns saturs, multivide un URL.</translation>
 <translation id="8705580154597116082">Ir pieejams Wi-Fi no tālruņa</translation>
 <translation id="8705629851992224300">Jūsu drošības atslēgu nevar nolasīt</translation>
 <translation id="8706111173576263877">Kvadrātkods ir noskenēts.</translation>

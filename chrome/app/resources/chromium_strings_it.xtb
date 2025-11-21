@@ -176,6 +176,7 @@
 <translation id="2977506796191543575">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="2981563588585023386">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi a Chromium</translation>
 <translation id="3003694935412297923">Tutte le attività</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati (1 elemento) verranno eliminati.}other{Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati ({count} elementi) verranno eliminati.}}</translation>
 <translation id="3013473503895162900">Apri <ph name="URL" /> in una nuova scheda in Chromium.</translation>
 <translation id="3032706164202344641">Chromium non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="3032787606318309379">Aggiunta a Chromium in corso...</translation>
@@ -492,6 +493,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6729124504294600478">Per accedere alla personalizzazione e ad altre funzionalità, includi Chromium in Attività web e app e nei servizi Google collegati</translation>
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6751374565094704799">Consente di accelerare i siti con il motore V8 di Chromium, ma rende Chromium leggermente meno resistente agli attacchi. Questa impostazione è attiva.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati (1 elemento) verranno eliminati.}other{Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati ({count} elementi) verranno eliminati.}}</translation>
 <translation id="67706546131546258">Chromium consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
 <translation id="6779406956731413166">La realizzazione di Chromium OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="6831043979455480757">Traduci</translation>

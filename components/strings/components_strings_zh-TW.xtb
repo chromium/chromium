@@ -661,6 +661,7 @@
 <translation id="2085876078937250610">儲存…</translation>
 <translation id="2088913896151127116">新增文字</translation>
 <translation id="2090451897496479509">詳情請洽詢供應商</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2093184051799735948">搜尋 <ph name="ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
@@ -798,6 +799,7 @@
 <translation id="2283340219607151381">儲存及填入地址</translation>
 <translation id="2283447177162560884">已刪除「<ph name="PAGE_TITLE" />」</translation>
 <translation id="2283599456633275070">旅遊</translation>
+<translation id="2285709459648658719">護照</translation>
 <translation id="2286383991450886080">34 x 44 吋</translation>
 <translation id="2288422996159078444">你輸入的內容、瀏覽的網頁或任何其他網路活動都會遭到監視，而且網站內容可能會在你不知情的情況下遭到變更。</translation>
 <translation id="2289385804009217824">裁切</translation>
@@ -2549,6 +2551,7 @@
 <translation id="5137761395480718572">這個應用程式要求你授權安裝 Wi-Fi 憑證。設定完成後，<ph name="DEVICE_TYPE" /> 將自動連線到設定好的 Wi-Fi 網路。如要移除這些憑證，請解除安裝應用程式。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡片，請洽詢你的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
+<translation id="5140155249377545621">駕照</translation>
 <translation id="5144613843429436866">你已允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
@@ -3140,6 +3143,7 @@
 <translation id="6124058285696691147">下載附件</translation>
 <translation id="6124432979022149706">Chrome Enterprise 連接器</translation>
 <translation id="6124996493718543728">「先買後付」進度畫面已開啟，並顯示在整個畫面。</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多詳細資料<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">位置</translation>
 <translation id="6133320744616005677">允許繼續存取</translation>
@@ -4235,6 +4239,7 @@
 <translation id="7886897188117641322">選擇系統可根據哪些廣泛的主題類別放送個人化廣告</translation>
 <translation id="7887683347370398519">請檢查您的信用卡驗證碼，然後再試一次</translation>
 <translation id="7887885240995164102">進入子母畫面</translation>
+<translation id="7888367499748383555">免手續費，年利率最低 0% (須符合資格)</translation>
 <translation id="7888575728750733395">列印算繪方式</translation>
 <translation id="7890748547282909375">如要儲存螢幕截圖，請登入 Microsoft OneDrive</translation>
 <translation id="7890755620327858054">目前無法先買後付，請再試一次或選擇其他付款方式。</translation>
@@ -4398,6 +4403,7 @@
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在商品降價時收到電子郵件嗎？</translation>
 <translation id="8169175551046720804">無法在相同字典中設定「<ph name="DATA_CONTROLS_KEYS" />」鍵</translation>
+<translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8175053171643471349">管理會員卡</translation>
 <translation id="8175796834047840627">你已登入帳戶，因此 Chrome 詢問你是否要將卡片儲存至你的 Google 帳戶。你可以在設定中變更這項行為。</translation>
 <translation id="8176440868214972690">這部裝置的管理員已將一些資訊 (例如設定或政策) 傳送到下列網站。</translation>

@@ -1061,6 +1061,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1706586824377653884">Lisas teie administraator</translation>
 <translation id="170658918174941828">Lisaks ülal märgitud teabele, mille soovisite esitada, esitatakse ka teie Chrome'i versioon, operatsioonisüsteemi versioon, Casti seaded, peegeldamise toimivusstatistika ja sidekanali diagnostikalogid. Seda tagasisidet kasutatakse probleemide diagnoosimiseks ja funktsiooni täiustamiseks. Kõiki (juhuslikult või teadlikult) esitatud isikuandmeid kaitstakse meie privaatsuseeskirjade järgi. Tagasiside esitamisel nõustute, et Google võib teie esitatud tagasisidet kasutada kõigi Google'i toodete ja teenuste täiustamiseks.</translation>
 <translation id="17081583771848899">käivitaja + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Salvesta pilvepõhisesse salvestusruumi</translation>
 <translation id="1708291623166985230">Kuumkoht on keelatud</translation>
 <translation id="1708338024780164500">(Passiivne)</translation>
 <translation id="1708563369218024896">Valitud ei ole ühtegi andmekogujat. Valige vähemalt üks andmekoguja.</translation>
@@ -6667,6 +6668,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5585912436068747822">Vormindamine ebaõnnestus</translation>
 <translation id="5587765208077583036">Jagamiseks paremklõpsake rakenduses Failid soovitud kaustal ja valige käsk „Jaga üksusega <ph name="SPECIFIC_NAME" />”.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Lehel olevate saitide filtreerimine</translation>
 <translation id="558918721941304263">Rakenduste laadimine …</translation>
 <translation id="5590418976913374224">Esita seadme käivitamisel heli</translation>
 <translation id="5591465468509111843">Väga kaugel</translation>
@@ -8057,6 +8059,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – jagab töölaua sisu</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% on lõpetatud</translation>
 <translation id="6580203076670148210">Skannimiskiirus</translation>
+<translation id="6580676117087365538">Selle laienduse saamiseks kõikidesse oma arvutitesse kinnitage oma isik.</translation>
 <translation id="6581356304040102696">Ei saa paroole importida. Faili suurus peab olema alla 1 MB.</translation>
 <translation id="6582080224869403177">Turvafunktsioonide värskendamiseks lähtestage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6582274660680936615">Sirvite külalisena</translation>
@@ -9578,6 +9581,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7647403192093989392">Hiljutised tegevused puuduvad</translation>
 <translation id="7648023614017258011">Chrome kinnitab installipaketti</translation>
 <translation id="7648048654005891115">Klahvitabeli stiil</translation>
+<translation id="7648180062672842917">See fail sisaldab delikaatseid või ohtlikke andmeid. Teie organisatsioon lubab teil need pilvepõhisesse salvestusruumi salvestada või kustutada.</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7649954700951153978">Tuleta mulle iOS-is meelde</translation>
 <translation id="7650141368285545431">Kasutage teisest seadmest pärit pääsuvõtit</translation>
@@ -11153,6 +11157,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8703766890819308134">Kuva otsingu otseteed</translation>
 <translation id="8704662571571150811">Domeenid</translation>
 <translation id="8705331520020532516">Seerianumber</translation>
+<translation id="870536819717176711">Kui otsustate praegust vahelehte Geminiga jagada, saadetakse Google'ile vahelehe kogu sisu, meedia ja URL.</translation>
 <translation id="8705580154597116082">WiFi on telefoni kaudu saadaval</translation>
 <translation id="8705629851992224300">Teie turvavõtit ei õnnestunud lugeda</translation>
 <translation id="8706111173576263877">QR-kood skanniti.</translation>

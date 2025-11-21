@@ -662,6 +662,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2085876078937250610">Mentés…</translation>
 <translation id="2088913896151127116">Szöveg hozzáadása</translation>
 <translation id="2090451897496479509">További információért forduljon a szolgáltatóhoz.</translation>
+<translation id="2090686487550343086">IBAN-számok</translation>
 <translation id="2091887806945687916">Hang</translation>
 <translation id="2093184051799735948">Írjon be egy URL-t, vagy keressen itt: <ph name="ENGINE_NAME" /></translation>
 <translation id="2093982008204312032">A Google Chrome megpróbálja kikapcsolni a Windows Hello szolgáltatást a jelszavak kitöltéséhez.</translation>
@@ -799,6 +800,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2283340219607151381">Címek mentése és kitöltése</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />” törölve</translation>
 <translation id="2283599456633275070">Utazás</translation>
+<translation id="2285709459648658719">Útlevél</translation>
 <translation id="2286383991450886080">34 × 44 hüvelyk</translation>
 <translation id="2288422996159078444">Megfigyelik, hogy mit gépel be, milyen oldalakat keres fel, illetve milyen egyéb tevékenységeket végez az interneten; emellett a webhelyek tartalma is módosulhat az Ön tudta nélkül.</translation>
 <translation id="2289385804009217824">Vágás</translation>
@@ -2548,6 +2550,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5137761395480718572">Ez az alkalmazás engedélyt kér a Wi-Fi-hálózathoz tartozó hitelesítési adatok telepítésére. A beállítás után a(z) <ph name="DEVICE_TYPE" /> automatikusan csatlakozik az egyik Wi-Fi-hálózathoz. A hitelesítési adatok eltávolításához távolítsa el az alkalmazást. <ph name="LEARN_MORE" />.</translation>
 <translation id="5138014172396933048">A virtuális kártya jelenleg nem áll rendelkezésre, vegye fel a kapcsolatot a bankjával</translation>
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
+<translation id="5140155249377545621">Vezetői engedélyek</translation>
 <translation id="5144613843429436866">Engedélyezte a következő használatát ezen a webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Az irányelv válasza hibakódot tartalmaz</translation>
 <translation id="5146995429444047494">A(z) <ph name="ORIGIN" /> értesítései le vannak tiltva</translation>
@@ -3139,6 +3142,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6124058285696691147">A melléklet letöltése</translation>
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
 <translation id="6124996493718543728">A Késleltetett fizetés folyamatképernyője teljes magasságban meg van nyitva.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />További részletek<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">2. kínai boríték</translation>
 <translation id="6131824478727057281">helyszín</translation>
 <translation id="6133320744616005677">Engedélyezés folytatása</translation>
@@ -4234,6 +4238,7 @@ További részletek:
 <translation id="7886897188117641322">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához.</translation>
 <translation id="7887683347370398519">Ellenőrizze a CVC-t, majd próbálja újra</translation>
 <translation id="7887885240995164102">Belépés a kép a képben módba</translation>
+<translation id="7888367499748383555">Nincs díj, akár 0%-os THM (jogosultságtól függően)</translation>
 <translation id="7888575728750733395">Nyomatmegjelenítési szándék</translation>
 <translation id="7890748547282909375">Jelentkezzen be a Microsoft OneDrive szolgáltatásba a képernyőkép mentéséhez</translation>
 <translation id="7890755620327858054">A későbbi fizetés funkció jelenleg nem áll rendelkezésre. Próbálja újra, vagy válasszon másik fizetési módot.</translation>
@@ -4397,6 +4402,7 @@ További részletek:
 <translation id="8163866351304776260">Négy lyuk a bal oldalon</translation>
 <translation id="8164078261547504572">Szeretne e-mailt kapni az árcsökkenésekről?</translation>
 <translation id="8169175551046720804">A(z) „<ph name="DATA_CONTROLS_KEYS" />” kulcsok nem állíthatók be ugyanabban a szótárban</translation>
+<translation id="8174047975335711832">Eszközadatok</translation>
 <translation id="8175053171643471349">Hűségkártyák kezelése</translation>
 <translation id="8175796834047840627">A Chrome felajánlja a kártyák mentését az Ön Google-fiókjába, mert be van jelentkezve. A beállítások között ezt bármikor módosíthatja.</translation>
 <translation id="8176440868214972690">Az eszköz rendszergazdája elküldött bizonyos információkat (pl. a beállításokat és a házirendeket) a következő webhelyeknek.</translation>

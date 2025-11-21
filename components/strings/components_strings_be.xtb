@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">Захаваць…</translation>
 <translation id="2088913896151127116">Дадаць тэкст</translation>
 <translation id="2090451897496479509">Каб даведацца больш, звярніцеся да пастаўшчыка</translation>
+<translation id="2090686487550343086">Нумары IBAN</translation>
 <translation id="2091887806945687916">Гук</translation>
 <translation id="2093184051799735948">Выканайце пошук у <ph name="ENGINE_NAME" /> або ўвядзіце URL-адрас</translation>
 <translation id="2093982008204312032">Google Chrome спрабуе выключыць Windows Hello для ўводу пароляў.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">Захоўваць і запаўняць адрасы</translation>
 <translation id="2283447177162560884">Выдалена: "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2283599456633275070">Падарожжы</translation>
+<translation id="2285709459648658719">Пашпарты</translation>
 <translation id="2286383991450886080">34 x 44 цалі</translation>
 <translation id="2288422996159078444">Уся інфармацыя, якую вы набіраеце, усе старонкі, якія вы праглядаеце, а таксама любыя іншыя вашы дзеянні ў інтэрнэце адсочваюцца. Змесціва сайтаў можа быць зменена без вашага ведама.</translation>
 <translation id="2289385804009217824">Абрэзка</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">Гэта праграма запытвае дазвол усталяваць уліковыя даныя Wi-Fi. Пасля наладжвання ваша прылада (<ph name="DEVICE_TYPE" />) зможа аўтаматычна падключацца да сетак Wi-Fi. Каб выдаліць гэтыя ўліковыя даныя, неабходна выдаліць праграму. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Віртуальная картка зараз недаступная, звяжыцеся са сваім банкам</translation>
 <translation id="5138227688689900538">Паказаць менш</translation>
+<translation id="5140155249377545621">Вадзіцельскія пасведчанні</translation>
 <translation id="5144613843429436866">Вы далі гэтаму сайту дазвол "<ph name="PERMISSION" />"</translation>
 <translation id="5145883236150621069">Код памылкі, указаны ў адказе, атрыманым ад палітыкі</translation>
 <translation id="5146995429444047494">Апавяшчэнні для <ph name="ORIGIN" /> заблакіраваны</translation>
@@ -3141,6 +3144,7 @@
 <translation id="6124058285696691147">Спампаваць далучэнне</translation>
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6124996493718543728">Экран прагрэсу куплі ў растэрміноўку адкрыты на ўсю вышыню.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дадатковая інфармацыя<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Канверт Chinese № 2</translation>
 <translation id="6131824478727057281">месца</translation>
 <translation id="6133320744616005677">Пакінуць дазвол</translation>
@@ -4236,6 +4240,7 @@
 <translation id="7886897188117641322">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы</translation>
 <translation id="7887683347370398519">Праверце код CVC і паўтарыце спробу</translation>
 <translation id="7887885240995164102">Уключыць рэжым "Відарыс у відарысе"</translation>
+<translation id="7888367499748383555">Без камісій, гадавая працэнтная стаўка складае 0% (пры адпаведнасці патрабаванням)</translation>
 <translation id="7888575728750733395">Намер візуалізацыі раздрукоўкі</translation>
 <translation id="7890748547282909375">Каб захаваць здымак экрана, увайдзіце ў Microsoft OneDrive</translation>
 <translation id="7890755620327858054">Аплата ў растэрміноўку зараз недаступная. Паўтарыце спробу або выберыце іншы спосаб аплаты.</translation>
@@ -4399,6 +4404,7 @@
 <translation id="8163866351304776260">Чатыры дзіркі злева</translation>
 <translation id="8164078261547504572">Хочаце атрымліваць электронныя лісты пры зніжэнні цэн?</translation>
 <translation id="8169175551046720804">Ключы "<ph name="DATA_CONTROLS_KEYS" />" нельга наладзіць у тым жа слоўніку</translation>
+<translation id="8174047975335711832">Інфармацыя аб прыладзе</translation>
 <translation id="8175053171643471349">Кіраваць карткамі лаяльнасці</translation>
 <translation id="8175796834047840627">Chrome прапаноўвае захоўваць карткі ва Уліковым запісе Google, бо вы ўвайшлі ў сістэму. Гэту функцыю можна выключыць у наладах.</translation>
 <translation id="8176440868214972690">Адміністратар гэтай прылады адправіў на наступныя вэб-сайты пэўныя звесткі (напрыклад, налады або палітыкі).</translation>

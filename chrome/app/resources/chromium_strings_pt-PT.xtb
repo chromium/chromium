@@ -107,6 +107,7 @@
 <translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2238130810669087193">Para aceder aos seus endereços e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Este endereço é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="2241627712206172106">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
+<translation id="2283803047247799269">Pesquisar este separador com a pesquisa de imagens</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{O Chromium recomenda pausar o separador que está a abrandar o navegador}other{O Chromium recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
 <translation id="2307973900865360088">Manter na Dock</translation>
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
@@ -164,6 +165,7 @@
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
 <translation id="2847479871509788944">Remover do Chromium...</translation>
 <translation id="2850691299438350830">Mantém a sua segurança no Chromium e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
+<translation id="2856481144859256719">Mostrar sempre o atalho do Modo IA na Pesquisa Google</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2910007522516064972">Acerca do &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>

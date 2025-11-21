@@ -1060,6 +1060,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1706586824377653884">Yöneticiniz tarafından eklendi</translation>
 <translation id="170658918174941828">Yukarıda dahil etmeyi seçtiğiniz tüm bilgilere ek olarak Chrome sürümünüz, işletim sisteminizin sürümü, Google Cast ayarlarınız, yansıtma performansı istatistikleriniz ve iletişim kanalı teşhis günlükleriniz gönderilecektir. Bu geri bildirim, sorunları teşhis etmek ve özelliği iyileştirmeye yardımcı olmak için kullanılacaktır. Gönderdiğiniz tüm kişisel bilgiler, ister açıkça ister kazayla belirtilmiş olsun, gizlilik politikalarımıza uygun olarak korunacaktır. Bu geri bildirimi göndererek, Google'ın, sağladığınız geri bildirimi herhangi bir Google ürününü veya hizmetini iyileştirmek amacıyla kullanabileceğini kabul etmiş olursunuz.</translation>
 <translation id="17081583771848899">başlatıcı + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Bulut depolama alanına kaydet</translation>
 <translation id="1708291623166985230">Hotspot devre dışı bırakıldı</translation>
 <translation id="1708338024780164500">(Etkin değil)</translation>
 <translation id="1708563369218024896">Veri toplayıcı seçilmedi. Lütfen en az bir veri toplayıcı seçin.</translation>
@@ -6658,6 +6659,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5585912436068747822">Biçimlendirme başarısız oldu</translation>
 <translation id="5587765208077583036">Paylaşmak için Dosyalar uygulamasındaki bir klasörü sağ tıklayın, ardından "<ph name="SPECIFIC_NAME" /> ile paylaş"ı seçin.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Sayfadaki siteleri filtrele</translation>
 <translation id="558918721941304263">Uygulamalar yükleniyor...</translation>
 <translation id="5590418976913374224">Cihaz başlatılırken ses çal</translation>
 <translation id="5591465468509111843">Çok geniş</translation>
@@ -8049,6 +8051,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Masaüstü içeriği paylaşıldı</translation>
 <translation id="6580060371127789208">%<ph name="PERCENTAGE_COMPLETE" /> tamamlandı</translation>
 <translation id="6580203076670148210">Tarama hızı</translation>
+<translation id="6580676117087365538">Bu uzantıyı tüm bilgisayarlarınızda kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="6581356304040102696">Şifreler içe aktarılamıyor. Dosya boyutu 1 MB'tan küçük olmalıdır.</translation>
 <translation id="6582080224869403177">Güvenliğinizi yeni sürüme geçirmek için <ph name="DEVICE_TYPE" /> cihazınızı sıfırlayın.</translation>
 <translation id="6582274660680936615">Misafir olarak göz atıyorsunuz</translation>
@@ -9569,6 +9572,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7647403192093989392">Yeni etkinlik yok</translation>
 <translation id="7648023614017258011">Chrome, yükleme paketini doğruluyor</translation>
 <translation id="7648048654005891115">Tuş eşleme stili</translation>
+<translation id="7648180062672842917">Bu dosya, hassas veya tehlikeli veri içeriyor. Kuruluşunuz, dosyayı bulut depolama alanına kaydetmenize veya silmenize izin verir</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7649954700951153978">iOS'te hatırlat</translation>
 <translation id="7650141368285545431">Başka bir cihazdaki geçiş anahtarını kullan</translation>
@@ -11144,6 +11148,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8703766890819308134">Arama kısayollarını göster</translation>
 <translation id="8704662571571150811">Alan adları</translation>
 <translation id="8705331520020532516">Seri Numarası</translation>
+<translation id="870536819717176711">Geçerli sekmeyi Gemini ile paylaşmayı seçtiğinizde sekmenin tüm içeriği, medyası ve URL'si Google'a gönderilir.</translation>
 <translation id="8705580154597116082">Kablosuz bağlantı telefon üzerinden kullanılabilir</translation>
 <translation id="8705629851992224300">Güvenlik anahtarınız okunamadı</translation>
 <translation id="8706111173576263877">QR Kodu tarandı.</translation>

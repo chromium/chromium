@@ -1060,6 +1060,7 @@
 <translation id="1706586824377653884">由管理員新增</translation>
 <translation id="170658918174941828">除了你選擇提交的以上資訊外，你的 Chrome 版本、作業系統版本、Cast 設定、鏡像成效統計資料和通訊頻道診斷記錄也會一併提交。我們會使用你提交的意見回饋來診斷問題並協助改善功能。其中無論是你明確提交還是不慎提交的個人資訊，一律會依隱私權政策規定受到妥善保護。提交意見回饋即表示你同意 Google 將你提供的意見回饋用於改善任何 Google 產品或服務。</translation>
 <translation id="17081583771848899">啟動鍵 + Alt + <ph name="TOP_ROW_KEY" /> 鍵</translation>
+<translation id="170825127491242914">儲存到雲端儲存空間</translation>
 <translation id="1708291623166985230">已停用無線基地台</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708563369218024896">未選取任何資料收集器。請至少選取一個資料收集器。</translation>
@@ -6654,6 +6655,7 @@
 <translation id="5585912436068747822">無法格式化</translation>
 <translation id="5587765208077583036">如要共用資料夾，請在「檔案」應用程式中的資料夾上按一下右鍵，選取「與 <ph name="SPECIFIC_NAME" /> 共用」。</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">篩選頁面上的網站</translation>
 <translation id="558918721941304263">正在載入應用程式...</translation>
 <translation id="5590418976913374224">裝置開啟時播放音效</translation>
 <translation id="5591465468509111843">字距很寬</translation>
@@ -8040,6 +8042,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面內容</translation>
 <translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">掃描速度</translation>
+<translation id="6580676117087365538">如要在電腦上使用這個擴充功能，請驗證身分</translation>
 <translation id="6581356304040102696">無法匯入密碼，檔案大小必須小於 1 MB。</translation>
 <translation id="6582080224869403177">請重設 <ph name="DEVICE_TYPE" />，以便進行安全性更新。</translation>
 <translation id="6582274660680936615">你目前是以訪客身分瀏覽</translation>
@@ -9560,6 +9563,7 @@
 <translation id="7647403192093989392">最近沒有活動</translation>
 <translation id="7648023614017258011">Chrome 正在驗證安裝套件</translation>
 <translation id="7648048654005891115">按鍵對映樣式</translation>
+<translation id="7648180062672842917">這個檔案含有敏感內容或危險內容。根據貴機構政策，你只能儲存到雲端儲存空間或捨棄檔案</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7649954700951153978">在 iOS 裝置上提醒我</translation>
 <translation id="7650141368285545431">使用其他裝置的密碼金鑰</translation>
@@ -11135,6 +11139,7 @@
 <translation id="8703766890819308134">顯示搜尋捷徑</translation>
 <translation id="8704662571571150811">網域</translation>
 <translation id="8705331520020532516">序號</translation>
+<translation id="870536819717176711">如果將目前分頁分享給 Gemini，分頁的完整內容、媒體和網址都會傳送給 Google。</translation>
 <translation id="8705580154597116082">可透過手機使用 Wi-Fi</translation>
 <translation id="8705629851992224300">無法讀取你的安全金鑰</translation>
 <translation id="8706111173576263877">已掃描 QR 圖碼。</translation>

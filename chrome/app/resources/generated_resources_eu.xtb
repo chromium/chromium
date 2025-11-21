@@ -1060,6 +1060,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1706586824377653884">Administratzaileak gehitu du</translation>
 <translation id="170658918174941828">Chrome-ren bertsioa, sistema eragilearen bertsioa, Cast-en ezarpenak, islatzearen errendimendu-estatistikak eta komunikazio-kanalen diagnostikoen erregistroak bidaliko dira, goian aukeratzen duzun informazioarekin batera. Arazoak identifikatzeko eta eginbidea hobetzeko erabiltzen dira oharrak. Informazio pertsonalik bidaltzen baduzu, nahita zein nahi gabe, gure pribatutasun-gidalerroei jarraikiz babestuko dugu. Ohar hauek bidalita, onartu egingo duzu agian Google-k bere produktu eta zerbitzuak hobetzeko erabiliko dituela.</translation>
 <translation id="17081583771848899">Exekutatzeko tresnaren tekla + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Gorde hodeiko biltegian</translation>
 <translation id="1708291623166985230">Desgaitu da wifi-gunea</translation>
 <translation id="1708338024780164500">(Inaktibo)</translation>
 <translation id="1708563369218024896">Ez da hautatu datu-biltzailerik. Hautatu datu-biltzaile bat gutxienez.</translation>
@@ -6659,6 +6660,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5585912436068747822">Ezin izan da formateatu</translation>
 <translation id="5587765208077583036">Partekatzeko, egin klik eskuineko botoiarekin Fitxategiak aplikazioko karpeta batean. Ondoren, hautatu "Partekatu <ph name="SPECIFIC_NAME" /> zerbitzuarekin".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Iragazi orriko webguneak</translation>
 <translation id="558918721941304263">Aplikazioak kargatzen…</translation>
 <translation id="5590418976913374224">Erreproduzitu soinua gailua piztean</translation>
 <translation id="5591465468509111843">Oso zabala</translation>
@@ -8046,6 +8048,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: ordenagailuko edukia partekatzen ari da</translation>
 <translation id="6580060371127789208">% <ph name="PERCENTAGE_COMPLETE" /> osatuta</translation>
 <translation id="6580203076670148210">Bilaketa-abiadura</translation>
+<translation id="6580676117087365538">Luzapen hau ordenagailu guztietan lortzeko, egiaztatu zeu zarela</translation>
 <translation id="6581356304040102696">Ezin dira inportatu pasahitzak. Fitxategiak 1 MB baino gutxiago izan behar ditu.</translation>
 <translation id="6582080224869403177">Berrezarri <ph name="DEVICE_TYPE" /> gailua segurtasuna eguneratzeko.</translation>
 <translation id="6582274660680936615">Gonbidatu gisa arakatzen ari zara</translation>
@@ -9565,6 +9568,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7647403192093989392">Ez dago azkenaldiko jarduerarik</translation>
 <translation id="7648023614017258011">Chrome instalazio-paketea egiaztatzen ari da</translation>
 <translation id="7648048654005891115">Teklatu-diseinuaren estiloa</translation>
+<translation id="7648180062672842917">Fitxategiak kontuzko datuak edo datu arriskutsuak dauzka. Erakundeak hodeiko biltegian gordetzeko edo baztertzeko aukera emango dizu.</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7649954700951153978">Gogorarazi iOS-en</translation>
 <translation id="7650141368285545431">Erabili beste gailu bateko sarbide-kodea</translation>
@@ -11139,6 +11143,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8703766890819308134">Erakutsi bilatzeko lasterbideak</translation>
 <translation id="8704662571571150811">Domeinuak</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>
+<translation id="870536819717176711">Une horretan irekita dagoen fitxa Gemini-rekin partekatzea aukeratzen duzunean, fitxaren eduki osoa, multimedia-edukia eta URLa bidaltzen zaizkio Google-ri.</translation>
 <translation id="8705580154597116082">Telefonoaren bidez erabil dezakezu wifi-konexioa</translation>
 <translation id="8705629851992224300">Ezin izan da irakurri segurtasun-giltza</translation>
 <translation id="8706111173576263877">Eskaneatu da QR kodea.</translation>

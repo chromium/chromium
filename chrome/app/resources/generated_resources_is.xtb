@@ -1070,6 +1070,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
      samþykkirðu að Google megi nota þær til að betrumbæta
     hvaða Google vöru eða þjónustu sem er.</translation>
 <translation id="17081583771848899">ræsilykill + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Vista í skýjageymslu</translation>
 <translation id="1708291623166985230">Slökkt á heitum reit</translation>
 <translation id="1708338024780164500">(Óvirk)</translation>
 <translation id="1708563369218024896">Engin gagnauppspretta valin. Veldu að minnsta kosti eina gagnauppsprettu.</translation>
@@ -6677,6 +6678,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5585912436068747822">Mistókst að sníða</translation>
 <translation id="5587765208077583036">Hægrismelltu á möppu í forritinu „Skrár“ og veldu „Deila með <ph name="SPECIFIC_NAME" />“ til að deila.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Sía vefsvæði á síðu</translation>
 <translation id="558918721941304263">Hleður forrit...</translation>
 <translation id="5590418976913374224">Spila hljóð þegar kveikt er á tæki</translation>
 <translation id="5591465468509111843">Mjög breitt bil</translation>
@@ -8067,6 +8069,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – skjáborðsefni deilt</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% lokið</translation>
 <translation id="6580203076670148210">Skönnunarhraði</translation>
+<translation id="6580676117087365538">Staðfestu að þetta sért þú til að fá þessa viðbót í allar tölvurnar þínar</translation>
 <translation id="6581356304040102696">Ekki er hægt að flytja inn aðgangsorð. Skráin má ekki vera stærri en 1 MB.</translation>
 <translation id="6582080224869403177">Endurstilltu <ph name="DEVICE_TYPE" /> til að auka öryggið.</translation>
 <translation id="6582274660680936615">Þú ert að vafra sem gestur</translation>
@@ -9589,6 +9592,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7647403192093989392">Engar nýlegar aðgerðir</translation>
 <translation id="7648023614017258011">Chrome er að staðfesta uppsetningarpakkann</translation>
 <translation id="7648048654005891115">Lyklakort</translation>
+<translation id="7648180062672842917">Þessi skrá inniheldur viðkvæm eða hættuleg gögn. Fyrirtækið þitt mun leyfa þér að vista það í skýjageymslu eða farga því</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7649954700951153978">Minna mig á í iOS</translation>
 <translation id="7650141368285545431">Nota aðgangslykil úr öðru tæki</translation>
@@ -11163,6 +11167,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8703766890819308134">Sýna flýtileið leitar</translation>
 <translation id="8704662571571150811">Lén</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>
+<translation id="870536819717176711">Þegar þú ákveður að deila opnum flipa með Gemini eru vefslóðin og allt efni flipans send til Google.</translation>
 <translation id="8705580154597116082">Wi-Fi aðgengilegt gegnum síma</translation>
 <translation id="8705629851992224300">Ekki var hægt að lesa öryggislykilinn þinn</translation>
 <translation id="8706111173576263877">QR-kóði var skannaður inn.</translation>

@@ -662,6 +662,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2085876078937250610">Sačuvaj…</translation>
 <translation id="2088913896151127116">Dodajte tekst</translation>
 <translation id="2090451897496479509">Kontaktirajte pružaoca usluge za više informacija</translation>
+<translation id="2090686487550343086">IBAN-ovi</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2093184051799735948">Pretražite <ph name="ENGINE_NAME" /> ili upišite URL</translation>
 <translation id="2093982008204312032">Google Chrome pokušava isključiti Windows Hello za popunjavanje lozinki.</translation>
@@ -799,6 +800,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2283340219607151381">Sačuvaj i popuni adrese</translation>
 <translation id="2283447177162560884">Stavka "<ph name="PAGE_TITLE" />" je izbrisana</translation>
 <translation id="2283599456633275070">Putovanja</translation>
+<translation id="2285709459648658719">Pasoši</translation>
 <translation id="2286383991450886080">34 x 44 in</translation>
 <translation id="2288422996159078444">Sve što napišete, svaka stranica koju pregledate ili bilo koja druga aktivnost na webu se nadzire. Sadržaj na web lokacijama se može promijeniti bez vašeg znanja.</translation>
 <translation id="2289385804009217824">Skrati</translation>
@@ -2551,6 +2553,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5137761395480718572">Aplikacija traži odobrenje za instaliranje akreditiva za WiFi. Nakon postavljanja uređaj <ph name="DEVICE_TYPE" /> će se automatski povezivati s WiFi mrežama koje učestvuju. Da uklonite akreditive, deinstalirajte aplikaciju. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Kontaktirajte banku</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
+<translation id="5140155249377545621">Vozačke dozvole</translation>
 <translation id="5144613843429436866">Dali ste odobrenje "<ph name="PERMISSION" />" ovoj web lokaciji</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kȏd greške</translation>
 <translation id="5146995429444047494">Obavještenja za <ph name="ORIGIN" /> su blokirana</translation>
@@ -3142,6 +3145,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6124058285696691147">Preuzmite prilog</translation>
 <translation id="6124432979022149706">Konektori Chromea za preduzeća</translation>
 <translation id="6124996493718543728">Ekran napretka naknadnog plaćanja je otvoren u punoj visini.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Više detalja<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Koverta Chinese #2</translation>
 <translation id="6131824478727057281">lokacija</translation>
 <translation id="6133320744616005677">I dalje dozvoli</translation>
@@ -4237,6 +4241,7 @@ Dodatni detalji:
 <translation id="7886897188117641322">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa</translation>
 <translation id="7887683347370398519">Provjerite CVC i pokušajte ponovo</translation>
 <translation id="7887885240995164102">Pokreni način rada slika u slici</translation>
+<translation id="7888367499748383555">Bez naknada, EKS od samo 0% (podložno je ispunjavanju uslova)</translation>
 <translation id="7888575728750733395">Štampanje namjere iscrtavanja</translation>
 <translation id="7890748547282909375">Prijavite se na Microsoft OneDrive da sačuvate snimak ekrana</translation>
 <translation id="7890755620327858054">Kasnije plaćanje trenutno nije dostupno. Pokušajte ponovo ili odaberite drugi način plaćanja.</translation>
@@ -4400,6 +4405,7 @@ Dodatni detalji:
 <translation id="8163866351304776260">Četverostruko bušenje na lijevoj strani</translation>
 <translation id="8164078261547504572">Želite li primati e-poruke kada dođe do pada cijena?</translation>
 <translation id="8169175551046720804">Ključevi "<ph name="DATA_CONTROLS_KEYS" />" se ne mogu postaviti u isti rječnik</translation>
+<translation id="8174047975335711832">Informacije s uređaja</translation>
 <translation id="8175053171643471349">Upravljajte karticama lojalnosti</translation>
 <translation id="8175796834047840627">Chrome vam nudi pohranjivanje vaših kartica na Google računu zato što ste prijavljeni. Ovo ponašanje možete promjeniti u postavkama</translation>
 <translation id="8176440868214972690">Administrator ovog uređaja je poslao određene informacije web lokacijama u nastavku, naprimjer postavke ili pravila.</translation>

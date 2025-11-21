@@ -622,6 +622,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3710560693796335511">Yhteiskäyttö</translation>
 <translation id="3718765429352682176">Saatat nähdä muiden sellaisten sovellusten historian, jotka avaavat linkkejä Chromessa.</translation>
 <translation id="3721119614952978349">Sinä ja Google</translation>
+<translation id="3727000368239390918">Kirjaudu sisään, niin voit käyttää esimerkiksi välilehtiä kaikilla laitteilla</translation>
 <translation id="3737319253362202215">Käännösasetukset</translation>
 <translation id="3738139272394829648">Koskettamalla hakeminen</translation>
 <translation id="3739455665973395693">Google-tililläsi ei ole vaarantuneita salasanoja</translation>
@@ -1501,6 +1502,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valittu kiinnitetty välilehti, jonka sisältöä jaetaan</translation>
 <translation id="7304072650267745798">Android-laitteellasi voi olla vastaava asetus. Jos asetus on päällä Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
+<translation id="7311244614769792472">Ei tuloksia</translation>
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
 <translation id="7314734791127433392">Salasanojen tarkistaminen ei onnistu</translation>
 <translation id="7324354302972299151">Lähetä Do Not Track ‐pyyntö</translation>

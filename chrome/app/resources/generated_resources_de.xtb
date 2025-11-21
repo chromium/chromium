@@ -1057,6 +1057,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1706586824377653884">Von deinem Administrator hinzugefügt</translation>
 <translation id="170658918174941828">Neben den oben angegebenen Informationen werden deine Chrome-Version, die Version deines Betriebssystems, deine Google Cast-Einstellungen, Statistiken zur Spiegelungsleistung und Diagnoseprotokolle des Kommunikationskanals gesendet. Dieses Feedback wird zur Fehlerdiagnose und zur Verbesserung der Funktion genutzt. Von dir absichtlich oder unabsichtlich gesendete personenbezogene Daten werden entsprechend unserer Datenschutzerklärung geschützt. Durch das Senden dieses Feedbacks stimmst du zu, dass Google dein Feedback zur Verbesserung aller Google-Produkte und -Dienste nutzen darf.</translation>
 <translation id="17081583771848899">Launcher-Taste + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">In der Cloud speichern</translation>
 <translation id="1708291623166985230">Hotspot deaktiviert</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708563369218024896">Keine Datenquelle ausgewählt. Wähle mindestens eine Datenquelle aus.</translation>
@@ -6656,6 +6657,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5585912436068747822">Fehler bei der Formatierung</translation>
 <translation id="5587765208077583036">Wenn du einen Ordner freigeben möchtest, klicke in der App „Dateien“ mit der rechten Maustaste darauf und wähle dann „Für <ph name="SPECIFIC_NAME" /> freigeben“ aus.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Websites auf der Seite filtern</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
 <translation id="5590418976913374224">Ton beim Gerätestart abspielen</translation>
 <translation id="5591465468509111843">Sehr breit</translation>
@@ -7584,7 +7586,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6248988683584659830">In Einstellungen suchen</translation>
 <translation id="6249200942125593849">Bedienungshilfen verwalten</translation>
 <translation id="6250186368828697007">Details sind während des Bildschirmteilens verborgen</translation>
-<translation id="6250887692313997958">Tab zum Einfügen in die geteilte Ansicht auswählen</translation>
+<translation id="6250887692313997958">Tab auswählen, der in der geteilten Ansicht angezeigt werden soll</translation>
 <translation id="6251870443722440887">GDI-Handles</translation>
 <translation id="6251924700383757765">Datenschutzerklärung</translation>
 <translation id="625369703868467034">Netzwerkzustand</translation>
@@ -8043,6 +8045,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Desktopinhalte geteilt</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % abgeschlossen</translation>
 <translation id="6580203076670148210">Scangeschwindigkeit</translation>
+<translation id="6580676117087365538">Wenn du diese Erweiterung auf allen deinen Computern verwenden möchtest, bestätige deine Identität</translation>
 <translation id="6581356304040102696">Import der Passwörter nicht möglich. Die Datei muss kleiner als 1 MB sein.</translation>
 <translation id="6582080224869403177">Setze dein <ph name="DEVICE_TYPE" /> zurück, um das Sicherheitsupdate durchzuführen.</translation>
 <translation id="6582274660680936615">Der Gastmodus ist aktiviert</translation>
@@ -9564,6 +9567,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7647403192093989392">Keine neuen Aktivitäten</translation>
 <translation id="7648023614017258011">Chrome prüft das Installationspaket</translation>
 <translation id="7648048654005891115">Keymap-Stil</translation>
+<translation id="7648180062672842917">Diese Datei enthält vertrauliche oder schädliche Daten. Deine Organisation erlaubt dir, die Datei in der Cloud zu speichern oder zu verwerfen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7649954700951153978">Auf iOS-Geräten erinnern</translation>
 <translation id="7650141368285545431">Passkey eines anderen Geräts verwenden</translation>
@@ -11139,6 +11143,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8703766890819308134">Suchkürzel anzeigen</translation>
 <translation id="8704662571571150811">Domains</translation>
 <translation id="8705331520020532516">Seriennummer</translation>
+<translation id="870536819717176711">Wenn du den aktuellen Tab mit Gemini teilst, werden der gesamte Inhalt, alle Medien und die URL des Tabs an Google gesendet.</translation>
 <translation id="8705580154597116082">WLAN über Smartphone verfügbar</translation>
 <translation id="8705629851992224300">Dein Sicherheitsschlüssel konnte nicht gelesen werden</translation>
 <translation id="8706111173576263877">Der QR-Code wurde gescannt.</translation>

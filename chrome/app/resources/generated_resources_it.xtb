@@ -1060,6 +1060,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1706586824377653884">Aggiunta dall'amministratore</translation>
 <translation id="170658918174941828">La versione di Chrome, la versione del sistema operativo, le impostazioni di trasmissione, le statistiche sulle prestazioni del mirroring e i log di diagnosi sui canali di comunicazione verranno inviati in aggiunta a qualsiasi informazione che scegli di includere sopra. Questo feedback viene utilizzato per identificare i problemi e migliorare la funzionalità. Le informazioni personali inviate, in modo esplicito o fortuito, verranno protette secondo le nostre norme sulla privacy. Se invii questo feedback, accetti che Google possa utilizzarlo per migliorare i propri prodotti o servizi.</translation>
 <translation id="17081583771848899">Avvio app + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Salva nello spazio di archiviazione sul cloud</translation>
 <translation id="1708291623166985230">Hotspot disattivato</translation>
 <translation id="1708338024780164500">(Non attiva)</translation>
 <translation id="1708563369218024896">Nessun raccoglitore dati selezionato. Seleziona almeno un raccoglitore dati.</translation>
@@ -6662,6 +6663,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5585912436068747822">Formattazione non riuscita</translation>
 <translation id="5587765208077583036">Per condividere, fai clic con il tasto destro del mouse su una cartella nell'app File, quindi seleziona "Condividi con <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtra i siti sulla pagina</translation>
 <translation id="558918721941304263">Caricamento app...</translation>
 <translation id="5590418976913374224">Riproduci suono all'avvio del dispositivo</translation>
 <translation id="5591465468509111843">Molto larga</translation>
@@ -8049,6 +8051,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Contenuti del desktop condivisi</translation>
 <translation id="6580060371127789208">Completamento: <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Velocità di scansione</translation>
+<translation id="6580676117087365538">Per ottenere questa estensione su tutti i tuoi computer, verifica la tua identità</translation>
 <translation id="6581356304040102696">Impossibile importare le password. Le dimensioni file devono essere minori di 1 MB.</translation>
 <translation id="6582080224869403177">Ripristina il tuo dispositivo <ph name="DEVICE_TYPE" /> per eseguire l'upgrade della sicurezza.</translation>
 <translation id="6582274660680936615">Stai navigando come Ospite</translation>
@@ -9570,6 +9573,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7647403192093989392">Nessuna attività recente</translation>
 <translation id="7648023614017258011">Chrome sta verificando il bundle di installazione</translation>
 <translation id="7648048654005891115">Stile mappa dei tasti</translation>
+<translation id="7648180062672842917">Questo file include dati sensibili o pericolosi. La tua organizzazione ti consentirà di salvarlo nello spazio di archiviazione sul cloud o di eliminarlo</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7649954700951153978">Ricordamelo su iOS</translation>
 <translation id="7650141368285545431">Usa passkey da un altro dispositivo</translation>
@@ -11145,6 +11149,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8703766890819308134">Mostra scorciatoie per la ricerca</translation>
 <translation id="8704662571571150811">Domini</translation>
 <translation id="8705331520020532516">Numero di serie</translation>
+<translation id="870536819717176711">Quando scegli di condividere la scheda corrente con Gemini, l'intero contenuto della scheda, i file multimediali e l'URL vengono inviati a Google.</translation>
 <translation id="8705580154597116082">Wi-Fi disponibile tramite telefono</translation>
 <translation id="8705629851992224300">Impossibile leggere il token di sicurezza</translation>
 <translation id="8706111173576263877">Il codice QR è stato scansionato.</translation>

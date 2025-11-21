@@ -2250,13 +2250,6 @@ Opmerking: Als je een veld overslaat, betekent dit dat alle waarden overeenkomen
 
       Gebruikers kunnen de mappen waarin de bookmarks zijn geplaatst niet wijzigen (maar ze kunnen deze wel verbergen via de bookmarkbalk). De standaard mapnaam voor beheerde bookmarks is 'Beheerde bookmarks' maar je kunt deze naam wijzigen door een nieuw subwoordenboek aan het beleid toe te voegen met één sleutel met de naam '<ph name="TOPLEVEL_NAME" />' en met de gewenste map als waarde. Beheerde bookmarks worden niet gesynchroniseerd met het gebruikersaccount en kunnen niet worden gewijzigd via extensies.</translation>
 <translation id="2552966063069741410">Tijdzone</translation>
-<translation id="2554010621206996293">Met dit beleid kun je de functie Gerelateerde websitesets aanzetten.
-
-Dit beleid overschrijft het beleid <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Als je dit beleid niet instelt of instelt op True, staat de functie Gerelateerde websitesets aan.
-
-Als je dit beleid instelt op False, staat de functie Gerelateerde websitesets uit.</translation>
 <translation id="2555244983262829274">De startknop verbergen op de werkbalk</translation>
 <translation id="2558154810835597313">Hiermee wordt de registratie van clientcertificaten voor een beheerde gebruiker of een beheerd profiel aangezet</translation>
 <translation id="2559274305158103883">Post-quantum sleutelovereenkomst van WebRTC uitzetten</translation>
@@ -10547,34 +10540,6 @@ Als je het beleid instelt op Onwaar, kunnen ze deelnemen zonder dat ze zich binn
 <translation id="8199823751103472868">Als je het beleid instelt, wordt Hindi InScript-indeling aangezet voor <ph name="PRODUCT_OS_NAME" />. Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet beschikbaar.</translation>
 <translation id="8202566089100454374">Google Maps (ondersteund vanaf versie 135)</translation>
 <translation id="8202834945144737726">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's op het inlogscherm</translation>
-<translation id="8210117014924235250">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor functies van gehelen van gerelateerde websites.
-
-Dit beleid overschrijft het beleid <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Elke set in de lijst met gehelen van gerelateerde websites van de browser moet voldoen aan de vereisten van een geheel van gerelateerde websites.
-Een geheel van gerelateerde websites moet bestaan uit een primaire site en een of meer lidsites.
-Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
-Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> gehelen van gerelateerde websites gebruikt.
-
-
-Alle sites in een geheel van gerelateerde websites moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een geheel van gerelateerde websites moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer in een geheel van gerelateerde websites kan voorkomen.
-
-Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met gehelen van gerelateerde websites.
-
-Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, die site wordt verwijderd uit het geheel van gerelateerde websites van de browser.
-Daarna wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
-
-Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, het geheel van gerelateerde websites van de browser wordt geüpdatet zodat het nieuwe geheel van gerelateerde websites aan de lijst van de browser kan worden toegevoegd. Nadat de lijst van de browser is geüpdatet, wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
-
-De lijst met gehelen van gerelateerde websites van de browser vereist dat geen van de sites op de lijst in meer dan één set voorkomt. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
-
-Jokertekens (*) worden niet ondersteund als beleidswaarde of binnen een geheel van gerelateerde websites in deze lijsten.
-
-Alle sets die in het beleid worden vermeld, moeten geldige gehelen van gerelateerde websites zijn. Zo niet, dan krijg je de relevante foutmelding.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Als dit beleid is ingesteld, specificeert het de actie die worden ondernomen door <ph name="PRODUCT_OS_NAME" /> als de gebruiker inactief is gedurende de tijdsduur die is opgegeven door de inactieve vertraging. Dit kan afzonderlijk worden geconfigureerd.

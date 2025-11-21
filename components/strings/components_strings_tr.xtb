@@ -662,6 +662,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2085876078937250610">Kaydet</translation>
 <translation id="2088913896151127116">Metin ekleme</translation>
 <translation id="2090451897496479509">Daha fazla bilgi için sağlayıcıyla iletişime geçin</translation>
+<translation id="2090686487550343086">IBAN'lar</translation>
 <translation id="2091887806945687916">Ses</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> üzerinde arayın veya URL'yi yazın</translation>
 <translation id="2093982008204312032">Google Chrome, şifreleri doldurmak için Windows Hello'yu devre dışı bırakmaya çalışıyor.</translation>
@@ -799,6 +800,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2283340219607151381">Adresleri kaydet ve doldur</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" silindi</translation>
 <translation id="2283599456633275070">Seyahat</translation>
+<translation id="2285709459648658719">Pasaportlar</translation>
 <translation id="2286383991450886080">34 x 44 inç</translation>
 <translation id="2288422996159078444">Yazdığınız her şey, görüntülediğiniz her sayfa ve web'deki diğer tüm etkinlikleriniz izlenir. Sitelerdeki içerik, bilginiz dışında değiştirilebilir.</translation>
 <translation id="2289385804009217824">Kırp</translation>
@@ -2551,6 +2553,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5137761395480718572">Bu uygulama kablosuz ağ kimlik bilgileri yüklemek için izin istiyor. Kurulumdan sonra <ph name="DEVICE_TYPE" /> cihazınız katılımcı kablosuz ağlara otomatik olarak bağlanacaktır. Bu kimlik bilgilerini kaldırmak için uygulamayı kaldırın. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun.</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
+<translation id="5140155249377545621">Sürücü belgeleri</translation>
 <translation id="5144613843429436866">Bu site için <ph name="PERMISSION" /> iznini verdiniz</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> için bildirimler engellendi</translation>
@@ -3142,6 +3145,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6124058285696691147">Eklentiyi indir</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">"Şimdi al sonra öde" ilerleme ekranı tam ekranda açıldı.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Diğer ayrıntılar<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Zarf Chinese #2</translation>
 <translation id="6131824478727057281">konum</translation>
 <translation id="6133320744616005677">İzin vermeye devam et</translation>
@@ -4237,6 +4241,7 @@ Ek ayrıntılar:
 <translation id="7886897188117641322">Reklamların kişiselleştirilmesine yardımcı olmak için kullanılacak geniş kapsamlı konu kategorilerini seçin</translation>
 <translation id="7887683347370398519">CVC'nizi kontrol edin ve tekrar deneyin</translation>
 <translation id="7887885240995164102">Pencere içinde pencere moduna gir</translation>
+<translation id="7888367499748383555">Ücretsiz, %0'a varan yıllık faiz oranı (uygunluğa bağlıdır)</translation>
 <translation id="7888575728750733395">Baskı oluşturma amacı</translation>
 <translation id="7890748547282909375">Ekran görüntüsünü kaydetmek için Microsoft OneDrive'da oturum açın</translation>
 <translation id="7890755620327858054">Dahs sonra ödeme seçeneği şu anda kullanılamıyor. Tekrar deneyin veya başka bir ödeme yöntemi seçin.</translation>
@@ -4400,6 +4405,7 @@ Ek ayrıntılar:
 <translation id="8163866351304776260">Solda dörtlü delik</translation>
 <translation id="8164078261547504572">Fiyatlar düştüğünde e-posta almak ister misiniz?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" anahtarları aynı sözlükte ayarlanamaz</translation>
+<translation id="8174047975335711832">Cihaz bilgileri</translation>
 <translation id="8175053171643471349">Bağlılık kartlarını yönet</translation>
 <translation id="8175796834047840627">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz.</translation>
 <translation id="8176440868214972690">Bu cihazın yöneticisi, aşağıdaki web sitelerine ayarlar ve politikalar gibi bazı bilgiler gönderdi.</translation>

@@ -1774,6 +1774,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2192505247865591433">Daripada:</translation>
 <translation id="219283042927675668">Tab dalam kumpulan</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> mengurus halaman tab baharu anda, yang akan dibuka pada tab baharu</translation>
+<translation id="2192982266585216032">&amp;Pembayaran</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2195331105963583686">Anda masih boleh menggunakan <ph name="DEVICE_TYPE" /> ini selepas waktu itu tetapi tidak akan mendapat perisian automatik dan kemas kini keselamatan lagi</translation>
 <translation id="2195729137168608510">Perlindungan E-mel</translation>
@@ -3004,6 +3005,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3022072018423103125">Tanah tinggi</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> akan dialih keluar daripada Chromebook ini dan tidak akan disimpan pada <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Tidak faham.</translation>
+<translation id="3023204744987201088">&amp;Maklumat hubungan</translation>
 <translation id="3023464535986383522">Pilih untuk bercakap</translation>
 <translation id="3024374909719388945">Gunakan sistem 24 jam</translation>
 <translation id="3027296729579831126">Hidupkan Kongsi Berdekatan</translation>
@@ -7945,6 +7947,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6495261233408033662">Tutup tab yang dibuka</translation>
 <translation id="6495266441917713704">Tidak dapat memindahkan Wi-Fi</translation>
 <translation id="6495453178162183932">Tema dikemaskinikan kepada Chrome Lalai</translation>
+<translation id="6496641546298525838">Peranti anda</translation>
 <translation id="6497784818439587832">Tukar saiz paparan untuk menjadikan item pada skrin anda lebih kecil atau lebih besar</translation>
 <translation id="6497789971060331894">Penatalan terbalik tetikus</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa anda</translation>
@@ -9768,6 +9771,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7760176388948986635">Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti ini. Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan Android. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti ini untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti mana-mana individu untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.</translation>
 <translation id="7762024824096060040">Tidak boleh menggunakan akaun ini</translation>
+<translation id="776324966908034528">Tetapan proksi penyemak imbas dikawal oleh berbilang sumber</translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> daripada <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Buka Kumpulan dalam Tetingkap Baharu</translation>
@@ -10920,7 +10924,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8535005006684281994">URL Pembaharuan Sijil Netscape</translation>
 <translation id="8536810348276651776">Mengelog anda keluar daripada kebanyakan laman. Anda akan kekal dilog masuk ke Google Account anda supaya tetapan Family Link untuk Chrome digunakan.</translation>
 <translation id="8536956381488731905">Bunyi pada tekanan kekunci</translation>
-<translation id="8537854269962256103">Perbualan Gemini anda berada dalam sembang pop-keluar. Klik mana-mana sahaja pada panel sisi ini untuk mengalihkan panel sisi ke sini.</translation>
 <translation id="8539727552378197395">Tidak (HttpOnly)</translation>
 <translation id="8539766201049804895">Tingkatkan</translation>
 <translation id="8540136935098276800">Masukkan URL yang diformatkan dengan betul</translation>
@@ -11023,6 +11026,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8616441548384109662">Tambahkan <ph name="CONTACT_NAME" /> pada kenalan anda</translation>
 <translation id="8617601976406256334">Padamkan data laman dan kebenaran untuk <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">ID sambungan selamat: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Maklumat Hubungan</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Tidak dibenarkan memasang apl web pada peranti anda</translation>
 <translation id="8619803522055190423">Letak bayang</translation>
@@ -11624,6 +11628,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="90033698482696970">Imbas profil eSIM tersedia secara automatik?</translation>
 <translation id="9003647077635673607">Benarkan pada semua laman web</translation>
 <translation id="9005774573776346118">Untuk mendapatkan kata laluan dan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Organisasi anda</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> mahu membuka pautan ini pada apl.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
 <translation id="9008201858626224558">Butang kembali halaman butiran <ph name="SUBPAGE_TITLE" /></translation>

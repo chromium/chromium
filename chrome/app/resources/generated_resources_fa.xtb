@@ -1067,6 +1067,7 @@
    با ارسال این بازخورد، موافقت می‌کنید که Google می‌تواند از بازخوردتان برای بهبود
    محصولات یا سرویس‌های Google استفاده کند.</translation>
 <translation id="17081583771848899">راه‌انداز + دگرساز + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">ذخیره در فضای ذخیره‌سازی ابری</translation>
 <translation id="1708291623166985230">نقطه اتصال غیرفعال شد</translation>
 <translation id="1708338024780164500">(غیرفعال)</translation>
 <translation id="1708563369218024896">جمع‌آورنده داده‌ای انتخاب نشده است. لطفاً حداقل یک جمع‌آورنده داده انتخاب کنید.</translation>
@@ -6673,6 +6674,7 @@
 <translation id="5585912436068747822">قالب‌بندی ناموفق بود</translation>
 <translation id="5587765208077583036">‏برای هم‌رسانی، روی پوشه‌ای در برنامه Files کلیک راست کنید، سپس «هم‌رسانی با <ph name="SPECIFIC_NAME" />» را انتخاب کنید.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">فیلتر کردن سایت‌ها در صفحه</translation>
 <translation id="558918721941304263">درحال بار کردن برنامه...</translation>
 <translation id="5590418976913374224">پخش صدا هنگام راه‌اندازی دستگاه</translation>
 <translation id="5591465468509111843">بسیار عریض</translation>
@@ -8063,6 +8065,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - محتوای میز کار هم‌رسانی می‌شود</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> درصد تکمیل شده است</translation>
 <translation id="6580203076670148210">سرعت اسکن</translation>
+<translation id="6580676117087365538">برای دریافت این افزونه در همه رایانه‌هایتان، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="6581356304040102696">گذرواژه‌ها وارد نشد. اندازه فایل باید کمتر از ۱ مگابایت باشد.</translation>
 <translation id="6582080224869403177">برای ارتقای امنیت‌تان، <ph name="DEVICE_TYPE" /> را بازنشانی کنید.</translation>
 <translation id="6582274660680936615">به عنوان «مهمان» مرور می‌کنید</translation>
@@ -9586,6 +9589,7 @@
 <translation id="7647403192093989392">فعالیت اخیری وجود ندارد</translation>
 <translation id="7648023614017258011">‏Chrome درحال تأیید بسته نصب است</translation>
 <translation id="7648048654005891115">‏شیوه keymap</translation>
+<translation id="7648180062672842917">این فایل حاوی داده‌های حساس یا خطرناکی است. سازمانتان به شما اجازه می‌دهد آن را در فضای ذخیره‌سازی ابری ذخیره کنید یا از آن صرف‌نظر کنید</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7649954700951153978">‏در iOS یادآوری کن</translation>
 <translation id="7650141368285545431">استفاده از گذرکلید از دستگاهی دیگر</translation>
@@ -11161,6 +11165,7 @@
 <translation id="8703766890819308134">نمایش میان‌برهای جستجو</translation>
 <translation id="8704662571571150811">دامنه‌ها</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>
+<translation id="870536819717176711">‏وقتی‌که انتخاب می‌کنید زبانه فعلی را با Gemini هم‌رسانی کنید، محتوای کامل زبانه، رسانه، و نشانی وب آن برای Google ارسال می‌شوند.</translation>
 <translation id="8705580154597116082">‏Wi-Fi ازطریق تلفن دردسترس است</translation>
 <translation id="8705629851992224300">کلید امنیتی‌تان خوانده نشد</translation>
 <translation id="8706111173576263877">رمزینه پاسخ‌سریع اسکن شده است.</translation>

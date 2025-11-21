@@ -2363,13 +2363,6 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 
       Os usuários não podem mudar as pastas em que os favoritos estão, embora seja possível ocultá-las da barra de favoritos. O nome padrão da pasta de favoritos gerenciados é "Favoritos gerenciados", mas ele pode ser modificado ao adicionar um novo subdicionário à política com uma única chave chamada "<ph name="TOPLEVEL_NAME" />" usando o nome da pasta desejada como valor. Os favoritos gerenciados não são sincronizados com a conta do usuário, e as extensões não podem modificá-los.</translation>
 <translation id="2552966063069741410">Fuso horário</translation>
-<translation id="2554010621206996293">Esta política permite controlar a ativação do recurso de conjuntos de sites relacionados.
-
-Esta política substitui a <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Quando a política for deixada sem definição ou for definida como verdadeira, o recurso de conjuntos de sites relacionados será ativado.
-
-Quando ela for definida como falsa, o recurso de conjuntos de sites relacionados será desativado.</translation>
 <translation id="2555244983262829274">Ocultar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="2558154810835597313">Permite o provisionamento de certificado do cliente para um usuário ou perfil gerenciado</translation>
 <translation id="2559274305158103883">Desativar o contrato de chave pós-quântica para o WebRTC</translation>
@@ -11039,43 +11032,6 @@ Se o valor for "false", será possível participar sem estar em uma rede gerenci
 <translation id="8199823751103472868">Se a política for definida, o layout de teclado Inscript hindi vai ser ativado no <ph name="PRODUCT_OS_NAME" />. Se ela for "false" ou não for definida, o layout não estará disponível.</translation>
 <translation id="8202566089100454374">Google Maps (compatível desde a versão 135)</translation>
 <translation id="8202834945144737726">Ativar o fluxo de atestado <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs na tela de login</translation>
-<translation id="8210117014924235250">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjuntos de sites relacionados.
-
-Esta política substitui a <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Cada item na lista do navegador precisa atender aos requisitos de um conjunto de sites relacionados.
-O conjunto de sites relacionados precisa conter um site primário e um ou mais sites membros.
-Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
-Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como o <ph name="PRODUCT_NAME" /> usa conjuntos de sites relacionados.
-
-
-Todos os sites em um conjunto de sites relacionados precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto também precisa ser único,
-ou seja, um site não pode ser listado mais de uma vez em um conjunto de sites relacionados.
-
-Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos de sites relacionados.
-
-Para todos os sites em um conjunto de sites relacionados da lista <ph name="REPLACEMENTS" />, se o site também estiver presente
-em um desses conjuntos na lista do navegador, ele será removido desse conjunto.
-Em seguida, o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
-
-Para todos os sites de um conjunto de sites relacionados na lista <ph name="ADDITIONS" />, se o site também estiver presente
-em um conjunto na lista do navegador, esse conjunto será atualizado para que o
-novo conjunto de sites relacionados possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
-o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
-
-A lista de conjuntos de sites relacionados do navegador exige que nenhum dos sites na lista esteja em
-mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
-e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
-<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
-
-Caracteres curinga (*) não podem ser usados como valor da política, nem dentro de qualquer conjunto de sites relacionados nessas listas.
-
-Todos os conjuntos fornecidos pela política precisam ser conjuntos de sites relacionados válidos. Se não forem,
-um erro será gerado.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Quando esta política é definida, ela especifica a ação que o <ph name="PRODUCT_OS_NAME" /> executa quando o usuário permanece inativo pelo período definido pelo tempo de inatividade, que pode ser configurado separadamente.

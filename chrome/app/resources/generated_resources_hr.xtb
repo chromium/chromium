@@ -1062,6 +1062,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1706586824377653884">Dodao vaš administrator</translation>
 <translation id="170658918174941828">Vaša verzija Chromea, verzija operativnog sustava, postavke Casta, statistički podaci o izvedbi zrcaljenja i dijagnostički zapisnici komunikacijskih kanala poslat će se zajedno s informacijama koje ste prethodno odabrali. Te povratne informacije upotrebljavaju se za dijagnosticiranje problema i poboljšanje značajke. Svi osobni podaci koje pošaljete, bilo eksplicitno ili slučajno, bit će zaštićeni u skladu s našim pravilima o privatnosti. Slanjem tih povratnih informacija slažete se da Google može upotrebljavati te povratne informacije za poboljšanje svojih proizvoda ili usluga.</translation>
 <translation id="17081583771848899">pokretač + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Spremi u pohranu u oblaku</translation>
 <translation id="1708291623166985230">Žarišna točka je onemogućena</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708563369218024896">Nije odabran nijedan alat za prikupljanje podataka. Odaberite barem jedan alat za prikupljanje podataka.</translation>
@@ -6663,6 +6664,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5585912436068747822">Formatiranje nije uspjelo</translation>
 <translation id="5587765208077583036">Da biste dijelili mapu, kliknite je desnom tipkom u aplikaciji Datoteke, a zatim odaberite Dijeli s VM-om <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtriranje web-lokacija na stranici</translation>
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
 <translation id="5590418976913374224">Reprodukcija zvuka pri pokretanju uređaja</translation>
 <translation id="5591465468509111843">Vrlo široko</translation>
@@ -8050,6 +8052,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – dijeli se sadržaj radne površine</translation>
 <translation id="6580060371127789208">Dovršeno <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Brzina traženja</translation>
+<translation id="6580676117087365538">Da biste to proširenje dobili na svim svojim računalima, potvrdite svoj identitet</translation>
 <translation id="6581356304040102696">Uvoz zaporki nije uspio. Veličina datoteke treba biti manja od 1 MB.</translation>
 <translation id="6582080224869403177">Vratite uređaj <ph name="DEVICE_TYPE" /> na zadano radi sigurnosne nadogradnje.</translation>
 <translation id="6582274660680936615">Pregledavate kao gost</translation>
@@ -9575,6 +9578,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7647403192093989392">Nema nedavne aktivnosti</translation>
 <translation id="7648023614017258011">Chrome provjerava instalacijski paket</translation>
 <translation id="7648048654005891115">Stil Keymap</translation>
+<translation id="7648180062672842917">Ova datoteka ima osjetljive ili opasne podatke. Vaša će vam organizacija omogućiti da ih spremite u pohranu u oblaku ili odbacite</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7649954700951153978">Podsjeti me na iOS-u</translation>
 <translation id="7650141368285545431">Upotrijebi pristupni ključ s drugog uređaja</translation>
@@ -11150,6 +11154,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8703766890819308134">Prikaži prečace za pretraživanje</translation>
 <translation id="8704662571571150811">Domene</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
+<translation id="870536819717176711">Kad odlučite podijeliti trenutačnu karticu s Geminijem, sav sadržaj, medijski sadržaj i URL kartice šalju se Googleu.</translation>
 <translation id="8705580154597116082">Wi-Fi je dostupan putem telefona</translation>
 <translation id="8705629851992224300">Sigurnosni ključ nije moguće pročitati</translation>
 <translation id="8706111173576263877">QR kôd je skeniran.</translation>

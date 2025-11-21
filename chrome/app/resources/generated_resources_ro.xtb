@@ -1061,6 +1061,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1706586824377653884">Adăugat de administrator</translation>
 <translation id="170658918174941828">Versiunea Chrome, versiunea sistemului de operare, setările Cast, statisticile privind performanța oglindirii și jurnalele de diagnosticare a canalelor de comunicare vor fi trimise împreună cu toate celelalte informații pe care alegi să le incluzi mai sus. Acest feedback este folosit pentru a diagnostica problemele și pentru a îmbunătăți funcția. Orice informații cu caracter personal pe care le trimiți, deliberat sau accidental, vor fi protejate conform politicilor de confidențialitate Google. Dacă trimiți acest feedback, ești de acord cu faptul că Google îl poate folosi pentru a-și îmbunătăți produsele sau serviciile.</translation>
 <translation id="17081583771848899">lansator + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Salvează în spațiul de stocare în cloud</translation>
 <translation id="1708291623166985230">S-a dezactivat hotspotul</translation>
 <translation id="1708338024780164500">(Inactivă)</translation>
 <translation id="1708563369218024896">Nu s-a selectat niciun colector de date. Selectează cel puțin unul.</translation>
@@ -6661,6 +6662,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5585912436068747822">Formatarea nu a reușit</translation>
 <translation id="5587765208077583036">Pentru a trimite, dă clic dreapta pe un dosar din aplicația Fișiere, apoi selectează Trimite cu <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrează site-urile din pagină</translation>
 <translation id="558918721941304263">Se încarcă aplicațiile...</translation>
 <translation id="5590418976913374224">Redă sunet la pornirea dispozitivului</translation>
 <translation id="5591465468509111843">Foarte largă</translation>
@@ -8051,6 +8053,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Conținut de pe desktop la care s-a permis accesul</translation>
 <translation id="6580060371127789208">S-a finalizat <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Viteza de scanare</translation>
+<translation id="6580676117087365538">Pentru a accesa această extensie pe toate computerele, confirmă-ți identitatea</translation>
 <translation id="6581356304040102696">Nu se pot importa parolele. Dimensiunea fișierului trebuie să fie de maximum 1 MB.</translation>
 <translation id="6582080224869403177">Resetează <ph name="DEVICE_TYPE" /> pentru a îmbunătăți securitatea.</translation>
 <translation id="6582274660680936615">Navighezi ca invitat</translation>
@@ -9574,6 +9577,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7647403192093989392">Nu există activități recente.</translation>
 <translation id="7648023614017258011">Chrome verifică pachetul de instalare</translation>
 <translation id="7648048654005891115">Stil hartă taste</translation>
+<translation id="7648180062672842917">Acest fișier include date sensibile sau periculoase. Organizația ta îți va permite să le salvezi în stocarea în cloud sau să le ștergi</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7649954700951153978">Amintește-mi pe iOS</translation>
 <translation id="7650141368285545431">Folosește o cheie de acces de pe alt dispozitiv</translation>
@@ -11149,6 +11153,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8703766890819308134">Afișează comenzile directe de căutare</translation>
 <translation id="8704662571571150811">Domenii</translation>
 <translation id="8705331520020532516">Număr de serie</translation>
+<translation id="870536819717176711">Când alegi să trimiți fila actuală la Gemini, tot conținutul, elementele media și adresa URL pentru filă se trimit la Google.</translation>
 <translation id="8705580154597116082">Conexiune Wi-Fi disponibilă prin telefon</translation>
 <translation id="8705629851992224300">Cheia de securitate nu a putut fi citită</translation>
 <translation id="8706111173576263877">Codul QR a fost scanat.</translation>

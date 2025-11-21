@@ -2252,13 +2252,6 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 
       Les utilisateurs ne peuvent pas modifier les dossiers dans lesquels les favoris sont placés (bien qu'ils puissent les masquer dans la barre de favoris). Le nom du dossier par défaut est "Favoris gérés", mais vous pouvez le modifier en ajoutant à la règle un sous-dictionnaire contenant la clé unique "<ph name="TOPLEVEL_NAME" />" avec le nom de dossier souhaité comme valeur. Les favoris gérés ne sont pas synchronisés avec le compte utilisateur, et les extensions ne peuvent pas les modifier.</translation>
 <translation id="2552966063069741410">Fuseau horaire</translation>
-<translation id="2554010621206996293">Cette règle permet de contrôler l'activation de la fonctionnalité d'ensembles de sites Web associés.
-
-Elle remplace la règle <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Si cette règle est définie sur "True" ou n'est pas configurée, la fonctionnalité d'ensembles de sites Web associés est activée.
-
-Si cette règle est définie sur "False", la fonctionnalité d'ensembles de sites Web associés est désactivée.</translation>
 <translation id="2555244983262829274">Masquer le bouton Accueil dans la barre d'outils</translation>
 <translation id="2558154810835597313">Activer le provisionnement des certificats client pour un utilisateur ou profil géré</translation>
 <translation id="2559274305158103883">Désactiver l'accord de clé post-quantique pour WebRTC</translation>
@@ -10597,34 +10590,6 @@ Si la règle est définie sur "False", les utilisateurs peuvent rejoindre une se
 <translation id="8199823751103472868">Cette règle permet d'activer la disposition de clavier Hindi Inscript sur <ph name="PRODUCT_OS_NAME" />. Si elle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible.</translation>
 <translation id="8202566089100454374">Google Maps (compatible depuis la version 135)</translation>
 <translation id="8202834945144737726">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion</translation>
-<translation id="8210117014924235250">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles de sites Web associés.
-
-Cette règle remplace la règle <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Chaque ensemble figurant dans la liste des ensembles de sites Web associés du navigateur doit respecter les exigences liées à ces ensembles.
-Un ensemble de sites Web associés doit contenir un site principal et au moins un site membre.
-Un ensemble peut également contenir une liste de sites de services dont il est propriétaire, ainsi qu'un mappage entre un site et toutes ses variantes ccTLD.
-Pour savoir plus en détail comment <ph name="PRODUCT_NAME" /> utilise les ensembles de sites Web associés, rendez-vous sur https://github.com/WICG/first-party-sets.
-
-
-Tous les sites d'un ensemble de sites Web associés doivent être des domaines enregistrables diffusés sur HTTPS. Chaque site d'un ensemble de sites Web associés doit aussi être unique (il ne peut pas figurer plusieurs fois dans un ensemble de sites Web associés).
-
-Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles de sites Web associés.
-
-Pour tous les sites appartenant à un ensemble de sites Web associés de la liste <ph name="REPLACEMENTS" /> : si un site figure aussi dans un ensemble de sites Web associés de la liste du navigateur, il sera supprimé de l'ensemble de sites Web associés du navigateur.
-L'ensemble de sites Web associés de la règle sera alors ajouté à la liste des ensembles de sites Web associés du navigateur.
-
-Pour tous les sites appartenant à un ensemble de sites Web associés de la liste <ph name="ADDITIONS" /> : si un site figure aussi dans un ensemble de sites Web associés de la liste du navigateur, l'ensemble de sites Web associés du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble de sites Web associés à la liste du navigateur. Une fois la liste du navigateur mise à jour, l'ensemble de sites Web associés de la règle est ajouté à la liste des ensembles de sites Web associés du navigateur.
-
-La liste des ensembles de sites Web associés du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition s'applique aussi aux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />. De même, un site ne peut pas figurer dans les deux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />.
-
-Le caractère générique (*) ne peut pas être utilisé comme valeur de règle, ni dans aucun ensemble de sites Web associés figurant dans ces listes.
-
-Tous les ensembles que cette règle fournit doivent être des ensembles de sites Web associés valides sous peine de générer une erreur.
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213770777756919897">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
           Si cette règle est configurée, <ph name="PRODUCT_OS_NAME" /> met en œuvre l'action à effectuer en cas d'inactivité de l'utilisateur (laquelle peut être définie séparément) au terme du délai d'inactivité de l'utilisateur.

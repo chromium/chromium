@@ -2283,13 +2283,6 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_P
 
       사용자는 북마크가 있는 폴더를 변경할 수 없습니다(단, 북마크바에서 숨길 수는 있음). 관리 북마크의 기본 폴더 이름은 '관리 북마크'이지만 '<ph name="TOPLEVEL_NAME" />'이라는 단일 키와 원하는 폴더 이름으로 값을 설정하여 정책에 새 하위 사전을 추가하면 변경할 수 있습니다. 관리 북마크는 사용자 계정과 동기화되지 않으며 확장 프로그램으로 수정할 수 없습니다.</translation>
 <translation id="2552966063069741410">시간대</translation>
-<translation id="2554010621206996293">이 정책을 통해 관련 웹사이트 세트 기능의 사용 설정 여부를 관리할 수 있습니다.
-
-이 정책은 <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" /> 정책보다 우선 적용됩니다.
-
-정책을 설정하지 않거나 True로 설정하면 관련 웹사이트 세트 기능이 사용 설정됩니다.
-
-False로 설정되면 관련 웹사이트 세트 기능이 사용 중지됩니다.</translation>
 <translation id="2555244983262829274">툴바에서 홈 버튼 숨기기</translation>
 <translation id="2558154810835597313">관리 사용자 또는 프로필의 클라이언트 인증서 프로비저닝 사용 설정</translation>
 <translation id="2559274305158103883">WebRTC의 포스트 퀀텀 키 계약 사용 중지</translation>
@@ -10773,34 +10766,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8199823751103472868">정책을 설정하면 <ph name="PRODUCT_OS_NAME" />에서 힌디어 인스크립트 레이아웃이 사용 설정됩니다. False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 없습니다.</translation>
 <translation id="8202566089100454374">Google 지도(버전 135부터 지원됨)</translation>
 <translation id="8202834945144737726">로그인 화면의 URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 증명 흐름 사용 설정</translation>
-<translation id="8210117014924235250">이 정책을 통해 브라우저에서 관련 웹사이트 세트 기능에 사용하는 세트 목록을 재정의할 수 있습니다.
-
-이 정책은 <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" /> 정책보다 우선 적용됩니다.
-
-브라우저의 관련 웹사이트 세트 목록에 포함된 각 세트는 관련 웹사이트 세트 요구사항을 충족해야 합니다.
-관련 웹사이트 세트에는 하나의 기본 사이트 및 하나 이상의 구성원 사이트가 포함되어야 합니다.
-세트에는 해당 세트가 소유 중인 서비스 사이트 목록과 사이트의 모든 ccTLD 변형에 대한 매핑 정보도 포함될 수 있습니다.
-<ph name="PRODUCT_NAME" />에서 사용하는 관련 웹사이트 세트에 관한 자세한 내용은 https://github.com/WICG/first-party-sets를 참고하세요.
-
-
-관련 웹사이트 세트의 모든 사이트는 HTTPS를 통해 제공되는 등록 가능한 도메인이어야 합니다. 또한 관련 웹사이트 세트의 각 사이트는 고유해야 합니다. 즉, 한 사이트는 관련 웹사이트 세트에 두 번 이상 지정될 수 없습니다.
-
-정책에 제공된 사전이 비어 있는 경우 브라우저에서는 공개된 관련 웹사이트 세트 목록을 사용합니다.
-
-<ph name="REPLACEMENTS" /> 목록의 관련 웹사이트 세트에 포함된 모든 사이트 중 브라우저 목록의 관련 웹사이트 세트에도 포함된 사이트가 있는 경우, 브라우저의 관련 웹사이트 세트에서 삭제됩니다.
-삭제되고 나면 정책의 관련 웹사이트 세트가 브라우저의 관련 웹사이트 세트 목록에 추가됩니다.
-
-<ph name="ADDITIONS" /> 목록의 관련 웹사이트 세트에 포함된 모든 사이트 중 브라우저 목록의 관련 웹사이트 세트에도 포함된 사이트가 있는 경우, 새로운 관련 웹사이트 세트가 브라우저 목록에 추가될 수 있도록 브라우저의 관련 웹사이트 세트가 업데이트됩니다. 브라우저 목록이 업데이트되고 나면 정책의 관련 웹사이트 세트가 브라우저의 관련 웹사이트 세트 목록에 추가됩니다.
-
-브라우저의 관련 웹사이트 세트 목록에 포함된 모든 사이트 중 어떠한 사이트도 2개 이상의 세트에 포함되어서는 안 됩니다. 이는 <ph name="REPLACEMENTS" /> 목록 및 <ph name="ADDITIONS" /> 목록에도 적용되는 요구사항입니다. 마찬가지로 하나의 사이트가 <ph name="REPLACEMENTS" /> 목록과 <ph name="ADDITIONS" /> 목록 모두에 포함될 수 없습니다.
-
-와일드 카드(*)는 정책 값으로 사용할 수 없으며 이러한 목록의 관련 웹사이트 세트 내에서도 지원되지 않습니다.
-
-정책에서 제공하는 모든 세트는 유효한 관련 웹사이트 세트여야 하며, 그렇지 않은 경우 관련 오류 메시지가 표시됩니다.
-
-<ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
-
-<ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="8213770777756919897">이 정책은 지원이 중단되었으며 <ph name="PRODUCT_OS_NAME" /> 버전 85에서 삭제될 예정입니다. 대신 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 정책을 사용하세요.
 
           이 정책이 설정되어 있으면 사용자가 유휴 지연 시간으로 지정된 시간 동안 유휴 상태에 있을 때 <ph name="PRODUCT_OS_NAME" />에서 실행할 작업을 지정하며, 유휴 지연 시간은 별도로 설정할 수 있습니다.

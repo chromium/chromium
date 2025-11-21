@@ -1069,6 +1069,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
     godkänner du att Google använder den för att förbättra
     Googles produkter och tjänster.</translation>
 <translation id="17081583771848899">appstartaren + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Spara i molnlagring</translation>
 <translation id="1708291623166985230">Surfzon har inaktiverats</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708563369218024896">Ingen datakälla har valts. Välj minst en datakälla.</translation>
@@ -6676,6 +6677,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5585912436068747822">Formateringen misslyckades</translation>
 <translation id="5587765208077583036">Om du vill dela en mapp klickar du på den i Files-appen och väljer Dela med <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrera webbplatser på sidan</translation>
 <translation id="558918721941304263">Läser in appar …</translation>
 <translation id="5590418976913374224">Spela upp ljud vid start av enheten</translation>
 <translation id="5591465468509111843">Mycket brett</translation>
@@ -8066,6 +8068,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – skrivbordet delas</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % slutförd</translation>
 <translation id="6580203076670148210">Genomsökningshastighet</translation>
+<translation id="6580676117087365538">Verifiera din identitet om du vill ha det här tillägget på alla dina datorer</translation>
 <translation id="6581356304040102696">Det gick inte att importera lösenorden. Filstorleken får högst vara 1 MB.</translation>
 <translation id="6582080224869403177">Du måste återställa <ph name="DEVICE_TYPE" /> för att uppgradera säkerheten.</translation>
 <translation id="6582274660680936615">Du surfar som gäst</translation>
@@ -9587,6 +9590,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7647403192093989392">Inga aktiviteter nyligen</translation>
 <translation id="7648023614017258011">Chrome verifierar installationspaketet</translation>
 <translation id="7648048654005891115">Stil på tangentbordstabell</translation>
+<translation id="7648180062672842917">Filen har känslig eller skadlig data. Organisationen låter dig spara den i molnlagringen eller ignorera den</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7649954700951153978">Påminn mig på iOS</translation>
 <translation id="7650141368285545431">Använd nyckeln från en annan enhet</translation>
@@ -11162,6 +11166,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8703766890819308134">Visa genvägar för sökning</translation>
 <translation id="8704662571571150811">Domäner</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="870536819717176711">När du väljer att dela den aktuella fliken med Gemini skickas flikens fullständiga innehåll, media och webbadress till Google.</translation>
 <translation id="8705580154597116082">wifi är tillgängligt via mobilen</translation>
 <translation id="8705629851992224300">Det gick inte att läsa från säkerhetsnyckeln</translation>
 <translation id="8706111173576263877">QR-koden har skannats.</translation>

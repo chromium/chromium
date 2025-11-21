@@ -150,6 +150,7 @@
 <translation id="2712141162840347885">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass dein Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalte diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="2753623023919742414">Zum Suchen klicken</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen}=1{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="2765403129283291972">Chrome benötigt für diese Website die Berechtigung, auf dein Mikrofon zuzugreifen</translation>
@@ -504,6 +505,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6676384891291319759">Internetzugriff</translation>
 <translation id="6679975945624592337">Google Chrome im Hintergrund ausführen</translation>
 <translation id="6696915334902295848">Chrome benötigt die Mikrofonberechtigung für diese Website</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="6712881677154121168">Fehler beim Herunterladen: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome noch schneller machen</translation>
 <translation id="6734827584173583205">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere Berechtigungen entfernt.</translation>

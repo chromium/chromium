@@ -6543,7 +6543,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5499634624419508916">Remplacer le groupe d'onglets existant</translation>
 <translation id="5500163593833085874">Lorsque le bouton gauche de la souris est sélectionné, utilisez « + » pour double-cliquer</translation>
-<translation id="5500168250243071806">L'<ph name="BEGIN_LINK_SEARCH" />historique de recherche<ph name="END_LINK_SEARCH" /> et d'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activités<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="5500168250243071806">L‘<ph name="BEGIN_LINK_SEARCH" />historique de recherche<ph name="END_LINK_SEARCH" /> et d‘<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activités<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="5501322521654567960">Panneau latéral aligné à gauche</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}one{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}other{Échec de réception de <ph name="ATTACHMENTS" /> de l'appareil <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5501979953419946416">Écrire quelque chose de nouveau</translation>
@@ -10907,7 +10907,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536810348276651776">Cette option vous déconnectera de la plupart des sites. Vous resterez connecté à votre compte Google, donc vos paramètres Family Link pour Chrome s'appliqueront toujours.</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>
-<translation id="8537854269962256103">Votre conversation Gemini se trouve dans une fenêtre de clavardage. Cliquez n'importe où sur ce panneau latéral pour la déplacer ici.</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8539766201049804895">Mettre à niveau</translation>
 <translation id="8540136935098276800">Entrez une URL au format correct</translation>

@@ -3142,6 +3142,7 @@
 <translation id="6124058285696691147">ਨੱਥੀ ਫ਼ਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6124432979022149706">Chrome ਐਂਟਰਪ੍ਰਾਈਜ਼ ਕਨੈਕਟਰ</translation>
 <translation id="6124996493718543728">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਪ੍ਰਗਤੀ ਸਕ੍ਰੀਨ ਪੂਰੀ ਲੰਬਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />ਹੋਰ ਵੇਰਵੇ<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">ਚੀਨੀ #2 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="6131824478727057281">ਟਿਕਾਣਾ</translation>
 <translation id="6133320744616005677">ਆਗਿਆ ਦੇਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -4235,6 +4236,7 @@
 <translation id="7886897188117641322">ਚੁਣੋ ਕਿ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਲਈ ਵਿਸ਼ਿਆਂ ਦੀਆਂ ਕਿਹੜੀਆਂ ਵਿਸਤ੍ਰਿਤ ਸ਼੍ਰੇਣੀਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="7887683347370398519">ਆਪਣੇ CVC ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7887885240995164102">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="7888367499748383555">ਕੋਈ ਫ਼ੀਸ ਨਹੀਂ, ਘੱਟੋ-ਘੱਟ 0% APR (ਯੋਗਤਾ ਦੇ ਅਧੀਨ)</translation>
 <translation id="7888575728750733395">ਰੈਂਡਰਿੰਗ ਇੰਟੈਂਟ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="7890748547282909375">ਸਕ੍ਰੀਨਸ਼ਾਟ ਰੱਖਿਅਤ ਕਰਨ ਲਈ Microsoft OneDrive ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7890755620327858054">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਕੋਈ ਹੋਰ ਭੁਗਤਾਨ ਵਿਧੀ ਚੁਣੋ।</translation>
@@ -4398,6 +4400,7 @@
 <translation id="8163866351304776260">ਖੱਬੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="8164078261547504572">ਕੀ ਤੁਸੀਂ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਈਮੇਲਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8169175551046720804">ਕੁੰਜੀਆਂ "<ph name="DATA_CONTROLS_KEYS" />" ਨੂੰ ਉਸੇ ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="8174047975335711832">ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ</translation>
 <translation id="8175053171643471349">ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8175796834047840627">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ ਕਰਕੇ Chrome ਤੁਹਾਡੇ ਕਾਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸ ਵਤੀਰੇ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8176440868214972690">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੁਝ ਜਾਣਕਾਰੀ ਭੇਜੀ ਹੈ, ਜਿਵੇਂ ਸੈਟਿੰਗਾਂ ਜਾਂ ਨੀਤੀਆਂ।</translation>
@@ -4456,7 +4459,7 @@
 <translation id="8262952874573525464">ਹੇਠਾਂ ਕਿਨਾਰੇ ਤੋਂ ਸਿਲਾਈ</translation>
 <translation id="8263001937536038617">ਫ਼ੋਟੋ ਅਤੇ ਵੀਡੀਓ ਸੇਵਾਵਾਂ</translation>
 <translation id="8265992338205884890">ਦਿਖਣਯੋਗ ਡਾਟਾ</translation>
-<translation id="8267698848189296333"><ph name="USERNAME" /> ਤੌਰ 'ਤੇ ਸਾਈਨ ਇਨ ਕਰੋ</translation>
+<translation id="8267698848189296333"><ph name="USERNAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">ਵੱਖਰੇ ਦਸਤਾਵੇਜ਼/ਇਕੱਤਰ ਕਾਪੀਆਂ</translation>
 <translation id="8269703227894255363">{0,plural, =1{ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>

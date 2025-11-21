@@ -1070,6 +1070,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
     accepterer du, at Google kan bruge den feedback, som du indsender, til at
     forbedre Google-produkter og -tjenester.</translation>
 <translation id="17081583771848899">applistetast + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Gem i lagerplads i skyen</translation>
 <translation id="1708291623166985230">Hotspot er deaktiveret</translation>
 <translation id="1708338024780164500">(inaktiv)</translation>
 <translation id="1708563369218024896">Der er ikke valgt nogen dataindsamler. Vælg mindst én dataindsamler.</translation>
@@ -1775,6 +1776,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2192505247865591433">Fra:</translation>
 <translation id="219283042927675668">Faner i gruppe</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> administrerer siden Ny fane, åbnes på en ny fane</translation>
+<translation id="2192982266585216032">Betalinger</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2195331105963583686">Du kan stadig bruge denne <ph name="DEVICE_TYPE" /> efter denne dato, men den vil ikke længere modtage automatiske software- og sikkerhedsopdateringer.</translation>
 <translation id="2195729137168608510">Mail-beskyttelse</translation>
@@ -3005,6 +3007,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3022072018423103125">Højland</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> fjernes fra denne Chromebook og gemmes ikke på <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Det er ikke forstået.</translation>
+<translation id="3023204744987201088">Kontaktoplysninger</translation>
 <translation id="3023464535986383522">Tekstoplæsning</translation>
 <translation id="3024374909719388945">Brug 24-timers ur</translation>
 <translation id="3027296729579831126">Aktivér Deling tæt på</translation>
@@ -7610,7 +7613,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6248988683584659830">Søg i indstillinger</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6250186368828697007">Oplysningerne er skjulte, når du deler din skærm</translation>
-<translation id="6250887692313997958">Vælg en fane, der skal føjes til delt visning</translation>
+<translation id="6250887692313997958">Vælg en fane, der skal føjes til opdelt visning</translation>
 <translation id="6251870443722440887">GDI-navne</translation>
 <translation id="6251924700383757765">Privatlivspolitik</translation>
 <translation id="625369703868467034">Netværkets tilstand</translation>
@@ -7946,6 +7949,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6495261233408033662">Luk åbne faner</translation>
 <translation id="6495266441917713704">Der kan ikke overføres via Wi-Fi</translation>
 <translation id="6495453178162183932">Temaet er opdateret til standardversionen af Chrome</translation>
+<translation id="6496641546298525838">Din enhed</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
@@ -8069,6 +8073,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – skrivebordsindholdet deles</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % fuldført</translation>
 <translation id="6580203076670148210">Scanningshastighed</translation>
+<translation id="6580676117087365538">Verificer din identitet for at få denne udvidelse på alle dine computere</translation>
 <translation id="6581356304040102696">Adgangskoderne kan ikke importeres. Filstørrelsen må højst være på 1 MB.</translation>
 <translation id="6582080224869403177">Nulstil din <ph name="DEVICE_TYPE" /> for at opgradere din beskyttelse.</translation>
 <translation id="6582274660680936615">Du er logget ind som gæst</translation>
@@ -9592,6 +9597,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7647403192093989392">Ingen nye aktiviteter</translation>
 <translation id="7648023614017258011">Chrome verificerer installationspakken</translation>
 <translation id="7648048654005891115">Tastaturoversigt</translation>
+<translation id="7648180062672842917">Denne fil har følsomt eller farligt indhold. Din organisation giver dig mulighed for at gemme den i lagerplads i skyen eller kassere den</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7649954700951153978">Påmind mig i iOS</translation>
 <translation id="7650141368285545431">Brug en adgangsnøgle fra en anden enhed</translation>
@@ -9769,6 +9775,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7760176388948986635">Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge denne enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra denne enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere brugere med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
 <translation id="7762024824096060040">Denne konto kan ikke bruges</translation>
+<translation id="776324966908034528">Browserens proxyindstillinger styres af flere kilder</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Åbn gruppen i et nyt vindue</translation>
@@ -11022,6 +11029,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8616441548384109662">Føj <ph name="CONTACT_NAME" /> til dine kontakter</translation>
 <translation id="8617601976406256334">Vil du slette websitedata og tilladelser for <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Id for sikker forbindelse: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">Kontaktoplysninger</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Har ikke tilladelse til at installere webapps på din enhed</translation>
 <translation id="8619803522055190423">Dropskygge</translation>
@@ -11167,6 +11175,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8703766890819308134">Vis genveje til søgning</translation>
 <translation id="8704662571571150811">Domæner</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="870536819717176711">Når du vælger at dele den aktuelle fane med Gemini, sendes hele fanens indhold, dens medier og dens webadresse til Google.</translation>
 <translation id="8705580154597116082">Wi-Fi er tilgængelig via telefon</translation>
 <translation id="8705629851992224300">Din sikkerhedsnøgle kunne ikke læses</translation>
 <translation id="8706111173576263877">QR-koden blev scannet.</translation>
@@ -11624,6 +11633,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="90033698482696970">Vil du automatisk søge efter tilgængelige eSIM-kortprofiler?</translation>
 <translation id="9003647077635673607">Tillad på alle websites</translation>
 <translation id="9005774573776346118">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
+<translation id="9006511997799670136">Din organisation</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> anmoder om at åbne dette link i en app.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9008201858626224558">Knappen Tilbage på infosiden for <ph name="SUBPAGE_TITLE" /></translation>

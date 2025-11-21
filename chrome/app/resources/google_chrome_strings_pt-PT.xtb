@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{O Chrome recomenda pausar o separador que está a abrandar o navegador}other{O Chrome recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
 <translation id="1832046143430087831">Acelera os sites com o motor V8 do Chrome, mas torna o Chrome ligeiramente menos resistente a ataques. Esta definição está desativada.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
+<translation id="1843347690926158494">Pesquisar este separador com o Google Lens</translation>
 <translation id="1849248141818021764">Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, tem de <ph name="BEGIN_LINK" />eliminar os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">O Chrome necessita de autorização de acesso à câmara para este site.</translation>
 <translation id="1873233029667955273">O Google Chrome não é o seu navegador predefinido.</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Traduzir do</translation>
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
 <translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
+<translation id="2856481144859256719">Mostrar sempre o atalho do Modo IA na Pesquisa Google</translation>
 <translation id="2857540653560290388">A iniciar o Chrome…</translation>
 <translation id="286025080868315611">Saiba por que motivo o Chrome bloqueia algumas transferências</translation>
 <translation id="2861074815332034794">A atualizar o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>

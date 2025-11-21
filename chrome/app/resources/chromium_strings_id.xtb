@@ -177,6 +177,7 @@
 <translation id="2977506796191543575">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="2981563588585023386">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chromium</translation>
 <translation id="3003694935412297923">Semua tugas</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini (1 item) akan dihapus.}other{Chromium perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini ({count} item) akan dihapus.}}</translation>
 <translation id="3013473503895162900">Buka <ph name="URL" /> di tab baru di Chromium.</translation>
 <translation id="3032706164202344641">Chromium tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambahkan Chromium...</translation>
@@ -493,6 +494,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6729124504294600478">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chromium dalam Aktivitas Web &amp; Aplikasi serta layanan Google tertaut</translation>
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6751374565094704799">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan. Setelan ini aktif.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Beberapa data Chromium Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini (1 item) akan dihapus.}other{Beberapa data Chromium Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini ({count} item) akan dihapus.}}</translation>
 <translation id="67706546131546258">Chromium merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="6779406956731413166">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>

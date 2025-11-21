@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作单位</translation>
+<translation id="1122068467107743258">工作地点</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -1055,6 +1055,7 @@
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
 <translation id="170658918174941828">除了您选择包含的上述所有信息之外，还将提交您的 Chrome 版本、操作系统版本、Cast 设置、镜像性能统计信息以及通信渠道诊断日志。该反馈用于诊断问题并帮助改进此功能。您明确提交或无意中提交的任何个人信息都将按照我们的隐私权政策受到保护。提交该反馈即表示您授权 Google 使用您提供的反馈来改进任何 Google 产品或服务。</translation>
 <translation id="17081583771848899">启动器键 + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">保存到云端存储空间</translation>
 <translation id="1708291623166985230">已停用热点</translation>
 <translation id="1708338024780164500">（无效）</translation>
 <translation id="1708563369218024896">未选择任何数据收集器。请至少选择一个数据收集器。</translation>
@@ -6449,7 +6450,7 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">添加到您的搜索内容中</translation>
+<translation id="5457082343331641453">添加更多搜索条件</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="5457795687441958389">保持未登录状态</translation>
@@ -6650,6 +6651,7 @@
 <translation id="5585912436068747822">格式化失败</translation>
 <translation id="5587765208077583036">若要共享，请在“文件”应用中右键点击相应文件夹，然后选择“与 <ph name="SPECIFIC_NAME" /> 共享”。</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">过滤页面上的网站</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
 <translation id="5590418976913374224">设备启动时播放声音</translation>
 <translation id="5591465468509111843">非常宽</translation>
@@ -8037,6 +8039,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面内容</translation>
 <translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">扫描速度</translation>
+<translation id="6580676117087365538">若要在您的所有电脑上使用此扩展程序，请验证您的身份</translation>
 <translation id="6581356304040102696">无法导入密码，文件大小应小于 1 MB。</translation>
 <translation id="6582080224869403177">请重置您的 <ph name="DEVICE_TYPE" />，以进行安全性升级。</translation>
 <translation id="6582274660680936615">您正在以访客身份浏览</translation>
@@ -9558,6 +9561,7 @@
 <translation id="7647403192093989392">近期无活动</translation>
 <translation id="7648023614017258011">Chrome 正在验证安装包</translation>
 <translation id="7648048654005891115">键盘映射样式</translation>
+<translation id="7648180062672842917">此文件包含敏感数据或危险内容。您所属的组织将允许您将此文件保存到云端存储空间或舍弃它</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7649954700951153978">在 iOS 设备上提醒我</translation>
 <translation id="7650141368285545431">使用另一部设备中的通行密钥</translation>
@@ -11133,6 +11137,7 @@
 <translation id="8703766890819308134">显示搜索快捷方式</translation>
 <translation id="8704662571571150811">域名</translation>
 <translation id="8705331520020532516">序列号</translation>
+<translation id="870536819717176711">当您选择与 Gemini 分享当前标签页时，系统会将该标签页的完整内容、媒体和网址发送给 Google。</translation>
 <translation id="8705580154597116082">可通过手机使用 Wi-Fi</translation>
 <translation id="8705629851992224300">无法读取您的安全密钥</translation>
 <translation id="8706111173576263877">二维码已扫描完毕。</translation>

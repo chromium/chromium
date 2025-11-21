@@ -2250,13 +2250,6 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 
       Nutzer können nicht ändern, in welchem Ordner die Lesezeichen abgelegt werden. Aber sie haben die Möglichkeit, den Ordner in der Lesezeichenleiste auszublenden. Der Standardname des Ordners für verwaltete Lesezeichen lautet "Verwaltete Lesezeichen", kann jedoch angepasst werden. Dazu muss der Richtlinie ein neues untergeordnetes Wörterbuch mit einem einfachen Schlüssel namens "<ph name="TOPLEVEL_NAME" />" hinzugefügt werden, wobei der gewünschte Ordnername der Wert ist. Verwaltete Lesezeichen werden nicht mit dem Nutzerkonto synchronisiert und können nicht von Erweiterungen geändert werden.</translation>
 <translation id="2552966063069741410">Zeitzone</translation>
-<translation id="2554010621206996293">Mit dieser Richtlinie lässt sich die Aktivierung der Funktion für Gruppen ähnlicher Websites verwalten.
-
-Diese Richtlinie überschreibt die Richtlinie <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
-
-Wenn diese Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites aktiviert.
-
-Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites deaktiviert.</translation>
 <translation id="2555244983262829274">„Home“-Schaltfläche in der Symbolleiste ausblenden</translation>
 <translation id="2558154810835597313">Ermöglicht die Bereitstellung von Clientzertifikaten für verwaltete Nutzer und Profile</translation>
 <translation id="2559274305158103883">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit WebRTC deaktivieren</translation>
@@ -10572,34 +10565,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8199823751103472868">Ist diese Richtlinie festgelegt, wird das InScript-Layout für Hindi unter <ph name="PRODUCT_OS_NAME" /> aktiviert. Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar.</translation>
 <translation id="8202566089100454374">Google Maps (wird seit Version 135 unterstützt)</translation>
 <translation id="8202834945144737726">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="8210117014924235250">Mit dieser Richtlinie wird die Liste der Gruppen überschrieben, die der Browser für die Funktion „Gruppe ähnlicher Websites“ verwendet.
-
-Diese Richtlinie überschreibt die Richtlinie „<ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />“.
-
-Jede Gruppe auf der Liste der Gruppen ähnlicher Websites muss die Anforderungen einer Gruppe ähnlicher Websites erfüllen.
-Eine Gruppe ähnlicher Websites muss eine primäre Website und mindestens eine Mitgliedswebsite enthalten.
-Eine Gruppe kann auch eine Liste mit Dienstwebsites enthalten, deren Inhaber sie ist, sowie eine Zuordnung einer Website zu allen ihren ccTLD-Varianten.
-Unter https://github.com/WICG/first-party-sets findest du weitere Informationen dazu, wie Gruppen ähnlicher Websites in <ph name="PRODUCT_NAME" /> verwendet werden.
-
-
-Bei allen Websites in einer Gruppe ähnlicher Websites muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden. Außerdem müssen alle Websites in einer Gruppe ähnlicher Websites eindeutig sein, dürfen also nicht mehrmals in einer Gruppe ähnlicher Websites aufgeführt sein.
-
-Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet der Browser die öffentliche Liste mit Gruppen ähnlicher Websites.
-
-Wenn eine Website einer Gruppe ähnlicher Websites in der <ph name="REPLACEMENTS" />-Liste auch Teil einer Gruppe ähnlicher Websites in der Liste des Browsers ist, wird sie aus der Gruppe ähnlicher Websites des Browsers entfernt.
-Danach wird die Gruppe ähnlicher Websites der Richtlinie zur Liste der Gruppen ähnlicher Websites des Browsers hinzugefügt.
-
-Wenn eine Website einer Gruppe ähnlicher Websites in der <ph name="ADDITIONS" />-Liste auch Teil einer Gruppe ähnlicher Websites in der Liste des Browsers ist, wird die Gruppe ähnlicher Websites des Browsers aktualisiert, damit die neue Gruppe ähnlicher Websites zur Liste des Browsers hinzugefügt werden kann. Nachdem die Liste des Browsers aktualisiert wurde, wird die Gruppe ähnlicher Websites der Richtlinie zur Liste der Gruppen ähnlicher Websites des Browsers hinzugefügt.
-
-Alle Websites in der Liste der Gruppen ähnlicher Websites des Browsers dürfen nur jeweils Teil einer Gruppe sein. Dies gilt auch für die <ph name="REPLACEMENTS" />-Liste und die <ph name="ADDITIONS" />-Liste. Eine Website darf außerdem nicht gleichzeitig in der <ph name="REPLACEMENTS" />-Liste und der <ph name="ADDITIONS" />-Liste stehen.
-
-Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in Gruppen ähnlicher Websites in diesen Listen verwendet werden.
-
-Alle in dieser Richtlinie angegebenen Gruppen müssen gültige Gruppen ähnlicher Websites sein. Andernfalls wird ein entsprechender Fehler ausgegeben.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="8213770777756919897">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Ist diese Richtlinie konfiguriert, wird damit festgelegt, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer für die Dauer der Inaktivitätsverzögerung inaktiv bleibt. Diese kann gesondert konfiguriert werden.

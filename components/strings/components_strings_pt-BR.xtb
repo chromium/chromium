@@ -662,6 +662,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2085876078937250610">Salvar…</translation>
 <translation id="2088913896151127116">Adicionar texto</translation>
 <translation id="2090451897496479509">Entre em contato com o fornecedor para saber mais</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Som</translation>
 <translation id="2093184051799735948">Pesquise no <ph name="ENGINE_NAME" /> ou digite um URL</translation>
 <translation id="2093982008204312032">O Google Chrome está tentando desativar o Windows Hello para preencher senhas.</translation>
@@ -799,6 +800,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
 <translation id="2283447177162560884">Item "<ph name="PAGE_TITLE" />" excluído</translation>
 <translation id="2283599456633275070">Viagem</translation>
+<translation id="2285709459648658719">Passaportes</translation>
 <translation id="2286383991450886080">34 x 44 pol.</translation>
 <translation id="2288422996159078444">Tudo o que é digitado, as páginas que são acessadas e qualquer outra atividade na Web está sendo monitorado, e o conteúdo dos sites pode mudar sem que você saiba.</translation>
 <translation id="2289385804009217824">Cortar</translation>
@@ -2551,6 +2553,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5137761395480718572">Este app quer ter permissão para instalar credenciais de Wi-Fi. Após a configuração, seu <ph name="DEVICE_TYPE" /> se conecta automaticamente às redes Wi-Fi participantes. Para remover essas credenciais, desinstale o app. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">O cartão virtual não está disponível no momento. Entre em contato com seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="5140155249377545621">Carteiras de habilitação</translation>
 <translation id="5144613843429436866">Você concedeu esta permissão ao site: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
@@ -3142,6 +3145,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6124058285696691147">Baixar o anexo</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">A tela de progresso da opção "Compre agora, pague depois" está aberta no tamanho máximo.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Envelope chinês 2</translation>
 <translation id="6131824478727057281">local</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
@@ -4237,6 +4241,7 @@ Mais detalhes:
 <translation id="7886897188117641322">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo picture-in-picture</translation>
+<translation id="7888367499748383555">Sem taxas, APR de até 0% (sujeito à qualificação)</translation>
 <translation id="7888575728750733395">Intent de renderização da impressão</translation>
 <translation id="7890748547282909375">Faça login no Microsoft OneDrive para salvar a captura de tela</translation>
 <translation id="7890755620327858054">No momento, não é possível pagar depois. Tente novamente ou escolha outra forma de pagamento.</translation>
@@ -4400,6 +4405,7 @@ Mais detalhes:
 <translation id="8163866351304776260">Perfuração quádrupla no lado esquerdo</translation>
 <translation id="8164078261547504572">Quer receber e-mails de reduções no preço?</translation>
 <translation id="8169175551046720804">As chaves "<ph name="DATA_CONTROLS_KEYS" />" não podem ser definidas no mesmo dicionário</translation>
+<translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8175053171643471349">Gerenciar cartões fidelidade</translation>
 <translation id="8175796834047840627">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações.</translation>
 <translation id="8176440868214972690">O administrador do dispositivo enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>

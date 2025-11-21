@@ -662,6 +662,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2085876078937250610">Desa…</translation>
 <translation id="2088913896151127116">Afegeix text</translation>
 <translation id="2090451897496479509">Contacta amb el proveïdor per obtenir més informació</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">So</translation>
 <translation id="2093184051799735948">Fes una cerca a <ph name="ENGINE_NAME" /> o escriu un URL</translation>
 <translation id="2093982008204312032">Google Chrome està provant de desactivar Windows Hello per emplenar contrasenyes.</translation>
@@ -799,6 +800,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2283340219607151381">Desa i emplena les adreces</translation>
 <translation id="2283447177162560884">S'ha suprimit: <ph name="PAGE_TITLE" /></translation>
 <translation id="2283599456633275070">Viatges</translation>
+<translation id="2285709459648658719">Passaports</translation>
 <translation id="2286383991450886080">34 x 44 polzades</translation>
 <translation id="2288422996159078444">Tot el que escrius, les pàgines que veus i qualsevol altra activitat que fas al web se supervisa. És possible que el contingut dels llocs web canviï sense que ho sàpigues.</translation>
 <translation id="2289385804009217824">Retallat</translation>
@@ -2551,6 +2553,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5137761395480718572">Aquesta aplicació demana permís per instal·lar les credencials de la Wi-Fi. En finalitzar la configuració, <ph name="DEVICE_TYPE" /> es connectarà automàticament a les xarxes Wi-Fi disponibles. Per suprimir aquestes credencials, desinstal·la l'aplicació. <ph name="LEARN_MORE" />.</translation>
 <translation id="5138014172396933048">La targeta virtual no està disponible en aquests moments. Contacta amb el teu banc.</translation>
 <translation id="5138227688689900538">Mostra'n menys</translation>
+<translation id="5140155249377545621">Permisos de conduir</translation>
 <translation id="5144613843429436866">Has permès <ph name="PERMISSION" /> per a aquest lloc web</translation>
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>
 <translation id="5146995429444047494">Les notificacions per a <ph name="ORIGIN" /> estan bloquejades</translation>
@@ -3142,6 +3145,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6124058285696691147">Baixa el fitxer adjunt</translation>
 <translation id="6124432979022149706">Connectors de Chrome Enterprise</translation>
 <translation id="6124996493718543728">La pantalla de progrés de Compra ara, paga després està oberta a alçada completa.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Més detalls<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Sobre xinès número 2</translation>
 <translation id="6131824478727057281">ubicació</translation>
 <translation id="6133320744616005677">Continua permetent</translation>
@@ -4237,6 +4241,7 @@ Detalls addicionals:
 <translation id="7886897188117641322">Tria quines categories àmplies de temes es poden utilitzar per personalitzar els anuncis</translation>
 <translation id="7887683347370398519">Comproveu el CVC i torneu-ho a provar</translation>
 <translation id="7887885240995164102">Entra a imatge sobre imatge</translation>
+<translation id="7888367499748383555">Sense comissions, TAE del 0 % (subjecte a idoneïtat)</translation>
 <translation id="7888575728750733395">Intent de renderització d'impressió</translation>
 <translation id="7890748547282909375">Inicia la sessió a Microsoft OneDrive per desar la captura de pantalla</translation>
 <translation id="7890755620327858054">La funció Paga més tard no està disponible en aquest moment. Torna-ho a provar o tria una altra forma de pagament.</translation>
@@ -4400,6 +4405,7 @@ Detalls addicionals:
 <translation id="8163866351304776260">Encunyació quàdruple a l'esquerra</translation>
 <translation id="8164078261547504572">Vols rebre correus electrònics quan baixin els preus?</translation>
 <translation id="8169175551046720804">Les claus "<ph name="DATA_CONTROLS_KEYS" />" no es poden establir en el mateix diccionari</translation>
+<translation id="8174047975335711832">Informació del dispositiu</translation>
 <translation id="8175053171643471349">Gestiona les targetes de fidelització</translation>
 <translation id="8175796834047840627">Chrome t'està oferint desar les targetes al Compte de Google perquè tens la sessió iniciada. Pots canviar aquest comportament a la configuració.</translation>
 <translation id="8176440868214972690">L'administrador d'aquest dispositiu ha enviat informació als llocs web següents, com ara opcions de configuració o polítiques.</translation>

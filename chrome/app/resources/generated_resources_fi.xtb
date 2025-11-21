@@ -1068,6 +1068,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
     voi käyttää antamaasi palautetta minkä tahansa Googlen tuotteen tai
     palvelun parantamiseen.</translation>
 <translation id="17081583771848899">käynnistysohjelma + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Tallenna pilvitallennustilaan</translation>
 <translation id="1708291623166985230">Hotspot ei käytössä</translation>
 <translation id="1708338024780164500">(Ei-aktiivinen)</translation>
 <translation id="1708563369218024896">Datankeräjää ei ole valittu. Valitse vähintään yksi datankeruutyökalu.</translation>
@@ -6672,6 +6673,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5585912436068747822">Alustaminen epäonnistui</translation>
 <translation id="5587765208077583036">Jaa kansio klikkaamalla sitä hiiren kakkospainikkeella Tiedostot-sovelluksessa ja valitsemalla Jaa tällä: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Suodata sivustot sivulla</translation>
 <translation id="558918721941304263">Ladataan sovelluksia…</translation>
 <translation id="5590418976913374224">Toista ääni laitteen käynnistyessä</translation>
 <translation id="5591465468509111843">Erittäin leveä</translation>
@@ -8062,6 +8064,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – työpöydän sisältöä jaetaan</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % asennettu</translation>
 <translation id="6580203076670148210">Skannausnopeus</translation>
+<translation id="6580676117087365538">Vahvista henkilöllisyytesi, niin voit käyttää tätä laajennusta kaikilla tietokoneilla</translation>
 <translation id="6581356304040102696">Salasanojen siirto ei onnistu. Tiedoston koon täytyy olla alle 1 Mt.</translation>
 <translation id="6582080224869403177">Nollaa <ph name="DEVICE_TYPE" /> päivittääksesi tietoturvasi</translation>
 <translation id="6582274660680936615">Selaat vieraana</translation>
@@ -9583,6 +9586,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7647403192093989392">Ei viimeaikaisia tapahtumia</translation>
 <translation id="7648023614017258011">Chrome vahvistaa asennuspakettia</translation>
 <translation id="7648048654005891115">Näppäinkartan tyyli</translation>
+<translation id="7648180062672842917">Tämä tiedosto sisältää arkaluontoista tai vaarallista dataa. Organisaatio antaa sinun tallentaa sen pilvitallennustilaan tai hylätä sen</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7649954700951153978">Muistuta minua iOS:llä</translation>
 <translation id="7650141368285545431">Käytä avainkoodia toiselta laitteelta</translation>
@@ -11158,6 +11162,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8703766890819308134">Näytä haun pikanäppäimet</translation>
 <translation id="8704662571571150811">Verkkotunnukset</translation>
 <translation id="8705331520020532516">Sarjanumero</translation>
+<translation id="870536819717176711">Kun päätät jakaa nykyisen välilehden Geminille, välilehden koko sisältö, media ja URL-osoite lähetetään Googlelle.</translation>
 <translation id="8705580154597116082">Wi-Fi-yhteys on käytettävissä puhelimen kautta</translation>
 <translation id="8705629851992224300">Suojausavaimen lukeminen epäonnistui</translation>
 <translation id="8706111173576263877">QR-koodi on skannattu.</translation>

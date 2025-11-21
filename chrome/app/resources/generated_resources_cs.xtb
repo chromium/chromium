@@ -1062,6 +1062,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1706586824377653884">Přidáno administrátorem</translation>
 <translation id="170658918174941828">Kromě údajů, jejichž zahrnutí vyberete výše, bude odeslána verze Chromu, verze operačního systému, nastavení aplikace Cast, statistiky výkonu zrcadlení a protokoly diagnostiky komunikačního kanálu. Tato zpětná vazba slouží k diagnostice problémů a zlepšení funkce. Veškeré osobní údaje, které odešlete (ať už záměrně, nebo neúmyslně), budou chráněny v souladu s našimi zásadami ochrany soukromí. Odesláním zpětné vazby vyjadřujete souhlas s tím, že společnost Google může vaši zpětnou vazbu použít ke zlepšení libovolné služby nebo aplikace Google.</translation>
 <translation id="17081583771848899">spouštěč + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Uložit do cloudového úložiště</translation>
 <translation id="1708291623166985230">Hotspot je vypnutý</translation>
 <translation id="1708338024780164500">(Neaktivní)</translation>
 <translation id="1708563369218024896">Není vybrán žádný nástroj na shromažďování dat. Vyberte alespoň jeden nástroj na shromažďování dat.</translation>
@@ -6660,6 +6661,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5585912436068747822">Formátování se nezdařilo</translation>
 <translation id="5587765208077583036">Složku můžete sdílet tak, že na ni v aplikaci Soubory kliknete pravým tlačítkem a poté vyberete Sdílet s <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrovat weby na stránce</translation>
 <translation id="558918721941304263">Načítání aplikací...</translation>
 <translation id="5590418976913374224">Přehrát zvuk při spuštění zařízení</translation>
 <translation id="5591465468509111843">Velmi široké</translation>
@@ -8047,6 +8049,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – sdílí obsah plochy</translation>
 <translation id="6580060371127789208">Dokončeno <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Rychlost procházení</translation>
+<translation id="6580676117087365538">Pokud tohle rozšíření chcete mít na všech svých počítačích, ověřte svou totožnost</translation>
 <translation id="6581356304040102696">Hesla se nepodařilo importovat. Soubor musí být menší než 1 MB.</translation>
 <translation id="6582080224869403177">Resetujte zařízení <ph name="DEVICE_TYPE" />, aby se upgradovalo zabezpečení</translation>
 <translation id="6582274660680936615">Prohlížíte si web jako host</translation>
@@ -9571,6 +9574,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7647403192093989392">Žádné nedávné aktivity</translation>
 <translation id="7648023614017258011">Chrome ověřuje instalační balíček</translation>
 <translation id="7648048654005891115">Styl mapy kláves</translation>
+<translation id="7648180062672842917">Tento soubor obsahuje citlivá nebo nebezpečná data. Vaše organizace vám umožní uložit ho do cloudového úložiště nebo ho zahodit</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7649954700951153978">Připomenout na iOS</translation>
 <translation id="7650141368285545431">Použít přístupový klíč z jiného zařízení</translation>
@@ -10440,7 +10444,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8225046344534779393">Zkontrolujte připojení k internetu</translation>
 <translation id="8225265270453771718">Sdílet okno aplikace</translation>
 <translation id="8225516926291976401">Vaši polohu můžou používat pouze systémové služby. Aplikace a weby ji však přesto můžou dokázat zjistit podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
-<translation id="8226222018808695353">Zakázané</translation>
+<translation id="8226222018808695353">Zakázáno</translation>
 <translation id="8226619461731305576">Fronta</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8227793900613581774">Pokud pro <ph name="APP_NAME" /> chcete používat bezpečnostní klíč, vložte ho a dotkněte se ho</translation>
@@ -11146,6 +11150,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8703766890819308134">Zobrazit zkratky vyhledávání</translation>
 <translation id="8704662571571150811">Domény</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>
+<translation id="870536819717176711">Když se rozhodnete sdílet aktuální kartu s Gemini, celý její obsah, média a adresa URL se odešlou do Googlu.</translation>
 <translation id="8705580154597116082">Je k dispozici síť Wi-Fi prostřednictvím telefonu</translation>
 <translation id="8705629851992224300">Váš bezpečnostní klíč nebylo možné přečíst</translation>
 <translation id="8706111173576263877">QR kód byl naskenován.</translation>

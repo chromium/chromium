@@ -1060,6 +1060,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1706586824377653884">Toegevoegd door je beheerder</translation>
 <translation id="170658918174941828">De volgende gegevens worden gestuurd: je Chrome-versie, versie van het besturingssysteem, Cast-instellingen, prestatiestatistieken voor mirroring, logboeken met diagnostische gegevens van communicatiekanalen en eventuele informatie die je hierboven opgeeft. Deze feedback wordt gebruikt om een diagnose van problemen te stellen en de functie te verbeteren. Persoonlijke informatie die je stuurt, ongeacht of dit expliciet of per ongeluk gebeurt, wordt beschermd in overeenstemming met ons Privacybeleid. Door deze feedback in te dienen, ga je ermee akkoord dat Google je feedback kan gebruiken om producten of services van Google te verbeteren.</translation>
 <translation id="17081583771848899">Launcher + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Opslaan in cloudopslag</translation>
 <translation id="1708291623166985230">Hotspot staat uit</translation>
 <translation id="1708338024780164500">(Inactief)</translation>
 <translation id="1708563369218024896">Geen gegevensverzamelaar geselecteerd. Selecteer minstens één gegevensverzamelaar.</translation>
@@ -6658,6 +6659,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5585912436068747822">Formatteren mislukt</translation>
 <translation id="5587765208077583036">Als je een map wilt delen, klik je in de app Bestanden met de rechtermuisknop op een map en selecteer je Delen met <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Sites op pagina filteren</translation>
 <translation id="558918721941304263">Apps laden...</translation>
 <translation id="5590418976913374224">Geluid afspelen bij opstarten apparaat</translation>
 <translation id="5591465468509111843">Erg wijd</translation>
@@ -8045,6 +8047,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: content van bureaublad gedeeld</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% gelezen</translation>
 <translation id="6580203076670148210">Scansnelheid</translation>
+<translation id="6580676117087365538">Laat verifiëren dat jij het bent om deze extensie op al je computers te gebruiken</translation>
 <translation id="6581356304040102696">Kan wachtwoorden niet importeren. Het bestand moet kleiner zijn dan 1 MB.</translation>
 <translation id="6582080224869403177">Reset je <ph name="DEVICE_TYPE" /> om je beveiliging te upgraden.</translation>
 <translation id="6582274660680936615">Je browst momenteel als gast</translation>
@@ -9565,6 +9568,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7647403192093989392">Geen recente activiteiten</translation>
 <translation id="7648023614017258011">Chrome verifieert de installatiebundel</translation>
 <translation id="7648048654005891115">Stijl van toetsenindeling</translation>
+<translation id="7648180062672842917">Dit bestand bevat gevoelige of gevaarlijke gegevens. Je organisatie laat je het bestand opslaan in cloudopslag of verwijderen</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7649954700951153978">Herinneren op iOS</translation>
 <translation id="7650141368285545431">Toegangssleutel van een ander apparaat gebruiken</translation>
@@ -11140,6 +11144,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8703766890819308134">Snelkoppelingen voor zoekopdrachten tonen</translation>
 <translation id="8704662571571150811">Domeinen</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="870536819717176711">Als je ervoor kiest om het huidige tabblad met Gemini te delen, worden de volledige content, media en de URL van het tabblad naar Google gestuurd.</translation>
 <translation id="8705580154597116082">Wifi beschikbaar via telefoon</translation>
 <translation id="8705629851992224300">Je beveiligingssleutel kan niet worden gelezen</translation>
 <translation id="8706111173576263877">De QR-code is gescand.</translation>

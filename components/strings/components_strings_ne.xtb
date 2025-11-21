@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">सेभ गर्नुहोस्…</translation>
 <translation id="2088913896151127116">टेक्स्ट हाल्नुहोस्</translation>
 <translation id="2090451897496479509">यस सम्बन्धमा थप जानकारी प्राप्त गर्न सेवा प्रदायकलाई सम्पर्क गर्नुहोस्</translation>
+<translation id="2090686487550343086">IBAN हरू</translation>
 <translation id="2091887806945687916">आवाज</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> खोज्नुहोस् वा URL टाइप गर्नुहोस्</translation>
 <translation id="2093982008204312032">Google Chrome पासवर्डहरू हाल्नका निम्ति Windows Hello अफ गर्न खोज्दै छ।</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">ठेगाना सुरक्षित गरी फारम भर्नुहोस्</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मेटाइएको छ</translation>
 <translation id="2283599456633275070">यात्रा</translation>
+<translation id="2285709459648658719">राहदानीहरू</translation>
 <translation id="2286383991450886080">३४ x ४४ इन्च</translation>
 <translation id="2288422996159078444">तपाईंले टाइप गर्ने हरेक कुरा, तपाईंले हेर्ने हरेक पृष्ठ वा तपाईंले वेबमा गर्ने अन्य कुनै पनि गतिविधिमाथि निगरानी राखिन्छ र यी साइटका सामग्री तपाईंले थाहै नपाई परिवर्तन गर्न सकिन्छ।</translation>
 <translation id="2289385804009217824">छाँटकाँट गर्नुहोस्</translation>
@@ -2549,6 +2551,7 @@
 <translation id="5137761395480718572">यो एपले Wi-Fi क्रिडेन्सियलहरू इन्स्टल गर्ने अनुमति माग्दै छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> उपलब्ध Wi-Fi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। यी क्रिडेन्सियलहरू हटाउन यो एप अनइन्स्टल गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्</translation>
 <translation id="5138227688689900538">कम देखाउनुहोस्</translation>
+<translation id="5140155249377545621">चालक अनुमतिपत्रहरू</translation>
 <translation id="5144613843429436866">तपाईंले यो साइटलाई <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
 <translation id="5145883236150621069">नीति प्रतिक्रियामा त्रुटि कोड समावेश छ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> का सूचनाहरूलाई रोक लगाइएको छ</translation>
@@ -3140,6 +3143,7 @@
 <translation id="6124058285696691147">एट्याचमेन्ट डाउनलोड गर्नुहोस्</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6124996493718543728">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" को प्रोग्रेस स्क्रिन पूरै स्क्रिनमा खोलिएको छ।</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">स्थान</translation>
 <translation id="6133320744616005677">अनुमति दिइरहनुहोस्</translation>
@@ -4234,6 +4238,7 @@
 <translation id="7886897188117641322">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7887683347370398519">तपाईँको CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7887885240995164102">picture-in-picture मोडमा प्रविष्टि गर्नुहोस्‌</translation>
+<translation id="7888367499748383555">कुनै शुल्क लाग्दैन, न्यूनतम वार्षिक ब्याज दर ०% (यो लाभ लिन निश्चित योग्यता पूरा गर्नु पर्ने हुन्छ)</translation>
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7890748547282909375">स्क्रिनसट सेभ गर्न Microsoft OneDrive मा साइन इन गर्नुहोस्</translation>
 <translation id="7890755620327858054">पछि भुक्तानी गर्ने सुविधा अहिले उपलब्ध छैन। फेरि प्रयास गर्नुहोस् वा कुनै अर्को भुक्तानी विधि छनौट गर्नुहोस्।</translation>
@@ -4397,6 +4402,7 @@
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8164078261547504572">मूल्य घट्दा इमेल प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" नामक कीहरूलाई एउटै डिक्सनरीमा सेट गर्न सकिँदैन</translation>
+<translation id="8174047975335711832">यन्त्रको जानकारी</translation>
 <translation id="8175053171643471349">लोयल्टी कार्डहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>

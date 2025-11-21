@@ -622,6 +622,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3710560693796335511">Saradnja</translation>
 <translation id="3718765429352682176">Možda ćete vidjeti historiju iz drugih aplikacija koje otvaraju linkove u Chromeu.</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
+<translation id="3727000368239390918">Prijavite se da pristupite svojim karticama i drugom na svim uređajima</translation>
 <translation id="3737319253362202215">Postavke prevođenja</translation>
 <translation id="3738139272394829648">Pretraživanje dodirom</translation>
 <translation id="3739455665973395693">Nema ugroženih lozinki na Google računu</translation>
@@ -1501,6 +1502,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7293429513719260019">Odaberite jezik</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, odabrana zakačena kartica za dijeljenje</translation>
 <translation id="7304072650267745798">Android uređaj može sadržavati sličnu postavku. Ako je ta postavka uključena u Chromeu i na Android uređaju, kompanija će možda moći izmjeriti učinkovitost oglasa na web lokacijama koje posjećujete i u aplikacijama koje koristite.</translation>
+<translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7313188324932846546">Dodirnite da postavite sinhronizaciju</translation>
 <translation id="7314734791127433392">Nije moguće provjeriti lozinke</translation>
 <translation id="7324354302972299151">Pošalji zahtjev za "Do Not Track"</translation>

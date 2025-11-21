@@ -662,6 +662,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2085876078937250610">Speichern…</translation>
 <translation id="2088913896151127116">Text hinzufügen</translation>
 <translation id="2090451897496479509">Wende dich für weitere Informationen an den Anbieter</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Ton</translation>
 <translation id="2093184051799735948">In <ph name="ENGINE_NAME" /> suchen oder URL eingeben</translation>
 <translation id="2093982008204312032">Google Chrome versucht, Windows Hello zum Ausfüllen von Passwörtern zu deaktivieren.</translation>
@@ -799,6 +800,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2283340219607151381">Adressen speichern und ausfüllen</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ wurde gelöscht</translation>
 <translation id="2283599456633275070">Reisen</translation>
+<translation id="2285709459648658719">Reisepässe</translation>
 <translation id="2286383991450886080">34 x 44 Zoll</translation>
 <translation id="2288422996159078444">Alles, was du eingibst, alle Seiten, die du besuchst, und alle sonstigen Aktivitäten im Internet werden überwacht. Inhalte von Websites können ohne dein Wissen verändert werden.</translation>
 <translation id="2289385804009217824">Zuschneiden</translation>
@@ -2549,6 +2551,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5137761395480718572">Diese App fordert die Berechtigung zum Installieren von WLAN-Anmeldedaten an. Nach der Einrichtung stellt <ph name="DEVICE_TYPE" /> automatisch eine Verbindung zu beteiligten WLANs her. Deinstalliere die App, um diese Anmeldedaten zu entfernen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte kontaktiere deine Bank</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
+<translation id="5140155249377545621">Führerscheine</translation>
 <translation id="5144613843429436866">Du hast die Berechtigung „<ph name="PERMISSION" />“ für diese Website zugelassen</translation>
 <translation id="5145883236150621069">Fehlercode in der Richtlinienantwort</translation>
 <translation id="5146995429444047494">Benachrichtigungen von <ph name="ORIGIN" /> werden blockiert</translation>
@@ -3140,6 +3143,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6124058285696691147">Anhang herunterladen</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Der Fortschrittsbildschirm für „Jetzt kaufen, später bezahlen“ ist vollständig geöffnet.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Weitere Details<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Umschlag Chinesisch Nr. 2</translation>
 <translation id="6131824478727057281">Standort</translation>
 <translation id="6133320744616005677">Weiter gewähren</translation>
@@ -4235,6 +4239,7 @@ Weitere Details:
 <translation id="7886897188117641322">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden können</translation>
 <translation id="7887683347370398519">Prüfe deinen CVC und versuche es dann noch einmal.</translation>
 <translation id="7887885240995164102">Bild im Bild aktivieren</translation>
+<translation id="7888367499748383555">Keine Gebühren, bis zu 0 % effektiver Jahreszins (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="7888575728750733395">Rendering Intent für Druck</translation>
 <translation id="7890748547282909375">Zum Speichern des Screenshots in Microsoft OneDrive anmelden</translation>
 <translation id="7890755620327858054">Die Option „Später bezahlen“ ist derzeit nicht verfügbar. Versuche es noch einmal oder wähle eine andere Zahlungsmethode.</translation>
@@ -4398,6 +4403,7 @@ Weitere Details:
 <translation id="8163866351304776260">Vierfache Lochung links</translation>
 <translation id="8164078261547504572">Möchtest du per E‑Mail über Preissenkungen informiert werden?</translation>
 <translation id="8169175551046720804">Die Schlüssel „<ph name="DATA_CONTROLS_KEYS" />“ können nicht im selben Wörterbuch festgelegt werden</translation>
+<translation id="8174047975335711832">Gerätebezogene Informationen</translation>
 <translation id="8175053171643471349">Kundenkarten verwalten</translation>
 <translation id="8175796834047840627">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern.</translation>
 <translation id="8176440868214972690">Der Administrator dieses Geräts hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>

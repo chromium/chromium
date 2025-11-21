@@ -662,6 +662,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2085876078937250610">Spara …</translation>
 <translation id="2088913896151127116">Lägg till text</translation>
 <translation id="2090451897496479509">Kontakta leverantören för mer information</translation>
+<translation id="2090686487550343086">IBAN-nummer</translation>
 <translation id="2091887806945687916">Ljud</translation>
 <translation id="2093184051799735948">Sök efter <ph name="ENGINE_NAME" /> eller ange webbadress</translation>
 <translation id="2093982008204312032">Google Chrome försöker inaktivera Windows Hello för att fylla i lösenord.</translation>
@@ -799,6 +800,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2283340219607151381">Spara och fyll i adresser</translation>
 <translation id="2283447177162560884"><ph name="PAGE_TITLE" /> har raderats</translation>
 <translation id="2283599456633275070">Resor</translation>
+<translation id="2285709459648658719">Pass</translation>
 <translation id="2286383991450886080">34 x 44 tum</translation>
 <translation id="2288422996159078444">Allt du skriver, sidor du visar och all annan aktivitet på webben övervakas. Innehåll på webbplatser kan ändras utan din vetskap.</translation>
 <translation id="2289385804009217824">Beskär</translation>
@@ -2551,6 +2553,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5137761395480718572">Den här appen begär behörighet att installera wifi-användaruppgifter. Efter konfigureringen ansluter <ph name="DEVICE_TYPE" /> automatiskt till deltagande wifi-nätverk. Avinstallera appen om du vill ta bort dessa användaruppgifter. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuella kort är inte tillgängliga just nu. Kontakta banken</translation>
 <translation id="5138227688689900538">Visa färre</translation>
+<translation id="5140155249377545621">Körkort</translation>
 <translation id="5144613843429436866">Du har tillåtit <ph name="PERMISSION" /> för den här webbplatsen</translation>
 <translation id="5145883236150621069">Felkoden ingår i policysvaret</translation>
 <translation id="5146995429444047494">Aviseringar för <ph name="ORIGIN" /> blockeras.</translation>
@@ -3142,6 +3145,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6124058285696691147">Ladda ned bilagan</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">Förloppsskärmen för Köp nu, betala senare har öppnats över hela skärmen.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Kinesiskt nr 2-kuvert</translation>
 <translation id="6131824478727057281">plats</translation>
 <translation id="6133320744616005677">Fortsätt bevilja behörigheten</translation>
@@ -4237,6 +4241,7 @@ Mer information.
 <translation id="7886897188117641322">Välj vilka breda kategorier av ämnen som kan användas för att anpassa annonser</translation>
 <translation id="7887683347370398519">Kontrollera CVC-koden och försök igen</translation>
 <translation id="7887885240995164102">Öppna bild-i-bild-läge</translation>
+<translation id="7888367499748383555">Inga avgifter, så lite som 0 % i APR (omfattas av kvalificeringskrav)</translation>
 <translation id="7888575728750733395">Renderingsmetod för utskrifter</translation>
 <translation id="7890748547282909375">Logga in på Microsoft OneDrive för att spara skärmbilden</translation>
 <translation id="7890755620327858054">Det går inte att betala senare just nu. Försök igen eller välj en annan betalningsmetod.</translation>
@@ -4400,6 +4405,7 @@ Mer information.
 <translation id="8163866351304776260">Fyra hål till vänster</translation>
 <translation id="8164078261547504572">Vill du få e-postmeddelanden när priserna sänks?</translation>
 <translation id="8169175551046720804">Tangenterna <ph name="DATA_CONTROLS_KEYS" /> kan inte anges i samma ordlista</translation>
+<translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8175053171643471349">Hantera stamkundskort</translation>
 <translation id="8175796834047840627">Du erbjuds av Chrome att spara dina kort i Google-kontot eftersom du är inloggad. Du kan ändra detta i inställningarna.</translation>
 <translation id="8176440868214972690">Administratören för enheten har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>

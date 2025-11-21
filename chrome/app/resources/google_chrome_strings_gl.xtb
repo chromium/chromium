@@ -154,6 +154,7 @@
 <translation id="2712141162840347885">Selecciona o que queiras buscar con Google Lens ou preme Escape para saír da función</translation>
 <translation id="2738871930057338499">Non se puido establecer conexión con Internet. Erro: HTTP 403 Forbidden (acceso non permitido). Revisa a configuración do proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección da caixa correspondente a esta opción.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos (1 elemento).}other{Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
 <translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización}=1{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder ao micrófono neste sitio</translation>
@@ -513,6 +514,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6696915334902295848">Chrome necesita permiso de acceso ao micrófono para este sitio</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos (1 elemento).}other{Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
 <translation id="6712881677154121168">Produciuse un erro na descarga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Fai que Chrome sexa máis rápido</translation>
 <translation id="6734827584173583205">Levas un tempo sen entrar. Chrome quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="COUNT" /> máis.</translation>

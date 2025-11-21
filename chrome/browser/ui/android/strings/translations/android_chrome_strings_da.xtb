@@ -622,6 +622,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3710560693796335511">Samarbejde</translation>
 <translation id="3718765429352682176">Du kan muligvis se historikken fra andre apps, der åbner links i Chrome.</translation>
 <translation id="3721119614952978349">Dig og Google</translation>
+<translation id="3727000368239390918">Log ind for at få adgang til dine faner m.m. på alle dine enheder</translation>
 <translation id="3737319253362202215">Indstillinger for oversættelse</translation>
 <translation id="3738139272394829648">Tryk for at søge</translation>
 <translation id="3739455665973395693">Ingen kompromitterede adgangskoder på din Google-konto</translation>
@@ -1501,6 +1502,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt fane, der er fastgjort og deler indhold</translation>
 <translation id="7304072650267745798">Din Android-enhed har muligvis en lignende indstilling. Hvis denne indstilling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
+<translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke tjekke adgangskoder</translation>
 <translation id="7324354302972299151">Send en "Do Not Track"-anmodning</translation>
@@ -1926,6 +1928,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9081543426177426948">De websites, du besøger, gemmes ikke i inkognitotilstand</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9086455579313502267">Der kunne ikke opnås adgang til netværket</translation>
+<translation id="9093915805850895575">Åbn i Chrome-vindue</translation>
 <translation id="909756639352028172">Medtag Chrome i Web- og appaktivitet og de tilknyttede Google-tjenester for at få den mest personligt tilpassede brugeroplevelse</translation>
 <translation id="9099220545925418560">Baseret på din browserhistorik. Denne indstilling er deaktiveret.</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>

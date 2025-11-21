@@ -177,6 +177,7 @@
 <translation id="2977506796191543575">Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="2981563588585023386">Para protegerte más en línea con las elecciones de tu madre o padre, accede a Chromium</translation>
 <translation id="3003694935412297923">Todas las tareas</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos (1 elemento).}other{Chromium debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos ({count} elementos).}}</translation>
 <translation id="3013473503895162900">Abre <ph name="URL" /> en una pestaña nueva en Chromium.</translation>
 <translation id="3032706164202344641">Chromium no puede revisar las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="3032787606318309379">Agregar a Chromium...</translation>
@@ -489,6 +490,7 @@
 <translation id="6729124504294600478">Para obtener la personalización y otras funciones, incluye Chromium en la Actividad web y de aplicaciones y los servicios de Google vinculados</translation>
 <translation id="6734291798041940871">Chromium ya está instalado para todos los usuarios en tu computadora.</translation>
 <translation id="6751374565094704799">Acelera los sitios con el motor V8 de Chromium, pero reduce ligeramente la resistencia de Chromium a los ataques. Este parámetro de configuración está activado.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google. Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos (1 elemento).}other{Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google. Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos ({count} elementos).}}</translation>
 <translation id="67706546131546258">Chromium recomienda analizar el archivo porque puede ser peligroso.</translation>
 <translation id="6779406956731413166">Chromium OS es posible gracias a los <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicionales.</translation>
 <translation id="6831043979455480757">Traducir</translation>

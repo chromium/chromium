@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">አስቀምጥ…</translation>
 <translation id="2088913896151127116">ጽሑፍ አክል</translation>
 <translation id="2090451897496479509">ለበለጠ መረጃ አቅራቢውን ያነጋግሩ</translation>
+<translation id="2090686487550343086">አይቢኤኤኖች</translation>
 <translation id="2091887806945687916">ድምፅ</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" />ን ይፈልጉ ወይም ዩአርኤል ይተይቡ</translation>
 <translation id="2093982008204312032">Google Chrome የይለፍ ቃላትን ለመሙላት Windows Helloን ለማጥፋት እየሞከረ ነው።</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">አድራሻዎችን አስቀምጥ እና ሙላ</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» ተሰርዟል</translation>
 <translation id="2283599456633275070">ጉዞ</translation>
+<translation id="2285709459648658719">ፓስፖርቶች</translation>
 <translation id="2286383991450886080">34 x 44 ኢንች</translation>
 <translation id="2288422996159078444">ማናቸውም እርስዎ የሚተይቡት፣ የሚመለከቱት ማናቸውም ገፅ፣ ወይም ማናቸውም በድር ላይ ያለ ሌላ እንቅስቃሴ እየታየ ነው። በጣቢያዎች ላይ ያለ ይዘት እርስዎ ሳያውቁት ሊለወጥ ይችላል።</translation>
 <translation id="2289385804009217824">ከርክም</translation>
@@ -2550,6 +2552,7 @@
 <translation id="5137761395480718572">ይህ መተግበሪያ የWi-Fi የመግቢያ ማስረጃዎችን ለመጫን ፈቃድ እየጠየቀ ነው። ከውቅረት በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> በራስ-ሰር ከተሳታፊ የWiFi አውታረ መረቦች ጋር ይገናኛል። እነዚህን የመግቢያ ማስረጃዎች ለማስወገድ መተግበሪያውን ያራግፉ። <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ምናባዊ ካርድ አሁን አይገኝም፣ እባክዎ ባንክዎን ያነጋግሩ</translation>
 <translation id="5138227688689900538">ያነሰ አሳይ</translation>
+<translation id="5140155249377545621">የመንጃ ፈቃዶች</translation>
 <translation id="5144613843429436866">ለዚያ ጣቢያ <ph name="PERMISSION" /> ፈቅደዋል</translation>
 <translation id="5145883236150621069">የስህተት ኮድ በመምሪያው ምላሽ ውስጥ አለ</translation>
 <translation id="5146995429444047494">ለ <ph name="ORIGIN" /> ማሳወቂያዎች ታግደዋል</translation>
@@ -3141,6 +3144,7 @@
 <translation id="6124058285696691147">አባሪውን አውርድ</translation>
 <translation id="6124432979022149706">Chrome Enterprise አያያዦች</translation>
 <translation id="6124996493718543728">የአሁን ይግዙ፣ በኋላ ይክፈሉ ሂደት ማያ ገጽ በሙሉ ቁመት ተከፍቷል።</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />ተጨማሪ ዝርዝሮች<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">#2 የቻይና ፖስታ</translation>
 <translation id="6131824478727057281">አካባቢ</translation>
 <translation id="6133320744616005677">መፍቀድን ቀጥል</translation>
@@ -4236,6 +4240,7 @@
 <translation id="7886897188117641322">ማስታወቂያዎችን ግላዊ ለማድረግ የሚረዱ የትኞቹን ሰፊ የርዕሶች ምድቦች ይምረጡ</translation>
 <translation id="7887683347370398519">የእርስዎን CVC ይፈትሹ እና እንደገና ይሞክሩ</translation>
 <translation id="7887885240995164102">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
+<translation id="7888367499748383555">ምንም ክፍያዎች የሉም፣ እስከ 0% ዓመታዊ መቶኛ ተመን ድረስ ዝቅ የሚል (ለብቁነት ተገዥ የሆነ)</translation>
 <translation id="7888575728750733395">የህትመት ምስል ሥራ ሐሳብ</translation>
 <translation id="7890748547282909375">ቅጽበታዊ ገፅ ዕይታን ለማስቀመጥ ወደ Microsoft OneDrive ይግቡ</translation>
 <translation id="7890755620327858054">በኋላ ላይ መክፈል በዚህ ጊዜ አይገኝም። እንደገና ይሞክሩ ወይም ሌላ የመክፈያ ዘዴ ይምረጡ።</translation>
@@ -4399,6 +4404,7 @@
 <translation id="8163866351304776260">በግራ በኩል አራቴ ብሳ</translation>
 <translation id="8164078261547504572">ዋጋዎች ሲቀንሱ ኢሜይሎች ይፈልጋሉ?</translation>
 <translation id="8169175551046720804">«<ph name="DATA_CONTROLS_KEYS" />» ቁልፎችን በተመሳሳይ መዝገበ-ቃላት ማቀናበር አይቻልም</translation>
+<translation id="8174047975335711832">የመሣሪያ መረጃ</translation>
 <translation id="8175053171643471349">የታማኝነት ካርዶችን ያስተዳድሩ</translation>
 <translation id="8175796834047840627">እርስዎ በመለያ ስለገቡ Chrome ወደ የእርስዎ የGoogle መለያ ለማስቀመጥ አማራጭ እያቀረበ ነው። ይህን ባህሪ በቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="8176440868214972690">የዚህ መሣሪያ አስተዳዳሪ እንደ ቅንብሮች ወይም መመሪያዎች ላሉት ለሚከተሉት ድር ጣቢያዎች የተወሰነ መረጃ ልኳል።</translation>

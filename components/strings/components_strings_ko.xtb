@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">저장…</translation>
 <translation id="2088913896151127116">텍스트 추가</translation>
 <translation id="2090451897496479509">자세한 내용은 제공업체에 문의하세요</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">소리</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> 검색 또는 URL 입력</translation>
 <translation id="2093982008204312032">Chrome에서 비밀번호 입력에 Windows Hello를 사용하지 않으려고 합니다.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">주소 저장 및 자동 입력</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' 삭제됨</translation>
 <translation id="2283599456633275070">여행</translation>
+<translation id="2285709459648658719">여권</translation>
 <translation id="2286383991450886080">34x44인치</translation>
 <translation id="2288422996159078444">내가 입력하는 내용, 접속하는 페이지, 웹상의 기타 모든 활동이 감시되며, 사이트의 콘텐츠가 눈치채지 못하게 변경될 수 있습니다.</translation>
 <translation id="2289385804009217824">트림</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">이 앱에서 Wi-Fi 사용자 인증 정보를 설치할 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. 이러한 사용자 인증 정보를 삭제하려면 앱을 제거하세요. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">현재 가상 카드를 사용할 수 없습니다. 은행에 문의해 주세요.</translation>
 <translation id="5138227688689900538">간략히</translation>
+<translation id="5140155249377545621">운전면허증</translation>
 <translation id="5144613843429436866">이 사이트에 <ph name="PERMISSION" /> 권한을 허용했습니다.</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 알림이 차단됨</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6124058285696691147">첨부파일 다운로드</translation>
 <translation id="6124432979022149706">Chrome Enterprise 커넥터</translation>
 <translation id="6124996493718543728">선구매 후지불 진행 상황 화면이 전체 높이로 열렸습니다.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />세부정보 더보기<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">봉투 Chinese @2</translation>
 <translation id="6131824478727057281">위치</translation>
 <translation id="6133320744616005677">계속 허용</translation>
@@ -4236,6 +4240,7 @@
 <translation id="7886897188117641322">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요.</translation>
 <translation id="7887683347370398519">CVC를 확인한 후 다시 시도하세요.</translation>
 <translation id="7887885240995164102">PIP 모드 시작</translation>
+<translation id="7888367499748383555">수수료 없음, 연이율 최저 0%(자격 요건에 따라 다름)</translation>
 <translation id="7888575728750733395">인쇄 렌더링 인텐트</translation>
 <translation id="7890748547282909375">스크린샷을 저장하려면 Microsoft OneDrive에 로그인하세요.</translation>
 <translation id="7890755620327858054">지금은 후불 결제 기능을 사용할 수 없습니다. 다시 시도하거나 다른 결제 수단을 선택하세요.</translation>
@@ -4399,6 +4404,7 @@
 <translation id="8163866351304776260">왼쪽 4공 펀칭</translation>
 <translation id="8164078261547504572">가격이 인하되면 이메일을 받고 싶으신가요?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" 키는 동일한 사전에 설정할 수 없습니다.</translation>
+<translation id="8174047975335711832">기기 정보</translation>
 <translation id="8175053171643471349">포인트 카드 관리</translation>
 <translation id="8175796834047840627">로그인되어 있는 경우 Chrome에서 Google 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다.</translation>
 <translation id="8176440868214972690">기기 관리자가 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>

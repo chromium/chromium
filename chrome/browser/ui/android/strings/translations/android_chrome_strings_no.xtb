@@ -1502,6 +1502,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt festet delingsfane</translation>
 <translation id="7304072650267745798">Android-enheten din har muligens en lignende innstilling. Hvis denne innstillingen er slått på i Chrome og på Android-enheten din, kan selskaper måle effektiviteten til annonser på alle nettsteder du besøker, og i alle apper du bruker.</translation>
+<translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
@@ -1927,6 +1928,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9081543426177426948">Nettsteder du besøker, lagres ikke i inkognitomodus</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9086455579313502267">Fikk ikke tilgang til nettverket</translation>
+<translation id="9093915805850895575">Åpne i et Chrome-vindu</translation>
 <translation id="909756639352028172">For å få en mest mulig personlig tilpasset opplevelse, ta med Chrome i Nett- og appaktivitet og sammenknyttede Google-tjenester</translation>
 <translation id="9099220545925418560">Basert på nettleserloggen din. Denne innstillingen er slått av.</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>

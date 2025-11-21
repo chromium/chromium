@@ -622,6 +622,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3710560693796335511">Sadarbība</translation>
 <translation id="3718765429352682176">Var būt redzama vēsture no citām lietotnēm, kuru saites tiek atvērtas pārlūkā Chrome.</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
+<translation id="3727000368239390918">Pierakstieties, lai piekļūtu cilnēm un citiem datiem visās savās ierīcēs</translation>
 <translation id="3737319253362202215">Tulkošanas iestatījumi</translation>
 <translation id="3738139272394829648">Meklēšana pieskaroties</translation>
 <translation id="3739455665973395693">Jūsu Google kontā nav uzlauztu paroļu</translation>
@@ -1501,6 +1502,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="7298319215489933099">Atlasīta piesprausta cilne <ph name="TAB_TITLE" />, kuras saturs tiek kopīgots</translation>
 <translation id="7304072650267745798">Android ierīcē var būt līdzīgs iestatījums. Ja pārlūkā Chrome un jūsu Android ierīcē šis iestatījums ir ieslēgts, iespējams, uzņēmumi var izvērtēt reklāmas efektivitāti jūsu apmeklētajās tīmekļa vietnēs un izmantotajās lietotnēs.</translation>
+<translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7313188324932846546">Pieskarieties, lai iestatītu sinhronizāciju</translation>
 <translation id="7314734791127433392">Nevar pārbaudīt paroles</translation>
 <translation id="7324354302972299151">Sūtīt pieprasījumu “Do Not Track”</translation>

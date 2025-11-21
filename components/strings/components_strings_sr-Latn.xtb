@@ -1169,6 +1169,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2922792708490674">{0,plural, =1{Preuzimanje fajla je blokirano}one{Preuzimanje <ph name="FILE_COUNT" /> fajla je blokirano}few{Preuzimanje <ph name="FILE_COUNT" /> fajla je blokirano}other{Preuzimanje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="2923275635648511531">Proizvodi za sunčanje i potamnjivanje kože</translation>
 <translation id="292371311537977079">Podešavanja Chrome-a</translation>
+<translation id="2925032407415783182">Sačuvajte kartu za događaj u Novčaniku</translation>
 <translation id="2925454999967523701">Dugme Napravi dokument, aktivirajte ga da biste brzo napravili nov Google dokument</translation>
 <translation id="2925673989565098301">Način isporuke</translation>
 <translation id="2928426578619531300">Povezani korisnik</translation>
@@ -3145,6 +3146,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6124058285696691147">Preuzmi prilog</translation>
 <translation id="6124432979022149706">Priključci za Chrome za preduzeća</translation>
 <translation id="6124996493718543728">Ekran sa napretkom Kupite odmah, platite kasnije otvoren je na celom ekranu.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Još detalja<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Kineska koverta br. 2</translation>
 <translation id="6131824478727057281">lokacija</translation>
 <translation id="6133320744616005677">Ne opozivaj dozvolu</translation>
@@ -4403,6 +4405,7 @@ Dodatni detalji:
 <translation id="8163866351304776260">Četvorostruko bušenje na levoj strani</translation>
 <translation id="8164078261547504572">Želite li imejlove kada cene padnu?</translation>
 <translation id="8169175551046720804">Ključevi <ph name="DATA_CONTROLS_KEYS" /> ne mogu da se podese u istom rečniku</translation>
+<translation id="8174047975335711832">Informacije o uređaju</translation>
 <translation id="8175053171643471349">Upravljaj karticama lojalnosti</translation>
 <translation id="8175796834047840627">Chrome vam nudi čuvanje kartica na Google nalogu zato što ste prijavljeni. To možete da promenite u podešavanjima.</translation>
 <translation id="8176440868214972690">Administrator ovog uređaja je poslao određene podatke sledećim veb-sajtovima, poput podešavanja ili smernica.</translation>

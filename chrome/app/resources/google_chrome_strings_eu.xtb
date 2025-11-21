@@ -154,6 +154,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2712141162840347885">Hautatu edozer, Google Lens-ekin bilatzeko. Google Lens-etik irteteko, sakatu Ihes.</translation>
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2742320827292110288">Abisua: Google Chrome-k ezin die eragotzi luzapenei zure arakatze-historia erregistratzea. Luzapena ezkutuko moduan desgaitzeko, desautatu aukera hau.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik. Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak}=1{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko leihoa ez da irekiko berriro.}other{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko # leihoak ez dira irekiko berriro.}}</translation>
 <translation id="2765403129283291972">Chrome-k webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
@@ -512,6 +513,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
 <translation id="6679975945624592337">Utzi Google Chrome-ri atzeko planoan abiarazten</translation>
 <translation id="6696915334902295848">Chrome-k mikrofonoa erabiltzeko baimena behar du webgune honetan</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome-k zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chrome-k zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="6712881677154121168">Deskarga-errorea: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Bizkortu Chrome</translation>
 <translation id="6734827584173583205">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak eta beste <ph name="COUNT" /> baimen kendu dizkio.</translation>

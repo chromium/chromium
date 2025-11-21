@@ -1762,6 +1762,7 @@
 <translation id="2192505247865591433">તરફથી:</translation>
 <translation id="219283042927675668">ગ્રૂપમાંના ટૅબ</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> તમારા નવા ટૅબ પેજને મેનેજ કરી રહ્યાં છે, જે નવા ટૅબમાં ખુલે છે</translation>
+<translation id="2192982266585216032">&amp;ચુકવણીઓ</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195331105963583686">તેમ તે સમય પછી પણ આ <ph name="DEVICE_TYPE" />નો ઉપયોગ કરી શકશો પણ હવેથી ઑટોમૅટિક સૉફ્ટવેર અને સુરક્ષા અપડેટ મળશે નહીં</translation>
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
@@ -2990,6 +2991,7 @@
 <translation id="3022072018423103125">પર્વતીય પ્રદેશો</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />ને આ Chromebookમાંથી કાઢી નાખવામાં આવશે અને તેને <ph name="PRIMARY_EMAIL" />માં સાચવવામાં આવશે નહીં.</translation>
 <translation id="3022978424994383087">તે મળ્યો નથી.</translation>
+<translation id="3023204744987201088">&amp;સંપર્ક માહિતી</translation>
 <translation id="3023464535986383522">સાંભળવા માટે પસંદ કરો</translation>
 <translation id="3024374909719388945">24-કલાકની ઘડિયાળ વાપરો</translation>
 <translation id="3027296729579831126">'નજીકના શેર' સુવિધા ચાલુ કરો</translation>
@@ -6663,6 +6665,7 @@
 <translation id="5585912436068747822">ફોર્મેટિંગ નિષ્ફળ થયું</translation>
 <translation id="5587765208077583036">શેર કરવા માટે, Files ઍપમાં કોઈ ફોલ્ડર પર રાઇટ-ક્લિક કરો, પછી "<ph name="SPECIFIC_NAME" /> વડે શેર કરો" પસંદ કરો.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">પેજ પર સાઇટ ફિલ્ટર કરો</translation>
 <translation id="558918721941304263">ઍપ્લિકેશનો લોડ કરી રહ્યું છે...</translation>
 <translation id="5590418976913374224">ડિવાઇસ શરૂ થવા પર સાઉન્ડ વગાડો</translation>
 <translation id="5591465468509111843">અક્ષરો વચ્ચે વધુ સ્પેસ</translation>
@@ -7932,6 +7935,7 @@ USB ડિવાઇસ</translation>
 <translation id="6495261233408033662">ખોલેલા ટૅબ બંધ કરો</translation>
 <translation id="6495266441917713704">વાઇ-ફાઇ ટ્રાન્સફર કરી શકતા નથી</translation>
 <translation id="6495453178162183932">થીમને ડિફૉલ્ટ Chrome પર અપડેટ કરી</translation>
+<translation id="6496641546298525838">તમારું ડિવાઇસ</translation>
 <translation id="6497784818439587832">તમારી સ્ક્રીન પરની આઇટમને વધુ નાની અથવા વધુ મોટી કરવા માટે ડિસ્પ્લેનું કદ બદલો</translation>
 <translation id="6497789971060331894">માઉસનું રિવર્સ સ્ક્રોલિંગ</translation>
 <translation id="6498249116389603658">&amp;તમારી બધી ભાષાઓ</translation>
@@ -9757,6 +9761,7 @@ USB ડિવાઇસ</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7760176388948986635">લોકેશનની પરવાનગીઓ ધરાવતી ChromeOS અને Android ઍપ, વેબસાઇટ અને સેવાઓને આ ડિવાઇસના લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. લોકેશનની સચોટતા, Android ઍપ અને સેવાઓ માટે લોકેશનની વધુ સચોટ માહિતી પ્રદાન કરે છે. આમ કરવા માટે, Google સમયાંતરે આ ડિવાઇસના સેન્સર અને વાયરલેસ સિગ્નલ વિશેની માહિતી પર પ્રક્રિયા કરે છે, જેથી વાયરલેસ સિગ્નલવાળા લોકેશનને ક્રાઉડસૉર્સ કરી શકાય. કોઈપણ વ્યક્તિની ઓળખાણ છતી કર્યા વિના આ માહિતીનો ઉપયોગ લોકેશનની સચોટતા અને લોકેશન આધારિત સેવાઓને બહેતર બનાવવા તેમજ વપરાશકર્તાઓની જરૂરિયાતો પૂરી કરવા માટે Google અને ત્રીજા પક્ષોના કાયદેસરના હિતસંબંધોના આધારે Googleની સેવાઓને બહેતર બનાવવા, પ્રદાન કરવા અને જાળવી રાખવા માટે કરવામાં આવે છે.</translation>
 <translation id="7762024824096060040">આ એકાઉન્ટનો ઉપયોગ કરી શકાતો નથી</translation>
+<translation id="776324966908034528">બ્રાઉઝરના પ્રૉક્સી સેટિંગ એકથી વધુ સૉર્સ દ્વારા નિયંત્રિત કરવામાં આવે છે</translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> પરથી <ph name="DOWNLOAD_RECEIVED" /> પ્રાપ્ત કર્યું</translation>
 <translation id="7764527477537408401">નવી વિન્ડોમાં ગ્રૂપ ખોલો</translation>
@@ -10903,7 +10908,6 @@ USB ડિવાઇસ</translation>
 <translation id="8535005006684281994">નેટસ્કેપ પ્રમાણપત્ર નવીકરણ URL</translation>
 <translation id="8536810348276651776">તમને મોટાભાગની સાઇટમાંથી સાઇન આઉટ કરે છે. તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન થયેલા રહેશો, જેથી Chrome માટેના તમારા Family Linkના સેટિંગ લાગુ કરી શકાય.</translation>
 <translation id="8536956381488731905">કી દબાવવા પર સાઉન્ડ</translation>
-<translation id="8537854269962256103">તમારી Gemini વાતચીત પૉપ-આઉટ ચૅટમાં છે. આ બાજુની પૅનલને અહીં ખસેડવા માટે, તેના પર ગમે ત્યાં ક્લિક કરો.</translation>
 <translation id="8539727552378197395">ના (ફક્ત Http)</translation>
 <translation id="8539766201049804895">અપગ્રેડ કરો</translation>
 <translation id="8540136935098276800">સાચી રીતે ફોર્મેટ કરેલું URL દાખલ કરો</translation>
@@ -11006,6 +11010,7 @@ USB ડિવાઇસ</translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />ને તમારા સંપર્કોમાં ઉમેરો</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> માટે સાઇટનો ડેટા તેમજ પરવાનગીઓ ડિલીટ કરીએ?</translation>
 <translation id="8617748779076050570">સુરક્ષિત કનેક્શન ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;સંપર્ક માહિતી</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">તમારા ડિવાઇસ પર વેબ ઍપ ઇન્સ્ટૉલ કરવાની મંજૂરી નથી</translation>
 <translation id="8619803522055190423">ડ્રૉપ શૅડો</translation>
@@ -11608,6 +11613,7 @@ USB ડિવાઇસ</translation>
 <translation id="90033698482696970">ઉપલબ્ધ ઇ-સિમ પ્રોફાઇલ માટે ઑટોમૅટિક રીતે સ્કૅન કરીએ?</translation>
 <translation id="9003647077635673607">તમામ વેબસાઇટ્સ પર મંજૂરી આપો</translation>
 <translation id="9005774573776346118">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
+<translation id="9006511997799670136">તમારી સંસ્થા</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> આ લિંકને કોઈ ઍપમાં ખોલવા માગે છે.</translation>
 <translation id="9008201768610948239">અવગણો</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />ની વિગતો ધરાવતા પેજનું પાછળ જવા માટેનું બટન</translation>

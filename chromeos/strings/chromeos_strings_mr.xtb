@@ -535,7 +535,7 @@
 <translation id="3360306038446926262">विंडो</translation>
 <translation id="3361618936611118375">सुशी</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
-<translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
+<translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमचे सुरू असलेले प्रिंट जॉब साफ केले जाणार नाहीत.</translation>
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">अर्थ फ्लो वॉलपेपर</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> या अक्षरासह <ph name="LETTERS_COLOR" /> बॅकग्राउंड</translation>
@@ -715,7 +715,7 @@
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4171077696775491955">ब्राइटनेस कमी करा</translation>
-<translation id="4176463684765177261">अक्षम केले</translation>
+<translation id="4176463684765177261">बंद केले</translation>
 <translation id="4176659219503619100">कंट्रोल पॅनल</translation>
 <translation id="4192913637640303603">रेकॉर्डिंगची शीर्षके तयार करू शकत नाही</translation>
 <translation id="4193496492959950834">Recorder सेटिंग्ज</translation>

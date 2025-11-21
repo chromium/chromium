@@ -1169,6 +1169,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2922792708490674">{0,plural, =1{A transferência do ficheiro foi bloqueada}other{A transferência de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="2923275635648511531">Produtos de bronzeamento e proteção solar</translation>
 <translation id="292371311537977079">Definições do Chrome</translation>
+<translation id="2925032407415783182">Guarde o bilhete para evento na Carteira</translation>
 <translation id="2925454999967523701">Botão Criar documento; ative para criar rapidamente um novo documento Google</translation>
 <translation id="2925673989565098301">Método de fornecimento</translation>
 <translation id="2928426578619531300">Utilizador afiliado</translation>
@@ -3145,6 +3146,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6124058285696691147">Transferir anexo</translation>
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
 <translation id="6124996493718543728">Ecrã de progresso do método Comprar agora e pagar depois aberto à altura total.</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">Envelope Chinese n.º 2</translation>
 <translation id="6131824478727057281">localização</translation>
 <translation id="6133320744616005677">Continuar a permitir</translation>
@@ -4403,6 +4405,7 @@ Detalhes adicionais:
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>
 <translation id="8164078261547504572">Quer receber emails quando os preços descerem?</translation>
 <translation id="8169175551046720804">Não é possível definir as chaves "<ph name="DATA_CONTROLS_KEYS" />" no mesmo dicionário</translation>
+<translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8175053171643471349">Faça a gestão dos cartões de fidelidade</translation>
 <translation id="8175796834047840627">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições.</translation>
 <translation id="8176440868214972690">O administrador deste serviço enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
