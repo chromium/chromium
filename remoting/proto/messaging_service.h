@@ -56,6 +56,11 @@ struct BurstStruct {
   std::string payload;
 };
 
+struct EncryptedStruct {
+  std::string payload;
+  std::string unencrypted_payload;
+};
+
 struct SimpleStruct {
   std::string payload;
 };
@@ -70,8 +75,9 @@ struct SystemTestStruct {
   SystemTestStruct& operator=(const SystemTestStruct&);
   ~SystemTestStruct();
 
-  std::variant<PingPongStruct,
-               BurstStruct,
+  std::variant<BurstStruct,
+               EncryptedStruct,
+               PingPongStruct,
                SimpleStruct,
                ShareSessionTokenStruct>
       test_message;

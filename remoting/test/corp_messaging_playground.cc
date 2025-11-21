@@ -37,6 +37,7 @@ namespace remoting {
 namespace {
 
 using internal::BurstStruct;
+using internal::EncryptedStruct;
 using internal::PingPongStruct;
 using internal::ShareSessionTokenStruct;
 using internal::SimpleStruct;
@@ -208,6 +209,12 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                  [](const SimpleStruct& simple_message) {
                    LOG(INFO) << "PeerMessage received: payload="
                              << simple_message.payload;
+                 },
+                 [](const EncryptedStruct& encrypted_struct) {
+                   LOG(INFO) << "Encrypted PeerMessage received: payload="
+                             << encrypted_struct.payload << ", "
+                             << encrypted_struct.unencrypted_payload;
+                   // TODO: joedow - Decrypt the payload.
                  },
                  [this](const ShareSessionTokenStruct& message) {
                    LOG(INFO) << "ShareSessionToken received.";
