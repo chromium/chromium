@@ -872,7 +872,7 @@ enum CSSSampleId {
     kInteractivity = 811,
     kMasonryFill = 812,
     kMasonryDirection = 813,
-    kMasonryFlow = 814,
+    kGridLanesFlow = 814,
     // kMasonryAutoTracks = 815,
     kResult = 816,
     // NOTE(crbug.com/429392773): kAnimationTrigger* entries are deprecated.

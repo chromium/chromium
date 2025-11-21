@@ -767,6 +767,9 @@ All changes to this list should go through Blink's feature review process: http:
         grid-template-columns
         masonry-direction
         masonry-fill
+    grid-lanes-flow
+        masonry-direction
+        masonry-fill
     grid-row
         grid-row-end
         grid-row-start
@@ -824,9 +827,6 @@ All changes to this list should go through Blink's feature review process: http:
     mask-position
         -webkit-mask-position-x
         -webkit-mask-position-y
-    masonry-flow
-        masonry-direction
-        masonry-fill
     offset
         offset-anchor
         offset-distance

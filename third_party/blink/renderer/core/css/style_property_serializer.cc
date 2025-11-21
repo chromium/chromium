@@ -604,18 +604,22 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValue(flexShorthand());
     case CSSPropertyID::kFlexFlow:
       return GetShorthandValueForDoubleBarCombinator(flexFlowShorthand());
-    case CSSPropertyID::kGrid:
-      return GetShorthandValueForGrid(gridShorthand());
-    case CSSPropertyID::kGridTemplate:
-      return GetShorthandValueForGridTemplate(gridTemplateShorthand());
-    case CSSPropertyID::kGridColumn:
-      return GetShorthandValueForGridLine(gridColumnShorthand());
-    case CSSPropertyID::kGridRow:
-      return GetShorthandValueForGridLine(gridRowShorthand());
-    case CSSPropertyID::kGridArea:
-      return GetShorthandValueForGridArea(gridAreaShorthand());
     case CSSPropertyID::kGap:
       return Get2Values(gapShorthand());
+    case CSSPropertyID::kGrid:
+      return GetShorthandValueForGrid(gridShorthand());
+    case CSSPropertyID::kGridArea:
+      return GetShorthandValueForGridArea(gridAreaShorthand());
+    case CSSPropertyID::kGridColumn:
+      return GetShorthandValueForGridLine(gridColumnShorthand());
+    case CSSPropertyID::kGridLanes:
+      return GetShorthandValueForGridLanes(gridLanesShorthand());
+    case CSSPropertyID::kGridLanesFlow:
+      return GetShorthandValue(gridLanesFlowShorthand());
+    case CSSPropertyID::kGridRow:
+      return GetShorthandValueForGridLine(gridRowShorthand());
+    case CSSPropertyID::kGridTemplate:
+      return GetShorthandValueForGridTemplate(gridTemplateShorthand());
     case CSSPropertyID::kInset:
       return Get4Values(insetShorthand());
     case CSSPropertyID::kInterestDelay:
@@ -646,10 +650,6 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(marginBlockShorthand());
     case CSSPropertyID::kMarginInline:
       return Get2Values(marginInlineShorthand());
-    case CSSPropertyID::kGridLanes:
-      return GetShorthandValueForGridLanes(gridLanesShorthand());
-    case CSSPropertyID::kMasonryFlow:
-      return GetShorthandValue(masonryFlowShorthand());
     case CSSPropertyID::kOffset:
       return OffsetValue();
     case CSSPropertyID::kOverflow:

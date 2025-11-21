@@ -8712,6 +8712,11 @@
       valid_for_position_try: true,
     },
     {
+      name: "gap",
+      longhands: ["row-gap", "column-gap"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+    },
+    {
       name: "grid-area",
       longhands: [
         "grid-row-start", "grid-column-start", "grid-row-end",
@@ -8725,9 +8730,17 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
-      name: "gap",
-      longhands: ["row-gap", "column-gap"],
+      name: "grid-lanes",
+      longhands: [ "grid-template-areas", "grid-template-columns", "masonry-direction", "masonry-fill"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      layout_dependent: true,
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
+      name: "grid-lanes-flow",
+      longhands: ["masonry-direction", "masonry-fill"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSMasonryLayout",
     },
     {
       name: "grid-row",
@@ -8798,19 +8811,6 @@
       name: "marker",
       longhands: ["marker-start", "marker-mid", "marker-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-    },
-    {
-      name: "grid-lanes",
-      longhands: [ "grid-template-areas", "grid-template-columns", "masonry-direction", "masonry-fill"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      layout_dependent: true,
-      runtime_flag: "CSSMasonryLayout",
-    },
-    {
-      name: "masonry-flow",
-      longhands: ["masonry-direction", "masonry-fill"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSMasonryLayout",
     },
     {
       name: "offset",

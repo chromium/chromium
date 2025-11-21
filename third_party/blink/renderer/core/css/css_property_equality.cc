@@ -1312,6 +1312,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kGridArea:
     case CSSPropertyID::kGridColumn:
     case CSSPropertyID::kGridLanes:
+    case CSSPropertyID::kGridLanesFlow:
     case CSSPropertyID::kGridRow:
     case CSSPropertyID::kGridTemplate:
     case CSSPropertyID::kLineClamp:
@@ -1319,7 +1320,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMargin:
     case CSSPropertyID::kMarker:
     case CSSPropertyID::kMask:
-    case CSSPropertyID::kMasonryFlow:
     case CSSPropertyID::kOffset:
     case CSSPropertyID::kOutline:
     case CSSPropertyID::kOverflow:
