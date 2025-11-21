@@ -6145,7 +6145,7 @@
   {
     "name": "ios-browser-edit-menu-metrics",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 175
   },
   {
     "name": "ios-choose-from-drive",
