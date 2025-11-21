@@ -389,9 +389,10 @@ AdProtos GetAdProtosFromAds(const std::vector<blink::InterestGroup::Ad>& ads) {
           *ad.buyer_and_seller_reporting_id);
     }
     if (ad.selectable_buyer_and_seller_reporting_ids.has_value()) {
-      for (const auto& id : *ad.selectable_buyer_and_seller_reporting_ids) {
-        ad_proto->add_selectable_buyer_and_seller_reporting_ids(id);
-      }
+      ad_proto->mutable_selectable_buyer_and_seller_reporting_ids()->Add(
+        ad.selectable_buyer_and_seller_reporting_ids->begin(),
+        ad.selectable_buyer_and_seller_reporting_ids->end()
+      );
     }
     if (ad.ad_render_id.has_value()) {
       ad_proto->set_ad_render_id(*ad.ad_render_id);
