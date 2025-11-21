@@ -8,7 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -64,6 +66,13 @@ void WebappsUtils::ShowWebApkInstallResultToast(
     webapps::WebApkInstallResult result) {
   Java_WebappsUtils_showWebApkInstallResultToast(
       base::android::AttachCurrentThread(), (int)result);
+}
+
+// static
+bool WebappsUtils::IsAutoMintedTwaEnabled() {
+  // TODO: crbug.com/449581904 - Also check if Web App Service in WebApp
+  // mainline module is enabled.
+  return base::FeatureList::IsEnabled(webapps::features::kAndroidAutoMintedTWA);
 }
 
 }  // namespace webapps

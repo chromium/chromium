@@ -34,6 +34,9 @@ class WebappsUtils {
   // Shows toast notifying user of the result of a WebAPK install if the
   // installation was not successful.
   static void ShowWebApkInstallResultToast(webapps::WebApkInstallResult result);
+
+  // Returns whether installation of auto-minted TWA is enabled.
+  static bool IsAutoMintedTwaEnabled();
 };
 
 }  // namespace webapps
