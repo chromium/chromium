@@ -189,9 +189,10 @@ void PermissionBlockedMessageDelegate::HandleQuietPrimaryActionClick() {
 }
 
 void PermissionBlockedMessageDelegate::HandleManageClick() {
-  DCHECK(!dialog_controller_);
-  dialog_controller_ =
-      std::make_unique<PermissionBlockedDialogController>(this, web_contents_);
+  if (!dialog_controller_) {
+    dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
+        this, web_contents_);
+  }
   dialog_controller_->ShowDialog(*delegate_->ReasonForUsingQuietUi());
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::SECONDARY_ACTION);
@@ -217,12 +218,20 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
-  // TODO(http://crbug.com/458351800): Open PageInfo.
+  if (!dialog_controller_) {
+    dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
+        this, web_contents_);
+  }
+  // TODO(crbug.com/458351800): PageInfo is empty. I need to propagate
+  // Notifications permission in the PageInfo because it is not there.
+  dialog_controller_->ShowPageInfo();
+  messages::MessageDispatcherBridge::Get()->DismissMessage(
+      message_.get(), messages::DismissReason::PRIMARY_ACTION);
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     messages::DismissReason reason) {
-  // TODO(http://crbug.com/458351800): Add logic for dismiss.
+  // TODO(crbug.com/458351800): Add logic for dismiss.
 }
 
 void PermissionBlockedMessageDelegate::DismissInternal() {
