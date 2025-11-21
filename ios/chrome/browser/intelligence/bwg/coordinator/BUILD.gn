@@ -64,6 +64,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/model:unit_tests",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:test_support",

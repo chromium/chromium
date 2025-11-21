@@ -11,6 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
@@ -18,6 +20,7 @@
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -517,14 +520,16 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 
   latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
       optimization_guide::proto::GlicContextualCueingMetadata>();
+
   if (!latest_load_contextual_cueing_metadata_) {
     return;
   }
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  // TODO(crbug.com/453978851): Leverage engagement tracker events to track
-  // these conditions instead of checking prefs manually.
+
+  // TODO (crbug.com/461595639): Remove pref checks to fully migrate logic to
+  // FET.
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
   bool bwg_promo_shown =
       profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
@@ -533,7 +538,10 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 
   // Show promo if eligible.
   if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
-      !floaty_shown && !bwg_promo_shown) {
+      !floaty_shown && !bwg_promo_shown &&
+      feature_engagement::TrackerFactory::GetForProfile(profile)
+          ->WouldTriggerHelpUI(
+              feature_engagement::kIPHiOSGeminiFullscreenPromoFeature)) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
     return;
   }

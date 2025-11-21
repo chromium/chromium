@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -55,6 +57,9 @@ class GeminiCoordinatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
                               base::BindOnce(&CreateTestTracker));
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.SetName(kFirstProfileName);
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
@@ -118,6 +123,9 @@ TEST_F(GeminiCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
   EXPECT_CALL(
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion));
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(feature_engagement::events::kIOSGeminiFlowStartedNonPromo));
 
   StartCoordinatorWithEntryPoint(bwg::EntryPoint::AIHub);
 
@@ -127,7 +135,8 @@ TEST_F(GeminiCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
 
 // Tests fullscreen mode exiting when promo shows from the promo entry point.
 TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
-  feature_list_.InitWithFeatures({kGeminiNavigationPromo, kAskGeminiChip}, {});
+  feature_list_.InitWithFeatures(
+      {kGeminiNavigationPromo, kAskGeminiChip, kPageActionMenu}, {});
   auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForProfile(
           profile_manager_.GetProfileWithName(kFirstProfileName)));
@@ -139,12 +148,18 @@ TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
       TestFullscreenController::FromBrowser(browser_.get());
   controller->EnterFullscreen();
   ASSERT_EQ(0.0, controller->GetProgress());
-
   EXPECT_CALL(
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion));
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiFullscreenPromoTriggered));
 
-  EXPECT_CALL(*tracker, NotifyEvent("fullscreen_promos_group_trigger"));
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSFullscreenPromosGroupTrigger));
 
   StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
 
@@ -167,6 +182,15 @@ TEST_F(GeminiCoordinatorTest, GeminiPromoNotShown) {
   EXPECT_CALL(
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion))
+      .Times(0);
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiFullscreenPromoTriggered))
+      .Times(0);
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(feature_engagement::events::kIOSFullscreenPromosGroupTrigger))
       .Times(0);
 
   StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);

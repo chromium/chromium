@@ -2940,6 +2940,37 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSGeminiFullscreenPromoFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    // This feature is part of the standard iOS fullscreen promo group.
+    config.groups.push_back(kiOSFullscreenPromosGroup.name);
+    // Show promo only to users that are not recent.
+    config.event_configs.insert(EventConfig(
+        events::kIOSFirstRunComplete, Comparator(GREATER_THAN_OR_EQUAL, 1),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+    config.event_configs.insert(
+        EventConfig(events::kIOSFirstRunComplete, Comparator(EQUAL, 0), 1,
+                    feature_engagement::kMaxStoragePeriod));
+    // Show promo only if user has never started the Gemini flow before.
+    config.used =
+        EventConfig(events::kIOSGeminiFlowStartedNonPromo, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The promo should only be shown once.
+    config.trigger =
+        EventConfig(events::kIOSGeminiFullscreenPromoTriggered,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // Show promo only if user never give consent.
+    config.event_configs.insert(
+        EventConfig(events::kIOSGeminiConsentGiven, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

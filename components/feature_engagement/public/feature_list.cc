@@ -199,6 +199,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSHomepageLensNewBadge,
     &kIPHiOSHomepageCustomizationNewBadge,
     &kIPHiOSAIHubNewBadge,
+    &kIPHiOSGeminiFullscreenPromoFeature,
     &kIPHiOSGeminiContextualCueChip,
     &kIPHiOSReaderModeOptionsFeature,
 #endif  // BUILDFLAG(IS_IOS)

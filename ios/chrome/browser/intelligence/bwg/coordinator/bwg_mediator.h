@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 
 @protocol ApplicationCommands;
@@ -24,7 +25,8 @@ class WebStateList;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)BWGService
-                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent;
+                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
+                            tracker:(feature_engagement::Tracker*)tracker;
 
 // The delegate for this mediator.
 @property(nonatomic, weak) id<BWGMediatorDelegate> delegate;

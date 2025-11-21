@@ -384,6 +384,9 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 // FET feature flag that enables AI Hub "New" badge.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSAIHubNewBadge);
 
+// FET feature flag that enabled the Gemini fullscreen promo.
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiFullscreenPromoFeature);
+
 // FET feature flag that enables omnibox Gemini contextual cue chip.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiContextualCueChip);
 

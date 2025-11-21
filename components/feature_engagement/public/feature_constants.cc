@@ -859,6 +859,10 @@ BASE_FEATURE(kIPHiOSAIHubNewBadge,
              "IPH_iOSAIHubNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSGeminiFullscreenPromoFeature,
+             "IPH_iOSGeminiFullscreenPromoFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIPHiOSGeminiContextualCueChip,
              "IPH_iOSGeminiContextualCueChip",
              base::FEATURE_ENABLED_BY_DEFAULT);

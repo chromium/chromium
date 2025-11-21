@@ -10,7 +10,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
@@ -19,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -55,13 +59,17 @@
 
   // Whether the FRE was presented for the current BWG instance.
   BOOL _didPresentBWGFRE;
+
+  // The feature engagement tracker.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)BWGService
-                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent {
+                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
+                            tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     _prefService = prefService;
@@ -69,6 +77,7 @@
     _baseViewController = baseViewController;
     _BWGService = BWGService;
     _BWGBrowserAgent = BWGBrowserAgent;
+    _tracker = tracker;
   }
   return self;
 }
@@ -96,7 +105,6 @@
       return;
     }
     BWGTabHelper->SetIsFirstRun(true);
-
     return;
   }
 
@@ -108,6 +116,9 @@
 // Did consent to BWG.
 - (void)didConsentBWG {
   _prefService->SetBoolean(prefs::kIOSBwgConsent, YES);
+  if (IsGeminiNavigationPromoEnabled()) {
+    _tracker->NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven);
+  }
   __weak __typeof(self) weakSelf = self;
   [_delegate dismissBWGConsentUIWithCompletion:^{
     [weakSelf prepareBWGOverlay];
