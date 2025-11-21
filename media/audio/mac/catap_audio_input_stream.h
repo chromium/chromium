@@ -53,6 +53,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
     bool capture_default_device;
     bool mute_local_device;
     bool exclude_chrome;
+    std::optional<pid_t> capture_application_process_id;
 
     // Returns a human-readable string describing |*this|.  For debugging & test
     // output only.

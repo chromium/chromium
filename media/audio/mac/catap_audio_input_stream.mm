@@ -24,6 +24,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/catap_api.h"
@@ -243,13 +244,15 @@ bool IsLoopbackDevice(const std::string& device_id) {
          device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
          device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast ||
          device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
-         device_id == AudioDeviceDescription::kLoopbackAllDevicesId;
+         device_id == AudioDeviceDescription::kLoopbackAllDevicesId ||
+         AudioDeviceDescription::IsApplicationLoopbackDevice(device_id);
 }
 
 // True if the capturer should be configured to only capture the default
 // device.
 bool IsDefaultOutputDeviceLoopback(const std::string& device_id) {
   return device_id != AudioDeviceDescription::kLoopbackAllDevicesId &&
+         !AudioDeviceDescription::IsApplicationLoopbackDevice(device_id) &&
          !base::FeatureList::IsEnabled(kMacCatapCaptureAllDevices);
 }
 
@@ -390,7 +393,12 @@ CatapAudioInputStreamSource::Config::Config(const AudioParameters& params,
       frames_per_buffer(params.frames_per_buffer()),
       capture_default_device(IsDefaultOutputDeviceLoopback(device_id)),
       mute_local_device(MuteLocalPlaybackLoopback(device_id)),
-      exclude_chrome(ExcludeChromeLoopback(device_id)) {}
+      exclude_chrome(ExcludeChromeLoopback(device_id)),
+      capture_application_process_id(
+          AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)
+              ? std::make_optional(
+                    GetApplicationIdFromApplicationLoopbackDeviceId(device_id))
+              : std::nullopt) {}
 
 std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
   std::ostringstream s;
@@ -401,6 +409,10 @@ std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
     << ", mute_local_device: " << mute_local_device
     << ", exclude_chrome: " << exclude_chrome
     << ", catap_channels: " << catap_channels;
+  if (capture_application_process_id) {
+    s << ", capture_application_process_id: "
+      << *capture_application_process_id;
+  }
   return s.str();
 }
 
@@ -455,28 +467,48 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
     return AudioInputStream::OpenOutcome::kAlreadyOpen;
   }
 
-  NSArray<NSNumber*>* process_audio_device_ids_to_exclude = @[];
-  if (config_.exclude_chrome) {
-    // Get a list of all CoreAudio process device IDs that belong to the Chrome
-    // audio service.
-    pid_t chrome_audio_service_pid = getpid();
-    process_audio_device_ids_to_exclude =
-        GetProcessAudioDeviceIds(chrome_audio_service_pid);
-    if (![process_audio_device_ids_to_exclude count]) {
+  if (config_.capture_application_process_id) {
+    // Get a list of all CoreAudio process device IDs that belong to the
+    // specified application process.
+    pid_t application_pid = *config_.capture_application_process_id;
+    NSArray<NSNumber*>* process_audio_device_ids_to_include =
+        GetProcessAudioDeviceIds(application_pid);
+    if (![process_audio_device_ids_to_include count]) {
       ReportOpenStatus(OpenStatus::kGetProcessAudioDeviceIdsReturnedEmpty,
                        timer.Elapsed());
       SendLogMessage("%s => Could not determine audio objects that belong to "
-                     "the audio service.",
+                     "the application process.",
                      __func__);
+      return AudioInputStream::OpenOutcome::kFailed;
     }
-  }
+    // Mix the given process to a stereo stream. We will not select default
+    // device below when we capture application audio.
+    tap_description_ = [[CATapDescription alloc]
+        initStereoMixdownOfProcesses:process_audio_device_ids_to_include];
+  } else {
+    NSArray<NSNumber*>* process_audio_device_ids_to_exclude = @[];
+    if (config_.exclude_chrome) {
+      // Get a list of all CoreAudio process device IDs that belong to the
+      // Chrome audio service.
+      pid_t chrome_audio_service_pid = getpid();
+      process_audio_device_ids_to_exclude =
+          GetProcessAudioDeviceIds(chrome_audio_service_pid);
+      if (![process_audio_device_ids_to_exclude count]) {
+        ReportOpenStatus(OpenStatus::kGetProcessAudioDeviceIdsReturnedEmpty,
+                         timer.Elapsed());
+        SendLogMessage("%s => Could not determine audio objects that belong to "
+                       "the audio service.",
+                       __func__);
+      }
+    }
 
-  // Default initialization: Mix all processes to a stereo stream except the
-  // given processes. The default output device is selected below unless the
-  // device ID specifies that all devices should be captured.
-  tap_description_ =
-      [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:
-                                    process_audio_device_ids_to_exclude];
+    // Default initialization: Mix all processes to a stereo stream except the
+    // given processes. The default output device is selected below unless the
+    // device ID specifies that all devices should be captured.
+    tap_description_ =
+        [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:
+                                      process_audio_device_ids_to_exclude];
+  }
 
   if (tap_description_ == nil) {
     ReportOpenStatus(OpenStatus::kErrorCreatingTapDescription, timer.Elapsed());
@@ -1092,6 +1124,12 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
 
   CatapAudioInputStreamSource::Config config(params_, device_id_,
                                              force_mono_capture);
+
+  if (AudioDeviceDescription::IsApplicationLoopbackDevice(device_id_) &&
+      !config.capture_application_process_id) {
+    SendLogMessage("%s => No valid Application PID to capture.", __func__);
+    return AudioInputStream::OpenOutcome::kFailed;
+  }
 
   source_ = std::make_unique<CatapAudioInputStreamSource>(
       catap_api_.get(), config, log_callback_, this);

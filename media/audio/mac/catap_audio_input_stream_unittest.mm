@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
@@ -659,11 +660,58 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
     std::set<AudioObjectID> device_ids_to_exclude = {kChromeProcessDeviceId};
     EXPECT_EQ([fake_catap_api()->last_tap_description processes].count,
               device_ids_to_exclude.size());
+    // For system audio loopback, the `processes` list contains the specific
+    // `AudioObjects` we want to exclude from capture. Therefore, the
+    // `exclusive` flag must be true.
+    EXPECT_TRUE([fake_catap_api()->last_tap_description isExclusive]);
     for (NSNumber* device_id_number in
          [fake_catap_api()->last_tap_description processes]) {
       EXPECT_TRUE(device_ids_to_exclude.count(
           static_cast<AudioObjectID>([device_id_number intValue])));
     }
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
+  if (@available(macOS 14.2, *)) {
+    base::ProcessId process_id = getpid();
+    CreateStream(
+        /*with_permissions=*/true,
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+
+    // Arbitrary number of CoreAudio process audio device IDs to be returned by
+    // GetProcessAudioDeviceIds.
+    constexpr AudioDeviceID kProcessFirstDeviceId = 1;
+    constexpr AudioDeviceID kProcessSecondDeviceId = 2;
+    constexpr AudioDeviceID kOtherProcessDeviceId = 3;
+    fake_catap_api()->process_audio_devices = {
+        kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
+    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id;
+    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id;
+    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    // Initialize the stream.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+
+    // The device with the current process ID should be included.
+    std::set<AudioObjectID> device_ids_to_include = {kProcessFirstDeviceId,
+                                                     kProcessSecondDeviceId};
+    EXPECT_EQ([fake_catap_api()->last_tap_description processes].count,
+              device_ids_to_include.size());
+    // For application loopback, the `processes` list contains the specific
+    // `AudioObjects` we want to capture (include). Therefore, the `exclusive`
+    // flag must be false.
+    EXPECT_FALSE([fake_catap_api()->last_tap_description isExclusive]);
+    for (NSNumber* device_id_number in
+         [fake_catap_api()->last_tap_description processes]) {
+      EXPECT_TRUE(device_ids_to_include.count(
+          static_cast<AudioObjectID>([device_id_number intValue])));
+    }
+
+    // In application loopback we capture all output devices. In that case
+    // Device UID and stream should not have been set.
+    EXPECT_EQ([fake_catap_api()->last_tap_description deviceUID], nullptr);
+    EXPECT_EQ([fake_catap_api()->last_tap_description stream], nullptr);
   }
 }
 
