@@ -124,7 +124,6 @@ void DriveUploadObserver::OnEndUpload(bool success) {
     no_sync_update_timeout_.Reset();
   }
 
-  // TODO(b/343879839): Error UMA.
   // If the file sync to to Drive was unsuccessful, delete the file from the
   // Local cache.
   if (!success) {
