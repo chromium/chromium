@@ -878,6 +878,9 @@ CreateInputDataFromAnnotatedPageContent(
   [self updateOptionToAttachCurrentTab];
   if (_items.count > 0) {
     [self.consumer setAIModeEnabled:YES];
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kComposeboxUsesChromeComposeClient)) {
+    [self.delegate reloadAutocompleteSuggestions];
   }
 }
 
