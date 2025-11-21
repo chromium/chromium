@@ -89,6 +89,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/browser_ui/accessibility/android/features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/collaboration/public/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -10966,7 +10967,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-zoom-indicator", flag_descriptions::kAndroidZoomIndicatorName,
      flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidZoomIndicator)},
+     FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
 
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,

@@ -10,7 +10,7 @@ import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -34,7 +34,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomIn(@Nullable WebContents webContents) {
-        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
             return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
         }
         return changeZoomLevel(webContents, /* zoomIn= */ false);
@@ -48,7 +48,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomOut(@Nullable WebContents webContents) {
-        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
             return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
         }
         return changeZoomLevel(webContents, /* zoomIn= */ true);
@@ -63,7 +63,7 @@ public class ZoomController {
     public static boolean zoomReset(
             @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle) {
-        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
             return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
         }
         if (webContents == null || browserContextHandle == null) return false;

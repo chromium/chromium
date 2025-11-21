@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -883,7 +884,7 @@ class LocationBarMediator
     /* package */ void zoomButtonClicked(View view) {
         WebContents webContents = getWebContentsForCurrentTab();
         if (mPageZoomIndicatorCoordinator == null || webContents == null) return;
-        assert ChromeFeatureList.sAndroidZoomIndicator.isEnabled();
+        assert AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled();
         mPageZoomIndicatorCoordinator.show(webContents);
     }
 
@@ -1405,7 +1406,7 @@ class LocationBarMediator
     @VisibleForTesting
     boolean shouldShowZoomButton() {
         if (mUrlHasFocus || mIsUrlFocusChangeInProgress) return false;
-        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()
+        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()
                 || !mIsTablet
                 || mPageZoomIndicatorCoordinator == null
                 || getWebContentsForCurrentTab() == null

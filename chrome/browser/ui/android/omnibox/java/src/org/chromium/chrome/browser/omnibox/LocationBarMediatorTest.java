@@ -97,6 +97,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -138,6 +139,7 @@ import java.util.Map;
         })
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
+    AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR,
 })
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorTest {
@@ -1930,7 +1932,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testZoomButtonClicked() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -1939,7 +1941,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_featureEnabledAndNotDefaultZoom() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -1948,7 +1950,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_featureEnabledAndDefaultZoom() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -1957,7 +1959,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @DisableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_featureDisabled() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -1966,7 +1968,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_nullWebContents() {
         mMediator.onFinishNativeInitialization();
         doReturn(null).when(mTab).getWebContents();
@@ -1974,7 +1976,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testUpdateZoomButtonVisibility_popupShowing() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -1985,7 +1987,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_INDICATOR)
+    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testUpdateZoomButtonVisibility_hideButton() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -2105,7 +2107,7 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
-        ChromeFeatureList.ANDROID_ZOOM_INDICATOR
+        AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR
     })
     public void testZoomButtonToolbarWidthConsumer_notVisible() {
         int buttonWidth =
@@ -2131,7 +2133,7 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
-        ChromeFeatureList.ANDROID_ZOOM_INDICATOR
+        AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR
     })
     public void testZoomButtonToolbarWidthConsumer() {
         int buttonWidth =

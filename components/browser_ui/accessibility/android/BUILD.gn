@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("accessibility_jni_headers") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
   ]
@@ -14,6 +15,9 @@ generate_jni("accessibility_jni_headers") {
 
 source_set("android") {
   sources = [
+    "accessibility_feature_map.cc",
+    "features.cc",
+    "features.h",
     "font_size_prefs_android.cc",
     "font_size_prefs_android.h",
     "page_zoom_metrics.cc",
@@ -37,6 +41,7 @@ android_library("constants_java") {
 android_library("lib_java") {
   srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
