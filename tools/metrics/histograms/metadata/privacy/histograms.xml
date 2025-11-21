@@ -1381,17 +1381,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNoticeAction" variants="PSNoticeAction"/>
 </histogram>
 
-<histogram name="PrivacySandbox.Notice.Migration.PromptTypeCombination"
-    enum="PrivacySandboxPromptTypeCombination" expires_after="2026-05-07">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the combination of prompt types calculated by the Privacy Sandbox
-    Service and the Notice Service. This is recorded each time
-    GetRequiredPromptType() is called.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.Notice.NotHoldingHandle.InQueue" units="counts"
     expires_after="2026-03-28">
   <owner>aashnas@google.com</owner>

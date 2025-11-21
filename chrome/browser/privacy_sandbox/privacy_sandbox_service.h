@@ -43,67 +43,6 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kM1NoticeRestricted,
   };
 
-  // Combination of `PromptType` from the Privacy Sandbox Service (PS) and the
-  // Notice Service (NS). Used for UMA logging. The value is calculated as:
-  // `ps_prompt_type | (notice_service_prompt_type << 3)`.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(PrivacySandboxPromptTypeCombination)
-  enum class PromptTypeCombination {
-    // PS = 0 (kNone), NS = 0 (kNone)
-    kPSNone_NSNone = 0,
-    // PS = 1 (kM1Consent), NS = 0 (kNone)
-    kPSConsent_NSNone = 1,
-    // PS = 2 (kM1NoticeROW), NS = 0 (kNone)
-    kPSNoticeROW_NSNone = 2,
-    // PS = 3 (kM1NoticeEEA), NS = 0 (kNone)
-    kPSNoticeEEA_NSNone = 3,
-    // PS = 4 (kM1NoticeRestricted), NS = 0 (kNone)
-    kPSNoticeRestricted_NSNone = 4,
-    // PS = 0 (kNone), NS = 1 (kM1Consent)
-    kPSNone_NSConsent = 8,
-    // PS = 1 (kM1Consent), NS = 1 (kM1Consent)
-    kPSConsent_NSConsent = 9,
-    // PS = 2 (kM1NoticeROW), NS = 1 (kM1Consent)
-    kPSNoticeROW_NSConsent = 10,
-    // PS = 3 (kM1NoticeEEA), NS = 1 (kM1Consent)
-    kPSNoticeEEA_NSConsent = 11,
-    // PS = 4 (kM1NoticeRestricted), NS = 1 (kM1Consent)
-    kPSNoticeRestricted_NSConsent = 12,
-    // PS = 0 (kNone), NS = 2 (kM1NoticeROW)
-    kPSNone_NSNoticeROW = 16,
-    // PS = 1 (kM1Consent), NS = 2 (kM1NoticeROW)
-    kPSConsent_NSNoticeROW = 17,
-    // PS = 2 (kM1NoticeROW), NS = 2 (kM1NoticeROW)
-    kPSNoticeROW_NSNoticeROW = 18,
-    // PS = 3 (kM1NoticeEEA), NS = 2 (kM1NoticeROW)
-    kPSNoticeEEA_NSNoticeROW = 19,
-    // PS = 4 (kM1NoticeRestricted), NS = 2 (kM1NoticeROW)
-    kPSNoticeRestricted_NSNoticeROW = 20,
-    // PS = 0 (kNone), NS = 3 (kM1NoticeEEA)
-    kPSNone_NSNoticeEEA = 24,
-    // PS = 1 (kM1Consent), NS = 3 (kM1NoticeEEA)
-    kPSConsent_NSNoticeEEA = 25,
-    // PS = 2 (kM1NoticeROW), NS = 3 (kM1NoticeEEA)
-    kPSNoticeROW_NSNoticeEEA = 26,
-    // PS = 3 (kM1NoticeEEA), NS = 3 (kM1NoticeEEA)
-    kPSNoticeEEA_NSNoticeEEA = 27,
-    // PS = 4 (kM1NoticeRestricted), NS = 3 (kM1NoticeEEA)
-    kPSNoticeRestricted_NSNoticeEEA = 28,
-    // PS = 0 (kNone), NS = 4 (kM1NoticeRestricted)
-    kPSNone_NSNoticeRestricted = 32,
-    // PS = 1 (kM1Consent), NS = 4 (kM1NoticeRestricted)
-    kPSConsent_NSNoticeRestricted = 33,
-    // PS = 2 (kM1NoticeROW), NS = 4 (kM1NoticeRestricted)
-    kPSNoticeROW_NSNoticeRestricted = 34,
-    // PS = 3 (kM1NoticeEEA), NS = 4 (kM1NoticeRestricted)
-    kPSNoticeEEA_NSNoticeRestricted = 35,
-    // PS = 4 (kM1NoticeRestricted), NS = 4 (kM1NoticeRestricted)
-    kPSNoticeRestricted_NSNoticeRestricted = 36,
-    kMaxValue = kPSNoticeRestricted_NSNoticeRestricted,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPromptTypeCombination)
-
   // A list of the client surfaces we show consents / notices on.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class SurfaceType {

@@ -646,76 +646,18 @@ bool PrivacySandboxServiceImpl::ShouldDisablePrompt() {
   return false;
 }
 
-PromptType PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
-    SurfaceType surface_type) {
-  if (ShouldDisablePrompt()) {
-    return PromptType::kNone;
-  }
-
-  // Only one of the consent or notice should be required.
-  DCHECK(!IsNoticeRequired() || !IsConsentRequired());
-
-  // Check for and update suppression reasons. If suppressed, no prompt.
-  if (UpdateAndGetSuppressionReason()) {
-    return PromptType::kNone;
-  }
-
-  // At this point, no existing or newly determined suppression reason applies.
-  // Proceed to determine the specific prompt type based on remaining
-  // conditions.
-  if (IsRestrictedNoticeRequired()) {
-    CHECK(IsConsentRequired() || IsNoticeRequired());
-    if (HasAckedAnyMeasurementNotice(pref_service_)) {
-      return PromptType::kNone;
-    }
-    if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
-      return PromptType::kM1NoticeRestricted;
-    }
-  }
-
-  if (IsConsentRequired()) {
-    if (!pref_service_->GetBoolean(
-            prefs::kPrivacySandboxM1ConsentDecisionMade)) {
-      return PromptType::kM1Consent;
-    }
-    if (!pref_service_->GetBoolean(
-            prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
-      return PromptType::kM1NoticeEEA;
-    }
-    return PromptType::kNone;
-  }
-
-  DCHECK(IsNoticeRequired());
-
-  if (pref_service_->GetBoolean(
-          prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
-      pref_service_->GetBoolean(
-          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged)) {
-    return PromptType::kNone;
-  } else {
-    return PromptType::kM1NoticeROW;
-  }
-}
-
 PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
     SurfaceType surface_type) {
   // TODO(crbug.com/441942835) deprecate the user of force prompt test params.
   if (auto prompt_override = GetRequiredPromptTypeOverride()) {
     return *prompt_override;
   }
-  PromptType ps_prompt_type = GetRequiredPromptTypeInternal(surface_type);
   PromptType notice_service_prompt_type = PromptType::kNone;
   if (auto* notice_service =
           PrivacySandboxNoticeServiceFactory::GetForProfile(profile_)) {
     notice_service_prompt_type = ToPromptType(
         notice_service->GetRequiredNotices(ToNoticeSurfaceType(surface_type)));
   }
-
-  base::UmaHistogramEnumeration(
-      "PrivacySandbox.Notice.Migration.PromptTypeCombination",
-      static_cast<PromptTypeCombination>(
-          static_cast<int>(ps_prompt_type) |
-          (static_cast<int>(notice_service_prompt_type) << 3)));
 
   return notice_service_prompt_type;
 }

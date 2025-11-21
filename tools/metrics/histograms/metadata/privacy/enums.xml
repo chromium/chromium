@@ -408,38 +408,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_pending_contributions.h:TruncationResult) -->
 
-<!-- LINT.IfChange(PrivacySandboxPromptTypeCombination) -->
-
-<enum name="PrivacySandboxPromptTypeCombination">
-  <int value="0" label="PSNone_NSNone"/>
-  <int value="1" label="PSConsent_NSNone"/>
-  <int value="2" label="PSNoticeROW_NSNone"/>
-  <int value="3" label="PSNoticeEEA_NSNone"/>
-  <int value="4" label="PSNoticeRestricted_NSNone"/>
-  <int value="8" label="PSNone_NSConsent"/>
-  <int value="9" label="PSConsent_NSConsent"/>
-  <int value="10" label="PSNoticeROW_NSConsent"/>
-  <int value="11" label="PSNoticeEEA_NSConsent"/>
-  <int value="12" label="PSNoticeRestricted_NSConsent"/>
-  <int value="16" label="PSNone_NSNoticeROW"/>
-  <int value="17" label="PSConsent_NSNoticeROW"/>
-  <int value="18" label="PSNoticeROW_NSNoticeROW"/>
-  <int value="19" label="PSNoticeEEA_NSNoticeROW"/>
-  <int value="20" label="PSNoticeRestricted_NSNoticeROW"/>
-  <int value="24" label="PSNone_NSNoticeEEA"/>
-  <int value="25" label="PSConsent_NSNoticeEEA"/>
-  <int value="26" label="PSNoticeROW_NSNoticeEEA"/>
-  <int value="27" label="PSNoticeEEA_NSNoticeEEA"/>
-  <int value="28" label="PSNoticeRestricted_NSNoticeEEA"/>
-  <int value="32" label="PSNone_NSNoticeRestricted"/>
-  <int value="33" label="PSConsent_NSNoticeRestricted"/>
-  <int value="34" label="PSNoticeROW_NSNoticeRestricted"/>
-  <int value="35" label="PSNoticeEEA_NSNoticeRestricted"/>
-  <int value="36" label="PSNoticeRestricted_NSNoticeRestricted"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:PrivacySandboxPromptTypeCombination) -->
-
 <!-- LINT.IfChange(PrivacySandboxSentimentSurveyStatus) -->
 
 <enum name="PrivacySandboxSentimentSurveyStatus">
