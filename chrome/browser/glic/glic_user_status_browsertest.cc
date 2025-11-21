@@ -144,7 +144,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        account->email, signin::ConsentLevel::kSync);
+        account->email, signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_model_execution_features(true);
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(
 
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-      enterpriseAccount.email, signin::ConsentLevel::kSync);
+      enterpriseAccount.email, signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_use_model_execution_features(true);

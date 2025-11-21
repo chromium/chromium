@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -268,8 +269,11 @@ void InvalidateAccount(Profile* profile) {
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           identity_manager->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin)));
-  ASSERT_FALSE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    ASSERT_FALSE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  }
   ASSERT_TRUE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
