@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
@@ -1573,6 +1574,11 @@ static xmlEntityPtr GetEntityHandler(void* closure, const xmlChar* name) {
   }
 
   ent = xmlGetDocEntity(ctxt->myDoc, name);
+
+  if (ent && ent->etype == XML_EXTERNAL_GENERAL_PARSED_ENTITY) {
+    GetParser(closure)->DidSeeExternalEntity();
+  }
+
   if (!ent && GetParser(closure)->IsXHTMLDocument()) {
     ent = GetXHTMLEntity(name);
     if (ent) {
@@ -1681,6 +1687,25 @@ void XMLDocumentParser::DoEnd() {
 
       context_ = nullptr;
     }
+  }
+
+  auto* window = GetDocument()->domWindow();
+
+  // Don't issue the warning when we have moved from deprecation to removal.
+  if (!RuntimeEnabledFeatures::XMLNoExternalEntitiesEnabled() && !saw_error_ &&
+      !saw_xsl_transform_ && saw_external_entity_ && window) {
+    GetDocument()->CountDeprecation(WebFeature::kXMLExternalResourceLoadEntitiesOnly);
+
+    // The previous line counts this as a deprecation, but add an
+    // explicit message here, due to crbug.com/40069336.
+    window->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            ConsoleMessage::Source::kDeprecation,
+            ConsoleMessage::Level::kWarning,
+            "Externally loaded entities in XML parsing have been deprecated "
+            "and will be removed from this browser soon. See "
+            "https://chromestatus.com/feature/6734457763659776."),
+        /*discard_duplicates=*/true);
   }
 
   bool xml_viewer_mode = !saw_error_ && !saw_css_ && !saw_xsl_transform_ &&

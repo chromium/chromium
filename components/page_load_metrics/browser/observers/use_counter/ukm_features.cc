@@ -460,6 +460,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kXSLProcessingInstruction,
           WebFeature::kXSLTProcessor,
           WebFeature::kXMLExternalResourceLoad,
+          WebFeature::kXMLExternalResourceLoadEntitiesOnly,
           WebFeature::kProofreader_Create,
           WebFeature::kProofreader_Proofread,
           WebFeature::kDeviceBoundSessionRegistered,
