@@ -86,7 +86,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
   ${urlListItem}
 </cr-expand-button>
   ${this.toggleExpand ? html`
-    ${this.bookmark.children!.map(item => html`
+    ${this.sortedChildren.map(item => html`
       <power-bookmark-row
           id="bookmark-${item.id}"
           .bookmark="${item}"
@@ -104,6 +104,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
           ?has-active-drag="${this.hasActiveDrag}"
           .activeFolderPath="${this.activeFolderPath}"
           .contextMenuBookmark="${this.contextMenuBookmark}"
+          .activeSortIndex="${this.activeSortIndex}"
           ?has-folders="${true}">
       </power-bookmark-row>
     `)}`: ''

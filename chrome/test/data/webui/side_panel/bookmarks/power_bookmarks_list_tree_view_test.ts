@@ -5,6 +5,7 @@
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
 import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
@@ -19,10 +20,197 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTestBookmarks, getBookmarks, getPowerBookmarksRowElement, initializeUi} from './power_bookmarks_list_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
+
+const nestedBookmarks: BookmarksTreeNode[] = [
+  {
+    id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+    parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
+    index: 0,
+    title: 'Other Bookmarks',
+    url: null,
+    dateAdded: null,
+    dateLastUsed: null,
+    unmodifiable: false,
+    children: [
+      {
+        id: '3',
+        parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+        index: 0,
+        title: 'Child folder',
+        url: null,
+        dateAdded: 4,
+        dateLastUsed: null,
+        unmodifiable: false,
+        children: [
+          {
+            id: '7',
+            parentId: '3',
+            index: 0,
+            title: 'Nested bookmark',
+            url: 'http://nested/bookmark/',
+            dateAdded: 1,
+            dateLastUsed: 10,
+            unmodifiable: false,
+            children: null,
+          },
+        ],
+      },
+      {
+        id: '4',
+        parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+        index: 1,
+        title: 'Child folder',
+        url: null,
+        dateAdded: 2,
+        dateLastUsed: null,
+        unmodifiable: false,
+        children: [
+          {
+            id: '8',
+            parentId: '4',
+            index: 0,
+            title: 'Nested bookmark',
+            url: 'http://nested/bookmark/',
+            dateAdded: 5,
+            dateLastUsed: 6,
+            unmodifiable: false,
+            children: null,
+          },
+        ],
+      },
+      {
+        id: '5',
+        parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+        index: 2,
+        title: 'Child folder',
+        url: null,
+        dateAdded: 6,
+        dateLastUsed: null,
+        unmodifiable: false,
+        children: [
+          {
+            id: '10',
+            parentId: '5',
+            index: 0,
+            title: 'Child folder Q',
+            url: null,
+            dateAdded: 8,
+            dateLastUsed: null,
+            unmodifiable: false,
+            children: [
+              {
+                id: '13',
+                parentId: '10',
+                index: 0,
+                title: 'Nested folder',
+                url: null,
+                dateAdded: 0,
+                dateLastUsed: null,
+                unmodifiable: false,
+                children: [],
+              },
+            ],
+          },
+          {
+            id: '21',
+            parentId: '5',
+            index: 0,
+            title: 'Child folder P',
+            url: null,
+            dateAdded: 8,
+            dateLastUsed: null,
+            unmodifiable: false,
+            children: [
+              {
+                id: '25',
+                parentId: '21',
+                index: 0,
+                title: 'Nested folder',
+                url: null,
+                dateAdded: 0,
+                dateLastUsed: null,
+                unmodifiable: false,
+                children: [],
+              },
+            ],
+          },
+          {
+            id: '22',
+            parentId: '5',
+            index: 0,
+            title: 'Nested bookmark X',
+            url: 'http://nested/bookmark/',
+            dateAdded: 9,
+            dateLastUsed: 1,
+            unmodifiable: false,
+            children: null,
+          },
+          {
+            id: '23',
+            parentId: '5',
+            index: 0,
+            title: 'Nested bookmark Z',
+            url: 'http://nested/bookmark/',
+            dateAdded: 9,
+            dateLastUsed: 1,
+            unmodifiable: false,
+            children: null,
+          },
+          {
+            id: '24',
+            parentId: '5',
+            index: 0,
+            title: 'Nested bookmark A',
+            url: 'http://nested/bookmark/',
+            dateAdded: 9,
+            dateLastUsed: 1,
+            unmodifiable: false,
+            children: null,
+          },
+        ],
+      },
+      {
+        id: '6',
+        parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+        index: 3,
+        title: 'Child folder',
+        url: null,
+        dateAdded: 3,
+        dateLastUsed: null,
+        unmodifiable: false,
+        children: [
+          {
+            id: '12',
+            parentId: '6',
+            index: 0,
+            title: 'Child folder',
+            url: null,
+            dateAdded: 3,
+            dateLastUsed: null,
+            unmodifiable: false,
+            children: [
+              {
+                id: '14',
+                parentId: '12',
+                index: 0,
+                title: 'Nested bookmark',
+                url: 'http://nested/bookmark/',
+                dateAdded: 9,
+                dateLastUsed: 1,
+                unmodifiable: false,
+                children: null,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
 
 const ARROW_RIGHT_EVENT = new KeyboardEvent(
     'keydown', {key: 'ArrowRight', bubbles: true, composed: true});
@@ -102,6 +290,70 @@ suite('TreeView', () => {
             '#expandButton');
     // Assert that the expand button is not present for single bookmarks
     assertFalse(!!expandButton);
+  });
+
+  test('SortsNestedBookmarksLists', async () => {
+    bookmarksApi = new TestBookmarksApiProxy();
+    bookmarksApi.setAllBookmarks(nestedBookmarks);
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
+    powerBookmarksList = await initializeUi(bookmarksApi);
+
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    assertTrue(!!folderRow);
+    assertFalse(folderRow.toggleExpand, 'Folder should be initially collapsed');
+
+    // Focus the item before sending key presses.
+    const urlListItem = folderRow.shadowRoot.querySelector('cr-url-list-item')!;
+    urlListItem.focus();
+    powerBookmarksList.getKeyboardNavigationServiceforTesting()
+        .setCurrentFocusIndex(folderRow);
+
+    // Expand with Right Arrow.
+    const toggleEvent =
+        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
+    await toggleEvent;
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+
+    // Default sort is kNewest.
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-5',
+          'bookmark-10',
+          'bookmark-21',
+          'bookmark-22',
+          'bookmark-23',
+          'bookmark-24',
+          'bookmark-6',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
+
+    folderRow.activeSortIndex = 4;
+    await microtasksFinished();
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-5',
+          'bookmark-10',
+          'bookmark-21',
+          'bookmark-23',
+          'bookmark-22',
+          'bookmark-24',
+          'bookmark-6',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
   });
 
   test('ShowsCorrectFoldersOnTreeView', () => {
