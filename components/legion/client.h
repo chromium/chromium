@@ -10,8 +10,11 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
@@ -29,6 +32,8 @@ class Client {
  public:
   using BinaryEncodedProtoRequest = Request;
   using BinaryEncodedProtoResponse = Response;
+
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
@@ -65,14 +70,16 @@ class Client {
   // Sends a request with a single text content.
   void SendTextRequest(proto::FeatureName feature_name,
                        const std::string& text,
-                       OnTextRequestCompletedCallback callback);
+                       OnTextRequestCompletedCallback callback,
+                       base::TimeDelta timeout = kDefaultTimeout);
 
   // Sends a `GenerateContentRequest`. The caller is responsible for populating
   // the `request` proto, including setting the content's role to "user".
   void SendGenerateContentRequest(
       proto::FeatureName feature_name,
       const proto::GenerateContentRequest& request,
-      OnGenerateContentRequestCompletedCallback callback);
+      OnGenerateContentRequestCompletedCallback callback,
+      base::TimeDelta timeout = kDefaultTimeout);
 
  private:
   friend class ClientTest;
@@ -85,11 +92,15 @@ class Client {
   // Sends a request over the secure channel.
   void SendRequest(int32_t request_id,
                    BinaryEncodedProtoRequest request,
-                   OnRequestCompletedCallback callback);
+                   OnRequestCompletedCallback callback,
+                   base::TimeDelta timeout = kDefaultTimeout);
 
   // Handles responses from the secure channel.
   void OnResponseReceived(
       base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
+
+  // Handles a request timeout.
+  void OnRequestTimeout(int32_t request_id);
 
   // Fails all pending requests with the given error code.
   void FailAllPendingRequests(ErrorCode error_code);
@@ -101,6 +112,11 @@ class Client {
   // Callbacks for requests that have been sent to the secure channel but have
   // not yet received a response.
   base::flat_map<int32_t, OnRequestCompletedCallback> pending_requests_;
+
+  // The request_ids of requests that have timed out.
+  base::flat_set<int32_t> timed_out_requests_;
+
+  base::WeakPtrFactory<Client> weak_factory_{this};
 };
 
 }  // namespace legion

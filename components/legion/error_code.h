@@ -29,6 +29,8 @@ enum class ErrorCode {
   kNoContent,
   // The server response did not contain a generate_content_response.
   kNoResponse,
+  // The request timed out. The client may retry the request.
+  kTimeout,
 };
 
 }  // namespace legion

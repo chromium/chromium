@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/legion/proto/legion.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,7 +113,9 @@ class ClientTest : public ::testing::Test {
         &FakeSecureChannelFactory::Create, base::Unretained(&factory_))));
   }
 
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Client> client_;
   FakeSecureChannelFactory factory_;
 };
@@ -246,6 +249,69 @@ TEST_F(ClientTest, SecureChannelRecreation) {
   const auto& second_result = second_future.Get();
   ASSERT_TRUE(second_result.has_value());
   EXPECT_EQ(second_result.value(), kExpectedResponseText);
+}
+
+// Test that a request times out correctly.
+TEST_F(ClientTest, SendTextRequestTimeout) {
+  // Mock the secure channel to never respond.
+  EXPECT_CALL(*factory_.secure_channel_, Write(_))
+      .WillOnce(testing::Return(true));
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback(), base::Seconds(10));
+
+  // The request is sent but no response is received yet.
+  ASSERT_FALSE(future.IsReady());
+
+  // Advance time to trigger the timeout callback.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+}
+
+// Test that a response received after a timeout is ignored.
+TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
+  // Mock the secure channel to not invoke the response callback.
+  EXPECT_CALL(*factory_.secure_channel_, Write(_))
+      .WillOnce(testing::Return(true));
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback(), base::Seconds(10));
+
+  // The request is sent but no response is received yet.
+  ASSERT_FALSE(future.IsReady());
+
+  // Advance time to trigger the timeout callback.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // The future should now be ready with a timeout error.
+  ASSERT_TRUE(future.IsReady());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+
+  // Now, simulate the response arriving late. This should not cause a crash or
+  // change the result.
+  proto::LegionResponse legion_response;
+  legion_response.set_request_id(1);
+  legion_response.mutable_generate_content_response()
+      ->add_candidates()
+      ->mutable_content()
+      ->add_parts()
+      ->set_text("late response");
+  std::string serialized_response;
+  legion_response.SerializeToString(&serialized_response);
+  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
+                                                   serialized_response.end());
+  factory_.response_callback_.Run(base::ok(response_data));
+
+  // To ensure the task runner has a chance to run the callback (which should be
+  // a no-op), we can run until idle.
+  task_environment_.RunUntilIdle();
 }
 
 // Test fixture for error conditions in SendTextRequest where the

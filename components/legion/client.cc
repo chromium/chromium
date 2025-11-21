@@ -9,9 +9,13 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "components/legion/attestation_handler_impl.h"
 #include "components/legion/features.h"
 #include "components/legion/proto/legion.pb.h"
@@ -127,22 +131,28 @@ void Client::RecreateSecureChannel() {
 
 void Client::SendRequest(int32_t request_id,
                          BinaryEncodedProtoRequest request,
-                         OnRequestCompletedCallback callback) {
+                         OnRequestCompletedCallback callback,
+                         base::TimeDelta timeout) {
   DVLOG(1) << "SendRequest started.";
 
-  if (secure_channel_->Write(request)) {
+  if (secure_channel_->Write(std::move(request))) {
     pending_requests_.emplace(request_id, std::move(callback));
-    return;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&Client::OnRequestTimeout, weak_factory_.GetWeakPtr(),
+                       request_id),
+        timeout);
+  } else {
+    // The channel is in a permanent failure state, so fail the current request.
+    DVLOG(1) << "Secure channel write failed.";
+    std::move(callback).Run(base::unexpected(ErrorCode::kError));
   }
-
-  // The channel is in a permanent failure state, so fail the current request.
-  DVLOG(1) << "Secure channel write failed.";
-  std::move(callback).Run(base::unexpected(ErrorCode::kError));
 }
 
 void Client::SendTextRequest(proto::FeatureName feature_name,
                              const std::string& text,
-                             OnTextRequestCompletedCallback callback) {
+                             OnTextRequestCompletedCallback callback,
+                             base::TimeDelta timeout) {
   proto::GenerateContentRequest request;
   if (feature_name ==
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT) {
@@ -157,13 +167,14 @@ void Client::SendTextRequest(proto::FeatureName feature_name,
       base::BindOnce(&OnGenerateContentRequestCompleted, std::move(callback));
 
   SendGenerateContentRequest(feature_name, request,
-                             std::move(text_response_callback));
+                             std::move(text_response_callback), timeout);
 }
 
 void Client::SendGenerateContentRequest(
     proto::FeatureName feature_name,
     const proto::GenerateContentRequest& request,
-    OnGenerateContentRequestCompletedCallback callback) {
+    OnGenerateContentRequestCompletedCallback callback,
+    base::TimeDelta timeout) {
   int32_t request_id = next_request_id_;
   next_request_id_++;
 
@@ -177,17 +188,29 @@ void Client::SendGenerateContentRequest(
   BinaryEncodedProtoRequest binary_encoded_proto_request(
       serialized_request.begin(), serialized_request.end());
 
+  // The callback for when the response is received.
   auto response_parsing_callback =
       base::BindOnce(&OnRequestSent, std::move(callback));
 
   SendRequest(request_id, std::move(binary_encoded_proto_request),
-              std::move(response_parsing_callback));
+              std::move(response_parsing_callback), timeout);
 }
 
 void Client::FailAllPendingRequests(ErrorCode error_code) {
   auto pending_requests = std::move(pending_requests_);
   for (auto& entry : pending_requests) {
     std::move(entry.second).Run(base::unexpected(error_code));
+  }
+}
+
+void Client::OnRequestTimeout(int32_t request_id) {
+  auto it = pending_requests_.find(request_id);
+  if (it != pending_requests_.end()) {
+    DLOG(ERROR) << "Request timed out: " << request_id;
+    timed_out_requests_.insert(request_id);
+    auto callback = std::move(it->second);
+    pending_requests_.erase(it);
+    std::move(callback).Run(base::unexpected(ErrorCode::kTimeout));
   }
 }
 
@@ -213,8 +236,15 @@ void Client::OnResponseReceived(
 
   auto it = pending_requests_.find(legion_response.request_id());
   if (it == pending_requests_.end()) {
-    DLOG(ERROR) << "Received response for unknown request_id: "
-                << legion_response.request_id();
+    auto timed_out_it = timed_out_requests_.find(legion_response.request_id());
+    if (timed_out_it != timed_out_requests_.end()) {
+      DLOG(ERROR) << "Received response for timed out request_id: "
+                  << legion_response.request_id();
+      timed_out_requests_.erase(timed_out_it);
+    } else {
+      DLOG(ERROR) << "Received response for unknown request_id: "
+                  << legion_response.request_id();
+    }
     // This could be a response to a request that has already timed out and was
     // removed from the pending list. In this case we should just ignore it and
     // not cancel other pending requests.
