@@ -204,11 +204,15 @@ template("msvc_toolchain") {
 
     # Disabled with cc_wrapper because of
     # https://github.com/mozilla/sccache/issues/1013
-    if (toolchain_is_clang && toolchain_cc_wrapper == "") {
+    if (!system_headers_in_deps &&
+        (toolchain_is_clang && toolchain_cc_wrapper == "")) {
       # This flag omits system includes from /showIncludes output, to reduce
       # the amount of data to parse and store in .ninja_deps. We do this on
       # non-Windows too, and already make sure rebuilds after winsdk/libc++/
       # clang header updates happen via changing command line flags.
+
+      # A universal flag system_headers_in_deps for all OSes can override,
+      # to enable verbose dependency information.
       show_includes = "/showIncludes:user"
     } else {
       show_includes = "/showIncludes"
