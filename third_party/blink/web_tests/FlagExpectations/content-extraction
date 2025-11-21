@@ -22,5 +22,5 @@ crbug.com/447125474 paint/invalidation/compositing/subpixel-offset-scaled-will-c
 crbug.com/447125474 paint/invalidation/transform/subpixel-offset-scaled-transform.html [ Crash Timeout ]
 crbug.com/447125474 transforms/rotate.html [ Crash Timeout ]
 crbug.com/447125474 transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html [ Crash Timeout ]
-crbug.com/447125474 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Timeout ]
+crbug.com/447125474 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Failure Pass Timeout ]
 

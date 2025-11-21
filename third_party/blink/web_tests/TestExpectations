@@ -9925,4 +9925,4 @@ crbug.com/447125474 virtual/content-extraction/paint/invalidation/compositing/su
 crbug.com/447125474 virtual/content-extraction/paint/invalidation/transform/subpixel-offset-scaled-transform.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/transforms/rotate.html [ Crash Timeout ]
 crbug.com/447125474 virtual/content-extraction/transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html [ Crash Timeout ]
-crbug.com/447125474 virtual/content-extraction/transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Failure Pass Timeout ]
