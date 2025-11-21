@@ -1937,6 +1937,10 @@ public class AwContentsTest extends AwParameterizedTest {
                                     oldRight,
                                     oldBottom) -> {
                                 if (oldInset.get() == 0) {
+                                    containerView
+                                            .getAwContents()
+                                            .getDisplayCutoutController()
+                                            .recalculateBottomImeInset();
                                     oldInset.set(
                                             containerView
                                                     .getAwContents()
