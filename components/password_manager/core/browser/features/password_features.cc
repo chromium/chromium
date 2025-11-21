@@ -54,9 +54,6 @@ BASE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved,
 BASE_FEATURE(kCheckVisibilityInChangePasswordFormWaiter,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCheckLoginStateBeforePasswordChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClearUndecryptablePasswords,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT

@@ -343,17 +343,11 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
       originator_.get(), change_password_url_);
   logs_uploader_->SetLoginPasswordFormInfo(password_form_info_);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kCheckLoginStateBeforePasswordChange)) {
-    login_state_checker_ = std::make_unique<LoginStateChecker>(
-        originator_.get(), logs_uploader_.get(),
-        ChromePasswordManagerClient::FromWebContents(originator_),
-        base::BindRepeating(
-            &PasswordChangeDelegateImpl::OnLoginStateCheckResult,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    ProceedToChangePassword();
-  }
+  login_state_checker_ = std::make_unique<LoginStateChecker>(
+      originator_.get(), logs_uploader_.get(),
+      ChromePasswordManagerClient::FromWebContents(originator_),
+      base::BindRepeating(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // This creates FieldClassificationModelHandler and should trigger download of
   // a local ML model for field classification.

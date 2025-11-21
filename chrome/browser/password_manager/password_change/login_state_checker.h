@@ -57,16 +57,6 @@ class LoginStateChecker : public content::WebContentsObserver {
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(LoginCheckResult result) {
-    std::unique_ptr<
-        optimization_guide::proto::PasswordChangeSubmissionLoggingData>
-        logging_data = std::make_unique<
-            optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
-    logging_data->mutable_response()
-        ->mutable_is_logged_in_data()
-        ->set_is_logged_in(result == LoginCheckResult::kLoggedIn);
-    logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
-                                            std::move(logging_data));
-    state_checks_count_++;
     result_check_callback_.Run(result);
   }
 #endif
