@@ -97,8 +97,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Assert.
     // Verify the module was created and is visible.
     assertTrue(!!module);
-    assertTrue(
-        isVisible(module.shadowRoot.querySelector('ntp-module-header-v2')));
+    assertTrue(isVisible(module.shadowRoot.querySelector('ntp-module-header')));
 
     // Verify the tab groups info is correct.
     const groups =
@@ -296,8 +295,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Assert.
     // Open the dialog.
     assertTrue(!!module);
-    const headerElement =
-        module.shadowRoot.querySelector('ntp-module-header-v2');
+    const headerElement = module.shadowRoot.querySelector('ntp-module-header');
     assertTrue(!!headerElement);
     const infoButton =
         headerElement.shadowRoot.querySelector<HTMLButtonElement>('#info');
@@ -337,8 +335,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     // Act.
     const whenFired = eventToPromise('disable-module', module);
-    const headerElement =
-        module.shadowRoot.querySelector('ntp-module-header-v2');
+    const headerElement = module.shadowRoot.querySelector('ntp-module-header');
     assertTrue(!!headerElement);
     headerElement.dispatchEvent(new Event('disable-button-click'));
 
@@ -365,8 +362,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', module);
-    const headerElement =
-        module.shadowRoot.querySelector('ntp-module-header-v2');
+    const headerElement = module.shadowRoot.querySelector('ntp-module-header');
     assertTrue(!!headerElement);
     headerElement.dispatchEvent(new Event('dismiss-button-click'));
 
@@ -508,7 +504,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       // The module must still exist without tab groups data.
       assertTrue(!!module);
       assertTrue(
-          isVisible(module.shadowRoot.querySelector('ntp-module-header-v2')));
+          isVisible(module.shadowRoot.querySelector('ntp-module-header')));
 
       // The zero-state container should be present and visible.
       const zeroStateContainer =

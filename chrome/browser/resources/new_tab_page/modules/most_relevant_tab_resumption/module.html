@@ -1,4 +1,4 @@
-<ntp-module-header-v2
+<ntp-module-header
     id="moduleHeaderElementV2"
     header-text="${this.i18n('modulesMostRelevantTabResumptionTitle')}"
     .menuItems="${this.getMenuItems_()}"
@@ -8,7 +8,7 @@
     @disable-button-click="${this.onDisableButtonClick_}"
     @dismiss-button-click="${this.onDismissAllButtonClick_}"
     @info-button-click="${this.onInfoButtonClick_}">
-</ntp-module-header-v2>
+</ntp-module-header>
 <div id="urlVisits">
   ${this.getVisibleUrlVisits_().map((item, index) => html`
     <a class="url-visit" href="${item.url.url}"

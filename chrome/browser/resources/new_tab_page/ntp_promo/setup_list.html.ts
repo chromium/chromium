@@ -7,8 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SetupListElement} from './setup_list.js';
 
 export function getHtml(this: SetupListElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
-<ntp-module-header-v2
+<ntp-module-header
     id="moduleHeaderElementV2"
     header-text="${this.i18n('modulesSetupListTitle')}"
     .menuItems="${[
@@ -33,7 +34,7 @@ export function getHtml(this: SetupListElement) {
     @disable-button-click="${this.onDisableButtonClick_}"
     @dismiss-button-click="${this.onDismissButtonClick_}"
     @info-button-click="${this.onInfoButtonClick_}">
-</ntp-module-header-v2>
+</ntp-module-header>
 <div id="promos" @ntp-promo-click="${this.onPromoClick_}">
   ${this.eligiblePromos_.map(item => html`
     <setup-list-item
@@ -58,4 +59,5 @@ ${this.showInfoDialog_ ? html`
     </ntp-info-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
+  // clang-format on
 }

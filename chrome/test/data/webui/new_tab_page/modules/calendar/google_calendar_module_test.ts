@@ -67,7 +67,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', module);
-    ($$(module, 'ntp-module-header-v2')!
+    ($$(module, 'ntp-module-header')!
      ).dispatchEvent(new Event('dismiss-button-click'));
 
     // Assert.
@@ -97,7 +97,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     assertFalse(!!$$(module, 'ntp-info-dialog'));
 
     // Act.
-    ($$(module, 'ntp-module-header-v2')!
+    ($$(module, 'ntp-module-header')!
      ).dispatchEvent(new Event('info-button-click'));
     await microtasksFinished();
 

@@ -31,7 +31,7 @@ export interface ModuleHeaderElement {
 /** Element that displays a header inside a module.  */
 export class ModuleHeaderElement extends CrLitElement {
   static get is() {
-    return 'ntp-module-header-v2';
+    return 'ntp-module-header';
   }
 
   static override get styles() {
@@ -81,7 +81,7 @@ export class ModuleHeaderElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-module-header-v2': ModuleHeaderElement;
+    'ntp-module-header': ModuleHeaderElement;
   }
 }
 

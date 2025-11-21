@@ -1,4 +1,4 @@
-<ntp-module-header-v2
+<ntp-module-header
     header-text="${this.i18n('modulesTabGroupsTitle')}"
     .menuItems="${this.getMenuItems_()}"
     more-actions-text="${this.i18nRecursive(
@@ -6,7 +6,7 @@
     @disable-button-click="${this.onDisableButtonClick_}"
     @dismiss-button-click="${this.onDismissButtonClick_}"
     @info-button-click="${this.onInfoButtonClick_}">
-</ntp-module-header-v2>
+</ntp-module-header>
 <div id="tabGroups">
   ${this.showZeroState ? html`
     <div id="zeroTabGroupsContainer" class="tab-groups">

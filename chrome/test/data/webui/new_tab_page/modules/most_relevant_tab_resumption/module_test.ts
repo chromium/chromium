@@ -99,7 +99,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       // Assert.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      const headerElement = $$(moduleElement, 'ntp-module-header');
       assertTrue(!!headerElement);
       const actionMenu = $$(headerElement, 'cr-action-menu');
       assertTrue(!!actionMenu);
@@ -120,7 +120,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       // Assert.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      const headerElement = $$(moduleElement, 'ntp-module-header');
       assertTrue(!!headerElement);
       const infoButton = $$<HTMLElement>(headerElement, '#info');
       assertTrue(!!infoButton);
@@ -136,7 +136,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       // Assert.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      const headerElement = $$(moduleElement, 'ntp-module-header');
       assertTrue(!!headerElement);
       const dismissButton = $$<HTMLElement>(headerElement, '#dismiss');
       assertTrue(!!dismissButton);

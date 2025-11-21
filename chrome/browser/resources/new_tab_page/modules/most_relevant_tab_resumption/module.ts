@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './page_favicon.js';
 import '../icons.html.js';
 import '../info_dialog.js';
+import '../module_header.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
