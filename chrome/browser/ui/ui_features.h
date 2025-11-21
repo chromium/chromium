@@ -223,6 +223,15 @@ BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
 
 BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
 
+enum class SidePanelRelativeAlignment {
+  // Shows the toolbar and content height side panels on the same side.
+  kShowPanelsOnSameSide,
+  // Shows the toolbar and content height side panels on opposite sides.
+  kShowPanelsOnOppositeSides,
+};
+BASE_DECLARE_FEATURE_PARAM(SidePanelRelativeAlignment,
+                           kSidePanelRelativeAlignment);
+
 BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
 
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
@@ -231,8 +240,6 @@ BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 
 inline constexpr char kTabScrollingButtonPositionParameterName[] =
     "buttonPosition";
-
-BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 BASE_DECLARE_FEATURE(kTabGroupHoverCards);

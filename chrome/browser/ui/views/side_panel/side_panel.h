@@ -33,11 +33,9 @@ class SidePanel : public views::AccessiblePaneView,
   // BrowserViewLayout::LayoutSidePanelView. As such, left will always be on the
   // left side of the browser regardless of LTR / RTL mode.
   enum class HorizontalAlignment { kLeft = 0, kRight };
-  explicit SidePanel(
-      BrowserView* browser_view,
-      SidePanelEntry::PanelType type,
-      bool has_border,
-      HorizontalAlignment horizontal_alignment = HorizontalAlignment::kRight);
+  explicit SidePanel(BrowserView* browser_view,
+                     SidePanelEntry::PanelType type,
+                     bool has_border);
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
@@ -53,8 +51,9 @@ class SidePanel : public views::AccessiblePaneView,
   double GetAnimationValue() const;
   gfx::RoundedCornersF background_radii() const { return background_radii_; }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
-  void SetHorizontalAlignment(HorizontalAlignment alignment);
-  HorizontalAlignment GetHorizontalAlignment() const;
+  HorizontalAlignment horizontal_alignment() const {
+    return horizontal_alignment_;
+  }
   bool IsRightAligned() const;
   gfx::Size GetMinimumSize() const override;
   bool IsClosing();
@@ -113,6 +112,8 @@ class SidePanel : public views::AccessiblePaneView,
 
   bool ShouldShowAnimation() const;
   void AnnounceResize();
+
+  void UpdateHorizontalAlignment();
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;

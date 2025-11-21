@@ -315,6 +315,18 @@ BASE_FEATURE(kSideBySideFocusClearing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<SidePanelRelativeAlignment>::Option
+    kSidePanelRelativeAlignmentOptions[] = {
+        {SidePanelRelativeAlignment::kShowPanelsOnSameSide, "same"},
+        {SidePanelRelativeAlignment::kShowPanelsOnOppositeSides, "opposite"}};
+
+BASE_FEATURE_ENUM_PARAM(SidePanelRelativeAlignment,
+                        kSidePanelRelativeAlignment,
+                        &kToolbarHeightSidePanel,
+                        "side_panel_relative_alignment",
+                        SidePanelRelativeAlignment::kShowPanelsOnOppositeSides,
+                        &kSidePanelRelativeAlignmentOptions);
+
 BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);

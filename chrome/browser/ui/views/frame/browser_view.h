@@ -452,11 +452,6 @@ class BrowserView : public BrowserWindow,
     return window_management_permission_granted_;
   }
 
-  // Update the side panel's horizontal alignment when
-  // prefs::kSidePanelHorizontalAlignment is changed from the appearance
-  // settings page.
-  void UpdateSidePanelHorizontalAlignment();
-
   void UpdateWebAppStatusIconsVisiblity();
 
   // Getter for the `window.setResizable(bool)` state.

@@ -928,12 +928,8 @@ BrowserView::BrowserView(Browser* browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-  const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
-      prefs::kSidePanelHorizontalAlignment);
   contents_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, SidePanelEntry::PanelType::kContent, /*has_border=*/true,
-      is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                       : SidePanel::HorizontalAlignment::kLeft));
+      this, SidePanelEntry::PanelType::kContent, /*has_border=*/true));
 
   // `MultiContentsView` owns separators when `SideBySide` is enabled.
   if (!multi_contents_view_) {
@@ -970,9 +966,9 @@ BrowserView::BrowserView(Browser* browser)
       AddChildView(std::make_unique<ShadowOverlayView>(*this));
 
   // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
+
   toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false,
-      SidePanel::HorizontalAlignment::kLeft));
+      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false));
 
   // Tabstrip comes basically last because it should be before toolbar in the
   // focus order but also needs to paint on top of everything.
@@ -2656,15 +2652,6 @@ bool BrowserView::AppUsesBorderlessMode() const {
 
 bool BrowserView::AreDraggableRegionsEnabled() const {
   return IsWindowControlsOverlayEnabled() || IsBorderlessModeEnabled();
-}
-
-void BrowserView::UpdateSidePanelHorizontalAlignment() {
-  const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
-      prefs::kSidePanelHorizontalAlignment);
-  contents_height_side_panel_->SetHorizontalAlignment(
-      is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                       : SidePanel::HorizontalAlignment::kLeft);
-  GetBrowserViewLayout()->Layout(this);
 }
 
 void BrowserView::FocusBookmarksToolbar() {

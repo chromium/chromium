@@ -269,27 +269,31 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
       GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET);
 
   // Lay out toolbar-height side panel.
-  const double toolbar_height_reveal_amount =
+  bool toolbar_height_side_panel_leading = false;
+  const double toolbar_height_side_panel_reveal_amount =
       has_toolbar_height_side_panel
           ? views().toolbar_height_side_panel->GetAnimationValue()
           : 0.0;
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
+    const SidePanel* const toolbar_height_side_panel =
+        views().toolbar_height_side_panel;
+    toolbar_height_side_panel_leading =
+        toolbar_height_side_panel->IsRightAligned() == base::i18n::IsRTL();
+
     // Side panel needs to fit next to the other stuff in the browser, but it
     // always gets at least its minimum width.
-    int target_width =
-        views().toolbar_height_side_panel->GetPreferredSize().width();
+    int target_width = toolbar_height_side_panel->GetPreferredSize().width();
     target_width = std::min(
         target_width,
         params.visual_client_area.width() -
             (GetMinimumMainAreaSize().width() + container_inset_padding));
-    target_width =
-        std::max(target_width,
-                 views().toolbar_height_side_panel->GetMinimumSize().width());
+    target_width = std::max(
+        target_width, toolbar_height_side_panel->GetMinimumSize().width());
 
     // Not all of the width may be visible on the screen.
-    const int visible_width =
-        base::ClampFloor(target_width * toolbar_height_reveal_amount);
+    const int visible_width = base::ClampFloor(
+        target_width * toolbar_height_side_panel_reveal_amount);
 
     // Add `container_inset_padding` to the top of the toolbar height side panel
     // to separate it from the tab strip. SidePanel draws the top on top of the
@@ -297,19 +301,23 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     // not needed for the toolbar height side panel.
     const int top = params.visual_client_area.y() + container_inset_padding;
     gfx::Rect toolbar_height_bounds(
-        params.visual_client_area.x() - (target_width - visible_width), top,
-        target_width, params.visual_client_area.bottom() - top);
+        toolbar_height_side_panel_leading
+            ? params.visual_client_area.x() - (target_width - visible_width)
+            : params.visual_client_area.right() - visible_width,
+        top, target_width, params.visual_client_area.bottom() - top);
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
-    params.Inset(gfx::Insets::TLBR(0, visible_width, 0, 0));
+    params.InsetHorizontal(visible_width, toolbar_height_side_panel_leading);
   }
 
   // As the toolbar height side panel animates in, the main panel shrinks and
   // moves over to accommodate the panel.
-  const int scaled_main_area_padding =
-      base::ClampRound(toolbar_height_reveal_amount * container_inset_padding);
-  params.Inset(gfx::Insets::TLBR(scaled_main_area_padding, 0,
-                                 scaled_main_area_padding,
-                                 scaled_main_area_padding));
+  const int scaled_main_area_padding = base::ClampRound(
+      toolbar_height_side_panel_reveal_amount * container_inset_padding);
+  params.Inset(gfx::Insets::TLBR(
+      scaled_main_area_padding,
+      toolbar_height_side_panel_leading ? 0 : scaled_main_area_padding,
+      scaled_main_area_padding,
+      toolbar_height_side_panel_leading ? scaled_main_area_padding : 0));
 
   // Lay out the remainder of the main container.
   layout.AddChild(views().main_shadow_overlay, params.visual_client_area,
@@ -348,25 +356,27 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // Lay out contents-height side panel.
   bool show_left_separator = false;
   bool show_right_separator = false;
-  bool side_panel_leading = false;
+  bool contents_height_side_panel_leading = false;
   int min_contents_width = kContentsContainerMinimumWidth;
 
   // The contents-height side panel is adjusted for the presence of a top
   // container separator in the browser view.
   const auto* top_separator_layout =
       layout.GetLayoutFor(views().top_container_separator);
-  const int side_panel_top =
+  const int contents_height_side_panel_top =
       top_separator_layout && top_separator_layout->visibility.value()
           ? params.visual_client_area.y() - views::Separator::kThickness
           : params.visual_client_area.y();
 
   if (IsParentedTo(views().contents_height_side_panel, views().browser_view)) {
-    SidePanel* const side_panel = views().contents_height_side_panel;
-    int side_panel_width = 0;
-    int side_panel_visible_width = 0;
-    const bool is_right_aligned = side_panel->IsRightAligned();
-    side_panel_leading = is_right_aligned == base::i18n::IsRTL();
-    if (side_panel->GetVisible()) {
+    const SidePanel* const contents_height_side_panel =
+        views().contents_height_side_panel;
+    int contents_height_side_panel_width = 0;
+    int contents_height_side_panel_visible_width = 0;
+    const bool is_right_aligned = contents_height_side_panel->IsRightAligned();
+    contents_height_side_panel_leading =
+        is_right_aligned == base::i18n::IsRTL();
+    if (contents_height_side_panel->GetVisible()) {
       // Side panel implies a separator, which means we have to give a little
       // more room for the contents.
       min_contents_width += views::Separator::kThickness;
@@ -375,37 +385,43 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
 
       // Maximum width is the lesser of preferred width and the largest width
       // that doesn't shrink the contents pane past its own minimum size.
-      const int min_width = side_panel->GetMinimumSize().width();
-      const int preferred_width = side_panel->GetPreferredSize().width();
+      const int min_width =
+          contents_height_side_panel->GetMinimumSize().width();
+      const int preferred_width =
+          contents_height_side_panel->GetPreferredSize().width();
       int max_width =
           std::min(preferred_width,
                    params.visual_client_area.width() - min_contents_width);
-      if (side_panel->ShouldRestrictMaxWidth()) {
+      if (contents_height_side_panel->ShouldRestrictMaxWidth()) {
         max_width =
             std::min(max_width, params.visual_client_area.width() * 2 / 3);
       }
 
       // Side panel always gets at least its minimum width.
-      side_panel_width = std::max(min_width, max_width);
-      side_panel_visible_width = base::ClampFloor(
-          side_panel_width *
-          views().contents_height_side_panel->GetAnimationValue());
+      contents_height_side_panel_width = std::max(min_width, max_width);
+      contents_height_side_panel_visible_width =
+          base::ClampFloor(contents_height_side_panel_width *
+                           contents_height_side_panel->GetAnimationValue());
     }
 
     // Side panel slides in from the edge of the main container.
-    const gfx::Rect side_panel_bounds(
-        side_panel_leading
+    const gfx::Rect contents_height_side_panel_bounds(
+        contents_height_side_panel_leading
             ? params.visual_client_area.x() -
-                  (side_panel_width - side_panel_visible_width)
-            : params.visual_client_area.right() - side_panel_visible_width,
-        side_panel_top, side_panel_width,
-        params.visual_client_area.bottom() - side_panel_top);
-    layout.AddChild(side_panel, side_panel_bounds);
-    params.InsetHorizontal(side_panel_visible_width, side_panel_leading);
+                  (contents_height_side_panel_width -
+                   contents_height_side_panel_visible_width)
+            : params.visual_client_area.right() -
+                  contents_height_side_panel_visible_width,
+        contents_height_side_panel_top, contents_height_side_panel_width,
+        params.visual_client_area.bottom() - contents_height_side_panel_top);
+    layout.AddChild(views().contents_height_side_panel,
+                    contents_height_side_panel_bounds);
+    params.InsetHorizontal(contents_height_side_panel_visible_width,
+                           contents_height_side_panel_leading);
   }
 
   // This will be used to position the separator corner.
-  const int separator_edge = side_panel_leading
+  const int separator_edge = contents_height_side_panel_leading
                                  ? params.visual_client_area.x()
                                  : params.visual_client_area.right();
 
@@ -416,8 +432,8 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     bool show_leading_separator = false;
     bool show_trailing_separator = false;
     if (show_left_separator || show_right_separator) {
-      show_leading_separator = side_panel_leading;
-      show_trailing_separator = !side_panel_leading;
+      show_leading_separator = contents_height_side_panel_leading;
+      show_trailing_separator = !contents_height_side_panel_leading;
     }
     views().multi_contents_view->SetShouldShowLeadingSeparator(
         show_leading_separator);
@@ -435,12 +451,13 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
       const int separator_width =
           views().left_aligned_side_panel_separator->GetPreferredSize().width();
       separator_bounds =
-          gfx::Rect(side_panel_leading
+          gfx::Rect(contents_height_side_panel_leading
                         ? params.visual_client_area.x()
                         : params.visual_client_area.right() - separator_width,
                     params.visual_client_area.y(), separator_width,
                     params.visual_client_area.height());
-      params.InsetHorizontal(separator_width, side_panel_leading);
+      params.InsetHorizontal(separator_width,
+                             contents_height_side_panel_leading);
     }
     layout.AddChild(views().left_aligned_side_panel_separator, separator_bounds,
                     show_left_separator);
@@ -456,12 +473,13 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
               .right_aligned_side_panel_separator->GetPreferredSize()
               .width();
       separator_bounds =
-          gfx::Rect(side_panel_leading
+          gfx::Rect(contents_height_side_panel_leading
                         ? params.visual_client_area.x()
                         : params.visual_client_area.right() - separator_width,
                     params.visual_client_area.y(), separator_width,
                     params.visual_client_area.height());
-      params.InsetHorizontal(separator_width, side_panel_leading);
+      params.InsetHorizontal(separator_width,
+                             contents_height_side_panel_leading);
     }
     layout.AddChild(views().right_aligned_side_panel_separator,
                     separator_bounds, show_right_separator);
@@ -474,10 +492,10 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     if (visible) {
       const gfx::Size corner_size =
           views().side_panel_rounded_corner->GetPreferredSize();
-      const gfx::Point corner_pos(side_panel_leading
+      const gfx::Point corner_pos(contents_height_side_panel_leading
                                       ? separator_edge
                                       : separator_edge - corner_size.width(),
-                                  side_panel_top);
+                                  contents_height_side_panel_top);
       corner_bounds = gfx::Rect(corner_pos, corner_size);
     }
     layout.AddChild(views().side_panel_rounded_corner, corner_bounds, visible);
@@ -501,7 +519,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
           min_contents_width - params.visual_client_area.width();
       deficit > 0) {
     // Expand the contents by the deficit on the side with the side panel.
-    params.InsetHorizontal(-deficit, side_panel_leading);
+    params.InsetHorizontal(-deficit, contents_height_side_panel_leading);
     // However, do not let this go past the edge of the allowed area.
     content_left =
         std::max(content_left, browser_params.visual_client_area.x());

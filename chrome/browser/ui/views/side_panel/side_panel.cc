@@ -78,6 +78,21 @@ gfx::Insets GetBorderInsets() {
                            border_thickness, border_thickness);
 }
 
+SidePanel::HorizontalAlignment GetHorizontalAlignment(
+    PrefService* pref_service,
+    SidePanelEntry::PanelType type) {
+  bool is_right_aligned =
+      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  is_right_aligned = type == SidePanelEntry::PanelType::kToolbar &&
+                             features::kSidePanelRelativeAlignment.Get() ==
+                                 features::SidePanelRelativeAlignment::
+                                     kShowPanelsOnOppositeSides
+                         ? !is_right_aligned
+                         : is_right_aligned;
+  return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                          : SidePanel::HorizontalAlignment::kLeft;
+}
+
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
 // rounded corners of its own.
@@ -347,13 +362,14 @@ class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
 
 SidePanel::SidePanel(BrowserView* browser_view,
                      SidePanelEntry::PanelType type,
-                     bool has_border,
-                     HorizontalAlignment horizontal_alignment)
+                     bool has_border)
     : browser_view_(browser_view),
       type_(type),
       visible_bounds_view_clipper_(
-          std::make_unique<VisibleBoundsViewClipper>(this)),
-      horizontal_alignment_(horizontal_alignment) {
+          std::make_unique<VisibleBoundsViewClipper>(this)) {
+  horizontal_alignment_ =
+      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_);
+
   // The default z-order is the order in which children were added to the
   // parent view. content_parent_view_ is added first so it exists behind
   // border_view_ and resize_area_.
@@ -375,12 +391,10 @@ SidePanel::SidePanel(BrowserView* browser_view,
 
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
-  // base::Unretained is safe since the side panel must be attached to some
-  // BrowserView. Deleting BrowserView will also delete the SidePanel.
   pref_change_registrar_.Add(
       prefs::kSidePanelHorizontalAlignment,
-      base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
-                          base::Unretained(browser_view)));
+      base::BindRepeating(&SidePanel::UpdateHorizontalAlignment,
+                          base::Unretained(this)));
 
   animation_coordinator_ =
       std::make_unique<SidePanelAnimationCoordinator>(this);
@@ -467,16 +481,8 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   }
 }
 
-void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
-  horizontal_alignment_ = alignment;
-}
-
-SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() const {
-  return horizontal_alignment_;
-}
-
 bool SidePanel::IsRightAligned() const {
-  return GetHorizontalAlignment() == HorizontalAlignment::kRight;
+  return horizontal_alignment() == HorizontalAlignment::kRight;
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
@@ -767,6 +773,13 @@ void SidePanel::AnnounceResize() {
       IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT, web_contents_side_text,
       base::FormatPercent(web_contents_percentage), side_panel_side_text,
       base::FormatPercent(side_panel_percentage)));
+}
+
+void SidePanel::UpdateHorizontalAlignment() {
+  horizontal_alignment_ =
+      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_);
+
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(SidePanel)
