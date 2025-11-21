@@ -540,6 +540,11 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   if (settings.trees_in_viz_in_viz_process) {
     compositor_frame_reporting_controller_ =
         std::make_unique<StubCompositorFrameReportingController>();
+
+    // TreesInViz server side usually has frame tokens set by the client.
+    // Initialize a default value here, which is expected in many tree
+    // tests.
+    set_next_frame_token_from_client(1u);
   } else {
     compositor_frame_reporting_controller_ =
         std::make_unique<CompositorFrameReportingController>(

@@ -169,9 +169,28 @@ class CommitToActiveTreeLayerTreeHostImplTest
   }
 };
 
-
-
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplTest);
+
+// Test fixture that enables only Pending tree commit modes,
+// CommitToPendingTree and CommitToPendingTreeTreesInVizClient.
+class PendingTreeLayerTreeHostImplTest : public LayerTreeHostImplTest {};
+
+INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(PendingTreeLayerTreeHostImplTest);
+
+// Test fixture that runs in all tree modes except TreesInViz Client mode,
+// that, as an exception from other modes, does not produce complete
+// CompositorFrames.
+class CompositorFrameProducingLayerTreeHostImplTest
+    : public LayerTreeHostImplTest {};
+
+INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(
+    CompositorFrameProducingLayerTreeHostImplTest);
+
+// Test fixture that runs in all tree modes except for TreesInViz Servicce
+// mode.
+class ClientModeLayerTreeHostImplTest : public LayerTreeHostImplTest {};
+
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(ClientModeLayerTreeHostImplTest);
 
 class OccludedSurfaceThrottlingLayerTreeHostImplTest
     : public LayerTreeHostImplTest {
@@ -199,7 +218,7 @@ class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {
   }
 };
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
 
 class FluentOverlayScrollbarLayerTreeHostImplTest
     : public CommitToPendingTreeLayerTreeHostImplTest {
@@ -408,7 +427,11 @@ TEST_P(LayerTreeHostImplTest, NotifyIfCanDrawChanged) {
   on_can_draw_state_changed_called_ = false;
 }
 
-TEST_P(LayerTreeHostImplTest, ResourcelessDrawWithEmptyViewport) {
+// TODO(crbug.com/458781783): Review resourceless draw tests that fail in
+// TreesInViz Client mode. These tests use FakeLayerTreeFrameSink properties
+// that are not set this mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ResourcelessDrawWithEmptyViewport) {
   CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::CreateSoftware());
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
@@ -2839,7 +2862,9 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
   host_impl_ = nullptr;
 }
 
-TEST_P(LayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
+// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
+// Service mode.
+TEST_P(ClientModeLayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
 
   LayerImpl* child = AddLayerInActiveTree();
@@ -2922,7 +2947,10 @@ class IncompleteRecordingLayer : public LayerImpl {
   }
 };
 
-TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecordingPerScroll) {
+// TODO(crbug.com/401566175) implement checkerboard tracking for TreesInViz
+// mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ScrollCheckerboardsIncompleteRecordingPerScroll) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNewContentForCheckerboardedScrolls,
@@ -2989,7 +3017,10 @@ TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecordingPerScroll) {
   EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
 }
 
-TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecordingPerFrame) {
+// TODO(crbug.com/401566175) implement checkerboard tracking for TreesInViz
+// mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ScrollCheckerboardsIncompleteRecordingPerFrame) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNewContentForCheckerboardedScrolls,
@@ -5059,7 +5090,7 @@ class LayerTreeHostImplTestMultiScrollable : public LayerTreeHostImplTest {
   raw_ptr<SolidColorScrollbarLayerImpl> scrollbar_2_;
 };
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplTestMultiScrollable);
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplTestMultiScrollable);
 
 TEST_P(LayerTreeHostImplTestMultiScrollable,
        ScrollbarFlashAfterAnyScrollUpdate) {
@@ -5863,7 +5894,10 @@ TEST_P(LayerTreeHostImplTest, MouseMoveAtWithDeviceScaleOf2) {
 // This test verifies that only SurfaceLayers in the viewport and have fallbacks
 // that are different are included in viz::CompositorFrameMetadata's
 // |activation_dependencies|.
-TEST_P(LayerTreeHostImplTest, ActivationDependenciesInMetadata) {
+// These tests use FakeLayerTreeFrameSink properties that are not set in
+// TreesInViz Client mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ActivationDependenciesInMetadata) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
   LayerImpl* root = root_layer();
 
@@ -5942,7 +5976,10 @@ TEST_P(LayerTreeHostImplTest, ActivationDependenciesInMetadata) {
 // Verify that updating the set of referenced surfaces for the active tree
 // causes a new CompositorFrame to be submitted, even if there is no other
 // damage.
-TEST_P(LayerTreeHostImplTest, SurfaceReferencesChangeCausesDamage) {
+// These tests use FakeLayerTreeFrameSink properties that are not set in
+// TreesInViz Client mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       SurfaceReferencesChangeCausesDamage) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
   auto* fake_layer_tree_frame_sink =
       static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
@@ -6042,9 +6079,10 @@ TEST_P(LayerTreeHostImplTest, CompositorFrameMetadata) {
   }
 }
 
-
-
-TEST_P(LayerTreeHostImplTest, DamageShouldNotCareAboutContributingLayers) {
+// These tests rely on LayerTreeHostImpl to produce CompositorFrame quad data,
+// which is not enabled for TreesInViz Client mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       DamageShouldNotCareAboutContributingLayers) {
   auto* root = SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(),
                                                  gfx::Size(10, 10));
 
@@ -6328,7 +6366,16 @@ class LayerTreeHostImplPrepareToDrawTest : public LayerTreeHostImplTest {
 
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplPrepareToDrawTest);
 
-TEST_P(LayerTreeHostImplPrepareToDrawTest, PrepareToDrawSucceedsAndFails) {
+class DisabledForVizClientLayerTreeHostImplPrepareToDrawTest
+    : public LayerTreeHostImplPrepareToDrawTest {};
+
+INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(
+    DisabledForVizClientLayerTreeHostImplPrepareToDrawTest);
+
+// TODO(crbug.com/401566175) implement checkerboard tracking for TreesInViz
+// Client mode.
+TEST_P(DisabledForVizClientLayerTreeHostImplPrepareToDrawTest,
+       PrepareToDrawSucceedsAndFails) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
 
   std::vector<PrepareToDrawSuccessTestCase> cases;
@@ -6602,7 +6649,7 @@ class LayerTreeHostImplBrowserControlsTest : public LayerTreeHostImplTest {
   float top_controls_height_;
 };  // class LayerTreeHostImplBrowserControlsTest
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplBrowserControlsTest);
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplBrowserControlsTest);
 
 #define EXPECT_VIEWPORT_GEOMETRIES(expected_browser_controls_shown_ratio)    \
   do {                                                                       \
@@ -10552,7 +10599,10 @@ class FakeDrawableLayerImpl : public LayerImpl {
 // Make sure damage tracking propagates all the way to the viz::CompositorFrame
 // submitted to the LayerTreeFrameSink, where it should request to swap only
 // the sub-buffer that is damaged.
-TEST_P(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
+// These tests use FakeLayerTreeFrameSink properties that are not set in
+// TreesInViz Client mode.
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       PartialSwapReceivesDamageRect) {
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink =
       FakeLayerTreeFrameSink::Create3d();
   FakeLayerTreeFrameSink* fake_layer_tree_frame_sink =
@@ -10567,6 +10617,9 @@ TEST_P(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
           &task_graph_runner_,
           AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
           nullptr, nullptr);
+  if (layer_tree_host_impl->settings().trees_in_viz_in_viz_process) {
+    layer_tree_host_impl->set_next_frame_token_from_client(1u);
+  }
   layer_tree_host_impl->SetVisible(true);
   layer_tree_host_impl->InitializeFrameSink(layer_tree_frame_sink.get());
 
@@ -10817,7 +10870,10 @@ class LayerTreeHostImplTestDrawAndTestDamage : public LayerTreeHostImplTest {
   }
 };
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplTestDrawAndTestDamage);
+// These tests rely on LayerTreeHostImpl to produce CompositorFrame quad data,
+// which is not enabled for TreesInViz Client mode.
+INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(
+    LayerTreeHostImplTestDrawAndTestDamage);
 
 TEST_P(LayerTreeHostImplTestDrawAndTestDamage, FrameIncludesDamageRect) {
   auto* root = SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
@@ -10986,7 +11042,9 @@ TEST_P(LayerTreeHostImplTest,
 }
 
 // Checks that we use the memory limits provided.
-TEST_P(LayerTreeHostImplTest, MemoryLimits) {
+// TODO(crbug.com/458776836): Review memory limit related cc_unittests for
+// TreesInViz Service mode
+TEST_P(ClientModeLayerTreeHostImplTest, MemoryLimits) {
   host_impl_->ReleaseLayerTreeFrameSink();
   host_impl_ = nullptr;
 
@@ -11150,7 +11208,8 @@ TEST_P(LayerTreeHostImplTestPrepareTiles, PrepareTilesWhenInvisible) {
   EXPECT_TRUE(fake_host_impl_->prepare_tiles_needed());
 }
 
-TEST_P(LayerTreeHostImplTest, UIResourceManagement) {
+// UIResource tests do not apply to TIV Service.
+TEST_P(ClientModeLayerTreeHostImplTest, UIResourceManagement) {
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
   gpu::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
@@ -11194,7 +11253,7 @@ TEST_P(LayerTreeHostImplTest, UIResourceManagement) {
   EXPECT_EQ(0u, sii->shared_image_count());
 }
 
-TEST_P(LayerTreeHostImplTest, CreateETC1UIResource) {
+TEST_P(ClientModeLayerTreeHostImplTest, CreateETC1UIResource) {
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
   gpu::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
@@ -12298,8 +12357,10 @@ class LayerTreeHostImplWithImplicitLimitsTest : public LayerTreeHostImplTest {
   }
 };
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(LayerTreeHostImplWithImplicitLimitsTest);
+INSTANTIATE_CLIENT_MODE_TREE_TEST_P(LayerTreeHostImplWithImplicitLimitsTest);
 
+// TODO(crbug.com/458776836): Review memory limit related cc_unittests for
+// TreesInViz Service mode
 TEST_P(LayerTreeHostImplWithImplicitLimitsTest, ImplicitMemoryLimits) {
   // Set up a memory policy and percentages which could cause
   // 32-bit integer overflows.
@@ -12368,7 +12429,9 @@ TEST_P(LayerTreeHostImplTest, ExternalTransformSetNeedsRedraw) {
   EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
 }
 
-TEST_P(LayerTreeHostImplTest, OnMemoryPressure) {
+// TODO(crbug.com/458776836): Review memory limit related cc_unittests for
+// TreesInViz Service mode
+TEST_P(ClientModeLayerTreeHostImplTest, OnMemoryPressure) {
   gfx::Size size(200, 200);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
@@ -14518,7 +14581,10 @@ TEST_P(LayerTreeHostImplTest, SecondScrollAnimatedBeginNotIgnored) {
 
 // Verfify that a smooth scroll animation doesn't jump when UpdateTarget gets
 // called before the animation is started.
-TEST_P(LayerTreeHostImplTest, AnimatedScrollUpdateTargetBeforeStarting) {
+// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
+// Service mode.
+TEST_P(ClientModeLayerTreeHostImplTest,
+       AnimatedScrollUpdateTargetBeforeStarting) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(50, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -14573,7 +14639,9 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollUpdateTargetBeforeStarting) {
   EXPECT_TRUE(y > 1 && y < 49);
 }
 
-TEST_P(LayerTreeHostImplTest, ScrollAnimatedWithDelay) {
+// TODO(crbug.com/458778816): Review animation related unittests for TreesInViz
+// Service mode.
+TEST_P(ClientModeLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   const gfx::Size content_size(1000, 1000);
   const gfx::Size viewport_size(50, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
@@ -16069,7 +16137,8 @@ TEST_P(LayerTreeHostImplTest, RenderFrameMetadata) {
   }
 }
 
-TEST_P(LayerTreeHostImplTest, SelectionBoundsPassedToRenderFrameMetadata) {
+TEST_P(ClientModeLayerTreeHostImplTest,
+       SelectionBoundsPassedToRenderFrameMetadata) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(10, 10));
   UpdateDrawProperties(host_impl_->active_tree());
 
@@ -16123,7 +16192,7 @@ TEST_P(LayerTreeHostImplTest, SelectionBoundsPassedToRenderFrameMetadata) {
   EXPECT_TRUE(selection_2.end.visible());
 }
 
-TEST_P(LayerTreeHostImplTest,
+TEST_P(ClientModeLayerTreeHostImplTest,
        VerticalScrollDirectionChangesPassedToRenderFrameMetadata) {
   // Set up the viewport.
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
@@ -16209,8 +16278,6 @@ TEST_P(LayerTreeHostImplTest,
       GetInputHandler().ScrollEnd();
   }
 }
-
-
 
 // Tests ScrollUpdate() to see if the method sets the scroll tree's currently
 // scrolling node.
@@ -16560,7 +16627,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[0].rect);
 }
 
-TEST_P(LayerTreeHostImplTest, ImplThreadPhaseUponImplSideInvalidation) {
+TEST_P(ClientModeLayerTreeHostImplTest,
+       ImplThreadPhaseUponImplSideInvalidation) {
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   // In general invalidation should never be ran outside the impl frame.
@@ -17605,7 +17673,7 @@ TEST_P(UnifiedScrollingTest, CompositedWithSquashedLayerMutatesTransform) {
 // and requested by the LTHI. The scroll is applied to the
 // pending tree, so activation will be required before the scroll
 // is presented.
-TEST_P(LayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
+TEST_P(ClientModeLayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
   gfx::Size scrollable_content_bounds(100, 100);
   gfx::Size container_bounds(50, 50);
   if (!CommitsToActiveTree()) {
@@ -17673,7 +17741,8 @@ TEST_P(LayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
   }
 }
 
-TEST_P(LayerTreeHostImplTest, ActivatedPendingTreeRetainsRasterMetrics) {
+TEST_P(PendingTreeLayerTreeHostImplTest,
+       ActivatedPendingTreeRetainsRasterMetrics) {
   gfx::Size scrollable_content_bounds(100, 100);
   gfx::Size container_bounds(50, 50);
   if (!CommitsToActiveTree()) {

@@ -962,9 +962,44 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
       ScrollbarOrientation::kVertical));
 }
 
+LayerTreeHostImplTest::LayerTreeHostImplTest() {
+  const auto test_mode = GetParam();
+  switch (test_mode) {
+    case CommitToActiveTreeTreesInVizClient:
+    case CommitToPendingTreeTreesInVizClient:
+    case CommitToActiveTreeTreesInVizService:
+      scoped_feature_list_.InitAndEnableFeature(features::kTreesInViz);
+      break;
+    case CommitToActiveTree:
+    case CommitToPendingTree:
+      scoped_feature_list_.InitAndDisableFeature(features::kTreesInViz);
+      break;
+  }
+}
+
+LayerTreeHostImplTest::~LayerTreeHostImplTest() = default;
+
+bool LayerTreeHostImplTest::CommitsToActiveTree() {
+  const auto test_mode = GetParam();
+  switch (test_mode) {
+    case CommitToActiveTree:
+    case CommitToActiveTreeTreesInVizClient:
+    case CommitToActiveTreeTreesInVizService:
+      return true;
+    case CommitToPendingTree:
+    case CommitToPendingTreeTreesInVizClient:
+      return false;
+  }
+}
+
 LayerTreeSettings LayerTreeHostImplTest::DefaultSettings() {
+  const auto test_mode = GetParam();
+
   LayerTreeSettings settings = LayerTreeHostImplTestBase::DefaultSettings();
   settings.commit_to_active_tree = CommitsToActiveTree();
+  settings.trees_in_viz_in_viz_process =
+      (test_mode == CommitToActiveTreeTreesInVizService);
+
   return settings;
 }
 

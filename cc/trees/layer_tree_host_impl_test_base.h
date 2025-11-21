@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
@@ -310,12 +311,17 @@ class LayerTreeHostImplTestBase : public testing::Test,
   int first_scroll_observed = 0;
 };
 
-class LayerTreeHostImplTest : public LayerTreeHostImplTestBase,
-                              public testing::WithParamInterface<bool> {
+class LayerTreeHostImplTest
+    : public LayerTreeHostImplTestBase,
+      public testing::WithParamInterface<LayerTreeImplTestMode> {
  public:
-  static bool CommitsToActiveTree() { return GetParam(); }
-
+  LayerTreeHostImplTest();
+  ~LayerTreeHostImplTest() override;
+  static bool CommitsToActiveTree();
   LayerTreeSettings DefaultSettings() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace cc
