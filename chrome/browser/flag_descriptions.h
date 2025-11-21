@@ -3258,11 +3258,6 @@ inline constexpr char kWebUIOmniboxPopupDebugName[] =
 inline constexpr char kWebUIOmniboxPopupDebugDescription[] =
     "Enables the WebUI for omnibox suggestions without modifying the popup UI.";
 
-inline constexpr char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL Matches";
-inline constexpr char kOmniboxMaxURLMatchesDescription[] =
-    "The maximum number of URL matches to show, unless there are no "
-    "replacements.";
-
 inline constexpr char kOmniboxDynamicMaxAutocompleteName[] =
     "Omnibox Dynamic Max Autocomplete";
 inline constexpr char kOmniboxDynamicMaxAutocompleteDescription[] =

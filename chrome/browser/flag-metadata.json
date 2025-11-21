@@ -7679,11 +7679,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "omnibox-max-url-matches",
-    "owners": [ "orinj@chromium.org", "ender@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-max-zero-suggest-matches",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

@@ -2210,29 +2210,6 @@ const FeatureEntry::FeatureVariation
         {"12 matches", kOmniboxUIMaxAutocompleteMatches12,
          std::size(kOmniboxUIMaxAutocompleteMatches12), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxMaxURLMatches2[] = {
-    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "2"}};
-const FeatureEntry::FeatureParam kOmniboxMaxURLMatches3[] = {
-    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "3"}};
-const FeatureEntry::FeatureParam kOmniboxMaxURLMatches4[] = {
-    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "4"}};
-const FeatureEntry::FeatureParam kOmniboxMaxURLMatches5[] = {
-    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "5"}};
-const FeatureEntry::FeatureParam kOmniboxMaxURLMatches6[] = {
-    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "6"}};
-
-const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
-    {"2 matches", kOmniboxMaxURLMatches2, std::size(kOmniboxMaxURLMatches2),
-     nullptr},
-    {"3 matches", kOmniboxMaxURLMatches3, std::size(kOmniboxMaxURLMatches3),
-     nullptr},
-    {"4 matches", kOmniboxMaxURLMatches4, std::size(kOmniboxMaxURLMatches4),
-     nullptr},
-    {"5 matches", kOmniboxMaxURLMatches5, std::size(kOmniboxMaxURLMatches5),
-     nullptr},
-    {"6 matches", kOmniboxMaxURLMatches6, std::size(kOmniboxMaxURLMatches6),
-     nullptr}};
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kOmniboxMiaZpsEnabledWithHistoryAblation[] = {
     {OmniboxFieldTrial::kSuppressPsuggestBackfillWithMIAParam, "true"}};
@@ -7379,12 +7356,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kUIExperimentMaxAutocompleteMatches,
          kOmniboxUIMaxAutocompleteMatchesVariations,
          "OmniboxBundledExperimentV1")},
-
-    {"omnibox-max-url-matches", flag_descriptions::kOmniboxMaxURLMatchesName,
-     flag_descriptions::kOmniboxMaxURLMatchesDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
-                                    kOmniboxMaxURLMatchesVariations,
-                                    "OmniboxMaxURLMatchesVariations")},
 
     {"omnibox-mia-zps", flag_descriptions::kOmniboxMiaZps,
      flag_descriptions::kOmniboxMiaZpsDescription, kOsAll,

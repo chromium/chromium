@@ -149,15 +149,7 @@ void GetActiveSuggestFieldTrialHashes(std::vector<uint32_t>* field_trial_hash);
 // particular provider, returns the limit. Otherwise returns the default limit.
 size_t GetProviderMaxMatches(AutocompleteProvider::Type provider);
 
-// Returns whether the feature to limit the number of shown URL matches
-// is enabled.
-bool IsMaxURLMatchesFeatureEnabled();
 
-// Returns the maximum number of URL matches that should be allowed within
-// the Omnibox if there are search-type matches available to replace them.
-// If the capping feature is not enabled, or the parameter cannot be
-// parsed, it returns 0.
-size_t GetMaxURLMatches();
 
 // ---------------------------------------------------------
 // For the HistoryURL provider new scoring experiment that is part of the
@@ -340,7 +332,6 @@ extern const char kMaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevicesParam[];
 
 // Parameter names used by num suggestion experiments.
 extern const char kMaxZeroSuggestMatchesParam[];
-extern const char kOmniboxMaxURLMatchesParam[];
 extern const char kUIMaxAutocompleteMatchesByProviderParam[];
 extern const char kUIMaxAutocompleteMatchesParam[];
 // The URL cutoff and increased limit for dynamic max autocompletion.

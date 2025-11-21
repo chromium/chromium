@@ -442,6 +442,7 @@ class AutocompleteResult {
   friend class AutocompleteController;
   friend class AutocompleteResultForTesting;
   friend class AutocompleteProviderTest;
+  friend class AutocompleteResultTest;
   friend class HistoryURLProviderTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Desktop_TwoColumnRealbox);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Android_TrimOmniboxActions);
@@ -503,11 +504,10 @@ class AutocompleteResult {
       const AutocompleteMatch& match);
 
   // This method reduces the number of navigation suggestions to that of
-  // |max_url_matches| but will allow more if there are no other types to
+  // `max_url_matches_` but will allow more if there are no other types to
   // replace them.
   void LimitNumberOfURLsShown(
       size_t max_matches,
-      size_t max_url_count,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
   // If we have SearchProvider search suggestions, demote OnDeviceProvider
@@ -530,6 +530,10 @@ class AutocompleteResult {
   // current result set. Cleared along with `matches_` on `ClearMatches()` or
   // `Reset()`.
   omnibox::GroupConfigMap suggestion_groups_map_;
+
+  // The maximum number of URL matches that should be allowed within the Omnibox
+  // if there are search-type matches available to replace them.
+  size_t max_url_matches_ = 0;
 
   // The session data irrespective of the current result set. Cleared on
   // `Reset()`.

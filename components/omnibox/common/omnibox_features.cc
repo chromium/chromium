@@ -52,13 +52,6 @@ BASE_FEATURE(kUIExperimentMaxAutocompleteMatches,
              "OmniboxUIExperimentMaxAutocompleteMatches",
              DISABLED);
 
-// Feature used to cap the number of URL-type matches shown within the
-// Omnibox. If enabled, the number of URL-type matches is limited (unless
-// there are no more non-URL matches available.) If enabled, there is a
-// companion parameter - OmniboxMaxURLMatches - which specifies the maximum
-// desired number of URL-type matches.
-BASE_FEATURE(kOmniboxMaxURLMatches, ENABLED);
-
 // Feature used to cap max suggestions to a dynamic limit based on how many URLs
 // would be shown. E.g., show up to 10 suggestions if doing so would display no
 // URLs; else show up to 8 suggestions if doing so would include 1 or more URLs.

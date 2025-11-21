@@ -26,10 +26,6 @@ BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
 // focus, page context, provider, or URL v non-URL.
 BASE_DECLARE_FEATURE(kMaxZeroSuggestMatches);
 BASE_DECLARE_FEATURE(kUIExperimentMaxAutocompleteMatches);
-// The default value is established here as a bool so it can be referred to in
-// OmniboxFieldTrial.
-extern const bool kOmniboxMaxURLMatchesEnabledByDefault;
-BASE_DECLARE_FEATURE(kOmniboxMaxURLMatches);
 BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.

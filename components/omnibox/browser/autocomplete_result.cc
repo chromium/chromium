@@ -176,7 +176,8 @@ size_t AutocompleteResult::GetDynamicMaxMatches() {
       kDynamicMaxMatchesLimit);
 }
 
-AutocompleteResult::AutocompleteResult() {
+AutocompleteResult::AutocompleteResult()
+    : max_url_matches_(is_android || is_ios ? 5 : 7) {
   matches_.reserve(kMaxAutocompletePositionValue);
 }
 
@@ -702,14 +703,10 @@ void AutocompleteResult::SortAndCull(
       return false;
     });
 
-    // Limit URL matches per OmniboxMaxURLMatches.
-    size_t max_url_count = 0;
+    // Limit URL matches.
     if (input.GetFeaturedKeywordMode() !=
-            AutocompleteInput::FeaturedKeywordMode::kExact &&
-        OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
-        (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0) {
-      LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
-                             comparing_object);
+        AutocompleteInput::FeaturedKeywordMode::kExact) {
+      LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), comparing_object);
     }
 
     // Limit total matches accounting for suggestions score <= 0, sub matches,
@@ -1706,7 +1703,6 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
 
 void AutocompleteResult::LimitNumberOfURLsShown(
     size_t max_matches,
-    size_t max_url_count,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
   size_t search_count =
       std::ranges::count_if(matches_, [&](const AutocompleteMatch& m) {
@@ -1714,8 +1710,10 @@ void AutocompleteResult::LimitNumberOfURLsShown(
                // Don't count if would be removed.
                comparing_object.GetDemotedRelevance(m) > 0;
       });
-  // Display more than GetMaxURLMatches() if there are no non-URL suggestions
+  // Display more than `max_url_matches_` if there are no non-URL suggestions
   // to replace them. Avoid signed math.
+
+  size_t max_url_count = max_url_matches_;
   if (max_matches > search_count && max_matches - search_count > max_url_count)
     max_url_count = max_matches - search_count;
   size_t url_count = 0;

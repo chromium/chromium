@@ -119,6 +119,7 @@ class AutocompleteResultForTesting : public AutocompleteResult {
  public:
   using AutocompleteResult::DemoteOnDeviceSearchSuggestions;
   using AutocompleteResult::matches_;
+  using AutocompleteResult::max_url_matches_;
   using AutocompleteResult::MaybeCullTailSuggestions;
 };
 
@@ -2078,13 +2079,11 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
-       {omnibox::kOmniboxMaxURLMatches,
-        {{OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "3"}}}},
+        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}}},
       {omnibox::kGroupingFrameworkForNonZPS});
 
-  EXPECT_TRUE(OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled());
-  EXPECT_EQ(OmniboxFieldTrial::GetMaxURLMatches(), 3u);
+  AutocompleteResultForTesting result;
+  result.max_url_matches_ = 3;
 
   // Case 1: Eject URL match for a search.
   // Does not apply to Android and iOS which picks top N matches and performs
@@ -2107,7 +2106,6 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
 
     AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    AutocompleteResult result;
     result.AppendMatches(matches);
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
@@ -2127,6 +2125,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
     EXPECT_EQ(result.size(), AutocompleteResult::GetMaxMatches());
     for (size_t i = 0; i < result.size(); ++i)
       EXPECT_EQ(result.match_at(i)->type, expected_types[i]);
+    result.ClearMatches();
   }
 #endif
 
@@ -2148,7 +2147,6 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
 
     AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    AutocompleteResult result;
     result.AppendMatches(matches);
     result.SortAndCull(input, &template_url_service(),
                        triggered_feature_service(), /*is_lens_active=*/false,
@@ -2166,6 +2164,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
     });
     for (size_t i = 0; i < result.size(); ++i)
       EXPECT_EQ(result.match_at(i)->type, expected_types[i]) << i;
+    result.ClearMatches();
   }
 }
 
