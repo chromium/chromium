@@ -268,6 +268,9 @@ public final class ProductionSupportedFlagList {
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_FORM_EQUALITY,
+                "Fixes the semantics of Form[Field]Data::DeepEqual()"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
         Flag.baseFeature(
@@ -343,8 +346,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.FORCE_WEB_CONTENTS_DARK_MODE,
                 "Enables force dark mode to automatically darken page, it will be"
-                         + " used when WebView is in dark mode, but website doesn't provide dark"
-                         + " style."),
+                        + " used when WebView is in dark mode, but website doesn't provide dark"
+                        + " style."),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
