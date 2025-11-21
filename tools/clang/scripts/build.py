@@ -844,8 +844,8 @@ def main():
   if not args.skip_checkout:
     with timer.time('checkout llvm'):
       CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
-      # TODO(crbug.com/435127246): remove once we roll past this revision
-      GitCherryPick(LLVM_DIR, '69b8d6d4ead01b88fb8d6642914ca7492e32fdb6')
+      # TODO(crbug.com/461828767): remove once we roll past this revision
+      GitCherryPick(LLVM_DIR, '10e97641f53a6eba5ad9430dc25f1ad6e5e8abed')
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
