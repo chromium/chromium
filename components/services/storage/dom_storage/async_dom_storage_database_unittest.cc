@@ -56,7 +56,8 @@ AsyncDomStorageDatabaseTest::AsyncDomStorageDatabaseTest()
           blink::StorageKey::CreateFromStringForTesting(kFourthFakeUrlString)) {
 }
 
-TEST_F(AsyncDomStorageDatabaseTest, ReadAndWriteLocalStorageMetadata) {
+TEST_F(AsyncDomStorageDatabaseTest,
+       WriteAndReadThenDeleteLocalStorageMetadata) {
   // Define test values to write to the database.
   const DomStorageDatabase::MapMetadata kExpectedMapMetadataArray[] = {
       {
@@ -112,7 +113,7 @@ TEST_F(AsyncDomStorageDatabaseTest, ReadAndWriteLocalStorageMetadata) {
     // Write the metadata for a single map.
     DomStorageDatabase::Metadata cloned_metadata;
     cloned_metadata.map_metadata =
-        CloneMapMetadata(base::span_from_ref(kExpectedMapMetadata[i]));
+        CloneMapMetadataVector(base::span_from_ref(kExpectedMapMetadata[i]));
 
     ASSERT_NO_FATAL_FAILURE(
         PutMetadataSync(*database, std::move(cloned_metadata)));
@@ -128,6 +129,24 @@ TEST_F(AsyncDomStorageDatabaseTest, ReadAndWriteLocalStorageMetadata) {
     // Local storage does not store the next map id number.
     EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
   }
+
+  // Delete the first and third storage keys.
+  DeleteStorageKeysFromSessionSync(*database, kLocalStorageSessionId,
+                                   {kFirstStorageKey, kThirdStorageKey},
+                                   /*excluded_cloned_map_ids=*/{});
+
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
+  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
+
+  // Add the second and fourth storage keys as expected.
+  std::vector<DomStorageDatabase::MapMetadata> expected_metadata_after_delete;
+  expected_metadata_after_delete.push_back(
+      CloneMapMetadata(kExpectedMapMetadata[1]));
+  expected_metadata_after_delete.push_back(
+      CloneMapMetadata(kExpectedMapMetadata[3]));
+
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              expected_metadata_after_delete);
 }
 
 TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
@@ -161,7 +180,7 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
   // Immediately start using the database, which will enqueue pending tasks
   // while opening.
   DomStorageDatabase::Metadata cloned_metadata(
-      CloneMapMetadata(kExpectedMapMetadata));
+      CloneMapMetadataVector(kExpectedMapMetadata));
 
   base::test::TestFuture<DbStatus> write_status_future;
   database->PutMetadata(std::move(cloned_metadata),

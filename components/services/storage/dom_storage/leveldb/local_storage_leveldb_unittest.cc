@@ -59,6 +59,16 @@ void VerifyDatabaseVersionEntry(
   EXPECT_EQ(version_entry.value, ToBytes(kExpectedVersion));
 }
 
+// Return "_<storage key>\x00<script key>".
+DomStorageDatabase::Key CreateMapDataKey(const blink::StorageKey& storage_key,
+                                         std::string script_key) {
+  DomStorageDatabase::Key map_data_key =
+      LocalStorageLevelDB::GetMapPrefix(storage_key);
+
+  map_data_key.insert(map_data_key.end(), script_key.begin(), script_key.end());
+  return map_data_key;
+}
+
 }  // namespace
 
 class LocalStorageLevelDBTest : public testing::Test {
@@ -77,6 +87,7 @@ class LocalStorageLevelDBTest : public testing::Test {
 
   const base::Time kMapLastAccessed;
   const base::Time kSecondLastAccessed;
+  const base::Time kThirdLastAccessed;
   const base::Time kFourthLastAccessed;
 
   const base::Time kMapLastModified;
@@ -95,6 +106,7 @@ LocalStorageLevelDBTest::LocalStorageLevelDBTest()
           blink::StorageKey::CreateFromStringForTesting(kFourthFakeUrlString)),
       kMapLastAccessed(base::Time::Now() - base::Minutes(10)),
       kSecondLastAccessed(base::Time::Now() - base::Hours(10)),
+      kThirdLastAccessed(base::Time::Now() - base::Hours(7)),
       kFourthLastAccessed(base::Time::Now() - base::Days(10)),
       kMapLastModified(base::Time::Now()),
       kSecondLastModified(base::Time::Now() - base::Hours(1)),
@@ -113,7 +125,6 @@ void LocalStorageLevelDBTest::OpenInMemory(
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
 }
-
 
 TEST_F(LocalStorageLevelDBTest, CreateAccessMetaDataKey) {
   DomStorageDatabase::Key access_metadata_key =
@@ -676,6 +687,231 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
       LocalStorageLevelDB::CreateAccessMetaDataValue(kSecondLastAccessed));
 
   VerifyDatabaseVersionEntry(all_entries[4]);
+}
+
+TEST_F(LocalStorageLevelDBTest, GetMapPrefix) {
+  std::string expected_prefix("_https://a-fake.test");
+  expected_prefix.push_back(kLocalStorageKeyMapSeparator);
+
+  EXPECT_EQ(LocalStorageLevelDB::GetMapPrefix(kFakeUrlStorageKey),
+            ToBytes(expected_prefix));
+}
+
+TEST_F(LocalStorageLevelDBTest,
+       DeleteStorageKeysFromSessionWithAccessMetadata) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *local_storage_leveldb,
+      {
+          {
+              LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey),
+              LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed),
+          },
+      }));
+
+  DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId, {kFakeUrlStorageKey},
+      /*excluded_cloned_map_ids=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithWriteMetadata) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *local_storage_leveldb,
+      {
+          {
+              LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey),
+              LocalStorageLevelDB::CreateWriteMetaDataValue(kMapLastModified,
+                                                            kMapTotalSize),
+          },
+      }));
+
+  DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId, {kFakeUrlStorageKey},
+      /*excluded_cloned_map_ids=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(LocalStorageLevelDBTest,
+       DeleteStorageKeysFromSessionWithWriteMapKeyValues) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*local_storage_leveldb,
+                   {
+                       {
+                           CreateMapDataKey(kFakeUrlStorageKey, "key_1"),
+                           ToBytes("value_1"),
+                       },
+                       {
+                           CreateMapDataKey(kFakeUrlStorageKey, "key_2"),
+                           ToBytes("value_2"),
+                       },
+                   }));
+
+  DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId, {kFakeUrlStorageKey},
+      /*excluded_cloned_map_ids=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(LocalStorageLevelDBTest,
+       DeleteStorageKeysFromSessionWithMultipleStorageKeys) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Add three different storage keys to the database.
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *local_storage_leveldb,
+      {
+          // Add map key value pairs.
+          {
+              CreateMapDataKey(kFakeUrlStorageKey, "key_1"),
+              ToBytes("value_1"),
+          },
+          {
+              CreateMapDataKey(kFakeUrlStorageKey, "key_2"),
+              ToBytes("value_2"),
+          },
+          {
+              CreateMapDataKey(kSecondStorageKey, "key_3"),
+              ToBytes("value_3"),
+          },
+          {
+              CreateMapDataKey(kThirdStorageKey, "key_1"),
+              ToBytes("value_4"),
+          },
+          {
+              CreateMapDataKey(kThirdStorageKey, "key_2"),
+              ToBytes("value_5"),
+          },
+          {
+              CreateMapDataKey(kThirdStorageKey, "key_3"),
+              ToBytes("value_5"),
+          },
+          // Add "METAACCESS:" entries.
+          {
+              LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey),
+              LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed),
+          },
+          {
+              LocalStorageLevelDB::CreateAccessMetaDataKey(kSecondStorageKey),
+              LocalStorageLevelDB::CreateAccessMetaDataValue(
+                  kSecondLastAccessed),
+          },
+          {
+              LocalStorageLevelDB::CreateAccessMetaDataKey(kThirdStorageKey),
+              LocalStorageLevelDB::CreateAccessMetaDataValue(
+                  kThirdLastAccessed),
+          },
+          // Add "META:" entries.
+          {
+              LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey),
+              LocalStorageLevelDB::CreateWriteMetaDataValue(kMapLastModified,
+                                                            kMapTotalSize),
+          },
+          {
+              LocalStorageLevelDB::CreateWriteMetaDataKey(kSecondStorageKey),
+              LocalStorageLevelDB::CreateWriteMetaDataValue(kSecondLastModified,
+                                                            kSecondTotalSize),
+          },
+          {
+              LocalStorageLevelDB::CreateWriteMetaDataKey(kThirdStorageKey),
+              LocalStorageLevelDB::CreateWriteMetaDataValue(kThirdLastModified,
+                                                            kThirdTotalSize),
+          },
+      }));
+
+  // Erase the first and third storage keys.
+  DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId, {kFakeUrlStorageKey, kThirdStorageKey},
+      /*excluded_cloned_map_ids=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should include the second
+  // storage key entries and the "VERSION" entry.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 4u);
+
+  // Verify "META:" entry for the second storage key.
+  EXPECT_EQ(all_entries[0].key,
+            LocalStorageLevelDB::CreateWriteMetaDataKey(kSecondStorageKey));
+  EXPECT_EQ(all_entries[0].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
+                                      kSecondLastModified, kSecondTotalSize));
+
+  // Verify "METAACCESS:" entry for the second storage key.
+  EXPECT_EQ(all_entries[1].key,
+            LocalStorageLevelDB::CreateAccessMetaDataKey(kSecondStorageKey));
+  EXPECT_EQ(
+      all_entries[1].value,
+      LocalStorageLevelDB::CreateAccessMetaDataValue(kSecondLastAccessed));
+
+  VerifyDatabaseVersionEntry(all_entries[2]);
+
+  // Verify the map key/value paris for the second storage key.
+  EXPECT_EQ(all_entries[3].key, CreateMapDataKey(kSecondStorageKey, "key_3"));
+  EXPECT_EQ(all_entries[3].value, ToBytes("value_3"));
+
+  // Erase all the storage keys.
+  status = local_storage_leveldb->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId,
+      {
+          kFakeUrlStorageKey,
+          kSecondStorageKey,
+          kThirdStorageKey,
+          kFourthStorageKey,
+      },
+      /*excluded_cloned_map_ids=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  all_entries.clear();
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
 }
 
 }  // namespace storage

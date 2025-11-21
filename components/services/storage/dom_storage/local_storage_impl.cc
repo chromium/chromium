@@ -81,44 +81,6 @@ void IgnoreStatus(base::OnceClosure callback, DbStatus status) {
   std::move(callback).Run();
 }
 
-DomStorageDatabase::Key MakeStorageKeyPrefix(
-    const blink::StorageKey& storage_key) {
-  const char kDataPrefix = '_';
-  const std::string serialized_storage_key =
-      storage_key.SerializeForLocalStorage();
-  const char kStorageKeySeparator = '\x00';
-
-  DomStorageDatabase::Key prefix;
-  prefix.reserve(serialized_storage_key.size() + 2);
-  prefix.push_back(kDataPrefix);
-  prefix.insert(prefix.end(), serialized_storage_key.begin(),
-                serialized_storage_key.end());
-  prefix.push_back(kStorageKeySeparator);
-  return prefix;
-}
-
-void DeleteStorageKeys(AsyncDomStorageDatabase* database,
-                       std::vector<blink::StorageKey> storage_keys,
-                       base::OnceCallback<void(DbStatus)> callback) {
-  database->RunDatabaseTask(
-      base::BindOnce(
-          [](std::vector<blink::StorageKey> storage_keys,
-             DomStorageDatabaseLevelDB& db) {
-            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-                db.CreateBatchOperation();
-            for (const auto& storage_key : storage_keys) {
-              batch->DeletePrefixed(MakeStorageKeyPrefix(storage_key));
-              batch->Delete(
-                  LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key));
-              batch->Delete(
-                  LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key));
-            }
-            return batch->Commit();
-          },
-          storage_keys),
-      std::move(callback));
-}
-
 StorageAreaImpl::Options createOptions() {
   // Delay for a moment after a value is set in anticipation
   // of other values being set, so changes are batched.
@@ -154,7 +116,7 @@ class LocalStorageImpl::StorageAreaHolder final
       : context_(context),
         storage_key_(storage_key),
         area_(context_->database_.get(),
-              MakeStorageKeyPrefix(storage_key_),
+              LocalStorageLevelDB::GetMapPrefix(storage_key_),
               this,
               createOptions()) {}
 
@@ -310,8 +272,8 @@ void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
         base::BindOnce(&SuccessResponse, std::move(callback)));
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
-    DeleteStorageKeys(
-        database_.get(), {storage_key},
+    database_->DeleteStorageKeysFromSession(
+        kLocalStorageSessionId, {storage_key}, /*excluded_cloned_map_ids=*/{},
         base::BindOnce([](base::OnceClosure callback,
                           DbStatus) { std::move(callback).Run(); },
                        std::move(callback)));
@@ -774,9 +736,11 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
   }
 
   if (!storage_keys_to_delete.empty() && database_) {
-    DeleteStorageKeys(database_.get(), std::move(storage_keys_to_delete),
-                      base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
-                                     base::Unretained(this)));
+    database_->DeleteStorageKeysFromSession(
+        kLocalStorageSessionId, std::move(storage_keys_to_delete),
+        /*excluded_cloned_map_ids=*/{},
+        base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     OnShutdownComplete();
   }
@@ -899,8 +863,10 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       "LocalStorage.OrphanStorageAreasOnStartupCount", orphans_found);
 
   // Delete stale storage areas and count results.
-  DeleteStorageKeys(
-      database_.get(), stale_storage_keys,
+  size_t deleted_count = stale_storage_keys.size();
+  database_->DeleteStorageKeysFromSession(
+      kLocalStorageSessionId, std::move(stale_storage_keys),
+      /*excluded_cloned_map_ids=*/{},
       base::BindOnce(
           [](size_t keys_deleted, DbStatus status) {
             base::UmaHistogramBoolean(
@@ -912,7 +878,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
                   keys_deleted);
             }
           },
-          stale_storage_keys.size()));
+          deleted_count));
 }
 
 void LocalStorageImpl::OnReceiverDisconnected() {

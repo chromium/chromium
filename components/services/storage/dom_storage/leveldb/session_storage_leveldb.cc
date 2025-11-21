@@ -127,6 +127,14 @@ DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
   return batch->Commit();
 }
 
+DbStatus SessionStorageLevelDB::DeleteStorageKeysFromSession(
+    std::string session_id,
+    std::vector<blink::StorageKey> storage_keys,
+    absl::flat_hash_set<int64_t> excluded_cloned_map_ids) {
+  // TODO(crbug.com/377242771): Implement and use for session storage.
+  return DbStatus::NotSupported("");
+}
+
 DbStatus SessionStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }

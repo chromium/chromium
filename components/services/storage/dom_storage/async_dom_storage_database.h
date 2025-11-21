@@ -112,6 +112,11 @@ class AsyncDomStorageDatabase {
   void ReadAllMetadata(ReadAllMetadataCallback callback);
   void PutMetadata(DomStorageDatabase::Metadata metadata,
                    StatusCallback callback);
+  void DeleteStorageKeysFromSession(
+      std::string session_id,
+      std::vector<blink::StorageKey> storage_keys,
+      absl::flat_hash_set<int64_t> excluded_cloned_map_ids,
+      StatusCallback callback);
   void RewriteDB(StatusCallback callback);
 
   // TODO(crbug.com/377242771): Temporarily overload `RunDatabaseTask()` to

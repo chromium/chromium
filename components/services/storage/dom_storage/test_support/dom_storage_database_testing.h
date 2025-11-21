@@ -29,7 +29,10 @@ void ExpectEqualsMapMetadataSpan(
     base::span<const DomStorageDatabase::MapMetadata> left,
     base::span<const DomStorageDatabase::MapMetadata> right);
 
-std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadata(
+DomStorageDatabase::MapMetadata CloneMapMetadata(
+    const DomStorageDatabase::MapMetadata& source);
+
+std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(
     base::span<const DomStorageDatabase::MapMetadata> source_span);
 
 // A synchronous wrapper for
@@ -47,6 +50,15 @@ void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
 // `AsyncDomStorageDatabase::PutMetadata()`.  Asserts success.
 void PutMetadataSync(AsyncDomStorageDatabase& database,
                      DomStorageDatabase::Metadata metadata);
+
+// A synchronous wrapper for
+// `AsyncDomStorageDatabase::DeleteStorageKeysFromSessionSync()`.  Expects
+// success.
+void DeleteStorageKeysFromSessionSync(
+    AsyncDomStorageDatabase& database,
+    std::string session_id,
+    std::vector<blink::StorageKey> storage_keys,
+    absl::flat_hash_set<int64_t> excluded_cloned_map_ids);
 
 }  // namespace storage
 

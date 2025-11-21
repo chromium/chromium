@@ -50,11 +50,11 @@ void ExpectEqualsMapMetadataSpan(
   // Left and right may not have the same order of elements. Create clones to
   // sort before comparing.
   std::vector<DomStorageDatabase::MapMetadata> left_clone =
-      CloneMapMetadata(left);
+      CloneMapMetadataVector(left);
   std::sort(left_clone.begin(), left_clone.end(), CompareMapMetadata);
 
   std::vector<DomStorageDatabase::MapMetadata> right_clone =
-      CloneMapMetadata(right);
+      CloneMapMetadataVector(right);
   std::sort(right_clone.begin(), right_clone.end(), CompareMapMetadata);
 
   for (size_t i = 0u; i < left.size(); ++i) {
@@ -62,33 +62,38 @@ void ExpectEqualsMapMetadataSpan(
   }
 }
 
-std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadata(
+DomStorageDatabase::MapMetadata CloneMapMetadata(
+    const DomStorageDatabase::MapMetadata& source) {
+  if (source.map_locator.map_id()) {
+    return {
+        .map_locator{
+            source.map_locator.session_id(),
+            source.map_locator.storage_key(),
+            source.map_locator.map_id().value(),
+        },
+        .last_accessed{source.last_accessed},
+        .last_modified{source.last_modified},
+        .total_size{source.total_size},
+    };
+  }
+
+  // `source` does not have a map ID.
+  return {
+      .map_locator{
+          source.map_locator.session_id(),
+          source.map_locator.storage_key(),
+      },
+      .last_accessed{source.last_accessed},
+      .last_modified{source.last_modified},
+      .total_size{source.total_size},
+  };
+}
+
+std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(
     base::span<const DomStorageDatabase::MapMetadata> source_span) {
   std::vector<DomStorageDatabase::MapMetadata> results;
   for (const DomStorageDatabase::MapMetadata& source : source_span) {
-    if (source.map_locator.map_id()) {
-      results.push_back({
-          .map_locator{
-              source.map_locator.session_id(),
-              source.map_locator.storage_key(),
-              source.map_locator.map_id().value(),
-          },
-          .last_accessed{source.last_accessed},
-          .last_modified{source.last_modified},
-          .total_size{source.total_size},
-      });
-    } else {
-      // `source` does not have a map ID.
-      results.push_back({
-          .map_locator{
-              source.map_locator.session_id(),
-              source.map_locator.storage_key(),
-          },
-          .last_accessed{source.last_accessed},
-          .last_modified{source.last_modified},
-          .total_size{source.total_size},
-      });
-    }
+    results.push_back(CloneMapMetadata(source));
   }
   return results;
 }
@@ -132,6 +137,20 @@ void PutMetadataSync(AsyncDomStorageDatabase& database,
 
   // `SessionStorageNamespaceImplTest` requires `kNestableTasksAllowed`.
   ASSERT_TRUE(status_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+
+  const DbStatus& status = status_future.Get();
+  EXPECT_TRUE(status.ok()) << status.ToString();
+}
+
+void DeleteStorageKeysFromSessionSync(
+    AsyncDomStorageDatabase& database,
+    std::string session_id,
+    std::vector<blink::StorageKey> storage_keys,
+    absl::flat_hash_set<int64_t> excluded_cloned_map_ids) {
+  base::test::TestFuture<DbStatus> status_future;
+  database.DeleteStorageKeysFromSession(
+      std::move(session_id), std::move(storage_keys),
+      std::move(excluded_cloned_map_ids), status_future.GetCallback());
 
   const DbStatus& status = status_future.Get();
   EXPECT_TRUE(status.ok()) << status.ToString();

@@ -33,6 +33,10 @@ inline constexpr const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A'};
 inline constexpr const uint8_t kLocalStorageLevelDBVersionKey[] = {
     'V', 'E', 'R', 'S', 'I', 'O', 'N'};
 
+// A component of the map key that separates the storage key from the script
+// provided key. An example map key: "_<storage key>\x00<script key>"
+const uint8_t kLocalStorageKeyMapSeparator = 0u;
+
 // LevelDB supports one schema version for local storage without migration.
 inline constexpr int64_t kLocalStorageLevelDBVersion = 1;
 
@@ -105,6 +109,14 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   static Value CreateWriteMetaDataValue(base::Time last_modified,
                                         base::ByteSize total_size);
 
+  // TODO(crbug.com/377242771): Make private after fully adopting the
+  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
+  // swappable.
+  //
+  // Returns "_<storage key>\x00", which matches all of the map key/value pairs
+  // for `storage_key`.
+  static Key GetMapPrefix(const blink::StorageKey& storage_key);
+
   // Implement the `DomStorageDatabase` interface:
   DomStorageDatabaseLevelDB& GetLevelDB() override;
 
@@ -130,6 +142,20 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   // (2) Writes a "METAACCESS:" entry when the map's usage contains a last
   //     accessed time.
   DbStatus PutMetadata(Metadata metadata) override;
+
+  // Removes the following for each storage key:
+  //
+  // (1) All of the map's key/value pairs using the prefix "_<storage key>\x00".
+  //
+  // (2) The "META:<storage key>" entry, containing the map's last modified time
+  //     and total size.
+  //
+  // (3) The "METAACCESS:<storage key>" entry, containing the map's last
+  //     accessed time.
+  DbStatus DeleteStorageKeysFromSession(
+      std::string session_id,
+      std::vector<blink::StorageKey> storage_keys,
+      absl::flat_hash_set<int64_t> excluded_cloned_map_ids) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

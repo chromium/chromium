@@ -58,6 +58,25 @@ void AsyncDomStorageDatabase::PutMetadata(DomStorageDatabase::Metadata metadata,
       std::move(callback));
 }
 
+void AsyncDomStorageDatabase::DeleteStorageKeysFromSession(
+    std::string session_id,
+    std::vector<blink::StorageKey> storage_keys,
+    absl::flat_hash_set<int64_t> excluded_cloned_map_ids,
+    StatusCallback callback) {
+  RunDatabaseTask(base::BindOnce(
+                      [](std::string session_id,
+                         std::vector<blink::StorageKey> storage_keys,
+                         absl::flat_hash_set<int64_t> excluded_cloned_map_ids,
+                         DomStorageDatabase& db) {
+                        return db.DeleteStorageKeysFromSession(
+                            std::move(session_id), std::move(storage_keys),
+                            std::move(excluded_cloned_map_ids));
+                      },
+                      std::move(session_id), std::move(storage_keys),
+                      std::move(excluded_cloned_map_ids)),
+                  std::move(callback));
+}
+
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) { return db.RewriteDB(); }),

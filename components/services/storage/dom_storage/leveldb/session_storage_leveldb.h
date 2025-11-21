@@ -84,6 +84,10 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<Metadata> ReadAllMetadata() override;
   DbStatus PutMetadata(Metadata metadata) override;
+  DbStatus DeleteStorageKeysFromSession(
+      std::string session_id,
+      std::vector<blink::StorageKey> storage_keys,
+      absl::flat_hash_set<int64_t> excluded_cloned_map_ids) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.
