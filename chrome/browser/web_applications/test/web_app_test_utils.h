@@ -23,6 +23,14 @@ class Browser;
 class PrefService;
 class Profile;
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 class StoragePartition;
 class WebContents;
@@ -99,6 +107,13 @@ void SynchronizeOsIntegration(
 
 // Creates a few well-formed integrity block signatures.
 std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures();
+
+// Loads a gfx::Image from a png file on the disk. Will CHECK-fail if the png
+// data reading fails. If `read_from_test_dir` is true (which is the case for
+// most use-cases), the file_path should be an absolute path, otherwise
+// `base::FilePath::Append()` with DCHECK-fail.
+gfx::Image LoadTestImageFromDisk(const base::FilePath& file_path,
+                                 bool read_from_test_dir = true);
 
 }  // namespace test
 }  // namespace web_app

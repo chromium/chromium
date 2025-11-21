@@ -22,16 +22,19 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,6 +42,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -105,6 +109,7 @@
 #include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1400,6 +1405,22 @@ std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures() {
   // Unknown:
   signatures.push_back(web_package::SignedWebBundleSignatureInfoUnknown());
   return signatures;
+}
+
+gfx::Image LoadTestImageFromDisk(const base::FilePath& file_path,
+                                 bool read_from_test_dir) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Create the `image_path` from `file_path` if the path is an absolute path,
+  // else construct from the test data directory.
+  base::FilePath image_path =
+      read_from_test_dir
+          ? base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                .Append(file_path)
+          : file_path;
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(image_path);
+  CHECK(png_data.has_value());
+  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(*png_data));
 }
 
 }  // namespace web_app::test

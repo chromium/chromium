@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h"
 
-#include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -156,13 +155,6 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         .GetAppById(app_id)
         ->pending_update_info()
         .has_value();
-  }
-
-  SkBitmap LoadTestPNGAsBitmap(const base::FilePath& path) {
-    std::string png_data;
-    base::ReadFileToString(path, &png_data);
-    return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data))
-        .AsBitmap();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

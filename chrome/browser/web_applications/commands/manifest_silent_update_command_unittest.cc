@@ -4,11 +4,9 @@
 
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
-#include "base/base_paths.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +21,7 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -163,13 +162,6 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     base::FilePath app_dir =
         GetManifestResourcesDirectoryForApp(web_apps_root_directory, app_id);
     return app_dir.AppendASCII("Pending Manifest Icons");
-  }
-
-  SkBitmap LoadTestPNGAsBitmap(const base::FilePath& path) {
-    std::string png_data;
-    base::ReadFileToString(path, &png_data);
-    return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data))
-        .AsBitmap();
   }
 
   std::vector<int> GetStoredIconSizesForPurpose(
@@ -1016,9 +1008,11 @@ TEST_F(ManifestSilentUpdateCommandTest,
       base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
   EXPECT_TRUE(
       base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
-  SkBitmap disk_bitmap =
-      LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
-                              .Append(FILE_PATH_LITERAL("Icons/30.png")));
+  SkBitmap disk_bitmap = web_app::test::LoadTestImageFromDisk(
+                             GetAppPendingTrustedIconsDir(profile(), app_id)
+                                 .Append(FILE_PATH_LITERAL("Icons/30.png")),
+                             /*read_from_test_dir=*/false)
+                             .AsBitmap();
   EXPECT_THAT(disk_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -1088,9 +1082,11 @@ TEST_F(ManifestSilentUpdateCommandTest,
       base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
   EXPECT_TRUE(
       base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
-  SkBitmap disk_bitmap =
-      LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
-                              .Append(FILE_PATH_LITERAL("Icons/96.png")));
+  SkBitmap disk_bitmap = web_app::test::LoadTestImageFromDisk(
+                             GetAppPendingTrustedIconsDir(profile(), app_id)
+                                 .Append(FILE_PATH_LITERAL("Icons/96.png")),
+                             /*read_from_test_dir=*/false)
+                             .AsBitmap();
   EXPECT_THAT(disk_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
 
   EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
@@ -1160,9 +1156,11 @@ TEST_F(ManifestSilentUpdateCommandTest,
       base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
   EXPECT_TRUE(
       base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
-  SkBitmap disk_bitmap =
-      LoadTestPNGAsBitmap(GetAppPendingTrustedIconsDir(profile(), app_id)
-                              .Append(FILE_PATH_LITERAL("Icons/96.png")));
+  SkBitmap disk_bitmap = web_app::test::LoadTestImageFromDisk(
+                             GetAppPendingTrustedIconsDir(profile(), app_id)
+                                 .Append(FILE_PATH_LITERAL("Icons/96.png")),
+                             /*read_from_test_dir=*/false)
+                             .AsBitmap();
   EXPECT_THAT(disk_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),

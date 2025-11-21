@@ -6,13 +6,11 @@
 
 #include <string>
 
-#include "base/base_paths.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -31,17 +29,6 @@ const base::FilePath kMaskedMacIcon{
 const base::FilePath kMaskedChromeOsIcon{FILE_PATH_LITERAL(
     "chrome/test/data/web_apps/golden_masked_icon_chromeos.png")};
 
-SkBitmap LoadTestPNG(const base::FilePath& path) {
-  base::FilePath data_root;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_root);
-  base::FilePath image_path = data_root.Append(path);
-  std::optional<std::vector<uint8_t>> png_data =
-      base::ReadFileToBytes(image_path);
-  CHECK(png_data.has_value());
-  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(*png_data))
-      .AsBitmap();
-}
-
 base::FilePath GetExpectedIconsFilePath() {
 #if BUILDFLAG(IS_MAC)
   return kMaskedMacIcon;
@@ -54,16 +41,19 @@ base::FilePath GetExpectedIconsFilePath() {
 
 TEST(IconMaskingTest, Basic) {
   base::test::TaskEnvironment task_environment;
-  const SkBitmap input_bitmap = LoadTestPNG(kInputIcon);
+  const SkBitmap input_bitmap =
+      web_app::test::LoadTestImageFromDisk(kInputIcon).AsBitmap();
 
   base::test::TestFuture<SkBitmap> bitmap_future;
   MaskIconOnOs(input_bitmap, bitmap_future.GetCallback());
   EXPECT_TRUE(bitmap_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
 
   SkBitmap masked_bitmap = bitmap_future.Get();
-  EXPECT_THAT(masked_bitmap, gfx::test::IsCloseToBitmap(
-                                 LoadTestPNG(GetExpectedIconsFilePath()),
-                                 /*max_per_channel_deviation=*/2));
+  EXPECT_THAT(masked_bitmap,
+              gfx::test::IsCloseToBitmap(web_app::test::LoadTestImageFromDisk(
+                                             GetExpectedIconsFilePath())
+                                             .AsBitmap(),
+                                         /*max_per_channel_deviation=*/2));
 }
 
 }  // namespace
