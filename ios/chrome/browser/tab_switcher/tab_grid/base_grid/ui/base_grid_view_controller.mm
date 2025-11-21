@@ -964,7 +964,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     if (shouldGroup) {
       [self highlightCellAtIndexPath:destinationItemIndexPath];
       return [[UICollectionViewDropProposal alloc]
-          initWithDropOperation:UIDropOperationCopy
+          initWithDropOperation:UIDropOperationMove
                          intent:
                              UICollectionViewDropIntentInsertIntoDestinationIndexPath];
     }

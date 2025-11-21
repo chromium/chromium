@@ -109,7 +109,8 @@ const CGFloat kTopBarLargeInset = 20;
     if (IsTabGridDragAndDropEnabled()) {
       UIView* containerView = [[UIView alloc] init];
       containerView.translatesAutoresizingMaskIntoConstraints = NO;
-      containerView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      containerView.backgroundColor =
+          [UIColor colorNamed:kSecondaryBackgroundColor];
       containerView.layer.cornerRadius = kGridCellCornerRadius;
       containerView.layer.masksToBounds = YES;
       [self.contentView addSubview:containerView];
