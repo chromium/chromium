@@ -5698,7 +5698,8 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
         draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
         image->Draw(&canvas, flags, gfx::RectF(dest_rect), gfx::RectF(src_rect),
                     draw_options);
-      });
+      },
+      ImageOrientationEnum::kDefault);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(

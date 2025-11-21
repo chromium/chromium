@@ -909,7 +909,7 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
 scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-    ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
+    ImageOrientation orientation) {
   ExternalCanvasDrawHelper(draw_callback);
   return Snapshot(orientation);
 }

@@ -210,7 +210,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
   virtual scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation = ImageOrientationEnum::kDefault) = 0;
+      ImageOrientation orientation) = 0;
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -414,7 +414,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation = ImageOrientationEnum::kDefault) override;
+      ImageOrientation orientation) override;
 
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
@@ -528,7 +528,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation = ImageOrientationEnum::kDefault) final;
+      ImageOrientation orientation) final;
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) final;
