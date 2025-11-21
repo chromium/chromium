@@ -544,6 +544,14 @@ chromium-metrics-reviews@google.com.
   <token key="ActorTaskState" variants="ActorTaskState"/>
 </histogram>
 
+<histogram name="Actor.Task.StoppedReason" enum="StoppedReasonEnum"
+    expires_after="2026-09-17">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>The reason the task was stopped.</summary>
+</histogram>
+
 <histogram name="Actor.Tools.ExecutionDuration.{ToolRequest}" units="ms"
     expires_after="2026-09-17">
   <owner>dtapuska@google.com</owner>

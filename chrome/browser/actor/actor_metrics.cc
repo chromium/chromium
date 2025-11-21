@@ -93,6 +93,7 @@ void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
   base::UmaHistogramCounts1000(
       base::StrCat({"Actor.Task.Count.", ToString(stopped_reason)}),
       actions_count);
+  base::UmaHistogramEnumeration("Actor.Task.StoppedReason", stopped_reason);
 }
 
 }  // namespace actor

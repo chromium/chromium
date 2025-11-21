@@ -113,7 +113,8 @@ class ActorTask {
     kUserLoadedPreviousChat = 7,
     kMaxValue = kUserLoadedPreviousChat,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason,
+  // //tools/metrics/histograms/metadata/actor/enums.xml:StoppedReasonEnum)
 
   State GetState() const;
   void SetState(State new_state);

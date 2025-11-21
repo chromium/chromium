@@ -172,6 +172,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
 
+<!-- LINT.IfChange(StoppedReasonEnum) -->
+
+<enum name="StoppedReasonEnum">
+  <int value="0" label="Stopped By User"/>
+  <int value="1" label="Task complete"/>
+  <int value="2" label="Model error"/>
+  <int value="3" label="Chrome Failure"/>
+  <int value="4" label="Tab Detached"/>
+  <int value="5" label="Shutdown"/>
+  <int value="6" label="Started new chat"/>
+  <int value="7" label="Loaded previous chat"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->
+
 <!-- LINT.IfChange(TimeOfUseResult) -->
 
 <enum name="TimeOfUseResult">
