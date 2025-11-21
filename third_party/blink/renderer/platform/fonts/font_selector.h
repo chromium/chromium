@@ -65,25 +65,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
 
   virtual unsigned Version() const = 0;
 
-  // Called when a page attempts to match a font family, and the font family is
-  // available.
-  virtual void ReportSuccessfulFontFamilyMatch(
-      const AtomicString& font_family_name) = 0;
-
-  // Called when a page attempts to match a font family, and the font family is
-  // not available.
-  virtual void ReportFailedFontFamilyMatch(
-      const AtomicString& font_family_name) = 0;
-
-  // Called when a page attempts to match a font name via a @font-face src:local
-  // rule, and the font is available.
-  virtual void ReportSuccessfulLocalFontMatch(
-      const AtomicString& font_name) = 0;
-
-  // Called when a page attempts to match a font name via a @font-face src:local
-  // rule, and the font is not available.
-  virtual void ReportFailedLocalFontMatch(const AtomicString& font_name) = 0;
-
   virtual void ReportNotDefGlyph() const = 0;
 
   virtual void RegisterForInvalidationCallbacks(FontSelectorClient*) = 0;

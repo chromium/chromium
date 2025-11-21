@@ -212,7 +212,6 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
-#include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/history.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
@@ -8412,16 +8411,6 @@ ukm::UkmRecorder* Document::UkmRecorder() {
 
 ukm::SourceId Document::UkmSourceID() const {
   return ukm_source_id_;
-}
-
-FontMatchingMetrics* Document::GetFontMatchingMetrics() {
-  if (Lifecycle().GetState() >= DocumentLifecycle::LifecycleState::kStopping) {
-    return nullptr;
-  }
-  if (font_matching_metrics_)
-    return font_matching_metrics_.get();
-  font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(dom_window_);
-  return font_matching_metrics_.get();
 }
 
 void Document::MaybeRecordSvgImageProcessingTime(

@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -857,13 +856,6 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
 
 bool WorkerGlobalScope::HasPendingActivity() const {
   return !ExecutionContext::IsContextDestroyed();
-}
-
-FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
-  if (!font_matching_metrics_) {
-    font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(this);
-  }
-  return font_matching_metrics_.get();
 }
 
 CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {

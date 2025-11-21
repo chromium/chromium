@@ -191,7 +191,6 @@ class ExceptionState;
 class FocusOptions;
 class FocusedElementChangeObserver;
 class FontFaceSet;
-class FontMatchingMetrics;
 class FormController;
 class FragmentDirective;
 class FrameCallback;
@@ -1905,11 +1904,6 @@ class CORE_EXPORT Document : public ContainerNode,
   ukm::UkmRecorder* UkmRecorder();
   ukm::SourceId UkmSourceID() const;
 
-  // Tracks and reports UKM metrics of the number of attempted font family match
-  // attempts (both successful and not successful) by the page. This will return
-  // null if the document is stopped.
-  FontMatchingMetrics* GetFontMatchingMetrics();
-
   void MaybeRecordSvgImageProcessingTime(
       int data_change_count,
       base::TimeDelta data_change_elapsed_time) const;
@@ -3265,10 +3259,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // the document to record UKM.
   std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
   const int64_t ukm_source_id_;
-
-  // Tracks and reports metrics of attempted font match attempts (both
-  // successful and not successful) by the page.
-  std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
 
 #if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;

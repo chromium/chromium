@@ -175,12 +175,8 @@ const FontData* FontFallbackList::GetFontData(
                                             curr_family->FamilyName());
     }
     if (result) {
-      font_selector_->ReportSuccessfulFontFamilyMatch(
-          curr_family->FamilyName());
       return result;
     }
-
-    font_selector_->ReportFailedFontFamilyMatch(curr_family->FamilyName());
   }
   family_index_ = kCAllFamiliesScanned;
 

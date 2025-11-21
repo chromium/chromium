@@ -52,10 +52,6 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   DISALLOW_NEW();
 
  public:
-  // The optional emoji_metrics_callback argument is a mock metrics reporting
-  // function used during tests. Otherwise successful and unsuccessful emoji
-  // clusters are reported per Document / WorkerGlobalContext to
-  // FontMatchingMetrics.
   explicit HarfBuzzShaper(String text) : text_(std::move(text)) {}
 
   // Shape a range, defined by the start and end parameters, of the string

@@ -278,10 +278,6 @@ void CSSFontSelector::UpdateGenericFontFamilySettings(Document& document) {
   FontCacheInvalidated();
 }
 
-FontMatchingMetrics* CSSFontSelector::GetFontMatchingMetrics() const {
-  return GetDocument().GetFontMatchingMetrics();
-}
-
 bool CSSFontSelector::IsAlive() const {
   return tree_scope_ != nullptr;
 }
