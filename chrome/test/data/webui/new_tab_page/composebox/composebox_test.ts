@@ -932,7 +932,10 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert submit is disabled.
-    assertTrue(composeboxElement.$.submitContainer.hasAttribute('disabled'));
+    const submitButton =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    assertTrue(!!submitButton);
+    assertTrue(submitButton.hasAttribute('disabled'));
 
     // Act.
     composeboxElement.$.submitContainer.click();
@@ -943,7 +946,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
-  test('empty input has disabled submit container', async () => {
+  test('empty input has disabled submit button', async () => {
     createComposeboxElement();
 
     // Arrange.
@@ -952,7 +955,10 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert call cannot occur.
-    assertTrue(composeboxElement.$.submitContainer.hasAttribute('disabled'));
+    const submitButton =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    assertTrue(!!submitButton);
+    assertTrue(submitButton.hasAttribute('disabled'));
   });
 
   test('submit button is disabled', async () => {
@@ -962,7 +968,10 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert.
-    assertTrue(composeboxElement.$.submitContainer.hasAttribute('disabled'));
+    const submitButton =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    assertTrue(!!submitButton);
+    assertTrue(submitButton.hasAttribute('disabled'));
   });
 
   test('keydown submit only works for enter', async () => {

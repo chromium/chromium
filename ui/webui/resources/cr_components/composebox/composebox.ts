@@ -339,7 +339,7 @@ export class ComposeboxElement extends I18nMixinLit
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
         this.input_ = '';
-        this.submitEnabled_ = false;
+        this.submitEnabled_ = this.contextFilesSize_ > 0;
       } else {
         // For typed queries reset the input back to typed value when
         // focus leaves the match.

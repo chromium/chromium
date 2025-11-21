@@ -253,15 +253,19 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     // Grab the buttons to do visibility checks.
-    const submitButton =
+    const submitContainer =
         composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
     const cancelButton =
         composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+    assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
 
     // The buttons should not be visible initially while the composebox is
     // collapsed.
+    assertFalse(isTrulyVisible(submitContainer));
     assertFalse(isTrulyVisible(submitButton));
     assertFalse(isTrulyVisible(cancelButton));
 
@@ -271,12 +275,14 @@ suite('Composebox', () => {
     assertTrue(!!input);
 
     // Focusing the input should expand the composebox.
-    const expansionPromise = getTransitionEndPromise(submitButton, 'opacity');
+    const expansionPromise =
+        getTransitionEndPromise(submitContainer, 'opacity');
     input.focus();
     await expansionPromise;
 
     // With no text, submit button is visible but disabled. Cancel is not
     // visible and is disabled.
+    assertTrue(isTrulyVisible(submitContainer));
     assertTrue(isTrulyVisible(submitButton));
     assertTrue(submitButton.hasAttribute('disabled'));
     assertFalse(isTrulyVisible(cancelButton));
@@ -288,13 +294,14 @@ suite('Composebox', () => {
     const cancelContainerShowPromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     const submitContainerShowPromise =
-        getTransitionEndPromise(submitButton, 'opacity');
+        getTransitionEndPromise(submitContainer, 'opacity');
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await waitAfterNextRender(composebox);
     await Promise.all([
       cancelShowPromise, cancelContainerShowPromise, submitContainerShowPromise,
     ]);
 
+    assertTrue(isTrulyVisible(submitContainer));
     assertTrue(isTrulyVisible(submitButton));
     assertFalse(submitButton.hasAttribute('disabled'));
     assertTrue(isTrulyVisible(cancelButton));
@@ -306,7 +313,8 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
 
     // Blur the input to collapse the composebox.
-    const submitHidePromise = getTransitionEndPromise(submitButton, 'opacity');
+    const submitHidePromise = getTransitionEndPromise(
+        submitContainer, 'opacity');
     const cancelHidePromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     input.blur();
@@ -314,6 +322,7 @@ suite('Composebox', () => {
     await Promise.all([submitHidePromise, cancelHidePromise]);
 
     // The buttons should not be visible again.
+    assertFalse(isTrulyVisible(submitContainer));
     assertFalse(isTrulyVisible(submitButton));
     assertFalse(isTrulyVisible(cancelButton));
   });
@@ -461,10 +470,13 @@ suite('Composebox', () => {
     const input =
         composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
     assertTrue(!!input);
-    const submitButton =
+    const submitContainer =
         composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
     const cancelButton =
         composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+    assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
 
@@ -506,7 +518,7 @@ suite('Composebox', () => {
     const cancelContainerShowPromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     const submitContainerShowPromise =
-        getTransitionEndPromise(submitButton, 'opacity');
+        getTransitionEndPromise(submitContainer, 'opacity');
     await Promise.all([
       cancelShowPromise,
       cancelContainerShowPromise,
@@ -592,15 +604,18 @@ suite('Composebox', () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
 
-    const submitButton =
+    const submitContainer =
         composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+    assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
 
     // The button should be disabled initially with no input.
     assertTrue(submitButton.hasAttribute('disabled'));
 
-    // Click the submit button.
-    submitButton.click();
+    // Click the submit container.
+    submitContainer.click();
     await waitAfterNextRender(composebox);
 
     // Verify that neither of the submit handlers were called.
