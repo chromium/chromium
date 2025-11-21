@@ -156,8 +156,6 @@ class PLATFORM_EXPORT FontCache final {
   uint16_t Generation();
   void Invalidate();
 
-  sk_sp<SkFontMgr> FontManager() { return font_manager_; }
-
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
   static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
@@ -335,8 +333,6 @@ class PLATFORM_EXPORT FontCache final {
   // Don't purge if this count is > 0;
   int purge_prevent_count_ = 0;
 
-  sk_sp<SkFontMgr> font_manager_;
-
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* prewarmer_;
   static bool antialiased_text_enabled_;
@@ -348,10 +344,6 @@ class PLATFORM_EXPORT FontCache final {
   static int32_t small_caption_font_height_;
   static AtomicString* status_font_family_name_;
   static int32_t status_font_height_;
-
-  // Windows creates an SkFontMgr for unit testing automatically. This flag is
-  // to ensure it's not happening in the production from the crash log.
-  bool is_test_font_mgr_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

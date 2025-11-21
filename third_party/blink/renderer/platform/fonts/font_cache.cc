@@ -93,10 +93,7 @@ FontCache& FontCache::Get() {
   return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache()
-    : font_manager_(sk_ref_sp(skia::DefaultFontMgr().get())) {
-  DCHECK(font_manager_.get());
-}
+FontCache::FontCache() = default;
 
 FontCache::~FontCache() = default;
 
@@ -283,27 +280,12 @@ void FontCache::Invalidate() {
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
-  SkFontMgr* font_mgr = nullptr;
   int num_families = std::numeric_limits<int>::min();
-  bool is_test_font_mgr = false;
-  if (FontGlobalContext::TryGet()) {
-    FontCache& font_cache = FontGlobalContext::GetFontCache();
-#if BUILDFLAG(IS_WIN)
-    is_test_font_mgr = font_cache.is_test_font_mgr_;
-#endif
 
-    num_families = font_cache.font_manager_->countFamilies();
-  }
-
-  // In production, these 2 font managers must match.
-  // They don't match in unit tests or in single process mode.
-  SkFontMgr* skia_default_font_mgr = skia::DefaultFontMgr().get();
-  base::debug::Alias(&font_mgr);
-  base::debug::Alias(&skia_default_font_mgr);
+  num_families = skia::DefaultFontMgr()->countFamilies();
 
   FontDescription font_description_copy = *font_description;
   base::debug::Alias(&font_description_copy);
-  base::debug::Alias(&is_test_font_mgr);
   base::debug::Alias(&num_families);
 
   NOTREACHED();

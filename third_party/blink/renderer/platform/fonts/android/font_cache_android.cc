@@ -67,7 +67,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 }
 
 static AtomicString DefaultFontFamily() {
-  return DefaultFontFamily(FontCache::Get().FontManager());
+  return DefaultFontFamily(skia::DefaultFontMgr());
 }
 
 // static
@@ -94,7 +94,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
 
   const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
-  sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> typeface(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       locale_family_name, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1,
       // |matchFamilyStyleCharacter| is the only API that accepts |bcp47|, but
@@ -112,7 +112,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   // with what we get.
   SkString skia_family_name;
   typeface->getFamilyName(&skia_family_name);
-  sk_sp<SkTypeface> fallback(font_manager_->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> fallback(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       nullptr, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1, uchar::kSpace));
   SkString skia_fallback_name;

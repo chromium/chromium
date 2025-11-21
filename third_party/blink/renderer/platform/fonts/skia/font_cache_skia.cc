@@ -230,7 +230,7 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
   if (!font_platform_data) {
     // At least try to match locale.
     font_platform_data = FontCache::CreateFontPlatformDataForCharacter(
-        &*FontManager(), ' ', description, nullptr,
+        skia::DefaultFontMgr().get(), ' ', description, nullptr,
         FontFallbackPriority::kText);
   }
 #endif
@@ -238,7 +238,8 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
   if (!font_platform_data) {
     // Match anything.
     font_platform_data = CreateFontPlatformDataForTypeface(
-        FontManager()->legacyMakeTypeface(nullptr, description.SkiaFontStyle()),
+        skia::DefaultFontMgr()->legacyMakeTypeface(nullptr,
+                                                   description.SkiaFontStyle()),
         description);
   }
 
@@ -288,7 +289,7 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
       return typeface;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  return sk_sp<SkTypeface>(font_manager_->matchFamilyStyle(
+  return sk_sp<SkTypeface>(skia::DefaultFontMgr()->matchFamilyStyle(
       name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));
 }
 

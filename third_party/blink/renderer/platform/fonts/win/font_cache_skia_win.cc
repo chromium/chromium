@@ -41,6 +41,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -178,11 +179,11 @@ const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
     UChar32 codepoint,
     FontFallbackPriority fallback_priority) {
   UScriptCode script;
-  DCHECK(font_manager_);
+
   if (const AtomicString fallback_family =
           GetFallbackFamily(codepoint, font_description.GenericFamily(),
                             font_description.Locale(), fallback_priority,
-                            *font_manager_, script)) {
+                            *skia::DefaultFontMgr(), script)) {
     FontFaceCreationParams create_by_family =
         FontFaceCreationParams(fallback_family);
     const FontPlatformData* data =
@@ -256,7 +257,7 @@ const SimpleFontData* FontCache::GetDWriteFallbackFamily(
 
   Bcp47Vector locales;
   locales.push_back(fallback_locale->LocaleForSkFontMgr());
-  sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> typeface(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
       locales.size(), codepoint));
 
