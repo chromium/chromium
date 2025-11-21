@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-data-view.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -37,7 +38,9 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
   // reload_button::mojom::PageHandler:
-  void Reload(bool ignore_cache) override;
+  void Reload(bool ignore_cache,
+              const std::vector<reload_button::mojom::ClickDispositionFlag>&
+                  flags) override;
   void StopReload() override;
   void ShowContextMenu(int32_t offset_x, int32_t offset_y) override;
 

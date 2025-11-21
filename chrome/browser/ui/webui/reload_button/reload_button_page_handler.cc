@@ -19,10 +19,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-data-view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/window_open_disposition_utils.h"
+#include "ui/events/event_constants.h"
 
 namespace {
 // Measurement marks.
@@ -38,6 +41,31 @@ constexpr char kInputToReloadMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToReload.MouseRelease";
 constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
+
+int ToUIEventFlags(
+    const std::vector<reload_button::mojom::ClickDispositionFlag>& flags) {
+  using reload_button::mojom::ClickDispositionFlag;
+  int event_flags = 0;
+  for (auto& flag : flags) {
+    switch (flag) {
+      case ClickDispositionFlag::kMiddleMouseButton: {
+        event_flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
+        break;
+      }
+      case ClickDispositionFlag::kAltKeyDown: {
+        event_flags |= ui::EF_ALT_DOWN;
+        break;
+      }
+
+      case ClickDispositionFlag::kMetaKeyDown: {
+        event_flags |= ui::EF_COMMAND_DOWN;
+        break;
+      }
+    }
+  }
+  return event_flags;
+}
+
 }  // namespace
 
 ReloadButtonPageHandler::ReloadButtonPageHandler(
@@ -61,9 +89,13 @@ MetricsReporter* ReloadButtonPageHandler::GetMetricsReporter() {
   return service ? service->metrics_reporter() : nullptr;
 }
 
-void ReloadButtonPageHandler::Reload(bool ignore_cache) {
-  command_updater_->ExecuteCommand(ignore_cache ? IDC_RELOAD_BYPASSING_CACHE
-                                                : IDC_RELOAD);
+void ReloadButtonPageHandler::Reload(
+    bool ignore_cache,
+    const std::vector<reload_button::mojom::ClickDispositionFlag>& flags) {
+  command_updater_->ExecuteCommandWithDisposition(
+      ignore_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
+      ui::DispositionFromEventFlags(ToUIEventFlags(flags)));
+
   // Gets the current time immediately after executing the command.
   const base::TimeTicks now = base::TimeTicks::Now();
 
@@ -83,7 +115,8 @@ void ReloadButtonPageHandler::Reload(bool ignore_cache) {
 }
 
 void ReloadButtonPageHandler::StopReload() {
-  command_updater_->ExecuteCommand(IDC_STOP);
+  command_updater_->ExecuteCommandWithDisposition(
+      IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
   // Gets the current time immediately after executing the command.
   const base::TimeTicks now = base::TimeTicks::Now();
 

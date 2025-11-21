@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxyImpl, ClickDispositionFlag} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 
@@ -21,6 +21,10 @@ const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
     'reloadButtonTooltipReloadWithMenu';
 const RELOAD_BUTTON_TOOLTIP_RELOAD = 'reloadButtonTooltipReload';
 const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
+
+const BUTTON_LEFT = 0;
+const BUTTON_MIDDLE = 1;
+const BUTTON_RIGHT = 2;
 
 const LONG_PRESS_TIMER_THRESHOLD_MS = 500;
 
@@ -95,9 +99,15 @@ export class ReloadButtonAppElement extends CrLitElement {
     this.metricsRecorder_.stopObserving();
   }
 
+  /**
+   * See `onReloadButtonPointerUp_` for the click event handling logic.
+   * @param e the MouseEvent associated with the click.
+   * @returns
+   */
   protected onReloadButtonPointerDown_(e: MouseEvent) {
-    if (e.button !== 0) {
-      // The TypeScript code should only handle the left-click.
+    if (e.button === BUTTON_RIGHT) {
+      // The TypeScript code should only handle long press for the
+      // left-click/middle-click.
       return;
     }
 
@@ -121,16 +131,59 @@ export class ReloadButtonAppElement extends CrLitElement {
     }, LONG_PRESS_TIMER_THRESHOLD_MS);
   }
 
+  /**
+   * Generate the list of `ClickDispositionFlag`s based on the `MouseEvent`.
+   */
+  private generateFlags(e: MouseEvent): ClickDispositionFlag[] {
+    const flags: ClickDispositionFlag[] = [];
+    if (e.button === BUTTON_MIDDLE) {
+      flags.push(ClickDispositionFlag.kMiddleMouseButton);
+    }
+    if (e.altKey) {
+      flags.push(ClickDispositionFlag.kAltKeyDown);
+    }
+    if (e.metaKey) {
+      flags.push(ClickDispositionFlag.kMetaKeyDown);
+    }
+    return flags;
+  }
+
+  /**
+   * Handles the mouse click event.
+   * - If it's from the right mouse click, it's not handled from the Javascript.
+   * - If it's a single click:
+   *    - if the page is already in loading process, it should stop the process.
+   *    - if the page is not loading:
+   *        - if it's from the left mouse click, it should trigger the page
+   *          reload, so the loading state should be updated accordingly.
+   *        - if it's from the middle mouse click, it should open the same page
+   *          from another background tab, and the loading state of the current
+   *          tab remains unchanged.
+   * - If it's a long press with a duration longer than
+   *   `LONG_PRESS_TIMER_THRESHOLD_MS`, no matter it's a left click or middle
+   *   click, it should triggers the context menu display if the devtools is
+   *   open (see `onReloadButtonPointerDown_`).
+   * @param e the MouseEvent associated with the click.
+   * @returns
+   */
   protected onReloadButtonPointerUp_(e: MouseEvent) {
+    if (e.button === BUTTON_RIGHT) {
+      return;
+    }
+
     this.metricsRecorder_.onButtonPressedStart(e);
     if (this.isLongPressed_) {
       // If the long press is already handled, skip the rest.
       this.isLongPressed_ = false;
       return;
     }
-    this.metricsRecorder_.onChangeVisibleMode(
-        MetricsRecorder.getVisibleMode(this.isLoading_),
-        MetricsRecorder.getVisibleMode(!this.isLoading_));
+
+    // Handle the visible state changes only for left-click.
+    if (e.button === BUTTON_LEFT) {
+      this.metricsRecorder_.onChangeVisibleMode(
+          MetricsRecorder.getVisibleMode(this.isLoading_),
+          MetricsRecorder.getVisibleMode(!this.isLoading_));
+    }
 
     clearTimeout(this.longPressTimer_);
 
@@ -139,10 +192,14 @@ export class ReloadButtonAppElement extends CrLitElement {
     } else {
       // If the shift or ctrl key is pressed, we should reload with cache
       // ignored.
-      BrowserProxyImpl.getInstance().handler.reload(e.shiftKey || e.ctrlKey);
+      BrowserProxyImpl.getInstance().handler.reload(
+          /*ignore_cache=*/ e.shiftKey || e.ctrlKey, this.generateFlags(e));
     }
-    // Update the renderer in advance to avoid the delay.
-    this.isLoading_ = !this.isLoading_;
+
+    if (e.button === BUTTON_LEFT) {
+      // Update the renderer in advance to avoid the delay.
+      this.isLoading_ = !this.isLoading_;
+    }
   }
 }
 

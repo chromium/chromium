@@ -13,6 +13,14 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// The event flags for the click that might affect disposition of the reload
+// button's behavior.
+enum ClickDispositionFlag {
+  kMiddleMouseButton = 0,
+  kAltKeyDown = 1,
+  kMetaKeyDown = 2,
+};
+
 // Called from TS side of chrome://reload-button.top-chrome
 // (Renderer -> Browser)
 // The browser side will just invoke the corresponding browser command to
@@ -23,7 +31,10 @@ interface PageHandler {
   // it will trigger another reload, and abort the previous one.
   // If `ignore_cache` is set to true, the page will be reloaded while
   // ignoring the HTTP cache.
-  Reload(bool ignore_cache);
+  // `flags` contains the list of flag information about the click that
+  // might affect the reload logic (e.g. whether it's clicked through the
+  // middle mouse button, or whether the alt key is pressed).
+  Reload(bool ignore_cache, array<ClickDispositionFlag> flags);
   // Stops the current page from reloading. If the page is not in a loading
   // state, it is a no-op.
   StopReload();

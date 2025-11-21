@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-data-view.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -148,50 +149,78 @@ class ReloadButtonPageHandlerTest : public testing::Test {
 // Test suite for Reload-related tests.
 using ReloadButtonPageHandlerReloadTest = ReloadButtonPageHandlerTest;
 
-// Tests that calling Reload(false) executes the IDC_RELOAD command and
+// Tests that calling Reload(false, {}) executes the IDC_RELOAD command and
 // records metrics.
 TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseRelease) {
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_RELOAD, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
 
   const base::TimeDelta duration = base::Milliseconds(10);
   ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
 
-  handler().Reload(false);
+  handler().Reload(/*ignore_cache=*/false, /*flags=*/{});
 
   histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
                                             duration, 1);
 }
 
-// Tests that calling Reload(false) doesn't record metrics if the start mark
+// Tests that calling Reload(false, {}) doesn't record metrics if the start mark
 // is not present.
 TEST_F(ReloadButtonPageHandlerReloadTest, ReloadByMouseReleaseNoStartMark) {
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_RELOAD, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
   ExpectNoMeasureCallback(kInputMouseReleaseStartMark);
 
-  handler().Reload(false);
+  handler().Reload(/*ignore_cache=*/false, /*flags=*/{});
 
   histogram_tester().ExpectTotalCount(kInputToReloadMouseReleaseHistogram, 0);
 }
 
-// Tests that calling Reload() does not crash if the metrics reporter is null.
+// Tests that calling Reload(false, {middle_button}) executes the
+// IDC_RELOAD with new background tab.
+TEST_F(ReloadButtonPageHandlerReloadTest, ReloadWithMiddleMouseButton) {
+  EXPECT_CALL(
+      mock_command_updater(),
+      ExecuteCommandWithDisposition(
+          IDC_RELOAD, WindowOpenDisposition::NEW_BACKGROUND_TAB, testing::_));
+
+  const base::TimeDelta duration = base::Milliseconds(10);
+  ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
+
+  handler().Reload(
+      /*ignore_cache=*/false, /*flags=*/{
+          reload_button::mojom::ClickDispositionFlag::kMiddleMouseButton});
+
+  histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
+                                            duration, 1);
+}
+
+// Tests that calling Reload(false, {}) does not crash if the metrics reporter
+// is null.
 TEST_F(ReloadButtonPageHandlerReloadTest, ReloadNoMetricsReporter) {
   // Reset the metrics reporter to null.
   ClearMetricsReporter();
 
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_RELOAD, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_RELOAD, WindowOpenDisposition::CURRENT_TAB, testing::_));
   // No EXPECT_CALLs for mock_metrics_reporter_ as it is null.
 
-  handler().Reload(false);
+  handler().Reload(/*ignore_cache=*/false, /*flags=*/{});
   // Expect no crash.
 }
 
 // Tests that calling Reload(true) executes the IDC_RELOAD_BYPASSING_CACHE
 TEST_F(ReloadButtonPageHandlerReloadTest, ReloadBypassingCache) {
   EXPECT_CALL(mock_command_updater(),
-              ExecuteCommand(IDC_RELOAD_BYPASSING_CACHE, testing::_))
+              ExecuteCommandWithDisposition(IDC_RELOAD_BYPASSING_CACHE,
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            testing::_))
       .Times(1);
 
-  handler().Reload(true);
+  handler().Reload(/*ignore_cache=*/true, /*flags=*/{});
 }
 
 // Test suite for StopReload-related tests.
@@ -200,7 +229,9 @@ using ReloadButtonPageHandlerStopReloadTest = ReloadButtonPageHandlerTest;
 // Tests that calling StopReload() executes the IDC_STOP command and records
 // metrics.
 TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReload) {
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_STOP, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_STOP, WindowOpenDisposition::CURRENT_TAB, testing::_));
   const base::TimeDelta duration = base::Milliseconds(20);
   ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
 
@@ -213,7 +244,9 @@ TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReload) {
 // Tests that calling StopReload() doesn't record metrics if the start mark
 // is not present.
 TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoStartMark) {
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_STOP, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_STOP, WindowOpenDisposition::CURRENT_TAB, testing::_));
   ExpectNoMeasureCallback(kInputMouseReleaseStartMark);
 
   handler().StopReload();
@@ -225,7 +258,9 @@ TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoStartMark) {
 // null.
 TEST_F(ReloadButtonPageHandlerStopReloadTest, StopReloadNoMetricsReporter) {
   ClearMetricsReporter();
-  EXPECT_CALL(mock_command_updater(), ExecuteCommand(IDC_STOP, _));
+  EXPECT_CALL(mock_command_updater(),
+              ExecuteCommandWithDisposition(
+                  IDC_STOP, WindowOpenDisposition::CURRENT_TAB, testing::_));
   // No EXPECT_CALLs for `mock_metrics_reporter()` as it is null.
 
   handler().StopReload();
