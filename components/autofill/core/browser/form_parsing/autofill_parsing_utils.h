@@ -61,9 +61,8 @@ enum class RegexFeature : uint8_t {
   kAutofillSupportPhoneticNameForJP = 2,
   kAutofillSupportLastNamePrefix = 3,
   kAutofillEnableLoyaltyCardsFilling = 4,
-  kAutofillImproveCityFieldClassification = 5,
-  kAutofillSupportSplitZipCode = 6,
-  kAutofillDisallowMoreHyphenLikeLabels = 7,
+  kAutofillSupportSplitZipCode = 5,
+  kAutofillDisallowMoreHyphenLikeLabels = 6,
   kMaxValue = kAutofillDisallowMoreHyphenLikeLabels,
 };
 

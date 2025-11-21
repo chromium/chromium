@@ -271,9 +271,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
-                "Reduces city field false positive classifications"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DISALLOW_MORE_HYPHEN_LIKE_LABELS,
                 "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
                         + " special characters."),

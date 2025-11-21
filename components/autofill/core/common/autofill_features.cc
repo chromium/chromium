@@ -658,12 +658,6 @@ BASE_FEATURE(kAutofillIgnoreCheckableElements,
 BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, new `negative_pattern` regex values will be used
-// in order to reduce false positive classifications of city fields.
-// TODO(crbug.com/330508437): Clean up when launched.
-BASE_FEATURE(kAutofillImproveCityFieldClassification,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.
