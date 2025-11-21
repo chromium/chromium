@@ -21,6 +21,9 @@ config("cpuinfo_config") {
     # For src/src/arm/windows/init-by-logical-sys-info.c.
     "-Wno-tautological-pointer-compare",
 
+    # For src/src/arm/linux/chipset.c.
+    "-Wno-logical-op-parentheses",
+
     # A lot of locations.
     "-Wno-unused-function",
   ]
