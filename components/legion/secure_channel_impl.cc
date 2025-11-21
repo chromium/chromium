@@ -201,8 +201,15 @@ void SecureChannelImpl::OnEncryptedResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Step 6: Decrypt the response
-  std::optional<Request> decrypted_response =
-      secure_session_->Decrypt(response);
+  secure_session_->Decrypt(
+      response, base::BindOnce(&SecureChannelImpl::OnDecryptedResponse,
+                               weak_factory_.GetWeakPtr()));
+}
+
+void SecureChannelImpl::OnDecryptedResponse(
+    std::optional<Request> decrypted_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!decrypted_response.has_value()) {
     DLOG(ERROR) << "Failed to decrypt response.";
     FailAllRequestsAndClose(ErrorCode::kDecryptionFailed);

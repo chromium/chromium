@@ -72,6 +72,7 @@ class SecureChannelImpl : public SecureChannel {
   void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
   void OnHandshakeVerification(bool handshake_verified);
   void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
+  void OnDecryptedResponse(std::optional<Request> decrypted_response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

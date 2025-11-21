@@ -54,6 +54,15 @@ void SecureSessionImpl::Encrypt(const Request& data,
                         base::BindOnce(std::move(callback), std::move(result)));
 }
 
+void SecureSessionImpl::Decrypt(const oak::session::v1::EncryptedMessage& data,
+                                DecryptOnceCallback callback) {
+  auto result = DecryptSync(data);
+
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), std::move(result)));
+}
+
 oak::session::v1::HandshakeRequest
 SecureSessionImpl::GetHandshakeMessageSync() {
   noise_.emplace();
@@ -150,7 +159,7 @@ SecureSessionImpl::EncryptSync(const Request& data) {
   return encrypted_message;
 }
 
-std::optional<Response> SecureSessionImpl::Decrypt(
+std::optional<Response> SecureSessionImpl::DecryptSync(
     const oak::session::v1::EncryptedMessage& data) {
   if (!crypter_) {
     DLOG(ERROR) << "Crypter not initialized. Handshake must be completed.";

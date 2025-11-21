@@ -33,6 +33,8 @@ class SecureSession {
   using EncryptOnceCallback = base::OnceCallback<void(
       std::optional<oak::session::v1::EncryptedMessage>)>;
 
+  using DecryptOnceCallback = base::OnceCallback<void(std::optional<Response>)>;
+
   virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
@@ -58,9 +60,10 @@ class SecureSession {
 
   // Decrypts the given data.
   // This should only be called after the handshake is complete.
-  // Returns std::nullopt on failure.
-  virtual std::optional<Response> Decrypt(
-      const oak::session::v1::EncryptedMessage& data) = 0;
+  //
+  // Runs callback with `std::nullopt` on failure.
+  virtual void Decrypt(const oak::session::v1::EncryptedMessage& data,
+                       DecryptOnceCallback callback) = 0;
 };
 
 }  // namespace legion

@@ -210,10 +210,15 @@ TEST_F(SecureSessionImplTest, HandshakeAndEncryptDecryptSucceeds) {
   auto encrypted_from_server = server_session.Encrypt(server_plaintext);
   ASSERT_TRUE(encrypted_from_server.has_value());
 
-  auto decrypted_by_client =
-      client_session_.Decrypt(encrypted_from_server.value());
-  ASSERT_TRUE(decrypted_by_client.has_value());
-  EXPECT_EQ(server_plaintext, decrypted_by_client.value());
+  {
+    base::test::TestFuture<std::optional<Response>> future;
+    client_session_.Decrypt(encrypted_from_server.value(),
+                            future.GetCallback());
+    auto decrypted_by_client = future.Get();
+
+    ASSERT_TRUE(decrypted_by_client.has_value());
+    EXPECT_EQ(server_plaintext, decrypted_by_client.value());
+  }
 }
 
 TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
@@ -291,7 +296,11 @@ TEST_F(SecureSessionImplTest, EncryptBeforeHandshake) {
 TEST_F(SecureSessionImplTest, DecryptBeforeHandshake) {
   oak::session::v1::EncryptedMessage encrypted_message;
   encrypted_message.set_ciphertext("some data");
-  auto decrypted = client_session_.Decrypt(encrypted_message);
+
+  base::test::TestFuture<std::optional<Response>> future;
+  client_session_.Decrypt(encrypted_message, future.GetCallback());
+  auto decrypted = future.Get();
+
   EXPECT_FALSE(decrypted.has_value());
 }
 

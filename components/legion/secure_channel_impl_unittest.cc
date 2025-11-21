@@ -134,12 +134,21 @@ class FakeSecureSession : public SecureSession {
     return encrypted_message;
   }
 
-  // Returns std::nullopt if message's ciphertext is equal to
+  // Runs callback with `std::nullopt` if message's ciphertext is equal to
   // `kDecryptionMustFail`.
   //
   // Expects that message has "encrypted: " prefix and removes that prefix.
-  std::optional<Request> Decrypt(
-      const oak::session::v1::EncryptedMessage& message) override {
+  void Decrypt(const oak::session::v1::EncryptedMessage& message,
+               SecureSession::DecryptOnceCallback callback) override {
+    auto result = DecryptSync(message);
+
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
+
+  std::optional<Request> DecryptSync(
+      const oak::session::v1::EncryptedMessage& message) {
     Request message_bytes(message.ciphertext().begin(),
                           message.ciphertext().end());
 

@@ -28,8 +28,8 @@ class SecureSessionImpl : public SecureSession {
       const oak::session::v1::HandshakeResponse& response,
       ProcessHandshakeResponseOnceCallback callback) override;
   void Encrypt(const Request& data, EncryptOnceCallback callback) override;
-  std::optional<Response> Decrypt(
-      const oak::session::v1::EncryptedMessage& data) override;
+  void Decrypt(const oak::session::v1::EncryptedMessage& data,
+               DecryptOnceCallback callback) override;
 
   void set_crypter_for_testing(std::unique_ptr<Crypter> crypter) {
     crypter_ = std::move(crypter);
@@ -43,6 +43,9 @@ class SecureSessionImpl : public SecureSession {
 
   std::optional<oak::session::v1::EncryptedMessage> EncryptSync(
       const Request& data);
+
+  std::optional<Response> DecryptSync(
+      const oak::session::v1::EncryptedMessage& data);
 
   std::optional<Noise> noise_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
