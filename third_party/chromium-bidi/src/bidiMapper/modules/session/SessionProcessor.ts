@@ -156,7 +156,7 @@ export class SessionProcessor {
   }
 
   async subscribe(
-    params: Session.SubscriptionRequest,
+    params: Session.SubscribeParameters,
     googChannel: GoogChannel = null,
   ): Promise<Session.SubscribeResult> {
     const subscription = await this.#eventManager.subscribe(

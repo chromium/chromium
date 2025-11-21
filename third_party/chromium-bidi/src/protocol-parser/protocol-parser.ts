@@ -320,11 +320,11 @@ export namespace Session {
 
   export function parseSubscribeParams(
     params: unknown,
-  ): Protocol.Session.SubscriptionRequest {
+  ): Protocol.Session.SubscribeParameters {
     return parseObject(
       params,
-      WebDriverBidi.Session.SubscriptionRequestSchema,
-    ) as Protocol.Session.SubscriptionRequest;
+      WebDriverBidi.Session.SubscribeParametersSchema,
+    ) as Protocol.Session.SubscribeParameters;
   }
   export function parseUnsubscribeParams(
     params: unknown,

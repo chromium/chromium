@@ -340,7 +340,7 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Session module
   // keep-sorted start block=yes
-  parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
+  parseSubscribeParams(params: unknown): Session.SubscribeParameters {
     return Parser.Session.parseSubscribeParams(params);
   }
   parseUnsubscribeParams(params: unknown): Session.UnsubscribeParameters {

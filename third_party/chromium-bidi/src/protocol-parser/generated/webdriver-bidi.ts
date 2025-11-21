@@ -281,7 +281,7 @@ export namespace Session {
   export const SubscriptionSchema = z.lazy(() => z.string());
 }
 export namespace Session {
-  export const SubscriptionRequestSchema = z.lazy(() =>
+  export const SubscribeParametersSchema = z.lazy(() =>
     z.object({
       events: z.array(z.string()).min(1),
       contexts: z
@@ -372,7 +372,7 @@ export namespace Session {
   export const SubscribeSchema = z.lazy(() =>
     z.object({
       method: z.literal('session.subscribe'),
-      params: Session.SubscriptionRequestSchema,
+      params: Session.SubscribeParametersSchema,
     }),
   );
 }
@@ -1468,6 +1468,44 @@ export namespace Emulation {
     z.object({
       type: z.literal('offline'),
     }),
+  );
+}
+export namespace Emulation {
+  export const SetNetworkConditionsResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setScreenSettingsOverride'),
+      params: Emulation.SetScreenSettingsOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const ScreenAreaSchema = z.lazy(() =>
+    z.object({
+      width: JsUintSchema,
+      height: JsUintSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      screenArea: z.union([Emulation.ScreenAreaSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }
 export namespace Emulation {

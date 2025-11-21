@@ -339,8 +339,8 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Session module
   // keep-sorted start block=yes
-  parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
-    return params as Session.SubscriptionRequest;
+  parseSubscribeParams(params: unknown): Session.SubscribeParameters {
+    return params as Session.SubscribeParameters;
   }
   parseUnsubscribeParams(
     params: unknown,

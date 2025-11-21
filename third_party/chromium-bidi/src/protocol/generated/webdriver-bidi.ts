@@ -210,7 +210,7 @@ export namespace Session {
   export type Subscription = string;
 }
 export namespace Session {
-  export type SubscriptionRequest = {
+  export type SubscribeParameters = {
     events: [string, ...string[]];
     contexts?: [
       BrowsingContext.BrowsingContext,
@@ -280,7 +280,7 @@ export namespace Session {
 export namespace Session {
   export type Subscribe = {
     method: 'session.subscribe';
-    params: Session.SubscriptionRequest;
+    params: Session.SubscribeParameters;
   };
 }
 export namespace Session {
@@ -1200,6 +1200,34 @@ export namespace Emulation {
   export type NetworkConditionsOffline = {
     type: 'offline';
   };
+}
+export namespace Emulation {
+  export type SetNetworkConditionsResult = EmptyResult;
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverride = {
+    method: 'emulation.setScreenSettingsOverride';
+    params: Emulation.SetScreenSettingsOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type ScreenArea = {
+    width: JsUint;
+    height: JsUint;
+  };
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverrideParameters = {
+    screenArea: Emulation.ScreenArea | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverrideResult = EmptyResult;
 }
 export namespace Emulation {
   export type SetScreenOrientationOverride = {
