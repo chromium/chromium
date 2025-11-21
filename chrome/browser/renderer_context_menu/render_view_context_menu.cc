@@ -1313,6 +1313,13 @@ void RenderViewContextMenu::InitMenu() {
     autofill_client->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kContextMenuOpened);
   }
+
+  if (features::IsReadAnythingMenuShuffleExperimentEnabled() &&
+      features::GetReadAnythingMenuShuffleExperimentGroup() ==
+          features::ReadAnythingMenuShuffleExperimentGroup::kPlaceAtBottom &&
+      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
+    AppendReadAnythingItem();
+  }
 }
 
 Profile* RenderViewContextMenu::GetProfile() const {
@@ -2247,10 +2254,31 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
-  if (IsRegionSearchEnabled()) {
-    AppendRegionSearchItem();
+
+  if (features::IsReadAnythingMenuShuffleExperimentEnabled()) {
+    // This will be set to false in AppendRegionSearchItem() if it is called.
+    const auto experiment_group =
+        features::GetReadAnythingMenuShuffleExperimentGroup();
+
+    if (IsRegionSearchEnabled()) {
+      AppendRegionSearchItem();
+    }
+
+    if (experiment_group ==
+        features::ReadAnythingMenuShuffleExperimentGroup::kDefault) {
+      AppendReadAnythingItem();
+    } else if (experiment_group ==
+               features::ReadAnythingMenuShuffleExperimentGroup::
+                   kPlaceWithSeparation) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+      AppendReadAnythingItem();
+    }
+  } else {  // No ReadAnythingMenuShuffleExperiment -- keep default code.
+    if (IsRegionSearchEnabled()) {
+      AppendRegionSearchItem();
+    }
+    AppendReadAnythingItem();
   }
-  AppendReadAnythingItem();
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.

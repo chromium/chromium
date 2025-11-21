@@ -97,6 +97,7 @@ BASE_FEATURE_ENUM_PARAM(
     "accessibility_performance_group_name",
     AccessibilityPerformanceMeasurementExperimentGroup::kAXModeComplete,
     &kAccessibilityPerformanceMeasurementExperimentParamOptions);
+
 }  // namespace
 
 AccessibilityPerformanceMeasurementExperimentGroup
@@ -413,6 +414,37 @@ bool IsImmersiveReadAnythingEnabled() {
 BASE_FEATURE(kMainNodeAnnotations, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsMainNodeAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
+}
+
+BASE_FEATURE(kReadAnythingMenuShuffleExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingMenuShuffleExperimentEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingMenuShuffleExperiment);
+}
+
+namespace {
+constexpr base::FeatureParam<ReadAnythingMenuShuffleExperimentGroup>::Option
+    kReadAnythingMenuShuffleExperimentParamOptions[3] = {
+        {ReadAnythingMenuShuffleExperimentGroup::kDefault,
+         "MenuShuffleDefault"},
+        {ReadAnythingMenuShuffleExperimentGroup::kPlaceWithSeparation,
+         "MenuShuffleSeparation"},
+        {ReadAnythingMenuShuffleExperimentGroup::kPlaceAtBottom,
+         "MenuShufflePlaceAtBottom"}};
+
+BASE_FEATURE_ENUM_PARAM(ReadAnythingMenuShuffleExperimentGroup,
+                        kReadAnythingMenuShuffleExperimentParam,
+                        &kReadAnythingMenuShuffleExperiment,
+                        "read_anything_menu_shuffle_group_name",
+                        ReadAnythingMenuShuffleExperimentGroup::kDefault,
+                        &kReadAnythingMenuShuffleExperimentParamOptions);
+}  // namespace
+
+ReadAnythingMenuShuffleExperimentGroup
+GetReadAnythingMenuShuffleExperimentGroup() {
+  CHECK(IsReadAnythingMenuShuffleExperimentEnabled());
+  return kReadAnythingMenuShuffleExperimentParam.Get();
 }
 
 BASE_FEATURE(kReadAnythingReadAloud, base::FEATURE_ENABLED_BY_DEFAULT);

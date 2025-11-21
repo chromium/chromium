@@ -333,6 +333,27 @@ AX_BASE_EXPORT bool IsImmersiveReadAnythingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
 AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 
+enum class ReadAnythingMenuShuffleExperimentGroup {
+  kDefault,              // Leaves in default position
+  kPlaceWithSeparation,  // Adds a UI separator from previous element.
+  kPlaceAtBottom         // Places at bottom of context menu.
+};
+
+// Current usage of ReadAnything corresponds to fairly short sessions on
+// sites that are not naturally readable sites. We want to research whether
+// people are entering reading mode by accident. Given the proximity to
+// the Lens feature (and similar usage) in the context menu. We want to test
+// the hypothesis of whether or not people are clicking on the ReadAnything
+// menu item by mistake (targeting instead Lens).
+// The parameters allow us to see the effects if we separate Lens and
+// ReadAnything and if we take a more extreme position of sending ReadAnything
+// to the bottom.
+AX_BASE_EXPORT ReadAnythingMenuShuffleExperimentGroup
+GetReadAnythingMenuShuffleExperimentGroup();
+
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingMenuShuffleExperiment);
+AX_BASE_EXPORT bool IsReadAnythingMenuShuffleExperimentEnabled();
+
 // Show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
