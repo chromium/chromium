@@ -35,8 +35,7 @@ class NavigationAttachmentsViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(
-            PropertyModel model, NavigationAttachmentsViewHolder view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
         } else if (propertyKey == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE) {
@@ -128,8 +127,7 @@ class NavigationAttachmentsViewBinder {
         }
     }
 
-    static void updateModeSelectorVisibility(
-            PropertyModel model, NavigationAttachmentsViewHolder views) {
+    static void updateModeSelectorVisibility(PropertyModel model, FuseboxViewHolder views) {
         boolean isRequestTypeChangeable =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
         boolean showFuseboxToolbar =
@@ -208,8 +206,7 @@ class NavigationAttachmentsViewBinder {
         views.popup.mFileButton.setEnabled(!isImageGenerationUsed);
     }
 
-    static void reanchorViewsForCompactFusebox(
-            PropertyModel model, NavigationAttachmentsViewHolder views) {
+    static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {
         boolean shouldShowCompactUi = model.get(NavigationAttachmentsProperties.COMPACT_UI);
 
         int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
@@ -238,8 +235,7 @@ class NavigationAttachmentsViewBinder {
     }
 
     // TODO(https://crbug.com/460150759): Update to correctly tint for being disabled.
-    private static void updateForCurrentTabFavicon(
-            Bitmap favicon, NavigationAttachmentsViewHolder viewHolder) {
+    private static void updateForCurrentTabFavicon(Bitmap favicon, FuseboxViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();
         Resources res = context.getResources();
         Button addCurrentTabButton = viewHolder.popup.mAddCurrentTab;

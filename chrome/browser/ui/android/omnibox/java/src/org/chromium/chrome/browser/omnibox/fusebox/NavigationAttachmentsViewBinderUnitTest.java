@@ -76,7 +76,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
             new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
     private ActivityController<TestActivity> mActivityController;
-    private NavigationAttachmentsViewHolder mViewHolder;
+    private FuseboxViewHolder mViewHolder;
     private NavigationAttachmentsPopup mPopup;
 
     @Before
@@ -95,7 +95,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         doReturn(popupView).when(mPopupWindow).getContentView();
 
         mPopup = new NavigationAttachmentsPopup(activity, mPopupWindow, popupView);
-        mViewHolder = new NavigationAttachmentsViewHolder(parent, mPopup);
+        mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);

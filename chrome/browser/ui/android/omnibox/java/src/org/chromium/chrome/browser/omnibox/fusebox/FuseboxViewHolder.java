@@ -13,9 +13,9 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
-/** A ViewHolder for the NavigationAttachments component. */
+/** A ViewHolder for the Fusebox component. */
 @NullMarked
-class NavigationAttachmentsViewHolder {
+class FuseboxViewHolder {
     public final ConstraintLayout parentView;
     public final RecyclerView attachmentsView;
     public final ChromeImageView addButton;
@@ -24,7 +24,7 @@ class NavigationAttachmentsViewHolder {
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
 
-    NavigationAttachmentsViewHolder(ConstraintLayout parent, NavigationAttachmentsPopup popup) {
+    FuseboxViewHolder(ConstraintLayout parent, NavigationAttachmentsPopup popup) {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);

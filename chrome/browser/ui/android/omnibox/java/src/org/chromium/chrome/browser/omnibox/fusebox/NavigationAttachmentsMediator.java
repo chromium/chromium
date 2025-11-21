@@ -79,7 +79,7 @@ public class NavigationAttachmentsMediator {
             Context context,
             WindowAndroid windowAndroid,
             PropertyModel model,
-            NavigationAttachmentsViewHolder viewHolder,
+            FuseboxViewHolder viewHolder,
             FuseboxAttachmentModelList modelList,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,

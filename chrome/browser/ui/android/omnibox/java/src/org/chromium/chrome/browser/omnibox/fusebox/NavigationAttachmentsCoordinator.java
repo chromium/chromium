@@ -46,7 +46,7 @@ import java.util.List;
 @NullMarked
 public class NavigationAttachmentsCoordinator
         implements UrlFocusChangeListener, TemplateUrlServiceObserver {
-    private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
+    private final @Nullable FuseboxViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
@@ -102,7 +102,7 @@ public class NavigationAttachmentsCoordinator
         popupWindow.setAnimateFromAnchor(true);
 
         var popup = new NavigationAttachmentsPopup(mContext, popupWindow, popupView);
-        mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
+        mViewHolder = new FuseboxViewHolder(parent, popup);
 
         var adapter = new FuseboxAttachmentRecyclerViewAdapter(mModelList);
         mViewHolder.attachmentsView.setAdapter(adapter);
@@ -241,7 +241,7 @@ public class NavigationAttachmentsCoordinator
         return mModel;
     }
 
-    @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
+    @Nullable FuseboxViewHolder getViewHolderForTesting() {
         return mViewHolder;
     }
 

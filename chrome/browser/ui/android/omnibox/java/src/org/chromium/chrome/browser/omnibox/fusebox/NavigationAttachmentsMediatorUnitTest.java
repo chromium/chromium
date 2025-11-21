@@ -75,7 +75,7 @@ import java.util.function.Function;
 public class NavigationAttachmentsMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private NavigationAttachmentsViewHolder mViewHolder;
+    @Mock private FuseboxViewHolder mViewHolder;
     @Mock private NavigationAttachmentsPopup mPopup;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
@@ -115,7 +115,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
-        mViewHolder = new NavigationAttachmentsViewHolder(viewGroup, mPopup);
+        mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
         mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         mMediator =
