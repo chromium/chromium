@@ -162,6 +162,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
     case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
       return "INVALID_VIDEO_DEVICE_ID";
+    case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
+      return "STREAM_NOT_FOUND_IN_REGISTRY";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -330,6 +332,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
       return "Invalid security origin";
     case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
+    case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
       return "Error starting tab capture";
     case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
       return "Error starting screen capture";

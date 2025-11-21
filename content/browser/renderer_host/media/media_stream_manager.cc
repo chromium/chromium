@@ -330,6 +330,8 @@ const char* RequestResultToString(
     case blink::mojom::MediaStreamRequestResult::
         INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
       return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
+    case blink::mojom::MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
+      return "STREAM_NOT_FOUND_IN_REGISTRY";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }
@@ -2879,8 +2881,8 @@ void MediaStreamManager::FinishTabCaptureRequestSetupWithDeviceId(
 
   // Received invalid device id.
   if (device_id.type != content::DesktopMediaID::TYPE_WEB_CONTENTS) {
-    FinalizeRequestFailed(request_it,
-                          MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
+    FinalizeRequestFailed(
+        request_it, MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY);
     return;
   }
 

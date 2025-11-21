@@ -950,6 +950,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // `exception_code` kInvalidStateError for
       // FAILED_DUE_TO_SHUTDOWN once all new enum values are added.
     case Result::TAB_CAPTURE_FAILURE:
+    case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::SCREEN_CAPTURE_FAILURE:
     case Result::CAPTURE_FAILURE:
     case Result::START_TIMEOUT:
