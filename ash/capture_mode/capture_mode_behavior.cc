@@ -541,9 +541,6 @@ bool CaptureModeBehavior::ShouldSkipVideoRecordingCountDown() const {
 }
 
 bool CaptureModeBehavior::ShouldCreateAnnotationsOverlayController() const {
-  if (base::FeatureList::IsEnabled(ash::features::kAnnotatorMode)) {
-    return true;
-  }
   return false;
 }
 
