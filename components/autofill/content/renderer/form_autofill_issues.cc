@@ -57,6 +57,19 @@ const WebString& GetWebString() {
   return *web_string;
 }
 
+struct FormIssue {
+  FormIssue(GenericIssueErrorType type, int node, blink::WebString attribute)
+      : issue_type(type),
+        violating_node(node),
+        violating_node_attribute(attribute) {}
+  FormIssue(GenericIssueErrorType type, int node)
+      : issue_type(type), violating_node(node) {}
+
+  GenericIssueErrorType issue_type;
+  int violating_node;
+  blink::WebString violating_node_attribute;
+};
+
 void MaybeAppendLabelWithoutControlDevtoolsIssue(
     WebLabelElement label,
     std::vector<FormIssue>& form_issues) {
@@ -342,20 +355,6 @@ void EmitFormIssues(
     emit(document, form_issue.issue_type, form_issue.violating_node,
          form_issue.violating_node_attribute);
   }
-}
-
-std::vector<FormIssue> GetFormIssuesForTesting(  // IN-TEST
-    const std::vector<WebFormControlElement>& control_elements,
-    std::vector<FormIssue> form_issues) {
-  return GetFormIssues(control_elements, form_issues);
-}
-
-std::vector<FormIssue>
-CheckForLabelsWithIncorrectForAttributeForTesting(  // IN-TEST
-    const WebDocument& document,
-    const std::vector<FormFieldData>& fields,
-    std::vector<FormIssue> form_issues) {
-  return CheckForLabelsWithIncorrectForAttribute(document, fields, form_issues);
 }
 
 }  // namespace autofill::form_issues

@@ -5,34 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 
-#include <vector>
-
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
-class WebFormControlElement;
 class WebDocument;
 }  // namespace blink
 
 // Responsible for processing form issues that are emitted to devtools.
 namespace autofill::form_issues {
-
-struct FormIssue {
-  FormIssue(blink::mojom::GenericIssueErrorType type,
-            int node,
-            blink::WebString attribute)
-      : issue_type(type),
-        violating_node(node),
-        violating_node_attribute(attribute) {}
-  FormIssue(blink::mojom::GenericIssueErrorType type, int node)
-      : issue_type(type), violating_node(node) {}
-
-  blink::mojom::GenericIssueErrorType issue_type;
-  int violating_node;
-  blink::WebString violating_node_attribute;
-};
 
 // The default emitter used by EmitFormIssues().
 //
@@ -62,15 +44,6 @@ void EmitFormIssues(
                            blink::mojom::GenericIssueErrorType issue_type,
                            int violating_node,
                            blink::WebString violating_node_attribute)> emit);
-
-std::vector<FormIssue> GetFormIssuesForTesting(
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    std::vector<FormIssue> form_issues);
-
-std::vector<FormIssue> CheckForLabelsWithIncorrectForAttributeForTesting(
-    const blink::WebDocument& document,
-    const std::vector<FormFieldData>& fields,
-    std::vector<FormIssue> form_issues);
 
 }  // namespace autofill::form_issues
 
