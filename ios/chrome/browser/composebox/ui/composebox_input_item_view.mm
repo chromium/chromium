@@ -44,6 +44,10 @@ const CGFloat kCloseButtonTrailing = 8.0;
   UILabel* _titleLabel;
   // The fade view for the title label.
   UIView* _fadeView;
+  // The layer representing the fade at the trailing edge of title label.
+  CAGradientLayer* _gradientLayer;
+  // The theme for this view.
+  ComposeboxTheme* _theme;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -52,6 +56,11 @@ const CGFloat kCloseButtonTrailing = 8.0;
     [self setupViews];
     [self setupConstraints];
   }
+
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits withAction:@selector(updateGradient)];
+
   return self;
 }
 
@@ -61,13 +70,25 @@ const CGFloat kCloseButtonTrailing = 8.0;
   _fadeView.layer.sublayers.firstObject.frame = _fadeView.bounds;
 }
 
-- (void)configureWithItem:(ComposeboxInputItem*)item {
+- (void)configureWithItem:(ComposeboxInputItem*)item
+                    theme:(ComposeboxTheme*)theme {
   BOOL isImageItem =
       item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage;
+
+  _theme = theme;
 
   _previewImageView.hidden = !isImageItem;
   _leadingIconImageView.hidden = isImageItem;
   _titleLabel.hidden = isImageItem;
+
+  [self updateGradient];
+
+  UIImage* image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
+        [UIColor colorNamed:kTextSecondaryColor],
+        [theme.inputItemBackgroundColor colorWithAlphaComponent:0.9]
+      ]);
+  [_closeButton setImage:image forState:UIControlStateNormal];
 
   if (isImageItem) {
     _previewImageView.image = item.previewImage;
@@ -129,16 +150,10 @@ const CGFloat kCloseButtonTrailing = 8.0;
   _fadeView = [[UIView alloc] init];
   _fadeView.translatesAutoresizingMaskIntoConstraints = NO;
   _fadeView.hidden = YES;
-  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
-  gradientLayer.colors = @[
-    (id)[[UIColor colorNamed:kSecondaryBackgroundColor]
-        colorWithAlphaComponent:0.0]
-        .CGColor,
-    (id)[UIColor colorNamed:kSecondaryBackgroundColor].CGColor
-  ];
-  gradientLayer.startPoint = CGPointMake(0.0, 0.5);
-  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
-  [_fadeView.layer insertSublayer:gradientLayer atIndex:0];
+  _gradientLayer = [CAGradientLayer layer];
+  _gradientLayer.startPoint = CGPointMake(0.0, 0.5);
+  _gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+  [_fadeView.layer insertSublayer:_gradientLayer atIndex:0];
   [self addSubview:_fadeView];
 
   // Leading Image View
@@ -153,12 +168,6 @@ const CGFloat kCloseButtonTrailing = 8.0;
   // Close Button
 
   _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
-        [UIColor colorNamed:kTextSecondaryColor],
-        [UIColor colorNamed:kSecondaryBackgroundColor]
-      ]);
-  [_closeButton setImage:image forState:UIControlStateNormal];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
 
   [_closeButton
@@ -213,6 +222,13 @@ const CGFloat kCloseButtonTrailing = 8.0;
   ]];
 
   AddSameConstraints(_previewImageView, self);
+}
+
+- (void)updateGradient {
+  _gradientLayer.colors = @[
+    (id)[_theme.inputItemBackgroundColor colorWithAlphaComponent:0.0].CGColor,
+    (id)_theme.inputItemBackgroundColor.CGColor
+  ];
 }
 
 @end

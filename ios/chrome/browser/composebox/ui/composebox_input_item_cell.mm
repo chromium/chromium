@@ -79,7 +79,7 @@ const CGFloat kMaxCellHeight = 36;
 
 - (void)configureWithItem:(ComposeboxInputItem*)item
                     theme:(ComposeboxTheme*)theme {
-  [_inputItemView configureWithItem:item];
+  [_inputItemView configureWithItem:item theme:theme];
 
   BOOL isLoading = item.state == ComposeboxInputItemState::kLoading ||
                    item.state == ComposeboxInputItemState::kUploading;
