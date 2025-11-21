@@ -57,6 +57,11 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
       base::RepeatingCallback<void(const TabDataChange&)>;
   base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback) override;
+  using TabPinningStatusEventCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*,
+                                   GlicPinningStatusEvent)>;
+  base::CallbackListSubscription AddTabPinningStatusEventCallback(
+      TabPinningStatusEventCallback callback) override;
   bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
                GlicPinTrigger trigger) override;
   bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
@@ -93,6 +98,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
   void OnFocusedTabDataChangedCallback(const mojom::TabData* focused_tab_data);
   void OnFocusedBrowserChangedCallback(BrowserWindowInterface* browser_window);
   void OnTabPinningStatusChangedCallback(tabs::TabInterface* tab, bool pinned);
+  void OnTabPinningStatusEventCallback(tabs::TabInterface* tab,
+                                       GlicPinningStatusEvent event);
   void OnPinnedTabsChangedCallback(
       const std::vector<content::WebContents*>& pinnned_tabs);
   void OnPinnedTabDataChangedCallback(const TabDataChange& tab_data_change);
@@ -120,6 +127,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
       focused_browser_changed_callback_list_;
   base::RepeatingCallbackList<void(tabs::TabInterface*, bool)>
       tab_pinning_status_changed_callback_list_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*, GlicPinningStatusEvent)>
+      tab_pinning_status_event_callback_list_;
   base::RepeatingCallbackList<void(const std::vector<content::WebContents*>&)>
       pinned_tabs_changed_callback_list_;
   base::RepeatingCallbackList<void(const TabDataChange&)>
@@ -130,6 +139,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
   base::CallbackListSubscription focused_tab_data_changed_callback_;
   base::CallbackListSubscription focused_browser_changed_callback_;
   base::CallbackListSubscription tab_pinning_status_changed_callback_;
+  base::CallbackListSubscription tab_pinning_status_event_callback_;
   base::CallbackListSubscription pinned_tabs_changed_callback_;
   base::CallbackListSubscription pinned_tab_data_changed_callback_;
 

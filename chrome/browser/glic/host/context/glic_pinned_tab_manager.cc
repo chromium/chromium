@@ -265,6 +265,12 @@ GlicPinnedTabManager::AddTabPinningStatusChangedCallback(
   return pinning_status_changed_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+GlicPinnedTabManager::AddTabPinningStatusEventCallback(
+    TabPinningStatusEventCallback callback) {
+  return pinning_status_event_callback_list_.Add(std::move(callback));
+}
+
 bool GlicPinnedTabManager::PinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicPinTrigger trigger) {
@@ -298,9 +304,12 @@ bool GlicPinnedTabManager::PinTabs(
       tab->GetContents()->GetController().LoadIfNecessary();
     }
 
+    GlicPinnedTabUsage usage = GlicPinnedTabUsage(trigger, pin_timestamp);
     pinned_tabs_.emplace_back(
         tab_handle, std::make_unique<PinnedTabObserver>(this, tab_handle.Get()),
-        GlicPinnedTabUsage(trigger, pin_timestamp));
+        usage);
+    pinning_status_event_callback_list_.Notify(tab_handle.Get(),
+                                               usage.pin_event);
     pinning_status_changed_callback_list_.Notify(tab_handle.Get(), true);
     metrics_->OnTabPinnedForSharing(
         GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded);
@@ -312,16 +321,22 @@ bool GlicPinnedTabManager::PinTabs(
 bool GlicPinnedTabManager::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicUnpinTrigger trigger) {
+  base::TimeTicks unpin_timestamp = base::TimeTicks::Now();
+
   bool unpinning_fully_succeeded = true;
   for (const auto tab_handle : tab_handles) {
     auto* tab = tab_handle.Get();
-    if (!tab || !IsTabPinned(tab_handle)) {
+    auto* entry = GetPinnedTabEntry(tab_handle);
+    if (!tab || !entry) {
       unpinning_fully_succeeded = false;
       continue;
     }
+    GlicUnpinEvent unpin_event =
+        GlicUnpinEvent(trigger, entry->usage, unpin_timestamp);
     std::erase_if(pinned_tabs_, [tab_handle](const PinnedTabEntry& entry) {
       return entry.tab_handle == tab_handle;
     });
+    pinning_status_event_callback_list_.Notify(tab_handle.Get(), unpin_event);
     pinning_status_changed_callback_list_.Notify(tab_handle.Get(), false);
   }
   NotifyPinnedTabsChanged();

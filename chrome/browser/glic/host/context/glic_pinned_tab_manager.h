@@ -43,6 +43,14 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback);
 
+  // Registers a callback to be invoked when a pinning status event takes place
+  // for a tab. Provides richer metadata than the simple boolean callback above.
+  using TabPinningStatusEventCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*,
+                                   GlicPinningStatusEvent)>;
+  base::CallbackListSubscription AddTabPinningStatusEventCallback(
+      TabPinningStatusEventCallback callback);
+
   // Registers a callback to be invoked when the TabData for a pinned tab is
   // changed.
   using PinnedTabDataChangedCallback =
@@ -163,6 +171,10 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // changes.
   base::RepeatingCallbackList<void(tabs::TabInterface*, bool)>
       pinning_status_changed_callback_list_;
+
+  // List of callbacks to invoke when a pinning status event occurs.
+  base::RepeatingCallbackList<void(tabs::TabInterface*, GlicPinningStatusEvent)>
+      pinning_status_event_callback_list_;
 
   // Enables searching for pin_candidates.
   raw_ptr<Profile> profile_;

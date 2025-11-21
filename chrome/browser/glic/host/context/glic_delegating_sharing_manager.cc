@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 
 namespace glic {
 
@@ -22,6 +23,12 @@ base::CallbackListSubscription
 GlicDelegatingSharingManagerBase::AddTabPinningStatusChangedCallback(
     TabPinningStatusChangedCallback callback) {
   return tab_pinning_status_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicDelegatingSharingManagerBase::AddTabPinningStatusEventCallback(
+    TabPinningStatusEventCallback callback) {
+  return tab_pinning_status_event_callback_list_.Add(std::move(callback));
 }
 
 FocusedTabData GlicDelegatingSharingManagerBase::GetFocusedTabData() {
@@ -204,6 +211,12 @@ void GlicDelegatingSharingManagerBase::OnTabPinningStatusChangedCallback(
   tab_pinning_status_changed_callback_list_.Notify(tab, pinned);
 }
 
+void GlicDelegatingSharingManagerBase::OnTabPinningStatusEventCallback(
+    tabs::TabInterface* tab,
+    GlicPinningStatusEvent event) {
+  tab_pinning_status_event_callback_list_.Notify(tab, event);
+}
+
 void GlicDelegatingSharingManagerBase::OnPinnedTabsChangedCallback(
     const std::vector<content::WebContents*>& pinned_tabs) {
   pinned_tabs_changed_callback_list_.Notify(pinned_tabs);
@@ -249,6 +262,11 @@ void GlicDelegatingSharingManagerBase::RefreshDelegateSubscriptions() {
           base::BindRepeating(&GlicDelegatingSharingManagerBase::
                                   OnTabPinningStatusChangedCallback,
                               base::Unretained(this)));
+  tab_pinning_status_event_callback_ =
+      sharing_manager_delegate_->AddTabPinningStatusEventCallback(
+          base::BindRepeating(&GlicDelegatingSharingManagerBase::
+                                  OnTabPinningStatusEventCallback,
+                              base::Unretained(this)));
   pinned_tabs_changed_callback_ =
       sharing_manager_delegate_->AddPinnedTabsChangedCallback(
           base::BindRepeating(
@@ -266,11 +284,19 @@ void GlicDelegatingSharingManagerBase::ForceNotify(
   for (auto* tab : old_pinned_tabs) {
     tab_pinning_status_changed_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), false);
+    // TODO(crbug.com/461849870): once metadata getters are implemented,
+    // consider caching and returning a meaningful event here.
+    tab_pinning_status_event_callback_list_.Notify(
+        tabs::TabInterface::GetFromContents(tab), GetEmptyUnpinEvent());
   }
 
   for (auto* tab : GetPinnedTabs()) {
     tab_pinning_status_changed_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), true);
+    // TODO(crbug.com/461849870): once metadata getters are implemented,
+    // consider returning a meaningful event here.
+    tab_pinning_status_event_callback_list_.Notify(
+        tabs::TabInterface::GetFromContents(tab), GetEmptyPinEvent());
   }
 
   // Note: in the case where delegate is now null, we still want to fire these

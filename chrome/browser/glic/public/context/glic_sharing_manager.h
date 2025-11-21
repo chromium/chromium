@@ -110,7 +110,7 @@ struct GlicUnpinEvent {
 };
 
 // Represents a change in pinning status, used for callbacks.
-using PinningStatusChange = std::variant<GlicPinEvent, GlicUnpinEvent>;
+using GlicPinningStatusEvent = std::variant<GlicPinEvent, GlicUnpinEvent>;
 
 // TODO(crbug.com/461849870): Add metadata to the api below.
 
@@ -161,6 +161,14 @@ class GlicSharingManager {
       base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
   virtual base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback) = 0;
+
+  // Registers a callback to be invoked when a pinning status event takes place
+  // for a tab. Provides richer metadata than the simple boolean callback above.
+  using TabPinningStatusEventCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*,
+                                   GlicPinningStatusEvent)>;
+  virtual base::CallbackListSubscription AddTabPinningStatusEventCallback(
+      TabPinningStatusEventCallback callback) = 0;
 
   // Registers a callback to be invoked when the collection of pinned tabs
   // changes.

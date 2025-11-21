@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_UTILS_H_
 
 #include "base/callback_list.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -28,6 +29,15 @@ bool IsBrowserValidForSharingInProfile(
 // This becomes invalid when the committed URL changes.
 // Sharing may still fail for other reasons.
 bool IsTabValidForSharing(content::WebContents* web_contents);
+
+// Returns an empty pin event.
+GlicPinEvent GetEmptyPinEvent();
+
+// Returns an empty pinned tab usage.
+GlicPinnedTabUsage GetEmptyPinnedTabUsage();
+
+// Returns an empty unpin event.
+GlicUnpinEvent GetEmptyUnpinEvent();
 
 // Shared util for monitoring changes to "active tab" for a given profile.
 class GlicActiveTabForProfileTracker : public BrowserListObserver {

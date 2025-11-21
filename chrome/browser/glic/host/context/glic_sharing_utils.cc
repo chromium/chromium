@@ -47,6 +47,19 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
          base::Contains(*kUrlAllowList, url);
 }
 
+GlicPinEvent GetEmptyPinEvent() {
+  return GlicPinEvent(GlicPinTrigger::kUnknown, base::TimeTicks::Now());
+}
+
+GlicPinnedTabUsage GetEmptyPinnedTabUsage() {
+  return GlicPinnedTabUsage(GetEmptyPinEvent());
+}
+
+GlicUnpinEvent GetEmptyUnpinEvent() {
+  return GlicUnpinEvent(GlicUnpinTrigger::kUnknown, GetEmptyPinnedTabUsage(),
+                        base::TimeTicks::Now());
+}
+
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
   BrowserList::AddObserver(this);

@@ -116,6 +116,13 @@ GlicSharingManagerImpl::AddTabPinningStatusChangedCallback(
       std::move(callback));
 }
 
+base::CallbackListSubscription
+GlicSharingManagerImpl::AddTabPinningStatusEventCallback(
+    TabPinningStatusEventCallback callback) {
+  return pinned_tab_manager()->AddTabPinningStatusEventCallback(
+      std::move(callback));
+}
+
 bool GlicSharingManagerImpl::PinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicPinTrigger trigger) {
