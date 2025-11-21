@@ -616,7 +616,7 @@ Transaction::Operation Database::CreateGetAllOperation(
     int64_t index_id,
     blink::IndexedDBKeyRange key_range,
     blink::mojom::IDBGetAllResultType result_type,
-    int64_t max_count,
+    uint32_t max_count,
     blink::mojom::IDBCursorDirection direction,
     blink::mojom::IDBDatabase::GetAllCallback callback,
     Transaction* transaction) {
@@ -683,14 +683,14 @@ Status Database::GetAllOperation(
     int64_t index_id,
     IndexedDBKeyRange key_range,
     blink::mojom::IDBGetAllResultType result_type,
-    int64_t max_count,
+    uint32_t max_count,
     blink::mojom::IDBCursorDirection direction,
     std::unique_ptr<GetAllResultSinkWrapper> result_sink,
     Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::GetAllOperation", "txn.id",
                transaction->id());
 
-  DCHECK_GT(max_count, 0);
+  CHECK_GT(max_count, 0U);
 
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
@@ -743,8 +743,6 @@ Status Database::GetAllOperation(
     return Status::OK();
   }
 
-  bool did_first_seek = false;
-
   // Values get passed over mojo with BigBuffer, which caps inline byte usage
   // before falling back to shared memory. This cap is 64kiB; assume that max
   // key/value size is 128kiB tops, to fit under 128MiB mojo limit. This value
@@ -764,25 +762,21 @@ Status Database::GetAllOperation(
       "BigBuffer may use shared memory with LevelDB backing store");
 
   const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
-  int64_t num_found_items = 0;
-  while (num_found_items++ < max_count) {
-    StatusOr<bool> cursor_valid = true;
-    if (did_first_seek) {
-      cursor_valid = (*cursor)->Continue();
-    } else {
-      // Cursor creation performs the first seek, returning a nullptr cursor
-      // when invalid.
-      did_first_seek = true;
-    }
-    if (!cursor_valid.has_value()) {
-      result_sink->Get()->OnError(
-          CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                            "Seek failure, unable to continue", transaction));
-      return cursor_valid.error();
-    }
+  for (uint32_t i = 0; i < max_count; ++i) {
+    // Cursor creation performs the first seek, returning a nullptr cursor when
+    // invalid.
+    if (i != 0) {
+      StatusOr<bool> cursor_valid = (*cursor)->Continue();
+      if (!cursor_valid.has_value()) {
+        result_sink->Get()->OnError(
+            CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
+                              "Seek failure, unable to continue", transaction));
+        return cursor_valid.error();
+      }
 
-    if (!cursor_valid.value()) {
-      break;
+      if (!cursor_valid.value()) {
+        break;
+      }
     }
 
     blink::mojom::IDBRecordPtr return_record;

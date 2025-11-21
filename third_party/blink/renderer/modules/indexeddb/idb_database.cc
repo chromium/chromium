@@ -655,7 +655,7 @@ void IDBDatabase::GetAll(int64_t transaction_id,
                          int64_t index_id,
                          const IDBKeyRange* key_range,
                          mojom::blink::IDBGetAllResultType result_type,
-                         int64_t max_count,
+                         uint32_t max_count,
                          mojom::blink::IDBCursorDirection direction,
                          IDBRequest* request) {
   IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);

@@ -167,7 +167,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
               int64_t index_id,
               blink::IndexedDBKeyRange key_range,
               blink::mojom::IDBGetAllResultType result_type,
-              int64_t max_count,
+              uint32_t max_count,
               blink::mojom::IDBCursorDirection direction,
               blink::mojom::IDBDatabase::GetAllCallback callback) override;
   void OpenCursor(

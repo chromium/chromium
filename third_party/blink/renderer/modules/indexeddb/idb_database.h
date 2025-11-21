@@ -195,7 +195,7 @@ class MODULES_EXPORT IDBDatabase final
               int64_t index_id,
               const IDBKeyRange*,
               mojom::blink::IDBGetAllResultType result_type,
-              int64_t max_count,
+              uint32_t max_count,
               mojom::blink::IDBCursorDirection direction,
               IDBRequest*);
   void OpenCursor(int64_t object_store_id,

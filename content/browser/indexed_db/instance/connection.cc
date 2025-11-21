@@ -400,10 +400,15 @@ void Connection::GetAll(int64_t transaction_id,
                         int64_t index_id,
                         IndexedDBKeyRange key_range,
                         blink::mojom::IDBGetAllResultType result_type,
-                        int64_t max_count,
+                        uint32_t max_count,
                         blink::mojom::IDBCursorDirection direction,
                         blink::mojom::IDBDatabase::GetAllCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (max_count == 0) {
+    receiver_->ReportBadMessage("max_count must be greater than 0.");
+    return;
+  }
 
   base::expected<Transaction*, DatabaseError> transaction =
       GetTransactionAndVerifyState(transaction_id);

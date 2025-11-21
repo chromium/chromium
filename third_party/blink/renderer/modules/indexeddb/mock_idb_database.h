@@ -71,7 +71,7 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase>,
                int64_t index_id,
                mojom::blink::IDBKeyRangePtr,
                mojom::blink::IDBGetAllResultType result_type,
-               int64_t max_count,
+               uint32_t max_count,
                mojom::blink::IDBCursorDirection direction,
                GetAllCallback),
               (override));

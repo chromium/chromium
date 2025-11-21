@@ -404,7 +404,7 @@ interface IDBDatabase {
          int64 index_id,
          IDBKeyRange key_range,
          IDBGetAllResultType result_type,
-         int64 max_count,
+         uint32 max_count,
          IDBCursorDirection direction)
     => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
   OpenCursor(int64 transaction_id,
