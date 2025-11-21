@@ -657,10 +657,8 @@ void TransformTree::UndoOverscroll(
 }
 
 namespace {
-#if BUILDFLAG(IS_ANDROID)
-void ApplyElasticOverscrollStretch(
+[[maybe_unused]] void ApplyElasticOverscrollStretch(
     const ScrollTree& scroll_tree,
-    TransformTree& transform_tree,
     std::pair<ElementId, gfx::Vector2dF> elastic_overscroll,
     gfx::Transform* transform) {
   const ScrollNode* scroll_node =
@@ -703,16 +701,13 @@ void ApplyElasticOverscrollStretch(
     transform->Translate(-origin);
   }
 }
-#else
-void ApplyElasticOverscrollTranslate(
+[[maybe_unused]] void ApplyElasticOverscrollTranslate(
     const ScrollTree&,
-    const TransformTree&,
     std::pair<ElementId, gfx::Vector2dF> elastic_overscroll,
     gfx::Transform* transform) {
   transform->Translate(-elastic_overscroll.second.x(),
                        -elastic_overscroll.second.y());
 }
-#endif
 }  // namespace
 
 void TransformTree::UpdateLocalTransform(
@@ -735,10 +730,10 @@ void TransformTree::UpdateLocalTransform(
   }
   gfx::Vector2dF position_adjustment(0.f, y_adjustment);
 
-  if (node->should_undo_overscroll)
+  if (node->should_undo_overscroll) {
     UndoOverscroll(node, position_adjustment, viewport_property_ids);
-  transform.Translate(position_adjustment -
-                      node->scroll_offset().OffsetFromOrigin());
+  }
+  transform.Translate(position_adjustment);
 
   const auto& scroll_tree = property_trees()->scroll_tree();
   const std::pair<ElementId, gfx::Vector2dF> elastic_overscroll =
@@ -747,15 +742,17 @@ void TransformTree::UpdateLocalTransform(
 
   if (!elastic_overscroll.second.IsZero()) {
 #if BUILDFLAG(IS_ANDROID)
-    ApplyElasticOverscrollStretch(scroll_tree,
-                                  property_trees()->transform_tree_mutable(),
-                                  elastic_overscroll, &transform);
+    ApplyElasticOverscrollStretch(scroll_tree, elastic_overscroll, &transform);
 #else
-    ApplyElasticOverscrollTranslate(scroll_tree,
-                                    property_trees()->transform_tree_mutable(),
-                                    elastic_overscroll, &transform);
+    ApplyElasticOverscrollTranslate(scroll_tree, elastic_overscroll,
+                                    &transform);
 #endif
   }
+
+  // Apply scroll translate after elastic stretch so that the origin for
+  // stretching from the bottom / right is correct.
+  transform.Translate(-node->scroll_offset().OffsetFromOrigin());
+
   transform.Translate(StickyPositionOffset(node));
   if (node->anchor_position_scroll_data_id >= 0) {
     transform.Translate(AnchorPositionOffset(node, node->id - 1, update_data));
