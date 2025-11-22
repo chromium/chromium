@@ -22,6 +22,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -381,8 +382,30 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   static std::unique_ptr<FrameView> CreateDialogFrameView(Widget* widget);
 
-  const gfx::Insets& margins() const { return margins_; }
-  void set_margins(const gfx::Insets& margins) { margins_ = margins; }
+  // TODO(crbug.com/431219296): Deprecate after API migration.
+  const gfx::Insets& margins() const { return margins_.contents.value(); }
+
+  void set_margins(const gfx::Insets& margins) {
+    set_frame_margins({.contents = margins});
+  }
+  void set_title_margins(const gfx::Insets& title_margins) {
+    set_frame_margins({.title = title_margins});
+  }
+  void set_footnote_margins(const gfx::Insets& footnote_margins) {
+    set_frame_margins({.footnote = footnote_margins});
+  }
+
+  // The margins between the content and the inside of the border.
+  // Also includes title and footnote margins.
+  struct FrameMargins {
+    std::optional<gfx::Insets> contents;
+    std::optional<gfx::Insets> title;
+    std::optional<gfx::Insets> footnote;
+  };
+  const FrameMargins& frame_margins() const { return margins_; }
+  // Set the content, title, and/or footnote margins. Note this is not a direct
+  // replacement, only non-empty fields will be updated.
+  void set_frame_margins(const FrameMargins& margins);
 
   // Set a fixed width for the dialog. Used by DialogClientView.
   void set_fixed_width(int fixed_width) { fixed_width_ = fixed_width; }
@@ -615,11 +638,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
       std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
           callback);
 
-  // The margins between the content and the inside of the border.
-  // TODO(crbug.com/41325252): Most subclasses assume they must set their own
-  // margins explicitly, so we set them to 0 here for now to avoid doubled
-  // margins.
-  gfx::Insets margins_{0};
+  FrameMargins margins_;
 
   // Use a fixed dialog width for dialog. Used by DialogClientView.
   int fixed_width_ = 0;
@@ -868,6 +887,7 @@ VIEW_BUILDER_PROPERTY(int, DefaultButton)
 VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
 VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
+VIEW_BUILDER_METHOD(set_frame_margins, const DialogDelegateView::FrameMargins&)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
 VIEW_BUILDER_METHOD(set_draggable, bool)

@@ -43,6 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -452,11 +453,11 @@ BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
   SetShowCloseButton(false);
 
   LayoutProvider* const layout_provider = LayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
-      DialogContentType::kText, DialogContentType::kText));
-  set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
-  set_footnote_margins(
-      layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE));
+  set_frame_margins(
+      {.contents = layout_provider->GetDialogInsetsForContentType(
+           DialogContentType::kText, DialogContentType::kText),
+       .title = layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE),
+       .footnote = layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE)});
 
   set_desired_bounds_delegate(base::BindRepeating(
       &BubbleDialogDelegate::GetDesiredBubbleBounds, base::Unretained(this)));
@@ -571,9 +572,10 @@ BubbleDialogDelegate* BubbleDialogDelegate::AsBubbleDialogDelegate() {
 
 std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
     Widget* widget) {
-  auto frame = std::make_unique<BubbleDialogFrameView>(title_margins_);
+  const FrameMargins& margin = frame_margins();
+  auto frame = std::make_unique<BubbleDialogFrameView>(margin.title.value());
 
-  frame->SetFootnoteMargins(footnote_margins_);
+  frame->SetFootnoteMargins(margin.footnote.value());
   frame->SetFootnoteView(DisownFootnoteView());
 
   std::unique_ptr<BubbleBorder> border =
@@ -794,7 +796,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
 }
 
 void BubbleDialogDelegate::UseCompactMargins() {
-  set_margins(gfx::Insets(6));
+  set_frame_margins({.contents = gfx::Insets(6)});
 }
 
 // static
