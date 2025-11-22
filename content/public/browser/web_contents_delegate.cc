@@ -454,6 +454,13 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+void WebContentsDelegate::GetAIPageContent(
+    WebContents* web_contents,
+    bool include_actionable_elements,
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run(std::string());
+}
+
 bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
     WebContents* web_contents) {
   return false;

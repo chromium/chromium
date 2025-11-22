@@ -67,6 +67,7 @@
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/script_source_location.mojom.h"
@@ -990,6 +991,45 @@ void PageHandler::Navigate(const std::string& url,
   const base::UnguessableToken& navigation_token =
       navigation_request->devtools_navigation_token();
   navigate_callbacks_[navigation_token] = std::move(callback);
+}
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}
+
+void PageHandler::GetAnnotatedPageContent(
+    std::optional<bool> include_actionable_information,
+    std::unique_ptr<GetAnnotatedPageContentCallback> callback) {
+  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
+  if (std::holds_alternative<Response>(result)) {
+    callback->sendFailure(std::get<Response>(result));
+    return;
+  }
+  WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
+  if (!web_contents) {
+    callback->sendFailure(Response::ServerError("WebContents not found."));
+    return;
+  }
+
+  if (WebContentsDelegate* delegate = web_contents->GetDelegate()) {
+    delegate->GetAIPageContent(
+        web_contents, include_actionable_information.value_or(true),
+        base::BindOnce(
+            [](std::unique_ptr<GetAnnotatedPageContentCallback> callback,
+               const std::string& serialized_proto) {
+              if (!serialized_proto.empty()) {
+                callback->sendSuccess(
+                    protocol::Binary::fromString(serialized_proto));
+              } else {
+                callback->sendFailure(Response::ServerError(
+                    "Failed to get annotated page content"));
+              }
+            },
+            std::move(callback)));
+  } else {
+    callback->sendFailure(Response::ServerError(
+        "No WebContentsDelegate available to get annotated page content"));
+  }
 }
 
 void PageHandler::NavigationReset(NavigationRequest* navigation_request) {

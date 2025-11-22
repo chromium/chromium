@@ -1767,3 +1767,15 @@ domain Page
   experimental command setPrerenderingAllowed
     parameters
       boolean isAllowed
+
+  # Get the annotated page content for the main frame.
+  # This is an experimental command that is subject to change.
+  experimental command getAnnotatedPageContent
+    parameters
+      # Whether to include actionable information. Defaults to true.
+      optional boolean includeActionableInformation
+    returns
+      # The annotated page content as a base64 encoded protobuf.
+      # The format is defined by the `AnnotatedPageContent` message in
+      # components/optimization_guide/proto/features/common_quality_data.proto
+      binary content

@@ -3569,6 +3569,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest,
   EXPECT_FALSE(error());
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetAnnotatedPageContent) {
+  GURL url = GURL("data:text/html,<body>Hello, world!</body>");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
+  Attach();
+  const base::Value::Dict* result_ptr = SendCommandSync(
+      "Page.getAnnotatedPageContent",
+      base::Value::Dict().Set("includeActionableInformation", false));
+  ASSERT_FALSE(result_ptr);
+  EXPECT_EQ(*error()->FindInt("code"),
+            static_cast<int>(crdtp::DispatchCode::SERVER_ERROR));
+  EXPECT_EQ(*error()->FindString("message"),
+            "Failed to get annotated page content");
+}
+
 // Flaky on ChromeOS https://crbug.com/860312
 // Also flaky on Wndows and other platforms: http://crbug.com/1070302
 // Check that downloading multiple (in this case, 2) files does not result in
