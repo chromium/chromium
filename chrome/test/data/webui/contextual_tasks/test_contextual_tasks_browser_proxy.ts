@@ -2,12 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {PageHandlerInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+const BASE64_HANDSHAKE_RESPONSE = 'CgIIAA==';
+
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+const HANDSHAKE_RESPONSE_BYTES = base64ToUint8Array(BASE64_HANDSHAKE_RESPONSE);
+
+class MockPage extends TestBrowserProxy implements PageInterface {
+  private postMessageHandler_: PostMessageHandler|null = null;
+
+  constructor() {
+    super([
+      'setThreadTitle',
+      'postMessageToWebview',
+      'onHandshakeComplete',
+      'onSidePanelStateChanged',
+    ]);
+  }
+
+  setPostMessageHandler(handler: PostMessageHandler) {
+    this.postMessageHandler_ = handler;
+  }
+
+  setThreadTitle(title: string) {
+    this.methodCalled('setThreadTitle', title);
+  }
+
+  postMessageToWebview(message: number[]) {
+    this.methodCalled('postMessageToWebview', message);
+  }
+
+  onHandshakeComplete() {
+    this.methodCalled('onHandshakeComplete');
+    if (this.postMessageHandler_) {
+      this.postMessageHandler_.completeHandshake();
+    }
+  }
+
+  onSidePanelStateChanged() {
+    this.methodCalled('onSidePanelStateChanged');
+  }
+}
 
 /**
  * Test version of the ContextualTasksPageHandler used to verify calls to the
@@ -17,8 +68,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
   private url_: Url;
   private isInTab_: boolean = true;
+  private rejectGetHandshakeMessage_: boolean = false;
+  private page_: MockPage;
 
-  constructor(url: string) {
+  constructor(url: string, page: MockPage) {
     super([
       'getThreadUrl',
       'getUrlForTask',
@@ -33,9 +86,18 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'getOAuthToken',
       'getAttachedTabs',
       'onTabClickedFromSourcesMenu',
+      'getSearchUrl',
+      'onWebviewMessage',
+      'getHandshakeMessage',
+      'submitQuery',
     ]);
 
     this.url_ = {url};
+    this.page_ = page;
+  }
+
+  setRejectGetHandshakeMessage(reject: boolean) {
+    this.rejectGetHandshakeMessage_ = reject;
   }
 
   getThreadUrl() {
@@ -102,6 +164,47 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   onTabClickedFromSourcesMenu(tabId: number, url: Url) {
     this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
   }
+
+  getSearchUrl(query: string) {
+    this.methodCalled('getSearchUrl', query);
+    return Promise.resolve({url: {url: 'https://test.com/?q=' + query}});
+  }
+
+  onWebviewMessage(message: number[]) {
+    this.methodCalled('onWebviewMessage', message);
+    // Simulate the C++ side calling onHandshakeComplete on the Page remote
+    // if the message is a handshake response.
+    const messageUint8 = new Uint8Array(message);
+    let isHandshakeResponse =
+        messageUint8.length === HANDSHAKE_RESPONSE_BYTES.length;
+    if (isHandshakeResponse) {
+      for (let i = 0; i < messageUint8.length; i++) {
+        if (messageUint8[i] !== HANDSHAKE_RESPONSE_BYTES[i]) {
+          isHandshakeResponse = false;
+          break;
+        }
+      }
+    }
+
+    if (isHandshakeResponse) {
+      this.page_.onHandshakeComplete();
+    }
+  }
+
+  getHandshakeMessage() {
+    this.methodCalled('getHandshakeMessage');
+    if (this.rejectGetHandshakeMessage_) {
+      return Promise.reject(new Error('Test rejection'));
+    }
+    return Promise.resolve({message: [1, 2, 3]});
+  }
+
+  submitQuery(
+      query: string, mouseButton: number, altKey: boolean, ctrlKey: boolean,
+      metaKey: boolean, shiftKey: boolean) {
+    this.methodCalled(
+        'submitQuery', query, mouseButton, altKey, ctrlKey, metaKey, shiftKey);
+  }
 }
 
 /**
@@ -111,17 +214,19 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
   callbackRouter: PageCallbackRouter;
-  callbackRouterRemote: PageRemote;
   handler: TestContextualTasksPageHandler;
+  page: MockPage;
+  callbackRouterRemote: PageRemote;
 
   /**
-   * @param url The URL to load in the iframe.
+   * @param url The URL to load in the webview.
    */
   constructor(url: string) {
     super([]);
     this.callbackRouter = new PageCallbackRouter();
+    this.page = new MockPage();
+    this.handler = new TestContextualTasksPageHandler(url, this.page);
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
-    this.handler = new TestContextualTasksPageHandler(url);
   }
 }

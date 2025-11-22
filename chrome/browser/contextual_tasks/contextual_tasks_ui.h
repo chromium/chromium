@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,6 +25,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -42,21 +44,7 @@ class ContextualTasksUiService;
 class ContextualTasksComposeboxHandler;
 class ContextualTasksInternalsPageHandler;
 
-// An interface for managing task IDs held by the WebUI.
-class TaskInfoDelegate {
- public:
-  TaskInfoDelegate() = default;
-  virtual ~TaskInfoDelegate() = default;
-  virtual const std::optional<base::Uuid>& GetTaskId() = 0;
-  virtual void SetTaskId(std::optional<base::Uuid> id) = 0;
-  virtual const std::optional<std::string>& GetThreadId() = 0;
-  virtual void SetThreadId(std::optional<std::string> id) = 0;
-  virtual const std::optional<std::string>& GetThreadTitle() = 0;
-  virtual void SetThreadTitle(std::optional<std::string> title) = 0;
-  virtual bool IsShownInTab() = 0;
-  virtual BrowserWindowInterface* GetBrowser() = 0;
-  virtual content::WebContents* GetWebUIWebContents() = 0;
-};
+class ContextualTasksPageHandler;
 
 class ContextualTasksUI : public TaskInfoDelegate,
                           public TopChromeWebUIController,
@@ -100,7 +88,16 @@ class ContextualTasksUI : public TaskInfoDelegate,
   ContextualTasksUI& operator=(const ContextualTasksUI&) = delete;
   ~ContextualTasksUI() override;
 
-  // next::mojom::PageHandlerFactory
+  // composebox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<composebox::mojom::Page> pending_page,
+      mojo::PendingReceiver<composebox::mojom::PageHandler>
+          pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler) override;
+
+  // contextual_tasks::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<contextual_tasks::mojom::Page> page,
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler)
@@ -122,17 +119,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
-
-  // composebox::mojom::PageHandlerFactory
-  // Instantiates the implementor of the composebox::mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
-  void CreatePageHandler(
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
-      mojo::PendingReceiver<composebox::mojom::PageHandler>
-          pending_page_handler,
-      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
-      mojo::PendingReceiver<searchbox::mojom::PageHandler>
-          pending_searchbox_handler) override;
 
   // Instantiates the implementor of the
   // composebox::mojom::PageHandlerFactory mojo interface passing the
@@ -171,6 +157,12 @@ class ContextualTasksUI : public TaskInfoDelegate,
       std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
     composebox_handler_ = std::move(handler);
   }
+
+  // Called by the browser process to send a message to the <webview>
+  // guest. The WebUI is responsible for taking the 'message' (a serialized
+  // lens.ClientToAimMessage protobuf) and using the <webview> postMessage API
+  // to send it to the guest content.
+  void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
  private:
   // A an observer specifically to watch for the creation of the hosted remote
@@ -212,6 +204,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
       contextual_tasks_page_handler_factory_receiver_{this};
 
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
+  mojo::Remote<composebox::mojom::Page> page_remote_;
 
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;

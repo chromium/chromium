@@ -13,6 +13,7 @@ import {getHtml} from './app.html.js';
 import type {Tab, Thread} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import {PostMessageHandler} from './post_message_handler.js';
 
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
@@ -48,6 +49,16 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor historyThreads_: Thread[] = [];
   private listenerIds_: number[] = [];
   private oauthToken_: string = '';
+  private postMessageHandler_!: PostMessageHandler;
+
+  constructor() {
+    super();
+  }
+
+  override firstUpdated() {
+    this.postMessageHandler_ =
+        new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+  }
 
   // TODO(crbug.com/454388385): Remove this once the authentication flow is
   // implemented. Removing the gsc param renders the OGB header, which allows
@@ -99,7 +110,12 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.setThreadTitle.addListener(
             (title: string) => {
               this.threadTitle_ = title;
-            }));
+            }),
+        this.browserProxy_.callbackRouter.postMessageToWebview.addListener(
+            this.postMessageToWebview.bind(this)),
+        this.listenerIds_.push(
+            this.browserProxy_.callbackRouter.onHandshakeComplete.addListener(
+                this.onHandshakeComplete.bind(this))));
 
     this.updateToolbarVisibility();
 
@@ -138,6 +154,14 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  private postMessageToWebview(message: number[]) {
+    this.postMessageHandler_.sendMessage(new Uint8Array(message));
+  }
+
+  private onHandshakeComplete() {
+    this.postMessageHandler_.completeHandshake();
   }
 
   private async updateToolbarVisibility() {

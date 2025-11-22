@@ -163,8 +163,7 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page_handler), web_ui(), this, ui_service_);
-  page_ = mojo::Remote(std::move(page));
+      std::move(page_handler), std::move(page), this, ui_service_);
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
@@ -246,12 +245,17 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
-  DCHECK(pending_page.is_valid());
   composebox_handler_ = std::make_unique<ContextualTasksComposeboxHandler>(
-      Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
+      this, Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
+}
+
+void ContextualTasksUI::PostMessageToWebview(
+    const lens::ClientToAimMessage& message) {
+  CHECK(page_handler_);
+  page_handler_->PostMessageToWebview(message);
 }
 
 void ContextualTasksUI::OnInnerWebContentsCreated(

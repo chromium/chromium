@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -39,28 +40,24 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
 }  // namespace
 
 ContextualTasksPageHandler::ContextualTasksPageHandler(
-    mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
-    content::WebUI* web_ui,
+    mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
+    mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     ContextualTasksUI* web_ui_controller,
-    contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service)
-    : page_handler_(this, std::move(page_handler)),
-      web_ui_(CHECK_DEREF(web_ui)),
-      web_ui_controller_(CHECK_DEREF(web_ui_controller)),
-      ui_service_(contextual_tasks_ui_service) {}
+    contextual_tasks::ContextualTasksUiService* ui_service)
+    : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
+      web_ui_controller_(web_ui_controller),
+      ui_service_(ui_service) {}
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
-  if (ui_service_) {
-    std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
-  }
+  std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
 }
 
 void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                                                GetUrlForTaskCallback callback) {
-  if (ui_service_) {
-    std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
-  }
+  std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
 }
 
 void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {
@@ -84,32 +81,30 @@ void ContextualTasksPageHandler::ShowThreadHistory(
 }
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
-  std::move(callback).Run(
-      tabs::TabInterface::MaybeGetFromContents(web_ui_->GetWebContents()));
+  std::move(callback).Run(web_ui_controller_->IsShownInTab());
 }
 
 void ContextualTasksPageHandler::OpenMyActivityUi() {
-  OpenUrlInNewTab(&web_ui_.get(), GURL(kMyActivityUrl));
+  OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kMyActivityUrl));
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
-  OpenUrlInNewTab(&web_ui_.get(), GURL(kHelpUrl));
+  OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kHelpUrl));
 }
 
 void ContextualTasksPageHandler::MoveTaskUiToToNewTab() {
-  auto* browser = webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
+  auto* browser = web_ui_controller_->GetBrowser();
   const auto& task_id = web_ui_controller_->GetTaskId();
   if (!task_id.has_value()) {
     LOG(ERROR) << "Attempted to open in new tab with no valid task ID.";
     return;
   }
-
   ui_service_->MoveTaskUiToToNewTab(task_id.value(), browser);
 }
 
 void ContextualTasksPageHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(&web_ui_.get()));
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(
+      Profile::FromWebUI(web_ui_controller_->web_ui()));
 
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -157,6 +152,51 @@ void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
   if (ui_service_) {
     ui_service_->OnTabClickedFromSourcesMenu(
         tab_id, url,
-        webui::GetBrowserWindowInterface(web_ui_->GetWebContents()));
+        webui::GetBrowserWindowInterface(
+            web_ui_controller_->web_ui()->GetWebContents()));
   }
+}
+
+void ContextualTasksPageHandler::OnWebviewMessage(
+    const std::vector<uint8_t>& message) {
+  lens::AimToClientMessage aim_to_client_message;
+  if (!aim_to_client_message.ParseFromArray(message.data(), message.size())) {
+    return;
+  }
+
+  if (aim_to_client_message.has_handshake_response()) {
+    page_->OnHandshakeComplete();
+  }
+}
+
+void ContextualTasksPageHandler::GetHandshakeMessage(
+    GetHandshakeMessageCallback callback) {
+  lens::ClientToAimMessage message;
+  lens::HandshakePing* ping = message.mutable_handshake_ping();
+  ping->add_capabilities(lens::FeatureCapability::DEFAULT);
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(&serialized_message[0], size);
+  std::move(callback).Run(serialized_message);
+}
+
+void ContextualTasksPageHandler::PostMessageToWebview(
+    const lens::ClientToAimMessage& message) {
+  DCHECK(page_);
+  if (!page_) {
+    return;
+  }
+
+  const size_t size = message.ByteSizeLong();
+  if (size == 0) {
+    LOG(WARNING) << "PostMessageToWebview called with an empty message.";
+    return;
+  }
+  std::vector<uint8_t> serialized_message(size);
+  if (!message.SerializeToArray(&serialized_message[0], size)) {
+    LOG(ERROR) << "Failed to serialize ClientToAimMessage.";
+    return;
+  }
+
+  page_->PostMessageToWebview(serialized_message);
 }

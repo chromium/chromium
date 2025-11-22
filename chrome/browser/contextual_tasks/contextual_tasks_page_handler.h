@@ -5,20 +5,20 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 class GoogleServiceAuthError;
 
 namespace base {
 class Uuid;
-}
-
-namespace content {
-class WebUI;
 }
 
 class ContextualTasksUI;
@@ -35,18 +35,14 @@ struct AccessTokenInfo;
 class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
  public:
   ContextualTasksPageHandler(
-      mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
-      content::WebUI* web_ui,
+      mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
+      mojo::PendingRemote<contextual_tasks::mojom::Page> page,
       ContextualTasksUI* web_ui_controller,
-      contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service);
-  ContextualTasksPageHandler(const ContextualTasksPageHandler&) = delete;
-  ContextualTasksPageHandler& operator=(const ContextualTasksPageHandler&) =
-      delete;
+      contextual_tasks::ContextualTasksUiService* ui_service);
   ~ContextualTasksPageHandler() override;
 
-  // contextual_tasks::mojom::PageHandler impl:
+  // contextual_tasks::mojom::PageHandler:
   void GetThreadUrl(GetThreadUrlCallback callback) override;
-
   void GetUrlForTask(const base::Uuid& uuid,
                      GetUrlForTaskCallback callback) override;
   void SetTaskId(const base::Uuid& uuid) override;
@@ -61,17 +57,20 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
   void GetAttachedTabs(GetAttachedTabsCallback callback) override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
+  void OnWebviewMessage(const std::vector<uint8_t>& message) override;
+  void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
+  void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
  private:
   void OnOAuthTokenReceived(GetOAuthTokenCallback callback,
                             GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
 
-  mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;
-  const raw_ref<content::WebUI> web_ui_;
-  const raw_ref<ContextualTasksUI> web_ui_controller_;
-  const raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
   std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
+  mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
+  mojo::Remote<contextual_tasks::mojom::Page> page_;
+  raw_ptr<ContextualTasksUI> web_ui_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_

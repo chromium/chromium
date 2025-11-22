@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # This target is only for public headers for classes used outside this directory (i.e. services and factories).
 source_set("contextual_tasks") {
@@ -105,11 +106,14 @@ if (!is_android) {
       "contextual_tasks_ui.h",
       "contextual_tasks_ui_service.h",
       "contextual_tasks_ui_service_factory.h",
+      "task_info_delegate.h",
     ]
 
     public_deps = [
       ":contextual_tasks",
       ":mojo_bindings",
+      "//base",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/searchbox",
@@ -117,6 +121,7 @@ if (!is_android) {
       "//components/contextual_tasks/public:feature_list",
       "//content/public/browser",
       "//content/public/common",
+      "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
@@ -151,6 +156,9 @@ if (!is_android) {
       "//components/keyed_service/core",
       "//components/lens",
       "//components/omnibox/browser:mojo_bindings",
+      "//google_apis",
+      "//third_party/lens_server_proto:lens_overlay_proto",
+      "//third_party/protobuf:protobuf_lite",
       "//url",
     ]
   }
@@ -164,6 +172,7 @@ if (!is_android) {
     webui_module_path = "/"
     public_deps = [
       "//mojo/public/mojom/base",
+      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url/mojom:url_mojom_gurl",
     ]
   }

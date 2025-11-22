@@ -520,6 +520,7 @@ include_rules = [
   "+third_party/icu/source/common/unicode",
   "+third_party/icu/source/i18n/unicode",
   "+third_party/leveldatabase",
+  "+third_party/lens_server_proto",
   "+third_party/libxml/chromium/xml_writer.h",
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/re2",

@@ -29,13 +29,15 @@ class MockContextualTasksComposeboxHandler
     : public ContextualTasksComposeboxHandler {
  public:
   MockContextualTasksComposeboxHandler(
+      ContextualTasksUI* ui_controller,
       Profile* profile,
       content::WebContents* web_contents,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler)
-      : ContextualTasksComposeboxHandler(profile,
+      : ContextualTasksComposeboxHandler(ui_controller,
+                                         profile,
                                          web_contents,
                                          std::move(pending_handler),
                                          std::move(pending_page),
@@ -373,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 
   auto mock_composebox_handler =
       std::make_unique<testing::NiceMock<MockContextualTasksComposeboxHandler>>(
-          browser()->profile(),
+          ui, browser()->profile(),
           browser()->tab_strip_model()->GetWebContentsAt(0),
           std::move(composebox_handler_receiver),
           std::move(composebox_page_remote),

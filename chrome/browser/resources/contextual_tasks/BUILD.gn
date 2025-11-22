@@ -20,6 +20,7 @@ build_webui("build") {
     "composebox.ts",
     "composebox.html.ts",
     "contextual_tasks_browser_proxy.ts",
+    "post_message_handler.ts",
     "top_toolbar.ts",
     "top_toolbar.html.ts",
     "internals/app.ts",
@@ -34,12 +35,15 @@ build_webui("build") {
     "internals/app.css",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [
+    "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings_ts__generator",
+  ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_internals.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_types.mojom-webui.ts",
+    "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts",
   ]
 
   # Needed for browser_tests
