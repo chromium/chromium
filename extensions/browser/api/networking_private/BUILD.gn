@@ -70,7 +70,6 @@ source_set("networking_private") {
     deps += [
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
-      "//chromeos/ash/components/network/portal_detector",
       "//chromeos/components/onc",
       "//components/proxy_config",
     ]
