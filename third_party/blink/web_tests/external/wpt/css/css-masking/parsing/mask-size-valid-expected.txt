@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] e.style['mask-size'] = "1px auto" should set the property value
+  assert_equals: serialization should be canonical expected "1px auto" but got "1px"
+Harness: the test ran to completion.
+

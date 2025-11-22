@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Input image button inside draggable element should be draggable from border
+  assert_equals: should drag outer element expected "outer" but got "inner"
+[FAIL] Input image button inside draggable element should be draggable from image
+  assert_equals: should drag outer element expected "outer" but got "inner"
+Harness: the test ran to completion.
+

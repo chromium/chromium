@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Selection.modify("move", "left", "character") when "abc<span>d[]ef</span>"
+  assert_equals: expected "[(#text \\"def\\", 0)]" but got "[(#text \\"abc\\", 3)]"
+[FAIL] Selection.modify("move", "left", "character") when "<b>abc</b><i>d[]ef</i>"
+  assert_equals: expected "[(#text \\"def\\", 0)]" but got "[(#text \\"abc\\", 3)]"
+[FAIL] Selection.modify("move", "left", "character") when "abc<span> []def</span>"
+  assert_equals: expected "[(#text \\" def\\", 0)]" but got "[(#text \\"abc\\", 3)]"
+[FAIL] Selection.modify("move", "left", "character") when "abc<span>  []def</span>"
+  assert_equals: expected "[(#text \\"  def\\", 0)]" but got "[(#text \\"abc\\", 3)]"
+[FAIL] Selection.modify("move", "left", "character") when "<span>abc</span>  []def"
+  assert_equals: expected "[(#text \\"  def\\", 0)]" but got "[(#text \\"abc\\", 3)]"
+Harness: the test ran to completion.
+

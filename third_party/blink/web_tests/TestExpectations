@@ -3204,6 +3204,42 @@ crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-f
 
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-001a.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-001b.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-001c.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-001d.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-001e.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002a.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002b.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002c.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002d.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002e.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002f.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002g.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002h.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/column/masonry-subgrid-002i.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-001a.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-001b.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-001c.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-001d.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002a.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002b.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002c.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002d.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002e.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002f.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002g.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002h.html [ Failure ]
+crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002i.html [ Failure ]
+
+external/wpt/css/css-grid/subgrid/subgrid-item-with-margin-left-auto.html [ Failure ]
+external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
+external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
+external/wpt/intersection-observer/scroll-margin-propagation.html [ Failure ]  # Flaky output
+
+[ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnected-device.https.window.html [ Failure Timeout ]
+crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/461896331 [ Linux ] external/wpt/html/editing/dnd/interactiveelements/disabled_input_text_inside_draggable_element.html [ Timeout ]
 crbug.com/461896331 [ Win ] external/wpt/html/editing/dnd/interactiveelements/disabled_input_text_inside_draggable_element.html [ Crash Timeout ]
@@ -3307,7 +3343,6 @@ crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_conte
 crbug.com/441216889 [ Mac14 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Pass Timeout ]
 crbug.com/441216889 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/device-same-object.https.window.html [ Failure Pass Timeout ]
 crbug.com/440811029 [ Mac14-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Pass Timeout ]
-crbug.com/440811029 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Pass Timeout ]
 crbug.com/440829301 [ Mac14-arm64 ] external/wpt/content-index/idlharness.https.any.html [ Skip Timeout ]
 crbug.com/440829301 [ Mac14 ] external/wpt/content-index/idlharness.https.any.html [ Skip Timeout ]
 crbug.com/440829301 [ Mac14-arm64 ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Skip Timeout ]
@@ -8522,8 +8557,8 @@ crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/webgl-texture-binding-preserved.h
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Timeout ]
 
 # Webrtc WPTs fail on Mac15 and Mac15-arm64
-crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-sender-worker-single-frame.https.html [ Timeout ]
-crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-sender-worker-single-frame.https.html [ Timeout ]
+crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-sender-worker-single-frame.https.html [ Skip Timeout ]
+crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-sender-worker-single-frame.https.html [ Skip Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-clone.https.html [ Timeout ]
 crbug.com/386799957 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-clone.https.html [ Timeout ]
 crbug.com/386799957 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-metadata.https.html [ Timeout ]

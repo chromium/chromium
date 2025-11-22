@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Document: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_true: expected true got false
+[FAIL] Document: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  assert_true: expected true got false
+[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_true: expected true got false
+[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  assert_true: expected true got false
+[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_true: expected true got false
+[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  assert_true: expected true got false
+[FAIL] CustomElementRegistry.prototype.initialize upgrades already initialized elements
+  assert_equals: expected "ABElement" but got "HTMLElement"
+Harness: the test ran to completion.
+

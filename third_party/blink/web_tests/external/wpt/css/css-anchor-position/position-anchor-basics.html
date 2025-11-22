@@ -16,9 +16,9 @@
 <script>
 // position-anchor: <anchor-element>
 // <anchor-element> = none | auto | <dashed-ident>
+test_valid_value('position-anchor', 'none');
 test_valid_value('position-anchor', 'auto');
 test_valid_value('position-anchor', '--foo');
-test_valid_value('position-anchor', 'none');
 test_invalid_value('position-anchor', 'foo-bar');
 test_invalid_value('position-anchor', '--foo --bar')
 test_invalid_value('position-anchor', '--foo, --bar')
