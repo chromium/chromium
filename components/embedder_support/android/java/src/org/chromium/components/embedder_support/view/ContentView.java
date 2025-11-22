@@ -88,6 +88,8 @@ public class ContentView extends FrameLayout
     @Nullable private MotionEvent mPendingTwoFingerSwipeDownEvent;
     @Nullable private VirtualStructureProvider mVirtualStructureProvider;
 
+    private final ObserverList<View.OnHoverListener> mHoverListeners = new ObserverList<>();
+
     /**
      * The desired size of this view in {@link MeasureSpec}. Set by the host when it should be
      * different from that of the parent.
@@ -225,6 +227,24 @@ public class ContentView extends FrameLayout
     public void setDesiredMeasureSpec(int width, int height) {
         mDesiredWidthMeasureSpec = width;
         mDesiredHeightMeasureSpec = height;
+    }
+
+    /**
+     * Registers the given listener to receive hover events.
+     *
+     * @param listener Listener to receive hover events.
+     */
+    public void addOnHoverListener(View.OnHoverListener listener) {
+        mHoverListeners.addObserver(listener);
+    }
+
+    /**
+     * Unregisters the given listener from receiving hover events.
+     *
+     * @param listener Listener that doesn't want to receive hover events.
+     */
+    public void removeOnHoverListener(View.OnHoverListener listener) {
+        mHoverListeners.removeObserver(listener);
     }
 
     @Override
@@ -469,12 +489,14 @@ public class ContentView extends FrameLayout
     }
 
     /**
-     * Mouse move events are sent on hover enter, hover move and hover exit.
-     * They are sent on hover exit because sometimes it acts as both a hover
-     * move and hover exit.
+     * Mouse move events are sent on hover enter, hover move and hover exit. They are sent on hover
+     * exit because sometimes it acts as both a hover move and hover exit.
      */
     @Override
     public boolean onHoverEvent(MotionEvent event) {
+        for (View.OnHoverListener listener : mHoverListeners) {
+            listener.onHover(this, event);
+        }
         EventForwarder forwarder = getEventForwarder();
         boolean consumed = forwarder != null ? forwarder.onHoverEvent(event) : false;
         if (!AccessibilityState.isTouchExplorationEnabled()) super.onHoverEvent(event);

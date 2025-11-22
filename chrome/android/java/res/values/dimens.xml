@@ -439,6 +439,7 @@ found in the LICENSE file.
     <!-- Link Hover Status Bar dimensions. -->
     <dimen name="link_hover_status_bar_max_width">300dp</dimen>
     <dimen name="link_hover_status_bar_margin">16dp</dimen>
+    <dimen name="link_hover_status_bar_mouse_padding">20dp</dimen>
 
     <!--  Reader mode prefs dimensions. -->
     <dimen name="reader_mode_prefs_font_style_container_width">280dp</dimen>
