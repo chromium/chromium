@@ -3232,12 +3232,12 @@ crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/maso
 crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002h.html [ Failure ]
 crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002i.html [ Failure ]
 
-external/wpt/css/css-grid/subgrid/subgrid-item-with-margin-left-auto.html [ Failure ]
-external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
-external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
-external/wpt/intersection-observer/scroll-margin-propagation.html [ Failure ]  # Flaky output
+crbug.com/462829956 external/wpt/css/css-grid/subgrid/subgrid-item-with-margin-left-auto.html [ Failure ]
+crbug.com/462825052 external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
+crbug.com/462825052 external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
+crbug.com/462704277 external/wpt/intersection-observer/scroll-margin-propagation.html [ Failure ]
 
-[ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnected-device.https.window.html [ Failure Timeout ]
+crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnected-device.https.window.html [ Failure Timeout ]
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
