@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
@@ -63,6 +64,9 @@ constexpr gfx::Rect kTestChar0EndCaret{22, 10, 1, 14};
 constexpr gfx::Rect kTestChar1Caret = kTestChar0EndCaret;
 constexpr gfx::Rect kTestChar1EndCaret{34, 10, 1, 14};
 constexpr gfx::Rect kTestChar0ZoomedCaret{20, 20, 1, 28};
+
+constexpr gfx::Rect kTestChar0TopCaret{10, 10, 12, 1};
+constexpr gfx::Rect kTestChar0BottomCaret{10, 24, 12, 1};
 
 constexpr gfx::Rect kTestMultiPage1Char0ScreenRect{15, 15, 8, 4};
 constexpr gfx::Rect kTestMultiPage1Char1ScreenRect{23, 15, 8, 4};
@@ -655,9 +659,6 @@ TEST_F(PdfCaretTest, SetCharAndDrawMultiPage) {
 
 class PdfCaretTextDirectionTest : public PdfCaretTest {
  public:
-  static constexpr gfx::Rect kTestChar0TopCaret{10, 10, 12, 1};
-  static constexpr gfx::Rect kTestChar0BottomCaret{10, 24, 12, 1};
-
   void SetUpTextDirectionTest(const PageCharacterIndex& start_index,
                               AccessibilityTextDirection direction) {
     SetUpPagesWithCharCounts({2});
@@ -716,7 +717,7 @@ TEST_F(PdfCaretTextDirectionTest, NoTextPage) {
 
   InSequence sequence;
   TestOrientation(PageOrientation::kOriginal, kDefaultCaret);
-  TestOrientation(PageOrientation::kClockwise90, gfx::Rect(10, 10, 12, 1));
+  TestOrientation(PageOrientation::kClockwise90, kTestChar0TopCaret);
   TestOrientation(PageOrientation::kClockwise180, gfx::Rect(22, 10, 1, 12));
   TestOrientation(PageOrientation::kClockwise270, gfx::Rect(10, 22, 12, 1));
 }
@@ -1595,6 +1596,58 @@ TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftUpMultiPage) {
   ExpectExtendAndInvalidateSelectionByChar(kTestChar0);
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+}
+
+class PdfCaretMoveWithTextDirectionTest : public PdfCaretMoveTest {
+ public:
+  void SetUpTextDirectionTest(AccessibilityTextDirection direction) {
+    // To simplify tests, just use a single character.
+    SetUpSingleCharLineTest();
+    EXPECT_CALL(client(), GetTextRunInfoAt(_))
+        .WillRepeatedly(Return(GenerateTestTextRunInfo(direction)));
+    InitializeVisibleCaretAtChar(kTestChar0);
+  }
+
+  void TestMove(ui::KeyboardCode key, const gfx::Rect& expected_caret) {
+    EXPECT_TRUE(caret().OnKeyDown(GenerateKeyboardEvent(key)));
+    TestDrawCaret(expected_caret);
+  }
+};
+
+TEST_F(PdfCaretMoveWithTextDirectionTest, LeftToRight) {
+  SetUpTextDirectionTest(AccessibilityTextDirection::kLeftToRight);
+  TestDrawCaret(kTestChar0Caret);
+  TestMove(ui::KeyboardCode::VKEY_RIGHT, kTestChar0EndCaret);
+  TestMove(ui::KeyboardCode::VKEY_LEFT, kTestChar0Caret);
+  TestMove(ui::KeyboardCode::VKEY_DOWN, kTestChar0EndCaret);
+  TestMove(ui::KeyboardCode::VKEY_UP, kTestChar0Caret);
+}
+
+TEST_F(PdfCaretMoveWithTextDirectionTest, RightToLeft) {
+  SetUpTextDirectionTest(AccessibilityTextDirection::kRightToLeft);
+  TestDrawCaret(kTestChar0EndCaret);
+  TestMove(ui::KeyboardCode::VKEY_LEFT, kTestChar0Caret);
+  TestMove(ui::KeyboardCode::VKEY_RIGHT, kTestChar0EndCaret);
+  TestMove(ui::KeyboardCode::VKEY_DOWN, kTestChar0Caret);
+  TestMove(ui::KeyboardCode::VKEY_UP, kTestChar0EndCaret);
+}
+
+TEST_F(PdfCaretMoveWithTextDirectionTest, TopToBottom) {
+  SetUpTextDirectionTest(AccessibilityTextDirection::kTopToBottom);
+  TestDrawCaret(kTestChar0TopCaret);
+  TestMove(ui::KeyboardCode::VKEY_DOWN, kTestChar0BottomCaret);
+  TestMove(ui::KeyboardCode::VKEY_UP, kTestChar0TopCaret);
+  TestMove(ui::KeyboardCode::VKEY_LEFT, kTestChar0BottomCaret);
+  TestMove(ui::KeyboardCode::VKEY_RIGHT, kTestChar0TopCaret);
+}
+
+TEST_F(PdfCaretMoveWithTextDirectionTest, BottomToTop) {
+  SetUpTextDirectionTest(AccessibilityTextDirection::kBottomToTop);
+  TestDrawCaret(kTestChar0BottomCaret);
+  TestMove(ui::KeyboardCode::VKEY_UP, kTestChar0TopCaret);
+  TestMove(ui::KeyboardCode::VKEY_DOWN, kTestChar0BottomCaret);
+  TestMove(ui::KeyboardCode::VKEY_LEFT, kTestChar0TopCaret);
+  TestMove(ui::KeyboardCode::VKEY_RIGHT, kTestChar0BottomCaret);
 }
 
 }  // namespace

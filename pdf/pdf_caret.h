@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_caret_client.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -127,7 +128,11 @@ class PdfCaret {
   // Returns the screen rect for a char, which may be empty.
   gfx::Rect GetScreenRectForChar(const PageCharacterIndex& index) const;
 
-  // Returns the text direction of `index`, taking page rotations into account.
+  // Returns the text direction of `index`.
+  AccessibilityTextDirection GetTextDirectionAt(
+      const PageCharacterIndex& index) const;
+
+  // Same as `GetTextDirectionAt()`, but takes page rotations into account.
   AccessibilityTextDirection GetTextDirectionAfterRotationAt(
       const PageCharacterIndex& index) const;
 
@@ -139,6 +144,13 @@ class PdfCaret {
   // position if not yet text selecting. If `should_select` is false, text
   // selection will be cleared, and the caret will be set visible.
   void MoveToChar(const PageCharacterIndex& new_index, bool should_select);
+
+  // Returns the arrow key converted from the `key` input after taking text
+  // direction into account. E.g. if the text direction is RTL and `key` is
+  // `ui::KeyboardCode::VKEY_LEFT`, the return result will be
+  // `ui::KeyboardCode::VKEY_RIGHT`. `key` must be an arrow key, otherwise
+  // crashes.
+  ui::KeyboardCode GetLogicalKeyAfterTextDirection(ui::KeyboardCode key) const;
 
   // Determines the next valid char, handling moving horizontally to a char on a
   // different page and ignoring newlines. Does nothing if the current char
