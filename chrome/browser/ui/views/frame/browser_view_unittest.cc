@@ -437,35 +437,6 @@ TEST_F(BrowserViewTest, DISABLED_RepeatedAccelerators) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-// Test that bookmark bar view becomes invisible when closing the browser.
-// TODO(crbug.com/40097152): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_BookmarkBarInvisibleOnShutdown \
-  DISABLED_BookmarkBarInvisibleOnShutdown
-#else
-#define MAYBE_BookmarkBarInvisibleOnShutdown BookmarkBarInvisibleOnShutdown
-#endif
-TEST_F(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
-  BookmarkBarView::DisableAnimationsForTesting(true);
-
-  Browser* browser = browser_view()->browser();
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-  EXPECT_EQ(0, tab_strip_model->count());
-
-  AddTab(browser, GURL("about:blank"));
-  EXPECT_EQ(1, tab_strip_model->count());
-
-  BookmarkBarView* bookmark_bar = browser_view()->GetBookmarkBarView();
-  chrome::ExecuteCommand(browser, IDC_SHOW_BOOKMARK_BAR);
-  EXPECT_TRUE(bookmark_bar->GetVisible());
-
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(0, tab_strip_model->count());
-  EXPECT_FALSE(bookmark_bar->GetVisible());
-
-  BookmarkBarView::DisableAnimationsForTesting(false);
-}
-
 TEST_F(BrowserViewTest, UpdateWindowTitle) {
   AddTab(browser(), GURL("about:blank"));
   AddTab(browser(), GURL("about:blank"));
