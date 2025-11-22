@@ -25,8 +25,6 @@ namespace ash {
 
 class InformedRestoreContextMenuModel;
 
-// TODO(http://b/337339184): Change the layout when the display orientation
-// changes.
 class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   METADATA_HEADER(InformedRestoreContentsView, views::BoxLayoutView)
 
