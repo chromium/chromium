@@ -5,6 +5,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
@@ -139,4 +142,101 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_EnumerateDevToolsTargets) {
   EXPECT_EQ(browser_ui_count, 1);
   EXPECT_EQ(tab_count, 1);
   EXPECT_EQ(page_count, 1);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_FullscreenEnterAndExit DISABLED_FullscreenEnterAndExit
+#else
+#define MAYBE_FullscreenEnterAndExit FullscreenEnterAndExit
+#endif
+// Test entering and exiting fullscreen mode.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_FullscreenEnterAndExit) {
+  auto* window = browser()->window();
+  ASSERT_TRUE(window);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Should not be in fullscreen initially.
+  EXPECT_FALSE(window->IsFullscreen());
+
+  // Enter fullscreen mode.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_TRUE(window->IsFullscreen());
+
+  // Exit fullscreen mode.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(window->IsFullscreen());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_TabFullscreenEnterAndExit DISABLED_TabFullscreenEnterAndExit
+#else
+#define MAYBE_TabFullscreenEnterAndExit TabFullscreenEnterAndExit
+#endif
+// Test entering and exiting tab fullscreen mode, including tab switching.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_TabFullscreenEnterAndExit) {
+  auto* window = browser()->window();
+  ASSERT_TRUE(window);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Add a second tab.
+  GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* second_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(second_tab);
+  ASSERT_NE(web_contents, second_tab);
+
+  auto* fullscreen_controller = browser()
+                                    ->GetFeatures()
+                                    .exclusive_access_manager()
+                                    ->fullscreen_controller();
+
+  // Enter tab fullscreen mode on second tab.
+  fullscreen_controller->EnterFullscreenModeForTab(
+      second_tab->GetPrimaryMainFrame());
+
+  // Wait for fullscreen state.
+  EXPECT_TRUE(
+      base::test::RunUntil([window]() { return window->IsFullscreen(); }));
+  EXPECT_TRUE(window->IsFullscreen());
+
+  // Exit fullscreen explicitly before switching tabs.
+  fullscreen_controller->ExitFullscreenModeForTab(second_tab);
+  EXPECT_TRUE(
+      base::test::RunUntil([window]() { return !window->IsFullscreen(); }));
+  EXPECT_FALSE(window->IsFullscreen());
+
+  // Switch to first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_FALSE(window->IsFullscreen());
+
+  // Switch back to the second tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(window->IsFullscreen());
+
+  // Enter fullscreen again on the second tab.
+  fullscreen_controller->EnterFullscreenModeForTab(
+      second_tab->GetPrimaryMainFrame());
+  EXPECT_TRUE(
+      base::test::RunUntil([window]() { return window->IsFullscreen(); }));
+  EXPECT_TRUE(window->IsFullscreen());
+
+  // Exit fullscreen.
+  fullscreen_controller->ExitFullscreenModeForTab(second_tab);
+  EXPECT_TRUE(
+      base::test::RunUntil([window]() { return !window->IsFullscreen(); }));
+  EXPECT_FALSE(window->IsFullscreen());
 }

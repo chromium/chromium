@@ -16,11 +16,15 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
@@ -173,14 +177,15 @@ WebUIBrowserWindow* WebUIBrowserWindow::FromWebShellWebContents(
 }
 
 // static
-WebUIBrowserWindow* WebUIBrowserWindow::FromBrowser(Browser* browser) {
+WebUIBrowserWindow* WebUIBrowserWindow::FromBrowser(
+    BrowserWindowInterface* browser) {
   // This function is implemented based on
   // BrowserView::GetBrowserViewForBrowser(). Please see the comments in that
   // function for the implementation rationale.
-  if (!browser->window() || !browser->window()->GetNativeWindow()) {
+  if (!browser->GetWindow() || !browser->GetWindow()->GetNativeWindow()) {
     return nullptr;
   }
-  return FromNativeWindow(browser->window()->GetNativeWindow());
+  return FromNativeWindow(browser->GetWindow()->GetNativeWindow());
 }
 
 // static
@@ -424,7 +429,13 @@ ui::RendererColorMap WebUIBrowserWindow::GetRendererColorMap(
 bool WebUIBrowserWindow::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  NOTIMPLEMENTED();
+  // Search for the accelerator in our table.
+  for (const auto& entry : accelerator_table_) {
+    if (entry.second == command_id) {
+      *accelerator = entry.first;
+      return true;
+    }
+  }
   return false;
 }
 
@@ -448,6 +459,34 @@ ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
   return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
       kExtensionsMenuButtonElementId,
       views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+}
+
+void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
+  widget_->SetFullscreen(fullscreen);
+  browser_->WindowFullscreenStateChanged();
+
+  auto* manager = browser_->GetFeatures().exclusive_access_manager();
+  if (!manager) {
+    return;
+  }
+
+  auto* controller = manager->fullscreen_controller();
+
+  std::optional<webui_browser::mojom::FullscreenContext> context;
+  if (fullscreen) {
+    if (controller->IsTabFullscreen()) {
+      context = webui_browser::mojom::FullscreenContext::kTab;
+    } else if (controller->IsFullscreenForBrowser()) {
+      context = webui_browser::mojom::FullscreenContext::kBrowser;
+    }
+  }
+
+  // Notify the WebUI about the fullscreen mode.
+  if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
+    page->OnFullscreenModeChanged(fullscreen, context);
+  }
+
+  controller->FullscreenTransitionCompleted();
 }
 
 void WebUIBrowserWindow::DeleteBrowserWindow() {
@@ -745,8 +784,7 @@ bool WebUIBrowserWindow::IsBookmarkBarAnimating() const {
 }
 
 bool WebUIBrowserWindow::IsTabStripEditable() const {
-  NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 void WebUIBrowserWindow::SetTabStripNotEditableForTesting() {
@@ -999,7 +1037,7 @@ void WebUIBrowserWindow::ShowHatsDialog(
 }
 
 ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
-  return this;
+  return browser_->GetFeatures().webui_browser_exclusive_access_context();
 }
 
 std::string WebUIBrowserWindow::GetWorkspace() const {
@@ -1115,55 +1153,6 @@ void WebUIBrowserWindow::Minimize() {
 
 void WebUIBrowserWindow::Restore() {
   widget_->Restore();
-}
-
-Profile* WebUIBrowserWindow::GetProfile() {
-  return browser_->profile();
-}
-
-void WebUIBrowserWindow::EnterFullscreen(
-    const url::Origin& origin,
-    ExclusiveAccessBubbleType bubble_type,
-    FullscreenTabParams fullscreen_tab_params) {
-  // TODO(webium): Implement this.
-  NOTIMPLEMENTED();
-}
-
-void WebUIBrowserWindow::ExitFullscreen() {
-  // TODO(webium): Implement this.
-  NOTIMPLEMENTED();
-}
-
-void WebUIBrowserWindow::UpdateExclusiveAccessBubble(
-    const ExclusiveAccessBubbleParams& params,
-    ExclusiveAccessBubbleHideCallback first_hide_callback) {
-  // TODO(webium): Implement this.
-  NOTIMPLEMENTED();
-}
-
-bool WebUIBrowserWindow::IsExclusiveAccessBubbleDisplayed() const {
-  // TODO(webium): Implement this.
-  return false;
-}
-
-void WebUIBrowserWindow::OnExclusiveAccessUserInput() {
-  // TODO(webium): Implement this.
-}
-
-content::WebContents* WebUIBrowserWindow::GetWebContentsForExclusiveAccess() {
-  return browser_->tab_strip_model()->GetActiveWebContents();
-}
-
-bool WebUIBrowserWindow::CanUserEnterFullscreen() const {
-  // TODO(webium): Implement this.
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool WebUIBrowserWindow::CanUserExitFullscreen() const {
-  // TODO(webium): Implement this.
-  NOTIMPLEMENTED();
-  return false;
 }
 
 void WebUIBrowserWindow::OnWindowCloseRequested(

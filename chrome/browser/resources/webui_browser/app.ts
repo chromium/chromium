@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
@@ -25,7 +25,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {PageHandlerFactory, SecurityIcon} from './browser.mojom-webui.js';
+import {FullscreenContext, PageHandlerFactory, SecurityIcon} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
 import type {SidePanel} from './side_panel.js';
@@ -63,6 +63,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     return {
       backButtonDisabled_: {state: true, type: Boolean},
       forwardButtonDisabled_: {state: true, type: Boolean},
+      fullscreenMode_:
+          {type: String, reflect: true, attribute: 'fullscreen-mode'},
       showingSidePanel_: {state: true, type: Boolean},
       reloadOrStopIcon_: {state: true, type: String},
       showLocationIconButton_: {type: Boolean, reflect: true},
@@ -75,6 +77,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   private trackedElementManager_: TrackedElementManager;
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
+  protected accessor fullscreenMode_: string = '';
   protected accessor reloadOrStopIcon_: string = 'icon-refresh';
   protected accessor showingSidePanel_: boolean = false;
   protected accessor showLocationIconButton_: boolean = false;
@@ -92,6 +95,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     const callbackRouter = BrowserProxy.getCallbackRouter();
     callbackRouter.showSidePanel.addListener(this.showSidePanel_.bind(this));
     callbackRouter.closeSidePanel.addListener(this.closeSidePanel_.bind(this));
+    callbackRouter.onFullscreenModeChanged.addListener(
+        this.onFullscreenModeChanged_.bind(this));
   }
 
   override async connectedCallback() {
@@ -308,6 +313,29 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   // when user clicks the close "x" button.
   protected onSidePanelClosed_() {
     this.showingSidePanel_ = false;
+  }
+
+  protected onFullscreenModeChanged_(
+      isFullscreen: boolean, context?: FullscreenContext) {
+    if (!isFullscreen) {
+      this.fullscreenMode_ = '';
+    } else {
+      // When fullscreen is true, we should always have a context
+      assert(
+          context !== undefined,
+          'Context must be provided when isFullscreen is true');
+
+      switch (context) {
+        case FullscreenContext.kTab:
+          this.fullscreenMode_ = 'tab';
+          break;
+        case FullscreenContext.kBrowser:
+          this.fullscreenMode_ = 'browser';
+          break;
+        default:
+          assertNotReachedCase(context);
+      }
+    }
   }
 
   protected onLocationIconClick_(_: Event) {

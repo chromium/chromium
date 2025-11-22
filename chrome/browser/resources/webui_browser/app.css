@@ -21,6 +21,20 @@
   overflow: hidden;
 }
 
+/* Hide browser frame in tab fullscreen mode */
+:host([fullscreen-mode="tab"]) #topContainer {
+  display: none;
+}
+
+/* Make content fill the window in tab fullscreen mode */
+:host([fullscreen-mode="tab"]) #contentRegion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .caption-button {
   box-shadow: none;
   border-radius: 0;

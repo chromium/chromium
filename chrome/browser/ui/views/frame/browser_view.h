@@ -1107,6 +1107,9 @@ class BrowserView : public BrowserWindow,
   // `frame_timing_details` contains the paint timing information of the frame.
   void OnFirstPresentation(const viz::FrameTimingDetails& frame_timing_details);
 
+  // TODO(crbug.com/461955649): Move ExclusiveAccessContextImpl out of
+  // BrowserView and make it shared so BrowserWindowFeatures can own it
+  // directly.
   class ExclusiveAccessContextImpl;
   std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context_;
 

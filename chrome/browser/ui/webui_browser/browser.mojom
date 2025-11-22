@@ -20,6 +20,14 @@ interface PageHandlerFactory {
   GetTabStripInset() => (int32 width);
 };
 
+// Fullscreen context when in fullscreen mode.
+enum FullscreenContext {
+  // Browser/user-initiated fullscreen.
+  kBrowser,
+  // Tab/content/renderer-initiated fullscreen.
+  kTab,
+};
+
 // Requests from the browser to WebUI ui for it.
 interface Page {
   // Requests the location box be focused. `is_user_initiated` is true if the
@@ -36,6 +44,10 @@ interface Page {
 
   // Closes the side panel, destroys the webview.
   CloseSidePanel();
+
+  // Notifies the WebUI that fullscreen state has changed.
+  // `context` will be present only when `is_fullscreen` is true.
+  OnFullscreenModeChanged(bool is_fullscreen, FullscreenContext? context);
 };
 
 // Browser-side handler for requests from WebUI page.

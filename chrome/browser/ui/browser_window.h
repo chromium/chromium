@@ -289,6 +289,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
   // Kiosk session.
+  // TODO(crbug.com/462003245): Remove these methods from here. It's exclusively
+  // set by ChromeOS in kiosk mode and never changes for the life of the
+  // Browser.
   virtual bool IsForceFullscreen() const = 0;
   virtual void SetForceFullscreen(bool force_fullscreen) = 0;
 

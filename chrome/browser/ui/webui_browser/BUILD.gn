@@ -14,6 +14,7 @@ source_set("webui_browser") {
   sources = [
     "browser_elements_webui_browser.h",
     "find_bar_owner_webui_browser.h",
+    "webui_browser_exclusive_access_context.h",
     "webui_browser_side_panel_ui.h",
     "webui_browser_ui.h",
     "webui_browser_window.h",
@@ -46,6 +47,7 @@ source_set("impl") {
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
+    "webui_browser_exclusive_access_context.cc",
     "webui_browser_extensions_container.cc",
     "webui_browser_extensions_container.h",
     "webui_browser_modal_dialog_host.cc",

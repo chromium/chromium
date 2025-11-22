@@ -86,6 +86,7 @@ class ToastController;
 class ToastService;
 class TranslateBubbleController;
 class UpgradeNotificationController;
+class WebUIBrowserExclusiveAccessContext;
 class WebUIBrowserSidePanelUI;
 class ZoomBubbleCoordinator;
 
@@ -456,6 +457,10 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
+  WebUIBrowserExclusiveAccessContext* webui_browser_exclusive_access_context() {
+    return webui_browser_exclusive_access_context_.get();
+  }
+
   ExclusiveAccessManager* exclusive_access_manager() {
     return exclusive_access_manager_.get();
   }
@@ -530,6 +535,9 @@ class BrowserWindowFeatures {
       product_specifications_entry_point_controller_;
 
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
+
+  std::unique_ptr<WebUIBrowserExclusiveAccessContext>
+      webui_browser_exclusive_access_context_;
 
   std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
 

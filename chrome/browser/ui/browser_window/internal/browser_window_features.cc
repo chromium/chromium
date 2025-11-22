@@ -116,6 +116,7 @@
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/find_bar_owner_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
@@ -422,6 +423,14 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
           *browser, browser, browser->window(),
           browser->GetUnownedUserDataHost());
+
+  if (WebUIBrowserWindow* webui_browser_window =
+          WebUIBrowserWindow::FromBrowser(browser)) {
+    webui_browser_exclusive_access_context_ =
+        std::make_unique<WebUIBrowserExclusiveAccessContext>(
+            browser->profile(), browser_, browser->GetTabStripModel(),
+            webui_browser_window->widget(), webui_browser_window);
+  }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
       browser->window()->GetExclusiveAccessContext());
@@ -903,6 +912,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   immersive_mode_controller_.reset();
 
   exclusive_access_manager_.reset();
+
+  webui_browser_exclusive_access_context_.reset();
 
   scrim_view_controller_.reset();
 
