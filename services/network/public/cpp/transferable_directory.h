@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 

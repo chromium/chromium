@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
 

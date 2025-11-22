@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/gfx/native_ui_types.h"

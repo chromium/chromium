@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_CLIPBOARD_TYPES_H_
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"

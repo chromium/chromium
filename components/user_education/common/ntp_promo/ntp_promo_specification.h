@@ -11,8 +11,7 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/user_education_context.h"

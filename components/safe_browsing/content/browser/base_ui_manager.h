@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"

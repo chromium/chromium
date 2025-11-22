@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
@@ -49,6 +48,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
+
+namespace base {
+class ScopedClosureRunner;
+}  // namespace base
 
 namespace base::android {
 class ScopedHardwareBufferHandle;

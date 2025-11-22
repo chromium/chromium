@@ -36,7 +36,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_helpers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"

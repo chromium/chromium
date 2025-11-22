@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
