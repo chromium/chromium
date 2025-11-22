@@ -17,14 +17,11 @@
 #include <type_traits>
 #include <utility>
 
-{%- if not contains_only_enums %}
+{%- if structs|length or unions|length %}
 #include "mojo/public/cpp/bindings/array_data_view.h"
-#include "mojo/public/cpp/bindings/enum_traits.h"
-#include "mojo/public/cpp/bindings/interface_data_view.h"
-#include "mojo/public/cpp/bindings/lib/bindings_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/map_data_view.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 {%- endif %}
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"

@@ -4,6 +4,9 @@
 
 #include "ui/accessibility/ax_tree_update.h"
 
+#include <map>
+#include <string>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
