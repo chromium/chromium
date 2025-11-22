@@ -5148,9 +5148,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
   // - It is a "regular" extension API function that goes through the request /
   //   response flow in ExtensionFunctionDispatcher, unlike extension message
   //   APIs.
-  // *TODO(crbug.com/40263329): The exact set of APIs and type of
-  // context this is is a bit fuzzy. In practice, it's basically the same set
-  // as is exposed to content scripts.
   static constexpr char kGetAcceptLanguages[] =
       R"(new Promise(resolve => {
            chrome.i18n.getAcceptLanguages((languages) => {
