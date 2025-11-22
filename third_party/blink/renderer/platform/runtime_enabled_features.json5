@@ -5204,7 +5204,7 @@
     },
     {
       name: "ThrottledHistoryAPIThrowsSecurityError",
-      status: "stable",
+      status: "test",
     },
     {
       // https://drafts.csswg.org/web-animations-2/#triggers
