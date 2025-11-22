@@ -123,6 +123,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -297,6 +298,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TipsOptInCoordinator mTipsOptInCoordinator;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
+    private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -763,6 +765,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mInactivityTrackerSupplier.get().removeObserver(mInactivityObserver);
         }
 
+        if (mNtpSyncedThemeManager != null) {
+            mNtpSyncedThemeManager.destroy();
+        }
+
         super.onDestroy();
     }
 
@@ -1044,6 +1050,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                 == mActivity;
                             });
             mTabGroupUiActionHandlerSupplier.set(mTabGroupSyncController);
+        }
+
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        boolean isNewTabPageCustomizationV2Enabled =
+                isTablet
+                        || NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                                mWindowAndroid, isTablet);
+        if (isNewTabPageCustomizationV2Enabled) {
+            mNtpSyncedThemeManager = new NtpSyncedThemeManager(mActivity, originalProfile);
         }
     }
 

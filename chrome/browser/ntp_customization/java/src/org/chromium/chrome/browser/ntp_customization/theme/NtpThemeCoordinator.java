@@ -91,13 +91,12 @@ public class NtpThemeCoordinator {
 
         mNtpThemeBridge =
                 new NtpThemeBridge(
+                        mContext,
                         profile,
                         mCallbackController.makeCancelable(
                                 () -> {
                                     mMediator.updateTrailingIconVisibilityForSectionType(
                                             THEME_COLLECTION);
-                                    // TODO: This might not be the right place for update theme
-                                    // color, especially for daily update function.
                                     mBottomSheetDelegate.onNewColorSelected(
                                             /* isDifferentColor= */ true);
                                 }));

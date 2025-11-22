@@ -203,7 +203,7 @@ public class UploadImagePreviewCoordinator {
         Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
         Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
         NtpCustomizationConfigManager.getInstance()
-                .onBackgroundChanged(
+                .onUploadedImageSelected(
                         bitmap, new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
 
         onBottomSheetClickedCallback.onResult(true);

@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -678,5 +679,52 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
 
         configManager.resetForTesting();
+    }
+
+    @Test
+    public void testRemoveCustomizedPrimaryColorFromSharedPreference() {
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        assertEquals(
+                Color.RED, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        NtpCustomizationUtils.removeCustomizedPrimaryColorFromSharedPreference();
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+    }
+
+    @Test
+    public void testSetAndGetCustomBackgroundInfo() {
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
+
+        CustomBackgroundInfo restoredInfo =
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+        assertEquals(JUnitTestGURLs.URL_1, restoredInfo.backgroundUrl);
+        assertEquals("id", restoredInfo.collectionId);
+        assertFalse(restoredInfo.isUploadedImage);
+        assertTrue(restoredInfo.isDailyRefreshEnabled);
+    }
+
+    @Test
+    public void testRemoveCustomBackgroundInfoFromSharedPreference() {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
+        NtpCustomizationUtils.removeCustomBackgroundInfoFromSharedPreference();
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
+    public void testCalculateInitialThemeCollectionImageMatrices() {
+        Bitmap bitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo info =
+                NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
+                        mContext, bitmap);
+        assertNotNull(info);
+        assertNotNull(info.portraitMatrix);
+        assertNotNull(info.landscapeMatrix);
     }
 }

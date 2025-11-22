@@ -34,6 +34,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpBackgroundImageCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpBackgroundImageLayoutViewBinder.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpBackgroundImageProperties.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeManager.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinator.java",
@@ -123,7 +125,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -209,6 +214,8 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpBackgroundImageCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpBackgroundImageLayoutViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridgeUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinatorUnitTest.java",

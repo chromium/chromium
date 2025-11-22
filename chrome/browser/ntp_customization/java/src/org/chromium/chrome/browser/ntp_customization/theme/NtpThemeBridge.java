@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -13,22 +15,34 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** The JNI bridge that deal with theme collections for the NTP. */
+/**
+ * The JNI bridge that deal with theme collections for the NTP. This object exists only if a NTP
+ * customization bottom sheet is visible. It is responsible only for handling manual settings and
+ * changing the NTP background according to the new theme collection selected.
+ */
 @NullMarked
+// TODO(crbug.com/423579377): Add a manager to create NtpThemeBridge.
 public class NtpThemeBridge {
 
+    private final Context mContext;
+    private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Runnable mOnThemeImageSelectedCallback;
     private final ObserverList<ThemeCollectionSelectionListener> mThemeCollectionSelectionListeners;
+    private final @Nullable ImageFetcher mImageFetcher;
     private long mNativeNtpThemeBridge;
 
     // Whether the theme collection that the user has currently chosen is daily refresh enabled.
@@ -53,26 +67,29 @@ public class NtpThemeBridge {
     /**
      * Constructs a new NtpThemeBridge.
      *
+     * @param context The application context to access resources.
      * @param profile The profile for which this bridge is created.
      * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
      */
-    public NtpThemeBridge(Profile profile, Runnable onThemeImageSelectedCallback) {
+    public NtpThemeBridge(Context context, Profile profile, Runnable onThemeImageSelectedCallback) {
+        mContext = context;
         mNativeNtpThemeBridge = NtpThemeBridgeJni.get().init(profile, this);
         mThemeCollectionSelectionListeners = new ObserverList<>();
         mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
+        mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
+        mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
 
-        if (mNativeNtpThemeBridge == 0) return;
-
-        CustomBackgroundInfo customBackgroundInfo =
-                NtpThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpThemeBridge);
-        if (customBackgroundInfo == null
-                || !customBackgroundInfo.backgroundUrl.isValid()
-                || customBackgroundInfo.backgroundUrl.isEmpty()) {
+        if (mNtpCustomizationConfigManager.getBackgroundImageType()
+                != NtpBackgroundImageType.THEME_COLLECTION) {
             return;
         }
 
-        setSelectedTheme(customBackgroundInfo.collectionId, customBackgroundInfo.backgroundUrl);
-        mIsDailyRefreshEnabled = customBackgroundInfo.isDailyRefreshEnabled;
+        CustomBackgroundInfo customBackgroundInfo =
+                mNtpCustomizationConfigManager.getCustomBackgroundInfo();
+        if (customBackgroundInfo != null) {
+            setSelectedTheme(customBackgroundInfo.collectionId, customBackgroundInfo.backgroundUrl);
+            mIsDailyRefreshEnabled = customBackgroundInfo.isDailyRefreshEnabled;
+        }
     }
 
     /** Cleans up the C++ side of this class. */
@@ -246,27 +263,42 @@ public class NtpThemeBridge {
 
     /**
      * Callback from native code, triggered when the custom background image has been successfully
-     * updated. This can occur after a new theme is selected or when a daily refresh happens.
+     * updated. This can occur after a new theme is selected.
      */
     @CalledByNative
     @VisibleForTesting
     void onCustomBackgroundImageUpdated() {
-        if (mNativeNtpThemeBridge == 0) return;
+        if (mNativeNtpThemeBridge == 0 || mImageFetcher == null) {
+            return;
+        }
 
         CustomBackgroundInfo info =
                 NtpThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpThemeBridge);
 
         if (info == null || !info.backgroundUrl.isValid() || info.backgroundUrl.isEmpty()) {
-            setSelectedTheme(/* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
             return;
         }
 
+        // TODO(crbug.com/423579377): Move the entire block of code to after the bitmap check, once
+        // the bitmap filter has been set in ntp_background_data.cc.
         setSelectedTheme(info.collectionId, info.backgroundUrl);
-        mOnThemeImageSelectedCallback.run();
+        // TODO(crbug.com/423579377): update(turn on or turn off) daily update button if the current
+        // page is that particular single theme collection bottom sheet.
         mIsDailyRefreshEnabled = info.isDailyRefreshEnabled;
+        mOnThemeImageSelectedCallback.run();
 
-        // TODO: update(turn on or turn off) daily update button if the current page is that
-        // particular single theme collection bottom sheet.
+        NtpCustomizationUtils.fetchThemeCollectionImage(
+                mImageFetcher,
+                info.backgroundUrl,
+                (bitmap) -> {
+                    if (bitmap != null) {
+                        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                                bitmap,
+                                info,
+                                NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
+                                        mContext, bitmap));
+                    }
+                });
     }
 
     /** Sets the user-selected background image. */

@@ -219,6 +219,8 @@ public class TopInsetCoordinatorUnitTest {
         landscapeMatrix.setScale(2f, 9f);
         BackgroundImageInfo imageInfo = new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
 
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
         mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
                 bitmap,
                 imageInfo,

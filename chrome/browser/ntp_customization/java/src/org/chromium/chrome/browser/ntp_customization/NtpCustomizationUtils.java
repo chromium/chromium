@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -42,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
@@ -52,7 +54,9 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -102,6 +106,9 @@ public class NtpCustomizationUtils {
 
     @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
     private static final String TAG = "NtpCustomization";
+    private static final String DELIMITER = "|";
+    private static final int CUSTOM_BACKGROUND_INFO_NUM_FIELDS = 4;
+    private static @Nullable ImageFetcher sImageFetcherForTesting;
 
     /**
      * Every list in NTP customization bottom sheets should use this function to get the background
@@ -309,7 +316,7 @@ public class NtpCustomizationUtils {
      *
      * @param backgroundImageBitmap The bitmap of the background image.
      */
-    public static void updateBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
+    private static void updateBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
         if (backgroundImageBitmap == null) {
             deleteBackgroundImageFile();
             return;
@@ -330,7 +337,8 @@ public class NtpCustomizationUtils {
      * @param backgroundImageInfo The {@link BackgroundImageInfo} object containing the portrait and
      *     landscape matrices.
      */
-    public static void updateBackgroundImageMatrices(BackgroundImageInfo backgroundImageInfo) {
+    @VisibleForTesting
+    static void updateBackgroundImageMatrices(BackgroundImageInfo backgroundImageInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeString(
                 ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
@@ -525,6 +533,20 @@ public class NtpCustomizationUtils {
     }
 
     /**
+     * Picks the primary color for the bitmap and saves it to the SharedPreference.
+     *
+     * @param bitmap The bitmap from which to extract and save the primary color.
+     */
+    private static void pickAndSavePrimaryColor(Bitmap bitmap) {
+        @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
+        if (primaryColor != null) {
+            setCustomizedPrimaryColorToSharedPreference(primaryColor.intValue());
+        } else {
+            removeCustomizedPrimaryColorFromSharedPreference();
+        }
+    }
+
+    /**
      * Sets the customized primary color to the SharedPreference.
      *
      * @param color The new primary theme color.
@@ -540,6 +562,12 @@ public class NtpCustomizationUtils {
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR,
                 NtpThemeColorInfo.COLOR_NOT_SET);
+    }
+
+    /** Removes the customized primary color from the SharedPreference. */
+    public static void removeCustomizedPrimaryColorFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
     }
 
     /**
@@ -658,9 +686,7 @@ public class NtpCustomizationUtils {
         @ColorInt int tintColor;
         if (defaultBackgroundType == NtpBackgroundImageType.CHROME_COLOR
                 || defaultBackgroundType == NtpBackgroundImageType.COLOR_FROM_HEX) {
-            @ColorInt
-            Integer primaryColor =
-                    NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(context);
+            @ColorInt Integer primaryColor = getPrimaryColorFromCustomizedThemeColor(context);
             if (primaryColor != null) {
                 tintColor = primaryColor.intValue();
             } else if (!isNightMode) {
@@ -686,6 +712,10 @@ public class NtpCustomizationUtils {
      * @param profile The profile to create the image fetcher for.
      */
     public static ImageFetcher createImageFetcher(Profile profile) {
+        if (sImageFetcherForTesting != null) {
+            return sImageFetcherForTesting;
+        }
+
         return ImageFetcherFactory.createImageFetcher(
                 ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                 profile.getProfileKey(),
@@ -723,6 +753,146 @@ public class NtpCustomizationUtils {
                 || backgroundImageType == NtpBackgroundImageType.THEME_COLLECTION;
     }
 
+    /**
+     * Sets the NTP's {@link CustomBackgroundInfo} to the SharedPreference.
+     *
+     * @param customBackgroundInfo The new {@link CustomBackgroundInfo} which contains the theme
+     *     collection info.
+     */
+    @VisibleForTesting
+    static void setCustomBackgroundInfoToSharedPreference(
+            CustomBackgroundInfo customBackgroundInfo) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeString(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO,
+                customBackgroundInfoToString(customBackgroundInfo));
+    }
+
+    /** Gets the current NTP's {@link CustomBackgroundInfo} from the SharedPreference. */
+    public static @Nullable CustomBackgroundInfo getCustomBackgroundInfoFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return stringToCustomBackgroundInfo(
+                prefsManager.readString(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO, null));
+    }
+
+    /** Removes the {@link CustomBackgroundInfo} from the SharedPreference. */
+    @VisibleForTesting
+    static void removeCustomBackgroundInfoFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO);
+    }
+
+    /**
+     * Converts a {@link CustomBackgroundInfo} object into a string representation for storage.
+     * Format: "backgroundUrl|collectionId|isUploadedImage|isDailyRefreshEnabled"
+     *
+     * @param info The {@link CustomBackgroundInfo} object to convert.
+     */
+    private static @Nullable String customBackgroundInfoToString(
+            @Nullable CustomBackgroundInfo info) {
+        if (info == null || info.backgroundUrl == null || info.collectionId == null) {
+            return null;
+        }
+
+        String backgroundUrlStr = info.backgroundUrl.getPossiblyInvalidSpec();
+
+        return TextUtils.join(
+                DELIMITER,
+                new String[] {
+                    backgroundUrlStr,
+                    info.collectionId,
+                    String.valueOf(info.isUploadedImage),
+                    String.valueOf(info.isDailyRefreshEnabled)
+                });
+    }
+
+    /**
+     * Converts a string representation back into a {@link CustomBackgroundInfo} object. Expects
+     * format: "backgroundUrl|collectionId|isUploadedImage|isDailyRefreshEnabled"
+     *
+     * @param infoString The string to convert.
+     */
+    private static @Nullable CustomBackgroundInfo stringToCustomBackgroundInfo(
+            @Nullable String infoString) {
+        if (TextUtils.isEmpty(infoString)) {
+            return null;
+        }
+
+        String[] parts =
+                infoString.split(
+                        "\\" + DELIMITER, -1); // Limit -1 to include trailing empty strings
+        if (parts.length != CUSTOM_BACKGROUND_INFO_NUM_FIELDS || parts[0].isEmpty()) {
+            return null;
+        }
+
+        try {
+            GURL backgroundUrl = new GURL(parts[0]);
+            if (!backgroundUrl.isValid()) {
+                return null;
+            }
+
+            String collectionId = parts[1];
+            boolean isUploadedImage = Boolean.parseBoolean(parts[2]);
+            boolean isDailyRefreshEnabled = Boolean.parseBoolean(parts[3]);
+
+            return new CustomBackgroundInfo(
+                    backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing CustomBackgroundInfo from string: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * Calculates the initial center-crop matrices for both portrait and landscape orientations.
+     *
+     * @param context The application context to access resources like display metrics.
+     * @param bitmap The source bitmap for which the matrices are to be calculated.
+     */
+    public static BackgroundImageInfo calculateInitialThemeCollectionImageMatrices(
+            Context context, Bitmap bitmap) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        // Robustly determine portrait and landscape dimensions
+        int portraitWidth = Math.min(screenWidth, screenHeight);
+        int portraitHeight = Math.max(screenWidth, screenHeight);
+
+        Matrix portraitMatrix = new Matrix();
+        CropImageUtils.calculateInitialCenterCropMatrix(
+                portraitMatrix, portraitWidth, portraitHeight, bitmap);
+
+        // For landscape, the width and height are swapped
+        Matrix landscapeMatrix = new Matrix();
+        CropImageUtils.calculateInitialCenterCropMatrix(
+                landscapeMatrix, portraitHeight, portraitWidth, bitmap);
+
+        return new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
+    }
+
+    /**
+     * Updates the necessary preferences and files for theme collection image or user uploaded
+     * image.
+     */
+    public static void saveBackgroundInfoForThemeCollectionOrUploadedImage(
+            @Nullable CustomBackgroundInfo customBackgroundInfo,
+            Bitmap bitmap,
+            BackgroundImageInfo backgroundImageInfo) {
+        updateBackgroundImageFile(bitmap);
+
+        if (customBackgroundInfo != null) {
+            setCustomBackgroundInfoToSharedPreference(customBackgroundInfo);
+        } else {
+            removeCustomBackgroundInfoFromSharedPreference();
+        }
+
+        pickAndSavePrimaryColor(bitmap);
+        updateBackgroundImageMatrices(backgroundImageInfo);
+    }
+
     public static void resetSharedPreferenceForTesting() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
@@ -730,5 +900,10 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX);
+    }
+
+    public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {
+        sImageFetcherForTesting = imageFetcher;
+        ResettersForTesting.register(() -> sImageFetcherForTesting = null);
     }
 }

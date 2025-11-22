@@ -114,7 +114,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
                 mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
         assertEquals(mBitmap, mPropertyModel.get(NtpBackgroundImageProperties.BACKGROUND_IMAGE));
         assertEquals(
-                ImageView.ScaleType.CENTER_CROP,
+                ImageView.ScaleType.MATRIX,
                 mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_SCALE_TYPE));
     }
 

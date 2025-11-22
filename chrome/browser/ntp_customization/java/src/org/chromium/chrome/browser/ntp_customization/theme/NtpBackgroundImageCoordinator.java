@@ -90,28 +90,12 @@ public class NtpBackgroundImageCoordinator {
             @NtpBackgroundImageType int backgroundType) {
         mOriginalBitmap = originalBitmap;
         mBackgroundImageType = backgroundType;
-
-        switch (backgroundType) {
-            case THEME_COLLECTION:
-                mPropertyModel.set(
-                        NtpBackgroundImageProperties.IMAGE_SCALE_TYPE,
-                        ImageView.ScaleType.CENTER_CROP);
-                mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
-                maybeAddDisplayStyleObserver();
-                break;
-
-            case IMAGE_FROM_DISK:
-                mBackgroundImageInfo = backgroundImageInfo;
-                mPropertyModel.set(
-                        NtpBackgroundImageProperties.IMAGE_SCALE_TYPE, ImageView.ScaleType.MATRIX);
-                mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
-                maybeAddDisplayStyleObserver();
-                setImageBackgroundWithMatrices();
-                break;
-
-            default:
-                assert false : "NtpBackgroundImageType not supported!";
-        }
+        mBackgroundImageInfo = backgroundImageInfo;
+        mPropertyModel.set(
+                NtpBackgroundImageProperties.IMAGE_SCALE_TYPE, ImageView.ScaleType.MATRIX);
+        mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
+        maybeAddDisplayStyleObserver();
+        setImageBackgroundWithMatrices();
     }
 
     /** Clears the background image. */
@@ -151,7 +135,7 @@ public class NtpBackgroundImageCoordinator {
     }
 
     private void setImageBackgroundWithMatrices() {
-        if (mBackgroundImageType != IMAGE_FROM_DISK
+        if ((mBackgroundImageType != IMAGE_FROM_DISK && mBackgroundImageType != THEME_COLLECTION)
                 || mOriginalBitmap == null
                 || mBackgroundImageInfo == null) return;
 

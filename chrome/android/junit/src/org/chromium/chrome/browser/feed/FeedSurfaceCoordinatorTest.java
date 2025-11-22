@@ -520,7 +520,7 @@ public class FeedSurfaceCoordinatorTest {
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         configManager.setBackgroundImageTypeForTesting(CHROME_COLOR);
 
-        configManager.onBackgroundChanged(mBitmap, mBackgroundImageInfo);
+        configManager.onUploadedImageSelected(mBitmap, mBackgroundImageInfo);
 
         // Verifies the coordinator delegates the setBackground call to the custom view.
         verify(mBackgroundImageCoordinator)
