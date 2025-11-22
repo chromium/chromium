@@ -74,9 +74,13 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
 
   // Returns the set of renditions that belong to this group, in the order they
   // appeared in the manifest.
-  const std::list<Rendition>& GetRenditions() const { return renditions_; }
+  const std::list<Rendition>& GetRenditionsForTesting() const {
+    return renditions_;
+  }
 
   const std::vector<MediaTrack>& GetTracks() const { return tracks_; }
+
+  bool HasTracks() const { return !tracks_.empty(); }
 
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
   const std::optional<RenditionTrack> GetDefaultRendition() const {

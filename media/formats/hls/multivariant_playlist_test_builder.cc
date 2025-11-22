@@ -95,8 +95,8 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
     const auto& group = *group_iter->second;
 
     const auto rendition_iter = std::ranges::find(
-        group.GetRenditions(), expectation.name, &Rendition::GetName);
-    ASSERT_NE(rendition_iter, group.GetRenditions().end())
+        group.GetRenditionsForTesting(), expectation.name, &Rendition::GetName);
+    ASSERT_NE(rendition_iter, group.GetRenditionsForTesting().end())
         << expectation.from.ToString();
     expectation.func.Run(expectation.from, *rendition_iter);
   }

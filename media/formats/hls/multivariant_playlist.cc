@@ -258,7 +258,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   // exist. The inverse (a rendition group that was not referenced by any
   // variant) is not considered an error.
   for (const auto& group : audio_rendition_groups) {
-    if (group.second->GetRenditions().empty()) {
+    if (!group.second->HasTracks()) {
       return ParseStatusCode::kRenditionGroupDoesNotExist;
     }
   }
