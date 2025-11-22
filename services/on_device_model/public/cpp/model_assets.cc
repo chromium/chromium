@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -153,6 +154,7 @@ ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
 ModelAssets::~ModelAssets() = default;
 
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
+  TRACE_EVENT("optimization_guide", "LoadModelAssets");
   if (!paths.weights.empty()) {
     PrefetchFile(paths.weights);
   }
@@ -201,6 +203,7 @@ AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;
 
 AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths) {
+  TRACE_EVENT("optimization_guide", "LoadAdaptationAssets");
   AdaptationAssets assets;
   if (!paths.weights.empty()) {
     PrefetchFile(paths.weights);

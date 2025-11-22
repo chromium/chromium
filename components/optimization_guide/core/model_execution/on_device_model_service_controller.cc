@@ -19,7 +19,9 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -167,6 +169,9 @@ OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     mojom::OnDeviceFeature feature) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::CanCreateSession", "feature",
+              base::ToString(feature));
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
   return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
@@ -177,6 +182,9 @@ std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
     mojom::OnDeviceFeature feature,
     base::WeakPtr<OptimizationGuideLogger> logger,
     const SessionConfigParams& config_params) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::CreateSession", "feature",
+              base::ToString(feature));
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
   auto& maybe_solution =
@@ -201,18 +209,27 @@ std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::SetLanguageDetectionModel",
+              "has_model", model_info.has_value());
   safety_client_.SetLanguageDetectionModel(model_info);
   UpdateSolutionProviders();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     std::unique_ptr<SafetyModelInfo> safety_model_info) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::MaybeUpdateSafetyModel",
+              "has_model", !!safety_model_info);
   safety_client_.MaybeUpdateSafetyModel(std::move(safety_model_info));
   UpdateSolutionProviders();
 }
 
 void OnDeviceModelServiceController::UpdateModel(
     std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::UpdateModel", "has_model",
+              !!model_metadata);
   bool did_model_change =
       !model_metadata.get() != !base_model_controller_->model_metadata();
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(),
@@ -227,6 +244,10 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
     mojom::OnDeviceFeature feature,
     base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>
         adaptation_metadata) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::MaybeUpdateModelAdaptation",
+              "feature", base::ToString(feature), "has_model",
+              adaptation_metadata.has_value());
   if (!adaptation_metadata_.MaybeUpdate(feature,
                                         std::move(adaptation_metadata))) {
     // Duplicate update (can be caused by multiple profiles).
@@ -239,6 +260,9 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
 
 void OnDeviceModelServiceController::OnServiceDisconnected(
     on_device_model::ServiceDisconnectReason reason) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::OnServiceDisconnected", "reason",
+              reason);
   switch (reason) {
     case on_device_model::ServiceDisconnectReason::kGpuBlocked:
       access_controller_->OnGpuBlocked();
@@ -341,6 +365,8 @@ OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
 }
 
 void OnDeviceModelServiceController::UpdateSolutionProviders() {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::UpdateSolutionProviders");
   for (const auto& feature : model_broker_impl_.GetCapabilityKeys()) {
     UpdateSolutionProvider(feature);
   }
@@ -357,6 +383,9 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
     base::SafeRef<OnDeviceModelServiceController> controller,
     std::unique_ptr<OnDeviceModelMetadata> model_metadata)
     : controller_(controller), model_metadata_(std::move(model_metadata)) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::BaseModelController::"
+              "BaseModelController");
   supported_adaptation_ranks_ =
       features::GetOnDeviceModelAllowedAdaptationRanks();
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
@@ -407,6 +436,10 @@ base::WeakPtr<ModelController> OnDeviceModelServiceController::
     BaseModelController::GetOrCreateFeatureController(
         mojom::OnDeviceFeature feature,
         const OnDeviceModelAdaptationMetadata& metadata) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::BaseModelController::"
+              "GetOrCreateFeatureController",
+              "feature", base::ToString(feature));
   if (!metadata.asset_paths()) {
     has_direct_use_ = true;
     return weak_ptr_factory_.GetWeakPtr();
@@ -437,6 +470,9 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
   if (remote_) {
     return remote_;
   }
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::BaseModelController::CreateRemote");
   controller_->service_client_->AddPendingUsage();  // Warm up the service.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -492,6 +528,9 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
 void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::ModelAssets assets) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::BaseModelController::"
+              "OnModelAssetsLoaded");
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->backend_type = ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
@@ -515,6 +554,9 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::BaseModelController::OnDisconnect(
     uint32_t reason,
     const std::string& description) {
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::BaseModelController::OnDisconnect");
   remote_.reset();
   const bool is_idle =
       reason == static_cast<uint32_t>(
@@ -541,6 +583,9 @@ void OnDeviceModelServiceController::BaseModelController::OnDisconnect(
 }
 
 void OnDeviceModelServiceController::BaseModelController::StartValidation() {
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::BaseModelController::StartValidation");
   mojo::Remote<on_device_model::mojom::Session> session;
   GetOrCreateRemote()->StartSession(session.BindNewPipeAndPassReceiver(),
                                     nullptr);
@@ -553,6 +598,9 @@ void OnDeviceModelServiceController::BaseModelController::StartValidation() {
 
 void OnDeviceModelServiceController::BaseModelController::FinishValidation(
     OnDeviceModelValidationResult result) {
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::BaseModelController::FinishValidation");
   DCHECK(model_validator_);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", result);
@@ -601,6 +649,8 @@ OnDeviceModelServiceController::Solution::MakeConfig() const {
 void OnDeviceModelServiceController::Solution::CreateSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> pending,
     on_device_model::mojom::SessionParamsPtr params) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelServiceController::Solution::CreateSession");
   if (!model_controller_) {
     return;
   }
@@ -610,6 +660,9 @@ void OnDeviceModelServiceController::Solution::CreateSession(
 
 void OnDeviceModelServiceController::Solution::CreateTextSafetySession(
     mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> pending) {
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::Solution::CreateTextSafetySession");
   base::WeakPtr<TextSafetyClient> client = safety_checker_->client();
   if (!client) {
     return;
@@ -618,6 +671,9 @@ void OnDeviceModelServiceController::Solution::CreateTextSafetySession(
 }
 
 void OnDeviceModelServiceController::Solution::ReportHealthyCompletion() {
+  TRACE_EVENT(
+      "optimization_guide",
+      "OnDeviceModelServiceController::Solution::ReportHealthyCompletion");
   controller_->access_controller_->OnResponseCompleted();
 }
 

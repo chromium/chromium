@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/to_string.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
@@ -22,12 +24,14 @@ ModelBrokerImpl::~ModelBrokerImpl() = default;
 
 void ModelBrokerImpl::BindBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::BindBroker");
   receivers_.Add(this, std::move(receiver));
 }
 
 void ModelBrokerImpl::Subscribe(
     mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::Subscribe");
   ensure_init_callback_.Run(base::BindOnce(
       &ModelBrokerImpl::SubscribeInternal, weak_ptr_factory_.GetWeakPtr(),
       std::move(options), std::move(subscriber)));
@@ -36,6 +40,7 @@ void ModelBrokerImpl::Subscribe(
 void ModelBrokerImpl::SubscribeInternal(
     mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SubscribeInternal");
   if (options->mark_used) {
     usage_tracker_->OnDeviceEligibleFeatureUsed(options->feature);
   }
@@ -67,21 +72,26 @@ ModelBrokerImpl::SolutionProvider::~SolutionProvider() = default;
 
 void ModelBrokerImpl::SolutionProvider::AddSubscriber(
     mojo::PendingRemote<mojom::ModelSubscriber> pending) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddSubscriber");
   auto id = subscribers_.Add(std::move(pending));
   UpdateSubscriber(*subscribers_.Get(id));
 }
 
 void ModelBrokerImpl::SolutionProvider::AddObserver(
     OnDeviceModelAvailabilityObserver* observer) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddObserver");
   observers_.AddObserver(observer);
 }
 
 void ModelBrokerImpl::SolutionProvider::RemoveObserver(
     OnDeviceModelAvailabilityObserver* observer) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RemoveObserver");
   observers_.RemoveObserver(observer);
 }
 
 void ModelBrokerImpl::SolutionProvider::Update(MaybeSolution solution) {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SolutionProvider::Update",
+              "feature", base::ToString(feature_));
   CHECK(!solution.has_value() || solution.value());
   if (solution.has_value()) {
     if (solution_.has_value() && solution_.value()->IsValid()) {
@@ -107,6 +117,9 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscribers() {
 
 void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(
     mojom::ModelSubscriber& subscriber) {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::SolutionProvider::UpdateSubscriber", "feature",
+              base::ToString(feature_));
   if (!solution_.has_value()) {
     subscriber.Unavailable(
         *AvailabilityFromEligibilityReason(solution_.error()));
@@ -124,6 +137,9 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(
 }
 
 void ModelBrokerImpl::SolutionProvider::UpdateObservers() {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::SolutionProvider::UpdateObservers", "feature",
+              base::ToString(feature_));
   for (auto& observer : observers_) {
     observer.OnDeviceModelAvailabilityChanged(
         feature_, solution_.error_or(OnDeviceModelEligibilityReason::kSuccess));

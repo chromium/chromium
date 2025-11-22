@@ -8,6 +8,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/to_string.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
@@ -86,12 +88,14 @@ ModelClient::~ModelClient() = default;
 
 void ModelClient::StartSession(
     mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session) {
+  TRACE_EVENT("optimization_guide", "ModelClient::StartSession");
   remote_->CreateTextSafetySession(std::move(session));
 }
 
 std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
     const SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger) {
+  TRACE_EVENT("optimization_guide", "ModelClient::CreateSession");
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<ModelClient::OnDeviceOptionsClient>(
       weak_ptr_factory_.GetWeakPtr());
@@ -110,6 +114,7 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
 }
 
 void ModelClient::OnDisconnect() {
+  TRACE_EVENT("optimization_guide", "ModelClient::OnDisconnect");
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -125,11 +130,14 @@ void ModelSubscriberImpl::CreateSession(
 }
 
 void ModelSubscriberImpl::WaitForClient(ClientCallback callback) {
+  TRACE_EVENT("optimization_guide", "ModelSubscriberImpl::WaitForClient");
   callbacks_.emplace_back(std::move(callback));
   FlushCallbacks();
 }
 
 void ModelSubscriberImpl::Unavailable(mojom::ModelUnavailableReason reason) {
+  TRACE_EVENT("optimization_guide", "ModelSubscriberImpl::Unavailable",
+              "reason", reason);
   unavailable_reason_ = reason;
   client_.reset();
   FlushCallbacks();
@@ -138,6 +146,7 @@ void ModelSubscriberImpl::Unavailable(mojom::ModelUnavailableReason reason) {
 void ModelSubscriberImpl::Available(
     mojom::ModelSolutionConfigPtr config,
     mojo::PendingRemote<mojom::ModelSolution> remote) {
+  TRACE_EVENT("optimization_guide", "ModelSubscriberImpl::Available");
   unavailable_reason_ = std::nullopt;
   client_.emplace(std::move(remote), std::move(config));
   FlushCallbacks();
@@ -171,6 +180,7 @@ ModelSubscriber::ModelSubscriber(
 ModelSubscriber::~ModelSubscriber() = default;
 
 void ModelSubscriber::OnDisconnect() {
+  TRACE_EVENT("optimization_guide", "ModelSubscriber::OnDisconnect");
   Unavailable(mojom::ModelUnavailableReason::kNotSupported);
 }
 
@@ -184,6 +194,8 @@ ModelSubscriber& ModelBrokerClient::GetSubscriber(
     mojom::OnDeviceFeature feature) {
   std::unique_ptr<ModelSubscriber>& ptr = subscribers_[feature];
   if (!ptr) {
+    TRACE_EVENT("optimization_guide", "ModelBrokerClient::CreateSubscriber",
+                "feature", base::ToString(feature));
     mojo::PendingRemote<mojom::ModelSubscriber> pending;
     ptr = std::make_unique<ModelSubscriber>(
         pending.InitWithNewPipeAndPassReceiver());

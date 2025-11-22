@@ -10,7 +10,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -50,6 +52,8 @@ CreateAdaptationMetadataFromModelExecutionConfig(
     std::unique_ptr<on_device_model::AdaptationAssetPaths> asset_paths,
     int64_t version,
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> execution_config) {
+  TRACE_EVENT("optimization_guide",
+              "CreateAdaptationMetadataFromModelExecutionConfig");
   if (!execution_config) {
     return base::unexpected(OnDeviceModelAdaptationAvailability::
                                 kAdaptationModelExecutionConfigInvalid);
@@ -214,6 +218,8 @@ void OnDeviceModelAdaptationLoader::Unregister() {
 void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     base::optional_ref<const OnDeviceBaseModelSpec> new_spec,
     bool was_feature_recently_used) {
+  TRACE_EVENT("optimization_guide", "MaybeRegisterModelDownload", "feature",
+              base::ToString(feature_));
   if (new_spec && *new_spec == registered_spec_) {
     return;
   }
@@ -255,6 +261,9 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
 void OnDeviceModelAdaptationLoader::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelAdaptationLoader::OnModelUpdated", "feature",
+              base::ToString(feature_));
   CHECK_EQ(optimization_target, target_);
   CHECK(registered_spec_.has_value());
   if (!model_info.has_value()) {

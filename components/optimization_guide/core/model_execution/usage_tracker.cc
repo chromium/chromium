@@ -4,7 +4,9 @@
 
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
@@ -21,6 +23,8 @@ UsageTracker::UsageTracker(PrefService* local_state)
 UsageTracker::~UsageTracker() = default;
 
 void UsageTracker::OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) {
+  TRACE_EVENT("optimization_guide", "UsageTracker::OnDeviceEligibleFeatureUsed",
+              "feature", base::ToString(feature));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool was_first_usage = !WasOnDeviceEligibleFeatureRecentlyUsed(feature);
