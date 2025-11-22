@@ -7,6 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
@@ -76,6 +78,26 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
         browser()->profile());
   }
 
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(browser()->profile());
+  }
+
+  SyncServiceImplHarness* sync_harness() {
+    if (sync_harness_) {
+      return sync_harness_.get();
+    }
+
+    sync_harness_ = SyncServiceImplHarness::Create(
+        browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+    return sync_harness_.get();
+  }
+
+  void EnableSync() {
+    ASSERT_TRUE(sync_harness()->SetupSync());
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+ }
+
  protected:
   void SetUpOnMainThread() override {
     EnclaveAuthenticatorTestBase::SetUpOnMainThread();
@@ -85,6 +107,15 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleEncryptionUnlockPageRequest));
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    base::test::TestFuture<void> load_future;
+    EnclaveManager* enclave_manager =
+        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+            browser()->profile());
+    enclave_manager->Load(load_future.GetCallback());
+    ASSERT_TRUE(load_future.Wait());
+
+    EnableSync();
   }
 
  private:
@@ -126,13 +157,6 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
   passkey_unlock_manager()->AddObserver(&observer);
 
-  base::test::TestFuture<void> load_future;
-  EnclaveManager* enclave_manager =
-      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
-  enclave_manager->Load(load_future.GetCallback());
-  ASSERT_TRUE(load_future.Wait());
-
   base::test::TestFuture<void> event_future;
   EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged())
       .WillOnce([&event_future]() {
@@ -141,11 +165,14 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
         event_future.SetValue();
       });
 
+  ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
   // Simulate the operations that make the EnclaveManager ready. This causes a
   // state change, which should be observed by the PasskeyUnlockManager.
   SimulateSuccessfulGpmPinCreation("123456");
 
   EXPECT_TRUE(event_future.Wait());
+  ASSERT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
+
   passkey_unlock_manager()->RemoveObserver(&observer);
 }
 

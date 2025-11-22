@@ -212,8 +212,10 @@ std::optional<bool> PasskeyUnlockManager::ArePasskeysLocked() const {
   if (!has_passkeys_.has_value()) {
     return std::nullopt;
   }
-  // TODO(crbug.com/450238902): Also check enclave manager readiness.
-  return has_passkeys_.value() && sync_active_;
+  if (!enclave_ready_.has_value()) {
+    return std::nullopt;
+  }
+  return has_passkeys_.value() && sync_active_ && !enclave_ready_.value();
 }
 
 std::optional<bool> PasskeyUnlockManager::ArePasskeysUnlockable() const {

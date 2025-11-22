@@ -132,10 +132,6 @@ class PasskeyUnlockManagerTest : public testing::Test {
   }
 
   void SetUpPasskeyUnlockManager() {
-    MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
-        EnclaveManagerFactory::GetForProfile(profile_.get()));
-    EXPECT_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_));
-
     passkey_unlock_manager_ =
         PasskeyUnlockManagerFactory::GetForProfile(profile_.get());
     passkey_unlock_manager_->AddObserver(observer_.get());
@@ -143,6 +139,16 @@ class PasskeyUnlockManagerTest : public testing::Test {
 
   void AdvanceClock(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
+  }
+
+  void SetUpEnclaveManager(bool ready) {
+    MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
+        EnclaveManagerFactory::GetForProfile(profile_.get()));
+    ON_CALL(*enclave_manager_mock, is_loaded())
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*enclave_manager_mock, is_ready())
+        .WillByDefault(testing::Return(ready));
+    EXPECT_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_));
   }
 
  private:
@@ -161,11 +167,13 @@ class PasskeyUnlockManagerTest : public testing::Test {
 };
 
 TEST_F(PasskeyUnlockManagerTest, IsCreated) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   EXPECT_NE(passkey_unlock_manager(), nullptr);
 }
 
 TEST_F(PasskeyUnlockManagerTest, NotifyOnPasskeysChangedWhenPasskeyAdded) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
@@ -173,6 +181,7 @@ TEST_F(PasskeyUnlockManagerTest, NotifyOnPasskeysChangedWhenPasskeyAdded) {
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiShownWithPasskeysAndActiveSync) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   // With passkeys and active sync, the manager should notify and the error UI
   // should be shown.
@@ -181,7 +190,17 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiShownWithPasskeysAndActiveSync) {
   EXPECT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 }
 
+TEST_F(PasskeyUnlockManagerTest,
+       ErrorUiNotShownWithPasskeysAndActiveSyncWithEnclaveReady) {
+  SetUpEnclaveManager(/*ready=*/true);
+  SetUpPasskeyUnlockManager();
+
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+  EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
+}
+
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenTrustedVaultKeyRequired) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
@@ -197,6 +216,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenTrustedVaultKeyRequired) {
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenSyncDisallowed) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
@@ -212,6 +232,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenSyncDisallowed) {
 
 TEST_F(PasskeyUnlockManagerTest,
        ErrorUiHiddenWhenTrustedVaultRecoverabilityDegraded) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
@@ -228,6 +249,7 @@ TEST_F(PasskeyUnlockManagerTest,
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
+  SetUpEnclaveManager(/*ready=*/false);
   SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
@@ -259,6 +281,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
 
 TEST_F(PasskeyUnlockManagerTest,
        MAYBE_ErrorUiHiddenWithoutUVKeysWithoutGpmPin) {
+  SetUpEnclaveManager(/*ready=*/false);
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ConfigureGpmPinToBe(EnclaveManager::GpmPinAvailability::kGpmPinUnset);
   DisableUVKeySupport();
@@ -268,6 +291,7 @@ TEST_F(PasskeyUnlockManagerTest,
 }
 
 TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiVisibleWithoutUVKeysWithGpmPin) {
+  SetUpEnclaveManager(/*ready=*/false);
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ConfigureGpmPinToBe(EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable);
   DisableUVKeySupport();
