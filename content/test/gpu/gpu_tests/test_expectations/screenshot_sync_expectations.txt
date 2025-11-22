@@ -127,6 +127,9 @@ crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ R
 # Win11 / Qualcomm Snapdragon X Elite
 crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
 
+# Win11 / Intel Arc B570
+crbug.com/462642963 [ win intel-0xe20c ] ScreenshotSync_GPURaster* [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
