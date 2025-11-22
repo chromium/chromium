@@ -815,6 +815,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
 // trust.
 NET_EXPORT BASE_DECLARE_FEATURE(kTLSTrustAnchorIDs);
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// Enables support for Merkle Tree Certificates. `kTLSTrustAnchorIDs` must also
+// be enabled for this to be useful.
+NET_EXPORT BASE_DECLARE_FEATURE(kVerifyMTCs);
+#endif
+
 // Indicates if the client is participating in the TCP socket pool limit
 // randomization trial. The params below define the bounds for the probability.
 // function we use when calculating the chance the state should flip between

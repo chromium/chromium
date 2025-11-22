@@ -401,6 +401,26 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   UpdateVerifierServices();
 }
 
+void CertVerifierServiceFactoryImpl::UpdateMtcMetadata(
+    mojo_base::ProtoWrapper new_mtc_metadata,
+    UpdateMtcMetadataCallback callback) {
+  // Ensure the callback is run regardless which return path is used.
+  base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
+
+  auto message = new_mtc_metadata.As<chrome_root_store::MtcMetadata>();
+  if (!message.has_value()) {
+    LOG(ERROR) << "error parsing proto for MTC Metadata";
+    return;
+  }
+
+  // The message->update_time() is not checked here, as it is expected the
+  // PKIMetadataComponentInstallerService will check it and not send the data
+  // if it is out of date.
+
+  // TODO(crbug.com/452986180): parse and cache the MTC metadata, pass it into
+  // verifiers that are created/updated.
+}
+
 void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();

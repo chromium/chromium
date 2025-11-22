@@ -47,6 +47,8 @@ struct ChromeRootCertInfo {
 struct ChromeRootStoreInfo {
   int64 version;
   array<ChromeRootCertInfo> root_cert_info;
+  // TODO(crbug.com/462227032): include MTC anchor info here, and show it in
+  // the certificate manager UI.
 };
 
 [EnableIf=is_platform_root_store_info_supported]
@@ -102,6 +104,13 @@ interface CertVerifierServiceFactory {
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store) => ();
+
+  // Updates the Merkle Tree Certificate metadata used by the
+  // CertVerifierServiceFactory with a new version. The callback will be run
+  // once the update has been processed (regardless if it was updated
+  // successfully or the update was ignored.)
+  [EnableIf=is_chrome_root_store_supported]
+  UpdateMtcMetadata(mojo_base.mojom.ProtoWrapper new_mtc_metadata) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including

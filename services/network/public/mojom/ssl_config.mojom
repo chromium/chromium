@@ -87,6 +87,10 @@ struct SSLConfig {
   // TLS Trust Anchor IDs that are configured as trusted, each in binary
   // representation.
   array<array<uint8>> trust_anchor_ids;
+
+  // Merkle Tree Certificate TLS Trust Anchor IDs that are configured as
+  // trusted, each in binary representation.
+  array<array<uint8>> mtc_trust_anchor_ids;
 };
 
 // Receives SSL configuration updates.

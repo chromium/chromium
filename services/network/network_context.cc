@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -98,6 +99,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/static_http_user_agent_settings.h"
@@ -2339,10 +2341,13 @@ void NetworkContext::VerifyCertificateForTesting(
 
 void NetworkContext::GetTrustAnchorIDsForTesting(
     GetTrustAnchorIDsForTestingCallback callback) {
-  std::move(callback).Run(
-      base::ToVector(url_request_context_->ssl_config_service()
-                         ->GetSSLContextConfig()
-                         .trust_anchor_ids));
+  const net::SSLContextConfig& ssl_context_config =
+      url_request_context_->ssl_config_service()->GetSSLContextConfig();
+  std::vector<std::vector<uint8_t>> all_trust_anchor_ids =
+      ssl_context_config.mtc_trust_anchor_ids;
+  base::Extend(all_trust_anchor_ids,
+               base::ToVector(ssl_context_config.trust_anchor_ids));
+  std::move(callback).Run(all_trust_anchor_ids);
 }
 
 void NetworkContext::PreconnectSockets(

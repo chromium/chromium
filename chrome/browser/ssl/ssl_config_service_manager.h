@@ -39,11 +39,14 @@ class SSLConfigServiceManager {
   void AddToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
 
-  // Notifies SSLConfigClients that the given list of |trust_anchor_ids| (a list
-  // of TLS Trust Anchor IDs in binary representation) should now be trusted.
-  // |trust_anchor_ids| would typically be provided by component updater, to
-  // update/override a set of compiled-in trust anchor IDs.
-  void UpdateTrustAnchorIDs(std::vector<std::vector<uint8_t>> trust_anchor_ids);
+  // Notifies SSLConfigClients that the given list of |trust_anchor_ids| and
+  // |mtc_trust_anchor_ids| (lists of TLS Trust Anchor IDs in binary
+  // representation) should now be trusted.  These would typically be provided
+  // by component updater, to update/override a set of compiled-in trust anchor
+  // IDs.
+  void UpdateTrustAnchorIDs(
+      std::vector<std::vector<uint8_t>> trust_anchor_ids,
+      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids);
 
   // Computes the SSL compliance policy settings based on the given prefs and
   // feature state, and writes those settings into the appropriate fields in
@@ -96,6 +99,10 @@ class SSLConfigServiceManager {
   // non-null but empty value to override a non-empty compiled-in list of Trust
   // Anchor IDs with an empty list from the component updater.
   std::optional<std::vector<std::vector<uint8_t>>> trust_anchor_ids_;
+
+  // Like `trust_anchor_ids_` but for MTC signatureless certs. (This is not
+  // a std::optional since there is no built-in list of MTC ids to override.)
+  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CONFIG_SERVICE_MANAGER_H_

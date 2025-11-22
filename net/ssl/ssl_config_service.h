@@ -93,6 +93,10 @@ struct NET_EXPORT SSLContextConfig {
   // TLS Trust Anchor IDs that are configured as trusted, as a list of Trust
   // Anchor IDs in binary representation.
   absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids;
+
+  // MTC TLS Trust Anchor IDs that are configured as trusted, as a list of
+  // Trust Anchor IDs in binary representation.
+  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

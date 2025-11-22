@@ -1018,8 +1018,10 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 }
 
 void SystemNetworkContextManager::UpdateTrustAnchorIDs(
-    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
-  ssl_config_service_manager_.UpdateTrustAnchorIDs(std::move(trust_anchor_ids));
+    std::vector<std::vector<uint8_t>> trust_anchor_ids,
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
+  ssl_config_service_manager_.UpdateTrustAnchorIDs(
+      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids));
 }
 
 // static

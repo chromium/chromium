@@ -596,6 +596,20 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     raw_ptr<PKIMetadataComponentChromeRootStoreUpdateTest> test_;
   };
 
+  class MtcMetadataWaiter {
+   public:
+    explicit MtcMetadataWaiter(
+        PKIMetadataComponentChromeRootStoreUpdateTest* test) {
+      test_ = test;
+      test_->mtc_metadata_config_closure_ = run_loop_.QuitClosure();
+    }
+    void Wait() { run_loop_.Run(); }
+
+   private:
+    base::RunLoop run_loop_;
+    raw_ptr<PKIMetadataComponentChromeRootStoreUpdateTest> test_;
+  };
+
   void InstallCRSUpdate(chrome_root_store::RootStore root_store_proto) {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -621,6 +635,21 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     InstallCRSUpdate(std::move(root_store_proto));
   }
 
+  void InstallMtcMetadataUpdate(
+      chrome_root_store::MtcMetadata mtc_metadata_proto) {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
+                      ->WriteMtcMetadataForTesting(
+                          component_dir_.GetPath(),
+                          mtc_metadata_proto.SerializeAsString()));
+    }
+
+    MtcMetadataWaiter waiter(this);
+    PKIMetadataComponentInstallerService::GetInstance()->ConfigureMtcMetadata();
+    waiter.Wait();
+  }
+
  protected:
   base::ScopedTempDir component_dir_;
 
@@ -631,7 +660,14 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     }
   }
 
+  void OnMtcMetadataConfigured() override {
+    if (mtc_metadata_config_closure_) {
+      std::move(mtc_metadata_config_closure_).Run();
+    }
+  }
+
   base::OnceClosure crs_config_closure_;
+  base::OnceClosure mtc_metadata_config_closure_;
   int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
 };
 
@@ -999,6 +1035,393 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
       tab, net::CERT_STATUS_AUTHORITY_INVALID,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
 }
+
+class PKIMetadataComponentChromeRootStoreMtcMetadataTest
+    : public PKIMetadataComponentChromeRootStoreUpdateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PKIMetadataComponentChromeRootStoreMtcMetadataTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(net::features::kVerifyMTCs);
+    } else {
+      feature_list_.InitAndDisableFeature(net::features::kVerifyMTCs);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PKIMetadataComponentChromeRootStoreMtcMetadataTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
+                       TrustAnchorIDsWhenUpdateMtcMetadataBeforeCRS) {
+  content::StoragePartition* partition =
+      chrome_test_utils::GetActiveWebContents(this)
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition();
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  scoped_refptr<net::X509Certificate> intermediate1 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "intermediate_ca_cert.pem");
+  ASSERT_TRUE(intermediate1);
+  scoped_refptr<net::X509Certificate> intermediate2 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "verisign_intermediate_ca_2016.pem");
+  ASSERT_TRUE(intermediate2);
+
+  // Test that the initial set of Trust Anchor IDs comes from the compiled-in
+  // root store.
+  {
+    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    EXPECT_THAT(future.Get(),
+                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+  }
+
+  // Install MTC metadata update that contains Trust AnchorIDs for
+  // signatureless MTCs. These TAIs should not be used yet since no MTC Anchor
+  // has been loaded, however we should see that the regular TAIs are still
+  // unchanged even though the MTC Metadata component loaded before the CRS
+  // component.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now()));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(2);
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    // Test that the set of Trust Anchor IDs is still the compiled-in ones.
+    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    EXPECT_THAT(future.Get(),
+                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+  }
+
+  // Install CRS update that contains a trusted MtcAnchor matching the added
+  // MtcMetadata, as well as a traditional anchor with a TAI.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+
+    chrome_root_store::MtcAnchor* mtc_anchor =
+        root_store_proto.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_trust_anchor_id({0x05, 0x06, 0x07});
+
+    InstallCRSUpdate(std::move(root_store_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    if (GetParam()) {
+      // Once a Chrome Root Store update containing the matching MtcAnchor is
+      // loaded, the signatureless MTC trust anchor IDs should be usable
+      // immediately.
+      // The current expectation is that a trusted TAI range is represented by
+      // the TAI constructed from the base_id + the max landmark number, which
+      // implies support for the preceding (non-expired) landmark numbers.
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x04, 0x05, 0x02}),
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    } else {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
+                       TrustAnchorIDsWhenUpdateCRSBeforeMtcMetadata) {
+  content::StoragePartition* partition =
+      chrome_test_utils::GetActiveWebContents(this)
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition();
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  scoped_refptr<net::X509Certificate> intermediate1 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "intermediate_ca_cert.pem");
+  ASSERT_TRUE(intermediate1);
+  scoped_refptr<net::X509Certificate> intermediate2 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "verisign_intermediate_ca_2016.pem");
+  ASSERT_TRUE(intermediate2);
+
+  // Test that the initial set of Trust Anchor IDs comes from the compiled-in
+  // root store.
+  {
+    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    EXPECT_THAT(future.Get(),
+                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+  }
+
+  // Install CRS update that contains a trusted MtcAnchor matching the
+  // MtcMetadata which will be added later, as well as a traditional anchor
+  // with a TAI.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+
+    chrome_root_store::MtcAnchor* mtc_anchor =
+        root_store_proto.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_trust_anchor_id({0x05, 0x06, 0x07});
+
+    InstallCRSUpdate(std::move(root_store_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    // Only the TAI from the traditional anchor is available, since the MTC
+    // Metadata hasn't loaded yet.
+    EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                  std::vector<uint8_t>({0x05, 0x06, 0x07})));
+  }
+
+  // Install MTC metadata update that contains Trust AnchorIDs for
+  // signatureless MTCs. Since the MTC Anchor is already loaded, the
+  // signatureless TAIs should be used immediately.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now()));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(2);
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    if (GetParam()) {
+      // The current expectation is that a trusted TAI range is represented by
+      // the TAI constructed from the base_id + the max landmark number, which
+      // implies support for the preceding (non-expired) landmark numbers.
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x04, 0x05, 0x02}),
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    } else {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
+                       StaleMtcMetadata) {
+  content::StoragePartition* partition =
+      chrome_test_utils::GetActiveWebContents(this)
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition();
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  scoped_refptr<net::X509Certificate> intermediate1 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "intermediate_ca_cert.pem");
+  ASSERT_TRUE(intermediate1);
+  scoped_refptr<net::X509Certificate> intermediate2 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "verisign_intermediate_ca_2016.pem");
+  ASSERT_TRUE(intermediate2);
+
+  // Test that the initial set of Trust Anchor IDs comes from the compiled-in
+  // root store.
+  {
+    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    EXPECT_THAT(future.Get(),
+                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+  }
+
+  // Install CRS update that contains a trusted MtcAnchor matching the
+  // MtcMetadata which will be added later, as well as a traditional anchor
+  // with a TAI.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+
+    chrome_root_store::MtcAnchor* mtc_anchor =
+        root_store_proto.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_trust_anchor_id({0x05, 0x06, 0x07});
+
+    InstallCRSUpdate(std::move(root_store_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    // Only the TAI from the traditional anchor is available, since the MTC
+    // Metadata hasn't loaded yet.
+    EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                  std::vector<uint8_t>({0x05, 0x06, 0x07})));
+  }
+
+  // Attempt to install MTC metadata update that contains Trust AnchorIDs for
+  // signatureless MTCs, but which has an out-of-date update time. It should be
+  // ignored.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now() - base::Days(14)));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(2);
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    // MTCMetadata update should have been ignored, so the TAI will still be
+    // only from the traditional anchor.
+    EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                  std::vector<uint8_t>({0x05, 0x06, 0x07})));
+  }
+
+  // Install a new MTC metadata update that contains Trust AnchorIDs for
+  // signatureless MTCs and which is up to date.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now() - base::Days(1)));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(4);
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    if (GetParam()) {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x04, 0x05, 0x04}),
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    } else {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    }
+  }
+
+  // Attempt to install another stale MTC metadata update that contains Trust
+  // AnchorIDs for signatureless MTCs. It should be ignored.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now() - base::Days(13)));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(3);
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        future.GetCallback());
+    // This MTCMetadata update should have been ignored, so the TAI will still
+    // be from the previous successful update. (This is slightly weird test
+    // scenario since you wouldn't normally expect to have a still-valid
+    // component and then be served an older, out-of-date one.)
+    if (GetParam()) {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x04, 0x05, 0x04}),
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    } else {
+      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
+                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+    }
+  }
+}
+
+// TODO(crbug.com/452986180): test end-to-end MTC verification
 
 class PKIMetadataComponentChromeRootStoreUpdateQwacTest
     : public PKIMetadataComponentChromeRootStoreUpdateTest,

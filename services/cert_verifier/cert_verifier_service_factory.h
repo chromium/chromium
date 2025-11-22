@@ -73,6 +73,8 @@ class CertVerifierServiceFactoryImpl
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojo_base::ProtoWrapper new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
+  void UpdateMtcMetadata(mojo_base::ProtoWrapper new_mtc_metadata,
+                         UpdateMtcMetadataCallback callback) override;
   // Will not return anchors that are not trusted for the current running
   // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;

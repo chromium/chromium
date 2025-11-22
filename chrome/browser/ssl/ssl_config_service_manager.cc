@@ -202,8 +202,10 @@ void SSLConfigServiceManager::AddToNetworkContextParams(
 }
 
 void SSLConfigServiceManager::UpdateTrustAnchorIDs(
-    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+    std::vector<std::vector<uint8_t>> trust_anchor_ids,
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
   trust_anchor_ids_ = std::move(trust_anchor_ids);
+  mtc_trust_anchor_ids_ = std::move(mtc_trust_anchor_ids);
   network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
@@ -281,6 +283,7 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
       trust_anchor_ids_.has_value()
           ? trust_anchor_ids_.value()
           : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  config->mtc_trust_anchor_ids = mtc_trust_anchor_ids_;
 #endif
 
   ConfigureSSLComplianceSettings(key_exchange_compliance_,

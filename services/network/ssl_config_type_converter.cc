@@ -64,6 +64,10 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
     net_config.trust_anchor_ids.insert(tai);
   }
 
+  for (const auto& tai : mojo_config->mtc_trust_anchor_ids) {
+    net_config.mtc_trust_anchor_ids.push_back(tai);
+  }
+
   return net_config;
 }
 
