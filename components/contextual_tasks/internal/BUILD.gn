@@ -27,6 +27,8 @@ source_set("internal") {
     "favicon_context_decorator.h",
     "history_context_decorator.cc",
     "history_context_decorator.h",
+    "pending_context_decorator.cc",
+    "pending_context_decorator.h",
   ]
 
   deps = [
@@ -61,6 +63,7 @@ source_set("unit_tests") {
     "fallback_title_context_decorator_unittest.cc",
     "favicon_context_decorator_unittest.cc",
     "history_context_decorator_unittest.cc",
+    "pending_context_decorator_unittest.cc",
   ]
 
   deps = [

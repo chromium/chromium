@@ -22,6 +22,7 @@ enum class ContextualTaskContextSource {
   kFaviconService,
   kHistoryService,
   kTabStrip,
+  kPendingContextDecorator,
 };
 
 class ContextualTask;

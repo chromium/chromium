@@ -8,15 +8,27 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/contextual_tasks/internal/fallback_title_context_decorator.h"
+#include "components/contextual_tasks/internal/favicon_context_decorator.h"
+#include "components/contextual_tasks/internal/history_context_decorator.h"
+#include "components/contextual_tasks/internal/pending_context_decorator.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/history/core/browser/history_service.h"
-#include "fallback_title_context_decorator.h"
-#include "favicon_context_decorator.h"
-#include "history_context_decorator.h"
+
+namespace {
+constexpr contextual_tasks::ContextualTaskContextSource kEarlyDecorators[] = {
+    contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator,
+};
+
+bool IsEarlyDecorator(contextual_tasks::ContextualTaskContextSource source) {
+  return base::Contains(kEarlyDecorators, source);
+}
+}  // namespace
 
 namespace contextual_tasks {
 
@@ -27,6 +39,8 @@ std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
         additional_decorators) {
   std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
       decorators;
+  decorators.emplace(ContextualTaskContextSource::kPendingContextDecorator,
+                     std::make_unique<PendingContextDecorator>());
   decorators.emplace(ContextualTaskContextSource::kFallbackTitle,
                      std::make_unique<FallbackTitleContextDecorator>());
   decorators.emplace(
@@ -57,16 +71,30 @@ void CompositeContextDecorator::DecorateContext(
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   std::vector<ContextDecorator*> decorators_to_run;
-  if (sources.empty()) {
-    for (const auto& pair : decorators_) {
-      decorators_to_run.push_back(pair.second.get());
-    }
-  } else {
-    for (const auto& source : sources) {
+
+  // 1. Add "Early" decorators in the strict order defined by kEarlyDecorators.
+  for (const auto& source : kEarlyDecorators) {
+    // Check if we should run this decorator (either all are requested, or this
+    // specific one is).
+    if (sources.empty() || base::Contains(sources, source)) {
       auto it = decorators_.find(source);
       if (it != decorators_.end()) {
         decorators_to_run.push_back(it->second.get());
       }
+    }
+  }
+
+  // 2. Add all "Other" decorators.
+  for (const auto& pair : decorators_) {
+    ContextualTaskContextSource source = pair.first;
+
+    // Skip if this is an early decorator, as we've already handled it above.
+    if (IsEarlyDecorator(source)) {
+      continue;
+    }
+
+    if (sources.empty() || base::Contains(sources, source)) {
+      decorators_to_run.push_back(pair.second.get());
     }
   }
 
