@@ -313,7 +313,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("test rendered text", future.GetCallback());
   EXPECT_FALSE(future.Get().execution_success);
-  EXPECT_EQ(future.Get().model_version, -1);
+  EXPECT_EQ(future.Get().model_version, fake_asset_.version());
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
   histogram_tester_.ExpectTotalCount(

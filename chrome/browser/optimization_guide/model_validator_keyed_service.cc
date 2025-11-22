@@ -228,23 +228,20 @@ void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
     // Ignore partial responses.
     return;
   }
-  // Complete responses with empty log entry indicate errors.
-  if (!result.execution_info || !result.provided_by_on_device) {
+  if (!result.response.has_value()) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "OptimizationGuide.ModelValidation.OnDevice.DidError", true);
   }
   proto::ModelValidationOutput output;
   optimization_guide::proto::ModelCall* model_call = output.add_model_calls();
   model_call->mutable_request()->CopyFrom(*request);
-  optimization_guide::proto::ModelExecutionInfo* model_execution_info =
-      model_call->mutable_model_execution_info();
+  if (result.execution_info) {
+    *model_call->mutable_model_execution_info() =
+        std::move(*result.execution_info);
+  }
   if (result.response.has_value()) {
     model_call->mutable_response()->CopyFrom(result.response.value().response);
-  } else {
-    model_execution_info->set_model_execution_error_enum(
-        static_cast<uint32_t>(result.response.error().error()));
   }
-  // TODO(crbug.com/372535824): store on-device execution log.
 
   auto out_file = switches::GetOnDeviceValidationWriteToFile();
   if (!out_file) {

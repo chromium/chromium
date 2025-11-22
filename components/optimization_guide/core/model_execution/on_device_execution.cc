@@ -130,6 +130,7 @@ OnDeviceExecution::OnDeviceExecution(
       histogram_logger_(std::move(logger)),
       callback_(std::move(callback)),
       cleanup_callback_(std::move(cleanup_callback)) {
+  exec_log_.set_execution_id(GenerateExecutionId());
   exec_log_.mutable_on_device_model_execution_info()->add_execution_infos();
   start_ = base::TimeTicks::Now();
   *(exec_log_.mutable_on_device_model_execution_info()
@@ -501,20 +502,13 @@ void OnDeviceExecution::CancelPendingResponse(Result result,
   }
   OptimizationGuideModelExecutionError og_error =
       OptimizationGuideModelExecutionError::FromModelExecutionError(error);
-  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
-  // TODO: crbug.com/372535824 - This probably doesn't need to be conditional?
-  if (og_error.ShouldLogModelQuality()) {
-    model_execution_info =
-        std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_));
-    exec_log_.Clear();
-    model_execution_info->set_execution_id(GenerateExecutionId());
-    model_execution_info->set_model_execution_error_enum(
-        static_cast<uint32_t>(og_error.error()));
-  }
+  exec_log_.set_model_execution_error_enum(
+      static_cast<uint32_t>(og_error.error()));
+
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
       base::unexpected(og_error), /*provided_by_on_device=*/true,
-      std::move(model_execution_info)));
+      std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_))));
   if (self) {
     self->Cleanup(/*healthy=*/true);
   }
@@ -536,15 +530,8 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
   TRACE_EVENT("optimization_guide",
               "OnDeviceExecution::SendSuccessCompletionCallback", "feature",
               base::ToString(feature_));
-  // Complete the log entry and promise it to the ModelQualityUploaderService.
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
   MutableLoggedResponse()->set_status(
       proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-  auto model_execution_info =
-      std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_));
-  model_execution_info->set_execution_id(GenerateExecutionId());
-  exec_log_.Clear();
-
   // Return the execution response.
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
@@ -553,7 +540,8 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
                             .is_complete = true,
                             .input_token_count = execute_input_token_count_,
                             .output_token_count = output_token_count_}),
-      /*provided_by_on_device=*/true, std::move(model_execution_info)));
+      /*provided_by_on_device=*/true,
+      std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_))));
   if (self) {
     self->Cleanup(/*healthy=*/true);
   }

@@ -992,7 +992,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session->ExecuteModel(PageUrlRequest("safe_url"),
                         response_.GetStreamingCallback());
   ASSERT_FALSE(response_.GetFinalStatus());
-  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1084,7 +1083,6 @@ TEST_F(OnDeviceModelServiceControllerTest, FailsWithInvalidRawOutputChecks) {
                         response_.GetStreamingCallback());
 
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1223,7 +1221,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
                         response_.GetStreamingCallback());
 
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
@@ -1324,7 +1321,6 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -1564,7 +1560,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   broker_.launcher().CrashService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_.value());
-  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextMultipleSessions) {
