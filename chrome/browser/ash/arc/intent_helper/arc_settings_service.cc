@@ -722,9 +722,6 @@ void ArcSettingsServiceImpl::SyncLocationServiceEnabled() const {
       "org.chromium.arc.intent_helper.SET_LOCATION_SERVICE_ENABLED");
 }
 
-// TODO(b/159871128, hugobenichi, acostinas) The current implementation only
-// syncs the global proxy from Chrome's default network settings. ARC has
-// multi-network support so we should sync per-network proxy configuration.
 void ArcSettingsServiceImpl::SyncProxySettings() const {
   std::unique_ptr<ProxyConfigDictionary> proxy_config_dict =
       ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
