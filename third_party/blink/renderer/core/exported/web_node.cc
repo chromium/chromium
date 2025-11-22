@@ -307,13 +307,18 @@ WebNode WebNode::FromDomNodeId(int dom_node_id) {
 
 base::ScopedClosureRunner WebNode::AddEventListener(
     EventType event_type,
-    base::RepeatingCallback<void(WebDOMEvent)> handler) {
+    base::RepeatingCallback<void(WebDOMEvent)> handler,
+    bool use_capture) {
   class EventListener : public NativeEventListener {
    public:
     EventListener(Node* node,
                   EventType event_type,
-                  base::RepeatingCallback<void(WebDOMEvent)> handler)
-        : node_(node), event_type_(event_type), handler_(std::move(handler)) {}
+                  base::RepeatingCallback<void(WebDOMEvent)> handler,
+                  bool use_capture)
+        : node_(node),
+          event_type_(event_type),
+          handler_(std::move(handler)),
+          use_capture_(use_capture) {}
 
     void Invoke(ExecutionContext*, Event* event) override {
       handler_.Run(WebDOMEvent(event));
@@ -321,12 +326,12 @@ base::ScopedClosureRunner WebNode::AddEventListener(
 
     void AddListener() {
       node_->addEventListener(event_type_name(), this,
-                              /*use_capture=*/false);
+                              /*use_capture=*/use_capture_);
     }
 
     void RemoveListener() {
       node_->removeEventListener(event_type_name(), this,
-                                 /*use_capture=*/false);
+                                 /*use_capture=*/use_capture_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -339,6 +344,26 @@ base::ScopedClosureRunner WebNode::AddEventListener(
       switch (event_type_) {
         case EventType::kSelectionchange:
           return event_type_names::kSelectionchange;
+        case EventType::kBeforeinput:
+          return event_type_names::kBeforeinput;
+        case EventType::kInput:
+          return event_type_names::kInput;
+        case EventType::kCompositionstart:
+          return event_type_names::kCompositionstart;
+        case EventType::kCompositionupdate:
+          return event_type_names::kCompositionupdate;
+        case EventType::kCompositionend:
+          return event_type_names::kCompositionend;
+        case EventType::kDrop:
+          return event_type_names::kDrop;
+        case EventType::kPaste:
+          return event_type_names::kPaste;
+        case EventType::kKeydown:
+          return event_type_names::kKeydown;
+        case EventType::kKeyup:
+          return event_type_names::kKeyup;
+        case EventType::kKeypress:
+          return event_type_names::kKeypress;
       }
       NOTREACHED();
     }
@@ -346,11 +371,13 @@ base::ScopedClosureRunner WebNode::AddEventListener(
     Member<Node> node_;
     EventType event_type_;
     base::RepeatingCallback<void(WebDOMEvent)> handler_;
+    bool use_capture_ = false;
   };
 
   WebPrivatePtrForGC<EventListener> listener =
       MakeGarbageCollected<EventListener>(Unwrap<Node>(), event_type,
-                                          std::move(handler));
+                                          std::move(handler),
+                                          /*use_capture=*/use_capture);
   listener->AddListener();
   return base::ScopedClosureRunner(BindOnce(
       &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));

@@ -60,6 +60,16 @@ class BLINK_EXPORT WebNode {
  public:
   enum class EventType {
     kSelectionchange,
+    kBeforeinput,
+    kInput,
+    kCompositionstart,
+    kCompositionupdate,
+    kCompositionend,
+    kDrop,
+    kPaste,
+    kKeydown,
+    kKeyup,
+    kKeypress,
   };
 
   static WebNode FromDomNodeId(int dom_node_id);
@@ -146,7 +156,8 @@ class BLINK_EXPORT WebNode {
   // Returns a RAII object that removes the listener.
   base::ScopedClosureRunner AddEventListener(
       EventType event_type,
-      base::RepeatingCallback<void(WebDOMEvent)> handler);
+      base::RepeatingCallback<void(WebDOMEvent)> handler,
+      bool use_capture = false);
 
   // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
   // not legal. The returned `T` will always be non-null if `this` is non-null.
