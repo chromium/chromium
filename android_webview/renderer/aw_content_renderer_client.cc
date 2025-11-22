@@ -224,8 +224,8 @@ AwContentRendererClient::CreatePrescientNetworking(
 void AwContentRendererClient::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillSharedAutofill)) {
-    blink::WebRuntimeFeatures::EnableSharedAutofill(true);
+          autofill::features::kAutofillPolicyControlledFeatureAutofill)) {
+    blink::WebRuntimeFeatures::EnableAutofill(true);
   }
 
   // Enable the overall android.webview namespace.

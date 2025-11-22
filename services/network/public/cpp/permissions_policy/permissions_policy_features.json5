@@ -114,6 +114,11 @@
       depends_on: ["AttributionReporting"],
     },
     {
+      name: "Autofill",
+      permissions_policy_name: "shared-autofill",
+      depends_on: ["Autofill"],
+    },
+    {
       name: "Autoplay",
       permissions_policy_name: "autoplay",
     },
@@ -508,11 +513,6 @@
       permissions_policy_name: "serial",
       depends_on: ["Serial"],
       privacy_sensitive: true,
-    },
-    {
-      name: "SharedAutofill",
-      permissions_policy_name: "shared-autofill",
-      depends_on: ["SharedAutofill"],
     },
     {
       name: "SharedStorage",

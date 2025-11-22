@@ -665,6 +665,12 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
+      name: "Autofill",
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,
@@ -4715,12 +4721,6 @@
       name: "SharedArrayBufferUnrestrictedAccessAllowed",
       base_feature: "none",
       public: true,
-    },
-    {
-      name: "SharedAutofill",
-      public: true,
-      status: "test",
-      base_feature: "none",
     },
     {
       name: "SharedStorageAPI",

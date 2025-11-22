@@ -126,9 +126,10 @@ enum PermissionsPolicyFeature {
   // [Deprecated]
   // kInterestCohort = 82,
 
-  // Controls whether Autofill may fill fields in that frame when triggered on
-  // a field with the main frame's origin.
-  kSharedAutofill = 83,
+  // Controls whether Autofill may fill fields in a frame.
+  // See https://github.com/explainers-by-googlers/safe-text-input and
+  // crbug.com/40178859.
+  kAutofill = 83,
 
   // Controls access to Direct Sockets.
   // See https://github.com/WICG/direct-sockets.

@@ -1442,8 +1442,8 @@ void ChromeContentRendererClient::
 #endif
 
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillSharedAutofill)) {
-    blink::WebRuntimeFeatures::EnableSharedAutofill(true);
+          autofill::features::kAutofillPolicyControlledFeatureAutofill)) {
+    blink::WebRuntimeFeatures::EnableAutofill(true);
   }
 
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))

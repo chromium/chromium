@@ -6453,7 +6453,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="80" label="OTPCredentials"/>
   <int value="81" label="DisplayCapture"/>
   <int value="82" label="Deprecated: InterestCohort"/>
-  <int value="83" label="SharedAutofill"/>
+  <int value="83" label="Autofill"/>
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>
   <int value="86" label="WindowManagement"/>
