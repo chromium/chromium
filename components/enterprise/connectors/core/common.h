@@ -20,7 +20,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -30,6 +29,10 @@ namespace download {
 class DownloadItem;
 }  // namespace download
 #endif  // BUILDFLAG(USE_BLINK)
+
+namespace gfx {
+class Range;
+}  // namespace gfx
 
 namespace signin {
 class IdentityManager;

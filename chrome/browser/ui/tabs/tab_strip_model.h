@@ -35,7 +35,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
@@ -49,6 +48,10 @@ class TabStripModelObserver;
 
 namespace content {
 class WebContents;
+}
+
+namespace gfx {
+class Range;
 }
 
 namespace split_tabs {

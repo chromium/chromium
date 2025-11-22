@@ -27,6 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 
 namespace enterprise_connectors {
 

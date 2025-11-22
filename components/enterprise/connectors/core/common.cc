@@ -14,6 +14,7 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "components/download/public/common/download_item.h"  // nogncheck
