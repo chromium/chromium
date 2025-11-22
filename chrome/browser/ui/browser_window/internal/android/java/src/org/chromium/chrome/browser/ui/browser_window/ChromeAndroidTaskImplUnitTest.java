@@ -1684,6 +1684,37 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void isMinimized_whenPendingUpdate_withPendingMinimize_returnsTrue() {
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        chromeAndroidTask.onTaskVisibilityChanged(1, true);
+
+        // Act.
+        chromeAndroidTask.minimize();
+        assertEquals(
+                "Future state of isVisible() should be false when minimize() is pending",
+                false,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
+        assertTrue(
+                "isMinimized() should be true when minimize() is pending",
+                chromeAndroidTask.isMinimized());
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
+        chromeAndroidTask.onTaskVisibilityChanged(1, false);
+
+        // Assert.
+        assertNull(
+                "Future state of isVisible() should be cleared after minimized() is completed",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
+        assertFalse(chromeAndroidTask.isMinimized());
+    }
+
+    @Test
     public void isFullscreen_whenPendingCreate_returnsFalse() {
         // Arrange.
         var task =

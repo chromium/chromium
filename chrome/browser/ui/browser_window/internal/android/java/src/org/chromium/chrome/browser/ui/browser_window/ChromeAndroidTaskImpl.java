@@ -50,7 +50,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
-import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -399,10 +398,9 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isMinimized() {
-        if (mState.get() == State.PENDING_CREATE) {
-            return mPendingActionManager.isActionRequested(PendingAction.MINIMIZE)
-                    || assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
-                            == WindowShowState.MINIMIZED;
+        @Nullable Boolean isVisibleFuture = mPendingActionManager.isVisibleFuture(mState.get());
+        if (isVisibleFuture != null) {
+            return !isVisibleFuture;
         }
 
         synchronized (mActivityScopedObjectsLock) {
