@@ -30,7 +30,8 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  explicit RenditionGroup(base::PassKey<MultivariantPlaylist>, std::string id);
+  RenditionGroup(base::PassKey<MultivariantPlaylist>,
+                 std::optional<std::string> id);
 
   RenditionGroup(const RenditionGroup&) = delete;
   RenditionGroup(RenditionGroup&&) = delete;
@@ -70,7 +71,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       const MediaTrack::Id& id) const;
 
   // Returns the id of this rendition group.
-  const std::string& GetId() const { return id_; }
+  const std::optional<std::string>& GetIdForTesting() const { return id_; }
 
   // Returns the set of renditions that belong to this group, in the order they
   // appeared in the manifest.
@@ -91,7 +92,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   friend base::RefCounted<RenditionGroup>;
   ~RenditionGroup();
 
-  std::string id_;
+  std::optional<std::string> id_;
 
   // Set of renditions within this group, in the order they appeared in the
   // manifest. Using a `std::list` as opposed to a `std::vector` to ensure

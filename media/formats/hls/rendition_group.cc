@@ -51,7 +51,7 @@ MediaTrack CreateTrackForRendition(const Rendition& rendition,
 }  // namespace
 
 RenditionGroup::RenditionGroup(base::PassKey<MultivariantPlaylist>,
-                               std::string id)
+                               std::optional<std::string> id)
     : id_(std::move(id)) {}
 
 RenditionGroup::~RenditionGroup() = default;

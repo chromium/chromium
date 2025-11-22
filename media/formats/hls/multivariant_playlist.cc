@@ -36,14 +36,17 @@ namespace {
 template <typename T>
 T* GetOrCreateRenditionGroup(
     base::PassKey<MultivariantPlaylist> pass_key,
-    base::flat_map<std::string_view, scoped_refptr<T>>& groups,
-    std::string_view id) {
+    base::flat_map<std::optional<std::string_view>, scoped_refptr<T>>& groups,
+    std::optional<std::string_view> id) {
   auto iter = groups.find(id);
 
   // If the group wasn't found, create it.
   if (iter == groups.end()) {
-    auto group =
-        base::MakeRefCounted<RenditionGroup>(pass_key, std::string(id));
+    std::optional<std::string> group_id;
+    if (id.has_value()) {
+      group_id = std::string(*id);
+    }
+    auto group = base::MakeRefCounted<RenditionGroup>(pass_key, group_id);
     iter = groups.insert(std::make_pair(id, std::move(group))).first;
   }
 
@@ -83,7 +86,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   VariableDictionary::SubstitutionBuffer sub_buffer;
   std::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
-  base::flat_map<std::string_view, scoped_refptr<RenditionGroup>>
+  base::flat_map<std::optional<std::string_view>, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
   RenditionGroup::RenditionTrackId::Generator rendition_id_generator;
 
@@ -256,9 +259,10 @@ MultivariantPlaylist::Parse(std::string_view source,
   // Ensure that each rendition group has at least one rendition
   // If there were none, then a variant stream referenced a group that does not
   // exist. The inverse (a rendition group that was not referenced by any
-  // variant) is not considered an error.
+  // variant) is not considered an error. If this represents the implicit
+  // virtual group, we should expect that there are no tracks at all.
   for (const auto& group : audio_rendition_groups) {
-    if (!group.second->HasTracks()) {
+    if (group.first.has_value() != group.second->HasTracks()) {
       return ParseStatusCode::kRenditionGroupDoesNotExist;
     }
   }

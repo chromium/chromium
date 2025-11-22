@@ -223,7 +223,7 @@ inline void HasAudioRenditionGroup(std::optional<std::string> group_id,
                                    const base::Location& from,
                                    const VariantStream& variant) {
   if (variant.GetAudioRenditionGroup()) {
-    EXPECT_EQ(variant.GetAudioRenditionGroup()->GetId(), group_id)
+    EXPECT_EQ(variant.GetAudioRenditionGroup()->GetIdForTesting(), group_id)
         << from.ToString();
   } else {
     EXPECT_EQ(std::nullopt, group_id) << from.ToString();

@@ -62,7 +62,7 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
 
   // Validate rendition group expectations
   // Begin by constructing a table of group_id -> group
-  base::flat_map<std::string, scoped_refptr<RenditionGroup>>
+  base::flat_map<std::optional<std::string>, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
   for (const auto& variant : playlist.GetVariants()) {
     const auto& group = variant.GetAudioRenditionGroup();
@@ -70,12 +70,13 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
       continue;
     }
 
-    auto iter = audio_rendition_groups.find(group->GetId());
+    auto iter = audio_rendition_groups.find(group->GetIdForTesting());
     if (iter != audio_rendition_groups.end()) {
       // The same ID should always refer to the same group.
       DCHECK(iter->second.get() == group.get());
     } else {
-      audio_rendition_groups.insert(std::make_pair(group->GetId(), group));
+      audio_rendition_groups.insert(
+          std::make_pair(group->GetIdForTesting(), group));
     }
   }
 
