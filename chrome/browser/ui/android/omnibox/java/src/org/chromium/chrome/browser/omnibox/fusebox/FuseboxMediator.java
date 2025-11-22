@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -137,6 +138,12 @@ public class FuseboxMediator {
 
     public void destroy() {
         mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
+    }
+
+    /** Apply a variant of the branded color scheme to Fusebox UI elements */
+    /*package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        mModel.set(FuseboxProperties.COLOR_SCHEME, brandedColorScheme);
+        mModelList.updateVisualsForState(brandedColorScheme);
     }
 
     private void onRequestTypeButtonClicked() {

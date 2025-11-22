@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 @NullMarked
 public class FuseboxAttachmentModelList extends ModelList {
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private @BrandedColorScheme int mBrandedColorScheme;
 
     /**
      * @param composeBoxQueryControllerBridge The bridge to use for backend operations
@@ -60,6 +62,7 @@ public class FuseboxAttachmentModelList extends ModelList {
             return;
         }
 
+        attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
         attachment.setOnRemoveCallback(() -> remove(attachment));
         super.add(attachment);
     }
@@ -97,5 +100,14 @@ public class FuseboxAttachmentModelList extends ModelList {
 
         assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         super.clear();
+    }
+
+    /** Apply a variant of the branded color scheme to Fusebox Attachment elements. */
+    /*package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        if (mBrandedColorScheme == brandedColorScheme) return;
+        mBrandedColorScheme = brandedColorScheme;
+        for (var item : this) {
+            item.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, brandedColorScheme);
+        }
     }
 }

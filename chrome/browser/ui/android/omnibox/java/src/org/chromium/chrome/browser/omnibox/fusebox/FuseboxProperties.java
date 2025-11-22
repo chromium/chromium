@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -47,6 +48,10 @@ class FuseboxProperties {
 
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** The variant of {@link BrandedColorScheme} to apply to the UI elements. */
+    public static final WritableObjectPropertyKey<@BrandedColorScheme Integer> COLOR_SCHEME =
             new WritableObjectPropertyKey<>();
 
     /** Whether the UI is in compact mode. */
@@ -135,6 +140,7 @@ class FuseboxProperties {
         AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
+        COLOR_SCHEME,
         COMPACT_UI,
         CURRENT_TAB_BUTTON_CLICKED,
         CURRENT_TAB_BUTTON_ENABLED,

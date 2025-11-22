@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivati
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -162,6 +163,12 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
             mComposeBoxQueryControllerBridge.destroy();
             mComposeBoxQueryControllerBridge = null;
         }
+    }
+
+    /** Apply a variant of the branded color scheme to Fusebox UI elements */
+    public void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        if (mMediator == null) return;
+        mMediator.updateVisualsForState(brandedColorScheme);
     }
 
     public void onAiModeActivatedFromNtp() {
