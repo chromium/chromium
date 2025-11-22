@@ -28,23 +28,21 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
                 () -> {
                     switch (type) {
                         case DeviceFormFactor.PHONE:
-                            return !isDesktop() && !isTablet();
+                            return !DeviceInfo.isDesktop() && !isTablet();
                         case DeviceFormFactor.ONLY_TABLET:
-                            return !isDesktop() && isTablet();
+                            return !DeviceInfo.isDesktop() && isTablet();
                         case DeviceFormFactor.DESKTOP:
-                            return isDesktop();
+                            return DeviceInfo.isDesktop();
+                        case DeviceFormFactor.DESKTOP_FREEFORM:
+                            return UiRestriction.isDesktopFreeform();
                         case DeviceFormFactor.TABLET_OR_DESKTOP:
                             return isTablet();
                         case DeviceFormFactor.PHONE_OR_TABLET:
-                            return !isDesktop();
+                            return !DeviceInfo.isDesktop();
                         default:
                             return false;
                     }
                 });
-    }
-
-    private boolean isDesktop() {
-        return DeviceInfo.isDesktop();
     }
 
     private boolean isTablet() {

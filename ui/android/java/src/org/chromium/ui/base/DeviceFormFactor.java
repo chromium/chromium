@@ -25,11 +25,19 @@ import org.chromium.ui.display.DisplayUtil;
 @NullMarked
 public class DeviceFormFactor {
     /**
-     * Desktop form factor.
+     * Desktop form factor. It's not guaranteed to have freeform windows.
      *
      * <p>As identified by <code>DeviceInfo.isDesktop() == true</code>.
      */
     public static final String DESKTOP = "Desktop";
+
+    /**
+     * Desktop form factor, guaranteed to have freeform windows.
+     *
+     * <p>As identified by <code>UiRestriction.isDesktopFreeform() == true</code>; to be used only
+     * for restricting multi-window tests on the desktop Android OS.
+     */
+    public static final String DESKTOP_FREEFORM = "DesktopFreeform";
 
     /**
      * Phone form factor.

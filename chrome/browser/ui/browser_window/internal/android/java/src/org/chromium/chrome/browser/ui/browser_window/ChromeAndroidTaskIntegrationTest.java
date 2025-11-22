@@ -508,35 +508,42 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM /* test needs freeform windows */)
     public void deactivate_activateVisibleInactiveTask() {
         // Arrange
         WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
         int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
-        var chromeAndroidTask = getChromeAndroidTask(firstTaskId);
+        var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
 
         RegularNewTabPageStation ntpStation =
                 webPageStation.openRegularTabAppMenu().openNewWindow();
         int secondTaskId = ntpStation.getActivity().getTaskId();
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
-        assertNotNull(chromeAndroidTask);
+        assertNotNull(firstChromeAndroidTask);
         assertNotNull(secondChromeAndroidTask);
-        assertFalse(chromeAndroidTask.isActive());
+        assertFalse(firstChromeAndroidTask.isActive());
         assertTrue(secondChromeAndroidTask.isActive());
 
         // Act
         secondChromeAndroidTask.deactivate();
 
         // Assert
-        Assert.assertTrue(
-                "Deactivate should make isActive true immediately", chromeAndroidTask.isActive());
+        assertTrue(
+                "Deactivating the 2nd window should immediately make isActive() true for the 1st"
+                        + " window",
+                firstChromeAndroidTask.isActive());
         CriteriaHelper.pollUiThread(
                 assumeNonNull(webPageStation.getActivity().getWindowAndroid())
                         ::isTopResumedActivity);
-        Assert.assertTrue(
-                "Deactivate should make isActive true eventually", chromeAndroidTask.isActive());
-        assertFalse(secondChromeAndroidTask.isActive());
+        assertTrue(
+                "Deactivating the 2nd window should keep isActive() true for the 1st window after"
+                        + " the 1st window becomes active",
+                firstChromeAndroidTask.isActive());
+        assertFalse(
+                "Deactivating the 2nd window should keep isActive() false for the 2nd window after"
+                        + " the 1st window becomes active",
+                secondChromeAndroidTask.isActive());
+
         // Cleanup
         ntpStation.getActivity().finish();
     }
