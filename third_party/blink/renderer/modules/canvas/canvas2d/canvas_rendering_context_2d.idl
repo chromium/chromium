@@ -55,22 +55,28 @@ interface CanvasRenderingContext2D {
     void drawFocusIfNeeded(Path2D path, Element element);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElement(Element element,
-                     unrestricted double x, unrestricted double y);
+    DOMMatrix drawElement(Element element,
+                                  unrestricted double x,
+                                  unrestricted double y);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElement(Element element,
-                     unrestricted double x, unrestricted double y,
-                     unrestricted double dwidth, unrestricted double dheight);
+    DOMMatrix drawElement(Element element,
+                                  unrestricted double x,
+                                  unrestricted double y,
+                                  unrestricted double dwidth,
+                                  unrestricted double dheight);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElementImage(Element element,
-                         unrestricted double x, unrestricted double y);
+    DOMMatrix drawElementImage(Element element,
+                                       unrestricted double x,
+                                       unrestricted double y);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElementImage(Element element,
-                         unrestricted double x, unrestricted double y,
-                         unrestricted double dwidth, unrestricted double dheight);
+    DOMMatrix drawElementImage(Element element,
+                                       unrestricted double x,
+                                       unrestricted double y,
+                                       unrestricted double dwidth,
+                                       unrestricted double dheight);
 
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 };

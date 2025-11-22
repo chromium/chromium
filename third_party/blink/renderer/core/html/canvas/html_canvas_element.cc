@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
@@ -93,6 +94,7 @@
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -916,6 +918,55 @@ void HTMLCanvasElement::ResetLayer() {
     cc_layer_->ClearClient();
     cc_layer_ = nullptr;
   }
+}
+
+namespace {
+
+// Given a transform at the origin, return an adjusted transform that is
+// equivalent, but can be applied to `element` given the current
+// `transform-origin`.
+DOMMatrix* AdjustTransformByTransformOrigin(const Element* element,
+                                            DOMMatrix* transform) {
+  gfx::Point3F origin_css;
+  if (LayoutBox* box = element ? element->GetLayoutBox() : nullptr) {
+    const PhysicalRect reference_box = ComputeReferenceBox(*box);
+    const ComputedStyle& style = box->StyleRef();
+
+    gfx::Point3F origin_phys;
+    origin_phys.set_x(FloatValueForLength(style.GetTransformOrigin().X(),
+                                          reference_box.Width()));
+    origin_phys.set_y(FloatValueForLength(style.GetTransformOrigin().Y(),
+                                          reference_box.Height()));
+    origin_phys.set_z(style.GetTransformOrigin().Z());
+    origin_css = ScalePoint(origin_phys, 1.0f / style.EffectiveZoom());
+  }
+
+  DOMMatrix* result = DOMMatrix::Create();
+  result->translateSelf(-origin_css.x(), -origin_css.y(), -origin_css.z());
+  result->multiplySelf(*transform);
+  result->translateSelf(origin_css.x(), origin_css.y(), origin_css.z());
+  return result;
+}
+
+}  // namespace
+
+DOMMatrix* HTMLCanvasElement::ComputeElementTransform(Element* element,
+                                                      DOMMatrix* draw_matrix) {
+  DOMMatrix* result = DOMMatrix::Create();
+
+  // This is a change of basis for a transform in canvas pixel grid coordinates
+  // to a canvas in css coordinates. The general formula is:
+  // T_css = S_canvas_to_css * T_canvas * S_canvas_to_css-1
+  gfx::Vector2dF physical_to_canvas_grid =
+      context_->PhysicalPixelToCanvasGridScaleFactor();
+  float physical_to_css = 1.0f / element->ComputedStyleRef().EffectiveZoom();
+  float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
+  float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
+  result->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
+  result->multiplySelf(*draw_matrix);
+  result->scaleSelf(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
+
+  return AdjustTransformByTransformOrigin(element, result);
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {

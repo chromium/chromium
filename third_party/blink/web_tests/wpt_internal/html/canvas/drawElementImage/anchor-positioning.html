@@ -35,8 +35,8 @@
 <script>
 function runTest() {
   var context = canvas.getContext('2d');
-  context.drawElementImage(anchor, 50, 50);
-  anchor.style.transform = 'translate(50px, 50px)';
+  let matrix = context.drawElementImage(anchor, 50, 50);
+  anchor.style.transform = matrix.toString();
 }
 onload = () => runTest();
 </script>

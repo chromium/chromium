@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
@@ -747,40 +748,42 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
 }
 
-void CanvasRenderingContext2D::drawElement(Element* element,
-                                           double x,
-                                           double y,
-                                           ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
-                      exception_state);
-}
-
-void CanvasRenderingContext2D::drawElement(Element* element,
-                                           double x,
-                                           double y,
-                                           double dwidth,
-                                           double dheight,
-                                           ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
-}
-
-void CanvasRenderingContext2D::drawElementImage(
+DOMMatrix* CanvasRenderingContext2D::drawElement(
     Element* element,
     double x,
     double y,
     ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
-                      exception_state);
+  return DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
+                             exception_state);
 }
 
-void CanvasRenderingContext2D::drawElementImage(
+DOMMatrix* CanvasRenderingContext2D::drawElement(
     Element* element,
     double x,
     double y,
     double dwidth,
     double dheight,
     ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
+  return DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
+}
+
+DOMMatrix* CanvasRenderingContext2D::drawElementImage(
+    Element* element,
+    double x,
+    double y,
+    ExceptionState& exception_state) {
+  return DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
+                             exception_state);
+}
+
+DOMMatrix* CanvasRenderingContext2D::drawElementImage(
+    Element* element,
+    double x,
+    double y,
+    double dwidth,
+    double dheight,
+    ExceptionState& exception_state) {
+  return DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
 void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
@@ -791,7 +794,7 @@ void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
   }
 }
 
-void CanvasRenderingContext2D::DrawElementInternal(
+DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
     Element* element,
     double x,
     double y,
@@ -801,33 +804,36 @@ void CanvasRenderingContext2D::DrawElementInternal(
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 
   if (!GetOrCreatePaintCanvas()) {
-    return;
+    return nullptr;
   }
 
   std::optional<cc::PaintRecord> paint_record =
       GetElementPaintRecord(element, "drawElementImage()", exception_state);
   if (!paint_record) {
-    return;
+    return nullptr;
   }
 
   // The filter needs to be resolved before calling Draw, because it
   // immediately checks IsFilterResolved() and uses a null canvas if not.
   StateGetFilter();
 
+  // Element size in physical coordinates.
   gfx::SizeF box_size(element->GetLayoutBox()->StitchedSize());
+
+  // The ideal size is the source content size, represented in canvas grid
+  // coordinates. This will cause the element to have the same proportions when
+  // appearing inside the canvas as it would have were it painted outside the
+  // canvas.
+  gfx::SizeF ideal_dst_size(box_size);
+  gfx::Vector2dF scale_factor = PhysicalPixelToCanvasGridScaleFactor();
+  ideal_dst_size.Scale(scale_factor.x(), scale_factor.y());
 
   gfx::RectF dst_rect(x, y, 0, 0);
   if (dwidth && dheight) {
     dst_rect.set_size(gfx::SizeF(*dwidth, *dheight));
   } else {
-    // If no explicit destination size is given, default to the source content
-    // size scaled to canvas grid coordinates. This causes the element to have
-    // the same proportions when appearing inside the canvas as it would have
-    // were it painted outside the canvas.
-    gfx::SizeF src_size(box_size);
-    gfx::Vector2dF scale_factor = PhysicalPixelToCanvasGridScaleFactor();
-    src_size.Scale(scale_factor.x(), scale_factor.y());
-    dst_rect.set_size(src_size);
+    // If no explicit destination size is given, default to the ideal size.
+    dst_rect.set_size(ideal_dst_size);
   }
 
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
@@ -896,6 +902,24 @@ void CanvasRenderingContext2D::DrawElementInternal(
       CanvasRenderingContext2DState::kImagePaintType,
       CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kElement);
+
+  // Compute the transform, in canvas grid coordinates, that we just drew with.
+  // We start from the context's CTM, then offset by x,y, and finally apply any
+  // dest scaling.
+  gfx::Transform draw_transform = GetState().GetTransform().ToTransform();
+  draw_transform.Translate(x, y);
+  // The drawing commands above scale by `dst_rect.size() / box_size`, which
+  // does two things: 1) scales the drawing commands of `paint_record` (in
+  // physical pixels) to canvas grid coordinates, and 2) applies any additional
+  // dest scaling. We are only returning #2 in the logic below.
+  draw_transform.Scale(dst_rect.width() / ideal_dst_size.width(),
+                       dst_rect.height() / ideal_dst_size.height());
+
+  // This call will take our draw transform in canvas grid coordinates, and
+  // convert it to a transform in CSS pixels suitable for positioning the
+  // element.
+  DOMMatrix* draw_matrix = MakeGarbageCollected<DOMMatrix>(draw_transform);
+  return canvas()->ComputeElementTransform(element, draw_matrix);
 }
 
 void CanvasRenderingContext2D::PreFinalizeFrame() {

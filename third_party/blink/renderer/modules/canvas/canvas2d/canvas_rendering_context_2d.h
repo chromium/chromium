@@ -204,26 +204,26 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void PreFinalizeFrame() override;
   void FinalizeFrame(FlushReason) override;
 
-  void drawElement(Element* element,
-                   double x,
-                   double y,
-                   ExceptionState& exception_state);
-  void drawElement(Element* element,
-                   double x,
-                   double y,
-                   double dwidth,
-                   double dheight,
-                   ExceptionState& exception_state);
-  void drawElementImage(Element* element,
-                        double x,
-                        double y,
-                        ExceptionState& exception_state);
-  void drawElementImage(Element* element,
-                        double x,
-                        double y,
-                        double dwidth,
-                        double dheight,
-                        ExceptionState& exception_state);
+  DOMMatrix* drawElement(Element* element,
+                         double x,
+                         double y,
+                         ExceptionState& exception_state);
+  DOMMatrix* drawElement(Element* element,
+                         double x,
+                         double y,
+                         double dwidth,
+                         double dheight,
+                         ExceptionState& exception_state);
+  DOMMatrix* drawElementImage(Element* element,
+                              double x,
+                              double y,
+                              ExceptionState& exception_state);
+  DOMMatrix* drawElementImage(Element* element,
+                              double x,
+                              double y,
+                              double dwidth,
+                              double dheight,
+                              ExceptionState& exception_state);
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
@@ -290,12 +290,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
 
-  void DrawElementInternal(Element* element,
-                           double x,
-                           double y,
-                           std::optional<double> dwidth,
-                           std::optional<double> dheight,
-                           ExceptionState& exception_state);
+  DOMMatrix* DrawElementInternal(Element* element,
+                                 double x,
+                                 double y,
+                                 std::optional<double> dwidth,
+                                 std::optional<double> dheight,
+                                 ExceptionState& exception_state);
 
   void PruneLocalFontCache(size_t target_size);
 

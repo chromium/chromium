@@ -64,6 +64,7 @@ class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContextFactory;
+class DOMMatrix;
 class Element;
 class GraphicsContext;
 class HTMLCanvasElement;
@@ -331,6 +332,11 @@ class CORE_EXPORT HTMLCanvasElement final
   void UpdatePreferred2DRasterMode();
 
   void ResetLayer();
+
+  // If `element` is drawn into the canvas's coordinate system with
+  // `draw_matrix`, this returns the transform that can be applied to `element`
+  // to make its CSS position match the drawn position.
+  DOMMatrix* ComputeElementTransform(Element* element, DOMMatrix* draw_matrix);
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
