@@ -44,7 +44,6 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::LEFT_CENTER,
-                                      // TODO(b/329895423): Add shadow.
                                       views::BubbleBorder::NO_SHADOW),
       controller_(controller) {
   SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
