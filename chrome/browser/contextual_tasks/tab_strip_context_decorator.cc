@@ -49,6 +49,7 @@ TabStripContextDecorator::GetOpenTabUrls() {
 
 void TabStripContextDecorator::DecorateContext(
     std::unique_ptr<ContextualTaskContext> context,
+    ContextDecorationParams* params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   // This method performs a two-pass matching process to determine if a URL

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/core/session_id.h"
@@ -96,9 +97,11 @@ void ContextualTasksContextControllerImpl::DetachUrlFromTask(
 void ContextualTasksContextControllerImpl::GetContextForTask(
     const base::Uuid& task_id,
     const std::set<ContextualTaskContextSource>& sources,
+    std::unique_ptr<ContextDecorationParams> params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
-  service_->GetContextForTask(task_id, sources, std::move(context_callback));
+  service_->GetContextForTask(task_id, sources, std::move(params),
+                              std::move(context_callback));
 }
 
 void ContextualTasksContextControllerImpl::AssociateTabWithTask(

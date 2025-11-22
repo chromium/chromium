@@ -37,6 +37,7 @@ namespace contextual_tasks {
 
 class CompositeContextDecorator;
 struct ContextualTaskContext;
+struct ContextDecorationParams;
 
 class ContextualTasksServiceImpl : public ContextualTasksService,
                                    public AiThreadSyncBridge::Observer,
@@ -91,6 +92,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void GetContextForTask(
       const base::Uuid& task_id,
       const std::set<ContextualTaskContextSource>& sources,
+      std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
   void AddObserver(ContextualTasksService::Observer* observer) override;

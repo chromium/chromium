@@ -19,6 +19,7 @@ class FaviconService;
 namespace contextual_tasks {
 
 struct ContextualTaskContext;
+struct ContextDecorationParams;
 struct UrlAttachment;
 
 // A decorator that enriches a context with favicons for URL attachments.
@@ -33,6 +34,7 @@ class FaviconContextDecorator : public ContextDecorator {
   // ContextDecorator implementation:
   void DecorateContext(
       std::unique_ptr<ContextualTaskContext> context,
+      ContextDecorationParams* params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
 

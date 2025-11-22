@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 
 namespace favicon {
@@ -23,6 +24,7 @@ namespace contextual_tasks {
 
 class CompositeContextDecorator;
 class ContextDecorator;
+struct ContextDecorationParams;
 struct UrlAttachment;
 struct UrlAttachmentDecoratorData;
 
@@ -43,8 +45,10 @@ class ContextDecorator {
   // Asynchronously enriches the given |context|. Invokes |context_callback|
   // with the updated ContextualTaskContext on the original sequence when the
   // operation is complete, regardless of success or failure.
+  // The parameter `params` may be `nullptr`.
   virtual void DecorateContext(
       std::unique_ptr<ContextualTaskContext> context,
+      ContextDecorationParams* params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 

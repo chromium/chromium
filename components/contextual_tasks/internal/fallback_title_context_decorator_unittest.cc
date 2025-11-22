@@ -32,7 +32,7 @@ TEST_F(FallbackTitleContextDecoratorTest, DecorateContextWithTitle) {
 
   base::RunLoop run_loop;
   decorator_.DecorateContext(
-      std::move(context),
+      std::move(context), nullptr,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::unique_ptr<ContextualTaskContext> context) {

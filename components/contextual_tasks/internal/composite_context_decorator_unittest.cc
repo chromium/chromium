@@ -29,6 +29,7 @@ class MockContextDecorator : public ContextDecorator {
   MOCK_METHOD(void,
               DecorateContext,
               (std::unique_ptr<ContextualTaskContext> context,
+               ContextDecorationParams* params,
                base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                    context_callback),
               (override));
@@ -42,7 +43,7 @@ ACTION(RunCallbackAsync) {
           std::move(
               const_cast<base::OnceCallback<void(
                   std::unique_ptr<contextual_tasks::ContextualTaskContext>)>&>(
-                  arg1)),
+                  arg2)),
           std::move(const_cast<
                     std::unique_ptr<contextual_tasks::ContextualTaskContext>&>(
               arg0))));
@@ -88,14 +89,16 @@ TEST_F(CompositeContextDecoratorTest, DecorateContext_EmptySources) {
   // InSequence is used to ensure that the decorators are called in the
   // correct order.
   testing::InSequence s;
-  EXPECT_CALL(*mock_decorator1_ptr, DecorateContext(testing::_, testing::_))
+  EXPECT_CALL(*mock_decorator1_ptr,
+              DecorateContext(testing::_, testing::_, testing::_))
       .WillOnce(RunCallbackAsync());
-  EXPECT_CALL(*mock_decorator2_ptr, DecorateContext(testing::_, testing::_))
+  EXPECT_CALL(*mock_decorator2_ptr,
+              DecorateContext(testing::_, testing::_, testing::_))
       .WillOnce(RunCallbackAsync());
 
   base::RunLoop run_loop;
   composite_decorator.DecorateContext(
-      std::move(context), {},
+      std::move(context), {}, nullptr,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::unique_ptr<ContextualTaskContext> context) {
@@ -118,14 +121,17 @@ TEST_F(CompositeContextDecoratorTest, DecorateContext_SingleSource) {
   ContextualTask task(base::Uuid::GenerateRandomV4());
   auto context = std::make_unique<ContextualTaskContext>(task);
 
-  EXPECT_CALL(*mock_decorator1_ptr, DecorateContext(testing::_, testing::_))
+  EXPECT_CALL(*mock_decorator1_ptr,
+              DecorateContext(testing::_, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(*mock_decorator2_ptr, DecorateContext(testing::_, testing::_))
+  EXPECT_CALL(*mock_decorator2_ptr,
+              DecorateContext(testing::_, testing::_, testing::_))
       .WillOnce(RunCallbackAsync());
 
   base::RunLoop run_loop;
   composite_decorator.DecorateContext(
       std::move(context), {ContextualTaskContextSource::kFaviconService},
+      nullptr,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::unique_ptr<ContextualTaskContext> context) {

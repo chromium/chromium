@@ -73,7 +73,7 @@ TEST_F(HistoryContextDecoratorTest, DecorateContextWithHistory) {
 
   HistoryContextDecorator decorator(&mock_history_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);
@@ -99,7 +99,7 @@ TEST_F(HistoryContextDecoratorTest, NoHistoryService) {
 
   HistoryContextDecorator decorator(nullptr);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);
@@ -117,7 +117,7 @@ TEST_F(HistoryContextDecoratorTest, NoAttachments) {
 
   HistoryContextDecorator decorator(&mock_history_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);

@@ -64,7 +64,7 @@ TEST_F(FaviconContextDecoratorTest, DecorateContextWithFavicons) {
 
   FaviconContextDecorator decorator(&mock_favicon_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);
@@ -93,7 +93,7 @@ TEST_F(FaviconContextDecoratorTest, NoFaviconService) {
 
   FaviconContextDecorator decorator(nullptr);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);
@@ -112,7 +112,7 @@ TEST_F(FaviconContextDecoratorTest, NoAttachments) {
 
   FaviconContextDecorator decorator(&mock_favicon_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);

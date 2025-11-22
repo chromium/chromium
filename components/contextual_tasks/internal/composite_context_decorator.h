@@ -16,6 +16,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 
 namespace contextual_tasks {
+struct ContextDecorationParams;
 
 // An implementation of ContextDecorator that serves as the entry point for a
 // decorator chain. This class owns a map of concrete decorator
@@ -43,6 +44,7 @@ class CompositeContextDecorator {
   virtual void DecorateContext(
       std::unique_ptr<ContextualTaskContext> context,
       const std::set<ContextualTaskContextSource>& sources,
+      std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback);
 
@@ -52,6 +54,7 @@ class CompositeContextDecorator {
       size_t decorator_index,
       std::vector<ContextDecorator*> decorators_to_run,
       std::unique_ptr<ContextualTaskContext> context,
+      ContextDecorationParams* params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           final_callback);
 

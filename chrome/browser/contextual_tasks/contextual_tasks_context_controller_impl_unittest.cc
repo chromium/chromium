@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -73,7 +74,26 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
     std::unique_ptr<ContextualTaskContext> result;
     base::RunLoop run_loop;
     controller_->GetContextForTask(
-        task_id, {},
+        task_id, {}, nullptr,
+        base::BindOnce(
+            [](std::unique_ptr<ContextualTaskContext>* out_context,
+               base::OnceClosure quit_closure,
+               std::unique_ptr<ContextualTaskContext> context) {
+              *out_context = std::move(context);
+              std::move(quit_closure).Run();
+            },
+            &result, run_loop.QuitClosure()));
+    run_loop.Run();
+    return result;
+  }
+
+  std::unique_ptr<ContextualTaskContext> GetContextForTaskWithParams(
+      const base::Uuid& task_id,
+      std::unique_ptr<ContextDecorationParams> params) {
+    std::unique_ptr<ContextualTaskContext> result;
+    base::RunLoop run_loop;
+    controller_->GetContextForTask(
+        task_id, {}, std::move(params),
         base::BindOnce(
             [](std::unique_ptr<ContextualTaskContext>* out_context,
                base::OnceClosure quit_closure,
@@ -263,9 +283,10 @@ TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
 
   ContextualTaskContext expected_context(task);
 
-  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _))
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _, _))
       .WillOnce(
           [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams> params,
               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                   callback) {
             std::move(callback).Run(
@@ -284,9 +305,10 @@ TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _))
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _, _))
       .WillOnce(
           [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams> params,
               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                   callback) { std::move(callback).Run(nullptr); });
 
@@ -304,6 +326,37 @@ TEST_F(ContextualTasksContextControllerImplTest, GetFeatureEligibility) {
   EXPECT_EQ(actual_eligibility.contextual_tasks_enabled,
             expected_eligibility.contextual_tasks_enabled);
   EXPECT_EQ(actual_eligibility.aim_eligible, expected_eligibility.aim_eligible);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_WithParams) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  ContextualTaskContext expected_context(task);
+  auto input_params = std::make_unique<ContextDecorationParams>();
+  // Extract raw pointer to be able to verify what it points to within the
+  // lambda for the service API call.
+  ContextDecorationParams* input_params_ptr = input_params.get();
+
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _, _))
+      .WillOnce(
+          [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) {
+            // Verify that params is not null and are actually the ones that
+            // provided.
+            ASSERT_TRUE(params);
+            EXPECT_EQ(input_params_ptr, params.get());
+            std::move(callback).Run(
+                std::make_unique<ContextualTaskContext>(expected_context));
+          });
+
+  // Call the GetContextForTask method with the input_params.
+  std::unique_ptr<ContextualTaskContext> context =
+      GetContextForTaskWithParams(task_id, std::move(input_params));
+  ASSERT_TRUE(context.get());
+  EXPECT_EQ(context->GetTaskId(), expected_context.GetTaskId());
 }
 
 }  // namespace

@@ -25,6 +25,8 @@ class DataTypeControllerDelegate;
 
 namespace contextual_tasks {
 
+struct ContextDecorationParams;
+
 // Represents the eligibility status for contextual tasks features.
 // This is used to determine if any backend is available and if the feature
 // is enabled.
@@ -122,6 +124,7 @@ class ContextualTasksService : public KeyedService {
   virtual void GetContextForTask(
       const base::Uuid& task_id,
       const std::set<ContextualTaskContextSource>& sources,
+      std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 

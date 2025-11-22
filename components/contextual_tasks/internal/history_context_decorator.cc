@@ -20,6 +20,7 @@ HistoryContextDecorator::~HistoryContextDecorator() = default;
 
 void HistoryContextDecorator::DecorateContext(
     std::unique_ptr<ContextualTaskContext> context,
+    ContextDecorationParams* params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   if (!history_service_) {

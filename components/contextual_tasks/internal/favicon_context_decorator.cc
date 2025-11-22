@@ -21,6 +21,7 @@ FaviconContextDecorator::~FaviconContextDecorator() = default;
 
 void FaviconContextDecorator::DecorateContext(
     std::unique_ptr<ContextualTaskContext> context,
+    ContextDecorationParams* params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   if (!favicon_service_) {

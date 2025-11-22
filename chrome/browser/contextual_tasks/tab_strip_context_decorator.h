@@ -38,6 +38,7 @@ class TabStripContextDecorator : public ContextDecorator {
   // ContextDecorator implementation:
   void DecorateContext(
       std::unique_ptr<ContextualTaskContext> context,
+      ContextDecorationParams* params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
 

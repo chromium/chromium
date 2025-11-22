@@ -11,6 +11,7 @@
 namespace contextual_tasks {
 
 struct ContextualTaskContext;
+struct ContextDecorationParams;
 
 // A decorator that enriches a context with a fallback title for URL
 // attachments that do not have a title. The title is derived from the URL
@@ -27,6 +28,7 @@ class FallbackTitleContextDecorator : public ContextDecorator {
   // ContextDecorator implementation:
   void DecorateContext(
       std::unique_ptr<ContextualTaskContext> context,
+      ContextDecorationParams* params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
 };

@@ -12,6 +12,7 @@ source_set("feature_list") {
 
 source_set("public") {
   sources = [
+    "context_decoration_params.h",
     "context_decorator.cc",
     "context_decorator.h",
     "contextual_task.cc",

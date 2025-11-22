@@ -301,6 +301,7 @@ void ContextualTasksServiceImpl::ClearAllTabAssociationsForTask(
 void ContextualTasksServiceImpl::GetContextForTask(
     const base::Uuid& task_id,
     const std::set<ContextualTaskContextSource>& sources,
+    std::unique_ptr<ContextDecorationParams> params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   auto it = tasks_.find(task_id);
@@ -313,7 +314,7 @@ void ContextualTasksServiceImpl::GetContextForTask(
 
   composite_context_decorator_->DecorateContext(
       std::make_unique<ContextualTaskContext>(it->second), sources,
-      std::move(context_callback));
+      std::move(params), std::move(context_callback));
 }
 
 void ContextualTasksServiceImpl::AddObserver(

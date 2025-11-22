@@ -52,7 +52,7 @@ TEST_F(TabStripContextDecoratorTest, DecorateContextWithOpenTabs) {
   auto context = std::make_unique<ContextualTaskContext>(task);
 
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);
@@ -88,7 +88,7 @@ TEST_F(TabStripContextDecoratorTest, DecorateContextWithDeduplicatedUrls) {
   auto context = std::make_unique<ContextualTaskContext>(task);
 
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
-  decorator.DecorateContext(std::move(context), future.GetCallback());
+  decorator.DecorateContext(std::move(context), nullptr, future.GetCallback());
 
   auto decorated_context = future.Take();
   ASSERT_TRUE(decorated_context);

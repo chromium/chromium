@@ -16,6 +16,7 @@
 namespace contextual_tasks {
 class ContextualTasksService;
 enum class ContextualTaskContextSource;
+struct ContextDecorationParams;
 
 }  // namespace contextual_tasks
 
@@ -55,6 +56,7 @@ class ContextualTasksContextControllerImpl
   void GetContextForTask(
       const base::Uuid& task_id,
       const std::set<ContextualTaskContextSource>& sources,
+      std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
   void AssociateTabWithTask(const base::Uuid& task_id,

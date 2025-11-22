@@ -19,6 +19,7 @@
 #include "base/version_info/channel.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
@@ -109,6 +110,7 @@ class MockCompositeContextDecorator : public CompositeContextDecorator {
               DecorateContext,
               (std::unique_ptr<ContextualTaskContext> context,
                const std::set<ContextualTaskContextSource>& sources,
+               std::unique_ptr<ContextDecorationParams> params,
                base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                    context_callback),
               (override));
@@ -173,7 +175,7 @@ class ContextualTasksServiceImplTest : public testing::Test {
     std::unique_ptr<ContextualTaskContext> result;
     base::RunLoop run_loop;
     service_->GetContextForTask(
-        task_id, {},
+        task_id, {}, nullptr,
         base::BindOnce(
             [](std::unique_ptr<ContextualTaskContext>* out_context,
                base::OnceClosure quit_closure,
@@ -948,10 +950,11 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
   service_->AttachUrlToTask(task.GetTaskId(), url);
 
   EXPECT_CALL(*mock_decorator_,
-              DecorateContext(testing::_, testing::_, testing::_))
+              DecorateContext(testing::_, testing::_, testing::_, testing::_))
       .WillOnce(
           [](std::unique_ptr<ContextualTaskContext> context,
              const std::set<ContextualTaskContextSource>& sources,
+             std::unique_ptr<ContextDecorationParams> params,
              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                  callback) {
             // Mock decorator just passes the context through.
@@ -974,10 +977,11 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
   service_->AttachUrlToTask(task.GetTaskId(), url);
 
   EXPECT_CALL(*mock_decorator_,
-              DecorateContext(testing::_, testing::_, testing::_))
+              DecorateContext(testing::_, testing::_, testing::_, testing::_))
       .WillOnce(
           [](std::unique_ptr<ContextualTaskContext> context,
              const std::set<ContextualTaskContextSource>& sources,
+             std::unique_ptr<ContextDecorationParams> params,
              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                  callback) {
             // Mock decorator adds a title.

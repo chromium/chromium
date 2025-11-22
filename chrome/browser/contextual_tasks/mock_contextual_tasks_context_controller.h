@@ -11,6 +11,7 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,6 +71,7 @@ class MockContextualTasksContextController
               GetContextForTask,
               (const base::Uuid& task_id,
                const std::set<ContextualTaskContextSource>& sources,
+               std::unique_ptr<ContextDecorationParams> params,
                base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                    context_callback),
               (override));

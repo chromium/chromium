@@ -54,6 +54,7 @@ FallbackTitleContextDecorator::~FallbackTitleContextDecorator() = default;
 
 void FallbackTitleContextDecorator::DecorateContext(
     std::unique_ptr<ContextualTaskContext> context,
+    ContextDecorationParams* params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   for (auto& attachment : GetMutableUrlAttachments(*context)) {
