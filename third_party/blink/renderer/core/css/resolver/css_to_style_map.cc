@@ -806,7 +806,7 @@ EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTriggerBehavior(
   return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerBehavior>();
 }
 
-Persistent<const ScopedCSSName> CSSToStyleMap::MapAnimationTimelineTriggerName(
+const ScopedCSSName* CSSToStyleMap::MapAnimationTimelineTriggerName(
     StyleResolverState& state,
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());

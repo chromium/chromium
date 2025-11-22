@@ -700,7 +700,7 @@ void OnMediaCapabilitiesEncodingInfo(
     return;
   }
 
-  Persistent<MediaCapabilitiesInfo> info(MediaCapabilitiesInfo::Create());
+  auto* info = MediaCapabilitiesInfo::Create();
   info->setSupported(result->supported);
   info->setSmooth(result->smooth);
   info->setPowerEfficient(result->power_efficient);
@@ -1454,8 +1454,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
     return;
   }
 
-  Persistent<MediaCapabilitiesDecodingInfo> info(
-      MediaCapabilitiesDecodingInfo::Create());
+  auto* info = MediaCapabilitiesDecodingInfo::Create();
   info->setSupported(true);
   info->setKeySystemAccess(pending_cb->key_system_access);
 

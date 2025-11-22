@@ -71,7 +71,7 @@ class CORE_EXPORT ListItemOrdinal {
     STACK_ALLOCATED();
 
    public:
-    Persistent<const Node> node;
+    const Node* node = nullptr;
     ListItemOrdinal* ordinal = nullptr;
     operator bool() const { return node; }
   };

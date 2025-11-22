@@ -67,9 +67,7 @@ class MediaKeys::PendingAction final
 
   Type GetType() const { return type_; }
 
-  const Persistent<ContentDecryptionModuleResult> Result() const {
-    return result_;
-  }
+  ContentDecryptionModuleResult* Result() const { return result_; }
 
   DOMArrayBuffer* Data() const {
     DCHECK_EQ(Type::kSetServerCertificate, type_);

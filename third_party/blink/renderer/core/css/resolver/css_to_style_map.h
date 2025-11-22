@@ -120,7 +120,7 @@ class CSSToStyleMap {
   static EAnimationTriggerBehavior MapAnimationTriggerBehavior(
       StyleResolverState&,
       const CSSValue&);
-  static Persistent<const ScopedCSSName> MapAnimationTimelineTriggerName(
+  static const ScopedCSSName* MapAnimationTimelineTriggerName(
       StyleResolverState&,
       const CSSValue&);
   static EAnimationTriggerBehavior MapAnimationTimelineTriggerBehavior(
