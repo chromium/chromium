@@ -51,22 +51,24 @@ InsetBias GetAlignmentInsetBias(
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction,
     bool is_justify_axis,
-    std::optional<InsetBias>* out_safe_inset_bias,
-    std::optional<InsetBias>* out_default_inset_bias) {
+    bool* out_has_default_alignment_overflow,
+    InsetBias* out_default_inset_bias,
+    std::optional<InsetBias>* out_safe_inset_bias) {
   // `alignment` is in the writing-direction of the containing-block, vs. the
   // inset-bias which is relative to the writing-direction of the candidate.
   const LogicalToLogical bias(
       self_writing_direction, container_writing_direction, InsetBias::kStart,
       InsetBias::kEnd, InsetBias::kStart, InsetBias::kEnd);
 
+  *out_default_inset_bias =
+      is_justify_axis ? bias.InlineStart() : bias.BlockStart();
   if (alignment.Overflow() == OverflowAlignment::kSafe) {
     *out_safe_inset_bias =
         is_justify_axis ? bias.InlineStart() : bias.BlockStart();
   }
   if (alignment.Overflow() == OverflowAlignment::kDefault &&
       alignment.GetPosition() != ItemPosition::kNormal) {
-    *out_default_inset_bias =
-        is_justify_axis ? bias.InlineStart() : bias.BlockStart();
+    *out_has_default_alignment_overflow = true;
   }
 
   switch (alignment.GetPosition()) {
@@ -129,12 +131,12 @@ void ComputeUnclampedIMCBInOneAxis(
     const LayoutUnit static_position_offset,
     InsetBias static_position_inset_bias,
     InsetBias alignment_inset_bias,
+    InsetBias default_inset_bias,
     const std::optional<InsetBias>& safe_inset_bias,
     const std::optional<InsetBias>& alt_safe_inset_bias,
-    const std::optional<InsetBias>& default_inset_bias,
     LayoutUnit* imcb_start_out,
     LayoutUnit* imcb_end_out,
-    InsetBias* imcb_inset_bias_out,
+    InsetBias* inset_bias_out,
     std::optional<InsetBias>* safe_inset_bias_out,
     std::optional<InsetBias>* default_inset_bias_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
@@ -167,7 +169,7 @@ void ComputeUnclampedIMCBInOneAxis(
         *imcb_start_out = LayoutUnit();
         break;
     }
-    *imcb_inset_bias_out = static_position_inset_bias;
+    *inset_bias_out = static_position_inset_bias;
     *safe_inset_bias_out =
         is_static_alignment_parallel ? safe_inset_bias : alt_safe_inset_bias;
   } else {
@@ -177,12 +179,12 @@ void ComputeUnclampedIMCBInOneAxis(
 
     if (!inset_start.has_value() || !inset_end.has_value()) {
       // In the case that only one inset is auto, that is the weaker inset;
-      *imcb_inset_bias_out =
+      *inset_bias_out =
           inset_start.has_value() ? InsetBias::kStart : InsetBias::kEnd;
     } else {
       // Both insets were set - use the alignment bias (defaults to the "start"
       // edge of the containing block if we have normal alignment).
-      *imcb_inset_bias_out = alignment_inset_bias;
+      *inset_bias_out = alignment_inset_bias;
       *safe_inset_bias_out = safe_inset_bias;
       *default_inset_bias_out = default_inset_bias;
     }
@@ -206,20 +208,23 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
                             self_writing_direction.GetWritingMode());
 
+  InsetBias inline_default_inset_bias;
   std::optional<InsetBias> inline_safe_inset_bias;
-  std::optional<InsetBias> inline_default_inset_bias;
   const auto inline_alignment_inset_bias = GetAlignmentInsetBias(
       alignment.inline_alignment, container_writing_direction,
       self_writing_direction,
-      /* is_justify_axis */ is_parallel, &inline_safe_inset_bias,
-      &inline_default_inset_bias);
+      /* is_justify_axis */ is_parallel,
+      &imcb.inline_has_default_alignment_overflow, &inline_default_inset_bias,
+      &inline_safe_inset_bias);
+
+  InsetBias block_default_inset_bias;
   std::optional<InsetBias> block_safe_inset_bias;
-  std::optional<InsetBias> block_default_inset_bias;
   const auto block_alignment_inset_bias =
       GetAlignmentInsetBias(alignment.block_alignment,
                             container_writing_direction, self_writing_direction,
                             /* is_justify_axis */ !is_parallel,
-                            &block_safe_inset_bias, &block_default_inset_bias);
+                            &imcb.block_has_default_alignment_overflow,
+                            &block_default_inset_bias, &block_safe_inset_bias);
 
   const bool is_static_alignment_parallel =
       static_position.align_self_direction ==
@@ -229,17 +234,17 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
       available_size.inline_size, insets.inline_start, insets.inline_end,
       is_static_alignment_parallel, static_position.offset.inline_offset,
       GetStaticPositionInsetBias(static_position.inline_edge),
-      inline_alignment_inset_bias, inline_safe_inset_bias,
-      block_safe_inset_bias, inline_default_inset_bias, &imcb.inline_start,
+      inline_alignment_inset_bias, inline_default_inset_bias,
+      inline_safe_inset_bias, block_safe_inset_bias, &imcb.inline_start,
       &imcb.inline_end, &imcb.inline_inset_bias, &imcb.inline_safe_inset_bias,
       &imcb.inline_default_inset_bias);
   ComputeUnclampedIMCBInOneAxis(
       available_size.block_size, insets.block_start, insets.block_end,
       is_static_alignment_parallel, static_position.offset.block_offset,
       GetStaticPositionInsetBias(static_position.block_edge),
-      block_alignment_inset_bias, block_safe_inset_bias, inline_safe_inset_bias,
-      block_default_inset_bias, &imcb.block_start, &imcb.block_end,
-      &imcb.block_inset_bias, &imcb.block_safe_inset_bias,
+      block_alignment_inset_bias, block_default_inset_bias,
+      block_safe_inset_bias, inline_safe_inset_bias, &imcb.block_start,
+      &imcb.block_end, &imcb.block_inset_bias, &imcb.block_safe_inset_bias,
       &imcb.block_default_inset_bias);
   return imcb;
 }
@@ -321,7 +326,8 @@ void ComputeInsets(const LayoutUnit available_size,
                    const LayoutUnit container_end,
                    const LayoutUnit original_imcb_start,
                    const LayoutUnit original_imcb_end,
-                   const InsetBias imcb_inset_bias,
+                   const bool has_default_alignment_overflow,
+                   const InsetBias inset_bias,
                    const std::optional<InsetBias>& safe_inset_bias,
                    const std::optional<InsetBias>& default_inset_bias,
                    const LayoutUnit margin_start,
@@ -355,7 +361,7 @@ void ComputeInsets(const LayoutUnit available_size,
   // the safe edge (may be end if RTL for example).
   LayoutUnit free_space =
       available_size - imcb_start - imcb_end - margin_box_size;
-  InsetBias bias = imcb_inset_bias;
+  InsetBias bias = inset_bias;
   bool apply_safe_bias = safe_inset_bias && free_space < LayoutUnit();
   if (apply_safe_bias) {
     free_space = LayoutUnit();
@@ -374,7 +380,8 @@ void ComputeInsets(const LayoutUnit available_size,
   // This will take the element, and shift it to be within the bounds of the
   // containing-block. It will prioritize the edge specified by
   // `default_inset_bias`.
-  if (default_inset_bias && !apply_safe_bias) {
+  if (has_default_alignment_overflow && default_inset_bias &&
+      !apply_safe_bias) {
     // If the margin-box fits within the IMCB, use that for the default
     // alignment overflow - otherwise use the union of the IMCB, and the
     // original containing-block.
@@ -607,24 +614,28 @@ InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
       container_writing_direction, self_writing_direction);
   // Clamp any negative size to 0.
   if (imcb.InlineSize() < LayoutUnit()) {
-    ResizeIMCBInOneAxis(imcb.inline_inset_bias, imcb.InlineSize(),
-                        &imcb.inline_start, &imcb.inline_end);
+    ResizeIMCBInOneAxis(
+        imcb.inline_default_inset_bias.value_or(imcb.inline_inset_bias),
+        imcb.InlineSize(), &imcb.inline_start, &imcb.inline_end);
   }
   if (imcb.BlockSize() < LayoutUnit()) {
-    ResizeIMCBInOneAxis(imcb.block_inset_bias, imcb.BlockSize(),
-                        &imcb.block_start, &imcb.block_end);
+    ResizeIMCBInOneAxis(
+        imcb.block_default_inset_bias.value_or(imcb.block_inset_bias),
+        imcb.BlockSize(), &imcb.block_start, &imcb.block_end);
   }
   if (node.IsTable()) {
     // Tables should not be larger than the container.
     if (imcb.InlineSize() > available_size.inline_size) {
-      ResizeIMCBInOneAxis(imcb.inline_inset_bias,
-                          imcb.InlineSize() - available_size.inline_size,
-                          &imcb.inline_start, &imcb.inline_end);
+      ResizeIMCBInOneAxis(
+          imcb.inline_default_inset_bias.value_or(imcb.inline_inset_bias),
+          imcb.InlineSize() - available_size.inline_size, &imcb.inline_start,
+          &imcb.inline_end);
     }
     if (imcb.BlockSize() > available_size.block_size) {
-      ResizeIMCBInOneAxis(imcb.block_inset_bias,
-                          imcb.BlockSize() - available_size.block_size,
-                          &imcb.block_start, &imcb.block_end);
+      ResizeIMCBInOneAxis(
+          imcb.block_default_inset_bias.value_or(imcb.block_inset_bias),
+          imcb.BlockSize() - available_size.block_size, &imcb.block_start,
+          &imcb.block_end);
     }
   }
   return imcb;
@@ -791,11 +802,11 @@ bool ComputeOofInlineDimensions(
     ComputeInsets(
         space.AvailableSize().inline_size, container_insets.inline_start,
         container_insets.inline_end, imcb.inline_start, imcb.inline_end,
-        imcb.inline_inset_bias, imcb.inline_safe_inset_bias,
-        imcb.inline_default_inset_bias, dimensions->margins.inline_start,
-        dimensions->margins.inline_end, inline_size,
-        anchor_center_position.inline_offset, &dimensions->inset.inline_start,
-        &dimensions->inset.inline_end);
+        imcb.inline_has_default_alignment_overflow, imcb.inline_inset_bias,
+        imcb.inline_safe_inset_bias, imcb.inline_default_inset_bias,
+        dimensions->margins.inline_start, dimensions->margins.inline_end,
+        inline_size, anchor_center_position.inline_offset,
+        &dimensions->inset.inline_start, &dimensions->inset.inline_end);
   }
 
   return depends_on_min_max_sizes;
@@ -903,14 +914,14 @@ const LayoutResult* ComputeOofBlockDimensions(
     dimensions->inset.block_end =
         imcb.block_end + dimensions->margins.block_end;
   } else {
-    ComputeInsets(space.AvailableSize().block_size,
-                  container_insets.block_start, container_insets.block_end,
-                  imcb.block_start, imcb.block_end, imcb.block_inset_bias,
-                  imcb.block_safe_inset_bias, imcb.block_default_inset_bias,
-                  dimensions->margins.block_start,
-                  dimensions->margins.block_end, block_size,
-                  anchor_center_position.block_offset,
-                  &dimensions->inset.block_start, &dimensions->inset.block_end);
+    ComputeInsets(
+        space.AvailableSize().block_size, container_insets.block_start,
+        container_insets.block_end, imcb.block_start, imcb.block_end,
+        imcb.block_has_default_alignment_overflow, imcb.block_inset_bias,
+        imcb.block_safe_inset_bias, imcb.block_default_inset_bias,
+        dimensions->margins.block_start, dimensions->margins.block_end,
+        block_size, anchor_center_position.block_offset,
+        &dimensions->inset.block_start, &dimensions->inset.block_end);
   }
   return result;
 }
