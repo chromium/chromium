@@ -91,7 +91,6 @@ NSString* GetPromoLabelString(
       return l10n_util::GetNSString(
           IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::kSettings:
-    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
       // No text.
       return nil;
     case signin_metrics::AccessPoint::kStartPage:

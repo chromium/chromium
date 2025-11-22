@@ -42974,14 +42974,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Impression_FromYourSavedInfo" not_user_triggered="true">
-  <owner>ireneuszszulc@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <description>
-    Recorded when showing sign in entry in the Your Saved Info settings page.
-  </description>
-</action>
-
 <action name="Signin_ImpressionWithAccount_FromAvatarBubbleSignin"
     not_user_triggered="true">
   <obsolete>Removed in M104.</obsolete>
@@ -44025,16 +44017,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kUserManagerWithPrefilledEmail.
-  </description>
-</action>
-
-<action name="Signin_Signin_FromYourSavedInfo">
-  <owner>ireneuszszulc@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <description>
-    Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kSettingsYourSavedInfo, emitted from Your saved
-    info settings page.
   </description>
 </action>
 

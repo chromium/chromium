@@ -415,8 +415,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   bool is_sync_promo =
       access_point ==
           signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo ||
-      access_point == signin_metrics::AccessPoint::kSettings ||
-      access_point == signin_metrics::AccessPoint::kSettingsYourSavedInfo;
+      access_point == signin_metrics::AccessPoint::kSettings;
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
       account.account_id !=
                   identity_manager

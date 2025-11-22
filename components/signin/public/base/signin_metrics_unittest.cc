@@ -19,7 +19,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
-    AccessPoint::kSettingsYourSavedInfo,
     AccessPoint::kSupervisedUser,
     AccessPoint::kExtensionInstallBubble,
     AccessPoint::kExtensions,
@@ -62,7 +61,6 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kNtpLink,
     AccessPoint::kMenu,
     AccessPoint::kSettings,
-    AccessPoint::kSettingsYourSavedInfo,
     AccessPoint::kExtensionInstallBubble,
     AccessPoint::kBookmarkBubble,
     AccessPoint::kBookmarkManager,
@@ -99,8 +97,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "Menu";
       case AccessPoint::kSettings:
         return "Settings";
-      case AccessPoint::kSettingsYourSavedInfo:
-        return "YourSavedInfo";
       case AccessPoint::kSupervisedUser:
         return "SupervisedUser";
       case AccessPoint::kExtensionInstallBubble:

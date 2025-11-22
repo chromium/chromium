@@ -410,10 +410,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kSettings:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromSettings"));
       break;
-    case AccessPoint::kSettingsYourSavedInfo:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromYourSavedInfo"));
-      break;
     case AccessPoint::kSupervisedUser:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSupervisedUser"));
@@ -687,10 +683,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kSettings:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSettings"));
-      break;
-    case AccessPoint::kSettingsYourSavedInfo:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Impression_FromYourSavedInfo"));
       break;
     case AccessPoint::kExtensionInstallBubble:
       base::RecordAction(base::UserMetricsAction(
