@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_CONTEXT_GLIC_SHARING_MANAGER_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_CONTEXT_GLIC_SHARING_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -230,6 +232,9 @@ class GlicSharingManager {
 
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
+
+  virtual std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
+      tabs::TabHandle tab_handle) = 0;
 
   virtual void GetContextFromTab(
       tabs::TabHandle tab_handle,

@@ -370,7 +370,7 @@ GlicPinnedTabManager::GetPinnedTabEntry(tabs::TabHandle tab_handle) const {
   return &(*it);
 }
 
-GlicPinnedTabUsage* GlicPinnedTabManager::GetPinnedTabUsage(
+GlicPinnedTabUsage* GlicPinnedTabManager::GetPinnedTabUsageInternal(
     tabs::TabHandle tab_handle) {
   auto it = std::find_if(pinned_tabs_.begin(), pinned_tabs_.end(),
                          [tab_handle](const PinnedTabEntry& entry) {
@@ -413,6 +413,15 @@ std::vector<content::WebContents*> GlicPinnedTabManager::GetPinnedTabs() const {
   return pinned_contents;
 }
 
+std::optional<GlicPinnedTabUsage> GlicPinnedTabManager::GetPinnedTabUsage(
+    tabs::TabHandle tab_handle) const {
+  const auto* entry = GetPinnedTabEntry(tab_handle);
+  if (!entry) {
+    return std::nullopt;
+  }
+  return entry->usage;
+}
+
 void GlicPinnedTabManager::SubscribeToPinCandidates(
     mojom::GetPinCandidatesOptionsPtr options,
     mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
@@ -430,7 +439,7 @@ void GlicPinnedTabManager::SubscribeToPinCandidates(
 void GlicPinnedTabManager::OnPinnedTabContextEvent(
     tabs::TabHandle tab_handle,
     GlicPinnedTabContextEvent context_event) {
-  auto* pinned_usage = GetPinnedTabUsage(tab_handle);
+  auto* pinned_usage = GetPinnedTabUsageInternal(tab_handle);
   if (!pinned_usage) {
     return;
   }

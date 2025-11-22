@@ -91,6 +91,9 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   void UnpinAllTabs(GlicUnpinTrigger trigger) override;
 
+  std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
+      tabs::TabHandle tab_handle) override;
+
   int32_t GetMaxPinnedTabs() const override;
 
   int32_t GetNumPinnedTabs() const override;

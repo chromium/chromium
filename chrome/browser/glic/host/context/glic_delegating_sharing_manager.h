@@ -67,6 +67,10 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
   bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
                  GlicUnpinTrigger trigger) override;
   void UnpinAllTabs(GlicUnpinTrigger trigger) override;
+
+  std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
+      tabs::TabHandle tab_handle) override;
+
   int32_t GetMaxPinnedTabs() const override;
   int32_t GetNumPinnedTabs() const override;
   bool IsTabPinned(tabs::TabHandle tab_handle) const override;

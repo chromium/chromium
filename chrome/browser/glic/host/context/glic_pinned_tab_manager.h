@@ -101,6 +101,10 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // Returns true if the tab is in the pinned collection.
   bool IsTabPinned(tabs::TabHandle tab_handle) const;
 
+  // Returns the pinned tab usage for a given tab handle, if it exists.
+  std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
+      tabs::TabHandle tab_handle) const;
+
   // Fetches the current list of pinned tabs.
   std::vector<content::WebContents*> GetPinnedTabs() const;
 
@@ -168,7 +172,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   const PinnedTabEntry* GetPinnedTabEntry(tabs::TabHandle tab_handle) const;
 
   // Returns the pinned tab usage for a given tab_handle, if it exists.
-  GlicPinnedTabUsage* GetPinnedTabUsage(tabs::TabHandle tab_handle);
+  GlicPinnedTabUsage* GetPinnedTabUsageInternal(tabs::TabHandle tab_handle);
 
   // Returns true if the tab is in the pinned collection.
   bool IsTabPinned(int tab_id) const;

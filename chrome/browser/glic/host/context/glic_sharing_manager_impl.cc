@@ -142,6 +142,11 @@ void GlicSharingManagerImpl::UnpinAllTabs(GlicUnpinTrigger trigger) {
   pinned_tab_manager()->UnpinAllTabs(trigger);
 }
 
+std::optional<GlicPinnedTabUsage> GlicSharingManagerImpl::GetPinnedTabUsage(
+    tabs::TabHandle tab_handle) {
+  return pinned_tab_manager()->GetPinnedTabUsage(tab_handle);
+}
+
 int32_t GlicSharingManagerImpl::GetMaxPinnedTabs() const {
   return pinned_tab_manager()->GetMaxPinnedTabs();
 }
