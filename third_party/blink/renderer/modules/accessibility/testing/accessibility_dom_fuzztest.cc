@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -19,6 +21,21 @@
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
+
+namespace {
+
+// Helper to create a domain for an attribute name-value pair.
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AttributeNameValuePairDomain(const QualifiedName& attribute,
+                             fuzztest::Domain<std::string> value_domain) {
+  return fuzztest::Map(
+      [attribute](const std::string& value) {
+        return std::make_pair(attribute, value);
+      },
+      std::move(value_domain));
+}
+
+}  // namespace
 
 class HtmlAndAria : public DomScenarioDomainSpecification {
  public:
@@ -101,6 +118,90 @@ class MathMLAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class ProblematicMarkup : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override {
+    return fuzztest::Map(
+        [](html_names::HTMLTag tag) -> QualifiedName {
+          return html_names::TagToQualifiedName(tag);
+        },
+        fuzztest::ElementOf<html_names::HTMLTag>(
+            {html_names::HTMLTag::kArea, html_names::HTMLTag::kDialog,
+             html_names::HTMLTag::kIFrame, html_names::HTMLTag::kInput,
+             html_names::HTMLTag::kLabel, html_names::HTMLTag::kMap,
+             html_names::HTMLTag::kRp, html_names::HTMLTag::kRt,
+             html_names::HTMLTag::kRuby, html_names::HTMLTag::kWbr}));
+  }
+
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(
+        AttributeNameValuePairDomain(
+            html_names::kRoleAttr,
+            fuzztest::OneOf(AnyNonAbstractAriaRole(),
+                            fuzztest::Just(std::string("none")))),
+        AttributeNameValuePairDomain(
+            html_names::kAriaOwnsAttr,
+            AnyValueForAriaAttribute(html_names::kAriaOwnsAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kAriaActivedescendantAttr,
+            AnyValueForAriaAttribute(html_names::kAriaActivedescendantAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kAriaHiddenAttr,
+            AnyValueForAriaAttribute(html_names::kAriaHiddenAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kContenteditableAttr,
+            AnyValueForHtmlAttribute(html_names::kContenteditableAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kTypeAttr,
+            AnyValueForHtmlAttribute(html_names::kTypeAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kInertAttr,
+            AnyValueForHtmlAttribute(html_names::kInertAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kHiddenAttr,
+            AnyValueForHtmlAttribute(html_names::kHiddenAttr)));
+  }
+
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return fuzztest::FlatMap(
+        [](CSSPropertyID property) {
+          return fuzztest::Map(
+              [property](const std::string& value) {
+                CSSPropertyName prop_name(property);
+                return base::StrCat(
+                    {prop_name.ToAtomicString().Utf8(), ":", value});
+              },
+              AnyPlausibleValueForCSSProperty(property));
+        },
+        fuzztest::ElementOf<CSSPropertyID>(
+            {CSSPropertyID::kDisplay, CSSPropertyID::kVisibility,
+             CSSPropertyID::kContentVisibility}));
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    // Include problematic text content like soft hyphens (U+00AD).
+    return fuzztest::OneOf(fuzztest::PrintableAsciiString(),
+                           fuzztest::Map(
+                               [](const std::string& base_text) {
+                                 std::string result = base_text;
+                                 // Insert a soft hyphen somewhere in the middle
+                                 // if possible.
+                                 size_t mid = result.length() / 2;
+                                 if (mid > 0 && mid < result.length()) {
+                                   result.insert(mid, "\u00AD");
+                                 }
+                                 return result;
+                               },
+                               fuzztest::PrintableAsciiString()));
+  }
+  int GetMaxDomNodes() override { return 20; }
+  int GetMaxAttributesPerNode() override { return 8; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+};
+
 class ValidTableAndAria : public DomScenarioDomainSpecification {
  public:
   fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
@@ -176,6 +277,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void CanvasFallbackContent(const DomScenario& input) { RunTest(input); }
   void SvgAndAria(const DomScenario& input) { RunTest(input); }
   void MathMLAndAria(const DomScenario& input) { RunTest(input); }
+  void ProblematicMarkup(const DomScenario& input) { RunTest(input); }
   void ValidTableAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
@@ -203,6 +305,9 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, SvgAndAria)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, MathMLAndAria)
     .WithDomains(BuildDomScenarios<MathMLAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, ProblematicMarkup)
+    .WithDomains(BuildDomScenarios<ProblematicMarkup>());
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, ValidTableAndAria)
     .WithDomains(BuildDomScenarios<ValidTableAndAria>());
