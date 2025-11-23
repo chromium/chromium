@@ -22,13 +22,6 @@ public class IncognitoNewTabPageAppMenuFacility
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
         }
 
-        if (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
-                || ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-            // At most one of these exist.
-            mPinTab = declarePossibleMenuItem(items, PIN_TAB);
-            mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);
-        }
-
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);

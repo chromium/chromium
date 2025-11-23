@@ -53,8 +53,6 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     protected Item mNewWindow;
     protected Item mBookmarks;
     protected Item mSettings;
-    protected Item mPinTab;
-    protected Item mUnpinTab;
 
     @Override
     protected void declareItems(ItemsBuilder items) {
@@ -74,12 +72,6 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
 
         if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
-        }
-        if (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
-                || ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-            // At most one of these exist.
-            mPinTab = declarePossibleMenuItem(items, PIN_TAB);
-            mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);
         }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             mNewWindow = declareMenuItem(items, NEW_WINDOW_ID);
@@ -149,17 +141,6 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
                         new TabGroupListBottomSheetFacility<>(
                                 new ArrayList<>(tabGroupIds), /* isNewTabGroupRowVisible= */ true));
     }
-
-    /** Select "Pin tab" from the app menu. */
-    public void pinTab() {
-         mPinTab.scrollToAndSelectTo().complete();
-    }
-
-    /** Select "Unpin tab" from the app menu. */
-    public void unpinTab() {
-         mUnpinTab.scrollToAndSelectTo().complete();
-    }
-
 
     private TabbedAppMenuPropertiesDelegate getTabbedAppMenuPropertiesDelegate() {
         return (TabbedAppMenuPropertiesDelegate)

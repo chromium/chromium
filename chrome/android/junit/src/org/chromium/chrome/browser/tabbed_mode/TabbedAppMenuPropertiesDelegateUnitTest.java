@@ -669,8 +669,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         expectedItems.add(R.id.add_to_group_menu_id);
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
-        expectedItems.add(R.id.pin_tab_menu_id);
-        expectedTitles.add(R.string.menu_pin_tab);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
         expectedItems.add(R.id.open_history_menu_id);
@@ -726,7 +724,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage() {
         testPageMenuItems_RegularPage(/* shouldShowNewIncognitoTab= */ true);
@@ -734,10 +731,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testPageMenuItems_Phone_RegularPage_incognitoWindowEnabled() {
         testPageMenuItems_RegularPage(/* shouldShowNewIncognitoTab= */ false);
     }
@@ -766,8 +760,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_new_incognito_tab);
         expectedItems.add(R.id.add_to_group_menu_id);
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
-        expectedItems.add(R.id.pin_tab_menu_id);
-        expectedTitles.add(R.string.menu_pin_tab);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
         if (!isIncognitoWindow) {
@@ -818,17 +810,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPageMenuItems_Phone_IncognitoPage() {
         testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ false);
     }
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testPageMenuItems_Phone_IncognitoPage_incognitoWindowEnabled() {
         testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ true);
     }
@@ -2274,48 +2262,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertFalse(
                 "AI PDF menu item should not be visible",
                 isMenuVisible(modelList, R.id.ai_pdf_menu_id));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS
-    })
-    public void testPinTabToggleMenuItem_tabNotPinned_shouldShowPinTabItem() {
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mTab.getIsPinned()).thenReturn(false);
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        assertTrue(
-                "Pin tab menu item should be visible",
-                isMenuVisible(modelList, R.id.pin_tab_menu_id));
-
-        assertFalse(
-                "Unpin tab menu item should not be visible",
-                isMenuVisible(modelList, R.id.unpin_tab_menu_id));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS
-    })
-    public void testPinTabToggleMenuItem_tabPinned_shouldShowUnpinTabItem() {
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mTab.getIsPinned()).thenReturn(true);
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        assertTrue(
-                "Unpin tab menu item should be visible",
-                isMenuVisible(modelList, R.id.unpin_tab_menu_id));
-
-        assertFalse(
-                "Pin tab menu item should not be visible",
-                isMenuVisible(modelList, R.id.pin_tab_menu_id));
     }
 
     @Test

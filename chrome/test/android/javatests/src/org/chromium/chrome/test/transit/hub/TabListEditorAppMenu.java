@@ -40,6 +40,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
     private final TabSwitcherListEditorFacility<HostStationT> mListEditor;
     private Item mCloseMenuItem;
     private Item mGroupOrAddTabsMenuItem;
+    private Item mPinMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility<HostStationT> listEditor) {
         mListEditor = listEditor;
@@ -74,6 +75,11 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                 itemViewSpec(withText("Bookmark " + tabOrTabs));
         items.declareItem(
                 onScreenViewSpec1, itemDataMatcher(R.id.tab_list_editor_bookmark_menu_item));
+
+        ViewSpec<? extends View> onScreenViewSpec3 = itemViewSpec(withText("Pin " + tabOrTabs));
+        mPinMenuItem =
+                items.declareItem(
+                        onScreenViewSpec3, itemDataMatcher(R.id.tab_list_editor_pin_menu_item));
 
         ViewSpec<? extends View> onScreenViewSpec = itemViewSpec(withText("Share " + tabOrTabs));
         items.declareItem(onScreenViewSpec, itemDataMatcher(R.id.tab_list_editor_share_menu_item));
@@ -125,6 +131,11 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                 .exitFacilityAnd(mListEditor)
                 .enterFacilities(card, undoSnackbar);
         return Pair.create(card, undoSnackbar);
+    }
+
+    /** Select "Pin tabs". */
+    public void pinTabs() {
+        mPinMenuItem.scrollToAndSelectTo().exitFacility(mListEditor);
     }
 
     /** Select "Close tabs" to close all selected tabs. */

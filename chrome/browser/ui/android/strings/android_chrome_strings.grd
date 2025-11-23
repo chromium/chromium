@@ -4370,12 +4370,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_REVIEW_PDF_WITH_AI" desc="Menu item to review a PDF file with AI.">
         Review PDF with AI
       </message>
-      <message name="IDS_MENU_PIN_TAB" desc="Menu item for pinning a tab.">
-        Pin tab
-      </message>
-      <message name="IDS_MENU_UNPIN_TAB" desc="Menu item for unpinning a tab.">
-        Unpin tab
-      </message>
       <message name="IDS_MENU_ITEM_CONTENT_FILTER_HELP_CENTER_LINK" desc="Menu item to explain that the content filter is on and to direct the user to the help center article about content filters. Only available when the content filter is on.">
         Content filter is on
       </message>

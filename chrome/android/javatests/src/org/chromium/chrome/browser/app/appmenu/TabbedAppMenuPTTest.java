@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.LargeTest;
 
@@ -19,7 +17,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -128,32 +125,6 @@ public class TabbedAppMenuPTTest {
                                 .withIncognito(false)
                                 .withTabAlreadySelected(tab)
                                 .build());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS
-    })
-    public void testPinTabToggle() {
-        WebPageStation page = mCtaTestRule.startOnBlankPage();
-        Tab tab = page.loadedTabElement.value();
-        assertFalse(tab.getIsPinned());
-
-        // Open the app menu and pin the tab.
-        RegularWebPageAppMenuFacility menu = page.openRegularTabAppMenu();
-
-        menu.pinTab();
-        tab = page.loadedTabElement.value();
-        assertTrue(tab.getIsPinned());
-
-        // Open the app menu and unpin the tab.
-        RegularWebPageAppMenuFacility pinnedMenu = page.openRegularTabAppMenu();
-
-        pinnedMenu.unpinTab();
-        tab = page.loadedTabElement.value();
-        assertFalse(tab.getIsPinned());
     }
 
     /**

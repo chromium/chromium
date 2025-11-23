@@ -24,7 +24,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -255,11 +254,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Add to Group
         if (shouldShowAddToGroup()) modelList.add(buildAddToGroupItem(currentTab));
-
-        // Pin/Unpin tab.
-        if (shouldShowTogglePinTabItem(currentTab)) {
-            modelList.add(buildTogglePinTabItem(currentTab));
-        }
 
         // New Window
         if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
@@ -580,26 +574,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         getAddToGroupMenuItemString(
                                 currentTab != null ? currentTab.getTabGroupId() : null)));
         return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
-    }
-
-    @Contract("null -> false")
-    private boolean shouldShowTogglePinTabItem(Tab currentTab) {
-        return (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
-                        || ChromeFeatureList.sAndroidPinnedTabs.isEnabled())
-                && currentTab != null;
-    }
-
-    private MVCListAdapter.ListItem buildTogglePinTabItem(Tab currentTab) {
-        assert shouldShowTogglePinTabItem(currentTab);
-        boolean isPinned = currentTab.getIsPinned();
-        int menuId = isPinned ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id;
-        int titleId = isPinned ? R.string.menu_unpin_tab : R.string.menu_pin_tab;
-        int iconId = isPinned ? R.drawable.ic_keep_off_24dp : R.drawable.ic_keep_24dp;
-
-        return new MVCListAdapter.ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
-                        menuId, titleId, shouldShowIconBeforeItem() ? iconId : 0));
     }
 
     private MVCListAdapter.ListItem buildNewWindowItem() {
