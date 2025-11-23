@@ -1,19 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] HTML parser should create a builtin element with null registry if customelementregistry is set
   assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] document.createElement should create a builtin element with null registry if customElement is set to null
-  assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] attchShadow on a builtin element with null customElementRegistry should create a ShadowRoot with null registry
-  assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] Setting customelementregistry content attribute after a builtin element had finishsed parsing should not set null registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
 [FAIL] Cloning a builtin element with null regsitry should create an element with null registry
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] HTML parser should create a custom element candidate with null registry if customelementregistry is set
-  assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] document.createElement should create a custom element candidate with null registry if customElement is set to null
-  assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] attchShadow on a custom element candidate with null customElementRegistry should create a ShadowRoot with null registry
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] Setting customelementregistry content attribute after a custom element candidate had finishsed parsing should not set null registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
@@ -21,13 +13,11 @@ This is a testharness.js-based test.
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] HTML parser should create a custom element with null registry if customelementregistry is set
   assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] document.createElement should create a custom element with null registry if customElement is set to null
-  assert_equals: expected (object) null but got (undefined) undefined
-[FAIL] attchShadow on a custom element with null customElementRegistry should create a ShadowRoot with null registry
-  assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] Setting customelementregistry content attribute after a custom element had finishsed parsing should not set null registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
 [FAIL] Cloning a custom element with null regsitry should create an element with null registry
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Descendants of an element with customelementregistry should use null registry
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] Setting customelementregistry content attribute during constructor should not make it use null registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined

@@ -9,6 +9,9 @@
 <body>
 <script>
 
+class GlobalABElement extends HTMLElement {};
+customElements.define('a-b', GlobalABElement);
+
 test(() => {
     const shadowRoot = document.createElement('div').attachShadow({mode: 'closed'});
     assert_equals(shadowRoot.customElementRegistry, window.customElements);
@@ -45,6 +48,24 @@ test(() => {
     const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null});
     assert_equals(shadowRoot.customElementRegistry, null);
 }, 'attachShadow() should use null registry when customElementRegistry is null (host uses custom registry)');
+
+test((test) => {
+    const host = document.createElement('div');
+    const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null});
+    assert_equals(shadowRoot.customElementRegistry, null);
+}, `attchShadow on a builtin element with null customElementRegistry should create a ShadowRoot with null registry`);
+
+test((test) => {
+    const host = document.createElement('c-d');
+    const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null});
+    assert_equals(shadowRoot.customElementRegistry, null);
+}, `attchShadow on a custom elememnt candidate with null customElementRegistry should create a ShadowRoot with null registry`);
+
+test((test) => {
+    const host = document.createElement('a-b');
+    const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null});
+    assert_equals(shadowRoot.customElementRegistry, null);
+}, `attchShadow on a custom elememnt with null customElementRegistry should create a ShadowRoot with null registry`);
 
 test(() => {
     const registry = new CustomElementRegistry;

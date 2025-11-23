@@ -31,19 +31,6 @@ function runBasicTests(makeIframe, elementName, elementDescription) {
 
     test((test) => {
         const [doc, win] = makeIframe(test);
-        assert_equals(doc.createElement(elementName, {customElementRegistry: null}).customElementRegistry, null);
-        assert_equals(doc.createElementNS('http://www.w3.org/1999/xhtml', 'div', {customElementRegistry: null}).customElementRegistry, null);
-    }, `document.createElement should create a ${elementDescription} with null registry if customElement is set to null`);
-
-    test((test) => {
-        const [doc, win] = makeIframe(test);
-        const host = doc.createElement(elementName);
-        const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null})
-        assert_equals(shadowRoot.customElementRegistry, null);
-    }, `attchShadow on a ${elementDescription} with null customElementRegistry should create a ShadowRoot with null registry`);
-
-    test((test) => {
-        const [doc, win] = makeIframe(test);
         const element = doc.createElement(elementName);
         assert_equals(element.customElementRegistry, win.customElements);
         element.setAttribute('customelementregistry', '');
@@ -65,6 +52,16 @@ function runBasicTests(makeIframe, elementName, elementDescription) {
 runBasicTests(makeIframe, 'div', 'builtin element');
 runBasicTests(makeIframe, 'a-b', 'custom element candidate');
 runBasicTests(makeIframeWithABElement, 'a-b', 'custom element');
+
+test((test) => {
+    const [doc, win] = makeIframe(test);
+    win.customElements.define('c-d', class CDElement extends win.HTMLElement { });
+    const container = doc.createElement('div', {customElementRegistry: null});
+    container.innerHTML = '<a-b><c-d></c-d><e-f customelementregistry></e-f></a-b>';
+    assert_equals(container.querySelector('a-b').customElementRegistry, null);
+    assert_equals(container.querySelector('c-d').customElementRegistry, null);
+    assert_equals(container.querySelector('e-f').customElementRegistry, null);
+}, 'Descendants of an element with customelementregistry should use null registry');
 
 test((test) => {
     const [doc, win] = makeIframe(test);

@@ -5,5 +5,7 @@ This is a testharness.js-based test.
   assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
 [FAIL] Inserting a custom element candiate with null registry does not change the registry
   assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Inserting a node from another document results in the custom element registry to be set and upgraded.
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
 Harness: the test ran to completion.
 
