@@ -210,6 +210,14 @@ void FindBarController::HandleActiveTabChanged(
   }
 }
 
+// `FindBarController` should be observing the active tab's contents at all
+// times.
+// On ChromeOS it's possible the active tab's contents are discarded, so the
+// observation must be updated.
+void FindBarController::AboutToBeDiscarded(content::WebContents* new_contents) {
+  ChangeWebContents(new_contents);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarController, content::WebContentsObserver implementation:
 
@@ -330,6 +338,7 @@ std::u16string FindBarController::GetSelectedText() {
 void FindBarController::UpdatePageAction() {
   CHECK(IsPageActionMigrated(PageActionIconType::kFind));
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
+
   tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   if (!tab_features) {
     return;
