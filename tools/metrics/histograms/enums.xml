@@ -11039,6 +11039,7 @@ from previous Chrome versions.
   <int value="-1110240043" label="FastPairSoftwareScanningSupport:disabled"/>
   <int value="-1109969457" label="AnnotatedPageContentExtraction:enabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
+  <int value="-1109622745" label="ToolbarHeightSidePanel:disabled"/>
   <int value="-1109559578" label="FeedContainment:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
   <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
@@ -11538,6 +11539,7 @@ from previous Chrome versions.
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
   <int value="-934900747" label="FluentOverlayScrollbar:disabled"/>
   <int value="-934444201" label="Hotspot:enabled"/>
+  <int value="-934221621" label="ToolbarHeightSidePanel:enabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>

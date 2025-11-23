@@ -3924,6 +3924,12 @@ inline constexpr char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
     "Pure refactoring, no user-visible behavioral changes are included.";
 
+inline constexpr char kSidePanelRelativeAlignmentName[] =
+    "Side Panel Relative Alignment";
+inline constexpr char kSidePanelRelativeAlignmentDescription[] =
+    "Set the relative alignment between the toolbar height side panel and the "
+    "content height side panel";
+
 inline constexpr char kTabStorageSqlitePrototypeName[] =
     "Tab Storage SQLite Prototype";
 inline constexpr char kTabStorageSqlitePrototypeDescription[] =
