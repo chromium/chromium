@@ -353,6 +353,31 @@ ProxyConfigToValueTestCase GetTestCaseMultiProxyChainProxyPerScheme() {
 }
 #endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
+ProxyConfigToValueTestCase GetTestCaseOverrideRule() {
+  ProxyConfig::ProxyOverrideRule rule;
+  rule.destination_matchers.AddRuleFromString("http://www.example.com");
+  rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
+  rule.dns_conditions = {
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("http", "ads.corps", 321),
+          .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+              kNotFound},
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "ads2.corps", 443),
+          .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+              kResolves},
+  };
+
+  auto config = ProxyConfig::CreateDirect();
+  config.set_proxy_override_rules({std::move(rule)});
+  return {std::move(config),
+          "{\"override_rules\":[{\"destination_matchers\":\"http://"
+          "www.example.com;\",\"dns_conditions\":[{\"host\":\"http://"
+          "ads.corps:321\",\"result\":\"NotFound\"},{\"host\":\"https://"
+          "ads2.corps\",\"result\":\"Resolves\"}],\"proxy_list\":[\"[https://"
+          "foo:333]\",\"direct://\"]}]}"};
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProxyConfigToValueTest,
@@ -368,7 +393,8 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
                     GetTestCaseMultiProxyChainProxyPerScheme(),
 #endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-                    GetTestCaseSingleProxyList()));
+                    GetTestCaseSingleProxyList(),
+                    GetTestCaseOverrideRule()));
 
 TEST(ProxyConfigTest, ParseProxyRules) {
   const struct {

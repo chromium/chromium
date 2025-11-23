@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -42,11 +43,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
 ConfiguredProxyResolutionRequest::~ConfiguredProxyResolutionRequest() {
   if (service_) {
     service_->RemovePendingRequest(this);
-    net_log_.AddEvent(NetLogEventType::CANCELLED);
-
-    if (is_started()) {
-      Cancel();
-    }
+    Cancel();
 
     // This should be emitted last, after any message `Cancel()` may
     // trigger.
@@ -64,8 +61,10 @@ int ConfiguredProxyResolutionRequest::Start() {
       service_->config_->traffic_annotation());
 
   if (!service_->config_->value().proxy_override_rules().empty()) {
+    net_log_.BeginEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
+
     auto* host_resolver = service_->GetHostResolverForOverrideRules();
-    DCHECK(host_resolver);
+    CHECK(host_resolver);
 
     for (const auto& rule : service_->config_->value().proxy_override_rules()) {
       if (rule.destination_matchers.Matches(url_)) {
@@ -79,22 +78,51 @@ int ConfiguredProxyResolutionRequest::Start() {
           if (!dns_results_.contains(dns_condition.host)) {
             HostResolver::ResolveHostParameters parameters;
             parameters.initial_priority = priority_;
+
+            auto sub_net_log = NetLogWithSource::Make(
+                net_log_.net_log(),
+                NetLogSourceType::PROXY_OVERRIDE_HOST_RESOLUTION);
             auto request = host_resolver->CreateRequest(
-                dns_condition.host, network_anonymization_key_, net_log_,
+                dns_condition.host, network_anonymization_key_, sub_net_log,
                 parameters);
+
+            // Link the two net log sources together.
+            sub_net_log.AddEventReferencingSource(
+                NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
+                net_log_.source());
+            net_log_.AddEvent(
+                NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION, [&] {
+                  base::Value::Dict dict;
+                  sub_net_log.source().AddToEventParameters(dict);
+                  dict.Set("dns_condition", dns_condition.ToDict());
+                  return dict;
+                });
 
             int rv = request->Start(base::BindOnce(
                 &ConfiguredProxyResolutionRequest::OnDnsHostResolved,
                 base::Unretained(this), dns_condition.host));
             if (rv != ERR_IO_PENDING) {
-              dns_results_.emplace(dns_condition.host,
-                                   ResolveHostResult(rv, *request));
+              auto result = ResolveHostResult(rv, *request);
+              net_log_.AddEvent(
+                  NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {
+                    base::Value::Dict dict;
+                    dict.Set("host", dns_condition.host.Serialize());
+                    dict.Set("was_resolved_sync", true);
+                    result.AddToDict(dict);
+                    return dict;
+                  });
+              dns_results_.emplace(dns_condition.host, std::move(result));
             } else {
               dns_results_.emplace(dns_condition.host, std::move(request));
             }
           }
         }
       }
+    }
+
+    if (applicable_override_rules_.empty()) {
+      // Not override rules applied.
+      net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
     }
   }
 
@@ -104,7 +132,7 @@ int ConfiguredProxyResolutionRequest::Start() {
 void ConfiguredProxyResolutionRequest::
     StartAndCompleteCheckingForSynchronous() {
   int rv = service_->TryToCompleteSynchronously(
-      url_, /*bypass_override_rules=*/false, results_);
+      url_, /*bypass_override_rules=*/false, net_log_, results_);
   if (rv == ERR_IO_PENDING) {
     rv = Start();
   }
@@ -115,11 +143,13 @@ void ConfiguredProxyResolutionRequest::
 }
 
 void ConfiguredProxyResolutionRequest::Cancel() {
-  CHECK(is_started());
-  // The request may already be running in the resolver.
-  resolve_job_.reset();
-  applicable_override_rules_ = base::queue<ProxyConfig::ProxyOverrideRule>();
-  dns_results_.clear();
+  net_log_.AddEvent(NetLogEventType::CANCELLED);
+
+  if (!dns_results_.empty()) {
+    net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
+  }
+
+  Reset();
   CHECK(!is_started());
 }
 
@@ -129,7 +159,7 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
   // Clear state so that `is_started()` returns false while
   // DidFinishResolvingProxy() runs.
   if (is_started()) {
-    Cancel();
+    Reset();
   }
 
   // Note that DidFinishResolvingProxy might modify `results_`.
@@ -192,6 +222,12 @@ ConfiguredProxyResolutionRequest::ResolveHostResult::ResolveHostResult(
     : result_code(result_code),
       is_address_list_empty(completed_request.GetAddressResults().empty()) {}
 
+void ConfiguredProxyResolutionRequest::ResolveHostResult::AddToDict(
+    base::Value::Dict& dict) const {
+  dict.Set("net_error", result_code);
+  dict.Set("is_address_list_empty", is_address_list_empty);
+}
+
 int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
   if (!applicable_override_rules_.empty()) {
     int rv = EvaluateApplicableOverrideRules();
@@ -208,7 +244,7 @@ int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
   // ended up not applying, and there are e.g. manual proxy settings as
   // fallback.
   int rv = service_->TryToCompleteSynchronously(
-      url_, /*bypass_override_rules=*/true, results_);
+      url_, /*bypass_override_rules=*/true, net_log_, results_);
   if (rv != ERR_IO_PENDING) {
     return rv;
   }
@@ -223,7 +259,6 @@ int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
 void ConfiguredProxyResolutionRequest::OnDnsHostResolved(
     const url::SchemeHostPort& host,
     int result_code) {
-  // TODO(crbug.com/454638342): Capture error result codes in NetLog.
   auto dns_result_it = dns_results_.find(host);
   CHECK(
       std::holds_alternative<std::unique_ptr<HostResolver::ResolveHostRequest>>(
@@ -233,6 +268,14 @@ void ConfiguredProxyResolutionRequest::OnDnsHostResolved(
           dns_result_it->second));
   CHECK(request);
   dns_result_it->second.emplace<ResolveHostResult>(result_code, *request);
+
+  net_log_.AddEvent(NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {
+    base::Value::Dict dict;
+    dict.Set("host", host.Serialize());
+    dict.Set("was_resolved_sync", false);
+    std::get<ResolveHostResult>(dns_result_it->second).AddToDict(dict);
+    return dict;
+  });
 
   if (!service_ || !service_->IsReady()) {
     // Something happened during DNS resolution which invalidated the
@@ -269,7 +312,8 @@ int ConfiguredProxyResolutionRequest::EvaluateApplicableOverrideRules() {
     }
 
     if (conditions_satisfied) {
-      // TODO(crbug.com/454638342): Capture applicable rule in NetLog.
+      net_log_.AddEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+                        [&] { return applicable_rule.ToDict(); });
       results_->UseProxyList(applicable_rule.proxy_list);
       break;
     }
@@ -280,7 +324,15 @@ int ConfiguredProxyResolutionRequest::EvaluateApplicableOverrideRules() {
   }
 
   dns_results_.clear();
+  net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
   return OK;
+}
+
+void ConfiguredProxyResolutionRequest::Reset() {
+  // The request may already be running in the resolver.
+  resolve_job_.reset();
+  applicable_override_rules_ = base::queue<ProxyConfig::ProxyOverrideRule>();
+  dns_results_.clear();
 }
 
 // static

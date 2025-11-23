@@ -333,8 +333,10 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // re-evaluate synchronous rules after having evaluated override rules with
   // none of them applying.
   // Completing synchronously means we don't need to query ProxyResolver.
+  // `net_log` will be used if an override rule was applied synchronously.
   int TryToCompleteSynchronously(const GURL& url,
                                  bool bypass_override_rules,
+                                 const NetLogWithSource& net_log,
                                  ProxyInfo* result);
 
   // Cancels all of the requests sent to the ProxyResolver. These will be

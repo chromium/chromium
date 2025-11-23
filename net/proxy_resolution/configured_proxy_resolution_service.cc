@@ -996,8 +996,8 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 
   // Check if the request can be completed right away. (This is the case when
   // using a direct connection for example).
-  int rv =
-      TryToCompleteSynchronously(url, /*bypass_override_rules=*/false, result);
+  int rv = TryToCompleteSynchronously(url, /*bypass_override_rules=*/false,
+                                      net_log, result);
   if (rv != ERR_IO_PENDING) {
     rv = DidFinishResolvingProxy(url, network_anonymization_key, method, result,
                                  rv, net_log);
@@ -1031,6 +1031,7 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     const GURL& url,
     bool bypass_override_rules,
+    const NetLogWithSource& net_log,
     ProxyInfo* result) {
   DCHECK_NE(STATE_NONE, current_state_);
 
@@ -1046,7 +1047,10 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     for (const auto& rule : config_->value().proxy_override_rules()) {
       if (rule.destination_matchers.Matches(url)) {
         if (rule.dns_conditions.empty()) {
-          // TODO(crbug.com/454638342): Capture applicable rule in NetLog.
+          net_log.AddEvent(
+              NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+              [&] { return rule.ToDict(); });
+
           result->UseProxyList(rule.proxy_list);
           result->set_traffic_annotation(MutableNetworkTrafficAnnotationTag(
               config_->traffic_annotation()));

@@ -5012,3 +5012,49 @@ EVENT_TYPE(DBSC_REFRESH_RESULT)
 //     "status": <string>,
 //   }
 EVENT_TYPE(DBSC_REGISTRATION_RESULT)
+
+// The evaluation start/end of proxy resolution override rules.
+EVENT_TYPE(PROXY_RESOLUTION_OVERRIDE_RULES)
+
+// This event is logged when an applicable proxy override rule starts a DNS
+// resolution as required by one of its conditions. It contains the following
+// parameters:
+//   {
+//      "source_dependency": <Source identifier for the override rule which
+//      started this host resolution>,
+//   }
+EVENT_TYPE(PROXY_OVERRIDE_HOST_RESOLUTION)
+
+// This event is logged when an applicable proxy override rule starts a DNS
+// resolution as required by one of its conditions. It contains the following
+// parameters:
+//   {
+//      "source_dependency": <Source identifier for the net log that will be
+//      used by the HostResolver request>, "dns_condition": {
+//         "host": <string>,
+//         "result": <string>
+//      }
+//   }
+EVENT_TYPE(PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION)
+
+// This event is logged when an applicable proxy override rule's DNS resolution
+// request completed. It contains the following parameters:
+//   {
+//      "host": <string>,
+//      "was_resolved_sync": <bool>,
+//      "net_error": <Integer error code>,
+//      "is_address_list_empty": <bool>,
+//   }
+EVENT_TYPE(PROXY_OVERRIDE_END_HOST_RESOLUTION)
+
+// This event is logged when a proxy resolution override rule was applied
+// for a request. It contains the rule, captured in the following parameters:
+//   {
+//     "destination_matchers": <string>,
+//     "proxy_list": <List of proxy servers>,
+//     "dns_conditions": [{
+//         "host": <string>,
+//         "result": <string>
+//       }]
+//   }
+EVENT_TYPE(PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED)

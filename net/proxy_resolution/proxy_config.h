@@ -7,16 +7,13 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -180,6 +177,9 @@ class NET_EXPORT ProxyConfig {
 
       bool operator==(const DnsProbeCondition& other) const;
 
+      // Creates a Value::Dict dump of this condition.
+      base::Value::Dict ToDict() const;
+
       url::SchemeHostPort host;
       Result result = kNotFound;
     };
@@ -193,6 +193,9 @@ class NET_EXPORT ProxyConfig {
 
     // Returns true if `this` has the same serialized list of rules as `other`.
     bool operator==(const ProxyOverrideRule& other) const;
+
+    // Creates a Value::Dict dump of this override rule.
+    base::Value::Dict ToDict() const;
 
     ProxyHostMatchingRules destination_matchers;
     std::vector<DnsProbeCondition> dns_conditions;

@@ -4751,12 +4751,173 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_EQ(&service, casted_service);
 }
 
+TEST_F(ConfiguredProxyResolutionServiceTest, NoMatchingOverrideRule) {
+  auto config = ProxyConfig::CreateDirect();
+  auto override_rule =
+      CreateOverrideRule(kNonMatchingRule, CreateProxyList(kProxy1));
+  config.set_proxy_override_rules({override_rule});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  RecordingNetLogObserver net_log_observer;
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.is_direct());
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 3U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 2,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, NoMatchingOverrideRuleWithPac) {
+  auto config = ProxyConfig::CreateAutoDetect();
+  auto override_rule =
+      CreateOverrideRule(kNonMatchingRule, CreateProxyList(kProxy1));
+  config.set_proxy_override_rules({override_rule});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  RecordingNetLogObserver net_log_observer;
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 7U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 2,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 3, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 4, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 6,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithoutHostAppliedSync) {
+  auto proxy_list = CreateProxyList(kProxy1);
+  auto config = ProxyConfig::CreateDirect();
+  auto override_rule = CreateOverrideRule(kMatchingRule, proxy_list);
+  config.set_proxy_override_rules({override_rule});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  RecordingNetLogObserver net_log_observer;
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 4U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(entries[1].params, override_rule.ToDict());
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 2, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 3,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
 TEST_F(ConfiguredProxyResolutionServiceTest,
        OverrideRuleWithHostAppliedSyncWhenHostIsCached) {
   auto proxy_list = CreateProxyList(kProxy1);
   auto config = ProxyConfig::CreateDirect();
-  config.set_proxy_override_rules(
-      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+  auto override_rule = CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1);
+  config.set_proxy_override_rules({override_rule});
 
   mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
   mock_host_resolver_->set_synchronous_mode(true);
@@ -4771,16 +4932,54 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
       /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 
+  RecordingNetLogObserver net_log_observer;
+
   ProxyInfo info;
   TestCompletionCallback callback;
   std::unique_ptr<ProxyResolutionRequest> request;
   int rv = service.ResolveProxy(
       GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
   EXPECT_THAT(rv, IsOk());
   EXPECT_FALSE(request);
   EXPECT_FALSE(callback.have_result());
   EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 9U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(entries, 2,
+                               NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 3, NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 4, NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(GetStringValueFromParams(entries[4], "host"), "https://host1.test");
+  EXPECT_EQ(GetBooleanValueFromParams(entries[4], "was_resolved_sync"), true);
+  EXPECT_EQ(GetIntegerValueFromParams(entries[4], "net_error"), 0);
+  EXPECT_EQ(GetBooleanValueFromParams(entries[4], "is_address_list_empty"),
+            false);
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(entries[5].params, override_rule.ToDict());
+
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 6, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 7, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 8,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,
@@ -5023,7 +5222,6 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OverrideRuleWithHostCancelled) {
   mock_host_resolver_ = std::make_unique<MockHostResolver>();
   mock_host_resolver_->set_ondemand_mode(true);
 
-  RecordingNetLogObserver net_log_observer;
   auto config_service =
       std::make_unique<MockProxyConfigService>(std::move(config));
   auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
@@ -5035,6 +5233,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OverrideRuleWithHostCancelled) {
   ProxyInfo info;
   TestCompletionCallback callback;
   std::unique_ptr<ProxyResolutionRequest> request;
+  RecordingNetLogObserver net_log_observer;
   auto nak = net::NetworkAnonymizationKey::CreateCrossSite(
       net::SchemefulSite(GURL("https://top.test")));
   int rv = service.ResolveProxy(
@@ -5057,12 +5256,22 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OverrideRuleWithHostCancelled) {
   EXPECT_FALSE(mock_host_resolver_->has_pending_requests());
 
   auto entries = net_log_observer.GetEntries();
-  EXPECT_EQ(entries.size(), 3u);
+  EXPECT_EQ(entries.size(), 7U);
   EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
                                     NetLogEventType::PROXY_RESOLUTION_SERVICE));
-  EXPECT_TRUE(LogContainsEvent(entries, 1, NetLogEventType::CANCELLED,
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(entries, 2,
+                               NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
                                NetLogEventPhase::NONE));
-  EXPECT_TRUE(LogContainsEndEvent(entries, 2,
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 3, NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEvent(entries, 4, NetLogEventType::CANCELLED,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 6,
                                   NetLogEventType::PROXY_RESOLUTION_SERVICE));
 }
 
@@ -5071,13 +5280,15 @@ TEST_F(
     OverrideRuleWithHostConfigChangedToDifferentOverrideRuleWithHostDuringDnsResolution) {
   ProxyConfig config = ProxyConfig::CreateDirect();
   auto proxy_list1 = CreateProxyList(kProxy1);
-  config.set_proxy_override_rules(
-      {CreateOverrideRule(kMatchingRule, proxy_list1, kDnsHost1)});
+  auto override_rule1 =
+      CreateOverrideRule(kMatchingRule, proxy_list1, kDnsHost1);
+  config.set_proxy_override_rules({override_rule1});
 
   ProxyConfig new_config = ProxyConfig::CreateDirect();
   auto proxy_list2 = CreateProxyList(kProxy2);
-  new_config.set_proxy_override_rules(
-      {CreateOverrideRule(kMatchingRule, proxy_list2, kDnsHost2)});
+  auto override_rule2 =
+      CreateOverrideRule(kMatchingRule, proxy_list2, kDnsHost2);
+  new_config.set_proxy_override_rules({override_rule2});
 
   mock_host_resolver_ = std::make_unique<MockHostResolver>();
   mock_host_resolver_->set_ondemand_mode(true);
@@ -5094,9 +5305,11 @@ TEST_F(
   ProxyInfo info;
   TestCompletionCallback callback;
   std::unique_ptr<ProxyResolutionRequest> request;
+  RecordingNetLogObserver net_log_observer;
   int rv = service.ResolveProxy(
       GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request);
   ASSERT_FALSE(callback.have_result());
@@ -5114,6 +5327,80 @@ TEST_F(
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_TRUE(info.proxy_list().Equals(proxy_list2));
+
+  // Verify NetLogs.
+  auto entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 16U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+
+  EXPECT_TRUE(LogContainsEvent(entries, 2,
+                               NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(entries[2].params.contains("source_dependency"));
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 3, NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(entries[3].params.contains("source_dependency"));
+  auto* dns_condition_params = entries[3].params.FindDict("dns_condition");
+  ASSERT_TRUE(dns_condition_params);
+  EXPECT_EQ(*dns_condition_params, override_rule1.dns_conditions[0].ToDict());
+
+  EXPECT_TRUE(LogContainsEvent(entries, 4, NetLogEventType::CANCELLED,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+
+  // Request restarted.
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 6,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 7,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 8, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+
+  EXPECT_TRUE(LogContainsEvent(entries, 9,
+                               NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(entries[9].params.contains("source_dependency"));
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 10, NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(entries[10].params.contains("source_dependency"));
+  dns_condition_params = entries[10].params.FindDict("dns_condition");
+  ASSERT_TRUE(dns_condition_params);
+  EXPECT_EQ(*dns_condition_params, override_rule2.dns_conditions[0].ToDict());
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 11, NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(GetStringValueFromParams(entries[11], "host"),
+            "https://host2.test");
+  EXPECT_EQ(GetBooleanValueFromParams(entries[11], "was_resolved_sync"), false);
+  EXPECT_EQ(GetIntegerValueFromParams(entries[11], "net_error"), 0);
+  EXPECT_EQ(GetBooleanValueFromParams(entries[11], "is_address_list_empty"),
+            false);
+
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 12, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(entries[12].params, override_rule2.ToDict());
+
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 13, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 14,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 15,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,

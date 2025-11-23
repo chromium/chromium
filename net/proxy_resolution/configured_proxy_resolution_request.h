@@ -96,6 +96,8 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
         int result_code,
         const HostResolver::ResolveHostRequest& completed_request);
 
+    void AddToDict(base::Value::Dict& dict) const;
+
     const int result_code;
     const bool is_address_list_empty;
   };
@@ -109,6 +111,11 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   void OnDnsHostResolved(const url::SchemeHostPort& host, int result_code);
 
   int EvaluateApplicableOverrideRules();
+
+  // Resets the request's state, which will cancel any pending activities and
+  // ensure that `is_started()` returns false. The main difference with
+  // `Cancel()` is the intent and extra logging in cancellation cases.
+  void Reset();
 
   static bool CheckDnsCondition(
       const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
