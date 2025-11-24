@@ -28,7 +28,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"

@@ -2,14 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("feature_flags") {
-  sources = [
-    "browsing_data_features.cc",
-    "browsing_data_features.h",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("model_remove_mask") {
   sources = [ "browsing_data_remove_mask.h" ]
 }
@@ -35,7 +27,6 @@ source_set("model") {
   ]
   deps = [
     ":counters",
-    ":feature_flags",
     ":util",
     "//base",
     "//components/autofill/core/browser",

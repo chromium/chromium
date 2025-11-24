@@ -92,7 +92,6 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"

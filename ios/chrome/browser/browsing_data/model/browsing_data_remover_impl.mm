@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
