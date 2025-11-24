@@ -116,6 +116,7 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   controller->GetPageContext(future.GetCallback());
   auto data = future.Take();
 
+  EXPECT_TRUE(data->tab_session_id.has_value());
   EXPECT_EQ(data->page_url, url);
   EXPECT_TRUE(data->page_title.has_value());
   EXPECT_TRUE(data->pdf_current_page.has_value());
@@ -145,6 +146,7 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   controller->GetPageContext(future.GetCallback());
   auto data = future.Take();
 
+  EXPECT_TRUE(data->tab_session_id.has_value());
   EXPECT_EQ(data->page_url, url);
   EXPECT_TRUE(data->page_title.has_value());
   EXPECT_EQ(data->primary_content_type, lens::MimeType::kAnnotatedPageContent);

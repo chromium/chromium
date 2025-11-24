@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "components/lens/lens_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -177,6 +178,8 @@ void TabContextualizationController::GetPageContext(
     return;
   }
 
+  contextual_input_data->tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents);
   contextual_input_data->page_url = web_contents->GetLastCommittedURL();
   contextual_input_data->page_title =
       base::UTF16ToUTF8(web_contents->GetTitle());
