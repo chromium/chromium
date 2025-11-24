@@ -422,9 +422,12 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         TRACE_EVENT_BEGIN(kTracingCategory, perfetto::StaticString{stage_name},
                           trace_track, stage_it->start_time);
 
-        if (stage_it->stage_type ==
-            CompositorFrameReporter::StageType::
-                kSubmitCompositorFrameToPresentationCompositorFrame) {
+        if ((stage_it->stage_type ==
+             CompositorFrameReporter::StageType::
+                 kSubmitCompositorFrameToPresentationCompositorFrame) ||
+            (stage_it->stage_type ==
+             CompositorFrameReporter::StageType::
+                 kSubmitUpdateDisplayTreeToPresentationCompositorFrame)) {
           DCHECK(viz_breakdown);
           for (auto it = viz_breakdown->CreateIterator(true); it.IsValid();
                it.Advance()) {
