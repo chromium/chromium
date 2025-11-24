@@ -4228,13 +4228,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost.
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
 
-  // Records a DocumentCreated UKM event and the corresponding identifiability
-  // study metric. Called when a Document is committed in this frame.
-  void RecordDocumentCreatedUkmEvent(
-      const url::Origin& origin,
-      const ukm::SourceId document_ukm_source_id,
-      ukm::UkmRecorder* ukm_recorder,
-      bool only_record_identifiability_metric = false);
+  // Records a DocumentCreated UKM event. Called after the navigation has
+  // committed.
+  void RecordDocumentCreatedUkmEvent(const url::Origin& origin,
+                                     const ukm::SourceId document_ukm_source_id,
+                                     ukm::UkmRecorder* ukm_recorder);
 
   // Initializes |policy_container_host_|. Constructor helper.
   //

@@ -2147,8 +2147,6 @@ source_set("browser") {
     "service_worker/service_worker_fetch_dispatcher.h",
     "service_worker/service_worker_host.cc",
     "service_worker/service_worker_host.h",
-    "service_worker/service_worker_identifiability_metrics.cc",
-    "service_worker/service_worker_identifiability_metrics.h",
     "service_worker/service_worker_info.cc",
     "service_worker/service_worker_info.h",
     "service_worker/service_worker_installed_script_loader.cc",

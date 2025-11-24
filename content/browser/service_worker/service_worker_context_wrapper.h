@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
-#include "content/browser/service_worker/service_worker_identifiability_metrics.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/common/content_export.h"
@@ -599,8 +598,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
-
-  std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;
