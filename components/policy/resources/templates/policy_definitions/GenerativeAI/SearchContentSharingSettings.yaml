@@ -1,0 +1,45 @@
+caption: Enable content sharing with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> integrations
+
+desc: |-
+  This policy controls sharing of page and file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> through <ph name="PRODUCT_NAME">Google Chrome</ph> side panel or tabs.
+
+  Note that this policy doesn't affect <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> on the web. It only controls how users can share information with it when using <ph name="PRODUCT_NAME">Google Chrome</ph>.
+
+  0/unset = users can share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>.
+
+  1 = users cannot share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>. The entry points for sharing context will be disabled or hidden.
+
+  This policy will be ignored when <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> is not users' default search engine as the feature is disabled.
+
+  This policy is independent of the <ph name="AI_MODE_SETTINGS_POLICY_NAME">AIModeSettings</ph> policy. The <ph name="AI_MODE_SETTINGS_POLICY_NAME">AIModeSettings</ph> policy only controls entry points on omnibox or NTP search box, while this policy controls context sharing through side panel or tabs.
+
+  This policy also doesn't control <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph> integration which can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph>.
+
+  For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow content sharing with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> integrations.
+  name: Allowed
+  value: 0
+- caption: Do not allow content sharing with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> integrations.
+  name: Disabled
+  value: 1
+owners:
+- file://components/contextual_search/OWNERS
+- file://components/contextual_tasks/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- android:144-
+- ios:144-
+- chrome.*:144-
+- chrome_os:144-
+tags: []
+type: int-enum

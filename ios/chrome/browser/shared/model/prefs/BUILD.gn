@@ -40,6 +40,8 @@ source_set("browser_prefs") {
     "//components/component_updater",
     "//components/component_updater/installer_policies",
     "//components/content_settings/core/browser",
+    "//components/contextual_search:impl",
+    "//components/contextual_search:public",
     "//components/dom_distiller/core",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",

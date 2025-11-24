@@ -22,6 +22,7 @@
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/contextual_search/contextual_search_service.h"
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
@@ -703,6 +704,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   collaboration::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterProfilePrefs(registry);
+  contextual_search::ContextualSearchService::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   cross_device::RegisterProfilePrefs(registry);
   CrossPlatformPromosService::RegisterProfilePrefs(registry);

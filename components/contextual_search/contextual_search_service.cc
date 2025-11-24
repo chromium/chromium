@@ -10,11 +10,27 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_entry.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
+#include "components/contextual_search/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/variations_client.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+// Reflects the default value for the `kSearchContentSharingSettings` pref.
+// Pref value is determined by:
+// `SearchContentSharingSettings` policy, `GenAiDefaultSettings` policy if
+// `SearchContentSharingSettings` isn't set, or the default pref value (0) if
+// neither policy is set. Do not change this value without migrating the
+// existing prefs and the policy's prefs mapping.
+constexpr contextual_search::SearchContentSharingSettingsValue
+    kSearchContentSharingAllowedDefault =
+        contextual_search::SearchContentSharingSettingsValue::kEnabled;
+
+}  // namespace
 
 namespace contextual_search {
 
@@ -33,6 +49,14 @@ ContextualSearchService::ContextualSearchService(
       locale_(locale) {}
 
 ContextualSearchService::~ContextualSearchService() = default;
+
+// static
+void ContextualSearchService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kSearchContentSharingSettings,
+      static_cast<int>(kSearchContentSharingAllowedDefault));
+}
 
 std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSession(

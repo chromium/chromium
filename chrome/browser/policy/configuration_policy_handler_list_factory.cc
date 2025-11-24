@@ -67,6 +67,7 @@
 #include "components/component_updater/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/domain_reliability/domain_reliability_prefs.h"
 #include "components/embedder_support/pref_names.h"
@@ -2478,6 +2479,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAIModeSettings,
     omnibox::kAIModeSettings,
     base::Value::Type::INTEGER },
+  { key::kSearchContentSharingSettings,
+    contextual_search::kSearchContentSharingSettings,
+    base::Value::Type::INTEGER },
 #if BUILDFLAG(ENABLE_GLIC)
   { key::kGeminiActOnWebSettings,
     glic::prefs::kGlicActuationOnWeb,
@@ -3504,6 +3508,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif
   gen_ai_default_policies.emplace_back(
       key::kAIModeSettings, omnibox::kAIModeSettings,
+      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  // Default value for SearchContentSharingSettings is 0 if
+  // GenAiDefaultSettings value is 0 or 1, or 1 if the latter is 2.
+  gen_ai_default_policies.emplace_back(
+      key::kSearchContentSharingSettings,
+      contextual_search::kSearchContentSharingSettings,
       GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(

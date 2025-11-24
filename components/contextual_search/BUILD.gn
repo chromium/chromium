@@ -18,8 +18,8 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/lens",
     "//components/lens/proto/server:proto",
-    "//components/sessions",
     "//components/search_engines",
+    "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",
@@ -41,6 +41,7 @@ source_set("impl") {
   ]
 
   deps = [
+    ":prefs",
     ":public",
     "//components/contextual_search/internal",
     "//components/lens",
@@ -72,4 +73,8 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
+}
+
+source_set("prefs") {
+  sources = [ "pref_names.h" ]
 }

@@ -25,6 +25,8 @@ inline constexpr char kAimHintDailyImpressionsCount[] =
 inline constexpr char kAimHintTotalImpressions[] =
     "omnibox.aim_hint_total_impressions";
 
+// An integer pref stores whether browser AIM features are enabled. E.g.
+// omnibox and NTP AIM entrypoints. Controlled by an admin policy.
 inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 
 // LINT.IfChange(TipsPrefNames)

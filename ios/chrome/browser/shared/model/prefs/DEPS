@@ -40,6 +40,7 @@ include_rules = [
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_prefs.mm": [
+    "+components/contextual_search/contextual_search_service.h",
     "+components/omnibox/browser/omnibox_pref_names.h",
     "+components/privacy_sandbox/tracking_protection_prefs.h",
     "+ios/chrome/browser/bookmarks/ui_bundled",

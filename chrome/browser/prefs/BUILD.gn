@@ -103,6 +103,7 @@ source_set("impl") {
     "//components/collaboration/public:prefs",
     "//components/commerce/core:prefs",
     "//components/content_settings/core/browser",
+    "//components/contextual_search:public",
     "//components/custom_handlers",
     "//components/domain_reliability:prefs",
     "//components/enterprise/browser/identifiers",

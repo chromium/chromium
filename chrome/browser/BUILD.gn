@@ -2144,6 +2144,7 @@ static_library("browser") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/contextual_search:impl",
+    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_search/internal",
     "//components/contextual_tasks/public:feature_list",

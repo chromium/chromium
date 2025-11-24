@@ -1414,6 +1414,7 @@ policies:
   1413: CameraSaveLocation
   1414: DeviceLoginScreenPreferSlowKexAlgorithms
   1415: DeviceLoginScreenPreferSlowCiphers
+  1416: SearchContentSharingSettings
 
 atomic_groups:
   1: Homepage

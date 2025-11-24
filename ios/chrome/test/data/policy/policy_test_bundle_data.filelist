@@ -81,6 +81,7 @@
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProxiedRealTimeChecksAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/SavingBrowserHistoryDisabled.json
+//ios/chrome/test/data/policy/pref_mapping/SearchContentSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/SearchSuggestEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ShoppingListEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SyncDisabled.json

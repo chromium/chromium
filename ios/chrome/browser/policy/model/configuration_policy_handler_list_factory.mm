@@ -15,6 +15,7 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/pref_names.h"
 #import "components/content_settings/core/common/pref_names.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/enterprise/browser/data_region/data_region_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_profile_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
@@ -190,6 +191,9 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kIncognitoModeAllowlist,
     policy::policy_prefs::kIncognitoModeAllowlist,
     base::Value::Type::LIST },
+  { policy::key::kSearchContentSharingSettings,
+    contextual_search::kSearchContentSharingSettings,
+    base::Value::Type::INTEGER },
 });
 // clang-format on
 
@@ -273,6 +277,13 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           {{0, 0}, {1, 0}, {2, 1}}));
   gen_ai_default_policies.emplace_back(
       policy::key::kAIModeSettings, omnibox::kAIModeSettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  // Default value for SearchContentSharingSettings is 0 if
+  // GenAiDefaultSettings value is 0 or 1, or 1 if the latter is 2.
+  gen_ai_default_policies.emplace_back(
+      policy::key::kSearchContentSharingSettings,
+      contextual_search::kSearchContentSharingSettings,
       policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
   handlers->AddHandler(

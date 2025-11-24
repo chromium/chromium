@@ -17,6 +17,7 @@
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class PrefRegistrySimple;
 class TemplateURLService;
 
 namespace signin {
@@ -44,6 +45,9 @@ class ContextualSearchService : public KeyedService {
       version_info::Channel channel,
       const std::string& locale);
   ~ContextualSearchService() override;
+
+  // Register profile related prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Creates a new session and returns a handle to it.
   std::unique_ptr<ContextualSearchSessionHandle> CreateSession(

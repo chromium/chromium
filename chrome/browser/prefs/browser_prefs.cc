@@ -111,6 +111,7 @@
 #include "components/commerce/core/prefs.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/domain_reliability/domain_reliability_prefs.h"
@@ -1611,6 +1612,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chrome_prefs::RegisterProfilePrefs(registry);
   collaboration::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterProfilePrefs(registry);
+  contextual_search::ContextualSearchService::RegisterProfilePrefs(registry);
   cross_device::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);
   enterprise_connectors::RegisterProfilePrefs(registry);

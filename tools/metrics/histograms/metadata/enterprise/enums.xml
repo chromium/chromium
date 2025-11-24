@@ -2348,6 +2348,7 @@ chromium-metrics-reviews@google.com.
   <int value="1413" label="CameraSaveLocation"/>
   <int value="1414" label="DeviceLoginScreenPreferSlowKexAlgorithms"/>
   <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
+  <int value="1416" label="SearchContentSharingSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
