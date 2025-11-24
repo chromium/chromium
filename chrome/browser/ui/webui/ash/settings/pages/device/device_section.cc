@@ -501,8 +501,8 @@ bool IsTouchCalibrationAvailable() {
 }
 
 bool IsTouchscreenRemappingExperienceAvailable() {
-  return (features::IsTouchscreenMappingExperienceEnabled() ||
-          Shell::Get()->display_manager()->GetNumExternalDisplays() >= 2) &&
+  return features::IsTouchscreenMappingExperienceEnabled() &&
+         Shell::Get()->display_manager()->GetNumExternalDisplays() >= 2 &&
          display::HasExternalTouchscreenDevice();
 }
 

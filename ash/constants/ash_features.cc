@@ -603,10 +603,9 @@ BASE_FEATURE(kEnableRootNsDnsProxy, base::FEATURE_DISABLED_BY_DEFAULT);
 // Settings > Privacy controls.
 BASE_FEATURE(kEnableToggleCameraShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO:(b/345017297): If enabled, touchscreen mapping experience is visible in
-// settings.
+// If enabled, touchscreen mapping experience is visible in settings.
 BASE_FEATURE(kEnableTouchscreenMappingExperience,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, touchpad cards will be shown in the diagnostics app's input
 // section.
