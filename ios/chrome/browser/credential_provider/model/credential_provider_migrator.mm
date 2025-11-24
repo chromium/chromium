@@ -147,7 +147,7 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
       } else {
         sync_pb::WebauthnCredentialSpecifics passkey =
             PasskeyFromCredential(credential);
-        if (webauthn::passkey_model_utils::IsPasskeyValid(passkey)) {
+        if (webauthn::passkey_model_utils::IsGpmPasskeyValid(passkey)) {
           _passkeyStore->CreatePasskey(passkey);
           base::UmaHistogramEnumeration(
               kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyCreated);

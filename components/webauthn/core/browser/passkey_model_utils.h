@@ -25,6 +25,9 @@ namespace webauthn::passkey_model_utils {
 // The byte length of the WebauthnCredentialSpecifics `sync_id` field.
 inline constexpr size_t kSyncIdLength = 16u;
 
+// The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
+inline constexpr size_t kUserIdMaxLength = 64u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();
@@ -77,8 +80,13 @@ struct ExtensionInputData {
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
 
-// Returns whether the passkey is of the expected format.
-bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
+// Returns whether the passkey created by the Google Password Manager is of the
+// expected format. This function might make some stricter assumptions than what
+// might be allowed in the WebAuthn spec (e.g. GPM uses a specific length when
+// generating credential IDs). This function should not be used for passkeys
+// created elsewhere (e.g. by a different credential manager, imported through
+// Credential Exchange Protocol).
+bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 
 // Generates a passkey for the given RP ID and user. `trusted_vault_key` must be
 // the security domain secret of the `hw_protected` domain. Returns a passkey

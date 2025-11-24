@@ -210,7 +210,7 @@ std::unique_ptr<syncer::DataBatch> PasskeySyncBridge::GetAllDataForDebugging() {
 
 bool PasskeySyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  return passkey_model_utils::IsPasskeyValid(
+  return passkey_model_utils::IsGpmPasskeyValid(
       entity_data.specifics.webauthn_credential());
 }
 
@@ -524,7 +524,7 @@ void PasskeySyncBridge::CreatePasskey(
   // passkey.
   CHECK(IsReady());
 
-  CHECK(passkey_model_utils::IsPasskeyValid(passkey));
+  CHECK(passkey_model_utils::IsGpmPasskeyValid(passkey));
 
   std::string sync_id = passkey.sync_id();
   CHECK(!base::Contains(data_, sync_id));
@@ -542,7 +542,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
 
 void PasskeySyncBridge::AddPasskeyInternal(
     sync_pb::WebauthnCredentialSpecifics specifics) {
-  CHECK(passkey_model_utils::IsPasskeyValid(specifics));
+  CHECK(passkey_model_utils::IsGpmPasskeyValid(specifics));
   CHECK(IsReady());
   CHECK(store_);
 

@@ -10,13 +10,15 @@
 #include <string>
 #include <vector>
 
+#include "components/webauthn/core/browser/import/imported_passkey_checker.h"
+
 namespace webauthn {
 
 // Attributes of a passkey to be displayed in the import UI.
-// TODO(crbug.com/458337350): Add error enum.
 struct ImportedPasskeyInfo {
   std::string rp_id;
   std::string user_name;
+  ImportedPasskeyStatus status;
 };
 
 // Results of initial processing of to-be imported passkeys.

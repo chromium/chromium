@@ -23,6 +23,7 @@ struct ImportProcessingResult;
 //
 // The caller should initiate the process by calling `StartImport`.
 // TODO(crbug.com/458337350): Add more unit tests.
+// TODO(crbug.com/458337350): Add metrics.
 class PasskeyImporter {
  public:
   using ProcessingCallback =

@@ -7,15 +7,18 @@
 #include "base/check_deref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
+#include "components/webauthn/core/browser/import/imported_passkey_checker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
-#include "components/webauthn/core/browser/passkey_model_utils.h"
 
 namespace webauthn {
 namespace {
 
 ImportedPasskeyInfo SpecificsToImportedPasskeyInfo(
-    const sync_pb::WebauthnCredentialSpecifics& specifics) {
-  return {.rp_id = specifics.rp_id(), .user_name = specifics.user_name()};
+    const sync_pb::WebauthnCredentialSpecifics& specifics,
+    ImportedPasskeyStatus status) {
+  return {.rp_id = specifics.rp_id(),
+          .user_name = specifics.user_name(),
+          .status = status};
 }
 
 }  // namespace
@@ -50,17 +53,17 @@ void PasskeyImporter::ProcessPasskeys(
     ProcessingCallback processing_callback) {
   ImportProcessingResult result;
   for (sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    // TODO(crbug.com/458337350): IsPasskeyValid is a temporary placeholder, add
-    // a more universal function.
-    if (!passkey_model_utils::IsPasskeyValid(passkey)) {
-      result.errors.push_back(SpecificsToImportedPasskeyInfo(passkey));
+    ImportedPasskeyStatus status = CheckImportedPasskey(passkey);
+    if (status != ImportedPasskeyStatus::kOk) {
+      result.errors.push_back(SpecificsToImportedPasskeyInfo(passkey, status));
       continue;
     }
 
     // TODO(crbug.com/458337350): Sanity check only matching credential ID.
     if (passkey_model_->GetPasskeyByUserId(passkey.rp_id(), passkey.user_id())
             .has_value()) {
-      result.conflicts.push_back(SpecificsToImportedPasskeyInfo(passkey));
+      result.conflicts.push_back(
+          SpecificsToImportedPasskeyInfo(passkey, status));
       conflicting_passkeys_.push_back(std::move(passkey));
       continue;
     }

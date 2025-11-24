@@ -20,8 +20,9 @@
 namespace webauthn {
 namespace {
 
-MATCHER_P2(ImportedInfoIs, rp_id, user_name, "") {
-  return arg.rp_id == rp_id && arg.user_name == user_name;
+MATCHER_P3(ImportedInfoIs, rp_id, user_name, status, "") {
+  return arg.rp_id == rp_id && arg.user_name == user_name &&
+         arg.status == status;
 }
 
 using ::testing::IsEmpty;
@@ -86,8 +87,9 @@ TEST_F(PasskeyImporterTest, ProcessesInvalidPasskeys) {
   ImportProcessingResult result = StartImport({passkey});
 
   EXPECT_EQ(result.valid_passkeys_amount, 0);
-  EXPECT_THAT(result.errors,
-              UnorderedElementsAre(ImportedInfoIs(kRpId, "username")));
+  EXPECT_THAT(result.errors, UnorderedElementsAre(ImportedInfoIs(
+                                 kRpId, "username",
+                                 ImportedPasskeyStatus::kPrivateKeyMissing)));
   EXPECT_THAT(result.conflicts, IsEmpty());
 }
 
@@ -99,7 +101,8 @@ TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
   EXPECT_EQ(result.valid_passkeys_amount, 0);
   EXPECT_THAT(result.errors, IsEmpty());
   EXPECT_THAT(result.conflicts,
-              UnorderedElementsAre(ImportedInfoIs(kRpId, "username")));
+              UnorderedElementsAre(ImportedInfoIs(kRpId, "username",
+                                                  ImportedPasskeyStatus::kOk)));
 }
 
 TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
