@@ -44,7 +44,6 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,6 +72,7 @@ class MediaPlayerAction;
 
 namespace gfx {
 class Point;
+class Rect;
 class Size;
 }  // namespace gfx
 

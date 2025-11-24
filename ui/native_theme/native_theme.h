@@ -27,11 +27,14 @@
 #include "ui/color/system_theme.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class PaintCanvas;
+}
+
+namespace gfx {
+class Rect;
 }
 
 namespace ui {

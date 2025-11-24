@@ -33,7 +33,6 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/range/range.h"
@@ -58,6 +57,7 @@ class RenderTextTestApi;
 class Canvas;
 struct DecoratedText;
 class Font;
+class PointF;
 
 namespace internal {
 

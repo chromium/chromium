@@ -42,7 +42,6 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -80,6 +79,7 @@ class GeolocationContext;
 
 namespace gfx {
 class Rect;
+class RectF;
 class Size;
 }  // namespace gfx
 

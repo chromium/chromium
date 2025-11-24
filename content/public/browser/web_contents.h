@@ -56,7 +56,6 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
@@ -112,6 +111,7 @@ class ColorProviderSource;
 
 namespace gfx {
 class PointF;
+class Rect;
 }  // namespace gfx
 
 namespace content {

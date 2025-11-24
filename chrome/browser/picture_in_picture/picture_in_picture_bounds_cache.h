@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 class WebContents;

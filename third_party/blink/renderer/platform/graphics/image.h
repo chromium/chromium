@@ -44,7 +44,6 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class SkMatrix;
@@ -54,6 +53,10 @@ class PaintCanvas;
 class PaintFlags;
 class ImageDecodeCache;
 }  // namespace cc
+
+namespace gfx {
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 

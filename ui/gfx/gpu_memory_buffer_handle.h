@@ -15,7 +15,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/gfx/native_pixmap_handle.h"
