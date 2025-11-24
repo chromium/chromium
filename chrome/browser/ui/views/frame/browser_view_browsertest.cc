@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -470,6 +471,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewWithoutSideBySideTest,
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   side_panel_ui->SetNoDelaysForTesting(true);
   side_panel_ui->Show(SidePanelEntry::Id::kBookmarks);
+  if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
+    browser()->GetBrowserView().GetWidget()->LayoutRootViewIfNecessary();
+  }
   EXPECT_EQ(side_panel()->bounds().x(),
             side_panel_rounded_corner()->bounds().right());
   EXPECT_EQ(side_panel()->bounds().y(),
