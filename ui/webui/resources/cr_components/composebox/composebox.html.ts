@@ -30,7 +30,9 @@ export function getHtml(this: ComposeboxElement) {
   <search-animated-glow
       animation-state="${this.animationState}"
       .entrypointName="${this.entrypointName}"
-      .requiresVoice="${this.shouldShowVoiceSearch_()}">
+      .requiresVoice="${this.shouldShowVoiceSearch_()}"
+      .transcript="${this.transcript_}"
+      .receivedSpeech="${this.receivedSpeech_}">
   </search-animated-glow>
   <ntp-error-scrim id="errorScrim" part="error-scrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
@@ -40,10 +42,10 @@ export function getHtml(this: ComposeboxElement) {
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin="${this.handleComposeboxFocusIn_}"
       @focusout="${this.handleComposeboxFocusOut_}"
-      @dragenter="${this.dragAndDropHandler.handleDragEnter}"
-      @dragover="${this.dragAndDropHandler.handleDragOver}"
-      @dragleave="${this.dragAndDropHandler.handleDragLeave}"
-      @drop="${this.dragAndDropHandler.handleDrop}"
+      @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
+      @dragover="${this.dragAndDropHandler_.handleDragOver}"
+      @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
+      @drop="${this.dragAndDropHandler_.handleDrop}"
       @paste="${this.onPaste_}">
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
@@ -139,8 +141,10 @@ export function getHtml(this: ComposeboxElement) {
     ${this.ntpRealboxNextEnabled ? '' : submitContainer}
   </div>
   <cr-composebox-voice-search id="voiceSearch"
-      @on-voice-search-cancel="${this.onVoiceSearchClose_}"
-      @on-voice-search-final-result="${this.onVoiceSearchFinalResult_}">
+      @voice-search-cancel="${this.onVoiceSearchClose_}"
+      @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
+      @transcript-update="${this.onTranscriptUpdate_}"
+      @speech-received="${this.onSpeechReceived_}">
   </cr-composebox-voice-search>
   ${this.shouldShowSuggestionActivityLink_() ? html`
     <div id="suggestionActivity">

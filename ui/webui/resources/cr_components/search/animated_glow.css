@@ -14,7 +14,7 @@
   --drag-placeholder-font-size: 16px;
 
   --end-angle-expand_: 245deg;
-  --end-angle-listen_: 230deg;
+  --end-angle-listen_: 210deg;
   --end-angle-submit_: 330deg;
 
   --expand-timing_: var(--glif-rotation-duration_)
@@ -24,7 +24,7 @@
    * interval, otherwise border-radius due to border width
    * may not be at right size at right time. */
   --glif-rotation-duration_: var(--search-animated-glif-rotation-duration,
-      2000ms);
+      2s);
 
   --glow-stroke-width_: 2px;
 
@@ -170,6 +170,10 @@
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
+:host([animation-state='listening']) {
+  --search-animated-glif-rotation-duration: 1.5s;
+}
+
 :host([animation-state='listening']) .gradient::before {
   animation: gradient-spin-listen var(--glif-rotation-duration_)
     var(--search-animated-glow-gradient-curve) forwards;
@@ -281,8 +285,7 @@
    * element so the gradient shows up behind it as a border.
    * Activates once upon init; again whenever gradient-border-width-close
    * triggered */
-  animation: gradient-border-width var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: gradient-border-width var(--expand-timing_);
   border: 0 solid transparent;
   border-radius: inherit;
   contain: paint;
@@ -341,8 +344,7 @@
 }
 
 :host([animation-state='expanding']) .background::before {
-  animation: plate-background-blur-on-expand var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: plate-background-blur-on-expand var(--expand-timing_);
 }
 
 :host([animation-state='expanding'][is-collapsible]) .background::before {
@@ -353,8 +355,8 @@
 
 :host([animation-state='listening']) .background::before {
   animation:
-      plate-background-blur-on-expand var(--glif-rotation-duration_)
-          var(--standard-curve, --search-animated-glow-standard-curve);
+      plate-background-blur-on-expand var(--expand-timing_),
+      color-pulse-on-expand-listen var(--expand-timing_)
 }
 
 @keyframes plate-background-blur-on-expand {
@@ -379,10 +381,10 @@
 }
 
 @keyframes color-pulse-on-expand-listen {
-  40% {
+  17% {
     background: var(--color-composebox-scrim-background);
   }
-  50% {
+  100% {
     background: var(--color-composebox-scrim-background);
   }
 }
@@ -405,17 +407,15 @@
 }
 
 :host([animation-state='expanding']) .background {
-  animation: gradient-border-width-close-expand var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: gradient-border-width-close-expand var(--expand-timing_);
 }
+
 :host([animation-state='submitting']) .background {
-  animation: gradient-border-width-close-submit var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: gradient-border-width-close-submit var(--expand-timing_);
 }
 
 :host([animation-state='listening']) .background {
-  animation: gradient-border-width-close-listen var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: gradient-border-width-close-listen var(--expand-timing_);
 }
 
 :host([animation-state='dragging']) .background::before {

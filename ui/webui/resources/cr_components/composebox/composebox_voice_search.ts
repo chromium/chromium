@@ -177,6 +177,7 @@ export class ComposeboxVoiceSearchElement extends
   private onSpeechStart_() {
     this.resetIdleTimer_();
     this.state_ = State.SPEECH_RECEIVED;
+    this.fire('speech-received');
   }
 
 
@@ -196,7 +197,6 @@ export class ComposeboxVoiceSearchElement extends
     // Process final results if is fully final.
     if (!!speechResult && speechResult.isFinal) {
       this.finalResult_ = speechResult[0]!.transcript;
-      this.fire('on-transcription-update', this.finalResult_);
       this.onFinalResult_();
       return;
     }
@@ -213,6 +213,8 @@ export class ComposeboxVoiceSearchElement extends
         this.interimResult_ += result.transcript;
       }
     }
+    this.transcript_ = this.finalResult_ + this.interimResult_;
+    this.fire('transcript-update', this.transcript_);
   }
 
   private onEnd_() {
@@ -224,13 +226,13 @@ export class ComposeboxVoiceSearchElement extends
       case State.AUDIO_RECEIVED:
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        this.fire('on-voice-search-cancel');
+        this.fire('voice-search-cancel');
         return;
       case State.ERROR_RECEIVED:
         // All other errors should close voice search.
         if (this.error_ !== Error.NOT_ALLOWED) {
           this.resetState_();
-          this.fire('on-voice-search-cancel');
+          this.fire('voice-search-cancel');
         }
         return;
       case State.RESULT_FINAL:
@@ -257,13 +259,13 @@ export class ComposeboxVoiceSearchElement extends
       return;
     }
     this.state_ = State.RESULT_FINAL;
-    this.fire('on-voice-search-final-result', this.finalResult_);
+    this.fire('voice-search-final-result', this.finalResult_);
   }
 
   protected onCloseClick_() {
     this.voiceRecognition_.abort();
     this.resetState_();
-    this.fire('on-voice-search-cancel');
+    this.fire('voice-search-cancel');
   }
 
   private resetState_() {
@@ -275,7 +277,7 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   protected onLinkClick_() {
-    this.fire('on-voice-search-cancel');
+    this.fire('voice-search-cancel');
   }
 }
 

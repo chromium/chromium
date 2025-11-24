@@ -160,6 +160,8 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       entrypointName: {type: String},
+      transcript_: {type: String},
+      receivedSpeech_: {type: Boolean},
     };
   }
 
@@ -202,12 +204,14 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
+  protected accessor transcript_: string = '';
+  protected accessor receivedSpeech_: boolean = false;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
-  protected dragAndDropHandler: DragAndDropHandler;
+  protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showTypedSuggestWithContext_: boolean =
@@ -236,7 +240,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
-    this.dragAndDropHandler =
+    this.dragAndDropHandler_ =
         new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
@@ -499,6 +503,16 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
   }
 
+  protected onTranscriptUpdate_(e: CustomEvent<string>) {
+    // Update property that is sent to searchAnimatedGlow binding.
+    this.transcript_ = e.detail;
+  }
+
+  protected onSpeechReceived_() {
+    // Update property that is sent to searchAnimatedGlow binding.
+    this.receivedSpeech_ = true;
+  }
+
   protected async deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
     // If we're in create image mode, notify that image is gone.
     if (this.inCreateImageMode_) {
@@ -648,6 +662,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected onVoiceSearchClose_() {
     this.inVoiceSearchMode_ = false;
     this.animationState = GlowAnimationState.NONE;
+    this.receivedSpeech_ = false;
   }
 
   protected onCancelClick_() {

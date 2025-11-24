@@ -38,7 +38,7 @@
   border: none;
   flex: 1;
   height: 100%;
-  /* Overflow scroll blur. */
+  /* Overflow scroll blur top/bottom. */
   mask-image: linear-gradient(to bottom,
       transparent 0px,
       black 7px,
@@ -61,7 +61,7 @@
   line-height: 24px;
   /* 11px + container padding = 18 px. Parent can set var if needed. */
   padding: var(--composebox-voice-search-top-padding, 11px)
-      134px 0px 20px;
+      40px 0px 20px;
   width: 100%;
 }
 

@@ -23,8 +23,10 @@ export function getHtml(this: SearchAnimatedGlowElement) {
    * creating an opaque snake effect.
    * - Gradient is the gradient border and inner glow, depending
    * on the Background styling.
-   * - Background is to apply a frosted glass effect in drag and drop mode,
-   * and to act as an overlay to help create the gradient border.
+   * - Background and its ::before apply a frosted glass effect in drag and
+   * drop mode, and act as overlay to help create the gradient border
+   * and background colorin composebox.
+   * - Audio wave provides the voice animation to show browser is listening
    */
 
   // clang-format off
@@ -37,7 +39,9 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     <div class="background"></div>
     ${this.requiresVoice ? html`
       <audio-wave
-          ?is-listening="${this.animationState === GlowAnimationState.LISTENING}">
+          ?is-listening="${this.animationState === GlowAnimationState.LISTENING}"
+          .transcript="${this.transcript}"
+          .receivedSpeech="${this.receivedSpeech}">
       </audio-wave>
     ` : ''}
   <!--_html_template_end_-->`;
