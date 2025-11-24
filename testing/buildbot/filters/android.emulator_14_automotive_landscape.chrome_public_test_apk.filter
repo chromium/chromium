@@ -1,5 +1,6 @@
 # crbug.com/1515446
 -org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+-org.chromium.chrome.browser.webauth.AuthenticatorImplTest.*
 
 # crbug.com/462590301
 -org.chromium.chrome.browser.app.bookmarks.*
