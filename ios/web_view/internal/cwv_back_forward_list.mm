@@ -65,6 +65,12 @@
   web::NavigationItem* item =
       self.list.navigationManager->GetItemAtIndex(internalIndex);
   DCHECK(item);
+  // TODO(crbug.com/462520371): This is a defensive check to prevent a crash.
+  // The root cause of the null item needs to be investigated.
+  if (!item) {
+    return nil;
+  }
+
   return [[CWVBackForwardListItem alloc] initWithNavigationItem:item];
 }
 
