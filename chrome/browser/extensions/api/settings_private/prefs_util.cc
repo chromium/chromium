@@ -217,6 +217,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kSidePanelHorizontalAlignment] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kVerticalTabsEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kTabSearchRightAligned] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[tab_groups::prefs::kAutoPinNewTabGroups] =

@@ -173,6 +173,19 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
+        <template is="dom-if" if="[[showVerticalTabsEnabled_]]">
+          <div class="cr-row">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{tabStripPosition}
+            </div>
+            <settings-dropdown-menu id="tabStripPosition"
+                label="$i18n{tabStripPosition}"
+                pref="{{prefs.vertical_tabs.enabled}}"
+                menu-options="[[tabStripOptions_]]">
+            </settings-dropdown-menu>
+          </div>
+        </template>
+
         <settings-toggle-button class="hr" id="showSavedTabGroups"
             pref="{{prefs.bookmark_bar.show_tab_groups}}"
             label="$i18n{showTabGroupsInBookmarksBar}">

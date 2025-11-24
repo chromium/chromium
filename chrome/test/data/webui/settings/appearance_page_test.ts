@@ -68,6 +68,12 @@ function createAppearancePage() {
         value: false,
       },
     },
+    vertical_tabs: {
+      enabled: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
   });
 
   document.body.appendChild(appearancePage);
@@ -529,5 +535,52 @@ suite('TabSearchPositionSettings', () => {
 
     await userClicksDropdownForOption(/*userChoice=*/ false);
     assertFalse(!!getTabSearchRestartButton());
+  });
+});
+
+suite('TabStripPositionSettings', () => {
+  setup(async () => {
+    loadTimeData.overrideValues({
+      showVerticalTabsEnabled: true,
+    });
+
+    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    createAppearancePage();
+
+    await microtasksFinished();
+  });
+
+  teardown(function() {
+    appearancePage.remove();
+  });
+
+  test('Dropdown menu updates vertical_tabs.enabled.value', async function() {
+    assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+
+    const dropdown =
+        appearancePage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#tabStripPosition');
+    assertTrue(!!dropdown);
+
+    const selectElement = dropdown.$.dropdownMenu;
+    assertTrue(!!selectElement);
+
+    assertEquals('false', selectElement.value);
+
+    selectElement.value = 'true';
+    selectElement.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    assertTrue(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+    assertEquals('true', selectElement.value);
+
+    selectElement.value = 'false';
+    selectElement.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
+    assertEquals('false', selectElement.value);
   });
 });

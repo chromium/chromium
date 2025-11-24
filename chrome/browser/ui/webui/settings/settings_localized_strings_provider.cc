@@ -523,6 +523,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
       {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
       {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+      {"tabStripPosition", IDS_SETTINGS_TAB_STRIP_POSITION},
       {"allowSplitViewDragAndDrop",
        IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP},
       {"showTabGroupsInBookmarksBar",
@@ -550,6 +551,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"huge", IDS_SETTINGS_HUGE_FONT_SIZE},
       {"uiFeatureAlignLeft", IDS_SETTINGS_UI_FEATURE_ALIGN_LEFT},
       {"uiFeatureAlignRight", IDS_SETTINGS_UI_FEATURE_ALIGN_RIGHT},
+      {"uiFeatureAlignSide", IDS_SETTINGS_UI_FEATURE_ALIGN_SIDE},
+      {"uiFeatureAlignTop", IDS_SETTINGS_UI_FEATURE_ALIGN_TOP},
       {"resetToDefault", IDS_SETTINGS_RESET_TO_DEFAULT},
 #if BUILDFLAG(IS_LINUX)
       {"gtkTheme", IDS_SETTINGS_GTK_THEME},
@@ -582,6 +585,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
   html_source->AddBoolean("showTabSearchPositionSettings",
                           tabs::CanShowTabSearchPositionSetting());
+  html_source->AddBoolean("showVerticalTabsEnabled",
+                          tabs::IsVerticalTabsFeatureEnabled());
   html_source->AddBoolean("showSplitViewDragAndDropSetting",
                           base::FeatureList::IsEnabled(features::kSideBySide));
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
