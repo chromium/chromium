@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -45,7 +45,7 @@ public class PdfPageUnitTest {
 
     @Mock private NativePageHost mMockNativePageHost;
     @Mock private Profile mMockProfile;
-    @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock private Destroyable mMarginSupplier;
     private Activity mActivity;
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
@@ -72,7 +72,7 @@ public class PdfPageUnitTest {
                             mActivity = activity;
                             doReturn(activity).when(mMockNativePageHost).getContext();
                         });
-        doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginSupplier();
+        doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginAdapter(any());
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         PdfCoordinator.skipLoadPdfForTesting(true);
@@ -118,7 +118,7 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
-        String jsonString = pdfPage.requestAssistContent(/*isWorkProfile*/ true);
+        String jsonString = pdfPage.requestAssistContent(/* isWorkProfile= */ true);
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
         JSONObject jsonObject = new JSONObject(jsonString);
@@ -199,7 +199,7 @@ public class PdfPageUnitTest {
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
         Assert.assertNull(
                 "Assist content cannot be generated when the pdf is not ready to load",
-                pdfPage.requestAssistContent(/*isWorkProfile*/ false));
+                pdfPage.requestAssistContent(/* isWorkProfile= */ false));
 
         // Simulate download complete
         pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
@@ -218,7 +218,7 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
-        String jsonString = pdfPage.requestAssistContent(/*isWorkProfile*/ false);
+        String jsonString = pdfPage.requestAssistContent(/* isWorkProfile= */ false);
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
         JSONObject jsonObject = new JSONObject(jsonString);

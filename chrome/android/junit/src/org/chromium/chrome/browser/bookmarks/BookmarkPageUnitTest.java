@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_ESCAPE_
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP;
 
 import android.content.ComponentName;
-import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -32,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -83,7 +82,7 @@ public class BookmarkPageUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mReauthenticatorBridge;
-    @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock private Destroyable mMarginAdapater;
     @Mock private BackPressManager mBackPressManager;
 
     // Mock native methods.
@@ -117,7 +116,7 @@ public class BookmarkPageUnitTest {
         mActivityScenarios
                 .getScenario()
                 .onActivity(activity -> when(mNativePageHost.getContext()).thenReturn(activity));
-        when(mNativePageHost.createDefaultMarginSupplier()).thenReturn(mMarginSupplier);
+        when(mNativePageHost.createDefaultMarginAdapter(any())).thenReturn(mMarginAdapater);
         when(mNativePageHost.createEdgeToEdgePadAdjuster(any()))
                 .thenAnswer(
                         invocation ->

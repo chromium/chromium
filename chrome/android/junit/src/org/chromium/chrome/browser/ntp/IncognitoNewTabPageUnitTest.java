@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Rect;
 import android.widget.ScrollView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
@@ -46,7 +46,7 @@ public class IncognitoNewTabPageUnitTest {
 
     @Mock NativePageHost mHost;
     @Mock Profile mProfile;
-    @Mock DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock Destroyable mMarginSupplier;
     @Mock IncognitoNewTabPageManager mIncognitoNtpManager;
 
     @Mock EdgeToEdgeController mEdgeToEdgeController;
@@ -64,7 +64,7 @@ public class IncognitoNewTabPageUnitTest {
         doReturn(true).when(mProfile).isOffTheRecord();
 
         doReturn(mActivity).when(mHost).getContext();
-        doReturn(mMarginSupplier).when(mHost).createDefaultMarginSupplier();
+        doReturn(mMarginSupplier).when(mHost).createDefaultMarginAdapter(any());
 
         IncognitoNewTabPage.setIncognitoNtpManagerForTesting(mIncognitoNtpManager);
 

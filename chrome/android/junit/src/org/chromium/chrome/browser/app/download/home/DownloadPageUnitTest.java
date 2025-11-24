@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,7 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -81,7 +80,7 @@ public class DownloadPageUnitTest {
     @Mock private FaviconHelper.Natives mFaviconHelperJni;
     @Mock private OfflineContentAggregatorFactory.Natives mOfflineContentAggregatorFactoryJni;
     @Mock private OfflineContentProvider mOfflineContentProvider;
-    @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock private Destroyable mMarginAdapter;
 
     // Needed to test edge-to-edge behavior.
     private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
@@ -97,7 +96,7 @@ public class DownloadPageUnitTest {
     public void setup() {
         mActivityScenarios.getScenario().onActivity(activity -> mActivity = activity);
         when(mNativePageHost.getContext()).thenReturn(mActivity);
-        when(mNativePageHost.createDefaultMarginSupplier()).thenReturn(mMarginSupplier);
+        when(mNativePageHost.createDefaultMarginAdapter(any())).thenReturn(mMarginAdapter);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mProfile.getOffTheRecordProfile(mOtrProfileId, true)).thenReturn(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);

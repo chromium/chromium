@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.widget.FrameLayout.LayoutParams;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,12 +29,11 @@ import org.chromium.content_public.browser.LoadUrlParams;
 public abstract class BasicNativePage implements NativePage, OnAttachStateChangeListener {
     private final NativePageHost mHost;
     private final int mBackgroundColor;
-    private @Nullable DestroyableObservableSupplier<Rect> mMarginSupplier;
     private @Nullable BackPressHandler mBackPressHandler;
     private @Nullable BackPressHandlerRegistry mRegistry;
-
-    @SuppressWarnings("NullAway.Init")
-    private Callback<Rect> mMarginObserver;
+    private final ObservableSupplierImpl<Rect> mBrowserControlsMarginsSupplier =
+            new ObservableSupplierImpl<>();
+    private @Nullable Destroyable mMarginsAdapter;
 
     private @Nullable View mView;
 
@@ -53,16 +52,11 @@ public abstract class BasicNativePage implements NativePage, OnAttachStateChange
         assert mView == null : "initWithView() should only be called once";
         mView = view;
 
-        mMarginObserver = result -> updateMargins(result);
-        mMarginSupplier = mHost.createDefaultMarginSupplier();
-        mMarginSupplier.addObserver(mMarginObserver);
-
+        mMarginsAdapter = mHost.createDefaultMarginAdapter(mBrowserControlsMarginsSupplier);
         // Update margins immediately if available rather than waiting for a posted notification.
         // Waiting for a posted notification could allow a layout pass to occur before the margins
         // are set.
-        if (mMarginSupplier.get() != null) {
-            updateMargins(mMarginSupplier.get());
-        }
+        mBrowserControlsMarginsSupplier.addSyncObserverAndCallIfNonNull(this::updateMargins);
     }
 
     @Override
@@ -107,9 +101,8 @@ public abstract class BasicNativePage implements NativePage, OnAttachStateChange
 
     @Override
     public void destroy() {
-        if (mMarginSupplier != null) {
-            mMarginSupplier.removeObserver(mMarginObserver);
-            mMarginSupplier.destroy();
+        if (mMarginsAdapter != null) {
+            mMarginsAdapter.destroy();
         }
 
         if (mBackPressHandler != null && getView() != null) {

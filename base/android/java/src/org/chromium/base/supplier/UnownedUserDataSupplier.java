@@ -13,10 +13,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * UnownedUserDataSupplier handles the combined lifecycle management for UnownedUserData and {@link
- * DestroyableObservableSupplier}. It can be constructed anywhere but needs to be attached before
- * it's accessible via {@link UnownedUserDataHost}. When destroyed, UnownedUserDataSupplier is
- * detached from all hosts.
+ * An ObservableSupplier that is owned by an UnownedUserDataHost.
  *
  * <p>A functional implementation with best practices is defined in {@link
  * UnownedUserDataSupplierTest}.

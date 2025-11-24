@@ -5013,7 +5013,6 @@ if (is_android) {
 
   android_library("supplier_java") {
     sources = [
-      "android/java/src/org/chromium/base/supplier/DestroyableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
