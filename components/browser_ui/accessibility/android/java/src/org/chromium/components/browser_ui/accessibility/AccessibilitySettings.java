@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -32,7 +33,9 @@ import org.chromium.ui.base.UiAndroidFeatureList;
 /** Fragment to keep track of all the accessibility related preferences. */
 @NullMarked
 public class AccessibilitySettings extends PreferenceFragmentCompat
-        implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
+        implements EmbeddableSettingsPage,
+                Preference.OnPreferenceChangeListener,
+                CustomDividerFragment {
     public static final String PREF_PAGE_ZOOM_DEFAULT_ZOOM = "page_zoom_default_zoom";
     public static final String PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT =
             "page_zoom_include_os_adjustment";
@@ -242,5 +245,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     @Override
     public @Nullable String getMainMenuKey() {
         return "accessibility";
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 }
