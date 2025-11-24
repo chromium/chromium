@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,6 +31,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.content.Context;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -46,6 +49,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
@@ -76,11 +80,14 @@ public class NtpCardsMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+    @Mock private CompoundButton mCompoundButton;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
     private Supplier<@Nullable Profile> mProfileSupplier;
     private NtpCardsMediator mNtpCardsMediator;
     private Context mContext;
+    private ListContainerViewDelegate mListContainerViewDelegate;
 
     @Before
     public void setUp() {
@@ -88,12 +95,14 @@ public class NtpCardsMediatorUnitTest {
         mProfileSupplier = () -> mProfile;
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         mNtpCardsMediator =
                 new NtpCardsMediator(
                         mContainerPropertyModel,
                         mBottomSheetPropertyModel,
                         mDelegate,
                         mProfileSupplier);
+        mListContainerViewDelegate = mNtpCardsMediator.createListDelegate();
     }
 
     @Test
@@ -104,12 +113,11 @@ public class NtpCardsMediatorUnitTest {
 
     @Test
     public void testListContainerViewDelegate() {
-        ListContainerViewDelegate delegate = mNtpCardsMediator.createListDelegate();
         HomeModulesConfigManager homeModulesConfigManager = HomeModulesConfigManager.getInstance();
 
         // Verifies that the content of the delegate.getListItems() comes from
         // homeModulesConfigManager.
-        List<Integer> content = delegate.getListItems();
+        List<Integer> content = mListContainerViewDelegate.getListItems();
         assertEquals(content, homeModulesConfigManager.getModuleListShownInSettings());
 
         // Verifies that the titles of list items come from HomeModulesUtils.
@@ -126,8 +134,41 @@ public class NtpCardsMediatorUnitTest {
         for (int type : types) {
             assertEquals(
                     HomeModulesUtils.getTitleForModuleType(type, mContext),
-                    delegate.getListItemTitle(type, mContext));
+                    mListContainerViewDelegate.getListItemTitle(type, mContext));
         }
+    }
+
+    @Test
+    public void testIsListItemChecked() {
+        when(mHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE))
+                .thenReturn(true);
+        assertTrue(mListContainerViewDelegate.isListItemChecked(ModuleType.PRICE_CHANGE));
+
+        when(mHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE))
+                .thenReturn(false);
+        assertFalse(mListContainerViewDelegate.isListItemChecked(ModuleType.PRICE_CHANGE));
+    }
+
+    @Test
+    public void testGetOnCheckedChangeListener() {
+        CompoundButton.OnCheckedChangeListener listener =
+                mListContainerViewDelegate.getOnCheckedChangeListener(ModuleType.PRICE_CHANGE);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NewTabPage.Customization.TurnOnModule", PRICE_CHANGE)
+                        .build();
+        listener.onCheckedChanged(mCompoundButton, true);
+        verify(mHomeModulesConfigManager).setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, true);
+        watcher.assertExpected();
+
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NewTabPage.Customization.TurnOffModule", PRICE_CHANGE)
+                        .build();
+        listener.onCheckedChanged(mCompoundButton, false);
+        verify(mHomeModulesConfigManager).setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
+        watcher.assertExpected();
     }
 
     @Test

@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,24 +22,18 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
@@ -51,11 +44,10 @@ public class MaterialSwitchWithTextListContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock ListContainerViewDelegate mDelegate;
-    @Mock MaterialSwitchWithText mListItemView;
 
-    @Captor
-    private ArgumentCaptor<CompoundButton.OnCheckedChangeListener> mOnCheckedChangeListenerCaptor;
-
+    private static final String SINGLE_TAB_TITLE = "Single Tab Title";
+    private static final String SAFTY_HUB_TITLE = "Safety Hub Title";
+    private static final String PRICE_CHANGE_TITLE = "Price Change Title";
     private MaterialSwitchWithTextListContainerView mContainerView;
     private List<Integer> mListContent;
 
@@ -63,83 +55,99 @@ public class MaterialSwitchWithTextListContainerViewUnitTest {
     public void setUp() {
         Context context =
                 new ContextThemeWrapper(
-                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+
         View view =
                 LayoutInflater.from(context)
-                        .inflate(
-                                org.chromium.chrome.browser.ntp_customization.R.layout
-                                        .ntp_customization_ntp_cards_bottom_sheet,
-                                null,
-                                false);
-        mContainerView = spy(view.findViewById(R.id.ntp_cards_container));
+                        .inflate(R.layout.ntp_customization_ntp_cards_bottom_sheet, null, false);
+
+        mContainerView = view.findViewById(R.id.ntp_cards_container);
         mListContent = List.of(SINGLE_TAB, SAFETY_HUB, PRICE_CHANGE);
+
         when(mDelegate.getListItems()).thenReturn(mListContent);
-        doReturn(mListItemView).when(mContainerView).createListItemView();
     }
 
     @Test
-    @SmallTest
     public void testDelegateInRenderAllListItems() {
         mContainerView.renderAllListItems(mDelegate);
 
-        // Verifies that only mDelegate.getListItems() and mDelegate.getListItemTitle() are called
-        // when creating list items.
         verify(mDelegate).getListItems();
         for (int type : mListContent) {
             verify(mDelegate).getListItemTitle(eq(type), any(Context.class));
+            verify(mDelegate).isListItemChecked(eq(type));
+            verify(mDelegate).getOnCheckedChangeListener(eq(type));
         }
+
         verify(mDelegate, never()).getListener(anyInt());
         verify(mDelegate, never()).getTrailingIcon(anyInt());
         verify(mDelegate, never()).getListItemSubtitle(anyInt(), any(Context.class));
     }
 
     @Test
-    @SmallTest
     public void testRenderAllListItems() {
+        // Gives the title a specific name to verify later.
+        // Item 1: SINGLE_TAB
+        when(mDelegate.getListItemTitle(eq(SINGLE_TAB), any())).thenReturn(SINGLE_TAB_TITLE);
+        when(mDelegate.isListItemChecked(SINGLE_TAB)).thenReturn(true);
+
+        // Item 2: SAFETY_HUB
+        when(mDelegate.getListItemTitle(eq(SAFETY_HUB), any())).thenReturn(SAFTY_HUB_TITLE);
+        when(mDelegate.isListItemChecked(SAFETY_HUB)).thenReturn(false);
+
+        // Item 3: PRICE_CHANGE
+        when(mDelegate.getListItemTitle(eq(PRICE_CHANGE), any())).thenReturn(PRICE_CHANGE_TITLE);
+        when(mDelegate.isListItemChecked(PRICE_CHANGE)).thenReturn(true);
+
+        // Calls the method that creates the views.
         mContainerView.renderAllListItems(mDelegate);
 
-        // Verifies the title, background, and switch are set.
-        int itemListSize = mListContent.size();
-        verify(mListItemView, times(itemListSize)).setText(any());
-        verify(mListItemView, times(itemListSize)).setBackground(any());
-        verify(mContainerView, times(itemListSize))
-                .setUpSwitch(
-                        any(HomeModulesConfigManager.class),
-                        any(MaterialSwitchWithText.class),
-                        anyInt());
+        assertEquals(
+                "Container should have 3 child views.",
+                mListContent.size(),
+                mContainerView.getChildCount());
+
+        // Verifies the first child (SINGLE_TAB)
+        MaterialSwitchWithText firstChild = (MaterialSwitchWithText) mContainerView.getChildAt(0);
+        assertEquals(SINGLE_TAB_TITLE, firstChild.getText());
+        assertTrue("Single Tab switch should be checked", firstChild.isChecked());
+
+        // Verifies the second child (SAFETY_HUB)
+        MaterialSwitchWithText secondChild = (MaterialSwitchWithText) mContainerView.getChildAt(1);
+        assertEquals(SAFTY_HUB_TITLE, secondChild.getText());
+        assertFalse("Safety Hub switch should NOT be checked", secondChild.isChecked());
+
+        // Verifies the third child (PRICE_CHANGE)
+        MaterialSwitchWithText thirdChild = (MaterialSwitchWithText) mContainerView.getChildAt(2);
+        assertEquals(PRICE_CHANGE_TITLE, thirdChild.getText());
+        assertTrue("Price Change switch should be checked", thirdChild.isChecked());
     }
 
     @Test
-    @SmallTest
-    public void testSetUpSwitch() {
-        HomeModulesConfigManager manager = mock(HomeModulesConfigManager.class);
-        MaterialSwitchWithText listItemView = mock(MaterialSwitchWithText.class);
-        String histogramTurnOnName = "NewTabPage.Customization.TurnOnModule";
-        String histogramTurnOffName = "NewTabPage.Customization.TurnOffModule";
+    public void testSetAllModuleSwitchesEnabled() {
+        // First, render the items to populate the view with real children.
+        mContainerView.renderAllListItems(mDelegate);
 
-        // Verifies that getPrefModuleTypeEnabled() is called.
-        mContainerView.setUpSwitch(manager, listItemView, SINGLE_TAB);
-        verify(manager).getPrefModuleTypeEnabled(SINGLE_TAB);
+        assertEquals(mListContent.size(), mContainerView.getChildCount());
 
-        // Verifies setPrefModuleTypeEnabled() is called inside the OnCheckedChangeListener to
-        // update the checked state of the switch.
-        verify(listItemView).setOnCheckedChangeListener(mOnCheckedChangeListenerCaptor.capture());
-        mOnCheckedChangeListenerCaptor
-                .getValue()
-                .onCheckedChanged(mock(CompoundButton.class), true);
-        verify(manager).setPrefModuleTypeEnabled(SINGLE_TAB, true);
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogramTurnOnName, SINGLE_TAB);
-        NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(SINGLE_TAB, true);
-        histogramWatcher.assertExpected();
+        // Calls the method to test
+        mContainerView.setAllModuleSwitchesEnabled(false);
 
-        mOnCheckedChangeListenerCaptor
-                .getValue()
-                .onCheckedChanged(mock(CompoundButton.class), false);
-        verify(manager).setPrefModuleTypeEnabled(SINGLE_TAB, false);
-        histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogramTurnOffName, SINGLE_TAB);
-        NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(SINGLE_TAB, false);
-        histogramWatcher.assertExpected();
+        // Verifies the state of all real child views
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            assertFalse(
+                    "Switch at index " + i + " should be disabled",
+                    mContainerView.getChildAt(i).isEnabled());
+        }
+
+        // Calls the method again with the other value
+        mContainerView.setAllModuleSwitchesEnabled(true);
+
+        // Verifies the state again
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            assertTrue(
+                    "Switch at index " + i + " should be enabled",
+                    mContainerView.getChildAt(i).isEnabled());
+        }
     }
 }

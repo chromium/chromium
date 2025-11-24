@@ -16,7 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
@@ -37,7 +36,6 @@ public class MaterialSwitchWithTextListContainerView extends LinearLayout
      */
     @Override
     public void renderAllListItems(ListContainerViewDelegate delegate) {
-        HomeModulesConfigManager homeModulesConfigManager = HomeModulesConfigManager.getInstance();
         List<Integer> types = delegate.getListItems();
 
         for (int i = 0; i < types.size(); i++) {
@@ -48,7 +46,8 @@ public class MaterialSwitchWithTextListContainerView extends LinearLayout
             listItemView.setBackground(
                     AppCompatResources.getDrawable(
                             getContext(), NtpCustomizationUtils.getBackground(types.size(), i)));
-            setUpSwitch(homeModulesConfigManager, listItemView, type);
+            listItemView.setChecked(delegate.isListItemChecked(type));
+            listItemView.setOnCheckedChangeListener(delegate.getOnCheckedChangeListener(type));
 
             addView(listItemView);
         }
@@ -61,28 +60,14 @@ public class MaterialSwitchWithTextListContainerView extends LinearLayout
                 .inflate(R.layout.ntp_customization_ntp_cards_list_item_layout, this, false);
     }
 
-    /**
-     * Sets up the current checked state of the switch in the list item view and sets up a {@link
-     * CompoundButton.OnCheckedChangeListener} to handle user selection to show or hide the magic
-     * stack module.
-     *
-     * @param homeModulesConfigManager The manager class handles showing and hiding each magic stack
-     *     module.
-     * @param listItemView The list item view that contains the switch.
-     * @param type The type of the magic stack module that this switch controls for showing and
-     *     hiding.
-     */
-    @VisibleForTesting
-    void setUpSwitch(
-            HomeModulesConfigManager homeModulesConfigManager,
-            MaterialSwitchWithText listItemView,
-            int type) {
-        listItemView.setChecked(homeModulesConfigManager.getPrefModuleTypeEnabled(type));
-        listItemView.setOnCheckedChangeListener(
-                (button, newValue) -> {
-                    homeModulesConfigManager.setPrefModuleTypeEnabled(type, newValue);
-                    NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(type, newValue);
-                });
+    /** Enables/disables interactivity of the module switches. */
+    void setAllModuleSwitchesEnabled(boolean isEnabled) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof MaterialSwitchWithText childSwitch) {
+                childSwitch.setEnabled(isEnabled);
+            }
+        }
     }
 
     /**
@@ -92,8 +77,10 @@ public class MaterialSwitchWithTextListContainerView extends LinearLayout
     @Override
     public void destroy() {
         for (int i = 0; i < getChildCount(); i++) {
-            MaterialSwitchWithText child = (MaterialSwitchWithText) getChildAt(i);
-            child.setOnCheckedChangeListener(null);
+            View child = getChildAt(i);
+            if (child instanceof MaterialSwitchWithText childSwitch) {
+                childSwitch.setOnCheckedChangeListener(null);
+            }
         }
 
         removeAllViews();

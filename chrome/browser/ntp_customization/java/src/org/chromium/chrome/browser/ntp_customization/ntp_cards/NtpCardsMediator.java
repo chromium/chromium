@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.content.Context;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -73,6 +75,8 @@ public class NtpCardsMediator {
     /** Returns {@link ListContainerViewDelegate} that defines the content of each list item. */
     @VisibleForTesting
     ListContainerViewDelegate createListDelegate() {
+        final HomeModulesConfigManager homeModulesConfigManager =
+                HomeModulesConfigManager.getInstance();
         return new ListContainerViewDelegate() {
             @Override
             public List<Integer> getListItems() {
@@ -104,6 +108,19 @@ public class NtpCardsMediator {
             @Override
             public @Nullable Integer getTrailingIconDescriptionResId(int type) {
                 return null;
+            }
+
+            @Override
+            public boolean isListItemChecked(int type) {
+                return homeModulesConfigManager.getPrefModuleTypeEnabled(type);
+            }
+
+            @Override
+            public CompoundButton.OnCheckedChangeListener getOnCheckedChangeListener(int type) {
+                return (button, newValue) -> {
+                    homeModulesConfigManager.setPrefModuleTypeEnabled(type, newValue);
+                    NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(type, newValue);
+                };
             }
         };
     }
