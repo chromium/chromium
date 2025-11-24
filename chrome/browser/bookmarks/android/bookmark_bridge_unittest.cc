@@ -349,7 +349,6 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
   EXPECT_TRUE(bookmark_bridge()->GetAccountReadingListFolder(env).is_null());
 }
 
-// TODO(crbug.com/41481802): Also enable bookmark account folders here.
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
 
