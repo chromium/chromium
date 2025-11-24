@@ -103,12 +103,16 @@ source_set("cloud_content_scanning") {
     "cloud_content_scanning/common.h",
     "cloud_content_scanning/connector_data_pipe_getter.cc",
     "cloud_content_scanning/connector_data_pipe_getter.h",
+    "cloud_content_scanning/connector_upload_request.cc",
+    "cloud_content_scanning/connector_upload_request.h",
   ]
   deps = [
+    "//components/file_access",
     "//base",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -22,7 +22,7 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 class ConnectorUploadRequestFactory;
 
@@ -81,8 +81,7 @@ class ConnectorUploadRequest {
 
   virtual ~ConnectorUploadRequest();
 
-  enterprise_connectors::ConnectorDataPipeGetter*
-  data_pipe_getter_for_testing() {
+  ConnectorDataPipeGetter* data_pipe_getter_for_testing() {
     return data_pipe_getter_.get();
   }
 
@@ -123,8 +122,7 @@ class ConnectorUploadRequest {
 
   // Data pipe getter used to stream a file or a page. Only populated for the
   // corresponding requests.
-  std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter>
-      data_pipe_getter_;
+  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
 
   // Suffix to be used for common histograms broken out by consumer.
   std::string histogram_suffix_;
@@ -155,7 +153,7 @@ class ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      enterprise_connectors::ScanRequestUploadResult get_data_result,
+      ScanRequestUploadResult get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
@@ -166,13 +164,13 @@ class ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      enterprise_connectors::ScanRequestUploadResult get_data_result,
+      ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
 };
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CONNECTOR_UPLOAD_REQUEST_H_

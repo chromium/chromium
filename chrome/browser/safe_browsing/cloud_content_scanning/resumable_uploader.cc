@@ -32,7 +32,8 @@ namespace safe_browsing {
 
 namespace {
 
-using enterprise_connectors::ConnectorDataPipeGetter;
+using ::enterprise_connectors::ConnectorDataPipeGetter;
+using ::enterprise_connectors::ConnectorUploadRequest;
 
 // HTTP headers for resumable upload requests
 constexpr char kUploadProtocolHeader[] = "X-Goog-Upload-Protocol";

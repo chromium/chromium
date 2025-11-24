@@ -15,9 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -31,10 +31,12 @@ namespace safe_browsing {
 
 // This class encapsulates the upload of a file with metadata using the
 // resumable protocol. This class is neither movable nor copyable.
-class ResumableUploadRequest : public ConnectorUploadRequest {
+class ResumableUploadRequest
+    : public enterprise_connectors::ConnectorUploadRequest {
  public:
   using ContentUploadedCallback = base::OnceClosure;
-  using VerdictReceivedCallback = ConnectorUploadRequest::Callback;
+  using VerdictReceivedCallback =
+      enterprise_connectors::ConnectorUploadRequest::Callback;
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
   // file corresponding to the provided `path` to the given `base_url`, and then
@@ -92,7 +94,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
 
   ~ResumableUploadRequest() override;
 
-  static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -103,7 +106,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload);
 
-  static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -117,7 +121,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload);
 
-  static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,

@@ -62,7 +62,7 @@ class DownloadFeedbackImpl : public DownloadFeedback {
   std::string ping_request_;
   std::string ping_response_;
 
-  std::unique_ptr<ConnectorUploadRequest> uploader_;
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest> uploader_;
 };
 
 DownloadFeedbackImpl::DownloadFeedbackImpl(

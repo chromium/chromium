@@ -14,8 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -24,7 +24,8 @@ namespace safe_browsing {
 
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
-class MultipartUploadRequest : public ConnectorUploadRequest {
+class MultipartUploadRequest
+    : public enterprise_connectors::ConnectorUploadRequest {
  public:
   // Creates a MultipartUploadRequest, which will upload `data` to the given
   // `base_url` with `metadata` attached.
@@ -74,7 +75,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
 
   std::string GetUploadInfo() override;
 
-  static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -83,7 +85,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -94,7 +97,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
+  static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,

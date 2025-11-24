@@ -56,6 +56,8 @@ enterprise_connectors::CloudAnalysisSettings CloudAnalysisSettingsWithUrl(
 
 }  // namespace
 
+using ::enterprise_connectors::ConnectorUploadRequest;
+using ::enterprise_connectors::ConnectorUploadRequestFactory;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;

@@ -493,7 +493,7 @@ void CloudBinaryUploadService::OnGetRequestData(
   auto content_uploaded_callback =
       base::BindOnce(&CloudBinaryUploadService::OnContentUploaded,
                      weakptr_factory_.GetWeakPtr(), request_id);
-  std::unique_ptr<ConnectorUploadRequest> upload_request;
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest> upload_request;
   // The downloaded file will not be available for deep scan upload due to the
   // newly introduced download obfuscation step. We must wait for deobfuscation
   // to complete before uploading, which is guaranteed under the pre-async

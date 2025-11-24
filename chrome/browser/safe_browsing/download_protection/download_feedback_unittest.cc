@@ -30,6 +30,9 @@
 
 namespace safe_browsing {
 
+using ::enterprise_connectors::ConnectorUploadRequest;
+using ::enterprise_connectors::ConnectorUploadRequestFactory;
+
 namespace {
 
 class FakeUploader : public MultipartUploadRequest {

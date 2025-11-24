@@ -19,8 +19,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
@@ -396,7 +396,8 @@ class ResumableUploadSendContentRequestTest
 
   UploadRequestType GetRequestType() { return GetParam(); }
 
-  std::unique_ptr<ConnectorUploadRequest> CreateTestRequest(
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateTestRequest(
       enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,

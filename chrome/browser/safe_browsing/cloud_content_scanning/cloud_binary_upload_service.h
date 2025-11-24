@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
 class Profile;
@@ -198,7 +198,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
   base::flat_map<Request::Id, base::TimeTicks> start_times_;
   base::flat_map<Request::Id, std::unique_ptr<base::OneShotTimer>>
       active_timers_;
-  base::flat_map<Request::Id, std::unique_ptr<ConnectorUploadRequest>>
+  base::flat_map<Request::Id,
+                 std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>>
       active_uploads_;
   base::flat_map<Request::Id, std::string> active_tokens_;
 

@@ -39,6 +39,7 @@ namespace safe_browsing {
 namespace {
 
 using ::enterprise_connectors::ConnectorDataPipeGetter;
+using ::enterprise_connectors::ConnectorUploadRequest;
 
 // Constants associated with exponential backoff. On each failure, we will
 // increase the backoff by `kBackoffFactor`, starting from

@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 // static
 ConnectorUploadRequestFactory* ConnectorUploadRequest::factory_ = nullptr;
@@ -85,8 +84,8 @@ ConnectorUploadRequest::~ConnectorUploadRequest() {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
-            [](std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter::
-                                   InternalMemoryMappedFile> file) {},
+            [](std::unique_ptr<
+                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
             std::move(file)));
   }
 }
@@ -94,4 +93,4 @@ ConnectorUploadRequest::~ConnectorUploadRequest() {
 void ConnectorUploadRequest::set_access_token(const std::string& access_token) {
   access_token_ = access_token;
 }
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
