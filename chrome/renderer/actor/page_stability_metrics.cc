@@ -44,13 +44,17 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
     case PageStabilityMonitor::State::kStartMonitoring:
       start_monitoring_time_ = base::TimeTicks::Now();
       break;
-    case PageStabilityMonitor::State::kNetworkAndMainThreadIdle:
-      stability_outcome_ = PageStabilityOutcome::kNetworkAndMainThread;
-      break;
     case PageStabilityMonitor::State::kTimeout:
       stability_outcome_ = PageStabilityOutcome::kTimeout;
       break;
-    case PageStabilityMonitor::State::kMaybeDelayCallback:
+    case PageStabilityMonitor::State::kMonitorCompleted:
+      CHECK_NE(paint_stability_reached_,
+               network_and_main_thread_stability_reached_);
+      if (paint_stability_reached_) {
+        stability_outcome_ = PageStabilityOutcome::kPaint;
+      } else {
+        stability_outcome_ = PageStabilityOutcome::kNetworkAndMainThread;
+      }
       break;
     case PageStabilityMonitor::State::kDelayCallback:
       if (stability_outcome_ == PageStabilityOutcome::kPaint) {
@@ -65,9 +69,6 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
       break;
     case PageStabilityMonitor::State::kRenderFrameGoingAway:
       stability_outcome_ = PageStabilityOutcome::kRenderFrameGoingAway;
-      break;
-    case PageStabilityMonitor::State::kPaintStabilityReached:
-      stability_outcome_ = PageStabilityOutcome::kPaint;
       break;
     case PageStabilityMonitor::State::kMojoDisconnected:
       stability_outcome_ = PageStabilityOutcome::kMojoDisconnected;
@@ -86,6 +87,8 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
 }
 
 void PageStabilityMetrics::OnNetworkAndMainThreadIdle() {
+  network_and_main_thread_stability_reached_ = true;
+
   CHECK(!start_monitoring_time_.is_null());
   base::UmaHistogramTimes(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
@@ -93,6 +96,8 @@ void PageStabilityMetrics::OnNetworkAndMainThreadIdle() {
 }
 
 void PageStabilityMetrics::OnPaintStabilityReached() {
+  paint_stability_reached_ = true;
+
   CHECK(!start_monitoring_time_.is_null());
   base::UmaHistogramTimes(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,

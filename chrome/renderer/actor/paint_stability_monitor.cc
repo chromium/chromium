@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/actor/paint_stability_monitor.h"
 
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/common/actor/actor_logging.h"
@@ -158,7 +159,8 @@ void PaintStabilityMonitor::OnPaintStabilityDetected() {
   // smaller global timeout for pages and interactions that the
   // `interaction_effects_monitor_` does a poor job of attributing (DOM node
   // removal/hiding, <canvas>, <iframe>, etc.
-  std::move(is_stable_callback_).Run();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(is_stable_callback_));
 }
 
 void PaintStabilityMonitor::ScheduleContentfulPaintTimeoutTask(

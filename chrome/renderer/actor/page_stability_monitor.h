@@ -82,16 +82,15 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // Entry point into the state machine. Decides which state to start in.
     kStartMonitoring,
 
-    // The network and main thread are settled.
-    kNetworkAndMainThreadIdle,
+    //  The NetworkAndMainThreadStabilityMonitor or PaintStabilityMonitor has
+    //  determined that the page stability has been reached. If
+    //  `kGlicActorPageStabilityMinWait` is set, the callback passed to
+    // NotifyWhenStable() may be delayed until the said amount of time is
+    // reached.
+    kMonitorCompleted,
 
     // Timeout state - this just logs and and moves to invoke callback state.
     kTimeout,
-
-    // If `kGlicActorPageStabilityMinWait` is set, the callback passed to
-    // NotifyWhenStable() may be delayed until the said amount of time is
-    // reached.
-    kMaybeDelayCallback,
 
     // Delay the callback until the min wait time is reached.
     kDelayCallback,
@@ -102,10 +101,6 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // The render frame is about to be deleted (e.g. because of a navigation to
     // a new RenderFrame).
     kRenderFrameGoingAway,
-
-    // The `paint_stability_monitor_` has determined that paint stability has
-    // been reached. This just moves to kInokeCallback.
-    kPaintStabilityReached,
 
     // The mojo pipeline gets disconnected. This just moves to kDone.
     kMojoDisconnected,

@@ -313,6 +313,10 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback) {
     task_environment_.FastForwardBy(GetSubsequentPaintTimeout());
     monitor->WaitForStable(base::BindLambdaForTesting(
         [&]() { did_reach_paint_stability = true; }));
+    // Fast-forwarding by a zero time delta runs any tasks that are ready to run
+    // at the current virtual time. In this case, it ensures that the callback
+    // passed to WaitForStable() is run if it was scheduled synchronously.
+    task_environment_.FastForwardBy(base::TimeDelta());
     EXPECT_TRUE(did_reach_paint_stability);
   }
 }

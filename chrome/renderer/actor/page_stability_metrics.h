@@ -31,6 +31,9 @@ class PageStabilityMetrics {
 
   PageStabilityOutcome stability_outcome_ = PageStabilityOutcome::kUnknown;
 
+  bool network_and_main_thread_stability_reached_ = false;
+  bool paint_stability_reached_ = false;
+
   // The time at which it starts to wait for page stabilization.
   base::TimeTicks start_waiting_time_;
 
