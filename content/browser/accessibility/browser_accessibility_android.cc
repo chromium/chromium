@@ -1518,6 +1518,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRadioButton:
+    case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kRowHeader:
     case ax::mojom::Role::kSectionFooter:
     case ax::mojom::Role::kSectionHeader:
@@ -1543,7 +1544,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kMenuItemSeparator:
     case ax::mojom::Role::kPdfActionableHighlight:
     case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kTableHeaderContainer:
     case ax::mojom::Role::kWebView: {
       ax::mojom::Role role = GetRole();
