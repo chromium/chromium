@@ -38,7 +38,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
-#include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -52,6 +51,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/btm_service.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
@@ -558,6 +558,38 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
             registry->registration_mode());
 }
 
+class URLCookieAccessObserver : public content::WebContentsObserver {
+ public:
+  URLCookieAccessObserver(content::WebContents* web_contents,
+                          const GURL& url,
+                          content::CookieAccessDetails::Type access_type)
+      : WebContentsObserver(web_contents),
+        url_(url),
+        access_type_(access_type) {}
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // WebContentsObserver overrides
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override {
+    if (details.type == access_type_ && details.url == url_) {
+      run_loop_.Quit();
+    }
+  }
+
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override {
+    if (details.type == access_type_ && details.url == url_) {
+      run_loop_.Quit();
+    }
+  }
+
+  GURL url_;
+  content::CookieAccessDetails::Type access_type_;
+  base::RunLoop run_loop_;
+};
+
 class DevToolsProtocolTest_BounceTrackingMitigations
     : public DevToolsProtocolTest {
  protected:
@@ -612,8 +644,8 @@ testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
            << "Failed to navigate to " << bounce_url;
   }
 
-  tpcd::trial::URLCookieAccessObserver cookie_observer(
-      web_contents, bounce_url, tpcd::trial::CookieOperation::kChange);
+  URLCookieAccessObserver cookie_observer(
+      web_contents, bounce_url, content::CookieAccessDetails::Type::kChange);
   testing::AssertionResult js_result =
       content::ExecJs(web_contents, "document.cookie = 'bounce=stateful';",
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE);

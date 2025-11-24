@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/origin_trials/browser",
-]

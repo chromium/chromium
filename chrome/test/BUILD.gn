@@ -219,8 +219,6 @@ static_library("test_support") {
     "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
     "../browser/tpcd/experiment/mock_experiment_manager.cc",
     "../browser/tpcd/experiment/mock_experiment_manager.h",
-    "../browser/tpcd/support/trial_test_utils.cc",
-    "../browser/tpcd/support/trial_test_utils.h",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
     "base/autocomplete_change_observer.cc",

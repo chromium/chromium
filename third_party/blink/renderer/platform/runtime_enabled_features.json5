@@ -3118,12 +3118,6 @@
       status: "experimental",
     },
     {
-      name: "LimitThirdPartyCookies",
-      origin_trial_feature_name: "LimitThirdPartyCookies",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       // Speculative fix for renderer hangs in crbug.com/447174988
       name: "LimitTriggerAttachmentUpdates"
     },
@@ -5239,13 +5233,6 @@
       public: true,
       status: "experimental",
     },
-    {
-      name: "TopLevelTpcd",
-      origin_trial_feature_name: "TopLevelTpcd",
-      origin_trial_type: "deprecation",
-      status: "experimental",
-      base_feature: "none",
-    },
     // This feature allows touch dragging and a context menu to occur
     // simultaneously, with the assumption that the menu is non-modal.  Without
     // this feature, a long-press touch gesture can start either a drag or a
@@ -5293,14 +5280,6 @@
     // Set to reflect the kTouchTextEditingRedesign feature.
     {
       name: "TouchTextEditingRedesign",
-      base_feature: "none",
-    },
-    {
-      name: "Tpcd",
-      origin_trial_feature_name: "Tpcd",
-      origin_trial_allows_third_party: true,
-      origin_trial_type: "deprecation",
-      status: "experimental",
       base_feature: "none",
     },
     {
