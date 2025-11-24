@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ios/web/web_thread_impl.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -50,11 +46,14 @@ struct WebThreadGlobals {
 
   // This array is protected by `lock`. This array is filled as WebThreadImpls
   // are constructed and depopulated when they are destructed.
-  scoped_refptr<base::SingleThreadTaskRunner>
-      task_runners[WebThread::ID_COUNT] GUARDED_BY(lock);
+  std::array<scoped_refptr<base::SingleThreadTaskRunner>, WebThread::ID_COUNT>
+      task_runners GUARDED_BY(lock);
 
   // This array is protected by `lock`. Holds the state of each WebThread::ID.
-  WebThreadState states[WebThread::ID_COUNT] GUARDED_BY(lock) = {};
+  std::array<WebThreadState, WebThread::ID_COUNT> states GUARDED_BY(lock) = {
+      UNINITIALIZED,
+      UNINITIALIZED,
+  };
 
  private:
   friend class base::NoDestructor<WebThreadGlobals>;
@@ -256,10 +255,11 @@ void WebThreadImpl::ResetGlobalsForTesting(WebThread::ID identifier) {
 
 // static
 const char* WebThreadImpl::GetThreadName(WebThread::ID thread) {
-  static const char* const kWebThreadNames[WebThread::ID_COUNT] = {
-      "Web_UIThread",  // UI
-      "Web_IOThread",  // IO
-  };
+  static constexpr std::array<const char*, WebThread::ID_COUNT>
+      kWebThreadNames = {
+          "Web_UIThread",  // UI
+          "Web_IOThread",  // IO
+      };
 
   if (WebThread::UI <= thread && thread < WebThread::ID_COUNT) {
     return kWebThreadNames[thread];
