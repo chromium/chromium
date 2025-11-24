@@ -452,18 +452,9 @@ function deferToRenderer(): void {
   DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(emptyCredential);
 }
 
-// Function called from C++ to resolve the deferred promise with a valid
-// attestation credential.
-function resolveAttestationRequest(
-    id64: string, attestationObject64: string, authenticatorData64: string,
-    publicKeySpkiDer64: string, clientDataJson: string): void {
-  const attestationObj = decodeBase64URLToArrayBuffer(attestationObject64);
-  const authenticatorData = decodeBase64URLToArrayBuffer(authenticatorData64);
-  const publicKeySpkiDer = decodeBase64URLToArrayBuffer(publicKeySpkiDer64);
-  const response: AuthenticatorAttestationResponse =
-      createAuthenticatorAttestationResponse(
-          attestationObj, authenticatorData, publicKeySpkiDer, clientDataJson);
-
+// Resolves the credential promise with the provided response.
+function resolveCredentialPromise(
+    id64: string, response: AuthenticatorResponse): void {
   const id = decodeBase64URLToArrayBuffer(id64);
   const credential: PublicKeyCredential = createPublicKeyCredential(
       arrayBufferToBase64URL(id), 'platform', id, response);
@@ -471,9 +462,39 @@ function resolveAttestationRequest(
   DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(credential);
 }
 
+// Function called from C++ to resolve the deferred promise with a valid
+// assertion credential.
+function resolveAssertionRequest(
+    id64: string, authenticatorData64: string, clientDataJson: string,
+    signature64: string, userHandle: string): void {
+  const response: AuthenticatorAssertionResponse = {
+    authenticatorData: decodeBase64URLToArrayBuffer(authenticatorData64),
+    clientDataJSON: stringToArrayBuffer(clientDataJson),
+    signature: decodeBase64URLToArrayBuffer(signature64),
+    userHandle: stringToArrayBuffer(userHandle),
+  };
+
+  resolveCredentialPromise(id64, response);
+}
+
+// Function called from C++ to resolve the deferred promise with a valid
+// attestation credential.
+function resolveAttestationRequest(
+    id64: string, attestationObject64: string, authenticatorData64: string,
+    publicKeySpkiDer64: string, clientDataJson: string): void {
+  const response: AuthenticatorAttestationResponse =
+      createAuthenticatorAttestationResponse(
+          decodeBase64URLToArrayBuffer(attestationObject64),
+          decodeBase64URLToArrayBuffer(authenticatorData64),
+          decodeBase64URLToArrayBuffer(publicKeySpkiDer64), clientDataJson);
+
+  resolveCredentialPromise(id64, response);
+}
+
 const passkey = new CrWebApi();
 
 passkey.addFunction('deferToRenderer', deferToRenderer);
+passkey.addFunction('resolveAssertionRequest', resolveAssertionRequest);
 passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 
 gCrWeb.registerApi('passkey', passkey);

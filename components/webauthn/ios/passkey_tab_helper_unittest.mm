@@ -26,6 +26,8 @@ using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kGetResolvedNonGpm;
 
+namespace {
+
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kCredentialId2[] = "credential_id_2";
 constexpr char kRpId[] = "example.com";
@@ -77,6 +79,8 @@ PasskeyTabHelper::AssertionRequestParams BuildAssertionRequestParams(
   return PasskeyTabHelper::AssertionRequestParams(BuildRequestParams(),
                                                   allow_credentials);
 }
+
+}  // namespace
 
 class FakeIOSPasskeyClient : public IOSPasskeyClient {
  public:

@@ -147,6 +147,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Requests a passkey to be created given the provided params.
   // Fetches the shared keys list and calls the CompletePasskeyCreation
   // callback.
+  // TODO(crbug.com/460485333): Test passkey creation flow.
   void StartPasskeyCreation(RegistrationRequestParams params);
 
   // Callback which creates a passkey given the provided shared keys list and
@@ -156,6 +157,21 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
                                const SharedKeyList& shared_key_list);
+
+  // Requests that the provided passkey be used for passkey assertion given the
+  // provided params. Fetches the shared keys list and calls the
+  // CompletePasskeyAssertion callback.
+  // TODO(crbug.com/460485333): Test passkey assertion flow.
+  void StartPasskeyAssertion(AssertionRequestParams params,
+                             sync_pb::WebauthnCredentialSpecifics passkey);
+
+  // Callback which uses the provided passkey for assertion given the provided
+  // shared keys list and params. The parameters required to resolve the
+  // PublicKeyCredential request are sent to PasskeyJavaScriptFeature.
+  void CompletePasskeyAssertion(AssertionRequestParams params,
+                                sync_pb::WebauthnCredentialSpecifics passkey,
+                                std::string client_data_json,
+                                const SharedKeyList& shared_key_list);
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.

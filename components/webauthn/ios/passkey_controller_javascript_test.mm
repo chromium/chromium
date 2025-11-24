@@ -34,6 +34,8 @@
 
 namespace webauthn {
 
+namespace {
+
 const char kNavigatorCredentialsCreateUrl[] = "/credentialsCreate";
 const char kNavigatorCredentialsGetUrl[] = "/credentialsGet";
 
@@ -66,6 +68,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   }
   return std::move(http_response);
 }
+
+}  // namespace
 
 // Test fixture for passkey_controller.ts.
 // TODO(crbug.com/369629469): Explore adding EG tests that verify original JS

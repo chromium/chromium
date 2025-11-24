@@ -37,6 +37,23 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
     std::string client_data_json;
   };
 
+  // Provides parameters for passkey assertion, as specified by the webauthn
+  // spec:
+  // https://www.w3.org/TR/webauthn-2/#iface-authenticatorassertionresponse
+  struct AssertionData {
+    AssertionData(std::vector<uint8_t> signature,
+                  std::vector<uint8_t> authenticator_data,
+                  std::vector<uint8_t> user_handle,
+                  std::string client_data_json);
+    AssertionData(AssertionData&& other);
+    ~AssertionData();
+
+    std::vector<uint8_t> signature;
+    std::vector<uint8_t> authenticator_data;
+    std::vector<uint8_t> user_handle;
+    std::string client_data_json;
+  };
+
   // This feature holds no state, so only a single static instance is ever
   // needed.
   static PasskeyJavaScriptFeature* GetInstance();
@@ -48,6 +65,11 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   void ResolveAttestationRequest(web::WebFrame* web_frame,
                                  const std::string& credential_id,
                                  AttestationData attestation_data);
+
+  // Resolves the assertion request with a valid passkey.
+  void ResolveAssertionRequest(web::WebFrame* web_frame,
+                               const std::string& credential_id,
+                               AssertionData assertion_data);
 
  private:
   friend class base::NoDestructor<PasskeyJavaScriptFeature>;

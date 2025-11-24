@@ -13,11 +13,14 @@
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
+#import "crypto/hash.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace webauthn {
+
+namespace {
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
@@ -91,6 +94,54 @@ CreatePasskeyAndAttestationObject(
               std::move(serialized_attestation_object.authenticator_data),
               std::move(public_key_spki_der), std::move(client_data_json))};
 }
+
+// Utility function to create an assertion object from the provided parameters.
+// TODO(crbug.com/460485333): Merge this code with PerformPasskeyAssertion.
+std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
+    const SharedKey& trusted_vault_key,
+    const sync_pb::WebauthnCredentialSpecifics& passkey,
+    std::string client_data_json,
+    std::string_view rp_id) {
+  // Fetch secrets from passkey if possible.
+  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+  if (!passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+          trusted_vault_key, passkey, &credential_secrets)) {
+    return std::nullopt;
+  }
+
+  // Generate authenticator data.
+  // TODO(crbug.com/460485333): use the real value for `did_complete_uv`.
+  std::vector<uint8_t> authenticator_data =
+      passkey_model_utils::MakeAuthenticatorDataForAssertion(
+          rp_id, /*did_complete_uv=*/false);
+
+  // Generate client data hash.
+  std::array<uint8_t, crypto::hash::kSha256Size> client_data_hash =
+      crypto::hash::Sha256(client_data_json);
+
+  // Prepare the signed data.
+  std::vector<uint8_t> signed_over_data = authenticator_data;
+  signed_over_data.insert(signed_over_data.end(), client_data_hash.begin(),
+                          client_data_hash.end());
+
+  // Compute signature.
+  std::optional<std::vector<uint8_t>> signature =
+      passkey_model_utils::GenerateEcSignature(
+          base::as_byte_span(credential_secrets.private_key()),
+          signed_over_data);
+
+  if (!signature.has_value()) {
+    return std::nullopt;
+  }
+
+  const std::string& user_id = passkey.user_id();
+  return PasskeyJavaScriptFeature::AssertionData(
+      std::move(*signature), std::move(authenticator_data),
+      std::vector<uint8_t>(user_id.begin(), user_id.end()),
+      std::move(client_data_json));
+}
+
+}  // namespace
 
 PasskeyTabHelper::RequestParams::RequestParams()
     : user_verification_(device::UserVerificationRequirement::kPreferred) {}
@@ -303,11 +354,6 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
        /*is_cross_origin_iframe=*/false},
       /*payment_json=*/std::nullopt);
 
-  if (client_data_json.empty()) {
-    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
-    return;
-  }
-
   client_->FetchKeys(ReauthenticatePurpose::kEncrypt,
                      base::BindOnce(&PasskeyTabHelper::CompletePasskeyCreation,
                                     this->AsWeakPtr(), std::move(params),
@@ -344,6 +390,63 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   // Resolve the PublicKeyCredential promise.
   PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
       web_frame, passkey.credential_id(), std::move(attestation_data));
+}
+
+void PasskeyTabHelper::StartPasskeyAssertion(
+    AssertionRequestParams params,
+    sync_pb::WebauthnCredentialSpecifics passkey) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  if (!web_frame) {
+    return;
+  }
+
+  // TODO(crbug.com/460485333): Use proper top origin.
+  std::string client_data_json = BuildClientDataJson(
+      {ClientDataRequestType::kWebAuthnGet, web_frame->GetSecurityOrigin(),
+       /*top_origin=*/url::Origin(), params.request_params_.challenge_,
+       /*is_cross_origin_iframe=*/false},
+      /*payment_json=*/std::nullopt);
+
+  client_->FetchKeys(
+      ReauthenticatePurpose::kDecrypt,
+      base::BindOnce(&PasskeyTabHelper::CompletePasskeyAssertion,
+                     this->AsWeakPtr(), std::move(params), std::move(passkey),
+                     std::move(client_data_json)));
+}
+
+void PasskeyTabHelper::CompletePasskeyAssertion(
+    AssertionRequestParams params,
+    sync_pb::WebauthnCredentialSpecifics passkey,
+    std::string client_data_json,
+    const SharedKeyList& shared_key_list) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  if (!web_frame) {
+    return;
+  }
+
+  // `hw_protected` security domain currently supports a single secret.
+  if (shared_key_list.size() != 1) {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+    return;
+  }
+
+  // TODO(crbug.com/460485679) : Implement extension support.
+
+  // Attempt to create an assertion object.
+  std::optional<PasskeyJavaScriptFeature::AssertionData> assertion_data =
+      CreateAssertionObject(shared_key_list[0], passkey,
+                            std::move(client_data_json), params.RpId());
+
+  // TODO(crbug.com/460485333): Update the passkey's last used time to
+  // base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds().
+
+  if (assertion_data.has_value()) {
+    // Resolve the PublicKeyCredential promise.
+    PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
+        web_frame, passkey.credential_id(), std::move(*assertion_data));
+  } else {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+  }
 }
 
 // WebStateObserver

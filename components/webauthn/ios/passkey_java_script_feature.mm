@@ -29,6 +29,8 @@ using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kGetResolvedNonGpm;
 
+namespace {
+
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
 
@@ -243,8 +245,7 @@ std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
         std::optional<device::FidoTransportProtocol> fidoTransportProtocol =
             device::ConvertToFidoTransportProtocol(transport.GetString());
         if (fidoTransportProtocol.has_value()) {
-          credential_descriptor.transports.insert(
-              *fidoTransportProtocol);
+          credential_descriptor.transports.insert(*fidoTransportProtocol);
         }
       }
     }
@@ -290,6 +291,8 @@ PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
+}  // namespace
+
 PasskeyJavaScriptFeature::AttestationData::AttestationData(
     std::vector<uint8_t> attestation_object,
     std::vector<uint8_t> authenticator_data,
@@ -303,6 +306,20 @@ PasskeyJavaScriptFeature::AttestationData::AttestationData(
 PasskeyJavaScriptFeature::AttestationData::AttestationData(
     PasskeyJavaScriptFeature::AttestationData&& other) = default;
 PasskeyJavaScriptFeature::AttestationData::~AttestationData() = default;
+
+PasskeyJavaScriptFeature::AssertionData::AssertionData(
+    std::vector<uint8_t> signature,
+    std::vector<uint8_t> authenticator_data,
+    std::vector<uint8_t> user_handle,
+    std::string client_data_json)
+    : signature(std::move(signature)),
+      authenticator_data(std::move(authenticator_data)),
+      user_handle(std::move(user_handle)),
+      client_data_json(std::move(client_data_json)) {}
+
+PasskeyJavaScriptFeature::AssertionData::AssertionData(
+    PasskeyJavaScriptFeature::AssertionData&& other) = default;
+PasskeyJavaScriptFeature::AssertionData::~AssertionData() = default;
 
 // static
 PasskeyJavaScriptFeature* PasskeyJavaScriptFeature::GetInstance() {
@@ -343,6 +360,20 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
           .Append(base::Base64Encode(attestation_data.authenticator_data))
           .Append(base::Base64Encode(attestation_data.public_key_spki_der))
           .Append(attestation_data.client_data_json));
+}
+
+void PasskeyJavaScriptFeature::ResolveAssertionRequest(
+    web::WebFrame* web_frame,
+    const std::string& credential_id,
+    AssertionData assertion_data) {
+  CallJavaScriptFunction(
+      web_frame, "passkey.resolveAssertionRequest",
+      base::Value::List()
+          .Append(base::Base64Encode(credential_id))
+          .Append(base::Base64Encode(assertion_data.authenticator_data))
+          .Append(assertion_data.client_data_json)
+          .Append(base::Base64Encode(assertion_data.signature))
+          .Append(base::Base64Encode(assertion_data.user_handle)));
 }
 
 std::optional<std::string>
