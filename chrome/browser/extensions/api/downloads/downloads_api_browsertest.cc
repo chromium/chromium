@@ -782,6 +782,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
       // Ensure we have an OTR window and OTR web contents.
       tab = PlatformOpenURLOffTheRecord(current_profile(), GURL("about:blank"));
     }
+    CHECK(tab);
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK,
                                   /*is_renderer_initiated=*/false);
@@ -806,16 +807,15 @@ class DownloadExtensionTest : public ExtensionApiTest {
                                !IncognitoInfo::IsSplitMode(extension)
                            ? GURL(url::kAboutBlankURL)
                            : extension->GetResourceURL("empty.html");
-      // Watch and wait for the navigation to take place.
-      auto observer = std::make_unique<content::TestNavigationObserver>(url);
-      observer->WatchExistingWebContents();
-      observer->StartWatchingNewWebContents();
       // Recreate the tab each time for insulation.
       content::WebContents* tab =
           LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-      observer->WaitForNavigationFinished();
+      CHECK(tab);
+      CHECK(content::WaitForLoadStop(tab));
       function->set_extension(extension);
+      CHECK(tab->GetPrimaryMainFrame());
       function->SetRenderFrameHost(tab->GetPrimaryMainFrame());
+      CHECK(tab->GetPrimaryMainFrame()->GetProcess());
       function->set_source_process_id(
           tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
     }
@@ -1034,8 +1034,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, ParseSearchQuery) {
       RunFunction(new DownloadsSearchFunction, "[{\"totalBytesGreater\":2}]"));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// The open dialog is not yet implemented on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   platform_util::internal::DisableShellOperationsForTesting();
 
@@ -1101,7 +1099,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   observer.WaitForEvent();
   EXPECT_TRUE(download_item->GetOpened());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_PauseResumeCancelErase) {
