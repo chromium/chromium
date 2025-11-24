@@ -16072,6 +16072,7 @@ from previous Chrome versions.
   <int value="667262414" label="IOSPromoBookmarkBubble:disabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="668342684" label="TabModelInitFixes:disabled"/>
+  <int value="668814021" label="AccessibilitySequentialFocus:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669105788"
       label="AutofillEnableAmountExtractionAllowlist:disabled"/>
@@ -18211,6 +18212,7 @@ from previous Chrome versions.
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>
   <int value="1411679884"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:enabled"/>
+  <int value="1411915938" label="AccessibilitySequentialFocus:disabled"/>
   <int value="1412874669" label="EnableRestrictedWebApis:enabled"/>
   <int value="1412998360"
       label="AutofillSkipAndroidBottomSheetForIban:disabled"/>

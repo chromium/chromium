@@ -347,6 +347,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRequestLayoutBasedActions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoomV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPopulateSupplementalDescriptionApi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySequentialFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilitySetSelectableOnAllNodesWithText);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityUnifiedSnapshots);

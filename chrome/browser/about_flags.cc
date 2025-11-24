@@ -6554,6 +6554,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          features::kAccessibilityPopulateSupplementalDescriptionApi)},
+    {"enable-accessibility-sequential-focus",
+     flag_descriptions::kAccessibilitySequentialFocusName,
+     flag_descriptions::kAccessibilitySequentialFocusDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilitySequentialFocus)},
     {"enable-accessibility-set-selectable-on-all-nodes-with-text",
      flag_descriptions::kAccessibilitySetSelectableOnAllNodesWithTextName,
      flag_descriptions::

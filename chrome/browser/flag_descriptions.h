@@ -4894,6 +4894,12 @@ inline constexpr char
         "populated "
         "using the Android supplemental description API.";
 
+inline constexpr char kAccessibilitySequentialFocusName[] =
+    "Accessibility Sequential Focus Navigation";
+inline constexpr char kAccessibilitySequentialFocusDescription[] =
+    "Enables synchronization of keyboard focus starting point with "
+    "accessibility focus.";
+
 inline constexpr char kAccessibilityTextFormattingName[] =
     "Accessibility Text Formatting";
 inline constexpr char kAccessibilityTextFormattingDescription[] =

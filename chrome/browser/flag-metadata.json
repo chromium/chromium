@@ -2950,6 +2950,11 @@
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
   },
+    {
+    "name": "enable-accessibility-sequential-focus",
+    "owners": [ "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 155
+  },
   {
     "name": "enable-accessibility-set-selectable-on-all-nodes-with-text",
     "owners": ["dtseng@chromium.org", "//ui/accessibility/OWNERS"],
