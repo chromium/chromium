@@ -183,12 +183,17 @@ PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
   return sites;
 }
 
-std::map<SectionType, PopularSites::SitesVector> ParseVersion5(
+std::map<SectionType, PopularSites::SitesVector> ParseSimple(
     const base::Value::List& list) {
   return {{SectionType::PERSONALIZED, ParseSiteList(list)}};
 }
 
-std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
+bool IsSectioned(const base::Value::List& list) {
+  return !list.empty() && list[0].is_dict() &&
+         list[0].GetDict().contains("section");
+}
+
+std::map<SectionType, PopularSites::SitesVector> ParseSectioned(
     const base::Value::List& list) {
   // Valid lists would have contained at least the PERSONALIZED section.
   std::map<SectionType, PopularSites::SitesVector> sections = {
@@ -224,10 +229,11 @@ std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
 std::map<SectionType, PopularSites::SitesVector> ParseSites(
     const base::Value::List& list,
     int version) {
-  if (version >= kSitesExplorationStartVersion) {
-    return ParseVersion6OrAbove(list);
+  if (version < kSitesExplorationStartVersion) {
+    return ParseSimple(list);
   }
-  return ParseVersion5(list);
+  // Look for sections and parse if found; else fall back to ParseSimple().
+  return IsSectioned(list) ? ParseSectioned(list) : ParseSimple(list);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \

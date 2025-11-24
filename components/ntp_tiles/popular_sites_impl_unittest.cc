@@ -434,6 +434,20 @@ TEST_F(PopularSitesTest, DoesntUseCachedFileIfDownloadForced) {
   EXPECT_THAT(sites[0].url, URLEq("https://www.chromium.org/"));
 }
 
+// V7 uses the V5 format. ParseSites() should be detect this, and fall back to
+// to ParseSimple().
+TEST_F(PopularSitesTest, ParsesV7AsV5) {
+  SetCountryAndVersion("ZZ", "7");
+  RespondWithV5JSON(
+      "https://www.gstatic.com/chrome/ntp/suggested_sites_ZZ_7.json",
+      {kChromium});
+  PopularSites::SitesVector sites;
+  EXPECT_THAT(FetchPopularSites(/*force_download=*/false, &sites),
+              Eq(std::optional<bool>(true)));
+  EXPECT_THAT(sites[0].url, URLEq("https://www.chromium.org/"));
+  EXPECT_THAT(prefs_->GetInteger(prefs::kPopularSitesVersionPref), Eq(7));
+}
+
 TEST_F(PopularSitesTest, DoesntUseCacheWithDeprecatedVersion) {
   SetCountryAndVersion("ZZ", "5");
   RespondWithV5JSON(
