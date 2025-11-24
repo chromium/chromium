@@ -684,6 +684,9 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   gfx::RectF accumulated_bound;
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {
     decoration_info.SetDecorationIndex(i);
+    if (!decoration_info.FontData()) {
+      continue;
+    }
     if (decoration_info.HasUnderline()) {
       decoration_info.SetUnderlineLineData(decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
