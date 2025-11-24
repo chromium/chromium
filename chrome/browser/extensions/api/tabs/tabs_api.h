@@ -317,15 +317,35 @@ class TabsUpdateFunction : public ExtensionFunction {
 
  protected:
   ~TabsUpdateFunction() override = default;
-  bool UpdateURL(const std::string& url,
+  bool UpdateURL(content::WebContents* web_contents,
+                 const std::string& url,
                  int tab_id,
                  std::string* error);
-  ResponseValue GetResult();
-
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  ResponseValue GetResult(content::WebContents* web_contents);
 
  private:
   ResponseAction Run() override;
+
+  // Returns true on success. Out parameters are the ID of the default tab to
+  // update and its web contents, or an error string.
+  bool ComputeDefaultTabId(int& tab_id,
+                           content::WebContents*& contents,
+                           std::string& error);
+
+  // Updates the active or selected tab. Returns true on success or if there was
+  // nothing to do. Returns false on failure with an error message.
+  bool UpdateActiveTab(const api::tabs::Update::Params& params,
+                       TabStripModel* tab_strip,
+                       int tab_index,
+                       const content::WebContents* contents,
+                       std::string& error);
+
+  // Updates the highlight state of the given tab. Returns true on success or if
+  // there was nothing to do. Returns false on failure with an error.
+  bool UpdateHighlightedTab(const api::tabs::Update::Params& params,
+                            TabStripModel* tab_strip,
+                            int tab_index,
+                            std::string& error);
 
   DECLARE_EXTENSION_FUNCTION("tabs.update", TABS_UPDATE)
 };

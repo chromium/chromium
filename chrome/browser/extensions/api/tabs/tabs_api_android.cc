@@ -181,7 +181,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   // Cache the web contents.
-  web_contents_ = contents;
+  content::WebContents* original_contents = contents;
 
   // Because this is a stub, the only parameter we update is the URL (and hence
   // navigate to a new page). This is the most common usage in tests. For other
@@ -219,13 +219,13 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
                                   : std::string();
 
     // See tabs_api.cc for the implementation of UpdateURL().
-    if (!UpdateURL(updated_url, tab_id, &error)) {
+    if (!UpdateURL(original_contents, updated_url, tab_id, &error)) {
       return RespondNow(Error(std::move(error)));
     }
   }
 
   // See tabs_api.cc for the implementation of GetResult().
-  return RespondNow(GetResult());
+  return RespondNow(GetResult(original_contents));
 }
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {

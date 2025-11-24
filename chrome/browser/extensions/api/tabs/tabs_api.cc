@@ -1128,7 +1128,8 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
 // TabsUpdateFunction has a production implementation in tabs_api_non_android.cc
 // and a stub implementation in tabs_api_android.cc, but these utility functions
 // are shared (and will stay here when there's finally a single implementation).
-bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
+bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
+                                   const std::string& url_string,
                                    int tab_id,
                                    std::string* error) {
   auto url = ExtensionTabUtil::PrepareURLForNavigation(url_string, extension(),
@@ -1149,7 +1150,7 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
   // |source_site_instance| needs to be set so that a renderer process
   // compatible with |initiator_origin| is picked by Site Isolation.
   load_params.source_site_instance = content::SiteInstance::CreateForURL(
-      web_contents_->GetBrowserContext(),
+      web_contents->GetBrowserContext(),
       load_params.initiator_origin->GetURL());
 
   // Marking the navigation as initiated via an API means that the focus
@@ -1157,7 +1158,7 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
 
   base::WeakPtr<content::NavigationHandle> navigation_handle =
-      web_contents_->GetController().LoadURLWithParams(load_params);
+      web_contents->GetController().LoadURLWithParams(load_params);
   // Navigation can fail for any number of reasons at the content layer.
   // Unfortunately, we can't provide a detailed error message here, because
   // there are too many possible triggers. At least notify the extension that
@@ -1168,19 +1169,20 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
   }
 
   DCHECK_EQ(*url,
-            web_contents_->GetController().GetPendingEntry()->GetVirtualURL());
+            web_contents->GetController().GetPendingEntry()->GetVirtualURL());
 
   return true;
 }
 
-ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult() {
+ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult(
+    content::WebContents* web_contents) {
   if (!has_callback()) {
     return NoArguments();
   }
 
   return ArgumentList(
       tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
-          web_contents_, extension(), source_context_type(), nullptr, -1)));
+          web_contents, extension(), source_context_type(), nullptr, -1)));
 }
 
 ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
