@@ -108,6 +108,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -2374,8 +2375,8 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
-// TODO(crbug.com/459532445): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/459532445): Flaky on Linux Wayland.
+#if BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_FullscreenAndRestoreWindowWithApi \
   DISABLED_FullscreenAndRestoreWindowWithApi
 #else
