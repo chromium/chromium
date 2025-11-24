@@ -34,7 +34,8 @@ export enum SecuritySettingsBundleSetting {
 export interface SettingsSecurityPageV2Element {
   $: {
     bundlesRadioGroup: SettingsRadioGroupElement,
-    resetBundleToDefaultsButton: CrButtonElement,
+    resetEnhancedBundleToDefaultsButton: CrButtonElement,
+    resetStandardBundleToDefaultsButton: CrButtonElement,
     securitySettingsBundleEnhanced: ControlledRadioButtonElement,
     securitySettingsBundleStandard: ControlledRadioButtonElement,
     safeBrowsingRadioGroup: SettingsRadioGroupElement,
@@ -67,12 +68,14 @@ export class SettingsSecurityPageV2Element extends
         value: SafeBrowsingSetting,
       },
 
-      isResetToDefaultsButtonHidden_: {
+      isResetStandardBundleToDefaultsButtonVisible_: {
         type: Boolean,
-        computed: 'computeIsResetToDefaultsButtonHidden_(' +
-            'isResettingToDefaults_,' +
-            'prefs.generated.security_settings_bundle.value,' +
-            'prefs.generated.safe_browsing.*),',
+        value: false,
+      },
+
+      isResetEnhancedBundleToDefaultsButtonVisible_: {
+        type: Boolean,
+        value: false,
       },
 
       // Whether the security-setting-bundle is being reset to default.
@@ -100,8 +103,18 @@ export class SettingsSecurityPageV2Element extends
     };
   }
 
+  static get observers() {
+    return [
+      'updateResetButtonVisibility_(' +
+          'isResettingToDefaults_,' +
+          'prefs.generated.security_settings_bundle.value,' +
+          'prefs.generated.safe_browsing.*),',
+    ];
+  }
+
   declare private isResettingToDefaults_: boolean;
-  declare private isResetToDefaultsButtonHidden_: boolean;
+  declare private isResetStandardBundleToDefaultsButtonVisible_: boolean;
+  declare private isResetEnhancedBundleToDefaultsButtonVisible_: boolean;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private safeBrowsingStateTextMap_: Object;
 
@@ -122,9 +135,12 @@ export class SettingsSecurityPageV2Element extends
             'securityStandardBundleSafeBrowsingDefault');
   }
 
-  private computeIsResetToDefaultsButtonHidden_() {
+  private updateResetButtonVisibility_() {
+    this.isResetStandardBundleToDefaultsButtonVisible_ = false;
+    this.isResetEnhancedBundleToDefaultsButtonVisible_ = false;
+
     if (this.isResettingToDefaults_) {
-      return true;
+      return;
     }
 
     const bundleSetting = this.getBundleSetting_();
@@ -137,11 +153,14 @@ export class SettingsSecurityPageV2Element extends
       const pref = this.getPref(prefToCheck.prefKey);
       if (pref.value !== prefToCheck.defaultValue &&
           pref.controlledBy == null) {
-        return false;
+        if (bundleSetting === SecuritySettingsBundleSetting.ENHANCED) {
+          this.isResetEnhancedBundleToDefaultsButtonVisible_ = true;
+        } else {
+          this.isResetStandardBundleToDefaultsButtonVisible_ = true;
+        }
+        return;
       }
     }
-
-    return true;
   }
 
   private onSecurityBundleChanged_() {

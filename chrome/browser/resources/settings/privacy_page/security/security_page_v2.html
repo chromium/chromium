@@ -70,11 +70,6 @@
   <h2 class="section-header cr-secondary-text first">
     $i18n{securityTitle}
   </h2>
-  <cr-button id="resetBundleToDefaultsButton"
-      on-click="onResetBundleToDefaultsButtonClick_"
-      hidden$="[[isResetToDefaultsButtonHidden_]]">
-    $i18n{securityBundleResetToDefaultsButtonLabel}
-  </cr-button>
   <settings-radio-group id="bundlesRadioGroup"
       class="card-container"
       pref="{{prefs.generated.security_settings_bundle}}"
@@ -86,6 +81,11 @@
         pref="{{prefs.generated.security_settings_bundle}}"
         label="$i18n{securityStandardBundleTitle}"
         class="card box">
+      <cr-button id="resetStandardBundleToDefaultsButton"
+          on-click="onResetBundleToDefaultsButtonClick_"
+          hidden$="[[!isResetStandardBundleToDefaultsButtonVisible_]]">
+        $i18n{securityBundleResetToDefaultsButtonLabel}
+      </cr-button>
     </controlled-radio-button>
     <controlled-radio-button
         id="securitySettingsBundleEnhanced"
@@ -93,6 +93,11 @@
         pref="{{prefs.generated.security_settings_bundle}}"
         label="$i18n{securityEnhancedBundleTitle}"
         class="card box">
+      <cr-button id="resetEnhancedBundleToDefaultsButton"
+          on-click="onResetBundleToDefaultsButtonClick_"
+          hidden$="[[!isResetEnhancedBundleToDefaultsButtonVisible_]]">
+        $i18n{securityBundleResetToDefaultsButtonLabel}
+      </cr-button>
     </controlled-radio-button>
   </settings-radio-group>
   <security-page-feature-row id="safeBrowsingRow"

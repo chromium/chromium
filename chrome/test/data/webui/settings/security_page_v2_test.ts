@@ -73,34 +73,64 @@ suite('Main', function() {
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup', true));
   });
 
-  test('ResetToDefaultsButtonVisibility', async function() {
+  test('ResetStandardBundleToDefaultsButtonVisibility', async function() {
     page.setPrefValue(
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     await flushTasks();
-    assertFalse(isChildVisible(page, '#resetBundleToDefaultsButton'));
+    assertFalse(isChildVisible(page, '#resetStandardBundleToDefaultsButton'));
 
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
     await flushTasks();
-    assertTrue(isChildVisible(page, '#resetBundleToDefaultsButton'));
+    assertTrue(isChildVisible(page, '#resetStandardBundleToDefaultsButton'));
   });
 
-  test('ResetToDefaultsClick', async function() {
+  test('ResetEnhancedBundleToDefaultsButtonVisibility', async function() {
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.ENHANCED);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+    assertFalse(isChildVisible(page, '#resetEnhancedBundleToDefaultsButton'));
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#resetEnhancedBundleToDefaultsButton'));
+  });
+
+  test('ResetStandardToDefaultsClick', async function() {
     page.setPrefValue(
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
     await flushTasks();
-    assertTrue(!!page.$.resetBundleToDefaultsButton);
-    assertTrue(isVisible(page.$.resetBundleToDefaultsButton));
+    assertTrue(!!page.$.resetStandardBundleToDefaultsButton);
+    assertTrue(isVisible(page.$.resetStandardBundleToDefaultsButton));
 
-    page.$.resetBundleToDefaultsButton.click();
+    page.$.resetStandardBundleToDefaultsButton.click();
     await flushTasks();
     assertEquals(
         SafeBrowsingSetting.STANDARD,
         page.getPref('generated.safe_browsing').value);
-    assertFalse(isVisible(page.$.resetBundleToDefaultsButton));
+    assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
+  });
+
+  test('ResetEnhancedToDefaultsClick', async function() {
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.ENHANCED);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await flushTasks();
+    assertTrue(!!page.$.resetEnhancedBundleToDefaultsButton);
+    assertTrue(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
+
+    page.$.resetEnhancedBundleToDefaultsButton.click();
+    await flushTasks();
+    assertEquals(
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
+    assertFalse(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
   });
 
 });
