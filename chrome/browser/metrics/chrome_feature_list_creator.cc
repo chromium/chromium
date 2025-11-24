@@ -15,12 +15,14 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/json_pref_store.h"
@@ -76,6 +78,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       // Enable 3PCD tracking protection UI.
       {network::switches::kTestThirdPartyCookiePhaseout,
        std::cref(content_settings::features::kTrackingProtection3pcd),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      // Override for --devtools-greendev-ui.
+      {switches::kEnableDevToolsGreenDevUi,
+       std::cref(features::kDevToolsGreenDevUi),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 

@@ -277,6 +277,9 @@ const char kEnableDevToolsPwaHandler[] = "enable-devtools-pwa-handler";
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
+// Enables the experimental GreenDev UI in DevTools.
+const char kEnableDevToolsGreenDevUi[] = "devtools-greendev-ui";
+
 // Enables logging for extension activity.
 const char kEnableExtensionActivityLogging[] =
     "enable-extension-activity-logging";

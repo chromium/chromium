@@ -515,10 +515,6 @@ inline constexpr char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 inline constexpr char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";
 
-inline constexpr char kDevToolsGreenDevUiName[] = "DevTools GreenDev UI";
-inline constexpr char kDevToolsGreenDevUiDescription[] =
-    "Enables the experimental GreenDev UI in DevTools.";
-
 inline constexpr char kDevToolsProjectSettingsName[] =
     "DevTools Project Settings";
 inline constexpr char kDevToolsProjectSettingsDescription[] =
