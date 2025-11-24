@@ -579,7 +579,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     // email.
     // Then the profile's email address will be replaced with the plus
     // address in order to show the updated email on the suggestion label.
-    if (plus_address_email_override && profile.HasInfo(EMAIL_ADDRESS) &&
+    if (plus_address_email_override && !plus_address_email_override->empty() &&
+        profile.HasInfo(EMAIL_ADDRESS) &&
         base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
       email_override = base::UTF8ToUTF16(*plus_address_email_override);
       profile.SetRawInfo(EMAIL_ADDRESS, email_override);
