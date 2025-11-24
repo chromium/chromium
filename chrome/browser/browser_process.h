@@ -125,6 +125,10 @@ class ResourceCoordinatorParts;
 class TabManager;
 }
 
+namespace ui {
+class UnownedUserDataHost;
+}  // namespace ui
+
 // NOT THREAD SAFE, call only from the main thread.
 // These functions shouldn't return NULL unless otherwise noted.
 class BrowserProcess {
@@ -135,6 +139,12 @@ class BrowserProcess {
   BrowserProcess& operator=(const BrowserProcess&) = delete;
 
   virtual ~BrowserProcess();
+
+  // Returns the UnownedUserDataHost associated with this browser process. This
+  // is used to retrieve arbitrary features from the browser process without
+  // requiring BrowserProcess to have knowledge of them.
+  virtual ui::UnownedUserDataHost& GetUnownedUserDataHost() = 0;
+  virtual const ui::UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
 
   // Invoked when the user is logging out/shutting down. When logging off we may
   // not have enough time to do a normal shutdown. This method is invoked prior

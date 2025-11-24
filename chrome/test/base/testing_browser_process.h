@@ -27,6 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -93,6 +94,8 @@ class TestingBrowserProcess
   TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
 
   // BrowserProcess overrides:
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
   void EndSession() override;
   void FlushLocalStateAndReply(base::OnceClosure reply) override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
@@ -218,6 +221,8 @@ class TestingBrowserProcess
   void MaybeStartTearDown();
 
   void ShutdownBrowserPolicyConnector();
+
+  ui::UnownedUserDataHost unowned_user_data_host_;
 
   // This member needs to stay at or near the top of the list so it gets
   // destroyed late in the shutdown process. Several other members rely on

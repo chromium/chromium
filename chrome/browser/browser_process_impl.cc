@@ -153,6 +153,7 @@
 #include "ui/base/idle/idle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -307,6 +308,15 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
   DCHECK(local_state_);
   DCHECK(startup_data);
   // Most work should be done in Init().
+}
+
+ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost() {
+  return unowned_user_data_host_;
+}
+
+const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
+    const {
+  return unowned_user_data_host_;
 }
 
 void BrowserProcessImpl::Init() {

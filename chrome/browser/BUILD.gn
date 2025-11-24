@@ -126,6 +126,7 @@ source_set("browser_process") {
     "//chrome/common:buildflags",
     "//components/safe_browsing:buildflags",
     "//media:media_buildflags",
+    "//ui/base/unowned_user_data",
   ]
 }
 
@@ -135,7 +136,10 @@ source_set("main_extra_parts") {
 
 source_set("global_features") {
   sources = [ "global_features.h" ]
-  deps = [ "//chrome/common:buildflags" ]
+  deps = [
+    "//chrome/common:buildflags",
+    "//ui/base/unowned_user_data",
+  ]
   public_deps = [
     "//base",
     "//build:branding_buildflags",
@@ -2599,6 +2603,7 @@ static_library("browser") {
     "//ui/base/emoji",
     "//ui/base/idle",
     "//ui/base/ime",
+    "//ui/base/unowned_user_data",
     "//ui/color",
     "//ui/color/dynamic_color",
     "//ui/compositor",

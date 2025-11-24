@@ -162,6 +162,7 @@ static_library("test_support") {
     "//chrome/test/data/webui:resources",
     "//components/affiliations/core/browser:test_support",
     "//components/supervised_user/core/browser:test_support",
+    "//ui/base/unowned_user_data",
   ]
 
   if (enable_background_mode) {

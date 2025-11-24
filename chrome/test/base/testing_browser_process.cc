@@ -183,6 +183,15 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   DCHECK_EQ(static_cast<BrowserProcess*>(nullptr), g_browser_process);
 }
 
+ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost() {
+  return unowned_user_data_host_;
+}
+
+const ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost()
+    const {
+  return unowned_user_data_host_;
+}
+
 void TestingBrowserProcess::Init() {
   features_ = GlobalFeatures::CreateGlobalFeatures();
   features_->Init();
@@ -233,8 +242,7 @@ void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
   NOTREACHED();
 }
 
-void TestingBrowserProcess::EndSession() {
-}
+void TestingBrowserProcess::EndSession() {}
 
 metrics_services_manager::MetricsServicesManager*
 TestingBrowserProcess::GetMetricsServicesManager() {
@@ -396,8 +404,9 @@ BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
 
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
-  if (!notification_ui_manager_.get())
+  if (!notification_ui_manager_.get()) {
     notification_ui_manager_ = NotificationUIManager::Create();
+  }
   return notification_ui_manager_.get();
 #else
   return nullptr;
@@ -421,8 +430,7 @@ IntranetRedirectDetector* TestingBrowserProcess::intranet_redirect_detector() {
 
 void TestingBrowserProcess::CreateDevToolsProtocolHandler() {}
 
-void TestingBrowserProcess::CreateDevToolsAutoOpener() {
-}
+void TestingBrowserProcess::CreateDevToolsAutoOpener() {}
 
 bool TestingBrowserProcess::IsShuttingDown() {
   return is_shutting_down_;
@@ -430,8 +438,9 @@ bool TestingBrowserProcess::IsShuttingDown() {
 
 printing::PrintJobManager* TestingBrowserProcess::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
-  if (!print_job_manager_.get())
+  if (!print_job_manager_.get()) {
     print_job_manager_ = std::make_unique<printing::PrintJobManager>();
+  }
   return print_job_manager_.get();
 #else
   NOTIMPLEMENTED();
@@ -485,8 +494,9 @@ DownloadStatusUpdater* TestingBrowserProcess::download_status_updater() {
 }
 
 DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
-  if (!download_request_limiter_)
+  if (!download_request_limiter_) {
     download_request_limiter_ = base::MakeRefCounted<DownloadRequestLimiter>();
+  }
   return download_request_limiter_.get();
 }
 
@@ -504,8 +514,9 @@ MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
   NOTIMPLEMENTED();
   return nullptr;
 #else
-  if (!media_file_system_registry_)
+  if (!media_file_system_registry_) {
     media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
+  }
   return media_file_system_registry_.get();
 #endif
 }

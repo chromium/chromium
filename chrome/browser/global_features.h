@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace system_permission_settings {
 class PlatformHandle;
@@ -33,6 +34,7 @@ class GlicSyntheticTrialManager;
 #endif
 
 class ApplicationLocaleStorage;
+class BrowserProcess;
 
 namespace installer_downloader {
 class InstallerDownloaderController;
@@ -130,6 +132,9 @@ class GlobalFeatures {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  static ui::UserDataFactoryWithOwner<BrowserProcess>&
+  GetUserDataFactoryForTesting();
+
  protected:
   GlobalFeatures();
 
@@ -144,6 +149,8 @@ class GlobalFeatures {
 #endif
 
  private:
+  static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();
+
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
 

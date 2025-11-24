@@ -153,4 +153,18 @@ GlobalFeatures::CreateWhatsNewRegistry() {
 }
 #endif
 
+// static
+ui::UserDataFactoryWithOwner<BrowserProcess>&
+GlobalFeatures::GetUserDataFactoryForTesting() {
+  return GetUserDataFactory();
+}
+
+// static
+ui::UserDataFactoryWithOwner<BrowserProcess>&
+GlobalFeatures::GetUserDataFactory() {
+  static base::NoDestructor<ui::UserDataFactoryWithOwner<BrowserProcess>>
+      factory;
+  return *factory;
+}
+
 GlobalFeatures::GlobalFeatures() = default;
