@@ -1671,12 +1671,6 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   return snapshot;
 }
 
-gpu::gles2::GLES2Interface* CanvasResourceProvider::ContextGL() const {
-  if (!context_provider_wrapper_)
-    return nullptr;
-  return context_provider_wrapper_->ContextProvider().ContextGL();
-}
-
 gpu::raster::RasterInterface* CanvasResourceProvider::RasterInterface() const {
   if (!context_provider_wrapper_)
     return nullptr;

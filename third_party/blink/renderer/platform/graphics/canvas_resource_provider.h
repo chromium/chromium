@@ -42,12 +42,6 @@ namespace gpu {
 
 struct SyncToken;
 
-namespace gles2 {
-
-class GLES2Interface;
-
-}  // namespace gles2
-
 namespace raster {
 
 class RasterInterface;
@@ -297,7 +291,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
  protected:
   class CanvasImageProvider;
 
-  gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
