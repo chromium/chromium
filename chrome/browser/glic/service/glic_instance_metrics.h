@@ -288,6 +288,10 @@ class GlicInstanceMetrics {
   void OnPinnedTabsChanged(
       const std::vector<content::WebContents*>& pinned_contents);
 
+  // Records the response latency (from user input submitted to response stop)
+  // by the number of attached tabs.
+  void RecordResponseLatencyByAttachedTabCount(base::TimeDelta latency);
+
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 

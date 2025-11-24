@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AttachedTabCount">
+  <variant name="0" summary="0 tabs attached"/>
+  <variant name="1" summary="1 tab attached"/>
+  <variant name="2" summary="2 tabs attached"/>
+  <variant name="3" summary="3 tabs attached"/>
+  <variant name="4" summary="4 tabs attached"/>
+  <variant name="5" summary="5 tabs attached"/>
+  <variant name="6" summary="6 tabs attached"/>
+  <variant name="7" summary="7 tabs attached"/>
+  <variant name="8" summary="8 tabs attached"/>
+  <variant name="9" summary="9 tabs attached"/>
+  <variant name="10" summary="10 tabs attached"/>
+  <variant name="MoreThan10" summary="More than 10 tabs attached"/>
+</variants>
+
 <variants name="Dimension">
   <variant name="Height" summary="height"/>
   <variant name="Width" summary="width"/>
@@ -1945,6 +1960,17 @@ chromium-metrics-reviews@google.com.
     Records the last invocation source that was used to open the Glic panel for
     a given turn. Recorded at the end of each turn.
   </summary>
+</histogram>
+
+<histogram name="Glic.Turn.LatencyByAttachedTabCount.{AttachedTabCount}"
+    units="ms" expires_after="2026-05-24">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response stops
+    for a given number of attached tabs. Recorded after each turn.
+  </summary>
+  <token key="AttachedTabCount" variants="AttachedTabCount"/>
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStartTime" units="ms"

@@ -651,9 +651,10 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
         GlicInstanceMetricsError::kResponseStopWithoutInput);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta latency = now - turn_.input_submitted_time_;
     base::UmaHistogramMediumTimes(
-        base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}),
-        now - turn_.input_submitted_time_);
+        base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}), latency);
+    RecordResponseLatencyByAttachedTabCount(latency);
   }
 
   GlicTurnSource turn_source;
@@ -777,6 +778,20 @@ void GlicInstanceMetrics::OnSessionFinished() {
 void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {
   base::UmaHistogramExactLinear("Glic.Response.AttachedContextCount", tab_count,
                                 51);
+}
+
+void GlicInstanceMetrics::RecordResponseLatencyByAttachedTabCount(
+    base::TimeDelta latency) {
+  std::string tab_count_suffix;
+  if (pinned_tab_count_ > 10) {
+    tab_count_suffix = "MoreThan10";
+  } else {
+    tab_count_suffix = base::NumberToString(pinned_tab_count_);
+  }
+
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Glic.Turn.LatencyByAttachedTabCount.", tab_count_suffix}),
+      latency);
 }
 
 int GlicInstanceMetrics::GetPinnedTabCount() const {
