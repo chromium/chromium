@@ -7,6 +7,8 @@
 #pragma mark - Element Colors
 NSString* const kAimInputItemTopBackgroundColor =
     @"aim_input_item_top_background_color";
+NSString* const kAimComposeboxButtonBackgroundColor =
+    @"aim_composebox_button_background_color";
 NSString* const kBackgroundColor = @"background_color";
 NSString* const kCloseButtonColor = @"close_button_color";
 NSString* const kDisabledTintColor = @"disabled_tint_color";

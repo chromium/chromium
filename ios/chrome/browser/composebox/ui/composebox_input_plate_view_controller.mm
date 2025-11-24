@@ -493,9 +493,9 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 - (CAGradientLayer*)createGradientLayerForLeading:(BOOL)isLeading {
   CAGradientLayer* gradientLayer = [CAGradientLayer layer];
-  UIColor* transparentColor = [[UIColor colorNamed:kPrimaryBackgroundColor]
-      colorWithAlphaComponent:0.0];
-  UIColor* solidColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  UIColor* transparentColor =
+      [_theme.inputPlateBackgroundColor colorWithAlphaComponent:0.0];
+  UIColor* solidColor = _theme.inputPlateBackgroundColor;
 
   if (isLeading) {
     gradientLayer.colors =
@@ -570,22 +570,21 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   config.attributedTitle = attributedTitle;
 
   config.imagePadding = 5;
-  config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
   self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
   _aimButton.layer.borderWidth = 0;
 
   if (self.AIModeEnabled) {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 22);
-    config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-    config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
+    config.background.backgroundColor =
+        [_theme aimButtonBackgroundColorWithAIMEnabled:YES];
+    config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:YES];
 
     _aimButton.hidden = NO;
   } else {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
     config.background.backgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+        [_theme aimButtonBackgroundColorWithAIMEnabled:NO];
+    config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
 
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
       _aimButton.layer.borderWidth = 1;

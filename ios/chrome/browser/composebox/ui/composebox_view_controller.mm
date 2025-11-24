@@ -12,9 +12,10 @@
 
 namespace {
 /// The padding for the close button.
-const CGFloat kCloseButtonDefaultPadding = 16.0f;
+const CGFloat kCloseButtonDefaultPadding = 10.0f;
 /// The horizontal and bottom padding for the input plate container.
 const CGFloat kInputPlatePadding = 10.0f;
+const CGFloat kInputPlateTopPadding = 4.0f;
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 34.0f;
 /// The alpha for the close button.
@@ -64,7 +65,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                         @[
                           [[UIColor tertiaryLabelColor]
                               colorWithAlphaComponent:kCloseButtonAlpha],
-                          [UIColor tertiarySystemFillColor]
+                          _theme.inputPlateBackgroundColor
                         ]);
   [_closeButton setImage:buttonImage forState:UIControlStateNormal];
 
@@ -184,7 +185,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                            constant:-kInputPlatePadding],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:kInputPlatePadding],
+                           constant:kInputPlateTopPadding],
         [_inputViewController.view.bottomAnchor
             constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
                                                   .topAnchor

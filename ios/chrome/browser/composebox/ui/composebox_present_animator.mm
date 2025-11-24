@@ -8,7 +8,7 @@
 
 namespace {
 // The total duration of the presentation animation.
-const NSTimeInterval kTotalDuration = 0.4;
+const NSTimeInterval kTotalDuration = 0.3;
 
 // The scale starting value for elements appearing.
 const NSTimeInterval kInitialScaleForAppear = 0.9;
@@ -85,7 +85,7 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
       delay:0
-      options:UIViewKeyframeAnimationOptionCalculationModeLinear
+      options:UIViewAnimationCurveEaseInOut
       animations:^{
         // Morph the initial entrypoint to the shape and position of the
         // inputplate.
