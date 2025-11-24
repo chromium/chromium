@@ -890,10 +890,6 @@ class HistorySyncOptinCoordinator
       case ButtonState::kGuestSession:
         break;
       case ButtonState::kPasskeysLockedError:
-        webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
-            webauthn::PasskeyUnlockManager::ErrorUIEventType::
-                kAvatarUIDisplayed);
-        [[fallthrough]];
       case ButtonState::kNormal:
       case ButtonState::kManagement:
         CHECK(!collapse_timer_.IsRunning());
@@ -909,9 +905,6 @@ class HistorySyncOptinCoordinator
         Trigger();
         break;
       case ButtonState::kPasskeysLockedError:
-        webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
-            webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden);
-        break;
       case ButtonState::kOnSignin:
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
@@ -1237,6 +1230,46 @@ class PasskeyStateProvider : public StateProvider,
   base::ScopedObservation<webauthn::PasskeyUnlockManager,
                           webauthn::PasskeyUnlockManager::Observer>
       passkey_manager_observation_{this};
+};
+
+class AvatarToolbarButtonPasskeyStateChangeReporter
+    : public base::SupportsUserData::Data,
+      public AvatarToolbarButtonStateManager::Observer {
+ public:
+  // AvatarToolbarButtonStateManager::Observer:
+  void OnButtonStateChanged(std::optional<ButtonState> old_state,
+                            ButtonState new_state) override {
+    if (new_state == ButtonState::kPasskeysLockedError) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIDisplayed);
+    }
+    if (!old_state.has_value()) {
+      return;
+    }
+    if (old_state.value() == ButtonState::kPasskeysLockedError) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden);
+    }
+  }
+
+  static AvatarToolbarButtonPasskeyStateChangeReporter& GetOrCreateForProfile(
+      Profile& profile) {
+    AvatarToolbarButtonPasskeyStateChangeReporter* reporter =
+        static_cast<AvatarToolbarButtonPasskeyStateChangeReporter*>(
+            profile.GetUserData(
+                kAvatarToolbarButtonPasskeyStateChangeReporterKey));
+    if (!reporter) {
+      reporter = new AvatarToolbarButtonPasskeyStateChangeReporter();
+      profile.SetUserData(kAvatarToolbarButtonPasskeyStateChangeReporterKey,
+                          base::WrapUnique(reporter));
+    }
+    return *reporter;
+  }
+
+ private:
+  constexpr static const void* const
+      kAvatarToolbarButtonPasskeyStateChangeReporterKey =
+          &kAvatarToolbarButtonPasskeyStateChangeReporterKey;
 };
 
 // This provider observes sync errors (including transport mode). It can be
@@ -2006,6 +2039,9 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
       states_[ButtonState::kPasskeysLockedError] =
           std::make_unique<PasskeyStateProvider>(profile,
                                                  /*state_observer=*/this);
+      state_manager_observers_.emplace_back(
+          AvatarToolbarButtonPasskeyStateChangeReporter::GetOrCreateForProfile(
+              *profile));
     }
 
     signin::IdentityManager* identity_manager =
