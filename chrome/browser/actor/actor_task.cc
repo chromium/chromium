@@ -425,8 +425,13 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
       GURL(), id(), "ActorTask::AddTab",
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
-  controlled_tabs_.emplace(tab_handle,
-                           std::make_unique<ActorControlledTabState>(this));
+  auto emplace_result = controlled_tabs_.emplace(
+      tab_handle, std::make_unique<ActorControlledTabState>(this));
+  if (tabs::TabInterface* tab = tab_handle.Get()) {
+    emplace_result.first->second->will_detach_subscription =
+        tab->RegisterWillDetach(base::BindRepeating(
+            &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
+  }
   DidTabEnterActorControl(tab_handle);
 
   // Notify the UI of the new tab.
@@ -630,8 +635,6 @@ void ActorTask::DidTabEnterActorControl(tabs::TabHandle handle) {
     return;
   }
 
-  state->will_detach_subscription = tab->RegisterWillDetach(base::BindRepeating(
-      &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
   // TODO(crbug.com/450524344)): Add a test for discarded content.
   state->content_discarded_subscription =
       tab->RegisterWillDiscardContents(base::BindRepeating(
@@ -675,7 +678,6 @@ void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
 
   // Reset focus and remove observers.
   SetFocusState(contents, std::nullopt);
-  state->will_detach_subscription = {};
   state->SetContents(nullptr);
   state->content_discarded_subscription = {};
   DidContentsExitActorControl(state, contents);

@@ -152,7 +152,7 @@ class ActorTask {
   // actor. That is, the user is unable to interact with the task's tabs.
   bool IsUnderActorControl() const;
 
-  // Returns true if the task has completed, either successfully or canceled.
+  // Returns true if the task has completed, either successfully or cancelled.
   bool IsCompleted() const;
 
   ExecutionEngine* GetExecutionEngine() const;
