@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,8 +59,10 @@ class ReadAnythingSidePanelControllerGlue
 };
 
 // A per-tab class that facilitates the showing of the Read Anything side panel.
-class ReadAnythingSidePanelController : public SidePanelEntryObserver,
-                                        public content::WebContentsObserver {
+class ReadAnythingSidePanelController
+    : public SidePanelEntryObserver,
+      public content::WebContentsObserver,
+      public page_actions::PageActionObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:

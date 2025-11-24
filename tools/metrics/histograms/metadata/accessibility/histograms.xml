@@ -2978,6 +2978,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.EntryPointAfterOmnibox"
+    enum="ReadAnythingOpenTrigger" expires_after="2026-06-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records which entrypoint is used to open Reading mode after showing the
+    omnibox chip.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.FontName"
     enum="ReadAnythingFontName" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

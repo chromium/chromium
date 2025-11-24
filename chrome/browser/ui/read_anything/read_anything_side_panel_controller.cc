@@ -11,17 +11,22 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -62,7 +67,9 @@ ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : tab_(tab), side_panel_registry_(side_panel_registry) {
+    : PageActionObserver(kActionSidePanelShowReadAnything),
+      tab_(tab),
+      side_panel_registry_(side_panel_registry) {
   CHECK(!side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
@@ -83,6 +90,11 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
   Observe(tab_->GetContents());
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    RegisterAsPageActionObserver(
+        *tab_->GetTabFeatures()->page_action_controller());
+  }
 
   // We do not know if the current tab is in the process of loading a page.
   // Assume that a page just finished loading to populate initial state.
@@ -132,6 +144,18 @@ void ReadAnythingSidePanelController::RemoveObserver(
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
 
+  std::optional<SidePanelOpenTrigger> open_trigger = entry->last_open_trigger();
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
+      open_trigger.has_value() && GetCurrentPageActionState().showing) {
+    // TODO(crbug.com/447418049): Also log this when immersive mode shows.
+    std::optional<ReadAnythingOpenTrigger> trigger =
+        read_anything::SidePanelToReadAnythingOpenTrigger(open_trigger.value());
+    if (trigger.has_value()) {
+      base::UmaHistogramEnumeration(
+          "Accessibility.ReadAnything.EntryPointAfterOmnibox", trigger.value());
+    }
+  }
   // Hide the omnibox entrypoint now that RM is already showing.
   // TODO(crbug.com/447418049): Also hide the omnibox entrypoint when the
   // immersive overlay shows.
@@ -156,10 +180,6 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
       ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
       ukm::builders::Accessibility_ReadAnything_SidePanel builder(source_id);
       builder.SetShown(true);
-
-      // Get the trigger from the entry object
-      std::optional<SidePanelOpenTrigger> open_trigger =
-          entry->last_open_trigger();
 
       if (open_trigger.has_value()) {
         builder.SetEntryPoint(static_cast<int64_t>(open_trigger.value()));

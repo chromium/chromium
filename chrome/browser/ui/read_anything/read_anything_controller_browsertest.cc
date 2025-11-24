@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
           .SetProperty(
               kSidePanelOpenTriggerKey,
               static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kToolbarButton))
+                  SidePanelOpenTrigger::kPinnedEntryToolbarButton))
           .Build();
 
   read_anything_action->InvokeAction(std::move(context));
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
           .SetProperty(
               kSidePanelOpenTriggerKey,
               static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kToolbarButton))
+                  SidePanelOpenTrigger::kPinnedEntryToolbarButton))
           .Build();
   read_anything_action->InvokeAction(std::move(context2));
 

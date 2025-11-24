@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -218,9 +221,12 @@ class ReadAnythingOmniboxTest
     return steps;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   GURL distillable_url_;
   GURL non_distillable_url_;
   base::test::ScopedFeatureList features_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
@@ -258,6 +264,20 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, HideOmniboxAfterEntryShown) {
                   WaitForWebContentsReady(kActiveTab),
                   WaitForPageActionChipVisible(), InvokePageAction(),
                   WaitForPageActionChipNotVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       EntryPointLoggedAfterOmniboxShownAndClicked) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(InstrumentTab(kActiveTab),
+                  NavigateWebContents(kActiveTab, distillable_url_),
+                  WaitForWebContentsReady(kActiveTab),
+                  WaitForPageActionChipVisible(), InvokePageAction(),
+                  WaitForPageActionChipNotVisible(), Do([this]() {
+                    histogram_tester().ExpectUniqueSample(
+                        "Accessibility.ReadAnything.EntryPointAfterOmnibox",
+                        ReadAnythingOpenTrigger::kOmniboxChip, 1);
+                  }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterTabSwitch) {

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +29,7 @@ class ReadAnythingEntryPointControllerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
                        ShowSidePanelFromOmnibox) {
+  base::HistogramTester histogram_tester;
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
@@ -41,15 +43,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+  histogram_tester.ExpectUniqueSample(
+      "SidePanel.ReadAnything.ShowTriggered",
+      SidePanelOpenTrigger::kReadAnythingOmniboxChip, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
                        ShowSidePanelFromPinned) {
+  base::HistogramTester histogram_tester;
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, -1);
+  context.SetProperty(
+      kSidePanelOpenTriggerKey,
+      static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
 
   read_anything::ReadAnythingEntryPointController::InvokePageAction(browser(),
                                                                     context);
@@ -58,6 +67,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+  histogram_tester.ExpectUniqueSample(
+      "SidePanel.ReadAnything.ShowTriggered",
+      SidePanelOpenTrigger::kPinnedEntryToolbarButton, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,

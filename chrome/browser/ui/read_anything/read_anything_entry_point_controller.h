@@ -31,6 +31,10 @@ class ReadAnythingEntryPointController {
   // Shows or hides the omnibox entry point.
   static void UpdatePageActionVisibility(bool should_show_page_action,
                                          BrowserWindowInterface* bwi);
+
+ private:
+  static void ToggleUI(BrowserWindowInterface* bwi,
+                       ReadAnythingOpenTrigger open_trigger);
 };
 
 }  // namespace read_anything
