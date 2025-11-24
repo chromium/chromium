@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/buildflags.h"
@@ -29,7 +30,6 @@
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view_observer.h"
 
-class AlertIndicatorButton;
 class TabCloseButton;
 class TabSlotController;
 class TabIcon;
@@ -62,7 +62,8 @@ class TabUnderlineView;
 class Tab : public gfx::AnimationDelegate,
             public views::MaskedTargeterDelegate,
             public views::ViewObserver,
-            public TabSlotView {
+            public TabSlotView,
+            public AlertIndicatorButton::Delegate {
   METADATA_HEADER(Tab, TabSlotView)
 
  public:
@@ -127,9 +128,6 @@ class Tab : public gfx::AnimationDelegate,
   // Returns the color for the tab's group, if any.
   std::optional<SkColor> GetGroupColor() const;
 
-  // Returns the color used for the alert indicator icon.
-  ui::ColorId GetAlertIndicatorColor(tabs::TabAlert state) const;
-
   // Returns true if this tab is the active tab.
   bool IsActive() const;
 
@@ -137,8 +135,11 @@ class Tab : public gfx::AnimationDelegate,
   // changed.
   void ActiveStateChanged();
 
-  // Called when the alert indicator has changed states.
-  void AlertStateChanged();
+  // AlertIndicatorButton::Delegate
+  bool ShouldEnableMuteToggle(int required_width) override;
+  void ToggleTabAudioMute() override;
+  bool IsApparentlyActive() const override;
+  void AlertStateChanged() override;
 
   // Called when the selected state changes.
   void SelectedStateChanged();
@@ -169,10 +170,6 @@ class Tab : public gfx::AnimationDelegate,
   void CreateFreezingVote(content::WebContents* contents);
   void ReleaseFreezingVote();
   bool HasFreezingVote() const { return freezing_vote_.has_value(); }
-
-  // Returns the width of the largest part of the tab that is available for the
-  // user to click to select/activate the tab.
-  int GetWidthOfLargestSelectableRegion() const;
 
   bool mouse_hovered() const { return mouse_hovered_; }
 
@@ -254,6 +251,10 @@ class Tab : public gfx::AnimationDelegate,
   // Updates the blocked attention state of the `icon_`. This only updates
   // state; it is the responsibility of the caller to request a paint.
   void UpdateTabIconNeedsAttentionBlocked();
+
+  // Returns the width of the largest part of the tab that is available for the
+  // user to click to select/activate the tab.
+  int GetWidthOfLargestSelectableRegion() const;
 
   // Selects, generates, and applies colors for various foreground elements to
   // ensure proper contrast. Elements affected include title text, close button

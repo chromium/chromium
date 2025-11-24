@@ -140,15 +140,15 @@ class AlertIndicatorButton::FadeAnimationDelegate
   void AnimationEnded(const gfx::Animation* animation) override {
     button_->showing_alert_state_ = button_->alert_state_;
     button_->SchedulePaint();
-    button_->parent_tab_->AlertStateChanged();
+    button_->delegate_->AlertStateChanged();
   }
 
   const raw_ptr<AlertIndicatorButton> button_;
 };
 
-AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
-    : parent_tab_(parent_tab) {
-  DCHECK(parent_tab_);
+AlertIndicatorButton::AlertIndicatorButton(Delegate* delegate)
+    : delegate_(delegate) {
+  DCHECK(delegate_);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   GetViewAccessibility().SetName(
@@ -257,7 +257,7 @@ void AlertIndicatorButton::TransitionToAlertState(
   alert_state_ = next_state;
 
   if (previous_alert_showing_state != showing_alert_state_) {
-    parent_tab_->AlertStateChanged();
+    delegate_->AlertStateChanged();
   }
 
   UpdateEnabledForMuteToggle();
@@ -275,10 +275,8 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
   // area for the user to activate a tab rather than unintentionally muting it.
   // Note that IsTriggerableEvent() is also overridden to provide an even wider
   // requirement for tap gestures.
-  if (enable && !GetTab()->IsActive()) {
-    const int required_width = width() * kMinMouseSelectableAreaPercent / 100;
-    enable = GetTab()->GetWidthOfLargestSelectableRegion() >= required_width;
-  }
+  const int required_width = width() * kMinMouseSelectableAreaPercent / 100;
+  enable = enable && delegate_->ShouldEnableMuteToggle(required_width);
 
   if (enable == was_enabled) {
     return;
@@ -341,7 +339,7 @@ void AlertIndicatorButton::NotifyClick(const ui::Event& event) {
     TransitionToAlertState(tabs::TabAlert::kAudioPlaying);
   }
 
-  GetTab()->controller()->ToggleTabAudioMute(GetTab());
+  delegate_->ToggleTabAudioMute();
 }
 
 bool AlertIndicatorButton::IsTriggerableEvent(const ui::Event& event) {
@@ -356,11 +354,10 @@ bool AlertIndicatorButton::IsTriggerableEvent(const ui::Event& event) {
   // For gesture events on an inactive tab, require an even wider tab before
   // click-to-mute can be triggered.  See comments in
   // UpdateEnabledForMuteToggle().
-  if (event.IsGestureEvent() && !GetTab()->IsActive()) {
-    const int required_width = width() * kMinGestureSelectableAreaPercent / 100;
-    if (GetTab()->GetWidthOfLargestSelectableRegion() < required_width) {
-      return false;
-    }
+  const int required_width = width() * kMinGestureSelectableAreaPercent / 100;
+  if (event.IsGestureEvent() &&
+      !delegate_->ShouldEnableMuteToggle(required_width)) {
+    return false;
   }
 
   return views::ImageButton::IsTriggerableEvent(event);
@@ -450,19 +447,11 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
   return std::move(animation);
 }
 
-Tab* AlertIndicatorButton::GetTab() {
-  DCHECK_EQ(static_cast<views::View*>(parent_tab_), parent());
-  return parent_tab_;
-}
-
 void AlertIndicatorButton::UpdateIconForAlertState(tabs::TabAlert state) {
   const ui::ColorId color =
-      parent_tab_->GetColorProvider()
-          ? tabs::GetAlertIndicatorColor(
-                state,
-                parent_tab_->tab_style_views()->GetApparentActiveState() ==
-                    TabActive::kActive,
-                GetWidget()->ShouldPaintAsActive())
+      GetColorProvider()
+          ? tabs::GetAlertIndicatorColor(state, delegate_->IsApparentlyActive(),
+                                         GetWidget()->ShouldPaintAsActive())
           : gfx::kPlaceholderColor;
   const ui::ImageModel indicator_image = tabs::GetAlertImageModel(state, color);
 

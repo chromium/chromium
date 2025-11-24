@@ -16,8 +16,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
-class Tab;
-
 namespace gfx {
 class Animation;
 class AnimationDelegate;
@@ -32,19 +30,38 @@ enum class TabAlert;
 }  // namespace tabs
 
 // This is an ImageButton subclass that serves as both the alert indicator icon
-// (audio, tab capture, etc.), and as a mute button.  It is meant to only be
-// used as a child view of Tab.
+// (audio, tab capture, etc.), and as a mute button. It is intended to be a
+// child view of a tab, which must implement the Delegate interface.
 //
 // When the indicator is transitioned to the audio playing or muting state, the
 // button functionality is enabled and begins handling mouse events.  Otherwise,
 // this view behaves like an image and all mouse events will be handled by the
-// Tab (its parent View).
+// parent tab.
 class AlertIndicatorButton : public views::ImageButton,
                              public views::ViewTargeterDelegate {
   METADATA_HEADER(AlertIndicatorButton, views::ImageButton)
 
  public:
-  explicit AlertIndicatorButton(Tab* parent_tab);
+  // An interface for the parent tab of the alert indicator.
+  class Delegate {
+   public:
+    // Whether click-to-mute should be enabled, given the required width for
+    // activating the tab. Returns false only if the tab is inactive, and the
+    // selectable region is smaller than the required width.
+    virtual bool ShouldEnableMuteToggle(int required_width) = 0;
+
+    // Toggles tab-wide audio muting.
+    virtual void ToggleTabAudioMute() = 0;
+
+    // Returns whether the tab appears more like the active state than the
+    // inactive state, given the current opacity.
+    virtual bool IsApparentlyActive() const = 0;
+
+    // Called when the alert indicator has changed states.
+    virtual void AlertStateChanged() = 0;
+  };
+
+  explicit AlertIndicatorButton(Delegate* delegate);
   AlertIndicatorButton(const AlertIndicatorButton&) = delete;
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
   ~AlertIndicatorButton() override;
@@ -71,6 +88,11 @@ class AlertIndicatorButton : public views::ImageButton,
 
   // Sets visibility of animation around alert indicator icon.
   void UpdateAlertIndicatorAnimation();
+
+  // Returns the current TabAlert for testing.
+  std::optional<tabs::TabAlert> alert_state_for_testing() const {
+    return alert_state_;
+  }
 
   // For testing purposes.
   views::AnimatedImageView* GetActorIndicatorSpinnerForTesting() {
@@ -110,9 +132,6 @@ class AlertIndicatorButton : public views::ImageButton,
   std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
       std::optional<tabs::TabAlert> alert_state);
 
-  // Returns the tab (parent view) of this AlertIndicatorButton.
-  Tab* GetTab();
-
   // Resets the images to display on the button to reflect `state` and the
   // parent tab's button color.  Should be called when either of these changes.
   void UpdateIconForAlertState(tabs::TabAlert state);
@@ -125,7 +144,7 @@ class AlertIndicatorButton : public views::ImageButton,
   // location and size.
   void SetActorAccessingSpinnerBounds();
 
-  const raw_ptr<Tab> parent_tab_;
+  const raw_ptr<Delegate> delegate_;
 
   std::optional<tabs::TabAlert> alert_state_;
 

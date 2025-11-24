@@ -34,6 +34,11 @@ tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
 // enums if maintaining both this and ToMojo gets out of hand.
 TabNetworkState FromMojo(mojom::NetworkState state);
 
+// Converts mojom::AlertState back to a tabs::TabAlert.
+// TODO(crbug.com/458095449): Consider using bimap or just static casting these
+// enums if maintaining both this and ToMojo gets out of hand.
+tabs::TabAlert FromMojo(mojom::AlertState state);
+
 }  // namespace tabs_api::converters
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_CONVERTERS_TAB_CONVERTERS_H_

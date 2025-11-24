@@ -907,6 +907,18 @@ void Tab::ActiveStateChanged() {
   DeprecatedLayoutImmediately();
 }
 
+bool Tab::ShouldEnableMuteToggle(int required_width) {
+  return IsActive() || GetWidthOfLargestSelectableRegion() >= required_width;
+}
+
+void Tab::ToggleTabAudioMute() {
+  controller()->ToggleTabAudioMute(this);
+}
+
+bool Tab::IsApparentlyActive() const {
+  return tab_style_views()->GetApparentActiveState() == TabActive::kActive;
+}
+
 void Tab::AlertStateChanged() {
   if (controller_->HoverCardIsShowingForTab(this)) {
     controller_->UpdateHoverCard(

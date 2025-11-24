@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -93,6 +94,81 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
   GURL changed_url = embedded_test_server()->GetURL("/title3.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), changed_url));
   EXPECT_EQ(u"Title Of More Awesomeness", title->GetText());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
+  // Create view hierarchy from an arbitrary parent view since we don't
+  // currently support updates from the API.
+  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // The initial tab is the first child of the unpinned collection which is the
+  // second child of the root node.
+  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
+  AlertIndicatorButton* alert_indicator =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
+          ->alert_indicator_for_testing();
+
+  // Expect the alert indicator to not be visible initially.
+  EXPECT_FALSE(alert_indicator->GetVisible());
+  EXPECT_EQ(std::nullopt, alert_indicator->showing_alert_state());
+
+  // After changing the tab alert state, expect the indicator to be visible.
+  {
+    tabs_api::mojom::DataPtr tab_data = tab_node->data()->Clone();
+    tab_data->get_tab()->alert_states = {
+        tabs_api::mojom::AlertState::kAudioPlaying};
+    auto event = tabs_api::mojom::OnDataChangedEvent::New();
+    event->data = std::move(tab_data);
+    root_node.OnDataChanged(event);
+    EXPECT_TRUE(alert_indicator->GetVisible());
+    EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+              alert_indicator->alert_state_for_testing());
+  }
+
+  // After adding a tab alert, expect the indicator to be visible.
+  {
+    tabs_api::mojom::DataPtr tab_data = tab_node->data()->Clone();
+    tab_data->get_tab()->alert_states = {
+        tabs_api::mojom::AlertState::kAudioPlaying};
+    auto event = tabs_api::mojom::OnDataChangedEvent::New();
+    event->data = std::move(tab_data);
+    root_node.OnDataChanged(event);
+    EXPECT_TRUE(alert_indicator->GetVisible());
+    EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+              alert_indicator->alert_state_for_testing());
+  }
+
+  // After changing the tab alert, expect the indicator state to change.
+  {
+    tabs_api::mojom::DataPtr tab_data = tab_node->data()->Clone();
+    tab_data->get_tab()->alert_states = {
+        tabs_api::mojom::AlertState::kAudioMuting};
+    auto event = tabs_api::mojom::OnDataChangedEvent::New();
+    event->data = std::move(tab_data);
+    root_node.OnDataChanged(event);
+    EXPECT_TRUE(alert_indicator->GetVisible());
+    EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+              alert_indicator->alert_state_for_testing());
+  }
+
+  // After removing the tab alert, expect the indicator to still be visible
+  // (because it is fading out).
+  {
+    tabs_api::mojom::DataPtr tab_data = tab_node->data()->Clone();
+    tab_data->get_tab()->alert_states = {};
+    auto event = tabs_api::mojom::OnDataChangedEvent::New();
+    event->data = std::move(tab_data);
+    root_node.OnDataChanged(event);
+    EXPECT_TRUE(alert_indicator->GetVisible());
+    EXPECT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
