@@ -1197,7 +1197,8 @@ public class ToolbarManager
                         topControlsStacker,
                         homeButtonDisplay);
         mTabStripTopControlLayer =
-                new TabStripTopControlLayer(mToolbar.getTabStripHeight(), mTopControlsStacker);
+                new TabStripTopControlLayer(
+                        mToolbar.getTabStripHeight(), mTopControlsStacker, mControlContainer);
         mActionModeController =
                 new ActionModeController(
                         mActivity,

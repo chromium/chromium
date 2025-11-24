@@ -25,7 +25,13 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 
-/** Class used to manage tab strip visibility and height updates. */
+/**
+ * Class used to manage tab strip visibility and height updates.
+ *
+ * <p>As of Nov 2025, this class is refactored to only request the tab strip height transition when
+ * applicable. The movement of the tab strip as a result of this transition is controlled by the
+ * TabStripTopControlLayer.
+ */
 @NullMarked
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
     static @Nullable Integer sHeightTransitionThresholdForTesting;
@@ -44,8 +50,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          *
          * @param newHeight The expected height tab strip will be changed into.
          * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
+         * @param transitionStartedCallback The callback to trigger when transition has started.
+         *     This is not guaranteed to be called.
          */
-        default void onTransitionRequested(int newHeight, boolean applyScrimOverlay) {}
+        default void onTransitionRequested(
+                int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {}
     }
 
     /** Delegate to enforce tab strip updates when strip transition is requested. */

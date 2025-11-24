@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabstrip;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
 
 /**
@@ -31,6 +33,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         implements TopControlLayer, TabStripTransitionHandler {
     private static final String TAG = "TabStripLayer";
     private final TopControlsStacker mTopControlsStacker;
+    private final ControlContainer mControlContainer;
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
@@ -45,14 +48,20 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         public final int startHeight;
         public final int targetHeight;
         public final boolean applyScrimOverlay;
+        public final Runnable transitionStartedCallback;
         public final @TopControlVisibility int visibility;
 
         private boolean mIsStarted;
 
-        private TransitionState(int startHeight, int targetHeight, boolean applyScrimOverlay) {
+        private TransitionState(
+                int startHeight,
+                int targetHeight,
+                boolean applyScrimOverlay,
+                Runnable transitionStartedCallback) {
             this.startHeight = startHeight;
             this.targetHeight = targetHeight;
             this.applyScrimOverlay = applyScrimOverlay;
+            this.transitionStartedCallback = transitionStartedCallback;
 
             visibility = calculateVisibility(startHeight, targetHeight);
         }
@@ -85,10 +94,15 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
      *
      * @param tabStripHeight The initial height of the tab strip.
      * @param topControlsStacker The top controls stacker instance.
+     * @param controlContainer The {@link ControlContainer} instance.
      */
-    public TabStripTopControlLayer(int tabStripHeight, TopControlsStacker topControlsStacker) {
+    public TabStripTopControlLayer(
+            int tabStripHeight,
+            TopControlsStacker topControlsStacker,
+            ControlContainer controlContainer) {
         super(tabStripHeight);
         mTopControlsStacker = topControlsStacker;
+        mControlContainer = controlContainer;
 
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
             mTopControlsStacker.addControl(this);
@@ -174,21 +188,28 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
     // Implements TabStripTransitionHandler
 
     @Override
-    public void onTransitionRequested(int newHeight, boolean applyScrimOverlay) {
-        prepForTransitionRequested(newHeight, applyScrimOverlay);
+    public void onTransitionRequested(
+            int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {
+        prepForTransitionRequested(newHeight, applyScrimOverlay, transitionStartedCallback);
 
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
         set(newHeight);
     }
 
-    private void prepForTransitionRequested(int newHeight, boolean applyScrimOverlay) {
+    private void prepForTransitionRequested(
+            int newHeight, boolean applyScrimOverlay, Runnable onHeightTransitionStartCallback) {
         if (mTabStrip == null) return;
 
         if (mTransitionState != null) {
             notifyTransitionFinished(false);
         }
-        mTransitionState = new TransitionState(getTopControlHeight(), newHeight, applyScrimOverlay);
+        mTransitionState =
+                new TransitionState(
+                        getTopControlHeight(),
+                        newHeight,
+                        applyScrimOverlay,
+                        onHeightTransitionStartCallback);
         mTabStrip.updateOffsetTagsInfo(null);
     }
 
@@ -219,14 +240,25 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
 
     private void notifyTransitionStarted() {
         assertNonNull(mTransitionState);
+        mTransitionState.transitionStartedCallback.run();
+        mControlContainer.onHeightChanged(
+                mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
         assertNonNull(mTabStrip)
                 .onHeightChanged(mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
     }
 
     private void notifyTransitionFinished(boolean success) {
+        mControlContainer.onHeightTransitionFinished(success);
         assertNonNull(mTabStrip).onHeightTransitionFinished(success);
+
+        recordTabStripTransitionFinished(success);
         if (!success) {
             Log.i(TAG, "Transition canceled.");
         }
+    }
+
+    private void recordTabStripTransitionFinished(boolean finished) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.DynamicTopChrome.TabStripTransition.Finished", finished);
     }
 }

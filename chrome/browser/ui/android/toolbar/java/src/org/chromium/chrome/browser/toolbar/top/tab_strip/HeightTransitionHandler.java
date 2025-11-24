@@ -343,7 +343,17 @@ class HeightTransitionHandler {
             recordTabStripTransitionFinished(false);
         }
 
-        mTabStripTransitionHandler.onTransitionRequested(newHeight, mUpdateStripVisibility);
+        mTabStripTransitionHandler.onTransitionRequested(
+                newHeight,
+                mUpdateStripVisibility,
+                () -> {
+                    // Acknowledge and record the new height when transition start signal.
+                    // This difference in timing is necessary, since the mTabStripHeight is used
+                    // for other parts of the code to update the browser UI (e.g. setting toolbar's
+                    // top margin), and we do not want to preemptively change it before render
+                    // responses to the change.
+                    mTabStripHeight = newHeight;
+                });
 
         // If the browser control is performing an browser initiated animation, we should update the
         // view margins right away. This will make sure the toolbar stays in the same place with
