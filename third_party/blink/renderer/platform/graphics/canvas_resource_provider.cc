@@ -192,9 +192,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
     // complete.
-    if (canvas_image_provider_) {
-      canvas_image_provider_->ReleaseLockedImages();
-    }
+    canvas_image_provider_->ReleaseLockedImages();
     last_recording_ = std::nullopt;
   }
 
