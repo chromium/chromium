@@ -86,8 +86,6 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
     notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>(prefs());
-    scoped_feature_list_.InitAndEnableFeature(
-        kPrivacySandboxMigratePrefsToSchemaV2);
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
@@ -402,28 +400,6 @@ using NoticeEvents = base::span<const std::unique_ptr<EventTimePair>>;
 
 class PrivacySandboxNoticeStorageV2Test
     : public PrivacySandboxNoticeStorageTest {};
-
-TEST_F(PrivacySandboxNoticeStorageV2Test,
-       PrivacySandboxMigratePrefsToSchemaV2FlagDisabledDoesNotMigrate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndDisableFeature(
-      kPrivacySandboxMigratePrefsToSchemaV2);
-
-  SetNoticeStateFromJSON("Notice1StorageName", R"({
-    "schema_version": 1,
-    "notice_last_shown": "100",
-    "notice_action_taken": 1,
-    "notice_action_taken_time": "200"
-    })");
-
-  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
-
-  auto notice_data = notice_storage()->ReadNoticeData("Notice1StorageName");
-  ASSERT_TRUE(notice_data.has_value());
-  EXPECT_EQ(notice_data->schema_version, 1);
-  EXPECT_THAT(notice_data->notice_events, ElementsAre());
-}
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        AllEventsPopulatedMigrateSuccessfully) {

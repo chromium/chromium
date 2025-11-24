@@ -401,9 +401,6 @@ NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
 // static
 void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
     PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(kPrivacySandboxMigratePrefsToSchemaV2)) {
-    return;
-  }
   const auto* notice_data_pref =
       pref_service->GetUserPrefValue(kNoticeDataPath);
   if (!notice_data_pref) {

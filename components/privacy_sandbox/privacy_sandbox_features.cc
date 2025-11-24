@@ -162,8 +162,5 @@ BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
 BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox
