@@ -5042,6 +5042,7 @@ enum WebFeature {
   kV8Origin_From_Method = 5726,
   kV8Origin_FromURL_Method = 5727,
   kV8Origin_Parse_Method = 5728,
+  kExtendedTextMetrics = 5729,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

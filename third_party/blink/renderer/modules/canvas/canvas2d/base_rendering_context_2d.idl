@@ -16,10 +16,10 @@ interface mixin BaseRenderingContext2D {
     [MeasureAs=Canvas2DDrawText] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [MeasureAs=Canvas2DDrawText] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [MeasureAs=Canvas2DMeasureText] TextMetrics measureText(DOMString text);
-    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
-    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
-    [RuntimeEnabled=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y);
-    [RuntimeEnabled=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y);
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);

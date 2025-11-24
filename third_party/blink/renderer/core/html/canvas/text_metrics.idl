@@ -50,16 +50,16 @@ interface TextMetrics {
     [RuntimeEnabled=TextMetricsBaselines] readonly attribute double hangingBaseline;
     [RuntimeEnabled=TextMetricsBaselines] readonly attribute double alphabeticBaseline;
     [RuntimeEnabled=TextMetricsBaselines] readonly attribute double ideographicBaseline;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] readonly attribute double emHeightAscent;
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] readonly attribute double emHeightDescent;
 
     // For editing, to get the text offset at a point
-    [RuntimeEnabled=ExtendedTextMetrics] unsigned long getIndexFromOffset(double x);
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] unsigned long getIndexFromOffset(double x);
 
     // For selection
-    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException, MeasureAs=ExtendedTextMetrics] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
     // For bounding box
-    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] DOMRectReadOnly getActualBoundingBox([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
-    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<TextCluster> getTextClusters([EnforceRange] unsigned long start, [EnforceRange] unsigned long end, optional TextClusterOptions options = {});
-    [RuntimeEnabled=ExtendedTextMetrics] sequence<TextCluster> getTextClusters(optional TextClusterOptions options = {});
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException, MeasureAs=ExtendedTextMetrics] DOMRectReadOnly getActualBoundingBox([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException, MeasureAs=ExtendedTextMetrics] sequence<TextCluster> getTextClusters([EnforceRange] unsigned long start, [EnforceRange] unsigned long end, optional TextClusterOptions options = {});
+    [RuntimeEnabled=ExtendedTextMetrics, MeasureAs=ExtendedTextMetrics] sequence<TextCluster> getTextClusters(optional TextClusterOptions options = {});
 };
