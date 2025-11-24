@@ -68,7 +68,7 @@ class TestMetricsServicesManagerClient
 // instance.
 class ScopedMetricsServiceManager {
  public:
-  ScopedMetricsServiceManager(
+  explicit ScopedMetricsServiceManager(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
       : shared_url_loader_factory_(shared_url_loader_factory) {
     EXPECT_EQ(nullptr, GetApplicationContext()->GetMetricsServicesManager());
@@ -142,6 +142,13 @@ class IOSModelQualityLogsUploaderServiceTest : public PlatformTest {
         field_trial_feature, logging_callback);
   }
 
+  IOSModelQualityLogsUploaderService CreateUploaderService() {
+    return IOSModelQualityLogsUploaderService(
+        test_shared_url_loader_factory_,
+        GetApplicationContext()->GetLocalState(),
+        base::WeakPtr<optimization_guide::ModelExecutionFeaturesController>());
+  }
+
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -157,9 +164,7 @@ TEST_F(IOSModelQualityLogsUploaderServiceTest, CanUploadLogs_FeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       optimization_guide::features::kModelQualityLogging);
 
-  IOSModelQualityLogsUploaderService service(
-      test_shared_url_loader_factory_,
-      GetApplicationContext()->GetLocalState());
+  IOSModelQualityLogsUploaderService service = CreateUploaderService();
 
   scoped_metrics_services_manager_.SetMetricsConsent(true);
 
@@ -173,9 +178,7 @@ TEST_F(IOSModelQualityLogsUploaderServiceTest, CanUploadLogs_FeatureEnabled) {
   // Consent is given.
   scoped_metrics_services_manager_.SetMetricsConsent(true);
 
-  IOSModelQualityLogsUploaderService service(
-      test_shared_url_loader_factory_,
-      GetApplicationContext()->GetLocalState());
+  IOSModelQualityLogsUploaderService service = CreateUploaderService();
 
   auto metadata = CreateMqlsFeatureMetadata(
       &optimization_guide::features::kModelQualityLogging);
@@ -184,9 +187,7 @@ TEST_F(IOSModelQualityLogsUploaderServiceTest, CanUploadLogs_FeatureEnabled) {
 }
 
 TEST_F(IOSModelQualityLogsUploaderServiceTest, CanUploadLogs_ConsentGiven) {
-  IOSModelQualityLogsUploaderService service(
-      test_shared_url_loader_factory_,
-      GetApplicationContext()->GetLocalState());
+  IOSModelQualityLogsUploaderService service = CreateUploaderService();
 
   auto metadata = CreateMqlsFeatureMetadata(
       &optimization_guide::features::kModelQualityLogging);
@@ -201,9 +202,7 @@ TEST_F(IOSModelQualityLogsUploaderServiceTest, CanUploadLogs_ConsentGiven) {
 
 TEST_F(IOSModelQualityLogsUploaderServiceTest,
        SetSystemMetadata_ClientIdsAreStripped) {
-  IOSModelQualityLogsUploaderService service(
-      test_shared_url_loader_factory_,
-      GetApplicationContext()->GetLocalState());
+  IOSModelQualityLogsUploaderService service = CreateUploaderService();
 
   optimization_guide::proto::LoggingMetadata metadata;
   metadata.mutable_system_profile()->set_client_uuid("123");

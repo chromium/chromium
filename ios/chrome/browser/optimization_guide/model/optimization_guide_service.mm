@@ -19,6 +19,7 @@
 #import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/hints/optimization_guide_store.h"
 #import "components/optimization_guide/core/hints/top_host_provider.h"
+#import "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #import "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #import "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -27,12 +28,15 @@
 #import "components/prefs/pref_service.h"
 #import "components/services/unzip/in_process_unzipper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/variations/service/variations_service.h"
 #import "components/variations/synthetic_trials.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_model_quality_logs_uploader_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/tab_url_provider_impl.h"
+#import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -87,10 +91,26 @@ OptimizationGuideService::OptimizationGuideService(
       identity_manager, optimization_guide_logger_.get());
 
   if (!off_the_record_) {
+    variations::VariationsService* variations_service =
+        GetApplicationContext()->GetVariationsService();
+    auto dogfood_status =
+        variations_service && variations_service->IsLikelyDogfoodClient()
+            ? optimization_guide::ModelExecutionFeaturesController::
+                  DogfoodStatus::DOGFOOD
+            : optimization_guide::ModelExecutionFeaturesController::
+                  DogfoodStatus::NON_DOGFOOD;
+    model_execution_features_controller_ =
+        std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
+            pref_service, identity_manager,
+            GetApplicationContext()->GetLocalState(),
+            policy::ManagementServiceIOSFactory::GetForPlatform(),
+            dogfood_status, version_info::IsOfficialBuild());
+
     if (optimization_guide::features::IsModelQualityLoggingEnabled()) {
       model_quality_logs_uploader_service_ =
           std::make_unique<IOSModelQualityLogsUploaderService>(
-              url_loader_factory, pref_service);
+              url_loader_factory, GetApplicationContext()->GetLocalState(),
+              model_execution_features_controller_->GetWeakPtr());
     }
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(

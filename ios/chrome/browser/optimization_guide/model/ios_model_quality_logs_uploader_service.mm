@@ -8,17 +8,22 @@
 #import "components/metrics/metrics_log.h"
 #import "components/metrics/version_utils.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
+#import "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/proto/model_quality_service.pb.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 IOSModelQualityLogsUploaderService::IOSModelQualityLogsUploaderService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* pref_service)
-    : ModelQualityLogsUploaderService(url_loader_factory, pref_service) {}
+    PrefService* pref_service,
+    base::WeakPtr<optimization_guide::ModelExecutionFeaturesController>
+        model_execution_feature_controller)
+    : ModelQualityLogsUploaderService(url_loader_factory, pref_service),
+      model_execution_feature_controller_(model_execution_feature_controller) {}
 
 IOSModelQualityLogsUploaderService::~IOSModelQualityLogsUploaderService() =
     default;
@@ -39,7 +44,15 @@ bool IOSModelQualityLogsUploaderService::CanUploadLogs(
           metadata)) {
     return false;
   }
-  // TODO(crbug.com/448433648): Add Enterprise policy check.
+
+  // Skip upload if logging is disabled by enterprise policy; If no enterprise
+  // policy set, disable logging if the user is managed (management authority
+  // exists).
+  if (model_execution_feature_controller_ &&
+      !model_execution_feature_controller_
+           ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata)) {
+    return false;
+  }
   return true;
 }
 
@@ -60,5 +73,10 @@ void IOSModelQualityLogsUploaderService::SetSystemMetadata(
       ->mutable_cloned_install_info()
       ->clear_cloned_from_client_id();
 
-  // TODO(crbug.com/448433648): Set `IsLikelyDogfoodClient` if relevant.
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  if (variations_service) {
+    logging_metadata->set_is_likely_dogfood_client(
+        variations_service->IsLikelyDogfoodClient());
+  }
 }

@@ -202,6 +202,11 @@ class OptimizationGuideService
   std::unique_ptr<optimization_guide::ModelExecutionManager>
       model_execution_manager_;
 
+  // Manage user opt-in settings and states. Not created for off the record
+  // profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionFeaturesController>
+      model_execution_features_controller_;
+
   // Manages the model quality logs uploader service. Not created for off the
   // record profiles.
   std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
