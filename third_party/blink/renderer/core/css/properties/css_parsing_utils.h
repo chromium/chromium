@@ -659,11 +659,10 @@ CSSValue* ConsumeTransformValue(CSSParserTokenStream&,
 CSSValue* ConsumeTransformList(CSSParserTokenStream&,
                                const CSSParserContext&,
                                const CSSParserLocalContext&);
+CSSValue* ConsumeTransitionBehavior(CSSParserTokenStream&);
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream&,
                                     const CSSParserContext&);
 bool IsValidPropertyList(const CSSValueList&);
-bool IsValidTransitionBehavior(const CSSValueID&);
-bool IsValidTransitionBehaviorList(const CSSValueList&);
 
 CSSValue* ConsumeBorderColorSide(CSSParserTokenStream&,
                                  const CSSParserContext&,

@@ -4353,11 +4353,7 @@ CSSValue* ConsumeTransitionValue(CSSPropertyID property,
     case CSSPropertyID::kTransitionTimingFunction:
       return css_parsing_utils::ConsumeAnimationTimingFunction(stream, context);
     case CSSPropertyID::kTransitionBehavior:
-      if (css_parsing_utils::IsValidTransitionBehavior(stream.Peek().Id())) {
-        return CSSIdentifierValue::Create(
-            stream.ConsumeIncludingWhitespace().Id());
-      }
-      return nullptr;
+      return css_parsing_utils::ConsumeTransitionBehavior(stream);
     default:
       NOTREACHED();
   }

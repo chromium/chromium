@@ -404,17 +404,14 @@ AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
 CSSTransitionData::TransitionBehavior CSSToStyleMap::MapAnimationBehavior(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (auto* ident_value = DynamicTo<CSSIdentifierValue>(value)) {
-    switch (ident_value->GetValueID()) {
-      case CSSValueID::kNormal:
-        return CSSTransitionData::TransitionBehavior::kNormal;
-      case CSSValueID::kAllowDiscrete:
-        return CSSTransitionData::TransitionBehavior::kAllowDiscrete;
-      default:
-        break;
-    }
+  switch (To<CSSIdentifierValue>(value).GetValueID()) {
+    case CSSValueID::kNormal:
+      return CSSTransitionData::TransitionBehavior::kNormal;
+    case CSSValueID::kAllowDiscrete:
+      return CSSTransitionData::TransitionBehavior::kAllowDiscrete;
+    default:
+      NOTREACHED();
   }
-  return CSSTransitionData::InitialBehavior();
 }
 
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,

@@ -8686,6 +8686,11 @@ CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
   return list;
 }
 
+CSSValue* ConsumeTransitionBehavior(CSSParserTokenStream& stream) {
+  return css_parsing_utils::ConsumeIdent<CSSValueID::kNormal,
+                                         CSSValueID::kAllowDiscrete>(stream);
+}
+
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
   const CSSParserToken& token = stream.Peek();
@@ -8718,29 +8723,6 @@ bool IsValidPropertyList(const CSSValueList& value_list) {
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(value.Get());
     if (identifier_value &&
         identifier_value->GetValueID() == CSSValueID::kNone) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool IsValidTransitionBehavior(const CSSValueID& value) {
-  switch (value) {
-    case CSSValueID::kNormal:
-    case CSSValueID::kAllowDiscrete:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool IsValidTransitionBehaviorList(const CSSValueList& value_list) {
-  for (auto& value : value_list) {
-    auto* ident_value = DynamicTo<CSSIdentifierValue>(value.Get());
-    if (!ident_value) {
-      return false;
-    }
-    if (!IsValidTransitionBehavior(ident_value->GetValueID())) {
       return false;
     }
   }

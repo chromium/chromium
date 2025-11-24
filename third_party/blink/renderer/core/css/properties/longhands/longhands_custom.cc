@@ -10705,23 +10705,12 @@ const CSSValue* TransitionProperty::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kAll);
 }
 
-namespace {
-CSSIdentifierValue* ConsumeIdentNoTemplate(CSSParserTokenStream& stream,
-                                           const CSSParserContext&) {
-  return css_parsing_utils::ConsumeIdent(stream);
-}
-}  // namespace
-
 const CSSValue* TransitionBehavior::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSValueList* list = css_parsing_utils::ConsumeCommaSeparatedList(
-      ConsumeIdentNoTemplate, stream, context);
-  if (!list || !css_parsing_utils::IsValidTransitionBehaviorList(*list)) {
-    return nullptr;
-  }
-  return list;
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeTransitionBehavior, stream);
 }
 
 const CSSValue* TransitionBehavior::CSSValueFromComputedStyleInternal(

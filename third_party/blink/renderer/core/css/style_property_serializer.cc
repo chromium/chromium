@@ -1724,11 +1724,9 @@ String StylePropertySerializer::GetLayeredShorthandValue(
 
       if (property->IDEquals(CSSPropertyID::kTransitionBehavior)) {
         CHECK_EQ(shorthand.id(), CSSPropertyID::kTransition);
-        auto* ident = DynamicTo<CSSIdentifierValue>(value);
-        CHECK(ident) << " transition-behavior should only have a "
-                        "CSSIdentifierValue for a value. CssText: "
-                     << value->CssText();
-        if (ident->GetValueID() == CSSValueID::kNormal) {
+        // transition-behavior can only have a CSSIdentifierValue for a value.
+        if (To<CSSIdentifierValue>(*value).GetValueID() ==
+            CSSValueID::kNormal) {
           // transition-behavior overrides InitialValue to return "normal"
           // instead of "initial", but we don't want to include "normal" in the
           // shorthand serialization, so this special case is needed.
