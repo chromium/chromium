@@ -253,6 +253,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   void ScrollToPoint(const BrowserAccessibility& node, gfx::Point point);
   void SetAccessibilityFocus(const BrowserAccessibility& node);
   void Blur(const BrowserAccessibility& node);
+  void RequestLayoutBasedAction(const BrowserAccessibility& node);
   void SetFocus(const BrowserAccessibility& node);
   void SetSequentialFocusNavigationStartingPoint(
       const BrowserAccessibility& node);

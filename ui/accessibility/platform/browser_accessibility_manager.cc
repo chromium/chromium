@@ -1077,6 +1077,19 @@ void BrowserAccessibilityManager::Collapse(const BrowserAccessibility& node) {
   AXPlatform::GetInstance().OnActionFromAssistiveTech();
 }
 
+void BrowserAccessibilityManager::RequestLayoutBasedAction(
+    const BrowserAccessibility& node) {
+  if (!delegate_) {
+    return;
+  }
+
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kRequestLayoutBasedAction;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  AXPlatform::GetInstance().OnActionFromAssistiveTech();
+}
+
 void BrowserAccessibilityManager::ShowContextMenu(
     const BrowserAccessibility& node) {
   if (!delegate_)

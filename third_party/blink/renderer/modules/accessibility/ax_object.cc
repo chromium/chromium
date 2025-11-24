@@ -7420,7 +7420,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kLongClick:
     case ax::mojom::blink::Action::kScrollToPositionAtRowColumn:
       return false;  // Handled in `RenderAccessibilityImpl`.
-    case ax::mojom::Action::kRequestLayoutBasedAction:
+    case ax::mojom::blink::Action::kRequestLayoutBasedAction:
       use_layout_based_action_ = true;
       AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
       return true;

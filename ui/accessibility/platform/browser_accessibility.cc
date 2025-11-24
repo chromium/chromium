@@ -1413,6 +1413,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kScrollRight:
       manager_->Scroll(*this, data.action);
       return true;
+    case ax::mojom::Action::kRequestLayoutBasedAction:
+      manager_->RequestLayoutBasedAction(*this);
+      return true;
     default:
       return false;
   }
