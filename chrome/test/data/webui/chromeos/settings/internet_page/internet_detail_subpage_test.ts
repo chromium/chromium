@@ -65,6 +65,9 @@ suite('<settings-internet-detail-subpage>', () => {
         value: true,
       },
     },
+    'proxy_override_rules': {
+      value: [],
+    },
   };
 
   suiteSetup(() => {

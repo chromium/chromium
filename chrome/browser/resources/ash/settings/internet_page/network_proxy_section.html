@@ -14,16 +14,51 @@
   }
 </style>
 
-<!-- Policy indicator. Only one dom-if below will be shown. -->
+<!-- Override policy indicator. -->
 <template is="dom-if"
-    if="[[shouldShowNetworkPolicyIndicator_(managedProperties)]]">
-  <div class="settings-box">
+    if="[[shouldShowOverridePolicyIndicator_(
+      managedProperties,
+      hasProxyOverrideRules_)]]">
+  <div class="settings-box" id="overrideRulesPolicy">
+    <div class="layout horizontal center">
+      <cr-policy-network-indicator-mojo
+          property="[[getProxyOverrideSettingsTypeProperty_()]]"
+          no-extension-indicator>
+      </cr-policy-network-indicator-mojo>
+      <div>$i18n{networkProxyOverrideEnforcedPolicy}</div>
+    </div>
+  </div>
+</template>
+
+<!-- Policy indicator. -->
+<template is="dom-if"
+    if="[[shouldShowNetworkPolicyIndicator_(
+      managedProperties,
+      hasProxyOverrideRules_)]]">
+  <div class="settings-box" id="networkPolicy">
     <div class="layout horizontal center">
       <cr-policy-network-indicator-mojo
           property="[[managedProperties.proxySettings.type]]"
           no-extension-indicator>
       </cr-policy-network-indicator-mojo>
       <div>$i18n{networkProxyEnforcedPolicy}</div>
+    </div>
+  </div>
+</template>
+
+<!-- Combined policy indicator, only shown when both the proxy
+ settings and override rules are set by a policy. -->
+<template is="dom-if"
+    if="[[shouldShowCombinedNetworkPolicyIndicator_(
+      managedProperties,
+      hasProxyOverrideRules_)]]">
+  <div class="settings-box" id="combinedPolicies">
+    <div class="layout horizontal center">
+      <cr-policy-network-indicator-mojo
+          property="[[managedProperties.proxySettings.type]]"
+          no-extension-indicator>
+      </cr-policy-network-indicator-mojo>
+      <div>$i18n{networkProxyEnforcedCombinedPolicies}</div>
     </div>
   </div>
 </template>

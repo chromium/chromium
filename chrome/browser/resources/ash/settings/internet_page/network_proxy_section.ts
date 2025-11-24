@@ -29,9 +29,9 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
-import type {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
@@ -89,6 +89,12 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       useSharedProxies_: Boolean,
 
       /**
+       * Reflects whether prefs.settings.proxy_override_rules has values,
+       * for data binding.
+       */
+      hasProxyOverrideRules_: Boolean,
+
+      /**
        * Information about the extension controlling the proxy. Can be null if
        * the proxy is not controlled by an extension.
        */
@@ -99,6 +105,7 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get observers() {
     return [
       'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
+      'proxyOverrideRulesChanged_(prefs.proxy_override_rules.value)',
     ];
   }
 
@@ -106,6 +113,7 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   managedProperties: ManagedProperties|undefined;
   private extensionInfo_: ExtensionInfo|undefined;
   private useSharedProxies_: boolean;
+  private hasProxyOverrideRules_: boolean;
 
   /**
    * Returns the allow shared CrToggleElement.
@@ -126,6 +134,11 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     this.useSharedProxies_ = !!pref && !!pref.value;
   }
 
+  private proxyOverrideRulesChanged_(): void {
+    const overrideRules = this.getPref('proxy_override_rules');
+    this.hasProxyOverrideRules_ = overrideRules &&
+        Array.isArray(overrideRules.value) && overrideRules.value.length > 0;
+  }
   /**
    * Return true if the proxy is controlled by an extension.
    */
@@ -156,6 +169,13 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     return proxySettings ? proxySettings.type : undefined;
   }
 
+  private getProxyOverrideSettingsTypeProperty_(): ManagedString {
+    // Proxy override rules are only supported as user policies.
+    const managedString = OncMojo.createManagedString('ProxyOverrideRules');
+    managedString.policySource = PolicySource.kUserPolicyEnforced;
+    return managedString;
+  }
+
   private getAllowSharedDialogTitle_(allowShared: boolean): string {
     if (allowShared) {
       return this.i18n('networkProxyAllowSharedDisableWarningTitle');
@@ -163,10 +183,22 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     return this.i18n('networkProxyAllowSharedEnableWarningTitle');
   }
 
-  private shouldShowNetworkPolicyIndicator_(): boolean {
+  private hasProxySettingsPolicy_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
     return !!property && !this.isProxySetByExtension_() &&
         this.isNetworkPolicyEnforced(property);
+  }
+
+  private shouldShowOverridePolicyIndicator_(): boolean {
+    return this.hasProxyOverrideRules_ && !this.hasProxySettingsPolicy_();
+  }
+
+  private shouldShowNetworkPolicyIndicator_(): boolean {
+    return this.hasProxySettingsPolicy_() && !this.hasProxyOverrideRules_;
+  }
+
+  private shouldShowCombinedNetworkPolicyIndicator_(): boolean {
+    return this.hasProxyOverrideRules_ && this.hasProxySettingsPolicy_();
   }
 
   private shouldShowAllowShared_(_property: OncMojo.ManagedProperty): boolean {
