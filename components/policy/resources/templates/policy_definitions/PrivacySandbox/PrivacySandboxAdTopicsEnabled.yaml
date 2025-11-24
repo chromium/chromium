@@ -1,5 +1,6 @@
 caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Ad topics setting can be disabled
 default: true
+deprecated: true
 desc: |-
   A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Ad topics setting can be disabled for your users.
 
@@ -7,6 +8,8 @@ desc: |-
   If you set this policy to Enabled or keep it unset, your users will be able to turn on or off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Ad topics setting on their device.
 
   Setting this policy requires setting the <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME">PrivacySandboxPromptEnabled</ph> policy to Disabled.
+
+  This policy is deprecated as of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 144 with the deprecation of Topics API.
 example_value: false
 features:
   dynamic_refresh: true
