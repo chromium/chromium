@@ -19,7 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -41,6 +40,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -318,7 +318,8 @@ void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
           ->browser();
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
-  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress, browser);
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      desktop_to_mobile_promos::PromoType::kAddress, browser);
 }
 
 void AddressBubblesController::MaybeShowSignInPromo(

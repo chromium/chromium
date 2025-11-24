@@ -37,6 +37,9 @@ using sync_preferences::TimestampedPrefValue;
 
 namespace {
 
+using desktop_to_mobile_promos::BubbleType;
+using desktop_to_mobile_promos::PromoType;
+
 // The time period over which the user has to have been active for at least 16
 // days in order to be considered active on iOS.
 const base::TimeDelta kActiveUserRecency = base::Days(28);
@@ -48,31 +51,31 @@ bool IsRecent(base::Time time, base::TimeDelta delta) {
 
 // ShowIOSDesktopPromoBubble shows the iOS Desktop Promo Bubble based on the
 // given promo type.
-void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
-                               IOSPromoBubbleType bubble_type,
+void ShowIOSDesktopPromoBubble(PromoType promo_type,
+                               BubbleType bubble_type,
                                Profile* profile,
                                BrowserView* browser_view) {
   ToolbarButtonProvider* toolbar_button_provider =
       browser_view->toolbar_button_provider();
   switch (promo_type) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetAnchorView(
               kActionShowPasswordsBubbleOrPage)},
           toolbar_button_provider->GetPageActionView(
               kActionShowPasswordsBubbleOrPage),
-          profile, IOSPromoType::kPassword, bubble_type);
+          profile, PromoType::kPassword, bubble_type);
       break;
-    case IOSPromoType::kAddress: {
+    case PromoType::kAddress: {
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetAnchorView(
               kActionShowAddressesBubbleOrPage)},
           toolbar_button_provider->GetPageActionView(
               kActionShowAddressesBubbleOrPage),
-          profile, IOSPromoType::kAddress, bubble_type);
+          profile, PromoType::kAddress, bubble_type);
       break;
     }
-    case IOSPromoType::kPayment:
+    case PromoType::kPayment:
       IconLabelBubbleView* icon_view;
       if (IsPageActionMigrated(PageActionIconType::kSaveCard)) {
         icon_view = toolbar_button_provider->GetPageActionView(
@@ -85,16 +88,16 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
 
       IOSPromoBubble::ShowPromoBubble({toolbar_button_provider->GetAnchorView(
                                           kActionShowPaymentsBubbleOrPage)},
-                                      icon_view, profile,
-                                      IOSPromoType::kPayment, bubble_type);
+                                      icon_view, profile, PromoType::kPayment,
+                                      bubble_type);
       break;
-    case IOSPromoType::kEnhancedBrowsing:
+    case PromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(
           {browser_view->toolbar()->app_menu_button()},
-          /*highlighted_button=*/nullptr, profile,
-          IOSPromoType::kEnhancedBrowsing, bubble_type);
+          /*highlighted_button=*/nullptr, profile, PromoType::kEnhancedBrowsing,
+          bubble_type);
       break;
-    case IOSPromoType::kLens: {
+    case PromoType::kLens: {
       SidePanel* side_panel = browser_view->contents_height_side_panel();
       IOSPromoBubble::Anchor anchor = {side_panel};
       if (side_panel) {
@@ -106,7 +109,7 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
       }
       IOSPromoBubble::ShowPromoBubble(anchor,
                                       /*highlighted_button=*/nullptr, profile,
-                                      IOSPromoType::kLens, bubble_type);
+                                      PromoType::kLens, bubble_type);
       break;
     }
   }
@@ -123,8 +126,8 @@ void RunCallback(std::optional<base::OnceClosure> callback) {
 // and computes, along with other criteria like impressions, whether the user
 // should be shown the promo. If yes, attempts to show the promo.
 void OnIOSPromoClassificationResult(
-    IOSPromoType promo_type,
-    IOSPromoBubbleType bubble_type,
+    PromoType promo_type,
+    BubbleType bubble_type,
     base::WeakPtr<Browser> browser,
     std::optional<base::OnceClosure> promo_will_be_shown_callback,
     std::optional<base::OnceClosure> promo_not_shown_callback,
@@ -153,8 +156,8 @@ void OnIOSPromoClassificationResult(
 }
 
 void VerifyIOSPromoEligibilityCriteriaAsync(
-    const IOSPromoType& promo_type,
-    IOSPromoBubbleType bubble_type,
+    const PromoType& promo_type,
+    BubbleType bubble_type,
     Browser* browser,
     std::optional<base::OnceClosure> promo_will_be_shown_callback =
         std::nullopt,
@@ -197,9 +200,9 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
 
 namespace ios_promos_utils {
 
-void VerifyIOSPromoEligibility(IOSPromoType promo_type,
+void VerifyIOSPromoEligibility(PromoType promo_type,
                                Browser* browser,
-                               IOSPromoBubbleType bubble_type) {
+                               BubbleType bubble_type) {
   VerifyIOSPromoEligibilityCriteriaAsync(promo_type, bubble_type, browser);
 }
 
@@ -208,7 +211,7 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
     base::OnceClosure promo_will_be_shown_callback,
     base::OnceClosure promo_not_shown_callback) {
   VerifyIOSPromoEligibilityCriteriaAsync(
-      IOSPromoType::kPayment, IOSPromoBubbleType::kQRCode, browser,
+      PromoType::kPayment, BubbleType::kQRCode, browser,
       std::move(promo_will_be_shown_callback),
       std::move(promo_not_shown_callback));
 }

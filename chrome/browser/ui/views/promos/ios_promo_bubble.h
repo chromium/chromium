@@ -23,8 +23,10 @@ struct IOSPromoTypeConfigs;
 
 class Profile;
 
-enum class IOSPromoBubbleType;
-enum class IOSPromoType;
+namespace desktop_to_mobile_promos {
+enum class BubbleType;
+enum class PromoType;
+}  // namespace desktop_to_mobile_promos
 class IOSPromoBubbleView;
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kIOSPromoBubbleElementId);
@@ -54,23 +56,24 @@ class IOSPromoBubble {
   static void ShowPromoBubble(Anchor anchor,
                               views::Button* highlighted_button,
                               Profile* profile,
-                              IOSPromoType promo_type,
-                              IOSPromoBubbleType bubble_type);
+                              desktop_to_mobile_promos::PromoType promo_type,
+                              desktop_to_mobile_promos::BubbleType bubble_type);
 
   // Hide closes the bubble.
   static void Hide();
 
   // Returns true if the bubble is currently being shown and is of type
   // `promo_type`.
-  static bool IsPromoTypeVisible(IOSPromoType promo_type);
+  static bool IsPromoTypeVisible(
+      desktop_to_mobile_promos::PromoType promo_type);
 
  private:
   friend class ::IOSPromoBubbleView;
 
   // Returns the config for the given `promo_type` and `bubble_type`.
   static IOSPromoConstants::IOSPromoTypeConfigs SetUpBubble(
-      IOSPromoType promo_type,
-      IOSPromoBubbleType bubble_type);
+      desktop_to_mobile_promos::PromoType promo_type,
+      desktop_to_mobile_promos::BubbleType bubble_type);
 
   // Creates the content view for the promo bubble, which includes the body and
   // buttons. Depedning on the BubbleLayout, the content view takes up either
@@ -79,23 +82,23 @@ class IOSPromoBubble {
       IOSPromoBubble::IOSPromoBubbleDelegate* bubble_delegate,
       const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config,
       bool with_title,
-      IOSPromoBubbleType bubble_type);
+      desktop_to_mobile_promos::BubbleType bubble_type);
 
   // Creates the body of the promo bubble, which includes the QR code or
   // icon, and the description.
   static std::unique_ptr<views::View> CreateImageAndBodyTextView(
       const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config,
-      IOSPromoBubbleType bubble_type);
+      desktop_to_mobile_promos::BubbleType bubble_type);
 
   // Creates the buttons view for the promo bubble.
   static std::unique_ptr<views::View> CreateButtonsView(
       IOSPromoBubble::IOSPromoBubbleDelegate* bubble_delegate,
       const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config,
-      IOSPromoBubbleType bubble_type);
+      desktop_to_mobile_promos::BubbleType bubble_type);
 
   static views::BubbleDialogDelegate* ios_promo_delegate_;
 
-  static IOSPromoType current_promo_type_;
+  static desktop_to_mobile_promos::PromoType current_promo_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_

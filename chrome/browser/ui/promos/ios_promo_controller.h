@@ -11,7 +11,10 @@
 
 class Browser;
 class BrowserWindowInterface;
-enum class IOSPromoType;
+
+namespace desktop_to_mobile_promos {
+enum class PromoType;
+}
 
 // This controller is responsible for showing iOS promos for a specific
 // browser window. An instance of this class is created for each window.
@@ -33,7 +36,7 @@ class IOSPromoController {
       BrowserWindowInterface* browser_window_interface);
 
  private:
-  void OnPromoTriggered(IOSPromoType promo_type);
+  void OnPromoTriggered(desktop_to_mobile_promos::PromoType promo_type);
 
   const raw_ptr<Browser> browser_;
 

@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/feature_list.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/features.h"

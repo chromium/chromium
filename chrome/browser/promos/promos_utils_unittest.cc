@@ -8,10 +8,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/promos/promos_pref_names.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -22,6 +22,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace promos_utils {
+
+using desktop_to_mobile_promos::PromoType;
 
 class IOSPromoOnDesktopTest : public ::testing::Test {
  public:
@@ -67,7 +69,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 1, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPassword, 1, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.FirstImpression.Action",
@@ -81,7 +83,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 1, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPassword, 1, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.FirstImpression.Action",
@@ -95,7 +97,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 2, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPassword, 2, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.SecondImpression.Action",
@@ -109,7 +111,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 2, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPassword, 2, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.SecondImpression.Action",
@@ -123,7 +125,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 3, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPassword, 3, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.ThirdImpression.Action",
@@ -137,7 +139,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForPasswordPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPassword, 3, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPassword, 3, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.ThirdImpression.Action",
@@ -151,7 +153,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 1, DesktopIOSPromoAction::kDismissed);
+      PromoType::kAddress, 1, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.FirstImpression.Action",
@@ -165,7 +167,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 1, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kAddress, 1, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.FirstImpression.Action",
@@ -179,7 +181,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 2, DesktopIOSPromoAction::kDismissed);
+      PromoType::kAddress, 2, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.SecondImpression.Action",
@@ -193,7 +195,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 2, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kAddress, 2, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.SecondImpression.Action",
@@ -207,7 +209,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 3, DesktopIOSPromoAction::kDismissed);
+      PromoType::kAddress, 3, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.ThirdImpression.Action",
@@ -221,7 +223,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForAddressPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kAddress, 3, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kAddress, 3, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.AddressPromo.ThirdImpression.Action",
@@ -234,7 +236,7 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForPasswordPromo) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kPassword));
+                                        PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the promotions are
@@ -244,7 +246,7 @@ TEST_F(IOSPromoOnDesktopTest,
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kPromotionsEnabled, false);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -254,7 +256,7 @@ TEST_F(IOSPromoOnDesktopTest,
   prefs()->SetInteger(
       promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 3);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -266,7 +268,7 @@ TEST_F(
       promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       base::Time::Now());
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -275,7 +277,7 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPasswordPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns true when no promo has yet been
@@ -283,7 +285,7 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForAddressPromo) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -293,7 +295,7 @@ TEST_F(IOSPromoOnDesktopTest,
   prefs()->SetInteger(promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter,
                       3);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -305,7 +307,7 @@ TEST_F(
       promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp,
       base::Time::Now());
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -314,7 +316,7 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForAddressPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSAddressPromoOptOut, true);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
@@ -324,7 +326,7 @@ TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestFirstImpressionForPasswordPromo) {
   // Record before and after times to ensure the timestamp is within that range.
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -350,11 +352,11 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestSecondImpressionForPasswordPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
 
   // Second impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -380,14 +382,14 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestThirdImpressionForPasswordPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
 
   // Second impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
 
   // Third impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  IOSDesktopPromoShown(profile(), PromoType::kPassword);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -414,7 +416,7 @@ TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestFirstImpressionForAddressPromo) {
   // Record before and after times to ensure the timestamp is within that range.
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -438,11 +440,11 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestSecondImpressionForAddressPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
 
   // Second impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -465,14 +467,14 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestThirdImpressionForAddressPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
 
   // Second impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
 
   // Third impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  IOSDesktopPromoShown(profile(), PromoType::kAddress);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -562,7 +564,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 1, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPayment, 1, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.FirstImpression.Action",
@@ -576,7 +578,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 1, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPayment, 1, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.FirstImpression.Action",
@@ -590,7 +592,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 2, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPayment, 2, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.SecondImpression.Action",
@@ -604,7 +606,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 2, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPayment, 2, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.SecondImpression.Action",
@@ -618,7 +620,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 3, DesktopIOSPromoAction::kDismissed);
+      PromoType::kPayment, 3, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.ThirdImpression.Action",
@@ -632,7 +634,7 @@ TEST_F(
     IOSPromoOnDesktopTest,
     RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForPaymentPromo) {
   RecordIOSDesktopPromoUserInteractionHistogram(
-      IOSPromoType::kPayment, 3, DesktopIOSPromoAction::kNoThanksClicked);
+      PromoType::kPayment, 3, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PaymentPromo.ThirdImpression.Action",
@@ -644,7 +646,7 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForPaymentPromo) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kPayment));
+                                        PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -654,7 +656,7 @@ TEST_F(IOSPromoOnDesktopTest,
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       3);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPayment));
+                                         PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -666,7 +668,7 @@ TEST_F(
       promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
       base::Time::Now());
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPayment));
+                                         PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -675,7 +677,7 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPaymentPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSPaymentPromoOptOut, true);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPayment));
+                                         PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -687,19 +689,19 @@ TEST_F(IOSPromoOnDesktopTest,
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       10);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       9);
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 
   // Go two below the limit so adding Desktop NTP promo impressions pushes back
   // to one below the limit.
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       8);
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 
   base::Time promo_time = base::Time::Now() - base::Days(1000);
   base::Value::List desktop_ntp_promo_timestamps;
@@ -707,7 +709,7 @@ TEST_F(IOSPromoOnDesktopTest,
   prefs()->SetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
                    std::move(desktop_ntp_promo_timestamps));
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 
   // Add a second timestamp and the promo should still be able to be shown.
   {
@@ -716,13 +718,13 @@ TEST_F(IOSPromoOnDesktopTest,
     update->Append(base::TimeToValue(promo_time + base::Seconds(1)));
   }
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 
   // Setting another promo's count higher should block the promo again.
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       9);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -730,13 +732,13 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseDesktopNtpPromoTooRecent) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 
   prefs()->SetList(
       promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
       base::Value::List().Append(base::TimeToValue(base::Time::Now())));
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
@@ -746,7 +748,7 @@ TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestFirstImpressionForPaymentPromo) {
   // Record before and after times to ensure the timestamp is within that range.
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -770,11 +772,11 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestSecondImpressionForPaymentPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
 
   // Second impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -797,14 +799,14 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        IOSDesktopPromoShownTestThirdImpressionForPaymentPromo) {
   // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
 
   // Second impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
 
   // Third impression
   base::Time before = base::Time::Now();
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  IOSDesktopPromoShown(profile(), PromoType::kPayment);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(prefs()->GetInteger(
@@ -826,7 +828,7 @@ TEST_F(IOSPromoOnDesktopTest,
 // feature.
 TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementPasswords) {
   const base::Feature& feature =
-      GetIOSDesktopPromoFeatureEngagement(IOSPromoType::kPassword);
+      GetIOSDesktopPromoFeatureEngagement(PromoType::kPassword);
 
   ASSERT_EQ(&feature, &feature_engagement::kIPHiOSPasswordPromoDesktopFeature);
 }
@@ -834,7 +836,7 @@ TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementPasswords) {
 // Tests getting the correct address promo Feature Engagement Tracker feature.
 TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementAddress) {
   const base::Feature& feature =
-      GetIOSDesktopPromoFeatureEngagement(IOSPromoType::kAddress);
+      GetIOSDesktopPromoFeatureEngagement(PromoType::kAddress);
 
   ASSERT_EQ(&feature, &feature_engagement::kIPHiOSAddressPromoDesktopFeature);
 }
@@ -848,7 +850,7 @@ TEST_F(IOSPromoOnDesktopTest,
       {syncer::UserSelectableType::kPasswords,
        syncer::UserSelectableType::kPreferences});
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kPassword));
+                                        PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the preferences
@@ -859,7 +861,7 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kPasswords});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the passwords
@@ -870,7 +872,7 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kPreferences});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPassword));
+                                         PromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
@@ -882,7 +884,7 @@ TEST_F(IOSPromoOnDesktopTest,
       {syncer::UserSelectableType::kAutofill,
        syncer::UserSelectableType::kPreferences});
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kAddress));
+                                        PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the preferences
@@ -893,7 +895,7 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kAutofill});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the autofill datatype
@@ -904,7 +906,7 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kPreferences});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kAddress));
+                                         PromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
@@ -916,7 +918,7 @@ TEST_F(IOSPromoOnDesktopTest,
       {syncer::UserSelectableType::kPayments,
        syncer::UserSelectableType::kPreferences});
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                        IOSPromoType::kPayment));
+                                        PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the preferences
@@ -927,7 +929,7 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kPayments});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPayment));
+                                         PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the payments datatype
@@ -938,13 +940,13 @@ TEST_F(IOSPromoOnDesktopTest,
       /*sync_everything=*/false, /*types=*/
       {syncer::UserSelectableType::kPreferences});
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
-                                         IOSPromoType::kPayment));
+                                         PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when sync service is null.
 TEST_F(IOSPromoOnDesktopTest, PromoSyncPrefsSyncServiceNull) {
   EXPECT_FALSE(
-      ShouldShowIOSDesktopPromo(profile(), nullptr, IOSPromoType::kPayment));
+      ShouldShowIOSDesktopPromo(profile(), nullptr, PromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopNtpPromo returns true when no promo has yet

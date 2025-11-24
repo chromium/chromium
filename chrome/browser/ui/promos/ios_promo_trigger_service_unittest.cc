@@ -11,11 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/desktop_to_mobile_promos/pref_names.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/sharing_message/pref_names.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
@@ -23,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using desktop_to_mobile_promos::PromoType;
 
 std::unique_ptr<KeyedService> BuildFakeDeviceInfoSyncService(
     content::BrowserContext* context) {
@@ -95,12 +97,12 @@ class IOSPromoTriggerServiceTest : public testing::Test {
 
 TEST_F(IOSPromoTriggerServiceTest, NotifiesCallback) {
   int call_count = 0;
-  std::optional<IOSPromoType> promo_type;
+  std::optional<PromoType> promo_type;
 
   base::CallbackListSubscription subscription =
       service_->RegisterPromoCallback(base::BindRepeating(
-          [](int* call_count, std::optional<IOSPromoType>* promo_type,
-             IOSPromoType type) {
+          [](int* call_count, std::optional<PromoType>* promo_type,
+             PromoType type) {
             (*call_count)++;
             *promo_type = type;
           },
@@ -109,30 +111,30 @@ TEST_F(IOSPromoTriggerServiceTest, NotifiesCallback) {
   EXPECT_EQ(call_count, 0);
   EXPECT_FALSE(promo_type.has_value());
 
-  service_->NotifyPromoShouldBeShown(IOSPromoType::kPassword);
+  service_->NotifyPromoShouldBeShown(PromoType::kPassword);
 
   EXPECT_EQ(call_count, 1);
   ASSERT_TRUE(promo_type.has_value());
-  EXPECT_EQ(promo_type.value(), IOSPromoType::kPassword);
+  EXPECT_EQ(promo_type.value(), PromoType::kPassword);
 }
 
 TEST_F(IOSPromoTriggerServiceTest,
        CallbackIsRemovedWhenSubscriptionIsDestroyed) {
   int call_count = 0;
-  std::optional<IOSPromoType> promo_type;
+  std::optional<PromoType> promo_type;
 
   {
     base::CallbackListSubscription subscription =
         service_->RegisterPromoCallback(base::BindRepeating(
-            [](int* call_count, std::optional<IOSPromoType>* promo_type,
-               IOSPromoType type) {
+            [](int* call_count, std::optional<PromoType>* promo_type,
+               PromoType type) {
               (*call_count)++;
               *promo_type = type;
             },
             &call_count, &promo_type));
   }
 
-  service_->NotifyPromoShouldBeShown(IOSPromoType::kPassword);
+  service_->NotifyPromoShouldBeShown(PromoType::kPassword);
 
   EXPECT_EQ(call_count, 0);
 }
@@ -215,14 +217,14 @@ TEST_F(IOSPromoTriggerServiceTest,
 }
 
 TEST_F(IOSPromoTriggerServiceTest, SetReminderForIOSDevice) {
-  service_->SetReminderForIOSDevice(IOSPromoType::kPassword, "test_guid");
+  service_->SetReminderForIOSDevice(PromoType::kPassword, "test_guid");
 
   const base::Value::Dict& promo_reminder_data =
       profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
   ASSERT_TRUE(promo_reminder_data.FindInt(prefs::kIOSPromoReminderPromoType));
   EXPECT_EQ(
       promo_reminder_data.FindInt(prefs::kIOSPromoReminderPromoType).value(),
-      static_cast<int>(IOSPromoType::kPassword));
+      static_cast<int>(PromoType::kPassword));
   ASSERT_TRUE(
       promo_reminder_data.FindString(prefs::kIOSPromoReminderDeviceGUID));
   EXPECT_EQ(*promo_reminder_data.FindString(prefs::kIOSPromoReminderDeviceGUID),

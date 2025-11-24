@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/promos/promos_types.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 
 class Browser;
 class Profile;
@@ -18,9 +18,10 @@ namespace ios_promos_utils {
 // `OnIOSPromoClassificationResult` to determine whether or not the user should
 // be shown the promo.
 void VerifyIOSPromoEligibility(
-    IOSPromoType promo_type,
+    desktop_to_mobile_promos::PromoType promo_type,
     Browser* browser,
-    IOSPromoBubbleType bubble_type = IOSPromoBubbleType::kQRCode);
+    desktop_to_mobile_promos::BubbleType bubble_type =
+        desktop_to_mobile_promos::BubbleType::kQRCode);
 
 // Checks if the user should be shown the iOS Payment promo and attempts to show
 // it. This should only be called if a card was successfully uploaded and

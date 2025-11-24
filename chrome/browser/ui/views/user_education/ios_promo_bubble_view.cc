@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -103,17 +104,19 @@ END_METADATA
 
 }  // namespace
 
+using desktop_to_mobile_promos::BubbleType;
+using desktop_to_mobile_promos::PromoType;
+
 // static
 std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
-    IOSPromoType promo_type,
+    PromoType promo_type,
     const scoped_refptr<user_education::UserEducationContext>& context,
     user_education::FeaturePromoSpecification::BuildHelpBubbleParams params) {
   Profile* profile = context->AsA<BrowserUserEducationContext>()
                          ->GetBrowserView()
                          .GetProfile();
-  IOSPromoBubbleType promo_bubble_type = IsUserActiveOnIOS(profile)
-                                             ? IOSPromoBubbleType::kReminder
-                                             : IOSPromoBubbleType::kQRCode;
+  BubbleType promo_bubble_type =
+      IsUserActiveOnIOS(profile) ? BubbleType::kReminder : BubbleType::kQRCode;
   auto* const anchor_element = params.anchor_element.get();
   return std::make_unique<IOSPromoBubbleView>(
       profile, promo_type, promo_bubble_type,
@@ -122,8 +125,8 @@ std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
 }
 
 IOSPromoBubbleView::IOSPromoBubbleView(Profile* profile,
-                                       IOSPromoType promo_type,
-                                       IOSPromoBubbleType promo_bubble_type,
+                                       PromoType promo_type,
+                                       BubbleType promo_bubble_type,
                                        views::View* anchor_view,
                                        views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegateView(anchor_view, arrow),
@@ -183,7 +186,7 @@ bool IOSPromoBubbleView::Cancel() {
 bool IOSPromoBubbleView::Accept() {
   // TODO(crbug.com/438769954): Record metrics.
   switch (promo_bubble_type_) {
-    case IOSPromoBubbleType::kReminder: {
+    case BubbleType::kReminder: {
       // Send the reminder to the iOS device and update the promo bubble with
       // the confirmation messaging.
       IOSPromoTriggerService* trigger_service =
@@ -194,15 +197,15 @@ bool IOSPromoBubbleView::Accept() {
       }
       trigger_service->SetReminderForIOSDevice(promo_type_,
                                                ios_device_info_->guid());
-      promo_bubble_type_ = IOSPromoBubbleType::kReminderConfirmation;
+      promo_bubble_type_ = BubbleType::kReminderConfirmation;
       ShowReminderConfirmation();
       // Return false to prevent the bubble from closing on accept.
       return false;
     }
-    case IOSPromoBubbleType::kQRCode:
+    case BubbleType::kQRCode:
       // TODO(crbug.com/438769954): Open QRCode URL.
       return true;
-    case IOSPromoBubbleType::kReminderConfirmation:
+    case BubbleType::kReminderConfirmation:
       return true;
   }
 }
@@ -219,8 +222,8 @@ void IOSPromoBubbleView::ShowReminderConfirmation() {
     return;
   }
 
-  config_ = IOSPromoBubble::SetUpBubble(
-      promo_type_, IOSPromoBubbleType::kReminderConfirmation);
+  config_ = IOSPromoBubble::SetUpBubble(promo_type_,
+                                        BubbleType::kReminderConfirmation);
 
   std::u16string device_name;
   switch (ios_device_info_->form_factor()) {
@@ -265,16 +268,16 @@ void IOSPromoBubbleView::ShowReminderConfirmation() {
 std::u16string IOSPromoBubbleView::GetConfirmationDescriptionText(
     const std::u16string& device_name) {
   switch (promo_type_) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
       return l10n_util::GetStringFUTF16(config_.promo_description_id,
                                         device_name);
-    case IOSPromoType::kEnhancedBrowsing:
-    case IOSPromoType::kLens:
+    case PromoType::kEnhancedBrowsing:
+    case PromoType::kLens:
       return l10n_util::GetStringFUTF16(
           config_.promo_description_id,
           l10n_util::GetStringUTF16(config_.feature_name_id));
-    case IOSPromoType::kAddress:
-    case IOSPromoType::kPayment:
+    case PromoType::kAddress:
+    case PromoType::kPayment:
       // These types do not have a reminder flow.
       NOTREACHED();
   }

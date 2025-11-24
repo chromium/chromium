@@ -31,7 +31,6 @@
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
@@ -73,6 +72,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/desktop_to_mobile_promos/features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -93,7 +94,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
-#include "components/sharing_message/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1210,11 +1210,12 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
     IOSPromoTriggerService* service =
         IOSPromoTriggerServiceFactory::GetForProfile(browser->GetProfile());
     if (service) {
-      service->NotifyPromoShouldBeShown(IOSPromoType::kPassword);
+      service->NotifyPromoShouldBeShown(
+          desktop_to_mobile_promos::PromoType::kPassword);
     }
   } else {
-    ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
-                                                browser);
+    ios_promos_utils::VerifyIOSPromoEligibility(
+        desktop_to_mobile_promos::PromoType::kPassword, browser);
   }
 }
 

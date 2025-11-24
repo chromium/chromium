@@ -6,8 +6,8 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/desktop_to_mobile_promos/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sharing_message/pref_names.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -16,7 +16,8 @@ IOSPromoTriggerService::IOSPromoTriggerService(Profile* profile)
     : profile_(profile) {}
 IOSPromoTriggerService::~IOSPromoTriggerService() = default;
 
-void IOSPromoTriggerService::NotifyPromoShouldBeShown(IOSPromoType promo_type) {
+void IOSPromoTriggerService::NotifyPromoShouldBeShown(
+    desktop_to_mobile_promos::PromoType promo_type) {
   callback_list_.Notify(promo_type);
 }
 
@@ -79,7 +80,7 @@ bool IOSPromoTriggerService::IsMorePreferredDevice(
 }
 
 void IOSPromoTriggerService::SetReminderForIOSDevice(
-    IOSPromoType promo_type,
+    desktop_to_mobile_promos::PromoType promo_type,
     const std::string& device_guid) {
   // TODO(crbug.com/442561857): Trigger iOS push notification as well.
   base::Value::Dict promo_reminder_data;

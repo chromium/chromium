@@ -147,6 +147,7 @@ source_set("push_notification_service") {
     ":push_notification_util",
     "//base",
     "//components/commerce/core:pref_names",
+    "//components/desktop_to_mobile_promos",
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/prefs",

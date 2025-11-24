@@ -24,6 +24,7 @@ source_set("flags") {
     "//components/collaboration/public:features",
     "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
+    "//components/desktop_to_mobile_promos",
     "//components/dom_distiller/core",
     "//components/download/public/background_service:public",
     "//components/enterprise",

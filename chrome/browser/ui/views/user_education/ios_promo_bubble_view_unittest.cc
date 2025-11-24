@@ -11,12 +11,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/sharing_message/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_preferences/features.h"
@@ -25,6 +25,9 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+using desktop_to_mobile_promos::BubbleType;
+using desktop_to_mobile_promos::PromoType;
 
 namespace {
 
@@ -43,7 +46,7 @@ class MockIOSPromoTriggerService : public IOSPromoTriggerService {
 
   MOCK_METHOD(void,
               SetReminderForIOSDevice,
-              (IOSPromoType promo_type, const std::string& device_guid),
+              (PromoType promo_type, const std::string& device_guid),
               (override));
 
   const syncer::DeviceInfo* GetFakeDeviceInfo() { return &fake_device_info_; }
@@ -121,9 +124,8 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
   Profile* GetProfile() { return profile_.get(); }
 
  protected:
-  void CreateAndShowBubble(
-      IOSPromoType promo_type = IOSPromoType::kLens,
-      IOSPromoBubbleType bubble_type = IOSPromoBubbleType::kQRCode) {
+  void CreateAndShowBubble(PromoType promo_type = PromoType::kLens,
+                           BubbleType bubble_type = BubbleType::kQRCode) {
     auto bubble = std::make_unique<IOSPromoBubbleView>(
         GetProfile(), promo_type, bubble_type, anchor_view_,
         views::BubbleBorder::TOP_RIGHT);
@@ -152,7 +154,7 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
 // Tests that closing the bubble (e.g. via dismissal) calls NotifyUserAction
 // with kDismiss.
 TEST_F(IOSPromoBubbleViewTest, OnDismissalCallsNotifyUserAction_QRCode) {
-  CreateAndShowBubble(IOSPromoType::kLens, IOSPromoBubbleType::kQRCode);
+  CreateAndShowBubble(PromoType::kLens, BubbleType::kQRCode);
 
   base::RunLoop run_loop;
   EXPECT_CALL(user_action_callback_,
@@ -166,7 +168,7 @@ TEST_F(IOSPromoBubbleViewTest, OnDismissalCallsNotifyUserAction_QRCode) {
 
 // Tests that clicking the Cancel button calls NotifyUserAction with kCancel.
 TEST_F(IOSPromoBubbleViewTest, CancelCallsNotifyUserAction_QRCode) {
-  CreateAndShowBubble(IOSPromoType::kLens, IOSPromoBubbleType::kQRCode);
+  CreateAndShowBubble(PromoType::kLens, BubbleType::kQRCode);
 
   EXPECT_CALL(user_action_callback_,
               Run(IOSPromoBubbleView::UserAction::kCancel));
@@ -193,9 +195,9 @@ TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
 
   // Expect the trigger service to be called with the correct promo type and
   // device GUID.
-  EXPECT_CALL(*service, SetReminderForIOSDevice(IOSPromoType::kLens, "guid"));
+  EXPECT_CALL(*service, SetReminderForIOSDevice(PromoType::kLens, "guid"));
 
-  CreateAndShowBubble(IOSPromoType::kLens, IOSPromoBubbleType::kReminder);
+  CreateAndShowBubble(PromoType::kLens, BubbleType::kReminder);
 
   // The bubble should be dismissed after the second accept.
   base::RunLoop run_loop;

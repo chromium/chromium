@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IOS_PROMO_BUBBLE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/user_education_context.h"
@@ -29,13 +29,13 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
  public:
   // Factory method to create an IOSPromoBubbleView.
   static std::unique_ptr<IOSPromoBubbleView> Create(
-      IOSPromoType promo_type,
+      desktop_to_mobile_promos::PromoType promo_type,
       const scoped_refptr<user_education::UserEducationContext>& context,
       user_education::FeaturePromoSpecification::BuildHelpBubbleParams params);
 
   IOSPromoBubbleView(Profile* profile,
-                     IOSPromoType promo_type,
-                     IOSPromoBubbleType promo_bubble_type,
+                     desktop_to_mobile_promos::PromoType promo_type,
+                     desktop_to_mobile_promos::BubbleType promo_bubble_type,
                      views::View* anchor_view,
                      views::BubbleBorder::Arrow arrow);
   ~IOSPromoBubbleView() override;
@@ -64,11 +64,11 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& device_name);
 
   const raw_ptr<Profile> profile_;
-  const IOSPromoType promo_type_;
+  const desktop_to_mobile_promos::PromoType promo_type_;
   raw_ptr<const syncer::DeviceInfo> ios_device_info_;
   // The type of bubble being displayed. Can be changed from kReminder to
   // kReminderConfirmation.
-  IOSPromoBubbleType promo_bubble_type_;
+  desktop_to_mobile_promos::BubbleType promo_bubble_type_;
   IOSPromoConstants::IOSPromoTypeConfigs config_;
 };
 

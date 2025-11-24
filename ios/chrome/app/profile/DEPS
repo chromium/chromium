@@ -1,6 +1,6 @@
 specific_include_rules = {
   "profile_controller.mm": [
-    "+components/sharing_message/features.h",
+    "+components/desktop_to_mobile_promos/features.h",
   ],
   "synced_set_up_profile_agent.mm": [
     "+components/sync_device_info/device_info.h",

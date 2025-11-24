@@ -38,13 +38,13 @@
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/prefs/pref_service.h"
-#include "components/sharing_message/features.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1020,7 +1020,8 @@ void LensSearchController::MaybeShowMobilePromo() {
             Profile::FromBrowserContext(
                 tab_->GetContents()->GetBrowserContext()));
     if (service) {
-      service->NotifyPromoShouldBeShown(IOSPromoType::kLens);
+      service->NotifyPromoShouldBeShown(
+          desktop_to_mobile_promos::PromoType::kLens);
     }
   }
 }

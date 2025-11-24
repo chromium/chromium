@@ -20,7 +20,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -85,6 +84,8 @@
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/data_sharing/public/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -94,7 +95,6 @@
 #include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/sharing_message/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -1575,8 +1575,9 @@ void MaybeRegisterChromeFeaturePromos(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
                       kSidePanelElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
-                          base::BindRepeating(&IOSPromoBubbleView::Create,
-                                              IOSPromoType::kLens)))
+                          base::BindRepeating(
+                              &IOSPromoBubbleView::Create,
+                              desktop_to_mobile_promos::PromoType::kLens)))
                       .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
                       .SetMetadata(144, "scottyoder@google.com",
                                    "Triggered when Lens Overlay is used.")));
@@ -1590,8 +1591,9 @@ void MaybeRegisterChromeFeaturePromos(
             feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
             kToolbarAppMenuButtonElementId,
             user_education::CreateCustomHelpBubbleViewFactoryCallback(
-                base::BindRepeating(&IOSPromoBubbleView::Create,
-                                    IOSPromoType::kEnhancedBrowsing)))
+                base::BindRepeating(
+                    &IOSPromoBubbleView::Create,
+                    desktop_to_mobile_promos::PromoType::kEnhancedBrowsing)))
             .SetPromoSubtype(user_education::FeaturePromoSpecification::
                                  PromoSubtype::kActionableAlert)
             .SetMetadata(144, "scottyoder@google.com",
@@ -1606,8 +1608,9 @@ void MaybeRegisterChromeFeaturePromos(
                       feature_engagement::kIPHiOSPasswordPromoDesktopFeature,
                       kPasswordsOmniboxKeyIconElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
-                          base::BindRepeating(&IOSPromoBubbleView::Create,
-                                              IOSPromoType::kPassword)))
+                          base::BindRepeating(
+                              &IOSPromoBubbleView::Create,
+                              desktop_to_mobile_promos::PromoType::kPassword)))
                       .SetMetadata(144, "scottyoder@google.com",
                                    "Triggered when a password is saved.")));
   }

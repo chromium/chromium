@@ -12,21 +12,24 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
+
+using desktop_to_mobile_promos::PromoType;
 
 namespace {
 
 // Returns the feature associated with the given IOSPromoType.
-const base::Feature& FeatureForIOSPromoType(IOSPromoType promo_type) {
+const base::Feature& FeatureForIOSPromoType(PromoType promo_type) {
   switch (promo_type) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
       return feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
-    case IOSPromoType::kAddress:
+    case PromoType::kAddress:
       return feature_engagement::kIPHiOSAddressPromoDesktopFeature;
-    case IOSPromoType::kPayment:
+    case PromoType::kPayment:
       return feature_engagement::kIPHiOSPaymentPromoDesktopFeature;
-    case IOSPromoType::kEnhancedBrowsing:
+    case PromoType::kEnhancedBrowsing:
       return feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature;
-    case IOSPromoType::kLens:
+    case PromoType::kLens:
       return feature_engagement::kIPHiOSLensPromoDesktopFeature;
   }
 }
@@ -55,7 +58,7 @@ IOSPromoController* IOSPromoController::From(
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
-void IOSPromoController::OnPromoTriggered(IOSPromoType promo_type) {
+void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
   BrowserWindow* window = browser_->window();
   // Don't show the promo if the window is not active or the toolbar is not
   // visible.

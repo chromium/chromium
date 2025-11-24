@@ -126,6 +126,7 @@
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -136,7 +137,6 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
-#include "components/sharing_message/features.h"
 #include "content/public/common/content_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

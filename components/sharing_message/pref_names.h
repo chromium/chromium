@@ -24,14 +24,6 @@ inline constexpr char kSharedClipboardEnabled[] =
 inline constexpr char kClickToCallEnabled[] = "browser.click_to_call_enabled";
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
-// Dictionary that stores information about the promo reminder to be shown on an
-// iOS device. It contains the promo type and the target device GUID.
-inline constexpr char kIOSPromoReminder[] = "promos.ios_promo_reminder";
-
-// Keys for the kIOSPromoReminder dictionary.
-inline constexpr char kIOSPromoReminderPromoType[] = "promo_type";
-inline constexpr char kIOSPromoReminderDeviceGUID[] = "device_guid";
-
 }  // namespace prefs
 
 #endif  // COMPONENTS_SHARING_MESSAGE_PREF_NAMES_H_

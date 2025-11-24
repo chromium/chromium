@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_PROMOS_IOS_PROMO_TRIGGER_SERVICE_H_
 
 #include "base/callback_list.h"
-#include "chrome/browser/promos/promos_types.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -19,7 +19,8 @@ class DeviceInfo;
 // to manage and trigger iOS promos.
 class IOSPromoTriggerService : public KeyedService {
  public:
-  using PromoCallback = base::RepeatingCallback<void(IOSPromoType)>;
+  using PromoCallback =
+      base::RepeatingCallback<void(desktop_to_mobile_promos::PromoType)>;
 
   explicit IOSPromoTriggerService(Profile* profile);
   ~IOSPromoTriggerService() override;
@@ -32,7 +33,8 @@ class IOSPromoTriggerService : public KeyedService {
   // solution for triggering promos. The long-term plan is to migrate the
   // presentation logic to the Browser User Education system. Once that is
   // complete, it can be removed.
-  virtual void NotifyPromoShouldBeShown(IOSPromoType promo_type);
+  virtual void NotifyPromoShouldBeShown(
+      desktop_to_mobile_promos::PromoType promo_type);
 
   // Returns a synced iOS device to show a reminder on. This method prioritizes
   // the most recently active iPhone. If no iPhone is found, it falls back to
@@ -42,8 +44,9 @@ class IOSPromoTriggerService : public KeyedService {
 
   // Sets a preference to show a reminder for `promo_type` on a synced iOS
   // device with guid `device_guid`.
-  virtual void SetReminderForIOSDevice(IOSPromoType promo_type,
-                                       const std::string& device_guid);
+  virtual void SetReminderForIOSDevice(
+      desktop_to_mobile_promos::PromoType promo_type,
+      const std::string& device_guid);
 
   // Registers a callback to be notified when a promo should be shown.
   [[nodiscard]] base::CallbackListSubscription RegisterPromoCallback(
@@ -56,7 +59,8 @@ class IOSPromoTriggerService : public KeyedService {
   bool IsMorePreferredDevice(const syncer::DeviceInfo* current_preference,
                              const syncer::DeviceInfo* another_device);
 
-  base::RepeatingCallbackList<void(IOSPromoType)> callback_list_;
+  base::RepeatingCallbackList<void(desktop_to_mobile_promos::PromoType)>
+      callback_list_;
   raw_ptr<Profile> profile_;
 };
 

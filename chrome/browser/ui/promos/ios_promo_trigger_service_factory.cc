@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
-#include "components/sharing_message/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
 
 // static
 IOSPromoTriggerService* IOSPromoTriggerServiceFactory::GetForProfile(

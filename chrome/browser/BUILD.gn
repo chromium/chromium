@@ -2159,6 +2159,7 @@ static_library("browser") {
     "//components/data_sharing/migration/internal",
     "//components/data_sharing/public",
     "//components/data_sharing/public:personal_collaboration_data",
+    "//components/desktop_to_mobile_promos",
     "//components/device_event_log",
     "//components/device_reauth",
     "//components/device_signals/core/browser",

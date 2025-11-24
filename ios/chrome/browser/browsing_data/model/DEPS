@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/sharing_message/features.h",
+  "+components/desktop_to_mobile_promos/features.h",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/crash_report/model",
