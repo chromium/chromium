@@ -609,10 +609,13 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
 - (TableViewTextItem*)createExportPasswordsItem {
   TableViewTextItem* exportPasswordsItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeExportPasswordsButton];
-  exportPasswordsItem.text =
-      CredentialExchangeEnabled()
-          ? l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS)
-          : l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
+  exportPasswordsItem.text = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
+  if (@available(iOS 26, *)) {
+    if (CredentialExchangeEnabled()) {
+      exportPasswordsItem.text =
+          l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+    }
+  }
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
   return exportPasswordsItem;
 }
