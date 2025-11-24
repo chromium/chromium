@@ -1,6 +1,5 @@
 accessibility/click-event.html
 animations/3d/matrix-transform-type-animation.html
-animations/composition/clip-composition.html
 animations/cross-fade-webkit-mask-box-image.html
 animations/custom-properties/angle-type-interpolation.html
 animations/custom-properties/animate-high-priority.html
@@ -424,6 +423,7 @@ external/wpt/css/css-lists/crashtests/chrome-legacy-propagation-remove-body-cras
 external/wpt/css/css-lists/parsing/list-style-position-valid.html
 external/wpt/css/css-logical/logicalprops-with-deferred-writing-mode.html
 external/wpt/css/css-logical/parsing/border-inline-width-invalid.html
+external/wpt/css/css-masking/animations/clip-composition.html
 external/wpt/css/css-masking/animations/clip-path-interpolation-002.html
 external/wpt/css/css-masking/clip-path/animations/clip-path-animation-three-keyframes1.html
 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html
