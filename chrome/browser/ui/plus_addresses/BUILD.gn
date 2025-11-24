@@ -41,8 +41,6 @@ source_set("plus_addresses") {
     public += [
       "android/all_plus_addresses_bottom_sheet_controller.h",
       "android/all_plus_addresses_bottom_sheet_view.h",
-      "android/plus_address_creation_controller_android.h",
-      "android/plus_address_creation_view_android.h",
     ]
     public_deps += [
       "//base",
@@ -97,8 +95,6 @@ source_set("impl") {
     sources = [
       "android/all_plus_addresses_bottom_sheet_controller.cc",
       "android/all_plus_addresses_bottom_sheet_view.cc",
-      "android/plus_address_creation_controller_android.cc",
-      "android/plus_address_creation_view_android.cc",
     ]
     deps = [
       ":plus_addresses",
@@ -162,14 +158,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_android) {
-    sources = [ "android/plus_address_creation_controller_android_unittest.cc" ]
-    deps += [
-      ":impl",
-      "//components/autofill/core/common",
-      "//components/plus_addresses/core/browser:plus_address_java_enums",
-    ]
-  } else {
+  if (!is_android) {
     sources = [
       "plus_address_creation_controller_desktop_unittest.cc",
       "plus_address_menu_model_unittest.cc",
@@ -190,10 +179,7 @@ if (is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "android/all_plus_addresses_bottom_sheet_view_browsertest.cc",
-      "android/plus_address_creation_view_android_browsertest.cc",
-    ]
+    sources = [ "android/all_plus_addresses_bottom_sheet_view_browsertest.cc" ]
     deps = [
       ":plus_addresses",
       "//base",
