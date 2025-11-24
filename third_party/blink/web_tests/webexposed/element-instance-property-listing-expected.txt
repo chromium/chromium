@@ -549,6 +549,7 @@ html element canvas
     property captureStream
     property configureHighDynamicRange
     property getContext
+    property getElementTransform
     property height
     property layoutSubtree
     property toBlob

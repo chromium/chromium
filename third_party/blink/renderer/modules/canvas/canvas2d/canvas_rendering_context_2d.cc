@@ -824,7 +824,8 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
   // appearing inside the canvas as it would have were it painted outside the
   // canvas.
   gfx::SizeF ideal_dst_size(box_size);
-  gfx::Vector2dF scale_factor = PhysicalPixelToCanvasGridScaleFactor();
+  gfx::Vector2dF scale_factor =
+      canvas()->PhysicalPixelToCanvasGridScaleFactor();
   ideal_dst_size.Scale(scale_factor.x(), scale_factor.y());
 
   gfx::RectF dst_rect(x, y, 0, 0);
@@ -918,7 +919,7 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
   // convert it to a transform in CSS pixels suitable for positioning the
   // element.
   DOMMatrix* draw_matrix = MakeGarbageCollected<DOMMatrix>(draw_transform);
-  return canvas()->ComputeElementTransform(element, draw_matrix);
+  return canvas()->getElementTransform(element, draw_matrix, exception_state);
 }
 
 void CanvasRenderingContext2D::PreFinalizeFrame() {

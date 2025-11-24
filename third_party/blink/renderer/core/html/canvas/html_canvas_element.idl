@@ -30,13 +30,14 @@
 ] interface HTMLCanvasElement : HTMLElement
 {
     [HTMLConstructor] constructor();
-    // Note: Due to dependecies on modules, getContext is defined in a partial
+    // Note: Due to dependencies on modules, getContext is defined in a partial
     // interface in html_canvas_element_module.idl
 
     [RaisesException=Setter, CEReactions] attribute unsigned long width;
     [RaisesException=Setter, CEReactions] attribute unsigned long height;
 
     [RuntimeEnabled=CanvasDrawElement] attribute boolean layoutSubtree;
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform(Element element, DOMMatrix draw_transform);
 
     [MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);
 

@@ -276,8 +276,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
-  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const;
-
   scoped_refptr<StaticBitmapImage> GetElementImage(
       Element* element,
       std::optional<uint32_t> width,

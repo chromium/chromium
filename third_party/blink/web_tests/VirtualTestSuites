@@ -2794,7 +2794,9 @@
       "external/wpt/css/css-ui/caret-shape-block-color-001.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html"
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
+      "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2836,7 +2838,9 @@
       "external/wpt/css/css-ui/caret-shape-block-color-001.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html"
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
+      "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"

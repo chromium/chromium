@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
@@ -102,6 +103,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -125,6 +127,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
@@ -920,6 +923,40 @@ void HTMLCanvasElement::ResetLayer() {
   }
 }
 
+gfx::Vector2dF HTMLCanvasElement::PhysicalPixelToCanvasGridScaleFactor() {
+  if (!GetDocument().View()) {
+    return {1., 1.};
+  }
+
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElementImage);
+  if (!GetLayoutBox()) {
+    return {1., 1.};
+  }
+
+  // As a special case, if the canvas is sized to its devicePixelContentBox,
+  // make sure the element's physical pixels are mapped 1:1 to the canvas
+  // grid to avoid any inadverent fuzziness due to rounding.
+  gfx::Size canvas_size = Size();
+  gfx::Size device_pixel_content_box =
+      ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+          LogicalSize(GetLayoutBox()->ContentLogicalWidth(),
+                      GetLayoutBox()->ContentLogicalHeight()),
+          *GetLayoutBox(), GetLayoutBox()->StyleRef());
+  if (canvas_size == device_pixel_content_box) {
+    return gfx::Vector2dF(1., 1.);
+  }
+
+  PhysicalRect content_rect;
+  if (auto* replaced = DynamicTo<LayoutReplaced>(GetLayoutBox())) {
+    content_rect = replaced->ReplacedContentRect();
+  } else {
+    content_rect = GetLayoutBox()->PhysicalContentBoxRect();
+  }
+  return gfx::Vector2dF(canvas_size.width() / content_rect.Width().ToFloat(),
+                        canvas_size.height() / content_rect.Height().ToFloat());
+}
+
 namespace {
 
 // Given a transform at the origin, return an adjusted transform that is
@@ -950,20 +987,22 @@ DOMMatrix* AdjustTransformByTransformOrigin(const Element* element,
 
 }  // namespace
 
-DOMMatrix* HTMLCanvasElement::ComputeElementTransform(Element* element,
-                                                      DOMMatrix* draw_matrix) {
+DOMMatrix* HTMLCanvasElement::getElementTransform(
+    Element* element,
+    DOMMatrix* draw_transform,
+    ExceptionState& exception_state) {
   DOMMatrix* result = DOMMatrix::Create();
 
   // This is a change of basis for a transform in canvas pixel grid coordinates
   // to a canvas in css coordinates. The general formula is:
   // T_css = S_canvas_to_css * T_canvas * S_canvas_to_css-1
   gfx::Vector2dF physical_to_canvas_grid =
-      context_->PhysicalPixelToCanvasGridScaleFactor();
+      PhysicalPixelToCanvasGridScaleFactor();
   float physical_to_css = 1.0f / element->ComputedStyleRef().EffectiveZoom();
   float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
   float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
   result->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
-  result->multiplySelf(*draw_matrix);
+  result->multiplySelf(*draw_transform);
   result->scaleSelf(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
 
   return AdjustTransformByTransformOrigin(element, result);

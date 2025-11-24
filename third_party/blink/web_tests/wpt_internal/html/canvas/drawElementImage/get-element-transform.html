@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.getElementTransform should return a matrix transforming the element's layout location to match the drawn matrix</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<canvas id="canvas" style="width: 100px; height: 100px;" width="100" height="100" layoutsubtree>
+  <div id="element" style="width: 10px; height: 10px;"></div>
+</canvas>
+<script>
+  test(() => {
+    let draw_transform = new DOMMatrix();
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix();
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform for identity draw transform should be an identity matrix');
+
+  test(() => {
+    let draw_transform = new DOMMatrix().translateSelf(17, -9);
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix().translateSelf(17, -9);
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should account for translation in the input transform');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      element.style.transformOrigin = '';
+    });
+    element.style.transformOrigin = '0 0';
+    let draw_transform = new DOMMatrix().scaleSelf(2, 0.5);
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix().scaleSelf(2, 0.5);
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should account for scale in the input transform');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      element.style.transform = '';
+    });
+    element.style.transform = 'rotate(45deg)';
+    let draw_transform = new DOMMatrix();
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix();
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should not include transform on the element');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      canvas.getContext('2d').reset();
+    });
+    canvas.getContext('2d').translate(7, 11);
+    let ctm = canvas.getContext('2d').getTransform();
+    let element_transform = canvas.getElementTransform(element, ctm);
+    let expected = new DOMMatrix().translateSelf(7, 11);
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should not automatically include the current transform matrix, but should pass it through');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      canvas.style.zoom = '';
+    });
+    canvas.style.zoom = '1.5';
+    let draw_transform = new DOMMatrix().translateSelf(7, 11);
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix().translateSelf(7, 11);
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should not be affected by zoom on the canvas');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      element.style.transformOrigin = '';
+    });
+    element.style.transformOrigin = '5px 5px';
+    let draw_transform = new DOMMatrix().rotateSelf(45);
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix()
+      .translateSelf(-5, -5)
+      .rotateSelf(45)
+      .translateSelf(5, 5);
+    assert_array_approx_equals(element_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
+  }, 'Element transform should account for transform-origin');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      canvas.width = 100;
+      canvas.height = 100;
+    });
+    canvas.width = 200;
+    canvas.height = 50;
+    let draw_transform = new DOMMatrix().translateSelf(7, 11);
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix()
+      .scaleSelf(0.5, 2)
+      .translateSelf(7, 11)
+      .scaleSelf(2, 0.5);
+    assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
+  }, 'Element transform should account for canvas pixel scale');
+
+  test((t) => {
+    t.add_cleanup(() => {
+      canvas.width = 100;
+      canvas.height = 100;
+      element.style.transformOrigin = '0 0';
+    });
+    canvas.width = 200;
+    canvas.height = 50;
+    let draw_transform = new DOMMatrix()
+      .translateSelf(42, 17)
+      .rotateSelf(45);
+    element.style.transformOrigin = '5px 5px';
+    let element_transform = canvas.getElementTransform(element, draw_transform);
+    let expected = new DOMMatrix()
+      .translateSelf(-5, -5)
+      .scaleSelf(0.5, 2)
+      .translateSelf(42, 17)
+      .rotateSelf(45)
+      .scaleSelf(2, 0.5)
+      .translateSelf(5, 5);
+    assert_array_approx_equals(element_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
+  }, 'Element transform should account for canvas pixel scale, transform-origin, and a complex draw transform');
+</script>

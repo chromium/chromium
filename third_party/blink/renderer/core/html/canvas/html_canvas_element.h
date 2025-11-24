@@ -333,10 +333,14 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void ResetLayer();
 
+  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor();
+
   // If `element` is drawn into the canvas's coordinate system with
-  // `draw_matrix`, this returns the transform that can be applied to `element`
-  // to make its CSS position match the drawn position.
-  DOMMatrix* ComputeElementTransform(Element* element, DOMMatrix* draw_matrix);
+  // `draw_transform`, this returns the transform that can be applied to
+  // `element` to make its CSS position match the drawn position.
+  DOMMatrix* getElementTransform(Element* element,
+                                 DOMMatrix* draw_transform,
+                                 ExceptionState&);
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
