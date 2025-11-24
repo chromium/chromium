@@ -36,12 +36,6 @@ void TrustedVaultClientBackend::NotifyKeysChanged(
   }
 }
 
-void TrustedVaultClientBackend::NotifyKeysChangedWithTrigger(
-    trusted_vault::SecurityDomainId security_domain_id,
-    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
-  NotifyKeysChanged(security_domain_id, trigger);
-}
-
 void TrustedVaultClientBackend::NotifyRecoverabilityChanged(
     trusted_vault::SecurityDomainId security_domain_id) {
   auto it = observer_lists_per_security_domain_id_.find(security_domain_id);

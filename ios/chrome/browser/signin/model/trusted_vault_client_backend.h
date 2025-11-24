@@ -130,13 +130,6 @@ class TrustedVaultClientBackend : public KeyedService {
       std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
           trigger);
 
-  // TODO(crbug.com/458664467): Remove once internal clients are migrated to
-  // `NotifyKeysChanged()`.
-  void NotifyKeysChangedWithTrigger(
-      trusted_vault::SecurityDomainId security_domain_id,
-      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
-          trigger);
-
   void NotifyRecoverabilityChanged(
       trusted_vault::SecurityDomainId security_domain_id);
 
