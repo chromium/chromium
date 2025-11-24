@@ -365,6 +365,16 @@ CreateInputDataFromAnnotatedPageContent(
   return webStateIDs;
 }
 
+- (NSUInteger)nonTabAttachmentCount {
+  NSUInteger result = 0;
+  for (ComposeboxInputItem* item in _items) {
+    if (item.type != ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+      result++;
+    }
+  }
+  return result;
+}
+
 - (void)attachSelectedTabsWithWebStateIDs:
     (std::set<web::WebStateID>)selectedWebStateIDs {
   _pageContextWrappers.clear();

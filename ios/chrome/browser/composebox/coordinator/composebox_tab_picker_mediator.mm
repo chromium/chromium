@@ -112,13 +112,13 @@
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
   CHECK_EQ(self.modeHolder.mode, TabGridMode::kSelection);
   CHECK_EQ(itemID.type, GridItemType::kTab);
-  if (![self.selectedEditingItems containItem:itemID] &&
-      self.selectedEditingItems.tabsCount >= kAttachmentLimit) {
+  if ([self attachmentLimitReached:itemID]) {
     ComposeboxSnackbarPresenter* snackbar =
         [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
     [snackbar showAttachmentLimitSnackbar];
     return;
   }
+
     web::WebState* webState = GetWebState(
         self.webStateList,
         WebStateSearchCriteria{
@@ -142,7 +142,7 @@
                               updateSnapshotForWebState:webState->GetWeakPtr()
                                                  itemID:itemID];
                         }];
-  }
+    }
   [super userTappedOnItemID:itemID];
 }
 
@@ -274,6 +274,13 @@
 // Reconfigures the grid item to reflect updated state (e.g., new snapshot).
 - (void)reconfigureGridItem:(GridItemIdentifier*)itemID {
   [_gridConsumer replaceItem:itemID withReplacementItem:itemID];
+}
+
+- (BOOL)attachmentLimitReached:(GridItemIdentifier*)itemID {
+  return ![self.selectedEditingItems containItem:itemID] &&
+         (self.selectedEditingItems.tabsCount +
+              [_tabsAttachmentDelegate nonTabAttachmentCount] >=
+          kAttachmentLimit);
 }
 
 @end

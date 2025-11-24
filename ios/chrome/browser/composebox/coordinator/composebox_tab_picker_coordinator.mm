@@ -74,4 +74,8 @@
   return [self.delegate webStateIDsForAttachedTabs];
 }
 
+- (NSUInteger)nonTabAttachmentCount {
+  return [self.delegate nonTabAttachmentCount];
+}
+
 @end

@@ -19,6 +19,9 @@
 // Returns the associated IDs for currently attached tabs.
 - (std::set<web::WebStateID>)webStateIDsForAttachedTabs;
 
+// Returns the number of non-tab attachments.
+- (NSUInteger)nonTabAttachmentCount;
+
 // Attaches the selected tabs with
 - (void)attachSelectedTabsWithWebStateIDs:
     (std::set<web::WebStateID>)selectedWebStateIDs;

@@ -17,6 +17,9 @@
 // The tabs attachment delegate.
 @protocol ComposeboxTabsAttachmentDelegate
 
+// Returns the number of non-tab attachments.
+- (NSUInteger)nonTabAttachmentCount;
+
 /// Sends the selected tabs identifiers to the tabs attachment delegate.
 - (void)attachSelectedTabs:(ComposeboxTabPickerMediator*)tabPickerMediator
        selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs;
