@@ -215,7 +215,6 @@ source_set("tests") {
       "output_device_mixer_manager_unittest.cc",
       "processing_audio_fifo_unittest.cc",
     ]
-    data = [ "test/data/noop.tflite" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

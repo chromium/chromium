@@ -20,15 +20,7 @@
 
 namespace audio {
 
-// Holds the TFLite model and the buffer that backs it.
-// The buffer must outlive the model.
-struct ModelWithBuffer {
-  explicit ModelWithBuffer(size_t buffer_size);
-  ~ModelWithBuffer();
-
-  std::vector<uint8_t> buffer;
-  std::unique_ptr<tflite::FlatBufferModel> model;
-};
+struct ModelWithBuffer;
 
 // Interface for managing Machine Learning models within the audio service.
 // This interface is used by components like the AudioProcessorHandler to access
@@ -40,6 +32,8 @@ class MlModelManager {
 
   // Returns a pointer to the TFLite model file for the neural residual echo
   // estimator. Returns nullptr if no valid model file is set or loading fails.
+  // The model shares its lifetime with the MlModelManager, and the client must
+  // ensure to stop using the pointer within that lifetime.
   virtual raw_ptr<const tflite::FlatBufferModel>
   GetResidualEchoEstimationModel() = 0;
 };
@@ -51,9 +45,11 @@ class MlModelManager {
 // Current Behavior:
 // - A model file is provided via SetResidualEchoEstimationModel().
 // - SetResidualEchoEstimationModel() is expected to be called exactly once with
-// a valid file.
+//   a valid file.
 // - GetResidualEchoEstimationModel() will return the loaded model after it has
 //   been read asynchronously.
+// - StopServingResidualEchoEstimationModel() stops serving any models,
+//   permanently if any model has been served before.
 class MlModelManagerImpl : public MlModelManager, public mojom::MlModelManager {
  public:
   MlModelManagerImpl();
@@ -66,10 +62,13 @@ class MlModelManagerImpl : public MlModelManager, public mojom::MlModelManager {
 
   // mojom::MlModelManager implementation.
   void SetResidualEchoEstimationModel(base::File tflite_file) override;
+  void StopServingResidualEchoEstimationModel() override;
 
   // MlModelManager implementation.
   raw_ptr<const tflite::FlatBufferModel> GetResidualEchoEstimationModel()
       override;
+
+  bool HasPendingTasksForTesting() const;
 
  private:
   void OnResidualEchoEstimationModelRead(
@@ -78,9 +77,16 @@ class MlModelManagerImpl : public MlModelManager, public mojom::MlModelManager {
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<mojo::Receiver<mojom::MlModelManager>> receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  // Residual Echo Estimation model.
-  std::unique_ptr<ModelWithBuffer> ree_model_
+
+  // Residual echo estimation model served by GetResidualEchoEstimationModel().
+  std::unique_ptr<ModelWithBuffer> serving_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // When the model stops being served, it is kept alive in this field for
+  // existing users.
+  std::unique_ptr<ModelWithBuffer> retired_model_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::WeakPtrFactory<MlModelManagerImpl> weak_factory_{this};
 };
 
