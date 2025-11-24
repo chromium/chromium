@@ -5,10 +5,10 @@
 -->
 <html><head>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Masonry layout with a subgrid (masonry-subgrid-001d)</title>
+  <title>CSS Grid Test: Masonry layout with a subgrid (masonry-subgrid-001a)</title>
   <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
   <link rel="help" href="https://drafts.csswg.org/css-grid-3/#subgrids">
-  <link rel="match" href="masonry-subgrid-001d-ref.html">
+  <link rel="match" href="grid-lanes-subgrid-001a-ref.html">
 <style>
 html,body {
   color:black; background-color:white; font:16px/1 monospace; padding:0; margin:0;
@@ -54,16 +54,14 @@ subgrid {
 <body>
 
 
-<grid class="rows">
+<grid>
   <item>1</item>
   <item>2</item>
   <item>3</item>
-  <subgrid style="grid:auto auto/subgrid">
+  <subgrid>
     <item>4a</item>
-    <item>4b</item>
-    <item>4c</item>
+    <item style="margin-right:15px">4b</item>
   </subgrid>
-  <item>5</item>
 </grid>
 
 </body></html>
