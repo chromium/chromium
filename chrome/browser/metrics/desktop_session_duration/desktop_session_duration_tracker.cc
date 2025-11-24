@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -172,6 +173,12 @@ void DesktopSessionDurationTracker::EndSession(
   // Note: This metric is recorded separately for Android in
   // UmaSessionStats::UmaEndSession.
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
+
+  // Records true each time Session.TotalDuration is supposed to be recorded
+  // in a PUMA histogram. Allowing for the count to be collected.
+  base::PumaHistogramBoolean(
+      base::PumaType::kRc,
+      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
                              base::Milliseconds(1), base::Hours(24), 50);

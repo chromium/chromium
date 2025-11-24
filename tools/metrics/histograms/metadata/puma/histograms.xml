@@ -74,6 +74,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(tools/metrics/histograms/metadata/regional_capabilities/histograms.xml:RegionalCapabilities.FunnelStage.Triggering) -->
 
+<histogram name="PUMA.RegionalCapabilities.Session.TotalDuration.Recorded"
+    units="ms" expires_after="2026-11-21">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <summary>
+    Recorded when `Session.TotalDuration` is recorded. See the
+    `Session.TotalDuration` description for more details.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
