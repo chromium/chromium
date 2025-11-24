@@ -335,6 +335,10 @@ class TouchToFillPaymentMethodMediator {
     private boolean mShouldShowScanCreditCard;
     private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;
+    private AutofillSuggestion mBnplSuggestion;
+    // It holds the properties needed to render the BNPL chip on the bottom sheet.
+    // It acts as a bridge between the data and the view.
+    private PropertyModel mBnplSuggestionModel;
 
     private InputProtector mInputProtector = new InputProtector();
 
@@ -384,13 +388,12 @@ class TouchToFillPaymentMethodMediator {
         for (int i = 0; i < mSuggestions.size(); ++i) {
             AutofillSuggestion suggestion = mSuggestions.get(i);
             if (suggestion.getSuggestionType() == SuggestionType.BNPL_ENTRY) {
-                sheetItems.add(
-                        new ListItem(
-                                BNPL,
-                                createBnplSuggestionModel(
-                                        suggestion,
-                                        new FillableItemCollectionInfo(
-                                                i + 1, mSuggestions.size()))));
+                mBnplSuggestion = suggestion;
+                mBnplSuggestionModel =
+                        createBnplSuggestionModel(
+                                suggestion,
+                                new FillableItemCollectionInfo(i + 1, mSuggestions.size()));
+                sheetItems.add(new ListItem(BNPL, mBnplSuggestionModel));
             } else {
                 sheetItems.add(
                         new ListItem(
@@ -578,21 +581,11 @@ class TouchToFillPaymentMethodMediator {
             List<BnplIssuerContext> bnplIssuerContexts,
             @Nullable Long extractedAmount,
             boolean isAmountSupportedByAnyIssuer) {
-        assert mSuggestions != null;
-        // `bnplSuggestion` contains the raw data for the BNPL suggestion.
-        // It is decoupled from its presentation in the UI.
-        AutofillSuggestion bnplSuggestion = null;
-        for (int i = 0; i < mSuggestions.size(); ++i) {
-            if (mSuggestions.get(i).getSuggestionType() == SuggestionType.BNPL_ENTRY) {
-                bnplSuggestion = mSuggestions.get(i);
-                break;
-            }
-        }
+        assert mBnplSuggestion != null;
         if (mModel.get(CURRENT_SCREEN) == PROGRESS_SCREEN) {
-            assert bnplSuggestion != null;
             if (extractedAmount != null) {
                 assert !bnplIssuerContexts.isEmpty();
-                bnplSuggestion
+                mBnplSuggestion
                         .getPaymentsPayload()
                         .setExtractedAmount(isAmountSupportedByAnyIssuer ? extractedAmount : null);
                 showBnplIssuers(bnplIssuerContexts);
@@ -604,27 +597,14 @@ class TouchToFillPaymentMethodMediator {
                         mContext.getString(R.string.autofill_bnpl_temporary_error_description));
             }
         } else {
-            // `bnplModel` holds the properties needed to render the BNPL chip on the bottom sheet.
-            // It acts as a bridge between the data and the view.
-            PropertyModel bnplModel = null;
-            ModelList sheetItems = mModel.get(SHEET_ITEMS);
-            for (int i = 0; i < sheetItems.size(); ++i) {
-                if (sheetItems.get(i).type == ItemType.BNPL) {
-                    bnplModel = sheetItems.get(i).model;
-                    break;
-                }
-            }
-
-            if (bnplSuggestion == null || bnplModel == null) return;
-
             if (isAmountSupportedByAnyIssuer) {
-                bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
-                bnplModel.set(IS_ENABLED, true);
-                bnplModel.set(SECONDARY_TEXT, bnplSuggestion.getSublabel());
+                mBnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+                mBnplSuggestionModel.set(IS_ENABLED, true);
+                mBnplSuggestionModel.set(SECONDARY_TEXT, mBnplSuggestion.getSublabel());
             } else {
-                bnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
-                bnplModel.set(IS_ENABLED, false);
-                bnplModel.set(
+                mBnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
+                mBnplSuggestionModel.set(IS_ENABLED, false);
+                mBnplSuggestionModel.set(
                         SECONDARY_TEXT,
                         mContext.getString(
                                 R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
@@ -859,13 +839,35 @@ class TouchToFillPaymentMethodMediator {
      * Displays the home screen when the back button is pressed.
      *
      * <p>This method is called when the user presses the back button in the header of the bottom
-     * sheet.
+     * sheet. Based on the BNPL issuers' eligibility status from the selection screen, it shows the
+     * BNPL chip on the home screen as either enabled or disabled.
      */
     public void onBackButtonPressed() {
-        if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
-            recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED);
+        if (mModel.get(CURRENT_SCREEN) != BNPL_ISSUER_SELECTION_SCREEN) {
+            showHomeScreen();
+            return;
+        }
+        recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED);
+        boolean isBnplChipEnabled = false;
+        ModelList sheetItems = mModel.get(SHEET_ITEMS);
+        for (int i = 0; i < sheetItems.size(); ++i) {
+            // If any issuer is enabled, the home screen BNPL chip remains active. Otherwise,
+            // the chip is grayed out.
+            if (sheetItems.get(i).type == ItemType.BNPL_ISSUER
+                    && !sheetItems.get(i).model.get(APPLY_ISSUER_DEACTIVATED_STYLE)) {
+                isBnplChipEnabled = true;
+                break;
+            }
         }
         showHomeScreen();
+        assert mBnplSuggestionModel != null;
+        mBnplSuggestionModel.set(IS_ENABLED, isBnplChipEnabled);
+        if (!isBnplChipEnabled) {
+            mBnplSuggestionModel.set(
+                    SECONDARY_TEXT,
+                    mContext.getString(
+                            R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
+        }
     }
 
     public void scanCreditCard() {
@@ -1364,5 +1366,9 @@ class TouchToFillPaymentMethodMediator {
 
     void setInputProtectorForTesting(InputProtector inputProtector) {
         mInputProtector = inputProtector;
+    }
+
+    PropertyModel getBnplSuggestionModelForTesting() {
+        return mBnplSuggestionModel;
     }
 }

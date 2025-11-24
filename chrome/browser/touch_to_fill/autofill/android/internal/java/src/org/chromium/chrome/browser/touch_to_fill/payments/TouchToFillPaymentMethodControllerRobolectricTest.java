@@ -748,15 +748,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
         assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
 
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
-        assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertNotNull(bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION));
-        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertNotNull(bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
     }
 
     @Test
@@ -787,20 +786,18 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
         assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
 
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, DEACTIVATED_BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
         assertThat(
-                bnplSuggestionModel.get().get(PRIMARY_TEXT),
-                is(DEACTIVATED_BNPL_SUGGESTION.getLabel()));
+                bnplSuggestionModel.get(PRIMARY_TEXT), is(DEACTIVATED_BNPL_SUGGESTION.getLabel()));
         assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT),
+                bnplSuggestionModel.get(SECONDARY_TEXT),
                 is(DEACTIVATED_BNPL_SUGGESTION.getSublabel()));
         assertThat(
-                bnplSuggestionModel.get().get(BNPL_ICON_ID),
-                is(DEACTIVATED_BNPL_SUGGESTION.getIconId()));
-        assertNotNull(bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION));
-        assertFalse(bnplSuggestionModel.get().get(IS_ENABLED));
+                bnplSuggestionModel.get(BNPL_ICON_ID), is(DEACTIVATED_BNPL_SUGGESTION.getIconId()));
+        assertNotNull(bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION));
+        assertFalse(bnplSuggestionModel.get(IS_ENABLED));
     }
 
     @Test
@@ -813,12 +810,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL).size(), is(1));
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
 
-        bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION).run();
+        bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION).run();
 
         verify(mDelegateMock).bnplSuggestionSelected(extractedAmount);
     }
@@ -1142,8 +1139,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     public void testShowBnplIssuerTwiceRecordsHistogramAndUserAction() {
         // Show the initial payment method selection screen.
         mCoordinator.showPaymentMethods(
-                List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
-                /* shouldShowScanCreditCard= */ false);
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
 
         // Simulate showing the BNPL issuer selection bottom sheet for the first time.
@@ -1334,8 +1330,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     @Test
     public void testBackButtonSelectedOnIssuerSelectionScreenRecordsUserAction() {
         mCoordinator.showPaymentMethods(
-                List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
-                /* shouldShowScanCreditCard= */ false);
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
         mCoordinator
                 .getMediatorForTesting()
@@ -1415,14 +1410,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
-        assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
         mCoordinator.onPurchaseAmountExtracted(
@@ -1430,14 +1424,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* extractedAmount= */ 5L,
                 /* isAmountSupportedByAnyIssuer= */ false);
 
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         String expectedSecondaryText =
                 ContextUtils.getApplicationContext()
                         .getString(
                                 R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase);
-        assertThat(bnplSuggestionModel.get().get(SECONDARY_TEXT), is(expectedSecondaryText));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertFalse(bnplSuggestionModel.get().get(IS_ENABLED));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(expectedSecondaryText));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertFalse(bnplSuggestionModel.get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
     }
 
@@ -1447,14 +1441,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
-        assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
         mCoordinator.onPurchaseAmountExtracted(
@@ -1462,14 +1455,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* extractedAmount= */ null,
                 /* isAmountSupportedByAnyIssuer= */ false);
 
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         String expectedSecondaryText =
                 ContextUtils.getApplicationContext()
                         .getString(
                                 R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase);
-        assertThat(bnplSuggestionModel.get().get(SECONDARY_TEXT), is(expectedSecondaryText));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertFalse(bnplSuggestionModel.get().get(IS_ENABLED));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(expectedSecondaryText));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertFalse(bnplSuggestionModel.get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
     }
 
@@ -1479,24 +1472,22 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
-        assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
         mCoordinator.onPurchaseAmountExtracted(
                 Collections.emptyList(), extractedAmount, /* isAmountSupportedByAnyIssuer= */ true);
 
-        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
-        assertThat(
-                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
-        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
-        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
         assertThat(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount(), is(extractedAmount));
     }
 
@@ -1506,10 +1497,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         long extractedAmount = 100L;
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
-        Optional<PropertyModel> bnplSuggestionModel =
-                getBnplSuggestionModel(
-                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), BNPL_SUGGESTION);
-        assertTrue(bnplSuggestionModel.isPresent());
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
         mCoordinator.getMediatorForTesting().showProgressScreen();
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
@@ -1588,6 +1578,89 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.autofill_bnpl_temporary_error_description)));
+    }
+
+    @Test
+    public void testIssuerSelectionBackButtonEnablesBnplChipOnHomeForEligibleIssuers() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(
+                        List.of(
+                                BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                                BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
+                                BNPL_ISSUER_CONTEXT_ZIP_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        // Find the back button in the BNPL screen header and invoke it.
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(itemList.get(0).type, is(BNPL_SELECTION_PROGRESS_HEADER));
+        PropertyModel bnplSelectionProgressHeaderModel = itemList.get(0).model;
+        bnplSelectionProgressHeaderModel
+                .get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_ON_BACK_BUTTON_CLICKED)
+                .run();
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
+    }
+
+    @Test
+    public void testIssuerSelectionBackButtonDisablesBnplChipOnHomeForNonEligibleIssuers() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertTrue(bnplSuggestionModel.get(IS_ENABLED));
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(
+                        List.of(
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        // Find the back button in the BNPL screen header and invoke it.
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(itemList.get(0).type, is(BNPL_SELECTION_PROGRESS_HEADER));
+        PropertyModel bnplSelectionProgressHeaderModel = itemList.get(0).model;
+        bnplSelectionProgressHeaderModel
+                .get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_ON_BACK_BUTTON_CLICKED)
+                .run();
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        String expectedSecondaryText =
+                ContextUtils.getApplicationContext()
+                        .getString(
+                                R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase);
+        assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(expectedSecondaryText));
+        assertFalse(bnplSuggestionModel.get(IS_ENABLED));
     }
 
     @Test
@@ -2460,22 +2533,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                                 || item.model
                                                         .get(SECOND_LINE_LABEL)
                                                         .equals(suggestion.getSecondarySublabel())))
-                .findFirst()
-                .map(item -> item.model);
-    }
-
-    private static Optional<PropertyModel> getBnplSuggestionModel(
-            ModelList items, AutofillSuggestion suggestion) {
-        return StreamSupport.stream(items.spliterator(), false)
-                .filter(
-                        item ->
-                                item.type == BNPL
-                                        && item.model
-                                                .get(PRIMARY_TEXT)
-                                                .equals(suggestion.getLabel())
-                                        && item.model
-                                                .get(SECONDARY_TEXT)
-                                                .equals(suggestion.getSublabel()))
                 .findFirst()
                 .map(item -> item.model);
     }
