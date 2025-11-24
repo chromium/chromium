@@ -3820,6 +3820,11 @@ void Animation::RemoveTrigger(AnimationTrigger* trigger) {
   triggers_.erase(trigger);
 }
 
+const HeapHashSet<WeakMember<AnimationTrigger>>&
+Animation::GetTriggersForTest() {
+  return triggers_;
+}
+
 void Animation::DisassociateTriggers() {
   HeapHashSet<WeakMember<AnimationTrigger>> triggers;
   triggers.swap(triggers_);

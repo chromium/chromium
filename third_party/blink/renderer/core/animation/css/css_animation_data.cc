@@ -86,10 +86,12 @@ const StyleTimeline& CSSAnimationData::GetTimelineTriggerSource(
   return GetRepeated(timeline_trigger_source_list_, index);
 }
 
-const Member<const StyleTriggerAttachmentVector>&
+const Member<const StyleTriggerAttachmentVector>
 CSSAnimationData::GetTriggerAttachments(size_t index) const {
   DCHECK_LT(index, name_list_.size());
-  return trigger_attachments_list_.at(index % trigger_attachments_list_.size());
+  return (index < trigger_attachments_list_.size())
+             ? trigger_attachments_list_.at(index)
+             : nullptr;
 }
 
 }  // namespace blink

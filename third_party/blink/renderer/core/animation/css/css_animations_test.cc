@@ -1268,9 +1268,7 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
   EXPECT_EQ(trigger_attachments->size(), 1);
   EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
             AtomicString("--trigger"));
-  EXPECT_EQ(trigger_attachments2->size(), 1);
-  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
-            AtomicString("--trigger"));
+  EXPECT_EQ(trigger_attachments2, nullptr);
 
   target->setAttribute(html_names::kClassAttr, AtomicString("double"));
   UpdateAllLifecyclePhasesForTest();
@@ -1279,11 +1277,7 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
             AtomicString("--trigger1"));
   EXPECT_EQ(trigger_attachments->at(1)->TriggerName()->GetName(),
             AtomicString("--trigger2"));
-  EXPECT_EQ(trigger_attachments2->size(), 2);
-  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
-            AtomicString("--trigger1"));
-  EXPECT_EQ(trigger_attachments2->at(1)->TriggerName()->GetName(),
-            AtomicString("--trigger2"));
+  EXPECT_EQ(trigger_attachments2, nullptr);
 
   target->setAttribute(html_names::kClassAttr, AtomicString("multiple_double"));
   UpdateAllLifecyclePhasesForTest();
@@ -2296,6 +2290,107 @@ TEST_P(CSSAnimationsTriggerTest, SameTriggerNameDifferentSource) {
   test_attachment(subject1);
   test_attachment(subject2);
   test_attachment(subject3);
+}
+
+TEST_P(CSSAnimationsTriggerTest, UnequalAnimationAttachments) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes fadein {
+        from { opacity: 0.1; }
+        to { opacity: 1; }
+      }
+
+      .source {
+        timeline-trigger: --trigger1 view() contain, --trigger2 view() cover;
+      }
+      #target, #source {
+        height: 50px;
+        width: 50px;
+      }
+      .extra_animation1 { /* transform triggered, opacity not triggered */
+        animation: expand 1s, fadein 1s;
+        animation-trigger: --trigger1 play;
+      }
+      .extra_animation2 { /* transform not triggered, opacity triggered */
+        animation: expand 1s, fadein 1s;
+        animation-trigger: none, --trigger1 play;
+      }
+      .extra_attachment {
+        animation: expand 1s;
+        animation-trigger: --trigger1 play, --trigger2 play;
+      }
+
+      #space {
+        width: 50px;
+        height: 600px;
+      }
+      .scroller {
+        overflow-y: scroll;
+        height: 500px;
+        width: 500px;
+        border: solid 1px;
+        position: relative;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="scroller" class="scroller">
+      <div id="space"></div>
+      <div id="source" class="source"></div>
+      <div id="space"></div>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  const CSSProperty& transform_property =
+      CSSProperty::Get(CSSPropertyID::kTransform);
+  const CSSProperty& opacity_property =
+      CSSProperty::Get(CSSPropertyID::kOpacity);
+
+  auto test_attachments = [&](HeapVector<Member<Animation>>& animations,
+                              const CSSProperty& triggered_property) {
+    for (auto& animation : animations) {
+      if (animation->Affects(*target, triggered_property)) {
+        EXPECT_EQ(animation->GetTriggersForTest().size(), 1);
+      } else {
+        EXPECT_EQ(animation->GetTriggersForTest().size(), 0);
+      }
+    }
+  };
+
+  target->classList().Add(AtomicString("extra_animation1"));
+  UpdateAllLifecyclePhasesForTest();
+  HeapVector<Member<Animation>> animations = target->getAnimations();
+  EXPECT_EQ(animations.size(), 2);
+
+  test_attachments(animations, transform_property);
+
+  target->classList().Remove(AtomicString("extra_animation1"));
+  UpdateAllLifecyclePhasesForTest();
+  animations = target->getAnimations();
+  EXPECT_EQ(animations.size(), 0);
+
+  target->classList().Add(AtomicString("extra_animation2"));
+  UpdateAllLifecyclePhasesForTest();
+  animations = target->getAnimations();
+  EXPECT_EQ(animations.size(), 2);
+
+  test_attachments(animations, opacity_property);
+
+  target->classList().Remove(AtomicString("extra_animation2"));
+  UpdateAllLifecyclePhasesForTest();
+  animations = target->getAnimations();
+  EXPECT_EQ(animations.size(), 0);
+
+  target->classList().Add(AtomicString("extra_attachment"));
+  UpdateAllLifecyclePhasesForTest();
+  animations = target->getAnimations();
+  EXPECT_EQ(animations.size(), 1);
+
+  test_attachments(animations, transform_property);
 }
 
 }  // namespace blink

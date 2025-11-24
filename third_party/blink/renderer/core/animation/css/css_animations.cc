@@ -1985,7 +1985,7 @@ void CSSAnimations::CalculateAnimationUpdate(
             ((range_end != existing_animation->RangeEnd()) &&
              !animation->GetIgnoreCSSRangeEnd());
 
-        const Member<const StyleTriggerAttachmentVector>&
+        const Member<const StyleTriggerAttachmentVector>
             existing_trigger_attachments = animation->GetTriggerAttachments();
         Member<const StyleTriggerAttachmentVector> trigger_attachments;
         if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
@@ -2023,7 +2023,7 @@ void CSSAnimations::CalculateAnimationUpdate(
         AnimationTimeline* timeline =
             ComputeTimeline(&animating_element, style_timeline, update,
                             /* existing_timeline */ nullptr);
-        const Member<const StyleTriggerAttachmentVector>& trigger_attachments =
+        const Member<const StyleTriggerAttachmentVector> trigger_attachments =
             RuntimeEnabledFeatures::AnimationTriggerEnabled()
                 ? animation_data->GetTriggerAttachments(i)
                 : nullptr;

@@ -486,6 +486,7 @@ class CORE_EXPORT Animation : public EventTarget,
 
   void AddTrigger(AnimationTrigger* trigger);
   void RemoveTrigger(AnimationTrigger* trigger);
+  const HeapHashSet<WeakMember<AnimationTrigger>>& GetTriggersForTest();
 
   // Playback rate that will take effect once any pending tasks are resolved.
   // If there are no pending tasks, then the effective playback rate equals the

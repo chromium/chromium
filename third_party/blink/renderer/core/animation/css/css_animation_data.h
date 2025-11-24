@@ -92,7 +92,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const TriggerAttachmentsListType& TriggerAttachmentsList() const {
     return trigger_attachments_list_;
   }
-  const Member<const StyleTriggerAttachmentVector>& GetTriggerAttachments(
+  const Member<const StyleTriggerAttachmentVector> GetTriggerAttachments(
       size_t index) const;
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
