@@ -192,7 +192,6 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
-    skgpu::ganesh::FlushAndSubmit(surface_);
 
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
