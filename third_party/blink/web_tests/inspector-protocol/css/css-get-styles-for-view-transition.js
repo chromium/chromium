@@ -26,11 +26,19 @@
 
   // The root node styles should include styles for each pseudo element.
   const rootNodeStyles = await dp.CSS.getMatchedStylesForNode({'nodeId': rootNode.nodeId});
-  testRunner.log(rootNodeStyles);
+  for (const pseudo of rootNodeStyles.result.pseudoElements) {
+    testRunner.log(`PseudoElement: ${pseudo.pseudoType}${pseudo.pseudoIdentifier ? ' ' + pseudo.pseudoIdentifier : ''}`);
+    for (const match of pseudo.matches) {
+      cssHelper.dumpRuleMatch(match);
+    }
+  }
 
   for (const node of getAllPseudos(rootNode)) {
     const styles = await dp.CSS.getMatchedStylesForNode({'nodeId': node.nodeId});
-    testRunner.log(styles, "Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
+    testRunner.log("Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
+    for (const match of styles.result.matchedCSSRules) {
+      cssHelper.dumpRuleMatch(match);
+    }
   }
 
   testRunner.completeTest();
