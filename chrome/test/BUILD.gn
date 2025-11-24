@@ -8373,7 +8373,7 @@ test("unit_tests") {
       "//chrome/browser/autofill/glic:unit_tests",
       "//chrome/browser/bluetooth",
       "//chrome/browser/contextual_cueing:unit_tests",
-      "//chrome/browser/contextual_search:web_contents_helper",
+      "//chrome/browser/contextual_search",
       "//chrome/browser/device_api:unit_tests",
       "//chrome/browser/device_identity:unit_tests",
       "//chrome/browser/device_notifications:unit_tests",
