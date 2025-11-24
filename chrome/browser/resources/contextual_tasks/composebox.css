@@ -181,6 +181,12 @@
   --cr-icon-button-icon-size: 24px;
 }
 
+#composebox::part(lens-icon) {
+  --cr-icon-button-fill-color: var(--color-composebox-lens-button);
+  --cr-icon-button-icon-size: 24px;
+  display: block;
+}
+
 #composebox:not([expanding_])::part(cancel),
 #composebox:not([expanding_])::part(submit) {
   pointer-events: none;

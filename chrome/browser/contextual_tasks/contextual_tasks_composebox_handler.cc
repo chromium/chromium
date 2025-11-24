@@ -94,3 +94,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
 
   web_ui_controller_->PostMessageToWebview(client_to_page_message);
 }
+
+void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
+  // TODO(crbug.com/461911729): Implement when overlay is ready to integrate.
+}

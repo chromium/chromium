@@ -42,6 +42,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
+  void HandleLensButtonClick() override;
 
   // Called by ContextualTasksPageHandler when a message is received from the
   // webview.

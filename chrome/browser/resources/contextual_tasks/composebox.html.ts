@@ -21,6 +21,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ?autofocus="${false}"
       carousel-on-top_
       .isCollapsible="${true}"
+      lens-button-disabled_$="${false}"
     >
         <!-- Currently an empty div that has height to force the input textarea to
             not flow behind the Lens icon. Eventually, this should contain the
