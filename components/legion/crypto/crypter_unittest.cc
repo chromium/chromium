@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/crypter.h"
+#include "components/legion/crypto/crypter.h"
 
 #include <optional>
 #include <vector>

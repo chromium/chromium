@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/secure_session_impl.h"
+#include "components/legion/crypto/secure_session_impl.h"
 
 #include <utility>
 
@@ -102,9 +102,8 @@ bool SecureSessionImpl::ProcessHandshakeResponseSync(
   }
 
   const auto& noise_response = response.noise_handshake_message();
-  std::vector<uint8_t> e(
-      noise_response.ephemeral_public_key().begin(),
-      noise_response.ephemeral_public_key().end());
+  std::vector<uint8_t> e(noise_response.ephemeral_public_key().begin(),
+                         noise_response.ephemeral_public_key().end());
 
   bssl::UniquePtr<EC_POINT> peer_point(
       EC_POINT_new(EC_KEY_get0_group(ephemeral_key_.get())));
@@ -123,9 +122,8 @@ bool SecureSessionImpl::ProcessHandshakeResponseSync(
   noise_->MixKey(e);
   noise_->MixKey(shared_key_ee);
 
-  std::vector<uint8_t> ciphertext_response(
-      noise_response.ciphertext().begin(),
-      noise_response.ciphertext().end());
+  std::vector<uint8_t> ciphertext_response(noise_response.ciphertext().begin(),
+                                           noise_response.ciphertext().end());
 
   auto plaintext = noise_->DecryptAndHash(ciphertext_response);
   if (!plaintext || !plaintext->empty()) {

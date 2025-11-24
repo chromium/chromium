@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_NOISE_H_
-#define COMPONENTS_LEGION_NOISE_H_
+#ifndef COMPONENTS_LEGION_CRYPTO_NOISE_H_
+#define COMPONENTS_LEGION_CRYPTO_NOISE_H_
 
 #include <stdint.h>
 
@@ -66,4 +66,4 @@ class Noise {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_NOISE_H_
+#endif  // COMPONENTS_LEGION_CRYPTO_NOISE_H_

@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_SECURE_SESSION_IMPL_H_
-#define COMPONENTS_LEGION_SECURE_SESSION_IMPL_H_
-
-#include "components/legion/secure_session.h"
+#ifndef COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_
+#define COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_
 
 #include <memory>
 #include <optional>
 
-#include "components/legion/crypter.h"
-#include "components/legion/noise.h"
+#include "components/legion/crypto/crypter.h"
+#include "components/legion/crypto/noise.h"
+#include "components/legion/secure_session.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 
 namespace legion {
@@ -54,4 +53,4 @@ class SecureSessionImpl : public SecureSession {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_SECURE_SESSION_IMPL_H_
+#endif  // COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_

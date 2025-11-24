@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_CRYPTER_H_
-#define COMPONENTS_LEGION_CRYPTER_H_
+#ifndef COMPONENTS_LEGION_CRYPTO_CRYPTER_H_
+#define COMPONENTS_LEGION_CRYPTO_CRYPTER_H_
 
 #include <stdint.h>
 
@@ -40,4 +40,4 @@ class Crypter {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_CRYPTER_H_
+#endif  // COMPONENTS_LEGION_CRYPTO_CRYPTER_H_

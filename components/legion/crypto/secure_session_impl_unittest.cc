@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/secure_session_impl.h"
+#include "components/legion/crypto/secure_session_impl.h"
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -82,10 +82,9 @@ class ServerSecureSession {
   // Processes the client's handshake request and performs the initial part of
   // the Noise handshake protocol. Returns the client's ephemeral public key
   // point on success.
-  bool ProcessClientRequest(
-      const oak::session::v1::HandshakeRequest& request,
-      const EC_GROUP* group,
-      bssl::UniquePtr<EC_POINT>* out_client_e_point) {
+  bool ProcessClientRequest(const oak::session::v1::HandshakeRequest& request,
+                            const EC_GROUP* group,
+                            bssl::UniquePtr<EC_POINT>* out_client_e_point) {
     const auto& client_noise_msg = request.noise_handshake_message();
     std::vector<uint8_t> client_e_pub(
         client_noise_msg.ephemeral_public_key().begin(),
@@ -146,8 +145,8 @@ class ServerSecureSession {
     oak::session::v1::HandshakeResponse server_handshake_response;
     auto* server_noise_msg =
         server_handshake_response.mutable_noise_handshake_message();
-    server_noise_msg->set_ephemeral_public_key(
-        server_e_pub_bytes, sizeof(server_e_pub_bytes));
+    server_noise_msg->set_ephemeral_public_key(server_e_pub_bytes,
+                                               sizeof(server_e_pub_bytes));
     server_noise_msg->set_ciphertext(server_ciphertext.data(),
                                      server_ciphertext.size());
     return server_handshake_response;
@@ -270,8 +269,8 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
       server_handshake_response.mutable_noise_handshake_message();
 
   uint8_t server_e_pub_bytes[kEphemeralPublicKeySize] = {0};  // Test key
-  server_noise_msg->set_ephemeral_public_key(
-      server_e_pub_bytes, sizeof(server_e_pub_bytes));
+  server_noise_msg->set_ephemeral_public_key(server_e_pub_bytes,
+                                             sizeof(server_e_pub_bytes));
   server_noise_msg->set_ciphertext("corrupted ciphertext");
 
   {
@@ -304,7 +303,8 @@ TEST_F(SecureSessionImplTest, DecryptBeforeHandshake) {
   EXPECT_FALSE(decrypted.has_value());
 }
 
-// Tests that ProcessHandshakeResponse fails if called before GetHandshakeMessage.
+// Tests that ProcessHandshakeResponse fails if called before
+// GetHandshakeMessage.
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseWithoutHandshake) {
   oak::session::v1::HandshakeResponse response;
 
