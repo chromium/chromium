@@ -262,6 +262,27 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void requestTypePopupDrawables() {
+        configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
+        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
+        assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.IMAGE_GENERATION);
+        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[0]);
+        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
+        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[0]);
+        assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+    }
+
+    @Test
     public void fileButtonVisibility_setsVisibility() {
         mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mFileButton.getVisibility());

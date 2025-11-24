@@ -12,6 +12,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -43,6 +45,7 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
             updateButtonsVisibilityAndStyling(model, view);
+            updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
         } else if (propertyKey == FuseboxProperties.COMPACT_UI) {
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
@@ -115,6 +118,44 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateButtonsVisibilityAndStyling(model, view);
         }
+    }
+
+    private static void updateToolDrawables(
+            @AutocompleteRequestType int autocompleteRequestType, FuseboxViewHolder views) {
+        Context context = views.parentView.getContext();
+        // Doesn't need manual tinting, the default tint from the button style will handle it. The
+        // same is true of the end drawables below.
+        final Drawable aiModeButtonStartDrawable =
+                context.getDrawable(R.drawable.search_spark_black_24dp);
+        final Drawable imageGenStartDrawable =
+                assumeNonNull(context.getDrawable(R.drawable.create_image_24dp)).mutate();
+        // Setting a color filter disables tinting.
+        imageGenStartDrawable.setColorFilter(
+                new PorterDuffColorFilter(
+                        context.getColor(R.color.default_icon_color_white_tint_list),
+                        Mode.MULTIPLY));
+        final Drawable aiModeButtonEndDrawable;
+        final Drawable imageGenEndDrawable;
+        switch (autocompleteRequestType) {
+            case AutocompleteRequestType.AI_MODE -> {
+                aiModeButtonEndDrawable =
+                        assumeNonNull(context.getDrawable(R.drawable.m3_ic_check_24px));
+                imageGenEndDrawable = null;
+            }
+            case AutocompleteRequestType.IMAGE_GENERATION -> {
+                aiModeButtonEndDrawable = null;
+                imageGenEndDrawable =
+                        assumeNonNull(context.getDrawable(R.drawable.m3_ic_check_24px));
+            }
+            default -> {
+                aiModeButtonEndDrawable = null;
+                imageGenEndDrawable = null;
+            }
+        }
+        views.popup.mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                aiModeButtonStartDrawable, null, aiModeButtonEndDrawable, null);
+        views.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                imageGenStartDrawable, null, imageGenEndDrawable, null);
     }
 
     static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {

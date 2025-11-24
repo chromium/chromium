@@ -83,10 +83,8 @@ found in the LICENSE file.
         style="@style/Fusebox.PopupMenu.Item"
         android:id="@+id/fusebox_create_image_button"
         android:drawableStart="@drawable/create_image_24dp"
-        android:drawableTintMode="multiply"
         android:text="@string/omnibox_create_image"
         android:contentDescription="@string/accessibility_omnibox_create_image"
-        app:drawableTint="@color/default_icon_color_white_tint_list"
         app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
