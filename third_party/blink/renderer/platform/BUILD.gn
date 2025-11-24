@@ -347,10 +347,7 @@ source_set("image_headers") {
 
 component("platform") {
   visibility = []  # Allow re-assignment of list.
-  visibility = [
-    "//third_party/blink/*",
-    "//tools/privacy_budget/font_indexer:*",
-  ]
+  visibility = [ "//third_party/blink/*" ]
   output_name = "blink_platform"
 
   sources = [
@@ -1983,10 +1980,7 @@ component("platform") {
 }
 
 static_library("test_support") {
-  visibility += [
-    "//third_party/blink/*",
-    "//tools/privacy_budget/font_indexer:*",
-  ]
+  visibility += [ "//third_party/blink/*" ]
   testonly = true
 
   defines = [ "BLINK_PLATFORM_TEST_IMPLEMENTATION" ]
