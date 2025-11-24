@@ -155,6 +155,10 @@ void ShareThisTabSourceView::Refresh() {
     return;  // No further refreshes scheduled.
   }
 
+  if (!web_contents_) {
+    return;
+  }
+
   content::RenderFrameHost* const host = web_contents_->GetPrimaryMainFrame();
   if (!host) {
     return;
