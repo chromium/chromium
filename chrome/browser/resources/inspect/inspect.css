@@ -314,6 +314,10 @@ img {
 .settings-bar label {
   display: inline-block;
   width: 35ex;
+
+  &.full-width {
+    width: 100%;
+  }
 }
 
 .settings-bar button {
@@ -456,6 +460,11 @@ dialog.target-discovery .port-forwarding {
 
 #bubble-locking-label {
   width: unset;
+}
+
+.remote-debugging-text {
+  padding: 5px 0;
+  max-width: 500px;
 }
 
 @media (forced-colors: active) {

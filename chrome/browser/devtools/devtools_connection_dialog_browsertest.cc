@@ -112,7 +112,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsConnectionDialogBrowserTest, Disable) {
 
   content::WebContents* new_web_contents = new_tab_observer.GetWebContents();
   content::TestNavigationObserver(new_web_contents).Wait();
-  // TODO(crbug.com/447543282): Update the expected URL once
-  // "chrome://inspect#remote-debugging" is implemented.
-  EXPECT_EQ(new_web_contents->GetVisibleURL(), "chrome://inspect/#devices");
+  EXPECT_EQ(new_web_contents->GetVisibleURL(),
+            "chrome://inspect/#remote-debugging");
 }

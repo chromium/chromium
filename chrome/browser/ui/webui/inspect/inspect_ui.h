@@ -64,6 +64,7 @@ class InspectUI : public content::WebUIController,
   void PopulateNativeUITargets(const base::Value::List& targets);
   void ShowNativeUILaunchButton(bool enabled);
   void SetHostVersion(const std::string& version);
+  void SetRemoteDebuggingEnabled(bool enabled);
 
   void StartListeningNotifications();
   void StopListeningNotifications();
@@ -80,6 +81,7 @@ class InspectUI : public content::WebUIController,
   void UpdateTCPDiscoveryEnabled();
   void UpdateTCPDiscoveryConfig();
   void UpdateBubbleLockingCheckbox();
+  void UpdateRemoteDebuggingEnabled();
 
   void SetPortForwardingDefaults();
 

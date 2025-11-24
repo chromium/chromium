@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -243,6 +249,81 @@ IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
   // "Inspect Native UI" button is still disabled.
   ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
                      "assertNativeUIButtonDisabled(true);"));
+}
+
+class InspectUIRemoteDebuggingTest : public InspectUITest {
+ public:
+  InspectUIRemoteDebuggingTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDevToolsAcceptDebuggingConnections);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, RemoteDebugging) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  // 1. Remote debugging not allowed.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, false);
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  EXPECT_TRUE(RunTestCase("RemoteDebuggingNotAllowed"));
+
+  // 2. Remote debugging allowed, but disabled.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  EXPECT_TRUE(RunTestCase("RemoteDebuggingAllowedAndDisabled"));
+
+  // 3. Remote debugging allowed and enabled.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  EXPECT_TRUE(RunTestCase("RemoteDebuggingAllowedAndEnabled"));
+}
+
+IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, RemoteDebuggingCheckbox) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  ASSERT_FALSE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
+
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_change_registrar;
+    pref_change_registrar.Init(local_state);
+    pref_change_registrar.Add(prefs::kDevToolsRemoteDebuggingEnabled,
+                              run_loop.QuitClosure());
+
+    ASSERT_TRUE(RunTestCase("ClickRemoteDebuggingCheckbox"));
+    run_loop.Run();
+    EXPECT_TRUE(
+        local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
+  }
+
+  // Reload the page to reset mocha.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  ASSERT_TRUE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
+
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_change_registrar;
+    pref_change_registrar.Init(local_state);
+    pref_change_registrar.Add(prefs::kDevToolsRemoteDebuggingEnabled,
+                              run_loop.QuitClosure());
+    ASSERT_TRUE(RunTestCase("ClickRemoteDebuggingCheckbox"));
+    run_loop.Run();
+    EXPECT_FALSE(
+        local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
+  }
 }
 
 }  // namespace

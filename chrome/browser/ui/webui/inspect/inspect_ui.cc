@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,9 +16,11 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -96,6 +99,8 @@ const char kInspectUiTCPDiscoveryConfigCommand[] = "set-tcp-discovery-config";
 const char kInspectUiOpenNodeFrontendCommand[] = "open-node-frontend";
 const char kInspectUiLaunchUIDevToolsCommand[] = "launch-ui-devtools";
 const char kInspectUiSetFocusCommand[] = "set-focus";
+const char kInspectUiSetRemoteDebuggingEnabledCommand[] =
+    "set-remote-debugging-enabled";
 
 const char kInspectUiPortForwardingDefaultPort[] = "8080";
 const char kInspectUiPortForwardingDefaultLocation[] = "localhost:8080";
@@ -231,6 +236,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void HandleLaunchUIDevToolsCommand(const base::Value::List& args);
   void HandleSetBubbleLocking(const base::Value::List& args);
   void HandleSetFocus(const base::Value::List& args);
+  void HandleSetRemoteDebuggingEnabled(const base::Value::List& args);
 
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
@@ -318,6 +324,11 @@ void InspectMessageHandler::RegisterMessages() {
       kInspectUiSetFocusCommand,
       base::BindRepeating(&InspectMessageHandler::HandleSetFocus,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      kInspectUiSetRemoteDebuggingEnabledCommand,
+      base::BindRepeating(
+          &InspectMessageHandler::HandleSetRemoteDebuggingEnabled,
+          base::Unretained(this)));
 }
 
 void InspectMessageHandler::HandleInitUICommand(const base::Value::List&) {
@@ -450,6 +461,13 @@ void InspectMessageHandler::HandleSetFocus(const base::Value::List& args) {
   }
 }
 
+void InspectMessageHandler::HandleSetRemoteDebuggingEnabled(
+    const base::Value::List& args) {
+  if (args.size() == 1 && args[0].is_bool()) {
+    inspect_ui_->SetRemoteDebuggingEnabled(args[0].GetBool());
+  }
+}
+
 void InspectMessageHandler::HandlePortForwardingConfigCommand(
     const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -576,6 +594,7 @@ void InspectUI::InitUI() {
   UpdateTCPDiscoveryEnabled();
   UpdateTCPDiscoveryConfig();
   UpdateBubbleLockingCheckbox();
+  UpdateRemoteDebuggingEnabled();
 }
 
 void InspectUI::Inspect(const std::string& source_id,
@@ -644,6 +663,19 @@ void InspectUI::Pause(const std::string& source_id,
                                        DevToolsToggleAction::PauseInDebugger(),
                                        DevToolsOpenedByAction::kInspectLink);
   }
+}
+
+void InspectUI::SetRemoteDebuggingEnabled(bool enabled) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDevToolsAcceptDebuggingConnections)) {
+    return;
+  }
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kDevToolsRemoteDebuggingAllowed)) {
+    return;
+  }
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kDevToolsRemoteDebuggingEnabled, enabled);
 }
 
 void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
@@ -791,6 +823,24 @@ void InspectUI::UpdateTCPDiscoveryConfig() {
 void InspectUI::UpdateBubbleLockingCheckbox() {
   web_ui()->CallJavascriptFunctionUnsafe(
       "updateBubbleLockingCheckbox", ui_devtools::BubbleLocking::GetEnabled());
+}
+
+void InspectUI::UpdateRemoteDebuggingEnabled() {
+  if (!base::FeatureList::IsEnabled(
+          features::kDevToolsAcceptDebuggingConnections)) {
+    web_ui()->CallJavascriptFunctionUnsafe("updateRemoteDebuggingEnabled",
+                                           /*enabled=*/false, /*allowed=*/false,
+                                           /*hidden=*/true);
+    return;
+  }
+  PrefService* local_state = g_browser_process->local_state();
+  const PrefService::Preference* pref =
+      local_state->FindPreference(prefs::kDevToolsRemoteDebuggingEnabled);
+  bool allowed =
+      local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed);
+  bool enabled = allowed && pref->GetValue()->GetBool();
+  web_ui()->CallJavascriptFunctionUnsafe("updateRemoteDebuggingEnabled",
+                                         enabled, allowed, false);
 }
 
 void InspectUI::SetPortForwardingDefaults() {

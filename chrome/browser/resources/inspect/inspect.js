@@ -770,6 +770,8 @@ function addActionLink(row, text, handler, opt_disabled, opt_title) {
 
 function initSettings() {
   checkboxSendsCommand(
+      'remote-debugging-enabled', 'set-remote-debugging-enabled');
+  checkboxSendsCommand(
       'discover-usb-devices-enable', 'set-discover-usb-devices-enabled');
   checkboxSendsCommand('port-forwarding-enable', 'set-port-forwarding-enabled');
   checkboxSendsCommand(
@@ -996,6 +998,26 @@ function updateTCPDiscoveryConfig(config) {
 
 function updateBubbleLockingCheckbox(enabled) {
   updateCheckbox('bubble-locking-checkbox', enabled);
+}
+
+function updateRemoteDebuggingEnabled(enabled, allowed, hide) {
+  const remoteDebugging = $('remote-debugging');
+  const tab = $('tab-remote-debugging');
+  if (hide) {
+    remoteDebugging.hidden = true;
+    if (tab) {
+      tab.hidden = true;
+    }
+    return;
+  }
+  remoteDebugging.hidden = false;
+  if (tab) {
+    tab.hidden = false;
+  }
+
+  const checkbox = $('remote-debugging-enabled');
+  checkbox.checked = !!enabled;
+  checkbox.disabled = !allowed;
 }
 
 function appendRow(list, lineFactory, key, value) {
@@ -1234,6 +1256,7 @@ Object.assign(window, {
   updateTCPDiscoveryEnabled,
   updateTCPDiscoveryConfig,
   updateBubbleLockingCheckbox,
+  updateRemoteDebuggingEnabled,
   populateNativeUITargets,
   populateTargets,
   populatePortStatus,

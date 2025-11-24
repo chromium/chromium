@@ -82,6 +82,37 @@ suite('InspectUITest', function() {
     // assertNativeButtonDisabled directly.
   });
 
+  async function assertRemoteDebuggingCheckbox(
+      expectedChecked: boolean, expectedDisabled: boolean) {
+    const elements = await waitForElements(
+        '#remote-debugging-enabled', 'updateRemoteDebuggingEnabled');
+    assertEquals(1, elements.length);
+    const checkbox = elements[0] as HTMLInputElement;
+    assertEquals(expectedChecked, checkbox.checked);
+    assertEquals(expectedDisabled, checkbox.disabled);
+  }
+
+  test(
+      'RemoteDebuggingNotAllowed',
+      () => assertRemoteDebuggingCheckbox(false, true));
+
+  test(
+      'RemoteDebuggingAllowedAndDisabled',
+      () => assertRemoteDebuggingCheckbox(false, false));
+
+  test(
+      'RemoteDebuggingAllowedAndEnabled',
+      () => assertRemoteDebuggingCheckbox(true, false));
+
+  async function clickRemoteDebuggingCheckbox() {
+    const elements = await waitForElements(
+        '#remote-debugging-enabled', 'updateRemoteDebuggingEnabled');
+    assertEquals(1, elements.length);
+    const checkbox = elements[0] as HTMLInputElement;
+    checkbox.click();
+  }
+
+  test('ClickRemoteDebuggingCheckbox', () => clickRemoteDebuggingCheckbox());
 
   test('AdbTargetsListed', async () => {
     const devices = await waitForElements('.device', 'populateRemoteTargets');
