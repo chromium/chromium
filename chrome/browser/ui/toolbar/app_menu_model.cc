@@ -189,6 +189,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kContactInfoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIdentityDocsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTravelMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
@@ -775,16 +776,19 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
           ? IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION
           : IDS_PAYMENT_METHOD_SUBMENU_OPTION,
       kCreditCardChromeRefreshIcon);
-  AddItemWithStringIdAndVectorIcon(
-      this, IDC_SHOW_ADDRESSES,
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage)
-          ? IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION
-          : IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-      vector_icons::kLocationOnChromeRefreshIcon);
 
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+        vector_icons::kLocationOnChromeRefreshIcon);
+  } else {
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_CONTACT_INFO,
+        IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
+        vector_icons::kLocationOnChromeRefreshIcon);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO).value(),
+                           AppMenuModel::kContactInfoMenuItem);
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_IDENTITY_DOCS,
                                      IDS_IDENTITY_DOCS_SUBMENU_OPTION,
                                      vector_icons::kIdCardIcon);
@@ -1760,6 +1764,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                       delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
+      break;
+    case IDC_SHOW_CONTACT_INFO:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowContactInfo",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_CONTACT_INFO);
       break;
     case IDC_SHOW_IDENTITY_DOCS:
       if (!uma_action_recorded_) {

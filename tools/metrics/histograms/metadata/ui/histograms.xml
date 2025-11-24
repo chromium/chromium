@@ -1115,6 +1115,7 @@ features through Chrome Labs. -->
     <variant name="ShowBookmarkMgr"/>
     <variant name="ShowBookmarkSidePanel"/>
     <variant name="ShowChromeLabs"/>
+    <variant name="ShowContactInfo"/>
     <variant name="ShowCustomizeChromeSidePanel"/>
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>

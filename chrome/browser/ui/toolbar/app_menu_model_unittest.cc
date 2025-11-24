@@ -515,6 +515,7 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_PASSWORD_MANAGER,
                     IDC_SHOW_PAYMENT_METHODS,
                     IDC_SHOW_ADDRESSES,
+                    IDC_SHOW_CONTACT_INFO,
                     IDC_SHOW_IDENTITY_DOCS,
                     IDC_SHOW_TRAVEL,
                     AppMenuModel::kMinOtherProfileCommandId));
@@ -530,6 +531,8 @@ TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
   ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
       model.GetSubmenuModelAt(your_saved_info_menu_index));
 
+  EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO)
+                  .has_value());
   EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
                   .has_value());
   EXPECT_TRUE(
@@ -547,6 +550,8 @@ TEST_F(AppMenuModelTest, YourSavedInfoSubmenusDisabled) {
   ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
       model.GetSubmenuModelAt(your_saved_info_menu_index));
 
+  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO)
+                   .has_value());
   EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
                    .has_value());
   EXPECT_FALSE(

@@ -708,6 +708,23 @@ class YourSavedInfoMenuItemInteractiveTest
 };
 
 IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
+                       ContactInfoNavigation) {
+  base::HistogramTester histograms;
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kPasswordAndAutofillMenuItem),
+      SelectMenuItem(AppMenuModel::kContactInfoMenuItem),
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          GURL(chrome::GetSettingsUrl(chrome::kContactInfoSubPage))));
+
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ShowContactInfo", 1);
+  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
+                               MENU_ACTION_SHOW_CONTACT_INFO, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
                        IdentityDocsNavigation) {
   base::HistogramTester histograms;
   RunTestSequence(

@@ -803,6 +803,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_ADDRESSES:
       ShowAddresses(browser_);
       break;
+    case IDC_SHOW_CONTACT_INFO:
+      ShowContactInfo(browser_);
+      break;
     case IDC_SHOW_IDENTITY_DOCS:
       ShowIdentityDocs(browser_);
       break;
@@ -1592,6 +1595,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN_WHEN_PAUSED, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_CONTACT_INFO, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_IDENTITY_DOCS, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_TRAVEL, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);

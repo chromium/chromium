@@ -663,6 +663,7 @@ inline constexpr char kAutofillAiSubPage[] = "enhancedAutofill";
 inline constexpr char kAutoPictureInPictureSubPage[] =
     "content/autoPictureInPicture";
 inline constexpr char kClearBrowserDataSubPage[] = "clearBrowserData";
+inline constexpr char kContactInfoSubPage[] = "contactInfo";
 inline constexpr char kContentSettingsSubPage[] = "content";
 inline constexpr char kCookieSettingsSubPage[] = "cookies";
 inline constexpr char kDefaultBrowserSubPage[] = "defaultBrowser";
