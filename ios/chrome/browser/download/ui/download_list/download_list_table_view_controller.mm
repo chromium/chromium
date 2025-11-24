@@ -8,7 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
@@ -35,6 +39,13 @@
 namespace {
 /// Constants for cancel button styling.
 static const CGFloat kCancelButtonIconSize = 30;
+
+/// Constants for timer update intervals.
+static constexpr base::TimeDelta kNormalUpdateInterval =
+    base::Milliseconds(100);  // 10 FPS
+/// Skip ratio for tracking mode: skip 2 out of 3 updates (keep every 3rd
+/// update)
+static const NSInteger kTrackingModeSkipRatio = 3;
 
 NSString* const kCancelButtonPrimaryActionIdentifier =
     @"kCancelButtonPrimaryActionIdentifier";
@@ -66,11 +77,18 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 @interface DownloadListTableViewController () <
     TableViewIllustratedEmptyViewDelegate>
+// Filter header view for download list.
 @property(nonatomic, strong) DownloadListTableViewHeader* filterHeaderView;
+// Counter to track number of updates for throttling logic.
+@property(nonatomic, assign) NSInteger updateCounter;
 @end
 
 @implementation DownloadListTableViewController {
   DownloadListDiffableDataSource* _diffableDataSource;
+  // Cached download items for timer updates.
+  NSArray<DownloadListItem*>* _cachedDownloadItems;
+  // Repeating timer for periodic UI updates.
+  base::RepeatingTimer _updateTimer;
 }
 
 - (void)viewDidLoad {
@@ -100,6 +118,9 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
   // Load download records.
   [self.mutator loadDownloadRecords];
+
+  // Start periodic updates.
+  [self startPeriodicUpdates];
 }
 
 #pragma mark - Private
@@ -137,6 +158,142 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   [self updateTableHeaderViewFrame];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [self pausePeriodicUpdates];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self resumePeriodicUpdates];
+}
+
+- (void)dealloc {
+  [self stopPeriodicUpdates];
+}
+
+#pragma mark - Periodic Updates
+
+// MARK: - UI Refresh Rate Optimization
+// The following methods implement a throttling mechanism to avoid excessive UI
+// updates using base::RepeatingTimer. Background: applySnapshot operations take
+// approximately 5ms each, so frequent calls can cause performance issues and UI
+// stuttering. This system batches updates and controls refresh frequency to
+// maintain smooth scrolling and responsive UI. The timer runs on the same
+// sequence and implements skip logic for UITrackingRunLoopMode.
+
+/// Starts the periodic update timer.
+- (void)startPeriodicUpdates {
+  [self stopPeriodicUpdates];
+
+  // Reset update counter
+  self.updateCounter = 0;
+
+  // Start base::RepeatingTimer: 100ms intervals (10 FPS) for UI updates.
+  // The timer runs on the same sequence (main thread) and we implement
+  // frequency reduction logic in performPeriodicUpdate based on run loop mode.
+  __weak __typeof(self) weakSelf = self;
+  _updateTimer.Start(FROM_HERE, kNormalUpdateInterval, base::BindRepeating(^{
+                       [weakSelf performPeriodicUpdate];
+                     }));
+}
+
+/// Stops the periodic update timer.
+- (void)stopPeriodicUpdates {
+  _updateTimer.Stop();
+}
+
+/// Pauses periodic updates without stopping the timer.
+- (void)pausePeriodicUpdates {
+  _updateTimer.Stop();
+}
+
+- (void)resumePeriodicUpdates {
+  if (!_updateTimer.IsRunning()) {
+    [self startPeriodicUpdates];
+  }
+}
+
+/// Performs periodic UI update based on cached download items.
+- (void)performPeriodicUpdate {
+  // Only update if we have cached items waiting to be processed AND
+  // the timer is running (updates are not paused).
+  // This prevents unnecessary applySnapshot calls when no data changes
+  // occurred or when updates are intentionally paused.
+  if (!_cachedDownloadItems || !_updateTimer.IsRunning()) {
+    return;
+  }
+
+  // Increment update counter for tracking mode throttling.
+  self.updateCounter++;
+
+  // Check current runloop mode to determine if we should throttle updates.
+  NSString* currentMode = [[NSRunLoop currentRunLoop] currentMode];
+  BOOL isInTrackingMode = [currentMode isEqualToString:UITrackingRunLoopMode];
+
+  if (isInTrackingMode) {
+    // During UITrackingRunLoopMode (user scrolling), throttle updates by only
+    // processing every kTrackingModeSkipRatio-th update to maintain smooth
+    // scrolling performance.
+    if (self.updateCounter % kTrackingModeSkipRatio != 0) {
+      return;
+    }
+  }
+
+  // Perform throttled UI update based on cached items.
+  // This ensures applySnapshot is called at controlled intervals rather than
+  // immediately upon each data change, reducing the ~5ms overhead per update.
+  [self updateUI];
+}
+
+/// Updates the UI with the current cached download items.
+- (void)updateUI {
+  // Create a new snapshot with date-grouped sections.
+  DownloadListSnapshot* snapshot = [[DownloadListSnapshot alloc] init];
+
+  // Group items by date.
+  NSArray<DownloadListGroupItem*>* groupItems =
+      download_list_grouping_util::GroupDownloadItemsByDate(
+          _cachedDownloadItems);
+
+  // Add sections and items.
+  for (DownloadListGroupItem* groupItem in groupItems) {
+    [snapshot appendSectionsWithIdentifiers:@[ groupItem ]];
+    [snapshot appendItemsWithIdentifiers:groupItem.items
+               intoSectionWithIdentifier:groupItem];
+  }
+
+  // Detect changes between old and new items for efficient updates.
+  // This minimizes the work done by applySnapshot by only reconfiguring changed
+  // cells rather than rebuilding the entire table view structure.
+  NSArray<DownloadListItem*>* oldItems =
+      _diffableDataSource.snapshot.itemIdentifiers;
+  if (oldItems.count > 0) {
+    NSSet<DownloadListItem*>* oldItemsSet = [NSSet setWithArray:oldItems];
+    NSMutableArray<DownloadListItem*>* changedItems =
+        [[NSMutableArray alloc] init];
+
+    for (DownloadListItem* newItem in _cachedDownloadItems) {
+      DownloadListItem* existingItem = [oldItemsSet member:newItem];
+      if (existingItem && ![existingItem isEqualToItem:newItem]) {
+        [changedItems addObject:newItem];
+      }
+    }
+
+    if (changedItems.count > 0) {
+      [snapshot reconfigureItemsWithIdentifiers:changedItems];
+    }
+  }
+
+  // Apply the snapshot to update the table view.
+  // Note: This operation takes ~5ms, which is why we throttle these calls
+  // using the CADisplayLink mechanism above to prevent performance issues.
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+
+  // Clear cached items after processing to indicate no pending updates.
+  _cachedDownloadItems = nil;
 }
 
 #pragma mark - Mutator setter override
@@ -334,41 +491,12 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 #pragma mark - DownloadListConsumer
 
 - (void)setDownloadListItems:(NSArray<DownloadListItem*>*)items {
-  // Create a new snapshot with date-grouped sections.
-  DownloadListSnapshot* snapshot = [[DownloadListSnapshot alloc] init];
-
-  // Group items by date.
-  NSArray<DownloadListGroupItem*>* groupItems =
-      download_list_grouping_util::GroupDownloadItemsByDate(items);
-
-  // Add sections and items.
-  for (DownloadListGroupItem* groupItem in groupItems) {
-    [snapshot appendSectionsWithIdentifiers:@[ groupItem ]];
-    [snapshot appendItemsWithIdentifiers:groupItem.items
-               intoSectionWithIdentifier:groupItem];
-  }
-
-  // Detect changes between old and new items.
-  NSArray<DownloadListItem*>* oldItems =
-      _diffableDataSource.snapshot.itemIdentifiers;
-  if (oldItems.count > 0) {
-    NSSet<DownloadListItem*>* oldItemsSet = [NSSet setWithArray:oldItems];
-    NSMutableArray<DownloadListItem*>* changedItems =
-        [[NSMutableArray alloc] init];
-
-    for (DownloadListItem* newItem in items) {
-      DownloadListItem* existingItem = [oldItemsSet member:newItem];
-      if (existingItem && ![existingItem isEqualToItem:newItem]) {
-        [changedItems addObject:newItem];
-      }
-    }
-
-    if (changedItems.count > 0) {
-      [snapshot reconfigureItemsWithIdentifiers:changedItems];
-    }
-  }
-
-  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  // Cache the input parameters for throttled DisplayLink updates
+  // Instead of immediately calling applySnapshot (which costs ~5ms), we cache
+  // the new items and let the CADisplayLink timer handle the actual UI update
+  // at controlled intervals. This prevents excessive refresh calls that could
+  // cause UI stuttering, especially during rapid data changes.
+  _cachedDownloadItems = [items copy];
 }
 
 - (void)setLoadingState:(BOOL)loading {

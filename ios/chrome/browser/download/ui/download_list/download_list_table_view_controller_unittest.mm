@@ -117,6 +117,13 @@ using ::testing::Return;
 
 @end
 
+// Test category to access private methods and properties.
+@interface DownloadListTableViewController (Testing)
+- (void)updateUI;
+- (void)performPeriodicUpdate;
+@property(nonatomic, readonly) DownloadListTableViewHeader* filterHeaderView;
+@end
+
 namespace {
 
 /// Creates a test download record with the given parameters.
@@ -206,6 +213,9 @@ class DownloadListTableViewControllerTest : public PlatformTest {
 
     [controller_ setDownloadListItems:@[ mockItem ]];
 
+    // Trigger periodic update manually to process cached items.
+    [controller_ performPeriodicUpdate];
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 
     return [controller_ tableView:controller_.tableView
@@ -251,6 +261,9 @@ TEST_F(DownloadListTableViewControllerTest, TestSetDownloadListItemsEmpty) {
 
   [controller_ setDownloadListItems:emptyItems];
 
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
+
   // Verify the table view has no sections when empty.
   EXPECT_EQ(0, controller_.tableView.numberOfSections);
 }
@@ -260,6 +273,9 @@ TEST_F(DownloadListTableViewControllerTest, TestSetDownloadListItemsMultiple) {
   NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
 
   [controller_ setDownloadListItems:items];
+
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
 
   // Verify table view has sections (grouped by date).
   EXPECT_GT(controller_.tableView.numberOfSections, 0);
@@ -324,6 +340,9 @@ TEST_F(DownloadListTableViewControllerTest, TestViewForHeaderInSection) {
   NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
   [controller_ setDownloadListItems:items];
 
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
+
   UIView* headerView = [controller_ tableView:controller_.tableView
                        viewForHeaderInSection:0];
 
@@ -342,6 +361,9 @@ TEST_F(DownloadListTableViewControllerTest,
       CreateTestDownloadListItem(inProgressRecord);
 
   [controller_ setDownloadListItems:@[ inProgressItem ]];
+
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
 
   // Verify the in-progress item shows cancel button.
   EXPECT_TRUE([inProgressItem cancelable]);
@@ -366,6 +388,9 @@ TEST_F(DownloadListTableViewControllerTest,
   DownloadListItem* completedItem = CreateTestDownloadListItem(completedRecord);
 
   [controller_ setDownloadListItems:@[ completedItem ]];
+
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
 
   // Verify the completed item does not show cancel button.
   EXPECT_FALSE([completedItem cancelable]);
@@ -410,6 +435,9 @@ TEST_F(DownloadListTableViewControllerTest,
   // Set initial items and verify basic configuration.
   [controller_ setDownloadListItems:items];
 
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
+
   // Verify that we can access cells for sections.
   if (controller_.tableView.numberOfSections > 0) {
     NSInteger rowCount = [controller_.tableView numberOfRowsInSection:0];
@@ -430,6 +458,9 @@ TEST_F(DownloadListTableViewControllerTest,
   // Update with modified items and verify reconfiguration.
   [controller_ setDownloadListItems:modifiedItems];
 
+  // Trigger periodic update manually to process cached items.
+  [controller_ performPeriodicUpdate];
+
   // Verify the data source was updated.
   NSInteger totalItems = 0;
   for (NSInteger section = 0; section < controller_.tableView.numberOfSections;
@@ -437,4 +468,80 @@ TEST_F(DownloadListTableViewControllerTest,
     totalItems += [controller_.tableView numberOfRowsInSection:section];
   }
   EXPECT_EQ(static_cast<NSInteger>(modifiedItems.count), totalItems);
+}
+
+#pragma mark - New Functionality Tests
+
+/// Tests periodic updates mechanism.
+TEST_F(DownloadListTableViewControllerTest, TestPeriodicUpdates) {
+  NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
+
+  // Set items but don't trigger update yet.
+  [controller_ setDownloadListItems:items];
+
+  // Initially no sections should be visible since no update was triggered.
+  EXPECT_EQ(0, controller_.tableView.numberOfSections);
+
+  // Manually trigger periodic update.
+  [controller_ performPeriodicUpdate];
+
+  // Now sections should be visible.
+  EXPECT_GT(controller_.tableView.numberOfSections, 0);
+}
+
+/// Tests throttling mechanism behavior.
+TEST_F(DownloadListTableViewControllerTest, TestThrottlingMechanism) {
+  NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
+
+  // Set items multiple times rapidly (simulating rapid updates).
+  [controller_ setDownloadListItems:items];
+  [controller_ setDownloadListItems:items];
+  [controller_ setDownloadListItems:items];
+
+  // Should still be 0 sections until update is triggered.
+  EXPECT_EQ(0, controller_.tableView.numberOfSections);
+
+  // Single periodic update should process all cached changes.
+  [controller_ performPeriodicUpdate];
+
+  // Now should show sections.
+  EXPECT_GT(controller_.tableView.numberOfSections, 0);
+}
+
+/// Tests filter header view functionality.
+TEST_F(DownloadListTableViewControllerTest, TestFilterHeaderView) {
+  // Initially no header should be shown.
+  EXPECT_FALSE(controller_.tableView.tableHeaderView);
+
+  // Show header.
+  [controller_ setDownloadListHeaderShown:YES];
+
+  // Header should now be visible.
+  EXPECT_TRUE(controller_.tableView.tableHeaderView);
+
+  // Hide header.
+  [controller_ setDownloadListHeaderShown:NO];
+
+  // Header should be hidden.
+  EXPECT_FALSE(controller_.tableView.tableHeaderView);
+}
+
+/// Tests view lifecycle methods.
+TEST_F(DownloadListTableViewControllerTest, TestViewLifecycleMethods) {
+  NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
+  [controller_ setDownloadListItems:items];
+
+  // Simulate view will disappear - should pause updates.
+  [controller_ viewWillDisappear:NO];
+
+  // Periodic update should not show items since updates are paused.
+  [controller_ performPeriodicUpdate];
+  EXPECT_EQ(0, controller_.tableView.numberOfSections);
+
+  // Simulate view will appear - should resume updates.
+  [controller_ viewWillAppear:NO];
+
+  // Now periodic update should work.
+  [controller_ performPeriodicUpdate];
+  EXPECT_GT(controller_.tableView.numberOfSections, 0);
 }
