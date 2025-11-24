@@ -298,6 +298,7 @@ class GlicInstanceMetrics {
   int max_concurrently_bound_tabs_ = 0;
 
   TurnInfo turn_;
+  TurnInfo last_turn_;
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode,
                 mojom::WebClientMode::kMinValue,

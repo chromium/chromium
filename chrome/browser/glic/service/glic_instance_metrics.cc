@@ -656,15 +656,6 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
         now - turn_.input_submitted_time_);
   }
 
-  // Reset the turn.
-  turn_ = {};
-}
-
-void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
-                                          base::TimeDelta duration) {
-  base::UmaHistogramEnumeration("Glic.Turn.InvocationSource",
-                                last_invocation_source_);
-
   GlicTurnSource turn_source;
   switch (turn_.ui_mode_) {
     case EmbedderType::kSidePanel:
@@ -698,7 +689,15 @@ void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
       break;
   }
   base::UmaHistogramEnumeration("Glic.Turn.Source", turn_source);
+  base::UmaHistogramEnumeration("Glic.Turn.InvocationSource",
+                                last_invocation_source_);
+  // Reset the turn.
+  last_turn_ = turn_;
+  turn_ = {};
+}
 
+void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
+                                          base::TimeDelta duration) {
   LogEvent(GlicInstanceEvent::kTurnCompleted);
   base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
                                     ? "Glic.Turn.Duration.Actor"
@@ -727,7 +726,7 @@ void GlicInstanceMetrics::OnUserResizeEnded(const gfx::Size& end_size) {
 void GlicInstanceMetrics::OnReaction(
     mojom::MetricUserInputReactionType reaction_type) {
   LogEvent(GlicInstanceEvent::kReaction);
-  if (turn_.input_submitted_time_.is_null() ||
+  if (last_turn_.input_submitted_time_.is_null() ||
       input_mode_ != mojom::WebClientMode::kText) {
     return;
   }
@@ -736,19 +735,19 @@ void GlicInstanceMetrics::OnReaction(
     case mojom::MetricUserInputReactionType::kUnknown:
       return;
     case mojom::MetricUserInputReactionType::kCanned:
-      if (!turn_.reported_reaction_time_canned_) {
+      if (!last_turn_.reported_reaction_time_canned_) {
         base::UmaHistogramMediumTimes(
             "Glic.Turn.FirstReaction.Text.Canned.Time",
-            base::TimeTicks::Now() - turn_.input_submitted_time_);
-        turn_.reported_reaction_time_canned_ = true;
+            base::TimeTicks::Now() - last_turn_.input_submitted_time_);
+        last_turn_.reported_reaction_time_canned_ = true;
       }
       return;
     case mojom::MetricUserInputReactionType::kModel:
-      if (!turn_.reported_reaction_time_modelled_) {
+      if (!last_turn_.reported_reaction_time_modelled_) {
         base::UmaHistogramMediumTimes(
             "Glic.Turn.FirstReaction.Text.Modelled.Time",
-            base::TimeTicks::Now() - turn_.input_submitted_time_);
-        turn_.reported_reaction_time_modelled_ = true;
+            base::TimeTicks::Now() - last_turn_.input_submitted_time_);
+        last_turn_.reported_reaction_time_modelled_ = true;
       }
       return;
   }
