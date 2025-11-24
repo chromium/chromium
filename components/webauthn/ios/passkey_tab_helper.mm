@@ -77,11 +77,14 @@ CreatePasskeyAndAttestationObject(
           extension_output_data);
 
   // TODO(crbug.com/460485333): use the real value for `did_complete_uv`.
-  return {
-      std::move(passkey),
-      passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id, /*did_complete_uv=*/false,
-          base::as_byte_span(passkey.credential_id()), public_key_spki_der)};
+  passkey_model_utils::SerializedAttestationObject
+      serialized_attestation_object =
+          passkey_model_utils::MakeAttestationObjectForCreation(
+              rp_id, /*did_complete_uv=*/false,
+              base::as_byte_span(passkey.credential_id()), public_key_spki_der);
+
+  return {std::move(passkey),
+          std::move(serialized_attestation_object.attestation_object)};
 }
 
 PasskeyTabHelper::RequestParams::RequestParams()

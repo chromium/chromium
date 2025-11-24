@@ -202,32 +202,30 @@ PasskeyCreationOutput PerformPasskeyCreation(
   webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
 
   // Generate a key pair containing the webauthn specifics and the public key.
-  std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-      generated_passkey =
-          webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-              rp_id_str,
-              webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
-                                                 user_name_str),
-              trusted_vault_key, /*trusted_vault_key_version=*/0,
-              extension_input_data, &extension_output_data);
-  sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
-  std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
+  auto [passkey, public_key_spki_der] =
+      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+          rp_id_str,
+          webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
+                                             user_name_str),
+          trusted_vault_key, /*trusted_vault_key_version=*/0,
+          extension_input_data, &extension_output_data);
 
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
-  NSData* credential_id = [NSData dataWithBytes:cred_id.data()
-                                         length:cred_id.size()];
-  std::vector<uint8_t> attestation_object_for_creation =
-      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id_str, did_complete_uv, cred_id, public_key_spki_der);
-  NSData* attestation_object =
-      [NSData dataWithBytes:attestation_object_for_creation.data()
-                     length:attestation_object_for_creation.size()];
+  webauthn::passkey_model_utils::SerializedAttestationObject
+      serialized_attestation_object =
+          webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
+              rp_id_str, did_complete_uv, cred_id, public_key_spki_der);
 
   SavePasskeyCredential([[ArchivableCredential alloc] initWithFavicon:nil
                                                                  gaia:gaia
                                                               passkey:passkey]);
 
+  NSData* credential_id = [NSData dataWithBytes:cred_id.data()
+                                         length:cred_id.size()];
+  NSData* attestation_object = [NSData
+      dataWithBytes:serialized_attestation_object.attestation_object.data()
+             length:serialized_attestation_object.attestation_object.size()];
   return {[ASPasskeyRegistrationCredential
               credentialWithRelyingParty:rp_id
                           clientDataHash:client_data_hash

@@ -71,6 +71,16 @@ struct ExtensionInputData {
   std::optional<device::PRFInput> prf_input;
 };
 
+// Serialized versions of the attestation object and authenticator data.
+struct SerializedAttestationObject {
+  SerializedAttestationObject();
+  SerializedAttestationObject(SerializedAttestationObject&& other);
+  ~SerializedAttestationObject();
+
+  std::vector<uint8_t> attestation_object;
+  std::vector<uint8_t> authenticator_data;
+};
+
 // Returns a list containing members from `passkeys` that are not shadowed.
 // A credential is shadowed if another credential contains it in its
 // `newly_shadowed_credential_ids` member, or if another credential for the same
@@ -131,13 +141,14 @@ bool EncryptWebauthnCredentialSpecificsData(
 std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
                                                        bool did_complete_uv);
 
-// Returns the WebAuthn attestation object for the GPM authenticator.
+// Returns the WebAuthn attestation object for the GPM authenticator and
+// the serialized authenticator data used to create the attestation object.
 // Set `did_complete_uv` iff the user has completed user verification (e.g.,
 // biometrics or PIN) during this operation.
 // For attestation signatures, the authenticator MUST set the AT flag and
 // include the attestedCredentialData. See
 // https://w3c.github.io/webauthn/#authenticator-data
-std::vector<uint8_t> MakeAttestationObjectForCreation(
+SerializedAttestationObject MakeAttestationObjectForCreation(
     std::string_view rp_id,
     bool did_complete_uv,
     base::span<const uint8_t> credential_id,
