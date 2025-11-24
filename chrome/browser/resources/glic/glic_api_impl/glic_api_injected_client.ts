@@ -4,7 +4,7 @@
 
 import type {WithGlicApi} from '../glic_api/glic_api.js';
 
-import {GlicHostRegistryImpl} from './glic_api_client.js';
+import {GlicHostRegistryImpl} from './client/glic_api_client.js';
 
 /*
 This is bundled into a js file, and sent to the web client. It should be

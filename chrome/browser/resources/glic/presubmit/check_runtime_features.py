@@ -69,7 +69,7 @@ def _Main():
     error = False
     # Find methods marked as checked in glic_api_client.ts.
     api_client_path = ('chrome/browser/resources/glic/glic_api_impl/'
-                       'glic_api_client.ts')
+                       'client/glic_api_client.ts')
     with open(os.path.join(SRC_ROOT, api_client_path), 'r') as f:
         client_src = f.read()
 

@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Mojo pipe closed unexpectedly"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:DetailedWebClientState) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:DetailedWebClientState) -->
 
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
       label="Request received while hidden (whether or not this is expected)."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:GlicRequestEvent, //chrome/browser/glic/glic_metrics.h:GlicRequestEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:GlicRequestEvent, //chrome/browser/glic/glic_metrics.h:GlicRequestEvent) -->
 
 <!-- LINT.IfChange(GlicResponseSegmentation) -->
 
