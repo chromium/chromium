@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -17,6 +16,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/histogram_macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -391,29 +391,20 @@ int FrameSequenceMetrics::ReportMetrics() {
     const char* thread_name = GetThreadTypeName(thread_type);
 
     if (type() == FrameSequenceTrackerType::kCompositorRasterAnimation) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped_v4),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped_v4);
     } else if (type() == FrameSequenceTrackerType::kCompositorNativeAnimation) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped);
     } else if (thread_type == FrameInfo::SmoothEffectDrivingThread::kRaster) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped_v4),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped_v4);
     } else {
       STATIC_HISTOGRAM_POINTER_GROUP(
           GetThroughputV3HistogramName(type(), thread_name),
@@ -431,13 +422,10 @@ int FrameSequenceMetrics::ReportMetrics() {
         base::LinearHistogram::FactoryGet(
             GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
-    STATIC_HISTOGRAM_POINTER_GROUP(
+    STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
         GetCheckerboardingV4HistogramName(type_, thread_name),
         GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-        Add(percent_checkerboarded),
-        base::LinearHistogram::FactoryGet(
-            GetCheckerboardingV4HistogramName(type_, thread_name), 1, 100, 101,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
+        percent_checkerboarded);
 
     if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {
       STATIC_HISTOGRAM_POINTER_GROUP(
