@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -216,7 +217,10 @@ void LoginStateChecker::OnExecutionResponseCallback(
 
   if (cached_page_content_.has_value() && !is_logged_in &&
       !ReachedAttemptsLimit()) {
-    OnPageContentReceived(std::move(cached_page_content_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&LoginStateChecker::OnPageContentReceived,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(cached_page_content_)));
     // Clear the page content to ensure that this check doesn't pass next time,
     // which would lead to a request with empty page content.
     cached_page_content_ = std::nullopt;
