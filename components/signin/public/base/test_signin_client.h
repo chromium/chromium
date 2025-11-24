@@ -116,6 +116,8 @@ class TestSigninClient : public SigninClient {
   version_info::Channel GetClientChannel() override;
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
+  signin::OAuthConsumer GetOAuthConsumerFromId(
+      signin::OAuthConsumerId oauth_consumer_id) const override;
 
  private:
   std::unique_ptr<TestWaitForNetworkCallbackHelper>
@@ -129,6 +131,8 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
   bool are_signin_cookies_allowed_;
   bool are_signin_cookies_deleted_on_exit_ = false;
+
+  std::unique_ptr<signin::OAuthConsumerRegistry> oauth_consumer_registry_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_TEST_SIGNIN_CLIENT_H_

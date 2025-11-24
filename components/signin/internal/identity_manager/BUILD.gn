@@ -27,8 +27,6 @@ source_set("identity_manager") {
     "diagnostics_provider_impl.h",
     "gaia_cookie_manager_service.cc",
     "gaia_cookie_manager_service.h",
-    "oauth_consumer_registry.cc",
-    "oauth_consumer_registry.h",
     "oauth_multilogin_helper.cc",
     "oauth_multilogin_helper.h",
     "oauth_multilogin_token_fetcher.cc",

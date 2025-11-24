@@ -17,6 +17,18 @@
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
+ protected:
+  signin::OAuthConsumer GetOAuthConsumerFromIdInternal(
+      signin::OAuthConsumerId oauth_consumer_id) const override {
+    NOTREACHED();
+  }
+};
+
+}  // namespace
+
 TestWaitForNetworkCallbackHelper::TestWaitForNetworkCallbackHelper() = default;
 TestWaitForNetworkCallbackHelper::~TestWaitForNetworkCallbackHelper() = default;
 
@@ -52,7 +64,8 @@ TestSigninClient::TestSigninClient(
           std::make_unique<TestWaitForNetworkCallbackHelper>()),
       test_url_loader_factory_(test_url_loader_factory),
       pref_service_(pref_service),
-      are_signin_cookies_allowed_(true) {}
+      are_signin_cookies_allowed_(true),
+      oauth_consumer_registry_(std::make_unique<TestOAuthConsumerRegistry>()) {}
 
 TestSigninClient::~TestSigninClient() = default;
 
@@ -140,3 +153,8 @@ version_info::Channel TestSigninClient::GetClientChannel() {
 
 void TestSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {}
+
+signin::OAuthConsumer TestSigninClient::GetOAuthConsumerFromId(
+    signin::OAuthConsumerId oauth_consumer_id) const {
+  return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
+}

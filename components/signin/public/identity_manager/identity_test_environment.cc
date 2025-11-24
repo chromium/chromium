@@ -553,7 +553,8 @@ void IdentityTestEnvironment::
         const std::string& token,
         const base::Time& expiration,
         const OAuthConsumerId oauth_consumer_id) {
-  OAuthConsumer oauth_consumer = GetOAuthConsumerFromId(oauth_consumer_id);
+  OAuthConsumer oauth_consumer =
+      signin_client()->GetOAuthConsumerFromId(oauth_consumer_id);
   WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
       token, expiration, oauth_consumer.GetName(), oauth_consumer.GetScopes());
 }

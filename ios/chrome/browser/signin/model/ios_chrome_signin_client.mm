@@ -19,13 +19,27 @@
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+class IOSChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
+ protected:
+  signin::OAuthConsumer GetOAuthConsumerFromIdInternal(
+      signin::OAuthConsumerId oauth_consumer_id) const override {
+    NOTREACHED();
+  }
+};
+
+}  // namespace
+
 IOSChromeSigninClient::IOSChromeSigninClient(
     ProfileIOS* profile,
     scoped_refptr<HostContentSettingsMap> host_content_settings_map)
     : network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       profile_(profile),
-      host_content_settings_map_(host_content_settings_map) {}
+      host_content_settings_map_(host_content_settings_map),
+      oauth_consumer_registry_(
+          std::make_unique<IOSChromeOAuthConsumerRegistry>()) {}
 
 IOSChromeSigninClient::~IOSChromeSigninClient() {}
 
@@ -113,4 +127,9 @@ void IOSChromeSigninClient::OnPrimaryAccountChanged(
       signin_metrics::RecordOpenTabCountOnSignin(signin::ConsentLevel::kSignin,
                                                  tabs_count);
   }
+}
+
+signin::OAuthConsumer IOSChromeSigninClient::GetOAuthConsumerFromId(
+    signin::OAuthConsumerId oauth_consumer_id) const {
+  return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
 }

@@ -114,6 +114,7 @@ AccessTokenFetcher::AccessTokenFetcher(
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
+    const OAuthConsumer& oauth_consumer,
     ProfileOAuth2TokenService* token_service,
     PrimaryAccountManager* primary_account_manager,
     TokenCallback callback,
@@ -122,6 +123,7 @@ AccessTokenFetcher::AccessTokenFetcher(
     Source token_source)
     : AccessTokenFetcher(account_id,
                          oauth_consumer_id,
+                         oauth_consumer,
                          token_service,
                          primary_account_manager,
                          /*url_loader_factory=*/nullptr,
@@ -133,27 +135,6 @@ AccessTokenFetcher::AccessTokenFetcher(
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
-    ProfileOAuth2TokenService* token_service,
-    PrimaryAccountManager* primary_account_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TokenCallback callback,
-    Mode mode,
-    bool require_sync_consent_for_scope_verification,
-    Source token_source)
-    : AccessTokenFetcher(account_id,
-                         GetOAuthConsumerFromId(oauth_consumer_id),
-                         token_service,
-                         primary_account_manager,
-                         url_loader_factory,
-                         std::move(callback),
-                         mode,
-                         require_sync_consent_for_scope_verification,
-                         token_source) {
-  oauth_consumer_id_ = oauth_consumer_id;
-}
-
-AccessTokenFetcher::AccessTokenFetcher(
-    const CoreAccountId& account_id,
     const OAuthConsumer& oauth_consumer,
     ProfileOAuth2TokenService* token_service,
     PrimaryAccountManager* primary_account_manager,
@@ -171,7 +152,9 @@ AccessTokenFetcher::AccessTokenFetcher(
                          std::move(callback),
                          mode,
                          require_sync_consent_for_scope_verification,
-                         token_source) {}
+                         token_source) {
+  oauth_consumer_id_ = oauth_consumer_id;
+}
 
 AccessTokenFetcher::~AccessTokenFetcher() = default;
 

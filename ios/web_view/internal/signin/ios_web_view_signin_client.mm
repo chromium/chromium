@@ -12,13 +12,27 @@
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+class IOSWebViewOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
+ protected:
+  signin::OAuthConsumer GetOAuthConsumerFromIdInternal(
+      signin::OAuthConsumerId oauth_consumer_id) const override {
+    NOTREACHED();
+  }
+};
+
+}  // namespace
+
 IOSWebViewSigninClient::IOSWebViewSigninClient(
     PrefService* pref_service,
     ios_web_view::WebViewBrowserState* browser_state)
     : network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       pref_service_(pref_service),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      oauth_consumer_registry_(
+          std::make_unique<IOSWebViewOAuthConsumerRegistry>()) {}
 
 IOSWebViewSigninClient::~IOSWebViewSigninClient() {}
 
@@ -92,3 +106,8 @@ version_info::Channel IOSWebViewSigninClient::GetClientChannel() {
 
 void IOSWebViewSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {}
+
+signin::OAuthConsumer IOSWebViewSigninClient::GetOAuthConsumerFromId(
+    signin::OAuthConsumerId oauth_consumer_id) const {
+  return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
+}

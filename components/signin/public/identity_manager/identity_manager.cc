@@ -13,7 +13,6 @@
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
-#include "components/signin/internal/identity_manager/oauth_consumer_registry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -200,8 +199,10 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode,
     AccessTokenFetcher::Source token_source) {
+  signin::OAuthConsumer oauth_consumer =
+      signin_client_->GetOAuthConsumerFromId(oauth_consumer_id);
   return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_id, token_service_.get(),
+      account_id, oauth_consumer_id, oauth_consumer, token_service_.get(),
       primary_account_manager_.get(), std::move(callback), mode,
       require_sync_consent_for_scope_verification_, token_source);
 }
@@ -213,8 +214,10 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode) {
+  signin::OAuthConsumer oauth_consumer =
+      signin_client_->GetOAuthConsumerFromId(oauth_consumer_id);
   return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_id, token_service_.get(),
+      account_id, oauth_consumer_id, oauth_consumer, token_service_.get(),
       primary_account_manager_.get(), url_loader_factory, std::move(callback),
       mode, require_sync_consent_for_scope_verification_);
 }
@@ -238,7 +241,8 @@ void IdentityManager::RemoveAccessTokenFromCache(
     return;
   }
 
-  ScopeSet scopes = GetOAuthConsumerFromId(oauth_consumer_id).GetScopes();
+  ScopeSet scopes =
+      signin_client_->GetOAuthConsumerFromId(oauth_consumer_id).GetScopes();
   token_service_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
