@@ -1507,7 +1507,7 @@ TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
   tick_clock.Advance(base::Milliseconds(2));
 
   // The second (non-empty) scroll update will be sent to the predictor,
-  // enqueued and then dispatched. predictor.
+  // enqueued and then dispatched.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
   DeliverInputForBeginFrame();
 
@@ -1519,7 +1519,7 @@ TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
   // Predictor needs at least 2 ms of delta between events to make a prediction.
   tick_clock.Advance(base::Milliseconds(2));
 
-  // The third  (non-empty) scroll update will be sent to the predictor,
+  // The third (non-empty) scroll update will be sent to the predictor,
   // enqueued and then dispatched.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -5);
 
@@ -1527,6 +1527,67 @@ TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
   // available.
   result = GestureScrollEventPredictionAvailable();
   EXPECT_TRUE(result);
+}
+
+// Verifies that when the `filter_out_empty_updates` parameter for the
+// SendEmptyGestureScrollUpdate feature is set to true, empty
+// GestureScrollUpdates are discarded on the renderer side even if
+// UpdateScrollPredictorInputMapping is also enabled.
+TEST_P(InputHandlerProxyEventQueueTest,
+       FilterOutEmptyUpdatesWhenInputPredictorMappingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+
+  // Always enable the empty update filtering.
+  enabled_features.push_back({
+      ::features::kSendEmptyGestureScrollUpdate,
+      {{"filter_out_empty_updates", "true"}},
+  });
+
+  feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                             /* disabled_features */ {});
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+
+  input_handler_proxy_->SetScrollEventDispatchMode(
+      cc::InputHandlerClient::ScrollEventDispatchMode::
+          kDispatchScrollEventsUntilDeadline,
+      0.333);
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
+      .Times(1);
+
+  if (IsRefactorCompositorThreadEventQueueEnabled() &&
+      IsUpdateScrollPredictorInputMappingEnabled()) {
+    EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
+  }
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame();
+
+  // The first (empty) scroll update will be discarded on the renderer side.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
+  DeliverInputForBeginFrame();
+
+  // The second (non-empty) scroll update will be enqueued if predictor input
+  // mapping and compositor queue refactoring are enabled. Otherwise, the update
+  // will de dispatched.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
+
+  if (IsRefactorCompositorThreadEventQueueEnabled() &&
+      IsUpdateScrollPredictorInputMappingEnabled()) {
+    EXPECT_EQ(1ul, event_queue().size());
+  } else {
+    EXPECT_EQ(0ul, event_queue().size());
+  }
+  GetInputHandlerProxy()->DispatchQueuedInputEventsHelper();
+  EXPECT_EQ(0ul, event_queue().size());
 }
 
 TEST_P(InputHandlerProxyTest, HitTestTouchEventNullTouchAction) {

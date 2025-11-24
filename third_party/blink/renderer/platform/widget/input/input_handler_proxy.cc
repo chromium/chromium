@@ -388,6 +388,23 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
       base::SampleMetadataScope::kProcess);
   const auto& gesture_event =
       static_cast<const WebGestureEvent&>(event_with_callback->event());
+
+  if (gesture_event.GetType() == WebGestureEvent::Type::kGestureScrollUpdate) {
+    // To estimate the impact of empty GestureScrollUpdates on predictor
+    // output quality, some experiment arms will skip them.
+    const bool should_filter_out_event =
+        (::features::kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates.Get() &&
+         gesture_event.data.scroll_update.delta_x == 0 &&
+         gesture_event.data.scroll_update.delta_y == 0);
+    if (should_filter_out_event) {
+      event_with_callback->RunCallbacks(
+          InputHandlerProxy::DID_HANDLE, event_with_callback->latency_info(),
+          /*did_overscroll_params=*/nullptr,
+          /*attribution=*/WebInputEventAttribution());
+      return;
+    }
+  }
+
   const bool is_first_gesture_scroll_update =
       !has_seen_first_gesture_scroll_update_after_begin_ &&
       gesture_event.GetType() == WebGestureEvent::Type::kGestureScrollUpdate;
@@ -413,17 +430,6 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
       // dispatching if `event_with_callback` is too old, and if we expect a
       // newer input event to still arrive in time.
       enqueue_scroll_events_ = true;
-
-      // To estimate the impact of empty GestureScrollUpdates on predictor
-      // output quality, some experiment arms will skip them.
-      const bool should_filter_out_event =
-          (::features::kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates
-               .Get() &&
-           gesture_event.data.scroll_update.delta_x == 0 &&
-           gesture_event.data.scroll_update.delta_y == 0);
-      if (should_filter_out_event) {
-        return;
-      }
 
       if (scroll_predictor_) {
         std::unique_ptr<EventWithCallback> event_to_dispatch =
