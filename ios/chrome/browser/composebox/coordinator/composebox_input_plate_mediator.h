@@ -53,7 +53,8 @@ class WebStateList;
                          webStateList:(WebStateList*)webStateList
                         faviconLoader:(FaviconLoader*)faviconLoader
                persistTabContextAgent:
-                   (PersistTabContextBrowserAgent*)persistTabContextAgent;
+                   (PersistTabContextBrowserAgent*)persistTabContextAgent
+                          isIncognito:(BOOL)isIncognito;
 
 - (void)disconnect;
 

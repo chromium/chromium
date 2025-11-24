@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/search_engines/template_url.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ui/base/page_transition_types.h"
 #import "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -32,5 +35,18 @@ void LoadJavaScriptURL(const GURL& url,
 void RestoreTab(const SessionID session_id,
                 WindowOpenDisposition disposition,
                 Browser* browser);
+
+// Returns a UrlLoadParams object populated with the given parameters.
+// This method handles:
+// - HTTPS upgrades
+// - POST content
+// - Variation headers
+UrlLoadParams CreateOmniboxUrlLoadParams(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool destination_url_entered_without_scheme,
+    bool is_incognito);
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_URL_LOADING_UTIL_H_

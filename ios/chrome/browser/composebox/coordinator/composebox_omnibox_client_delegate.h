@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 
+struct UrlLoadParams;
 enum class WindowOpenDisposition;
 
 /// Delegate for ComposeboxOmniboxClient.
@@ -20,7 +21,7 @@ enum class WindowOpenDisposition;
 /// `isSearchType`: Whether the search type is text or a URL.
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
-                 disposition:(WindowOpenDisposition)disposition
+               URLLoadParams:(const UrlLoadParams&)URLLoadParams
                 isSearchType:(BOOL)isSearchType;
 
 /// Omnibox did change text.

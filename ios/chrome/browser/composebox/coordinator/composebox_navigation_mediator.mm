@@ -78,17 +78,22 @@
 
 #pragma mark - ComposeboxURLLoader
 
-- (void)loadURL:(const GURL&)URL
-    disposition:(WindowOpenDisposition)disposition {
+- (void)loadURLParams:(const UrlLoadParams&)URLLoadParams {
   if (_webState) {
     // Request an SRP without an input plate.
-    GURL webStateURL = net::AppendOrReplaceQueryParameter(URL, "gsc", "2");
+    GURL webStateURL = net::AppendOrReplaceQueryParameter(
+        URLLoadParams.web_params.url, "gsc", "2");
     web::NavigationManager::WebLoadParams webParams =
         web::NavigationManager::WebLoadParams(webStateURL);
     webParams.transition_type = ui::PAGE_TRANSITION_GENERATED;
     _webState->GetNavigationManager()->LoadURLWithParams(webParams);
   } else {
-    [self loadURLInCurrentTab:URL disposition:disposition];
+    if (URLLoadParams.web_params.url.SchemeIs(url::kJavaScriptScheme)) {
+      [self.delegate navigationMediator:self
+               wantsToLoadJavaScriptURL:URLLoadParams.web_params.url];
+    } else {
+      _urlLoadingBrowserAgent->Load(URLLoadParams);
+    }
     [self dismissComposebox];
   }
 }
@@ -104,8 +109,7 @@
       !google_util::IsGoogleSearchUrl(URL)) {
     // Don't load within the embedded web view.
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    [self loadURLInCurrentTab:URL
-                  disposition:WindowOpenDisposition::CURRENT_TAB];
+    _urlLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(URL));
     [self dismissComposebox];
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -143,15 +147,6 @@
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webState->SetDelegate(nullptr);
   return std::move(_webState);
-}
-
-// Loads the URL in the underlying tab.
-- (void)loadURLInCurrentTab:(const GURL&)URL
-                disposition:(WindowOpenDisposition)disposition {
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
-  params.disposition = disposition;
-  _urlLoadingBrowserAgent->Load(params);
 }
 
 // Asks the delegate to dismiss the composebox.

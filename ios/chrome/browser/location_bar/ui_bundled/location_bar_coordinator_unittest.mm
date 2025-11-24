@@ -231,7 +231,8 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   EXPECT_EQ(web::ReferrerPolicyDefault,
             url_loader->last_params.web_params.referrer.policy);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      transition, url_loader->last_params.web_params.transition_type));
+      transition, PageTransitionStripQualifier(
+                      url_loader->last_params.web_params.transition_type)));
   EXPECT_FALSE(url_loader->last_params.web_params.is_renderer_initiated);
   ASSERT_EQ(1U, url_loader->last_params.web_params.extra_headers.count);
   EXPECT_GT([url_loader->last_params.web_params.extra_headers[@"X-Client-Data"]
@@ -267,7 +268,8 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   EXPECT_EQ(web::ReferrerPolicyDefault,
             url_loader->last_params.web_params.referrer.policy);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      transition, url_loader->last_params.web_params.transition_type));
+      transition, PageTransitionStripQualifier(
+                      url_loader->last_params.web_params.transition_type)));
   EXPECT_FALSE(url_loader->last_params.web_params.is_renderer_initiated);
   ASSERT_EQ(0U, url_loader->last_params.web_params.extra_headers.count);
   EXPECT_EQ(disposition, url_loader->last_params.disposition);

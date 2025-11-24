@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -324,7 +326,11 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
 
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
-                      disposition:disposition
+                    URLLoadParams:CreateOmniboxUrlLoadParams(
+                                      destination_url, post_content,
+                                      disposition, transition,
+                                      destination_url_entered_without_scheme,
+                                      profile_->IsOffTheRecord())
                      isSearchType:AutocompleteMatch::IsSearchType(match.type)];
 }
 

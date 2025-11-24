@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/web_state.h"
@@ -160,6 +161,8 @@ CreateInputDataFromAnnotatedPageContent(
 
   // Whether the textfield is multiline or not.
   BOOL _isMultiline;
+  // Whether the browser is in incognito mode.
+  BOOL _isIncognito;
 }
 
 - (instancetype)
@@ -168,7 +171,8 @@ CreateInputDataFromAnnotatedPageContent(
                          webStateList:(WebStateList*)webStateList
                         faviconLoader:(FaviconLoader*)faviconLoader
                persistTabContextAgent:
-                   (PersistTabContextBrowserAgent*)persistTabContextAgent {
+                   (PersistTabContextBrowserAgent*)persistTabContextAgent
+                          isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -181,6 +185,7 @@ CreateInputDataFromAnnotatedPageContent(
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
     _persistTabContextAgent = persistTabContextAgent;
+    _isIncognito = isIncognito;
   }
   return self;
 }
@@ -328,7 +333,13 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_AIModeEnabled) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
   }
-  [self.URLLoader loadURL:URL disposition:WindowOpenDisposition::CURRENT_TAB];
+
+  UrlLoadParams params = CreateOmniboxUrlLoadParams(
+      URL, /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED,
+      /*destination_url_entered_without_scheme=*/false, _isIncognito);
+
+  [self.URLLoader loadURLParams:params];
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
@@ -411,8 +422,7 @@ CreateInputDataFromAnnotatedPageContent(
 
     [_webStateDeferredExecutor webState:webState
                       executeOnceLoaded:^{
-                        [weakSelf attachWebStateContent:webState
-                                                  token:token];
+                        [weakSelf attachWebStateContent:webState token:token];
                       }];
   }
 }
@@ -520,13 +530,13 @@ CreateInputDataFromAnnotatedPageContent(
           base::WrapUnique(page_context->release_annotated_page_content()),
           webState);
 
-    __weak __typeof(self) weakSelf = self;
-    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-        ^(UIImage* image) {
-          [weakSelf didRetrieveColorSnapshot:image
-                                   inputData:std::move(input_data)
-                                       token:token];
-        });
+  __weak __typeof(self) weakSelf = self;
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* image) {
+        [weakSelf didRetrieveColorSnapshot:image
+                                 inputData:std::move(input_data)
+                                     token:token];
+      });
 }
 
 - (void)startFileUploadFlowWithToken:(const base::UnguessableToken)token
@@ -863,10 +873,10 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
-                 disposition:(WindowOpenDisposition)disposition
+               URLLoadParams:(const UrlLoadParams&)URLLoadParams
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (isSearchType) {
+  if (_AIModeEnabled) {
     if (IsAimURL(destinationURL)) {
       [self.consumer setAIModeEnabled:YES];
     }
@@ -878,7 +888,7 @@ CreateInputDataFromAnnotatedPageContent(
 
     [self sendText:[NSString cr_fromString16:text]];
   } else {
-    [self.URLLoader loadURL:destinationURL disposition:disposition];
+    [self.URLLoader loadURLParams:URLLoadParams];
   }
 }
 

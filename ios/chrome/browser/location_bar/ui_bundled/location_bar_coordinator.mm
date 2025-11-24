@@ -564,18 +564,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     // `loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
     // call to load.
-    web::NavigationManager::WebLoadParams web_params =
-        web_navigation_util::CreateWebLoadParams(url, transition, postContent);
-    if (destination_url_entered_without_scheme) {
-      web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
-    }
-    NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
-        [web_navigation_util::VariationHeadersForURL(url, self.isOffTheRecord)
-            mutableCopy];
-    [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
-    web_params.extra_headers = [combinedExtraHeaders copy];
-    UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
-    params.disposition = disposition;
+    UrlLoadParams params = CreateOmniboxUrlLoadParams(
+        url, postContent, disposition, transition,
+        destination_url_entered_without_scheme, self.isOffTheRecord);
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
   [self cancelOmniboxEdit];

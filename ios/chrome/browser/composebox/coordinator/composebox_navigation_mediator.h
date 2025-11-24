@@ -22,6 +22,10 @@ class UrlLoadingBrowserAgent;
 - (void)navigationMediatorDidFinish:
     (ComposeboxNavigationMediator*)navigationMediator;
 
+// Informs the delegate to handle a JavaScript URL.
+- (void)navigationMediator:(ComposeboxNavigationMediator*)navigationMediator
+    wantsToLoadJavaScriptURL:(const GURL&)URL;
+
 @end
 
 // A mediator for the composebox's navigation.

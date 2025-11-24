@@ -153,7 +153,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                            webStateList:self.browser->GetWebStateList()
                           faviconLoader:faviconLoader
                  persistTabContextAgent:PersistTabContextBrowserAgent::
-                                            FromBrowser(self.browser)];
+                                            FromBrowser(self.browser)
+                            isIncognito:self.isOffTheRecord];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;

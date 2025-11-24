@@ -22,12 +22,14 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/web/public/web_state.h"
 
 @interface ComposeboxCoordinator () <ComposeboxViewControllerDelegate,
@@ -147,6 +149,12 @@
 - (void)navigationMediatorDidFinish:
     (ComposeboxNavigationMediator*)navigationMediator {
   [self dismissComposeboxImmediately:NO];
+}
+
+- (void)navigationMediator:(ComposeboxNavigationMediator*)navigationMediator
+    wantsToLoadJavaScriptURL:(const GURL&)URL {
+  LoadJavaScriptURL(URL, self.browser,
+                    self.browser->GetWebStateList()->GetActiveWebState());
 }
 
 #pragma mark - Private

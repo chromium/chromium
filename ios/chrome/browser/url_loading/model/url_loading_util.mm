@@ -15,7 +15,9 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -59,4 +61,29 @@ void RestoreTab(const SessionID session_id,
   sessions::TabRestoreService* restoreService =
       IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   restoreService->RestoreEntryById(context, session_id, disposition);
+}
+
+UrlLoadParams CreateOmniboxUrlLoadParams(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool destination_url_entered_without_scheme,
+    bool is_incognito) {
+  transition = ui::PageTransitionFromInt(transition |
+                                         ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  web::NavigationManager::WebLoadParams web_params =
+      web_navigation_util::CreateWebLoadParams(destination_url, transition,
+                                               post_content);
+  if (destination_url_entered_without_scheme) {
+    web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
+  }
+  NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
+      [web_navigation_util::VariationHeadersForURL(destination_url,
+                                                   is_incognito) mutableCopy];
+  [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
+  web_params.extra_headers = [combinedExtraHeaders copy];
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
+  params.disposition = disposition;
+  return params;
 }
