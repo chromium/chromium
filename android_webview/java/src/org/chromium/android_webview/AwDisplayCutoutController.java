@@ -69,7 +69,7 @@ public class AwDisplayCutoutController {
      * references to the WebView or the Delegate which would prevent the WebView from being garbage
      * collected.
      */
-    private class Listener implements ViewPositionObserver.Listener {
+    private static class Listener implements ViewPositionObserver.Listener {
         // The minimum amount of time between subsequent calls to mDelegate.bottomImeInsetChanged()
         // when invoked from this listener.
         private static final long MIN_VIEWPORT_UPDATE_TIME_MILLIS = 200;
@@ -90,7 +90,6 @@ public class AwDisplayCutoutController {
                     TaskTraits.UI_DEFAULT,
                     () -> {
                         mUpdatePending = false;
-                        AwDisplayCutoutController.this.recalculateBottomImeInset();
                         delegate.bottomImeInsetChanged();
                     },
                     MIN_VIEWPORT_UPDATE_TIME_MILLIS);
@@ -101,13 +100,8 @@ public class AwDisplayCutoutController {
     private final Listener mViewMovedListener;
     private View mContainerView;
     private ViewPositionObserver mPositionObserver;
-
     // The amount the IME is currently imposing into the parent Window.
     private int mBottomImeInset;
-
-    // The amount to inset the visual viewport after comparing mBottomImeInset with the WebView's
-    // position.
-    private int mVisualViewportBottomInset;
 
     /**
      * Constructor for AwDisplayCutoutController.
@@ -223,15 +217,12 @@ public class AwDisplayCutoutController {
     }
 
     public int getBottomImeInset() {
-        return mVisualViewportBottomInset;
-    }
-
-    @VisibleForTesting
-    public void recalculateBottomImeInset() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || !mContainerView.isAttachedToWindow()) {
-            // Unsupported version or view is not attached yet, no insets needed.
-            mVisualViewportBottomInset = 0;
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 0;
+        }
+        if (!mContainerView.isAttachedToWindow()) {
+            // View is not attached yet, no insets needed.
+            return 0;
         }
 
         WindowMetrics wm =
@@ -260,13 +251,11 @@ public class AwDisplayCutoutController {
         // Window's coordinates that the IME reaches. In the case where the IME is not present
         // (mBottomImeInset is 0), this ensures that the visual viewport shows only the part of the
         // WebView that is visible in the Window.
-        mVisualViewportBottomInset =
-                Math.max(0, (viewRectInWindow.bottom - (windowBounds.height() - mBottomImeInset)));
+        return Math.max(0, (viewRectInWindow.bottom - (windowBounds.height() - mBottomImeInset)));
     }
 
     private void calculateBottomImeInsetsInternal(Insets insets) {
         mBottomImeInset = insets.bottom;
-        recalculateBottomImeInset();
         mDelegate.bottomImeInsetChanged();
     }
 
