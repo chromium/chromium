@@ -474,6 +474,37 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   return [UIMenu menuWithTitle:@"" children:actions];
 }
 
+- (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
+    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath {
+  DownloadListItem* item =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  // Only show delete action if it's available for this item.
+  if (!item || !(item.availableActions & DownloadListItemActionDelete)) {
+    return nil;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Create delete action.
+  UIContextualAction* deleteAction = [UIContextualAction
+      contextualActionWithStyle:UIContextualActionStyleDestructive
+                          title:nil
+                        handler:^(UIContextualAction* action,
+                                  __kindof UIView* sourceView,
+                                  void (^completionHandler)(BOOL)) {
+                          [weakSelf.mutator deleteDownloadItem:item];
+                          completionHandler(YES);
+                        }];
+
+  // Set delete action icon.
+  deleteAction.image =
+      DefaultSymbolWithPointSize(kTrashSymbol, kSymbolActionPointSize);
+
+  return
+      [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
+}
+
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
   // Get the section identifier (DownloadListGroupItem) from the data source

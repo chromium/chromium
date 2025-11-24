@@ -545,3 +545,31 @@ TEST_F(DownloadListTableViewControllerTest, TestViewLifecycleMethods) {
   [controller_ performPeriodicUpdate];
   EXPECT_GT(controller_.tableView.numberOfSections, 0);
 }
+
+#pragma mark - Swipe-to-Delete Tests
+
+/// Tests swipe actions configuration for items with delete action.
+TEST_F(DownloadListTableViewControllerTest, TestSwipeToDeleteAction) {
+  // Create test item with delete action available.
+  DownloadRecord record = CreateTestDownloadRecord("id1", "file1.pdf");
+  DownloadListItem* item = CreateTestDownloadListItem(record);
+
+  // Mock the item to return delete action.
+  id mockItem = OCMPartialMock(item);
+  OCMStub([mockItem availableActions]).andReturn(DownloadListItemActionDelete);
+
+  [controller_ setDownloadListItems:@[ mockItem ]];
+  [controller_ performPeriodicUpdate];
+
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+
+  // Test trailing swipe actions configuration.
+  UISwipeActionsConfiguration* config =
+      [controller_ tableView:controller_.tableView
+          trailingSwipeActionsConfigurationForRowAtIndexPath:indexPath];
+
+  EXPECT_TRUE(config);
+  EXPECT_EQ(1U, config.actions.count);
+  EXPECT_EQ(UIContextualActionStyleDestructive,
+            config.actions.firstObject.style);
+}
