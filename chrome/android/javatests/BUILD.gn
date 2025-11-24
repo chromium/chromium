@@ -838,6 +838,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.media") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "src/org/chromium/chrome/browser/media/AutoPipPermissionDialogViewRenderTest.java",
     "src/org/chromium/chrome/browser/media/MediaLauncherActivityTest.java",
     "src/org/chromium/chrome/browser/media/MediaViewerUtilsTest.java",
     "src/org/chromium/chrome/browser/media/PictureInPictureActivityBrowserTest.java",

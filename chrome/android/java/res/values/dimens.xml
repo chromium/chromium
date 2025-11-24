@@ -463,4 +463,8 @@ found in the LICENSE file.
     <!-- Caret browsing dimensions -->
     <dimen name="caret_top_padding">18dp</dimen>
     <dimen name="caret_external_margin">16dp</dimen>
+
+    <!-- Auto PiP permission dialog dimensions -->
+    <dimen name="auto_pip_permission_dialog_width">360dp</dimen>
+    <dimen name="auto_pip_permission_dialog_padding">24dp</dimen>
 </resources>

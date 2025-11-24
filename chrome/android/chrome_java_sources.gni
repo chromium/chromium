@@ -742,6 +742,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/latency_injection/StartupLatencyInjector.java",
   "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
   "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
+  "java/src/org/chromium/chrome/browser/media/AutoPictureInPicturePrivacyMaskView.java",
+  "java/src/org/chromium/chrome/browser/media/AutoPipPermissionDialogView.java",
   "java/src/org/chromium/chrome/browser/media/DocumentPictureInPictureActivity.java",
   "java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java",
   "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",

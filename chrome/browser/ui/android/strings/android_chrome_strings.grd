@@ -7463,6 +7463,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CARET_BROWSING_DIALOG_MESSAGE" desc="Message of the caret browsing confirmation dialog" formatter_data="android_java">
         You can navigate pages with a text cursor. Press F7 to turn off.
       </message>
+
+       <!-- Automatic Picture-in-Picture Permission Prompt -->
+      <message name="IDS_AUTO_PICTURE_IN_PICTURE_PROMPT_TITLE" desc="Title for the auto-picture-in-picture permission prompt. The placeholder is the website's origin.">
+        <ph name="URL">%1$s<ex>example.com</ex></ph> wants to enter picture-in-picture automatically
+      </message>
     </messages>
   </release>
 </grit>
