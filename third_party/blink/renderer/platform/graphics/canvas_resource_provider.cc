@@ -162,7 +162,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   draw_callback(Canvas());
 
   if (!surface_) {
-    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+    const auto info = info_.makeAlphaType(kPremul_SkAlphaType);
     const auto props = GetSkSurfaceProps();
     surface_ = SkSurfaces::Raster(info, &props);
     if (!surface_) {

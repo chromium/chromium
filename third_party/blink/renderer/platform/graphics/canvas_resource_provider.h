@@ -345,6 +345,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void DisableLineDrawingAsPathsIfNecessary();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+
+ protected:
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
@@ -353,7 +355,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
 
- protected:
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
