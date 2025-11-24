@@ -26,6 +26,10 @@ namespace {
 #if BUILDFLAG(IS_MAC)
 constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
+#elif BUILDFLAG(IS_CHROMEOS)
+// ui::EF_COMMAND_DOWN is the search key for ChromeOS.
+constexpr int kFocusToggleAcceleratorModifiers =
+    ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
 #else
 constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
