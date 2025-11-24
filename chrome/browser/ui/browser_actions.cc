@@ -1149,8 +1149,8 @@ void BrowserActions::InitializeBrowserActions() {
                 bwi))
             .SetActionId(kActionAiMode)
             .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
-            .SetTooltipText(
-                l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS))
             .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kSearchSparkIcon))
             .SetProperty(actions::kActionItemPinnableKey, false)
             .Build());
