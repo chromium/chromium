@@ -259,11 +259,17 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
       "encryptWithSyncPassphraseLabel",
       l10n_util::GetStringFUTF8(
           updateAccountSettingsStrings
+#if BUILDFLAG(IS_CHROMEOS)
               ? IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_LABEL
-          : base::FeatureList::IsEnabled(
-                plus_addresses::features::kPlusAddressesEnabled)
-              ? IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_INCLUDING_PLUS_ADDRESS_LABEL
-              : IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL,
+#else
+              ? base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
+                    ? IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_WALLET_LABEL
+                    : IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_LABEL
+#endif
+              : base::FeatureList::IsEnabled(
+                    plus_addresses::features::kPlusAddressesEnabled)
+                    ? IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_INCLUDING_PLUS_ADDRESS_LABEL
+                    : IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL,
 #if BUILDFLAG(IS_CHROMEOS)
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else

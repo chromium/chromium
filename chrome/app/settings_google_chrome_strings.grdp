@@ -339,11 +339,16 @@ Chrome understands forms better and can autofill them faster for you. This setti
     Chrome data in your account
   </message>
   <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
-    Use your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>own passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to encrypt all the Chrome data in your Google Account. Addresses and any data saved in Google Wallet won’t be encrypted by your passphrase. Browsing history from Chrome won’t sync.
+    Use your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>own passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
   </message>
   <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_EXPLANATION_TEXT" desc="Message shown when explicit passphrase is selected.">
     Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you’ll need to <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>delete the Chrome data in your account<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
   </message>
+<if expr="not is_chromeos">
+  <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_WALLET_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
+    Use your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>own passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to encrypt all the Chrome data in your Google Account. Addresses and any data saved in Google Wallet won’t be encrypted by your passphrase. Browsing history from Chrome won’t sync.
+  </message>
+</if>
   <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_ACCOUNT_DATA_ENCRYPTION" desc="Informs user how to change their encryption setting.">
     If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>delete the Chrome data in your account<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
