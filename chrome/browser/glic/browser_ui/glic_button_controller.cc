@@ -58,16 +58,7 @@ void GlicButtonController::UpdateButton() {
     return glic_controller_delegate_->SetGlicShowState(false);
   }
 
-  const bool can_show_attach_icon = !GlicWindowController::AlwaysDetached();
-  GlicInstance* instance =
-      glic_keyed_service_->GetInstanceForActiveTab(&*browser_);
-  const bool glic_instance_detached =
-      instance &&
-      instance->GetPanelState().kind == mojom::PanelStateKind::kDetached;
-
   glic_controller_delegate_->SetGlicShowState(true);
-  glic_controller_delegate_->SetGlicDetached(can_show_attach_icon &&
-                                             glic_instance_detached);
 
   // Try preloading since we know the button is visible.
   glic_keyed_service_->TryPreload();

@@ -1107,14 +1107,6 @@ void TabStripActionContainer::SetGlicShowState(bool show) {
   }
 }
 
-void TabStripActionContainer::SetGlicDetached(bool detached) {
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic_button_) {
-    glic_button_->SetGlicDetached(detached);
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-}
-
 void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_button_) {

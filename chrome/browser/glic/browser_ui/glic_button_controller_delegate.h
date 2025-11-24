@@ -16,9 +16,6 @@ class GlicButtonControllerDelegate {
   // Set the show state of the button
   virtual void SetGlicShowState(bool show) = 0;
 
-  // Update the glic button when attachment changes.
-  virtual void SetGlicDetached(bool detached) = 0;
-
   // Update the button when glic panel shows or hides.
   virtual void SetGlicPanelIsOpen(bool open) = 0;
 };

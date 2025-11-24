@@ -60,9 +60,6 @@ class GlicButton : public TabStripNudgeButton,
   void RestoreDefaultLabel();
   void SetGlicPanelIsOpen(bool open);
 
-  // Update button for glic attachment state.
-  void SetGlicDetached(bool detached);
-
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
 

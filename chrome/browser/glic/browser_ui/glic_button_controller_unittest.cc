@@ -63,15 +63,12 @@ class MockGlicButtonControllerDelegate
     : public glic::GlicButtonControllerDelegate {
  public:
   void SetGlicShowState(bool show) override { show_state_ = show; }
-  void SetGlicDetached(bool detached) override { detached_ = detached; }
   void SetGlicPanelIsOpen(bool open) override {}
 
   bool show_state() const { return show_state_; }
-  bool detached() const { return detached_; }
 
  private:
   bool show_state_ = false;
-  bool detached_ = true;
 };
 
 }  // namespace
