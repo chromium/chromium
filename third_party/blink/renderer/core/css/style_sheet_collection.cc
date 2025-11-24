@@ -80,39 +80,24 @@ static void CreateRuleSets(const StyleEngine& engine,
                            const MixinMap& effective_mixins,
                            ActiveStyleSheetVector& active_style_sheets,
                            HeapVector<Member<RuleSetDiff>>& rule_set_diffs) {
-  // Keep track of ensured RuleSets with @layer rules to detect
-  // StyleSheetContents sharing; RuleSets should not be shared
-  // between two equal sheets with @layer rules, since anonymous
-  // layers need to be unique.
-  HeapHashSet<Member<const RuleSet>> layer_rule_sets;
+  // It's possible to add the same StyleSheetContents more than once,
+  // either due to StyleSheetContents being shared between multiple
+  // CSSStyleSheets (see IsContentsShared()), or due to the same CSSStyleSheet
+  // being adopted more than once. When this happens, we may need to create
+  // multiple RuleSet objects for the same contents, because anonymous
+  // @layers must be unique.
+  HeapHashSet<Member<StyleSheetContents>> seen_contents;
 
   for (auto& [css_sheet, rule_set] : active_style_sheets) {
     CHECK_EQ(rule_set, nullptr);
-    rule_set = engine.RuleSetForSheet(*css_sheet, effective_mixins);
 
-    // NOTE: If the user has specified the same CSSStyleSheet object multiple
-    // times (which is only possible for constructible stylesheets, in
-    // adoptedStyleSheets), then we will not deduplicate them here
-    // (HasSingleOwnerNode() returns false, because the StyleSheetContents is
-    // indeed owned by only one CSSStyleSheet; we just send in that
-    // CSSStyleSheet twice). This means we could get confusing layer ordering if
-    // there were other stylesheets with anonymous layers between the
-    // duplicates.
-    //
-    // It is possible that we should change this; our current behavior differs
-    // from both Gecko and WebKit. It does not appear to be clear from the
-    // standard, though.
-    if (rule_set && rule_set->HasCascadeLayers() &&
-        !css_sheet->Contents()->HasSingleOwnerNode() &&
-        !layer_rule_sets.insert(rule_set).is_new_entry) {
-      // The condition above is met for a stylesheet with cascade layers which
-      // shares StyleSheetContents with another stylesheet in this TreeScope.
-      // WillMutateRules() creates a unique StyleSheetContents for this sheet to
-      // avoid incorrectly identifying two separate anonymous layers as the same
-      // layer.
-      //
-      // TODO(sesse): Can we detect this before creating the RuleSet?
-      css_sheet->WillMutateRules();
+    if (!seen_contents.insert(css_sheet->Contents()).is_new_entry &&
+        css_sheet->Contents()->GetRuleSet().HasCascadeLayers()) {
+      // We've already seen this StyleSheetContents, but we cannot simply
+      // add its cached RuleSet again; it would cause distinct anonymous
+      // layers to be misidentified as the same layer.
+      rule_set = engine.CreateUnconnectedRuleSet(*css_sheet, effective_mixins);
+    } else {
       rule_set = engine.RuleSetForSheet(*css_sheet, effective_mixins);
     }
 

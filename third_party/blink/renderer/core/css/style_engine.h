@@ -300,7 +300,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   //
   // Note that this can return nullptr when the associated media query
   // does not match.
-  RuleSet* CreateUnconnectedRuleSet(CSSStyleSheet&, const MixinMap& mixins);
+  RuleSet* CreateUnconnectedRuleSet(CSSStyleSheet&,
+                                    const MixinMap& mixins) const;
 
   // A functional @media query is evaluated as a part of some function
   // during value resolution. This is different from regular media queries,

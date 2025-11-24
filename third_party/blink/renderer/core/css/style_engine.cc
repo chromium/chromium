@@ -992,7 +992,7 @@ RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet,
 }
 
 RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet,
-                                               const MixinMap& mixins) {
+                                               const MixinMap& mixins) const {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
