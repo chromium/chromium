@@ -653,6 +653,11 @@ void LogSnackbarInteraction(SyncedSetUpState state,
     return YES;
   }
 
+  if (!_startupParameters.externalURL.is_valid()) {
+    // The app started with external intent and landed on an unknown page.
+    return NO;
+  }
+
   if (_startupParameters.externalURL != GURL(kChromeUINewTabURL)) {
     // The app started with external intent did not land on the NTP.
     return NO;
@@ -682,6 +687,16 @@ void LogSnackbarInteraction(SyncedSetUpState state,
       !IsVisibleURLNewTabPage(_webStateList->GetActiveWebState())) {
     // The app started without external intent and landed on a URL page.
     return YES;
+  }
+
+  if (!_startupParameters) {
+    // The app started without external intent and landed on the NTP.
+    return NO;
+  }
+
+  if (!_startupParameters.externalURL.is_valid()) {
+    // The app started with external intent and landed on an unknown page.
+    return NO;
   }
 
   if (_startupParameters.externalURL == GURL(kChromeUINewTabURL)) {
