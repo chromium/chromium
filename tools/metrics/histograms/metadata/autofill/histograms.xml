@@ -2398,15 +2398,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Bnpl.SuggestionNotShownReason"
-    enum="BnplSuggestionNotShownReason" expires_after="2026-06-01">
+<histogram name="Autofill.Bnpl.SuggestionUnavailableReason"
+    enum="BnplSuggestionUnavailableReason" expires_after="2026-06-01">
   <owner>wilsonlow@google.com</owner>
   <owner>vinnypersky@google.com</owner>
+  <owner>viplavkadam@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Tracks the reason why a BNPL suggestion was not shown, i.e. Amount
+    Tracks the reason why a BNPL suggestion was unavailable, i.e. Amount
     extraction failure or Checkout amount not supported. Logged once per page
-    load when a BNPL suggestion is not shown on an eligible BNPL merchant's
+    load when a BNPL suggestion is unavailable on an eligible BNPL merchant's
     website when suggestions were shown.
   </summary>
 </histogram>

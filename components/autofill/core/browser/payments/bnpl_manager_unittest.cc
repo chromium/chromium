@@ -302,6 +302,7 @@ class BnplManagerTest : public Test,
                 autofill_client().GetAutofillOptimizationGuideDecider()),
             IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
@@ -375,6 +376,7 @@ class BnplManagerTest : public Test,
         .GetPersonalDataManager()
         .test_payments_data_manager()
         .ClearBnplIssuers();
+    histogram_tester_.reset();
   }
 
  protected:
@@ -384,6 +386,7 @@ class BnplManagerTest : public Test,
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // BNPL is currently only available for desktop platforms.
@@ -1380,12 +1383,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
                                    /*extracted_amount=*/std::nullopt);
 }
 
-// Tests that BnplSuggestionNotShownReason will be logged once if the amount
+// Tests that BnplSuggestionUnavailableReason will be logged once if the amount
 // extraction engine fails to pass in a valid value.
-TEST_F(BnplManagerTest,
-       AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionNotShownReasonLogged) {
-  base::HistogramTester histogram_tester;
-
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionUnavailableReasonLogged) {
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1394,34 +1396,34 @@ TEST_F(BnplManagerTest,
 
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionFailure,
       1);
 
-  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
-  // flow is triggered and not shown more than once on the same page.
+  // Test that BnplSuggestionUnavailableReason is logged only once even if BNPL
+  // flow is triggered and unavailable more than once on the same page.
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionFailure,
       1);
 }
 
-// Tests that BnplSuggestionNotShownReason will not be logged if BNPL feature
+// Tests that BnplSuggestionUnavailableReason will not be logged if BNPL feature
 // flag is disabled and the amount extraction engine fails to pass in a valid
 // value.
 TEST_F(
     BnplManagerTest,
-    AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionNotShownReasonNotLogged_BnplDisabled) {
+    AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionUnavailableReasonNotLogged_BnplDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
 
-  base::HistogramTester histogram_tester;
-
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1430,9 +1432,10 @@ TEST_F(
 
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionFailure,
       0);
 }
 
@@ -1453,12 +1456,10 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
       /*extracted_amount=*/30'000'000ULL);
 }
 
-// Tests that BnplSuggestionNotShownReason will be logged once if the extracted
-// amount is too high and is not supported by available BNPL issuers.
+// Tests that BnplSuggestionUnavailableReason will be logged once if the
+// extracted amount is too high and is not supported by available BNPL issuers.
 TEST_F(BnplManagerTest,
-       AddBnplSuggestion_AmountTooHigh_BnplSuggestionNotShownReasonLogged) {
-  base::HistogramTester histogram_tester;
-
+       AddBnplSuggestion_AmountTooHigh_BnplSuggestionUnavailableReasonLogged) {
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1468,30 +1469,28 @@ TEST_F(BnplManagerTest,
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
       /*extracted_amount=*/30'000'000ULL);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
           kCheckoutAmountNotSupported,
       1);
 
-  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
-  // flow is triggered and not shown more than once on the same page.
+  // Test that BnplSuggestionUnavailableReason is logged only once even if BNPL
+  // flow is triggered and unavailable more than once on the same page.
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
       /*extracted_amount=*/30'000'000ULL);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
           kCheckoutAmountNotSupported,
       1);
 }
 
-// Tests that BnplSuggestionNotShownReason will be logged once if the extracted
-// amount is too low and is not supported by available BNPL issuers.
+// Tests that BnplSuggestionUnavailableReason will be logged once if the
+// extracted amount is too low and is not supported by available BNPL issuers.
 TEST_F(BnplManagerTest,
-       AddBnplSuggestion_AmountTooLow_BnplSuggestionNotShownReasonLogged) {
-  base::HistogramTester histogram_tester;
-
+       AddBnplSuggestion_AmountTooLow_BnplSuggestionUnavailableReasonLogged) {
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1501,31 +1500,29 @@ TEST_F(BnplManagerTest,
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
       /*extracted_amount=*/20ULL);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
           kCheckoutAmountNotSupported,
       1);
 
-  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
-  // flow is triggered and not shown more than once on the same page.
+  // Test that BnplSuggestionUnavailableReason is logged only once even if BNPL
+  // flow is triggered and unavailable more than once on the same page.
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
       /*extracted_amount=*/20ULL);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
           kCheckoutAmountNotSupported,
       1);
 }
 
-// Tests that BnplSuggestionNotShownReason will be logged once if the amount
+// Tests that BnplSuggestionUnavailableReason will be logged once if the amount
 // extraction engine times out.
 TEST_F(
     BnplManagerTest,
-    AddBnplSuggestion_AmountExtractionTimeout_BnplSuggestionNotShownReasonLogged) {
-  base::HistogramTester histogram_tester;
-
+    AddBnplSuggestion_AmountExtractionTimeout_BnplSuggestionUnavailableReasonLogged) {
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1535,35 +1532,35 @@ TEST_F(
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt,
                                    /*timeout_reached=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionTimeout,
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionTimeout,
       1);
 
-  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
-  // flow is triggered and not shown more than once on the same page.
+  // Test that BnplSuggestionUnavailableReason is logged only once even if BNPL
+  // flow is triggered and unavailable more than once on the same page.
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt,
                                    /*timeout_reached=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionTimeout,
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionTimeout,
       1);
 }
 
-// Tests that BnplSuggestionNotShownReason will not be logged if BNPL feature
+// Tests that BnplSuggestionUnavailableReason will not be logged if BNPL feature
 // flag is disabled and the extracted amount is not supported by available
 // BNPL issuers.
 TEST_F(
     BnplManagerTest,
-    AddBnplSuggestion_AmountNotSupported_BnplSuggestionNotShownReasonNotLogged_BnplDisabled) {
+    AddBnplSuggestion_AmountNotSupported_BnplSuggestionUnavailableReasonNotLogged_BnplDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
 
-  base::HistogramTester histogram_tester;
-
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/40,
@@ -1573,9 +1570,9 @@ TEST_F(
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
       /*extracted_amount=*/30'000'000ULL);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      autofill_metrics::BnplSuggestionNotShownReason::
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
           kCheckoutAmountNotSupported,
       0);
 }
@@ -2064,10 +2061,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
 // Tests that the `kBnplSuggestionAccepted` event is logged once when
 // `OnDidAcceptBnplSuggestion()` is called.
 TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_SuggestionAcceptedLogged) {
-  base::HistogramTester histogram_tester;
-
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
@@ -2075,7 +2070,7 @@ TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_SuggestionAcceptedLogged) {
   // Test that `kBnplSuggestionAccepted` is logged only once even if
   // `OnDidAcceptBnplSuggestion()` is called more than once on the same page.
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
@@ -2290,6 +2285,11 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/true);
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionTimeout,
+      1);
 }
 
 TEST_F(BnplManagerTest,
@@ -2303,6 +2303,11 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/false);
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionFailure,
+      1);
 }
 
 TEST_F(BnplManagerTest,
@@ -2319,6 +2324,11 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->OnAmountExtractionReturned(extracted_amount,
                                             /*timeout_reached=*/false);
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kCheckoutAmountNotSupported,
+      1);
 }
 
 TEST_F(BnplManagerTest,
@@ -2359,6 +2369,11 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/true);
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionTimeout,
+      1);
 }
 
 TEST_F(BnplManagerTest,
@@ -2383,6 +2398,11 @@ TEST_F(BnplManagerTest,
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/false);
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kAmountExtractionFailure,
+      1);
 }
 
 TEST_F(BnplManagerTest,
@@ -2423,6 +2443,11 @@ TEST_F(BnplManagerTest,
       ElementsAre(EqualsBnplIssuerContext(
           IssuerId::kBnplAffirm,
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      autofill_metrics::BnplSuggestionUnavailableReason::
+          kCheckoutAmountNotSupported,
+      1);
 }
 
 TEST_F(BnplManagerTest,

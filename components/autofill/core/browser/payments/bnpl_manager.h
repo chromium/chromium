@@ -312,9 +312,9 @@ class BnplManager {
   // ongoing. Set when a flow is initiated, and reset upon flow completion.
   std::unique_ptr<OngoingFlowState> ongoing_flow_state_;
 
-  // Set to true after the first time a BNPL suggestion not being shown is
+  // Set to true after the first time a BNPL suggestion being unavailable is
   // logged. Ensures that logging occurs only once per page load.
-  bool has_logged_bnpl_suggestion_not_shown_reason_ = false;
+  bool has_logged_bnpl_suggestion_unavailable_reason_ = false;
 
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.

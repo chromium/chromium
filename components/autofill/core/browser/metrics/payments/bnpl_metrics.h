@@ -15,11 +15,12 @@ namespace autofill::autofill_metrics {
 
 using BnplFlowResult = payments::PaymentsWindowManager::BnplFlowResult;
 
-// The reason why a BNPL suggestion was not shown on the page.
+// The reason why a BNPL suggestion was unavailable on the page.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class BnplSuggestionNotShownReason {
+// LINT.IfChange(BnplSuggestionUnavailableReason)
+enum class BnplSuggestionUnavailableReason {
   // The checkout amount could not be extracted from the page. This value is
   // necessary to determine BNPL eligibility for the purchase.
   kAmountExtractionFailure = 0,
@@ -35,6 +36,7 @@ enum class BnplSuggestionNotShownReason {
 
   kMaxValue = kAmountExtractionTimeout,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplSuggestionUnavailableReason)
 
 // Enum to track the result of a corresponding BnplTosDialog that was shown.
 //
@@ -137,8 +139,8 @@ void LogSelectBnplIssuerDialogResult(SelectBnplIssuerDialogResult result);
 // Logs the selection of BNPL issuer from the select BNPL issuer dialog.
 void LogBnplIssuerSelection(autofill::BnplIssuer::IssuerId issuer_id);
 
-// Logs that the BNPL suggestion was not shown and the reason why.
-void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
+// Logs that the BNPL suggestion was unavailable and the reason why.
+void LogBnplSuggestionUnavailableReason(BnplSuggestionUnavailableReason reason);
 
 // Logs that the BNPL popup window was shown.
 void LogBnplPopupWindowShown(autofill::BnplIssuer::IssuerId issuer_id);

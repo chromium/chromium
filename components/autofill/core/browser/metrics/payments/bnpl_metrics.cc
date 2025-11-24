@@ -73,8 +73,9 @@ void LogBnplIssuerSelection(IssuerId issuer_id) {
                                 issuer_id);
 }
 
-void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason) {
-  base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionNotShownReason",
+void LogBnplSuggestionUnavailableReason(
+    BnplSuggestionUnavailableReason reason) {
+  base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionUnavailableReason",
                                 reason);
 }
 

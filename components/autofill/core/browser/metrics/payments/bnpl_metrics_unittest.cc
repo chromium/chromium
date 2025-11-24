@@ -92,39 +92,39 @@ TEST_P(BnplMetricsTest, LogBnplTosDialogShown) {
 }
 
 TEST_F(BnplMetricsTest,
-       LogBnplSuggestionNotShownReason_AmountExtractionFailure) {
+       LogBnplSuggestionUnavailableReason_AmountExtractionFailure) {
   base::HistogramTester histogram_tester;
 
-  LogBnplSuggestionNotShownReason(
-      BnplSuggestionNotShownReason::kAmountExtractionFailure);
+  LogBnplSuggestionUnavailableReason(
+      BnplSuggestionUnavailableReason::kAmountExtractionFailure);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      BnplSuggestionNotShownReason::kAmountExtractionFailure, 1);
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      BnplSuggestionUnavailableReason::kAmountExtractionFailure, 1);
 }
 
 TEST_F(BnplMetricsTest,
-       LogBnplSuggestionNotShownReason_CheckoutAmountNotSupported) {
+       LogBnplSuggestionUnavailableReason_CheckoutAmountNotSupported) {
   base::HistogramTester histogram_tester;
 
-  LogBnplSuggestionNotShownReason(
-      BnplSuggestionNotShownReason::kCheckoutAmountNotSupported);
+  LogBnplSuggestionUnavailableReason(
+      BnplSuggestionUnavailableReason::kCheckoutAmountNotSupported);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      BnplSuggestionNotShownReason::kCheckoutAmountNotSupported, 1);
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      BnplSuggestionUnavailableReason::kCheckoutAmountNotSupported, 1);
 }
 
 TEST_F(BnplMetricsTest,
-       LogBnplSuggestionNotShownReason_AmountExtractionTimeout) {
+       BnplSuggestionUnavailableReason_AmountExtractionTimeout) {
   base::HistogramTester histogram_tester;
 
-  LogBnplSuggestionNotShownReason(
-      BnplSuggestionNotShownReason::kAmountExtractionTimeout);
+  LogBnplSuggestionUnavailableReason(
+      BnplSuggestionUnavailableReason::kAmountExtractionTimeout);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SuggestionNotShownReason",
-      BnplSuggestionNotShownReason::kAmountExtractionTimeout, 1);
+      "Autofill.Bnpl.SuggestionUnavailableReason",
+      BnplSuggestionUnavailableReason::kAmountExtractionTimeout, 1);
 }
 
 TEST_F(BnplMetricsTest, LogSelectBnplIssuerDialogResult_Cancelled) {

@@ -230,6 +230,10 @@ void BnplManager::OnSuggestionsShown(
 void BnplManager::OnAmountExtractionReturned(
     const std::optional<int64_t>& extracted_amount,
     bool timeout_reached) {
+  bool is_amount_supported_by_any_issuer =
+      IsExtractedAmountSupportedByAnyBnplIssuer(
+          payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers(),
+          extracted_amount);
   CHECK(payments_autofill_client().GetBnplStrategy());
   using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
   switch (payments_autofill_client()
@@ -240,19 +244,6 @@ void BnplManager::OnAmountExtractionReturned(
         return;
       }
       update_suggestions_barrier_callback_->Run(extracted_amount);
-      if (!has_logged_bnpl_suggestion_not_shown_reason_) {
-        if (timeout_reached) {
-          LogBnplSuggestionNotShownReason(
-              autofill_metrics::BnplSuggestionNotShownReason::
-                  kAmountExtractionTimeout);
-          has_logged_bnpl_suggestion_not_shown_reason_ = true;
-        } else if (!extracted_amount) {
-          LogBnplSuggestionNotShownReason(
-              autofill_metrics::BnplSuggestionNotShownReason::
-                  kAmountExtractionFailure);
-          has_logged_bnpl_suggestion_not_shown_reason_ = true;
-        }
-      }
       break;
     case kNotifyUiOfAmountExtractionReturnedResponse:
       // `ongoing_flow_state_` being present indicates the user accepted the
@@ -267,12 +258,7 @@ void BnplManager::OnAmountExtractionReturned(
         payments_autofill_client().OnPurchaseAmountExtracted(
             extracted_amount.has_value() ? GetSortedBnplIssuerContext()
                                          : std::vector<BnplIssuerContext>(),
-            extracted_amount,
-            IsExtractedAmountSupportedByAnyBnplIssuer(
-                payments_autofill_client()
-                    .GetPaymentsDataManager()
-                    .GetBnplIssuers(),
-                extracted_amount),
+            extracted_amount, is_amount_supported_by_any_issuer,
             ongoing_flow_state_->app_locale,
             base::BindOnce(&BnplManager::OnIssuerSelected,
                            weak_factory_.GetWeakPtr()),
@@ -288,17 +274,30 @@ void BnplManager::OnAmountExtractionReturned(
         // parameter from the showBnplIssuer method.
         payments_autofill_client().OnPurchaseAmountExtracted(
             /*bnpl_issuer_contexts=*/std::vector<BnplIssuerContext>(),
-            extracted_amount,
-            IsExtractedAmountSupportedByAnyBnplIssuer(
-                payments_autofill_client()
-                    .GetPaymentsDataManager()
-                    .GetBnplIssuers(),
-                extracted_amount),
+            extracted_amount, is_amount_supported_by_any_issuer,
             /*app_locale=*/std::nullopt,
             /*selected_issuer_callback=*/base::DoNothing(),
             /*cancel_callback=*/base::DoNothing());
       }
       break;
+  }
+  if (!has_logged_bnpl_suggestion_unavailable_reason_) {
+    if (timeout_reached) {
+      LogBnplSuggestionUnavailableReason(
+          autofill_metrics::BnplSuggestionUnavailableReason::
+              kAmountExtractionTimeout);
+      has_logged_bnpl_suggestion_unavailable_reason_ = true;
+    } else if (!extracted_amount) {
+      LogBnplSuggestionUnavailableReason(
+          autofill_metrics::BnplSuggestionUnavailableReason::
+              kAmountExtractionFailure);
+      has_logged_bnpl_suggestion_unavailable_reason_ = true;
+    } else if (!is_amount_supported_by_any_issuer) {
+      LogBnplSuggestionUnavailableReason(
+          autofill_metrics::BnplSuggestionUnavailableReason::
+              kCheckoutAmountNotSupported);
+      has_logged_bnpl_suggestion_unavailable_reason_ = true;
+    }
   }
 }
 
@@ -758,12 +757,6 @@ void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
                                                  *extracted_amount)) {
     // If the extracted amount is not supported by any issuer, no need to update
     // the suggestion list.
-    if (!has_logged_bnpl_suggestion_not_shown_reason_) {
-      LogBnplSuggestionNotShownReason(
-          autofill_metrics::BnplSuggestionNotShownReason::
-              kCheckoutAmountNotSupported);
-      has_logged_bnpl_suggestion_not_shown_reason_ = true;
-    }
     return;
   }
 
