@@ -644,6 +644,10 @@ crbug.com/1418360 external/wpt/svg/styling/use-element-web-animations.html [ Fai
 
 crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure ]
 
+# SVG referenced using Media Fragments syntax
+crbug.com/40362942 external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
+crbug.com/40362942 external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
+
 # Content Shell on macOS doesn't work well for Han glyph selection for
 # languages. Chrome works well.
 crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/lang-attribute.svg [ Failure ]
@@ -3233,8 +3237,6 @@ crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/maso
 crbug.com/462806688 external/wpt/css/css-grid/masonry/tentative/subgrid/row/masonry-subgrid-002i.html [ Failure ]
 
 crbug.com/462829956 external/wpt/css/css-grid/subgrid/subgrid-item-with-margin-left-auto.html [ Failure ]
-crbug.com/462825052 external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
-crbug.com/462825052 external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
 crbug.com/462704277 external/wpt/intersection-observer/scroll-margin-propagation.html [ Failure ]
 
 crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnected-device.https.window.html [ Failure Timeout ]
