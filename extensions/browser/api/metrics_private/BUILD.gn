@@ -25,5 +25,7 @@ source_set("metrics_private") {
     "//content/public/browser",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//url",
   ]
 }

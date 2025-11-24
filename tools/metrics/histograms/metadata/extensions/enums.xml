@@ -2866,6 +2866,7 @@ Called by update_extension_histograms.py.-->
       label="AUTOFILLPRIVATE_GETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
   <int value="1952"
       label="AUTOFILLPRIVATE_SETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
+  <int value="1953" label="METRICSPRIVATE_RECORDEXTENSIONUSAGEUKM"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

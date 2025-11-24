@@ -49,6 +49,7 @@ class RenderFrameHostImpl;
 namespace extensions {
 class ManifestV2ExperimentManager;
 class ExtensionContextMenuModel;
+class MetricsPrivateRecordExtensionUsageUkmFunction;
 }
 
 namespace safe_browsing {
@@ -147,6 +148,9 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& extension_url);
   static SourceId GetSourceIdForExtensionUrl(
       base::PassKey<extensions::ExtensionContextMenuModel>,
+      const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::MetricsPrivateRecordExtensionUsageUkmFunction>,
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
