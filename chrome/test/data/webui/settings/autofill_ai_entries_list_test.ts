@@ -323,13 +323,9 @@ suite('AutofillAiEntriesListUiTest', function() {
         testEntityInstancesWithLabels);
 
     // `testEntityTypes` now contains expected values, so they should be sorted
-    // alphabetically and put entities with Wallet storage last.
-    testEntityTypes.sort((a, b) => {
-      if (a.supportsWalletStorage !== b.supportsWalletStorage) {
-        return a.supportsWalletStorage ? 1 : -1;
-      }
-      return a.typeNameAsString.localeCompare(b.typeNameAsString);
-    });
+    // alphabetically.
+    testEntityTypes.sort(
+        (a, b) => a.typeNameAsString.localeCompare(b.typeNameAsString));
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
@@ -576,7 +572,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
     const addSpecificEntityTypeButtons =
         entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+            '#addSpecificEntityType');
     assertEquals(testEntityTypes.length, addSpecificEntityTypeButtons.length);
     for (const index in testEntityTypes) {
       assertTrue(
@@ -602,7 +598,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
     const addSpecificEntityTypeButtons =
         entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+            '#addSpecificEntityType');
     assertEquals(
         allowedEntityTypes.length, addSpecificEntityTypeButtons.length);
     for (let i = 0; i < allowedEntityTypes.length; i++) {
@@ -610,25 +606,6 @@ suite('AutofillAiEntriesListUiTest', function() {
           addSpecificEntityTypeButtons[i]!.textContent.includes(
               allowedEntityTypes[i]!.typeNameAsString));
     }
-  });
-
-  test('EntityTypesStorableInWalletHaveOpenInNewIcon', async function() {
-    await createEntriesList();
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
-    assertTrue(!!addButton);
-    addButton.click();
-    await flushTasks();
-
-    const addWalletEntityTypeButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addEntityInstanceFromWallet');
-    assertEquals(1, addWalletEntityTypeButtons.length);
-
-    const icon =
-        addWalletEntityTypeButtons[0]!.querySelector<HTMLElement>('cr-icon');
-    assertTrue(!!icon);
-    assertEquals('cr:open-in-new', icon.getAttribute('icon'));
   });
 
   test(
@@ -757,34 +734,6 @@ suite('AutofillAiEntriesListUiTest', function() {
         'With false opt-in status, the entries should be visible');
   });
 
-  test('EntityTypesAreRefreshedOnPersonalDataChangeCallback', async function() {
-    await createEntriesList();
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
-    assertTrue(!!addButton);
-
-    addButton.click();
-    await flushTasks();
-    const initialAddEntityButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType, #addEntityInstanceFromWallet');
-    assertEquals(testEntityTypes.length, initialAddEntityButtons.length);
-
-    const newTestEntityTypes = [
-      testEntityTypes[0]!,
-    ];
-    entityDataManager.setGetWritableEntityTypesResponse(newTestEntityTypes);
-    webUIListenerCallback('sync-status-changed');
-    await flushTasks();
-
-    addButton.click();
-    await flushTasks();
-    const updatedAddEntityButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType, #addEntityInstanceFromWallet');
-    assertEquals(newTestEntityTypes.length, updatedAddEntityButtons.length);
-  });
-
   test('EntityTypesAreFilteredOnPersonalDataChangeCallback', async function() {
     await createEntriesList(new Set([
       0,  // Passport
@@ -800,7 +749,7 @@ suite('AutofillAiEntriesListUiTest', function() {
     await flushTasks();
     const addEntityButtons =
         entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
-            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+            '#addSpecificEntityType');
     assertEquals(1, addEntityButtons.length);
   });
 });

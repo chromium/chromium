@@ -89,21 +89,10 @@
   <template>
     <cr-action-menu role-description="$i18n{menu}">
       <template is="dom-repeat" items="[[completeEntityTypesList_]]">
-        <template is="dom-if" if="[[!item.supportsWalletStorage]]" restamp>
-          <button id="addSpecificEntityType" class="dropdown-item"
-              on-click="onAddEntityInstanceFromDropdownClick_">
-            <div>[[item.typeNameAsString]]</div>
-          </button>
-        </template>
-        <template is="dom-if" if="[[item.supportsWalletStorage]]" restamp>
-          <button id="addEntityInstanceFromWallet" class="dropdown-item"
-              title="$i18n{remoteWalletPassesLinkLabel}" role="link"
-              on-click="onRemoteWalletPassesLinkClick_"
-              aria-description="$i18n{opensInNewTab}">
-            <div>[[item.typeNameAsString]]</div>
-            <cr-icon icon="cr:open-in-new" aria-hidden="false"></cr-icon>
-          </button>
-        </template>
+        <button id="addSpecificEntityType" class="dropdown-item"
+            on-click="onAddEntityInstanceFromDropdownClick_">
+          <div>[[item.typeNameAsString]]</div>
+        </button>
       </template>
     </cr-action-menu>
   </template>

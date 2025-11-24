@@ -254,10 +254,6 @@ export class SettingsAutofillAiEntriesListElement extends
    * between different capitalization or diacritics.
    */
   private entityTypesComparator_(a: EntityType, b: EntityType): number {
-    if (a.supportsWalletStorage !== b.supportsWalletStorage) {
-      return a.supportsWalletStorage ? 1 : -1;
-    }
-
     return a.typeNameAsString.localeCompare(
         b.typeNameAsString, undefined, {sensitivity: 'base'});
   }

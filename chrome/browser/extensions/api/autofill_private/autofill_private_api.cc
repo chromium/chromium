@@ -1090,6 +1090,8 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
     if (entity_type.read_only()) {
       continue;
     }
+    // TODO(crbug.com/454892936): Provide the correct value for
+    // `supports_wallet_storage`.
     result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
         entity_type, /*supports_wallet_storage=*/false));
   }
