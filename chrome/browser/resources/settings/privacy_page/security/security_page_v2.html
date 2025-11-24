@@ -96,7 +96,6 @@
     </controlled-radio-button>
   </settings-radio-group>
   <security-page-feature-row id="safeBrowsingRow"
-      on-expanded-changed="onSafeBrowsingRowClick_"
       pref="{{prefs.generated.safe_browsing}}"
       label="$i18n{securitySafeBrowsingTitle}"
       sub-label="$i18n{securitySafeBrowsingDesc}"
@@ -106,8 +105,7 @@
     <div slot="collapse">
       <settings-radio-group id="safeBrowsingRadioGroup"
           pref="{{prefs.generated.safe_browsing}}"
-          selectable-elements="controlled-radio-button"
-          on-change="onSafeBrowsingRadioChange_">
+          selectable-elements="controlled-radio-button">
         <controlled-radio-button
             label="$i18n{securitySafeBrowsingStandardTitle}"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"

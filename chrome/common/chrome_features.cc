@@ -1079,6 +1079,10 @@ const base::FeatureParam<std::string>
     kHappinessTrackingSurveysForSecurityPageTriggerId{
         &kHappinessTrackingSurveysForSecurityPage, "security-page-trigger-id",
         ""};
+const base::FeatureParam<bool>
+    kHappinessTrackingSurveysForSecurityPageRequireInteraction{
+        &kHappinessTrackingSurveysForSecurityPage,
+        "security-page-require-interaction", false};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

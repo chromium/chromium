@@ -1567,6 +1567,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
   RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
+                       SecurityPageHappinessTrackingSurveys) {
+  RunTest("settings/security_page_test.js",
+          "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
   RunTest("settings/security_page_test.js",
           "runMochaSuite('JavascriptOptimizer')");
@@ -1588,12 +1594,6 @@ using SettingsSecurityPageV2Test = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, Main) {
   RunTest("settings/security_page_v2_test.js", "runMochaSuite('Main')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
-                       SecurityPageHappinessTrackingSurveys) {
-  RunTest("settings/security_page_v2_test.js",
-          "runMochaSuite('SecurityPageV2HappinessTrackingSurveys')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
