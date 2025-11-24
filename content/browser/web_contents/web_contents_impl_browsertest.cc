@@ -6938,6 +6938,60 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   waiter.WaitForMediaDestroyed();
 }
 
+// TODO(crbug.com/461821799): For top-level navigation, even if only ad
+// subframes remain loading, `WebContents::IsLoadingExcludingAdFramesTopLevel()`
+// still returns true. This test should be enabled after the behavior in this
+// case is changed to return false.
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTest,
+    DISABLED_IsLoadingExcludingAdSubframesTopLevelNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/hello.html")));
+
+  GURL main_url = embedded_test_server()->GetURL("/page_with_iframe.html");
+  GURL iframe_url = embedded_test_server()->GetURL("/title1.html");
+  TestNavigationManager main_frame_manager(web_contents, main_url);
+  TestNavigationManager iframe_manager(web_contents, iframe_url);
+
+  // Navigate to a page with an iframe until Dom content loaded.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, main_url));
+  // Wait for main frame navigation to finish.
+  ASSERT_TRUE(main_frame_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForDOMContentLoaded(web_contents->GetPrimaryMainFrame()));
+  WaitForCopyableViewInWebContents(web_contents);
+
+  // Mark the iframe as an ad frame.
+  RenderFrameHost* iframe_rfh =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(iframe_rfh, nullptr);
+  iframe_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+  ASSERT_TRUE(iframe_rfh->IsAdFrame());
+
+  // TODO(crbug.com/461821799): If only ad subframe remains loading,
+  // `IsLoadingExcludingAdFrames()` is expected to return false. However, this
+  // is currently not the case
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
+
+  ASSERT_TRUE(iframe_manager.WaitForResponse());
+
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
+
+  // Wait for ad frame loading to stop.
+  ASSERT_TRUE(iframe_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
+
+  // Loading stops.
+  ASSERT_EQ(iframe_rfh->GetLastCommittedURL(), iframe_url);
+  EXPECT_FALSE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
+}
+
 class WebContentsImplInsecureLocalhostBrowserTest
     : public WebContentsImplBrowserTest {
  protected:

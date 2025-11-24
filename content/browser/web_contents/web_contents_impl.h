@@ -427,6 +427,7 @@ class CONTENT_EXPORT WebContentsImpl
                            const std::u16string& title) override;
   SiteInstanceImpl* GetSiteInstance() override;
   bool IsLoading() override;
+  bool IsLoadingExcludingAdSubframes() const override;
   double GetLoadProgress() override;
   bool ShouldShowLoadingUI() override;
   bool IsDocumentOnLoadCompletedInPrimaryMainFrame() override;

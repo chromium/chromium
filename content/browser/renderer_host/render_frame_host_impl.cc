@@ -18018,6 +18018,10 @@ bool RenderFrameHostImpl::IsOutermostMainFrame() const {
   return !GetParentOrOuterDocument();
 }
 
+bool RenderFrameHostImpl::IsAdFrame() const {
+  return browsing_context_state_->IsAdFrame();
+}
+
 void RenderFrameHostImpl::SetIsLoadingForRendererDebugURL() {
   LoadingState previous_frame_tree_loading_state =
       frame_tree()->LoadingTree()->GetLoadingState();

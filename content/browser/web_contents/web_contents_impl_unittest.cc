@@ -3719,4 +3719,60 @@ TEST_F(WebContentsImplTest, ProcessSelectAudioOutputNoDelegate) {
   ASSERT_TRUE(callback_run);
 }
 
+TEST_F(WebContentsImplTest, IsLoadingExcludingAdFrames) {
+  const GURL main_url("https://a.com");
+  const GURL child_url("https://b.com");
+  const GURL ad_url("https://c.com");
+
+  contents()->NavigateAndCommit(main_url);
+
+  // Start a browser-initiated main frame navigation.
+  auto main_frame_navigation =
+      NavigationSimulator::CreateBrowserInitiated(main_url, contents());
+  main_frame_navigation->ReadyToCommit();
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_TRUE(contents()->IsLoadingExcludingAdSubframes());
+
+  main_frame_navigation->Commit();
+  EXPECT_FALSE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+
+  RenderFrameHostImpl* main_rfh = contents()->GetPrimaryMainFrame();
+  // Create a child frame.
+  RenderFrameHost* child_rfh =
+      RenderFrameHostTester::For(main_rfh)->AppendChild("iframe");
+
+  // Start a renderer-initiated child frame navigation.
+  auto child_navigation =
+      NavigationSimulator::CreateRendererInitiated(child_url, child_rfh);
+  child_navigation->ReadyToCommit();
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_TRUE(contents()->IsLoadingExcludingAdSubframes());
+
+  child_navigation->Commit();
+  EXPECT_FALSE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+
+  // Now set the child frame to be an ad frame.
+  child_rfh = contents()
+                  ->GetPrimaryFrameTree()
+                  .root()
+                  ->child_at(0)
+                  ->current_frame_host();
+  child_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+
+  // Start the navigation again for the ad frame.
+  auto ad_frame_navigation =
+      NavigationSimulator::CreateRendererInitiated(ad_url, child_rfh);
+  ad_frame_navigation->ReadyToCommit();
+  // Note the loading state is different depending on whether ad subframes are
+  // excluded when checking loading state.
+  EXPECT_TRUE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+
+  ad_frame_navigation->Commit();
+  EXPECT_FALSE(contents()->IsLoading());
+  EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+}
+
 }  // namespace content

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -166,7 +167,12 @@ void ObservationDelayController::MoveToState(State new_state) {
           "WaitForLoadCompletion", {});
       page_stability_monitor_remote_.reset();
 
-      if (web_contents()->IsLoading()) {
+      bool is_web_contents_loading =
+          base::FeatureList::IsEnabled(
+              features::kGlicActorObservationDelayExcludeAdFrameLoading)
+              ? web_contents()->IsLoadingExcludingAdSubframes()
+              : web_contents()->IsLoading();
+      if (is_web_contents_loading) {
         // State will advance from DidStopLoading in this case.
         break;
       }

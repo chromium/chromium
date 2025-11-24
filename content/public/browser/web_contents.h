@@ -732,6 +732,22 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns whether this WebContents is loading a resource.
   virtual bool IsLoading() = 0;
 
+  // Returns whether this WebContents is loading a resource but excluding
+  // loadings in ad subframes.
+  //
+  // Note: For top-level navigation, this returns true until the top-level
+  // document, all of its subresources, all subframes, and their subresources
+  // have completed loading.
+  //
+  // In other words, for top-level navigation, even if only ad subframes remain
+  // loading, the main frame is still considered loading by this function.
+  //
+  // This function is useful in determining whether an already loaded page
+  // becomes loading due to ad subframes loading.
+  // TODO(crbug.com/461821799): Expand this to work with top-level navigation
+  // like the scenario described in the note.
+  virtual bool IsLoadingExcludingAdSubframes() const = 0;
+
   // Returns the current load progress.
   virtual double GetLoadProgress() = 0;
 

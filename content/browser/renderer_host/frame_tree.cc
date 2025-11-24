@@ -840,11 +840,12 @@ double FrameTree::GetLoadProgress() {
   return root_.current_frame_host()->GetPage().load_progress();
 }
 
-bool FrameTree::IsLoadingIncludingInnerFrameTrees() const {
-  return GetLoadingState() != LoadingState::NONE;
+bool FrameTree::IsLoadingIncludingInnerFrameTrees(
+    bool exclude_ad_subframes) const {
+  return GetLoadingState(exclude_ad_subframes) != LoadingState::NONE;
 }
 
-LoadingState FrameTree::GetLoadingState() const {
+LoadingState FrameTree::GetLoadingState(bool exclude_ad_subframes) const {
   // The overall loading state for the FrameTree matches the root node's loading
   // state if the root is loading.
   if (root_.GetLoadingState() != LoadingState::NONE) {
@@ -857,6 +858,11 @@ LoadingState FrameTree::GetLoadingState() const {
   for (const FrameTreeNode* node_to_check :
        const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
     if (node_to_check->IsLoading()) {
+      if (exclude_ad_subframes &&
+          node_to_check->current_frame_host()->IsAdFrame()) {
+        continue;
+      }
+
       return LoadingState::LOADING_WITHOUT_UI;
     }
   }

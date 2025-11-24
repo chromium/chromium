@@ -367,6 +367,10 @@ void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
   }
 }
 
+bool BrowsingContextState::IsAdFrame() const {
+  return replication_state_->is_ad_frame;
+}
+
 void BrowsingContextState::ActiveFrameCountIsZero(
     SiteInstanceGroup* site_instance_group) {
   CheckIfSiteInstanceGroupIsUnused(site_instance_group, kActiveFrameCount);

@@ -279,6 +279,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayLcp);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
 
 // Specifies the default pref value for `glic:prefs::kGlicActuationOnWeb` for

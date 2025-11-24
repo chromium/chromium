@@ -513,11 +513,22 @@ class CONTENT_EXPORT FrameTree {
 
   // Returns true if at least one of the nodes in this frame tree or nodes in
   // any inner frame tree of the same WebContents is loading.
-  bool IsLoadingIncludingInnerFrameTrees() const;
+  // `exclude_ad_subframes` indicates whether ad subframes are excluded from the
+  // query.
+  //
+  // Note: For top-level navigation, even if only ad subframes remain loading,
+  // the main frame is still considered loading by this function. See comments
+  // on `WebContents::IsLoadingExcludingAdSubframes()`.
+  //
+  // TODO(crbug.com/461821799): Expand this to work with top-level navigation.
+  bool IsLoadingIncludingInnerFrameTrees(
+      bool exclude_ad_subframes = false) const;
 
   // Returns the LoadingState for the FrameTree as a whole, indicating whether
   // a load is in progress, as well as whether loading UI should be shown.
-  LoadingState GetLoadingState() const;
+  // `exclude_ad_subframes` indicates whether ad subframes are excluded from the
+  // query.
+  LoadingState GetLoadingState(bool exclude_ad_subframes = false) const;
 
   // Set page-level focus in all SiteInstances involved in rendering
   // this FrameTree, not including the current main frame's

@@ -2517,7 +2517,13 @@ SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
 }
 
 bool WebContentsImpl::IsLoading() {
-  return primary_frame_tree_.IsLoadingIncludingInnerFrameTrees();
+  return primary_frame_tree_.IsLoadingIncludingInnerFrameTrees(
+      /*exclude_ad_subframes=*/false);
+}
+
+bool WebContentsImpl::IsLoadingExcludingAdSubframes() const {
+  return primary_frame_tree_.IsLoadingIncludingInnerFrameTrees(
+      /*exclude_ad_subframes=*/true);
 }
 
 double WebContentsImpl::GetLoadProgress() {

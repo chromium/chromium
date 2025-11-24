@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -483,6 +484,82 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest,
   // is tracked but has no contentful paint.
   EXPECT_GE(timer.Elapsed(), base::Milliseconds(kLcpDelayInMs));
 }
+
+class ObservationDelayControllerExcludeAdRequestsTest
+    : public ObservationDelayControllerTest,
+      public base::test::WithFeatureOverride {
+ public:
+  ObservationDelayControllerExcludeAdRequestsTest()
+      : base::test::WithFeatureOverride(
+            features::kGlicActorObservationDelayExcludeAdFrameLoading) {}
+  ~ObservationDelayControllerExcludeAdRequestsTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(ObservationDelayControllerExcludeAdRequestsTest,
+                       ExcludeAdIframeLoad) {
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Append an iframe.
+  EXPECT_TRUE(content::ExecJs(main_frame(), R"(
+      const frame = document.createElement('iframe');
+      frame.id = 'child'
+      document.body.appendChild(frame);
+    )"));
+  RenderFrameHost* iframe_rfh = content::ChildFrameAt(main_frame(), 0);
+  ASSERT_TRUE(iframe_rfh);
+
+  // Mark the iframe as an ad frame.
+  iframe_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+
+  const GURL iframe_url = embedded_test_server()->GetURL("/actor/simple.html");
+  TestNavigationManager iframe_manager(web_contents(), iframe_url);
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  // Initiate iframe navigation.
+  ASSERT_TRUE(BeginNavigateIframeToURL(web_contents(), /*iframe_id=*/"child",
+                                       iframe_url));
+  ASSERT_TRUE(iframe_manager.WaitForRequestStart());
+
+  // The frame tree is loading because the iframe is loading. However, it is
+  // considered as not loading when excluding ad frames.
+  ASSERT_TRUE(web_contents()->IsLoading());
+  ASSERT_FALSE(web_contents()->IsLoadingExcludingAdSubframes());
+
+  TestFuture<void> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+
+  // Regardless of the feature status, the controller should move to wait for
+  // load completion state after the wait starts.
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
+
+  if (IsParamFeatureEnabled()) {
+    // The controller immediately advances to the next state as it excludes ad
+    // frames when waiting for load completion.
+    ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+    ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+  } else {
+    // The controller should stay in the waiting for load completion state until
+    // the iframe navigation finishes.
+    ASSERT_TRUE(
+        DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
+
+    // Complete the navigation. The controller should wait for visual update,
+    // then complete.
+    ASSERT_TRUE(iframe_manager.WaitForNavigationFinished());
+    ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+    ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+  }
+
+  ASSERT_TRUE(result.Wait());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ObservationDelayControllerExcludeAdRequestsTest);
 
 }  // namespace
 

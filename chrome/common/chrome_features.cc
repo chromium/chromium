@@ -371,6 +371,10 @@ const base::FeatureParam<base::TimeDelta> kActorObservationDelayTimeout{
 const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp{
     &kGlicActor, "actor-observation-delay-lcp", base::Seconds(1)};
 
+// If enabled, observation for page load excludes load in ad frames.
+BASE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether typing happens incrementally.
 BASE_FEATURE(kGlicActorIncrementalTyping, base::FEATURE_ENABLED_BY_DEFAULT);
 
