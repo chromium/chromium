@@ -17,6 +17,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/drive:drive_api",
     "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/public/provider/chrome/browser/keyboard:keyboard_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
