@@ -45,6 +45,11 @@ class ContextualSearchSessionHandle {
       delete;
   ~ContextualSearchSessionHandle();
 
+  // Provides a WeakPtr to this instance. The caller is responsible to only use
+  // this on the same sequence that the `ContextualSearchSessionHandle` is
+  // destructed on.
+  base::WeakPtr<ContextualSearchSessionHandle> AsWeakPtr();
+
   base::UnguessableToken session_id() const { return session_id_; }
 
   // Returns the ContextualSearchContextController reference held by this
@@ -126,6 +131,10 @@ class ContextualSearchSessionHandle {
   // handle may outlive the service.
   const base::WeakPtr<ContextualSearchService> service_;
   const base::UnguessableToken session_id_;
+
+  // This needs to be the last member to ensure all outstanding WeakPtrs are
+  // invalidated before the rest of the members.
+  base::WeakPtrFactory<ContextualSearchSessionHandle> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_search

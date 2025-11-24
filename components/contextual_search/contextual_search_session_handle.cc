@@ -211,4 +211,9 @@ ContextualSearchSessionHandle::GetUploadedContextTokens() const {
   return uploaded_context_tokens_;
 }
 
+base::WeakPtr<ContextualSearchSessionHandle>
+ContextualSearchSessionHandle::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace contextual_search

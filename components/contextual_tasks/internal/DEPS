@@ -1,5 +1,6 @@
 include_rules = [
   "+components/prefs",
+  "+components/contextual_search",
   "+components/history/core/browser",
   "+components/omnibox/browser",
   "+components/signin/public",
@@ -9,4 +10,8 @@ include_rules = [
   "+net/base",
   "+services/network/public/cpp/shared_url_loader_factory.h",
   "+third_party/re2",
+
+  # For pending_context_decorator_unittest.cc.
+  "+components/lens/contextual_input.h",
+  "+components/lens/proto/server/lens_overlay_response.pb.h",
 ]

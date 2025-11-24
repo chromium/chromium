@@ -33,6 +33,7 @@ source_set("internal") {
 
   deps = [
     "//base",
+    "//components/contextual_search:public",
     "//components/contextual_tasks/internal/proto",
     "//components/contextual_tasks/public",
     "//components/favicon/core",
@@ -70,6 +71,8 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/contextual_search:impl",
+    "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//components/favicon/core/test:test_support",
     "//components/history/core/browser",
