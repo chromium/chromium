@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
@@ -93,13 +94,31 @@ void ConvertConnectionDetails(const base::Value::Dict* dict,
 GetReceiverConnectionInfoRequest::GetReceiverConnectionInfoRequest(
     std::string_view receiver_id,
     ResponseCallback callback)
-    : receiver_id_(receiver_id), callback_(std::move(callback)) {}
+    : GetReceiverConnectionInfoRequest(receiver_id,
+                                       /*connection_id=*/std::nullopt,
+                                       std::move(callback)) {}
+
+GetReceiverConnectionInfoRequest::GetReceiverConnectionInfoRequest(
+    std::string_view receiver_id,
+    std::optional<std::string> connection_id,
+    ResponseCallback callback)
+    : receiver_id_(receiver_id),
+      connection_id_(std::move(connection_id)),
+      callback_(std::move(callback)) {}
 
 GetReceiverConnectionInfoRequest::~GetReceiverConnectionInfoRequest() = default;
 
 std::string GetReceiverConnectionInfoRequest::GetRelativeUrl() {
-  return base::ReplaceStringPlaceholders(kRelativeUrlTemplate, {receiver_id_},
-                                         /*offsets=*/nullptr);
+  constexpr std::string_view kQueryStringPrefix = "?";
+  const std::string url = base::ReplaceStringPlaceholders(
+      kRelativeUrlTemplate, {receiver_id_}, /*offsets=*/nullptr);
+  if (!connection_id_.has_value()) {
+    return url;
+  }
+  const std::string connection_id_query_param = base::ReplaceStringPlaceholders(
+      kConnectionIdQueryParam, {connection_id_.value()},
+      /*offsets=*/nullptr);
+  return base::StrCat({url, kQueryStringPrefix, connection_id_query_param});
 }
 
 std::optional<std::string> GetReceiverConnectionInfoRequest::GetRequestBody() {

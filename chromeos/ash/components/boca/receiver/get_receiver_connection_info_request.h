@@ -57,8 +57,13 @@ class GetReceiverConnectionInfoRequest : public boca::BocaRequest::Delegate {
 
   static constexpr std::string_view kRelativeUrlTemplate =
       "/v1/receivers/$1/kioskReceiver:getConnectionInfo";
+  static constexpr std::string_view kConnectionIdQueryParam = "connectionId=$1";
 
   GetReceiverConnectionInfoRequest(std::string_view receiver_id,
+                                   ResponseCallback callback);
+
+  GetReceiverConnectionInfoRequest(std::string_view receiver_id,
+                                   std::optional<std::string> connection_id,
                                    ResponseCallback callback);
 
   GetReceiverConnectionInfoRequest(const GetReceiverConnectionInfoRequest&) =
@@ -77,6 +82,7 @@ class GetReceiverConnectionInfoRequest : public boca::BocaRequest::Delegate {
 
  private:
   std::string receiver_id_;
+  std::optional<std::string> connection_id_;
   ResponseCallback callback_;
 };
 
