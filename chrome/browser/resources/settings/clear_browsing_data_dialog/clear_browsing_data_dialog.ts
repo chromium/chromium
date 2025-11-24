@@ -26,7 +26,7 @@ import '../people_page/sync_account_control.js';
 // </if>
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninAccessPoint, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -576,7 +576,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.syncBrowserProxy_.pauseSync();
       } else if (this.isSyncPaused_) {
         chrome.metricsPrivate.recordUserAction('ClearBrowsingData_Sync_SignIn');
-        this.syncBrowserProxy_.startSignIn();
+        this.syncBrowserProxy_.startSignIn(ChromeSigninAccessPoint.SETTINGS);
       } else {
         if (this.hasPassphraseError_) {
           chrome.metricsPrivate.recordUserAction(

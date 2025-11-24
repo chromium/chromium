@@ -25,7 +25,7 @@ import '../settings_shared.css.js';
 import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninAccessPoint, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -100,6 +100,12 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
       primaryAccountName_: String,
       primaryAccountEmail_: String,
       primaryAccountIconUrl_: String,
+
+      /** Expose ChromeSigninAccessPoint enum to HTML bindings. */
+      accessPointEnum_: {
+        type: Object,
+        value: ChromeSigninAccessPoint,
+      },
       // </if>
 
       // <if expr="is_chromeos">

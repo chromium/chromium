@@ -24,7 +24,7 @@ import {assert, assertNotReached} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninAccessPoint, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -123,6 +123,14 @@ export class SettingsSyncAccountControlElement extends
         reflectToAttribute: true,
       },
 
+      // This property should be set by the parent only and should not change
+      // after the element is created.
+      accessPoint: {
+        type: Number,
+        value: ChromeSigninAccessPoint.SETTINGS,
+        reflectToAttribute: true,
+      },
+
       shouldShowAvatarRow_: {
         type: Boolean,
         value: false,
@@ -178,6 +186,7 @@ export class SettingsSyncAccountControlElement extends
   declare embeddedInSubpage: boolean;
   declare hideButtons: boolean;
   declare hideBanner: boolean;
+  declare accessPoint: ChromeSigninAccessPoint;
   declare private shouldShowAvatarRow_: boolean;
   declare private subLabel_: string;
   declare private showSetupButtons_: boolean;
@@ -595,7 +604,7 @@ export class SettingsSyncAccountControlElement extends
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
       case StatusAction.REAUTHENTICATE:
-        this.syncBrowserProxy_.startSignIn();
+        this.syncBrowserProxy_.startSignIn(this.accessPoint);
         break;
       case StatusAction.UPGRADE_CLIENT:
         router.navigateTo(routes.ABOUT);
@@ -617,7 +626,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onSigninClick_() {
-    this.syncBrowserProxy_.startSignIn();
+    this.syncBrowserProxy_.startSignIn(this.accessPoint);
     // Need to close here since one menu item also triggers this function.
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (actionMenu) {

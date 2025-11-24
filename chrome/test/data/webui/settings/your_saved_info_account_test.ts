@@ -12,7 +12,7 @@ import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format off
 // <if expr="not is_chromeos">
-import {Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import {ChromeSigninAccessPoint, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 // </if>
 // clang-format on
@@ -151,6 +151,42 @@ suite('YourSavedInfoAccount', function() {
     await flush();
 
     assertFalse(isChildVisible(accountCardElement, '#account-card'));
+  });
+
+  test('signInRecordsCorrectMetric', async function() {
+    loadTimeData.overrideValues({
+      signinAllowed: true,
+    });
+    resetRouterForTesting();
+    createAccountCardElement();
+    syncBrowserProxy.storedAccounts = [];
+    await syncBrowserProxy.whenCalled('getSyncStatus');
+    await setupSync({
+      syncSystemEnabled: true,
+      signinAllowed: true,
+      signedInState: SignedInState.SIGNED_OUT,
+      statusAction: StatusAction.NO_ACTION,
+      hasError: false,
+    });
+
+    assertTrue(
+        isChildVisible(accountCardElement, 'settings-sync-account-control'),
+        'sync-account-control should be visible');
+    const syncControl =
+        accountCardElement.shadowRoot!.querySelector<HTMLElement>(
+            'settings-sync-account-control')!;
+
+    assertTrue(
+        isChildVisible(syncControl, '#signIn'),
+        'Sign-in button should be visible');
+    const signInButton =
+        syncControl.shadowRoot!.querySelector<HTMLElement>('#signIn')!;
+    signInButton.click();
+
+    const accessPoint = await syncBrowserProxy.whenCalled('startSignIn');
+    assertEquals(
+        ChromeSigninAccessPoint.SETTINGS_YOUR_SAVED_INFO, accessPoint,
+        'Sign-in should be called with SettingsYourSavedInfo Access point');
   });
   // </if>
 

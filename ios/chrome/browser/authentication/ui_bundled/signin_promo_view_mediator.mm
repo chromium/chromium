@@ -68,6 +68,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kReadingList:
       return true;
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     // TODO(crbug.com/40280655): Pass kTabSwitcher and not recent
     // tabs in the tab switcher promo.
     case signin_metrics::AccessPoint::kTabSwitcher:
@@ -176,6 +177,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
       break;
     case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
@@ -283,6 +285,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
       break;
     case signin_metrics::AccessPoint::kEnterpriseSignoutCoordinator:
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
@@ -378,6 +381,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:
@@ -473,6 +477,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListPromoAlreadySeen;
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kTabSwitcher:
     case signin_metrics::AccessPoint::kStartPage:

@@ -70,7 +70,8 @@ void SignInFunctions::SignInFromSettings(
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().startSignIn();")));
+          "settings.SyncBrowserProxyImpl.getInstance()."
+          "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
   signin_tab_waiter.Wait();
   SignInFromCurrentPage(browser->tab_strip_model()->GetActiveWebContents(),
                         test_account, previously_signed_in_accounts);
@@ -139,7 +140,8 @@ void SignInFunctions::StartSignInFromSettings() {
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().startSignIn();")));
+          "settings.SyncBrowserProxyImpl.getInstance()."
+          "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
   signin_tab_waiter.Wait();
   login_ui_test_utils::WaitForSigninPageToLoad(
       browser->tab_strip_model()->GetActiveWebContents());

@@ -566,7 +566,9 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
                            signin_metrics::AccessPoint::kSettings,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
-  handler_->HandleStartSignin(base::Value::List());
+  base::Value::List args;
+  args.Append(0);
+  handler_->HandleStartSignin(args);
 
   // The sign-in flow setup hands off control to the gaia login tab.
   EXPECT_EQ(
@@ -1600,7 +1602,9 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
       ShowReauthUI(profile(), kManagedEmail, /*enable_sync=*/false,
                    signin_metrics::AccessPoint::kSettings,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
-  web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", base::Value::List());
+  base::Value::List args;
+  args.Append(0);
+  web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", args);
 }
 
 TEST_F(PeopleHandlerTest, SigninPendingValueWithSync) {
