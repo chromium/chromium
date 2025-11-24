@@ -28,6 +28,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
+
+static constexpr const char kPasskeyReadinessHistogram[] =
+    "WebAuthentication.PasskeyReadiness";
+
 // TODO(crbug.com/456454164): Don't pass the profile directly to the
 // constructor.
 PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
@@ -43,6 +47,7 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
   }
   if (enclave_manager->is_loaded()) {
     enclave_ready_ = enclave_manager->is_ready();
+    MaybeRecordDelayedPasskeyReadinessHistogram();
   } else {
     enclave_manager->LoadAfterDelay(
         base::Minutes(4), base::BindOnce(&PasskeyUnlockManager::OnStateUpdated,
@@ -239,6 +244,7 @@ void PasskeyUnlockManager::Shutdown() {
 void PasskeyUnlockManager::OnStateUpdated() {
   enclave_ready_ = enclave_manager()->is_ready();
   ComputeShouldDisplayErrorUiAndNotifyObservers();
+  MaybeRecordDelayedPasskeyReadinessHistogram();
 }
 
 void PasskeyUnlockManager::OnPasskeysChanged(
@@ -280,6 +286,24 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasskeyCountHistogram() {
 void PasskeyUnlockManager::RecordPasskeyCountHistogram() {
   base::UmaHistogramCounts1000("WebAuthentication.PasskeyCount",
                                passkey_model()->GetAllPasskeys().size());
+}
+
+void PasskeyUnlockManager::MaybeRecordDelayedPasskeyReadinessHistogram() {
+  if (passkey_readiness_recorded_on_startup_ ||
+      !enclave_manager()->is_loaded()) {
+    return;
+  }
+  passkey_readiness_recorded_on_startup_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasskeyUnlockManager::RecordPasskeyReadinessHistogram,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(30));
+}
+
+void PasskeyUnlockManager::RecordPasskeyReadinessHistogram() {
+  base::UmaHistogramBoolean(kPasskeyReadinessHistogram,
+                            enclave_manager()->is_ready());
 }
 
 }  // namespace webauthn

@@ -365,6 +365,28 @@ TEST_F(PasskeyUnlockManagerTest, TextLablesForDifferentUiExperimentArms) {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK));
 }
 
+TEST_F(PasskeyUnlockManagerTest,
+       LogsPasskeyReadinessHistogramWhenPasskeysReady) {
+  base::HistogramTester histogram_tester;
+  SetUpEnclaveManager(/*ready=*/true);
+  SetUpPasskeyUnlockManager();
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectBucketCount("WebAuthentication.PasskeyReadiness", true,
+                                     1);
+}
+
+TEST_F(PasskeyUnlockManagerTest,
+       LogsPasskeyReadinessHistogramWhenPasskeysLocked) {
+  base::HistogramTester histogram_tester;
+  SetUpEnclaveManager(/*ready=*/false);
+  SetUpPasskeyUnlockManager();
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectBucketCount("WebAuthentication.PasskeyReadiness",
+                                     false, 1);
+}
+
 }  // namespace
 
 }  // namespace webauthn

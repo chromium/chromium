@@ -158,6 +158,10 @@ class PasskeyUnlockManager : public KeyedService,
   void MaybeRecordDelayedPasskeyCountHistogram();
   // Records the `WebAuthentication.PasskeyCount` histogram.
   void RecordPasskeyCountHistogram();
+  // Schedules recording the `WebAuthentication.PasskeyReadiness` histogram.
+  void MaybeRecordDelayedPasskeyReadinessHistogram();
+  // Records the `WebAuthentication.PasskeyReadiness` histogram.
+  void RecordPasskeyReadinessHistogram();
 
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
@@ -172,6 +176,10 @@ class PasskeyUnlockManager : public KeyedService,
   // histogram needs to recorded. Set to true iff histogram was already
   // recorded.
   bool passkey_count_recorded_on_startup_ = false;
+  // Used for UMA to determine whether `WebAuthentication.PasskeyReadiness`
+  // histogram needs to recorded. Set to true iff histogram was already
+  // recorded.
+  bool passkey_readiness_recorded_on_startup_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

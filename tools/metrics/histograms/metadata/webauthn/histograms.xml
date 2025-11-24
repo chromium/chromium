@@ -539,6 +539,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.PasskeyReadiness" enum="Boolean"
+    expires_after="2026-03-22">
+  <owner>izuzic@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the readiness state of passkeys stored in Google Password Manager.
+    Tracks if Chrome clients are in a passkey ready state. Passkey ready state
+    means that the client is able to create and store new passkeys and is able
+    to use existing passkeys for signing in. Recorded on desktop, on Chrome
+    startup when enclave manager is loaded.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.PasskeyUnlock.ErrorUi.Event"
     enum="WebAuthenticationPasskeyUnlockErrorUiEvent"
     expires_after="2026-03-22">
