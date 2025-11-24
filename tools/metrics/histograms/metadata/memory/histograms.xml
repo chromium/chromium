@@ -872,13 +872,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.BloomFilterMaxSaturation{Process}"
-    units="%" expires_after="2026-03-22">
+    units="bits" expires_after="2026-03-22">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The number of bits set in PoissonAllocationSampler's bloom filter in
     {Process}, since the last heap snapshot was taken. Emitted once per snapshot
-    when the in-process heap profiler is enabled.
+    when the in-process heap profiler is enabled. The bloom filter is 64 bits
+    wide.
   </summary>
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
