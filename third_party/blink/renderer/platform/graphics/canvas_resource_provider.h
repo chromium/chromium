@@ -363,9 +363,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
-  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
  protected:
+  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
+
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
