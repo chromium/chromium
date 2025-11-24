@@ -695,13 +695,12 @@ void StyleEngine::UpdateActiveStyleSheets() {
   // Now create the actual RuleSets.
   if (ShouldUpdateDocumentStyleSheetCollection()) {
     document_style_sheet_collection_->FinishUpdateActiveStyleSheets(
-        medium, document_style_sheet_collection_->Mixins());
+        document_style_sheet_collection_->Mixins());
   }
   if (ShouldUpdateShadowTreeStyleSheetCollection()) {
     for (TreeScope* tree_scope : dirty_tree_scopes_) {
       StyleSheetCollection& collection = *StyleSheetCollectionFor(*tree_scope);
       collection.FinishUpdateActiveStyleSheets(
-          EnsureMediaQueryEvaluator(),
           EffectiveMixinsForTreeScope(*tree_scope));
       if (!collection.HasStyleSheetCandidateNodes() &&
           !tree_scope->HasAdoptedStyleSheets()) {

@@ -111,8 +111,7 @@ class CORE_EXPORT StyleSheetCollection
   void PrepareUpdateActiveStyleSheets(const MediaQueryEvaluator&);
 
   // Must be called once, after all PrepareUpdateActiveStyleSheets().
-  void FinishUpdateActiveStyleSheets(const MediaQueryEvaluator&,
-                                     const MixinMap& effective_mixins);
+  void FinishUpdateActiveStyleSheets(const MixinMap& effective_mixins);
 
  private:
   friend class StyleCascadeTest;

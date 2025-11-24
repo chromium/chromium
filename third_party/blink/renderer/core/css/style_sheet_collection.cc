@@ -43,16 +43,14 @@
 namespace blink {
 
 static void CreateRuleSets(const StyleEngine& engine,
-                           const MediaQueryEvaluator& medium,
                            const MixinMap& effective_mixins,
                            ActiveStyleSheetVector& active_style_sheets,
                            HeapVector<Member<RuleSetDiff>>& rule_set_diffs);
 
 void StyleSheetCollection::FinishUpdateActiveStyleSheets(
-    const MediaQueryEvaluator& medium,
     const MixinMap& effective_mixins) {
   HeapVector<Member<RuleSetDiff>> rule_set_diffs;
-  CreateRuleSets(GetDocument().GetStyleEngine(), medium, effective_mixins,
+  CreateRuleSets(GetDocument().GetStyleEngine(), effective_mixins,
                  pending_active_style_sheets_, rule_set_diffs);
 
   // We need to clear this before ApplyRuleSetChanges(),
@@ -76,7 +74,6 @@ void StyleSheetCollection::FinishUpdateActiveStyleSheets(
 //
 // Can only be called once.
 static void CreateRuleSets(const StyleEngine& engine,
-                           const MediaQueryEvaluator& medium,
                            const MixinMap& effective_mixins,
                            ActiveStyleSheetVector& active_style_sheets,
                            HeapVector<Member<RuleSetDiff>>& rule_set_diffs) {

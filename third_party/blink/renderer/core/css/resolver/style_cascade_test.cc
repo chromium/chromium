@@ -366,8 +366,7 @@ class StyleCascadeTest : public PageTestBase {
     StyleSheetCollection& collection =
         GetDocument().GetStyleEngine().GetDocumentStyleSheetCollection();
     collection.AddPendingActiveStyleSheetForTest(sheet);
-    collection.FinishUpdateActiveStyleSheets(
-        MediaQueryEvaluator(GetDocument().GetFrame()), /*effective_mixins=*/{});
+    collection.FinishUpdateActiveStyleSheets(/*effective_mixins=*/{});
   }
 
   Element* DocumentElement() const { return GetDocument().documentElement(); }
