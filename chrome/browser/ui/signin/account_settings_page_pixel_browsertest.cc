@@ -112,11 +112,16 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
                      WaitForWebContentsPainted(kActiveTab));
     }
 
+    const DeepQuery kSettingAccountPageQuery = {
+        "settings-ui", "settings-main#main", "settings-people-page-index",
+        "settings-account-page#account", "settings-subpage"};
+
     steps +=
         Steps(SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not supported in all testing environments."),
-              Screenshot(kActiveTab, screenshot_name, kScreenshotBaselineCL));
+              ScreenshotWebUi(kActiveTab, kSettingAccountPageQuery,
+                              screenshot_name, kScreenshotBaselineCL));
 
     return steps;
   }
