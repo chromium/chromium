@@ -40,7 +40,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -114,6 +113,13 @@ public class PaintPreviewPlayerTest {
 
     @After
     public void tearDown() throws Exception {
+        // overscrollRefreshTest() swipes near the top of the screen and may open the status bar.
+        //
+        // Collapse the status bar to avoid it breaking other tests (crbug.com/354279630).
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .executeShellCommand("cmd statusbar collapse");
+
         ThreadUtils.runOnUiThreadBlocking(mPlayerManager::destroy);
     }
 
@@ -217,18 +223,14 @@ public class PaintPreviewPlayerTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Test is flaky on Android 14, see crbug.com/354279630")
     public void overscrollRefreshTest() throws Exception {
         initPlayerManager(true);
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         int deviceHeight = uiDevice.getDisplayHeight();
         int statusBarHeight = statusBarHeight();
-        int navigationBarHeight = navigationBarHeight();
-        int padding = 20;
-        int toY = deviceHeight - navigationBarHeight - padding;
-        int fromY = statusBarHeight + padding;
+        int viewportHeight = deviceHeight - statusBarHeight - navigationBarHeight();
+        int fromY = statusBarHeight + viewportHeight / 4;
+        int toY = statusBarHeight + viewportHeight * 3 / 4;
         uiDevice.swipe(50, fromY, 50, toY, 5);
 
         mRefreshedCallback.waitForOnly();
