@@ -125,7 +125,6 @@ policy::CloudPolicyManager* ProfileReportGeneratorIOS::GetCloudPolicyManager(
   DCHECK(base::FeatureList::IsEnabled(
       enterprise_reporting::kCloudProfileReporting));
   // Profile report will include user cloud policy information by default.
-  // Or ProfileCloudPolicyManager when it's not managed by gaia account.
   return profile_->GetUserCloudPolicyManager();
 }
 
