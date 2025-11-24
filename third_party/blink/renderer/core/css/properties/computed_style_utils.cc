@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -765,15 +766,24 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
 
   const Length& offset = *positions.first;
   const Length& opposite = *positions.second;
-  const auto* box = DynamicTo<LayoutBox>(layout_object);
 
-  // In this case, the used value is the computed value, so we resolve directly.
+  // Just return the computed-value if:
+  //  - We don't have a layout-object.
+  //  - The layout-object isn't positioned.
+  //  - We just want the computed-value.
+  if (!layout_object || !layout_object->IsPositioned() ||
+      value_phase == CSSValuePhase::kComputedValue) {
+    return ZoomAdjustedPixelValueForLength(offset, style);
+  }
+
+  // Any fixed lengths can be directly resolved.
   if (offset.IsFixed()) {
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
-  if (value_phase == CSSValuePhase::kResolvedValue && box &&
-      box->IsOutOfFlowPositioned()) {
+  auto& document = layout_object->GetDocument();
+  const auto* box = DynamicTo<LayoutBox>(layout_object);
+  if (box && box->IsOutOfFlowPositioned()) {
     // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
     // container's writing direction. Convert it to physical.
     const PhysicalBoxStrut& insets =
@@ -799,8 +809,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if (value_phase == CSSValuePhase::kResolvedValue &&
-      (offset.IsPercent() || offset.IsCalculated()) && box &&
+  if ((offset.IsPercent() || offset.IsCalculated()) && box &&
       box->IsPositioned()) {
     LayoutUnit containing_block_size;
     if (box->IsStickyPositioned()) {
@@ -811,8 +820,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       containing_block_size = use_inline_size
                                   ? scroll_container->ContentLogicalWidth()
                                   : scroll_container->ContentLogicalHeight();
-      UseCounter::Count(box->GetDocument(),
-                        WebFeature::kPercentOrCalcStickyUsedOffset);
+      UseCounter::Count(document, WebFeature::kPercentOrCalcStickyUsedOffset);
     } else {
       DCHECK(box->IsRelPositioned());
       containing_block_size =
@@ -820,18 +828,15 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
                   box->ContainingBlock()->IsHorizontalWritingMode()
               ? box->ContainingBlockLogicalWidthForContent()
               : box->ContainingBlockLogicalHeightForRelPositioned();
-      UseCounter::Count(box->GetDocument(),
-                        WebFeature::kPercentOrCalcRelativeUsedOffset);
+      UseCounter::Count(document, WebFeature::kPercentOrCalcRelativeUsedOffset);
     }
 
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
                                   style);
   }
 
-  if (value_phase == CSSValuePhase::kResolvedValue && offset.IsAuto() &&
-      layout_object && layout_object->IsRelPositioned()) {
-    UseCounter::Count(layout_object->GetDocument(),
-                      WebFeature::kAutoRelativeUsedOffset);
+  if (offset.IsAuto() && layout_object->IsRelPositioned()) {
+    UseCounter::Count(document, WebFeature::kAutoRelativeUsedOffset);
     // If e.g. left is auto and right is not auto, then left's computed value
     // is negative right. So we get the opposite length unit and see if it is
     // auto.
@@ -857,10 +862,6 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     DCHECK_EQ(opposite.GetType(), Length::Type::kFixed);
     Length negated_opposite = Length(-opposite.Pixels(), opposite.GetType());
     return ZoomAdjustedPixelValueForLength(negated_opposite, style);
-  }
-
-  if (offset.IsAuto()) {
-    return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
   // Fixed lengths must have been handled by previous branches.
