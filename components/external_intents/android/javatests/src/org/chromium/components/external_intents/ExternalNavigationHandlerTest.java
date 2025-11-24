@@ -52,6 +52,8 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.external_intents.ExternalNavigationHandler.IncognitoDialogDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
+import org.chromium.components.external_intents.ExternalNavigationHandler.QueryIntentActivitiesSupplier;
+import org.chromium.components.external_intents.ExternalNavigationHandler.ResolveActivitySupplier;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams.AsyncActionTakenType;
 import org.chromium.content_public.browser.WebContents;
@@ -3660,6 +3662,16 @@ public class ExternalNavigationHandlerTest {
         @Override
         public Intent createIntentToPreventIncognitoAccess(GURL url) {
             return null;
+        }
+
+        @Override
+        public boolean wasTabLaunchedFromLinkCreatingNewForegroundTab() {
+            return false;
+        }
+
+        @Override
+        public boolean wasTabLaunchedFromLinkCreatingNewWindow() {
+            return false;
         }
 
         public void reset() {

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,7 +52,6 @@ import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -293,6 +293,8 @@ public class CustomTabExternalNavigationTest {
     @Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
     public void testShouldDisableExternalIntentRequestsForUrl() throws TimeoutException {
         setUpTwa();
+        mNavigationDelegate.setTabLaunchTypeForTesting(TabLaunchType.FROM_LONGPRESS_FOREGROUND);
+
         GURL insideVerifiedOriginUrl =
                 new GURL(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         GURL outsideVerifiedOriginUrl = new GURL("https://example.com/test.html");
@@ -314,9 +316,7 @@ public class CustomTabExternalNavigationTest {
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(false)
                         .setIsInitialNavigationInFrame(true)
-                        .setOriginalWindowOpenDisposition(WindowOpenDisposition.NEW_FOREGROUND_TAB)
                         .build();
-
         assertTrue(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params1, intent));
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
 
@@ -331,9 +331,7 @@ public class CustomTabExternalNavigationTest {
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(true)
                         .setIsInitialNavigationInFrame(true)
-                        .setOriginalWindowOpenDisposition(WindowOpenDisposition.NEW_FOREGROUND_TAB)
                         .build();
-
         assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params2, intent));
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
 
@@ -349,7 +347,6 @@ public class CustomTabExternalNavigationTest {
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(true)
                         .setIsInitialNavigationInFrame(true)
-                        .setOriginalWindowOpenDisposition(WindowOpenDisposition.NEW_FOREGROUND_TAB)
                         .build();
         assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params3, intent));
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0);

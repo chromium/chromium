@@ -181,4 +181,16 @@ public interface ExternalNavigationDelegate {
      * should be prevented. Returns null otherwise.
      */
     @Nullable Intent createIntentToPreventIncognitoAccess(GURL url);
+
+    /**
+     * Returns true if the tab associated with this client was launched from a link opening a new
+     * foreground tab.
+     */
+    boolean wasTabLaunchedFromLinkCreatingNewForegroundTab();
+
+    /**
+     * Returns true if the tab associated with this client was launched from a link opening a new
+     * window.
+     */
+    boolean wasTabLaunchedFromLinkCreatingNewWindow();
 }

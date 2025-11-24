@@ -70,7 +70,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -1702,8 +1701,7 @@ public class ExternalNavigationHandler {
                 && isInDesktopWindowingMode
                 && webContents != null
                 && webContents.hasOpener()
-                && webContents.getOriginalWindowOpenDisposition()
-                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && mDelegate.wasTabLaunchedFromLinkCreatingNewForegroundTab()
                 && UrlUtilities.isHttpOrHttps(url);
     }
 
@@ -1718,8 +1716,7 @@ public class ExternalNavigationHandler {
                 && params.isTabInBrowser()
                 && webContents != null
                 && webContents.hasOpener()
-                && webContents.getOriginalWindowOpenDisposition()
-                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && mDelegate.wasTabLaunchedFromLinkCreatingNewForegroundTab()
                 && UrlUtilities.isHttpOrHttps(params.getUrl())) {
             if (debug()) {
                 Log.i(TAG, "Auxiliary browsing context navigation from browser is not overridden.");

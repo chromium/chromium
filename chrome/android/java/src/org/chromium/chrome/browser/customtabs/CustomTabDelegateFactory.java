@@ -68,7 +68,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -140,11 +139,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             WebContents webContents = getWebContents();
             if (ChromeFeatureList.sAndroidWebAppLaunchHandler.isEnabled()
                     && webContents != null
-                    && params.getOriginalWindowOpenDisposition()
-                            == WindowOpenDisposition.NEW_FOREGROUND_TAB
                     && !webContents.hasOpener()
                     && params.isTabInPWA()
                     && params.isInitialNavigationInFrame()
+                    && wasTabLaunchedFromLinkCreatingNewForegroundTab()
                     && shouldIgnore) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 return false;

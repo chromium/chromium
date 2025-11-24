@@ -100,7 +100,6 @@ public class ExternalNavigationParams {
     private final long mNavigationId;
     private final boolean mIsTabInPWA;
     private final boolean mIsInDesktopWindowingMode;
-    private final int mOriginalWindowOpenDisposition;
     private final boolean mIsTabInBrowser;
 
     // Populated when an async action is taken, ensuring the callback gets called.
@@ -127,7 +126,6 @@ public class ExternalNavigationParams {
             long navigationId,
             boolean isTabInPWA,
             boolean isInDesktopWindowingMode,
-            int originalWindowOpenDisposition,
             boolean isTabInBrowser) {
         mUrl = url;
         mIsIncognito = isIncognito;
@@ -149,7 +147,6 @@ public class ExternalNavigationParams {
         mNavigationId = navigationId;
         mIsTabInPWA = isTabInPWA;
         mIsInDesktopWindowingMode = isInDesktopWindowingMode;
-        mOriginalWindowOpenDisposition = originalWindowOpenDisposition;
         mIsTabInBrowser = isTabInBrowser;
     }
 
@@ -282,14 +279,6 @@ public class ExternalNavigationParams {
     }
 
     /**
-     * @return the window open disposition that was originally requested when this WebContents was
-     *     created.
-     */
-    public int getOriginalWindowOpenDisposition() {
-        return mOriginalWindowOpenDisposition;
-    }
-
-    /**
      * @return whether the tab is a regular browser tab.
      */
     public boolean isTabInBrowser() {
@@ -318,7 +307,6 @@ public class ExternalNavigationParams {
         private long mNavigationId;
         private boolean mIsTabInPWA;
         private boolean mIsInDesktopWindowingMode;
-        private int mOriginalWindowOpenDisposition;
         private boolean mIsTabInBrowser;
 
         public Builder(GURL url, boolean isIncognito) {
@@ -428,15 +416,6 @@ public class ExternalNavigationParams {
             return this;
         }
 
-        /**
-         * Sets the window open disposition that was originally requested when this WebContents was
-         * created.
-         */
-        public Builder setOriginalWindowOpenDisposition(int v) {
-            mOriginalWindowOpenDisposition = v;
-            return this;
-        }
-
         /** Sets whether the tab is a regular browser tab. */
         public Builder setIsTabInBrowser(boolean v) {
             mIsTabInBrowser = v;
@@ -468,7 +447,6 @@ public class ExternalNavigationParams {
                     mNavigationId,
                     mIsTabInPWA,
                     mIsInDesktopWindowingMode,
-                    mOriginalWindowOpenDisposition,
                     mIsTabInBrowser);
         }
     }

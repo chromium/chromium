@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsReco
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -57,6 +58,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     private final @Nullable Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private boolean mIsTabDestroyed;
+    private @TabLaunchType int mTabLaunchType;
 
     private static @Nullable Predicate<Intent> sWillChromeHandleIntentHookForTesting;
 
@@ -72,6 +74,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
                     }
                 };
         mTab.addObserver(mTabObserver);
+        mTabLaunchType = tab.getLaunchType();
     }
 
     @Override
@@ -293,5 +296,28 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
 
         return intent;
+    }
+
+    @Override
+    public boolean wasTabLaunchedFromLinkCreatingNewForegroundTab() {
+        return mTabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                || mTabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
+    }
+
+    @Override
+    public boolean wasTabLaunchedFromLinkCreatingNewWindow() {
+        return mTabLaunchType == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW;
+    }
+
+    /**
+     * Sets the {@link TabLaunchType} for this delegate for testing purposes. This has no effect on
+     * the related Tab launch type.
+     *
+     * @param launchType The {@link TabLaunchType} to set for this delegate.
+     */
+    public void setTabLaunchTypeForTesting(@TabLaunchType int launchType) {
+        @TabLaunchType int originalTabLaunchType = mTabLaunchType;
+        mTabLaunchType = launchType;
+        ResettersForTesting.register(() -> mTabLaunchType = originalTabLaunchType);
     }
 }
