@@ -327,7 +327,7 @@ BASE_FEATURE_ENUM_PARAM(SidePanelRelativeAlignment,
                         SidePanelRelativeAlignment::kShowPanelsOnOppositeSides,
                         &kSidePanelRelativeAlignmentOptions);
 
-BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
