@@ -62,8 +62,13 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
 
   UIView* transitionContainerView = [transitionContext containerView];
   UIView* entrypointCopy = [animationBase entrypointViewVisualCopy];
-  CGRect frameee = entrypointCopy.frame;
-  NSLog(@"%f", frameee.origin.x);
+  // Where the entrypoint is not available as a shared element, fallback to
+  // a different transition.
+  if (!entrypointCopy) {
+    [self animateTransitionWihoutSharedElement:transitionContext];
+    return;
+  }
+
   [transitionContainerView addSubview:entrypointCopy];
   [entrypointCopy layoutIfNeeded];
 
@@ -99,8 +104,8 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                                             finalCornerRadius;
                                         [entrypointCopy layoutIfNeeded];
                                       }];
-        // The content vies of the visual copy (but not the container itself)
-        // start faiding.
+        // The content of the visual copy (but not the container itself)
+        // start fading.
         [UIView addKeyframeWithRelativeStartTime:0.0
                                 relativeDuration:0.7
                                       animations:^{
@@ -150,6 +155,57 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
         // Once the transition is complete the real view can be revealed in the
         // background.
         [animationBase setEntrypointViewHidden:NO];
+      }];
+}
+
+- (void)animateTransitionWihoutSharedElement:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+  __weak id<ComposeboxAnimationContextProvider> contextProvider =
+      _contextProvider;
+  BOOL toggleOnAIM = self.toggleOnAIM;
+
+  contextProvider.inputPlateViewForAnimation.alpha = 0;
+  contextProvider.closeButtonForAnimation.alpha = 0;
+  contextProvider.inputPlateViewForAnimation.transform =
+      CGAffineTransformMakeScale(kInitialScaleForAppear,
+                                 kInitialScaleForAppear);
+  contextProvider.closeButtonForAnimation.transform =
+      CGAffineTransformMakeScale(kInitialScaleForAppear,
+                                 kInitialScaleForAppear);
+
+  [UIView
+      animateKeyframesWithDuration:[self transitionDuration:transitionContext]
+      delay:0
+      options:UIViewAnimationCurveEaseInOut
+      animations:^{
+        // Scale and reveal the close button and the input plate.
+        [UIView
+            addKeyframeWithRelativeStartTime:0
+                            relativeDuration:1
+                                  animations:^{
+                                    contextProvider.closeButtonForAnimation
+                                        .alpha = 1;
+                                    contextProvider.closeButtonForAnimation
+                                        .transform =
+                                        CGAffineTransformMakeScale(1, 1);
+                                    contextProvider.inputPlateViewForAnimation
+                                        .alpha = 1;
+                                    contextProvider.inputPlateViewForAnimation
+                                        .transform =
+                                        CGAffineTransformMakeScale(1, 1);
+                                  }];
+        // Enables AIM if needed.
+        [UIView
+            addKeyframeWithRelativeStartTime:0.2
+                            relativeDuration:0.8
+                                  animations:^{
+                                    if (toggleOnAIM) {
+                                      [contextProvider setAIModeEnabled:YES];
+                                    }
+                                  }];
+      }
+      completion:^(BOOL finished) {
+        [transitionContext completeTransition:finished];
       }];
 }
 

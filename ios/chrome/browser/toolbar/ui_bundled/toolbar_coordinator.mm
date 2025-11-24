@@ -916,6 +916,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (UIView*)entrypointViewVisualCopy {
+  if (_omniboxPosition == ToolbarType::kSecondary || [self isNTP]) {
+    return nil;
+  }
+
   AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
       [self coordinatorWithToolbarType:_omniboxPosition];
   UIView* locationBarContainer =
@@ -944,6 +948,15 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   ]];
 
   return entrypointCopy;
+}
+
+- (BOOL)isNTP {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return NO;
+  }
+  return IsVisibleURLNewTabPage(webState);
 }
 
 @end
