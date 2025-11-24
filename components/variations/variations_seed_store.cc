@@ -1133,4 +1133,15 @@ void VariationsSeedStore::AllowToPurgeSeedsDataFromMemory() {
   safe_seed_store_->AllowToPurgeSeedDataFromMemory();
 }
 
+void VariationsSeedStore::GetStoredSeedInfoForDebugging(
+    base::OnceCallback<void(StoredSeedInfo)> done_callback,
+    SeedType seed_type) {
+  if (seed_type == SeedType::LATEST) {
+    seed_reader_writer_->GetStoredSeedInfoForDebugging(
+        std::move(done_callback));
+  } else {
+    safe_seed_store_->GetStoredSeedInfoForDebugging(std::move(done_callback));
+  }
+}
+
 }  // namespace variations

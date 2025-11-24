@@ -266,6 +266,12 @@ class VariationsService
   // no seed.
   base::Time GetLatestSeedFetchTime();
 
+  // Calls `done_callback` with the stored seed info for debugging. Reads either
+  // the latest or the safe seed, according to the specified `seed_type`.
+  void GetStoredSeedInfoForDebugging(
+      base::OnceCallback<void(StoredSeedInfo)> done_callback,
+      VariationsSeedStore::SeedType seed_type);
+
  protected:
   // Gets the serial number of the most recent Finch seed. Virtual for testing.
   virtual const std::string& GetLatestSerialNumber();

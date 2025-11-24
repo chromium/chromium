@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/metrics_service_observer.h"
+#include "components/variations/variations_seed_store.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
 
@@ -44,6 +45,9 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler,
   metrics::MetricsServiceObserver* GetUmaObserver();
 
   void HandleFetchVariationsSummary(const base::Value::List& args);
+  void HandleFetchStoredSeedInfo(
+      variations::VariationsSeedStore::SeedType seed_type,
+      const base::Value::List& args);
   void HandleFetchUmaSummary(const base::Value::List& args);
   void HandleFetchUmaLogsData(const base::Value::List& args);
   void HandleFetchEncryptionPublicKey(const base::Value::List& args);

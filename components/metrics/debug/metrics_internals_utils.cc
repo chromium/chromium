@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -125,6 +126,31 @@ base::Value::Dict CreateKeyValueDict(std::string_view key,
   return dict;
 }
 
+void StoredSeedInfoToKeyValueList(
+    base::OnceCallback<void(base::ValueView)> done_callback,
+    variations::StoredSeedInfo stored_seed_info) {
+  base::Value::List list;
+  // We need to encode the seed data so it's valid utf-8.
+  list.Append(CreateKeyValueDict("Seed Data",
+                                 base::Base64Encode(stored_seed_info.data())));
+  list.Append(
+      CreateKeyValueDict("Seed Signature", stored_seed_info.signature()));
+  list.Append(CreateKeyValueDict(
+      "Seed Milestone", base::NumberToString(stored_seed_info.milestone())));
+  list.Append(CreateKeyValueDict(
+      "Seed Date", base::NumberToString(stored_seed_info.seed_date())));
+  list.Append(CreateKeyValueDict(
+      "Client Fetch Time",
+      base::NumberToString(stored_seed_info.client_fetch_time())));
+  list.Append(CreateKeyValueDict("Session Country Code",
+                                 stored_seed_info.session_country_code()));
+  list.Append(CreateKeyValueDict("Permanent Country Code",
+                                 stored_seed_info.permanent_country_code()));
+  list.Append(CreateKeyValueDict("Permanent Version",
+                                 stored_seed_info.permanent_version()));
+  std::move(done_callback).Run(std::move(list));
+}
+
 }  // namespace
 
 base::Value::List GetUmaSummary(MetricsService* metrics_service) {
@@ -173,6 +199,17 @@ base::Value::List GetVariationsSummary(
                                  GoogleGroupsToString(state->GoogleGroups())));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return list;
+}
+
+void GetStoredSeedInfo(
+    base::OnceCallback<void(base::ValueView)> done_callback,
+    metrics_services_manager::MetricsServicesManager* metrics_service_manager,
+    variations::VariationsSeedStore::SeedType seed_type) {
+  metrics_service_manager->GetVariationsService()
+      ->GetStoredSeedInfoForDebugging(
+          base::BindOnce(&StoredSeedInfoToKeyValueList,
+                         std::move(done_callback)),
+          seed_type);
 }
 
 }  // namespace metrics

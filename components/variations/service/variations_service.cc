@@ -985,6 +985,13 @@ base::Time VariationsService::GetLatestSeedFetchTime() {
   return field_trial_creator_.seed_store()->GetLatestSeedFetchTime();
 }
 
+void VariationsService::GetStoredSeedInfoForDebugging(
+    base::OnceCallback<void(StoredSeedInfo)> done_callback,
+    VariationsSeedStore::SeedType seed_type) {
+  field_trial_creator_.seed_store()->GetStoredSeedInfoForDebugging(
+      std::move(done_callback), seed_type);
+}
+
 std::unique_ptr<ClientFilterableState>
 VariationsService::GetClientFilterableStateForVersion() {
   const base::Version current_version(version_info::GetVersionNumber());

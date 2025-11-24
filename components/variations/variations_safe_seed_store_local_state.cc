@@ -119,6 +119,11 @@ void VariationsSafeSeedStoreLocalState::AllowToPurgeSeedDataFromMemory() {
   seed_reader_writer_->AllowToPurgeSeedDataFromMemory();
 }
 
+void VariationsSafeSeedStoreLocalState::GetStoredSeedInfoForDebugging(
+    base::OnceCallback<void(StoredSeedInfo)> done_callback) {
+  seed_reader_writer_->GetStoredSeedInfoForDebugging(std::move(done_callback));
+}
+
 // static
 void VariationsSafeSeedStoreLocalState::RegisterPrefs(
     PrefRegistrySimple* registry) {

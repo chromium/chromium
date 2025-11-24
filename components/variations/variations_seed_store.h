@@ -53,6 +53,18 @@ struct ValidatedSeed {
 // seed from Local State.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
+  // The seed store contains two distinct seeds:
+  //   (1) The most recently fetched, or "latest", seed; and
+  //   (2) A "safe" seed, which has been observed to keep Chrome in a basically
+  //       functional state. In particular, a safe seed is one that allows
+  //       Chrome to receive new seed updates from the server.
+  // Note that it's possible for both seeds to be empty, and it's possible for
+  // the two seeds to be identical in their contents.
+  enum class SeedType {
+    LATEST,
+    SAFE,
+  };
+
   // |local_state| provides access to Local State prefs. Must not be null.
   // |initial_seed|, if not null, is stored in this seed store. It is used (A)
   // by Android Chrome and iOS to supply a first-run seed and (B) by Android
@@ -275,6 +287,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // from disk.
   void AllowToPurgeSeedsDataFromMemory();
 
+  // Calls `done_callback` with the stored seed info for debugging. Reads either
+  // the latest or the safe seed, according to the specified `seed_type`.
+  void GetStoredSeedInfoForDebugging(
+      base::OnceCallback<void(StoredSeedInfo)> done_callback,
+      SeedType seed_type);
+
  protected:
   // Stores the serial number of the latest seed.
   void StoreLatestSerialNumber(std::string_view serial_number);
@@ -316,18 +334,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
     // This type is move-only.
     SeedProcessingResult(SeedProcessingResult&& other);
     SeedProcessingResult& operator=(SeedProcessingResult&& other);
-  };
-
-  // The seed store contains two distinct seeds:
-  //   (1) The most recently fetched, or "latest", seed; and
-  //   (2) A "safe" seed, which has been observed to keep Chrome in a basically
-  //       functional state. In particular, a safe seed is one that allows
-  //       Chrome to receive new seed updates from the server.
-  // Note that it's possible for both seeds to be empty, and it's possible for
-  // the two seeds to be identical in their contents.
-  enum class SeedType {
-    LATEST,
-    SAFE,
   };
 
   // Callback for reading both seeds. They contain the result of loading the

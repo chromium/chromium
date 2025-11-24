@@ -94,6 +94,16 @@ void MetricsInternalsHandler::RegisterMessages() {
           &MetricsInternalsHandler::HandleFetchVariationsSummary,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "fetchStoredLatestSeedInfo",
+      base::BindRepeating(&MetricsInternalsHandler::HandleFetchStoredSeedInfo,
+                          base::Unretained(this),
+                          variations::VariationsSeedStore::SeedType::LATEST));
+  web_ui()->RegisterMessageCallback(
+      "fetchStoredSafeSeedInfo",
+      base::BindRepeating(&MetricsInternalsHandler::HandleFetchStoredSeedInfo,
+                          base::Unretained(this),
+                          variations::VariationsSeedStore::SeedType::SAFE));
+  web_ui()->RegisterMessageCallback(
       "fetchUmaSummary",
       base::BindRepeating(&MetricsInternalsHandler::HandleFetchUmaSummary,
                           base::Unretained(this)));
@@ -130,6 +140,19 @@ void MetricsInternalsHandler::HandleFetchVariationsSummary(
   ResolveJavascriptCallback(
       callback_id, metrics::GetVariationsSummary(
                        g_browser_process->GetMetricsServicesManager()));
+}
+
+void MetricsInternalsHandler::HandleFetchStoredSeedInfo(
+    variations::VariationsSeedStore::SeedType seed_type,
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  base::OnceCallback<void(base::ValueView)> resolve_js_callback =
+      base::BindOnce(&MetricsInternalsHandler::ResolveJavascriptCallback,
+                     weak_ptr_factory_.GetWeakPtr(), callback_id.Clone());
+  metrics::GetStoredSeedInfo(std::move(resolve_js_callback),
+                             g_browser_process->GetMetricsServicesManager(),
+                             seed_type);
 }
 
 void MetricsInternalsHandler::HandleFetchUmaSummary(

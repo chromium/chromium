@@ -109,6 +109,11 @@ export interface MetricsInternalsBrowserProxy {
   fetchVariationsSummary(): Promise<KeyValue[]>;
 
   /**
+   * Fetches the stored seed info.
+   */
+  fetchStoredSeedInfo(seedType: string): Promise<KeyValue[]>;
+
+  /**
    * Fetches a summary of UMA info.
    */
   fetchUmaSummary(): Promise<KeyValue[]>;
@@ -149,6 +154,8 @@ export interface MetricsInternalsBrowserProxy {
   restart(): Promise<void>;
 }
 
+export type SeedType = 'Latest'|'Safe';
+
 export class MetricsInternalsBrowserProxyImpl implements
     MetricsInternalsBrowserProxy {
   getUmaLogData(includeLogProtoData: boolean): Promise<string> {
@@ -157,6 +164,10 @@ export class MetricsInternalsBrowserProxyImpl implements
 
   fetchVariationsSummary(): Promise<KeyValue[]> {
     return sendWithPromise('fetchVariationsSummary');
+  }
+
+  fetchStoredSeedInfo(seedType: SeedType): Promise<KeyValue[]> {
+    return sendWithPromise(`fetchStored${seedType}SeedInfo`);
   }
 
   fetchUmaSummary(): Promise<KeyValue[]> {

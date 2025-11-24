@@ -13,7 +13,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './app.html.js';
-import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
+import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy, SeedType} from './browser_proxy.js';
 import {MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
 import {getEventsPeekString, logEventToString, sizeToString, timestampToString, umaLogTypeToString} from './log_utils.js';
 
@@ -28,6 +28,12 @@ const EMPTY_LOG: Log = {
   size: -1,
   events: [],
 };
+
+/**
+ * The maximum length of a value in the seed info table. Values longer than
+ * this will be truncated with an ellipsis.
+ */
+const VALUE_LENGTH_LIMIT = 64;
 
 export class MetricsInternalsAppElement extends CustomElement {
   static get is(): string {
@@ -72,6 +78,22 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Fetch variations summary data and set up a recurring timer.
     await this.updateVariationsSummary_();
     setInterval(() => this.updateVariationsSummary_(), 3000);
+
+    // Fetch stored latest and safe seeds info and set up a listener for the
+    // buttons for refreshing the data.
+    await this.updateStoredSeedInfo_('Latest');
+    const fetchStoredLatestSeedInfoButton =
+        this.getRequiredElement('#fetch-stored-latest-seed-info');
+    assert(fetchStoredLatestSeedInfoButton);
+    fetchStoredLatestSeedInfoButton.addEventListener(
+        'click', () => this.updateStoredSeedInfo_('Latest'));
+
+    await this.updateStoredSeedInfo_('Safe');
+    const fetchStoredSafeSeedInfoButton =
+        this.getRequiredElement('#fetch-stored-safe-seed-info');
+    assert(fetchStoredSafeSeedInfoButton);
+    fetchStoredSafeSeedInfoButton.addEventListener(
+        'click', () => this.updateStoredSeedInfo_('Safe'));
 
     // Fetch UMA summary data and set up a recurring timer.
     await this.updateUmaSummary_();
@@ -185,6 +207,41 @@ export class MetricsInternalsAppElement extends CustomElement {
   }
 
   /**
+   * Fills the passed table element with the given seed info.
+   */
+  private updateSeedInfoTable_(tableBody: HTMLElement, summary: KeyValue[]):
+      void {
+    // Clear the table first.
+    tableBody.replaceChildren();
+
+    const template =
+        this.getRequiredElement<HTMLTemplateElement>('#seed-info-row-template');
+    for (const info of summary) {
+      const row = template.content.cloneNode(true) as HTMLElement;
+      const [key, value, copy] = row.querySelectorAll('td');
+
+      assert(key);
+      key.textContent = info.key;
+
+      assert(value);
+      if (info.value.length > VALUE_LENGTH_LIMIT) {
+        value.textContent = info.value.substring(0, VALUE_LENGTH_LIMIT) + '...';
+      } else {
+        value.textContent = info.value;
+      }
+
+      assert(copy);
+      const copyButton = copy.querySelector('button');
+      assert(copyButton);
+      copyButton.addEventListener('click', () => {
+        navigator.clipboard.writeText(info.value);
+      });
+
+      tableBody.appendChild(row);
+    }
+  }
+
+  /**
    * Fetches variations summary data and updates the view.
    */
   private async updateVariationsSummary_(): Promise<void> {
@@ -201,6 +258,23 @@ export class MetricsInternalsAppElement extends CustomElement {
     const variationsSummaryTableBody =
         this.getRequiredElement('#variations-summary-body');
     this.updateSummaryTable_(variationsSummaryTableBody, summary);
+  }
+
+  /**
+   * Fetches stored seed info and updates the view for the given seed type.
+   */
+  private async updateStoredSeedInfo_(seedType: SeedType): Promise<void> {
+    const seedTypeKey = seedType.toLowerCase();
+    const refreshButton =
+        this.getRequiredElement(`#fetch-stored-${seedTypeKey}-seed-info`);
+    assert(refreshButton);
+    refreshButton.setAttribute('disabled', '');
+    const storedSeedInfo: KeyValue[] =
+        await this.browserProxy_.fetchStoredSeedInfo(seedType);
+    const storedSeedInfoTableBody =
+        this.getRequiredElement(`#stored-${seedTypeKey}-seed-info-body`);
+    this.updateSeedInfoTable_(storedSeedInfoTableBody, storedSeedInfo);
+    refreshButton.removeAttribute('disabled');
   }
 
   /**

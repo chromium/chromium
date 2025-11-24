@@ -5,7 +5,7 @@
 import 'chrome://metrics-internals/app.js';
 
 import {MetricsInternalsBrowserProxyImpl} from 'chrome://metrics-internals/browser_proxy.js';
-import type {FieldTrialState, HashNameMap, KeyValue, MetricsInternalsBrowserProxy} from 'chrome://metrics-internals/browser_proxy.js';
+import type {FieldTrialState, HashNameMap, KeyValue, MetricsInternalsBrowserProxy, SeedType} from 'chrome://metrics-internals/browser_proxy.js';
 import type {CwtKeyInfo, PrivateMetricsAppElement} from 'chrome://metrics-internals/private_metrics.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -26,6 +26,7 @@ class FakeBrowser extends TestBrowserProxy implements
     super([
       'getUmaLogData',
       'fetchVariationsSummary',
+      'fetchStoredSeedInfo',
       'fetchUmaSummary',
       'isUsingMetricsServiceObserver',
       'setTrialEnrollState',
@@ -48,6 +49,12 @@ class FakeBrowser extends TestBrowserProxy implements
 
   async fetchVariationsSummary(): Promise<KeyValue[]> {
     this.methodCalled('fetchVariationsSummary');
+    await wait();
+    return [];
+  }
+
+  async fetchStoredSeedInfo(seedType: SeedType): Promise<KeyValue[]> {
+    this.methodCalled(`fetchStored${seedType}SeedInfo`);
     await wait();
     return [];
   }
