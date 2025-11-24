@@ -4,6 +4,8 @@
 
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
+#include <string>
+
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
@@ -25,6 +28,7 @@
 #include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
 
@@ -141,6 +145,13 @@ class PasskeyUnlockManagerTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  void EnableUiExperimentArm(std::string arm_name) {
+    feature_params_[device::kPasskeyUnlockErrorUiExperimentArm.name] = arm_name;
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        device::kPasskeyUnlockErrorUi, feature_params_);
+  }
+
   void SetUpEnclaveManager(bool ready) {
     MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
         EnclaveManagerFactory::GetForProfile(profile_.get()));
@@ -155,6 +166,7 @@ class PasskeyUnlockManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
+  std::map<std::string, std::string> feature_params_;
   raw_ptr<PasskeyUnlockManager> passkey_unlock_manager_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<TestingProfile> profile_;
@@ -317,6 +329,40 @@ TEST_F(PasskeyUnlockManagerTest, LogsPasskeyCountHistogramWithPasskeys) {
 
   AdvanceClock(base::Seconds(31));
   histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount", 1, 1);
+}
+
+TEST_F(PasskeyUnlockManagerTest, TextLablesForDifferentUiExperimentArms) {
+  SetUpPasskeyUnlockManager();
+
+  EnableUiExperimentArm("text_with_verify_wording");
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY));
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
+            l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY));
+  EXPECT_EQ(
+      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY));
+
+  EnableUiExperimentArm("text_with_get_wording");
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET));
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
+            l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET));
+  EXPECT_EQ(
+      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET));
+
+  EnableUiExperimentArm("text_with_unlock_wording");
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK));
+  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
+            l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK));
+  EXPECT_EQ(
+      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK));
 }
 
 }  // namespace

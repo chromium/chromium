@@ -888,21 +888,14 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   // If `button_text` is empty, no button is shown (so there are no actionable
   // errors, and in this case if needed we can display a passkey unlock button).
   if (params.button_text.empty() &&
-      base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
-      base::FeatureList::IsEnabled(device::kPasskeyUnlockManager) &&
-      base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
+      webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
     webauthn::PasskeyUnlockManager* passkey_unlock_manager =
         webauthn::PasskeyUnlockManagerFactory::GetForProfile(&profile());
     if (passkey_unlock_manager->ShouldDisplayErrorUi()) {
-      // TODO(crbug.com/454658811): Add support for other experiment arms.
-      auto experiment_arm =
-          webauthn::PasskeyUnlockManager::ExperimentArm::kVerify;
       params.subtitle =
-          passkey_unlock_manager->GetPasskeyErrorProfileMenuDetails(
-              experiment_arm);
+          passkey_unlock_manager->GetPasskeyErrorProfileMenuDetails();
       params.button_text =
-          passkey_unlock_manager->GetPasskeyErrorProfileMenuButtonLabel(
-              experiment_arm);
+          passkey_unlock_manager->GetPasskeyErrorProfileMenuButtonLabel();
       params.button_action =
           base::BindRepeating(&ProfileMenuView::OnPasskeyUnlockButtonClicked,
                               base::Unretained(this));

@@ -1200,11 +1200,8 @@ class PasskeyStateProvider : public StateProvider,
   }
 
   std::u16string GetAvatarTooltipText() const final {
-    // TODO(crbug.com/454658811): Add support for other experiment arms and
-    // check if the tooltip text needs to be updated.
     return passkey_manager_observation_.GetSource()
-        ->GetPasskeyErrorProfilePillTitle(
-            webauthn::PasskeyUnlockManager::ExperimentArm::kVerify);
+        ->GetPasskeyErrorProfilePillTitle();
   }
 
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const override {
@@ -1212,10 +1209,8 @@ class PasskeyStateProvider : public StateProvider,
   }
 
   std::u16string GetText() const override {
-    // TODO(crbug.com/454658811): Add support for other experiment arms.
     return passkey_manager_observation_.GetSource()
-        ->GetPasskeyErrorProfilePillTitle(
-            webauthn::PasskeyUnlockManager::ExperimentArm::kVerify);
+        ->GetPasskeyErrorProfilePillTitle();
   }
 
  private:

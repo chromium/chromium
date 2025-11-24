@@ -105,43 +105,41 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
   Navigate(&params);
 }
 
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle(
-    ExperimentArm experiment_arm) const {
-  switch (experiment_arm) {
-    case ExperimentArm::kUnlock:
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle() const {
+  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
+    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK);
-    case ExperimentArm::kGet:
+    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET);
-    case ExperimentArm::kVerify:
+    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY);
   }
 }
 
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuDetails(
-    ExperimentArm experiment_arm) {
-  switch (experiment_arm) {
-    case ExperimentArm::kUnlock:
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuDetails() const {
+  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
+    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK);
-    case ExperimentArm::kGet:
+    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET);
-    case ExperimentArm::kVerify:
+    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY);
   }
 }
 
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel(
-    ExperimentArm experiment_arm) {
-  switch (experiment_arm) {
-    case ExperimentArm::kUnlock:
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel()
+    const {
+  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
+    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK);
-    case ExperimentArm::kGet:
+    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET);
-    case ExperimentArm::kVerify:
+    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY);
   }

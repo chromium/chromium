@@ -21,6 +21,15 @@ BASE_DECLARE_FEATURE(kPasskeyUnlockManager);
 // Allows the passkey unlock error UI to be shown.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kPasskeyUnlockErrorUi);
+
+enum class PasskeyUnlockErrorUiExperimentArm {
+  kUnlock,
+  kGet,
+  kVerify,
+};
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
+    kPasskeyUnlockErrorUiExperimentArm;
 #endif
 
 #if BUILDFLAG(IS_WIN)

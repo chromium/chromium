@@ -43,6 +43,20 @@ BASE_FEATURE(kPasskeyUnlockManager, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
 BASE_FEATURE(kPasskeyUnlockErrorUi, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>::Option
+    kPasskeyUnlockErrorUiExperimentArms[] = {
+        {PasskeyUnlockErrorUiExperimentArm::kUnlock,
+         "text_with_unlock_wording"},
+        {PasskeyUnlockErrorUiExperimentArm::kGet, "text_with_get_wording"},
+        {PasskeyUnlockErrorUiExperimentArm::kVerify,
+         "text_with_verify_wording"},
+};
+constexpr base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
+    kPasskeyUnlockErrorUiExperimentArm{
+        &kPasskeyUnlockErrorUi, "passkey_unlock_ui_experiment_arm",
+        PasskeyUnlockErrorUiExperimentArm::kVerify,
+        &kPasskeyUnlockErrorUiExperimentArms};
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -33,12 +33,6 @@ class PasskeyUnlockManager : public KeyedService,
                              public EnclaveManager::Observer,
                              public syncer::SyncServiceObserver {
  public:
-  enum class ExperimentArm {
-    kUnlock,
-    kGet,
-    kVerify,
-  };
-
   // LINT.IfChange
   //
   // Represents the type of event related to the passkey unlock error UI, such
@@ -82,13 +76,11 @@ class PasskeyUnlockManager : public KeyedService,
   // Opens a browser tab with a challenge for unlocking passkeys.
   static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
 
-  // Methods providing the UI strings depending on the experiment arms.
-  std::u16string GetPasskeyErrorProfilePillTitle(
-      ExperimentArm experiment_arm) const;
-  std::u16string GetPasskeyErrorProfileMenuDetails(
-      ExperimentArm experiment_arm);
-  std::u16string GetPasskeyErrorProfileMenuButtonLabel(
-      ExperimentArm experiment_arm);
+  // Methods providing the UI strings. Results depend on the experiment arms
+  // configured by the feature parameter `kPasskeyUnlockErrorUiExperimentArm`.
+  std::u16string GetPasskeyErrorProfilePillTitle() const;
+  std::u16string GetPasskeyErrorProfileMenuDetails() const;
+  std::u16string GetPasskeyErrorProfileMenuButtonLabel() const;
 
   // Returns true if the passkey unlock error UI is enabled, depending on the
   // feature flags.
