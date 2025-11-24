@@ -1,6 +1,5 @@
 accessibility/click-event.html
 animations/3d/matrix-transform-type-animation.html
-animations/composition/background-position-composition.html
 animations/composition/clip-composition.html
 animations/cross-fade-webkit-mask-box-image.html
 animations/custom-properties/angle-type-interpolation.html
@@ -288,6 +287,7 @@ external/wpt/css/css-animations/crashtests/replace-keyframes-animating-filter-00
 external/wpt/css/css-animations/parsing/animation-invalid.html
 external/wpt/css/css-animations/responsive/column-width-001.html
 external/wpt/css/css-backgrounds/animations/background-color-transition-currentcolor.html
+external/wpt/css/css-backgrounds/animations/background-position-composition.html
 external/wpt/css/css-backgrounds/animations/invalidation/background-color-transition-with-initially-transparent.html
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html
 external/wpt/css/css-backgrounds/background-position/subpixel-position-center.tentative.html
