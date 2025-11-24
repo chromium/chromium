@@ -172,9 +172,6 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
       GetRecorderHighEntropyCanvasOpTypes();
 
   if (recorder_->HasReleasableDrawOps()) {
-    ScopedRasterTimer timer(nullptr, *this,
-                            always_enable_raster_timers_for_testing_);
-
     // If a previous flush rasterized some paint ops, we lost part of the
     // recording and must fallback to raster printing instead of vectorial
     // printing.
