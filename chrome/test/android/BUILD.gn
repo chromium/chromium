@@ -315,6 +315,7 @@ android_library("chrome_java_transit") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:gendeps_java",

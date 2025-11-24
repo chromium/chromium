@@ -25,6 +25,7 @@ android_library("chrome_test_java_helper") {
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityTestUtil.java",
     "src/org/chromium/chrome/browser/compositor/layouts/MockLayoutHost.java",
     "src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityTestRule.java",
+    "src/org/chromium/chrome/browser/download/DownloadTestHelper.java",
     "src/org/chromium/chrome/browser/download/DownloadTestRule.java",
     "src/org/chromium/chrome/browser/firstrun/DisableFirstRun.java",
     "src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTestUtils.java",

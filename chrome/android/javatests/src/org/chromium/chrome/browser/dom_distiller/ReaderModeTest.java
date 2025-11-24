@@ -27,6 +27,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +51,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
-import org.chromium.chrome.browser.download.DownloadTestRule;
-import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
+import org.chromium.chrome.browser.download.DownloadTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
@@ -65,7 +65,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabBackgroundColorCondition;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabFontSizeCondition;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModePreferencesDialog;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
@@ -96,13 +96,12 @@ import java.util.concurrent.atomic.AtomicReference;
     "--reader-mode-heuristics=alwaystrue"
 })
 @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
-public class ReaderModeTest implements CustomMainActivityStart {
+public class ReaderModeTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.wrapTestRule(mDownloadTestRule);
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
     // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
@@ -111,28 +110,26 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private static final String PAGE_TITLE = "Test Page Title" + TITLE_SUFFIX;
     private static final String CONTENT = "Lorem ipsum";
 
-    @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
 
     private String mURL;
 
     @Mock DistilledPagePrefs.Observer mTestObserver;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
 
-    @Override
-    public void customMainActivityStart() {
+    @Before
+    public void setUp() {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
         mURL = mTestServer.getURL(TEST_PAGE);
-
-        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @Test
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModePromptShownForIncognitoTabs() {
+        mPage = mActivityTestRule.startOnBlankPage();
         // Note: For BrApp messages are only used on incognito tabs. Regular tabs use the MTB.
         mPage = mPage.openNewIncognitoTabOrWindowFast().loadWebPageProgrammatically(mURL);
         waitForReaderModeMessage();
@@ -142,7 +139,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModeInCct() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL);
+        mPage = mActivityTestRule.startOnUrl(mURL);
         Tab originalTab = mPage.getTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
@@ -171,7 +168,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModeInRegularTab() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
+        mPage = mActivityTestRule.startOnUrl(mURL).openRegularTabAppMenu().enterReaderMode();
 
         Tab originalTab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, originalTab);
@@ -181,33 +178,35 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL);
-        Tab originalTab = mDownloadTestRule.getActivityTab();
+        mPage = mActivityTestRule.startOnUrl(mURL);
+        Tab originalTab = mPage.getTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        downloadAndOpenOfflinePage();
+        try (DownloadTestHelper helper = new DownloadTestHelper(mActivityTestRule::getActivity)) {
+            downloadAndOpenOfflinePage(helper);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    originalTab
-                            .getUserDataHost()
-                            .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode(EntryPoint.APP_MENU);
-                });
-        CustomTabActivity customTabActivity = waitForCustomTabActivity();
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
-        @NonNull
-        Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-        waitForDistillation(PAGE_TITLE, distillerViewerTab);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        originalTab
+                                .getUserDataHost()
+                                .getUserData(ReaderModeManager.USER_DATA_KEY)
+                                .activateReaderMode(EntryPoint.APP_MENU);
+                    });
+            CustomTabActivity customTabActivity = waitForCustomTabActivity();
+            CriteriaHelper.pollUiThread(
+                    () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
+
+            Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
+            waitForDistillation(PAGE_TITLE, distillerViewerTab);
+        }
     }
 
     @Test
     @MediumTest
     @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
     public void testReaderModeInCct_Incognito() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL);
+        mPage = mActivityTestRule.startOnUrl(mURL);
         openReaderModeInIncognitoCct();
     }
 
@@ -217,7 +216,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testCloseAllIncognitoNotification_ClosesCct()
             throws PendingIntent.CanceledException, TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL);
+        mPage = mActivityTestRule.startOnUrl(mURL);
         CustomTabActivity customTabActivity = openReaderModeInIncognitoCct();
 
         // Click on "Close all Incognito tabs" notification.
@@ -239,11 +238,11 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private CustomTabActivity openReaderModeInIncognitoCct() throws TimeoutException {
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mDownloadTestRule.getActivity(),
+                (ChromeTabbedActivity) mActivityTestRule.getActivity(),
                 mURL,
                 true);
 
-        Tab originalTab = mDownloadTestRule.getActivityTab();
+        Tab originalTab = mActivityTestRule.getActivityTab();
         assertTrue(originalTab.isIncognito());
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
@@ -266,13 +265,13 @@ public class ReaderModeTest implements CustomMainActivityStart {
         return customTabActivity;
     }
 
-    private void downloadAndOpenOfflinePage() {
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
+    private void downloadAndOpenOfflinePage(DownloadTestHelper downloadTestHelper) {
+        int callCount = downloadTestHelper.getChromeDownloadCallCount();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 R.id.offline_page_id);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(downloadTestHelper.waitForChromeDownloadToFinish(callCount));
 
         // Stop the server and also disconnect the network.
         mTestServer.stopAndDestroyServer();
@@ -283,9 +282,9 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 });
 
         // Load the page that has an offline copy. The offline page should be shown.
-        Tab tab = mDownloadTestRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertFalse(isOfflinePage(tab));
-        mDownloadTestRule.loadUrl(ChromeTabUtils.getUrlOnUiThread(tab).getSpec());
+        mActivityTestRule.loadUrl(ChromeTabUtils.getUrlOnUiThread(tab).getSpec());
         Assert.assertTrue(isOfflinePage(tab));
     }
 
@@ -299,7 +298,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testPreferenceInCct() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL);
+        mPage = mActivityTestRule.startOnUrl(mURL);
         Tab originalTab = mPage.getTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -321,7 +320,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testPreferenceInTab() throws TimeoutException {
-        mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
+        mPage = mActivityTestRule.startOnUrl(mURL).openRegularTabAppMenu().enterReaderMode();
 
         Tab tab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, tab);
@@ -332,6 +331,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     public void testZoomLevelPrefsCallbackUpdatesFontScaling() throws TimeoutException {
+        mPage = mActivityTestRule.startOnBlankPage();
         final DistilledPagePrefs distilledPagePrefs = getDistilledPagePrefs();
 
         // Check that the initial font scaling is tied to the default zoom level.
@@ -339,7 +339,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 HostZoomMap.getDefaultZoomLevel(
-                                        mDownloadTestRule.getActivityTab().getProfile()));
+                                        mActivityTestRule.getActivityTab().getProfile()));
         final float initialZoomFactor = (float) Math.pow(1.2, initialZoomLevel);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -373,7 +373,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     HostZoomMap.setDefaultZoomLevel(
-                            mDownloadTestRule.getActivityTab().getProfile(), newZoomLevel);
+                            mActivityTestRule.getActivityTab().getProfile(), newZoomLevel);
                 });
 
         fontScalingChangedCallback.waitForCallback(0);
@@ -493,7 +493,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             MessageDispatcherProvider.from(
-                                                    mDownloadTestRule
+                                                    mActivityTestRule
                                                             .getActivity()
                                                             .getWindowAndroid()));
                     List<MessageStateHandler> messages =

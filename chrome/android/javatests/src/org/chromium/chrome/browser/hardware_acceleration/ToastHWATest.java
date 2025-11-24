@@ -79,7 +79,6 @@ public class ToastHWATest implements CustomMainActivityStart {
     @Override
     public void customMainActivityStart() throws InterruptedException {
         mDownloadTestRule.startMainActivityOnBlankPage();
-        mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
     }
 
     @Test
