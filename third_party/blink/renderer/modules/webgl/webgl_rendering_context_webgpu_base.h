@@ -606,9 +606,29 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          Element* element,
                          ExceptionState& exception_state);
 
+  void texElementImage2D(GLenum target,
+                         GLint level,
+                         GLint internalformat,
+                         GLsizei width,
+                         GLsizei height,
+                         GLenum format,
+                         GLenum type,
+                         Element* element,
+                         ExceptionState& exception_state);
+
   void texElement2D(GLenum target,
                     GLint level,
                     GLint internalformat,
+                    GLenum format,
+                    GLenum type,
+                    Element* element,
+                    ExceptionState& exception_state);
+
+  void texElement2D(GLenum target,
+                    GLint level,
+                    GLint internalformat,
+                    GLsizei width,
+                    GLsizei height,
                     GLenum format,
                     GLenum type,
                     Element* element,

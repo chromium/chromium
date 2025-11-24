@@ -168,10 +168,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
   virtual bool IsComposited() const = 0;
 
-  virtual gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const {
-    return gfx::Vector2dF(1., 1.);
-  }
-
   // Called when the entire tab is backgrounded or unbackgrounded.
   // The page's visibility status can be queried at any time via
   // Host()->IsPageVisible().
@@ -280,6 +276,15 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
+  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const;
+
+  scoped_refptr<StaticBitmapImage> GetElementImage(
+      Element* element,
+      std::optional<uint32_t> width,
+      std::optional<uint32_t> height,
+      const String& func_name,
+      ExceptionState& exception_state);
+
   // WebGL-specific interface
   virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual scoped_refptr<StaticBitmapImage>
@@ -290,9 +295,6 @@ class CORE_EXPORT CanvasRenderingContext
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
   virtual void Reshape(int width, int height) {}
-  scoped_refptr<StaticBitmapImage> GetElementImage(Element*,
-                                                   const String& func_name,
-                                                   ExceptionState&);
 
   virtual base::ByteCount AllocatedBufferSize() const;
   virtual int AllocatedBufferCountPerPixel() const { return 1; }

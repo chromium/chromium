@@ -5942,32 +5942,6 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   TexImageSkImage(params, std::move(sk_image));
 }
 
-void WebGLRenderingContextBase::DrawElementImage(
-    scoped_refptr<Image> image,
-    TexImageParams params,
-    ExceptionState& exception_state) {
-  if (!ValidateTexImageBinding(params)) {
-    exception_state.ThrowTypeError("ValidateTexImageBinding failure");
-    return;
-  }
-  if (!image || !ValidateTexFunc(params, image->width(), image->height())) {
-    exception_state.ThrowTypeError("ValidateTexFunc failure");
-    return;
-  }
-  ImageExtractor image_extractor(
-      image.get(), params.GetDestinationAlphaType(),
-      params.unpack_colorspace_conversion
-          ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
-          : nullptr);
-  auto sk_image = image_extractor.GetSkImage();
-  if (!sk_image) {
-    exception_state.ThrowTypeError("GetSkImage failure");
-    return;
-  }
-
-  TexImageSkImage(params, std::move(sk_image));
-}
-
 void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
                                            GLenum target,
                                            GLint level,
@@ -6683,10 +6657,52 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
                     exception_state);
 }
 
+void WebGLRenderingContextBase::texElement2D(GLenum target,
+                                             GLint level,
+                                             GLint internalformat,
+                                             GLsizei width,
+                                             GLsizei height,
+                                             GLenum format,
+                                             GLenum type,
+                                             Element* element,
+                                             ExceptionState& exception_state) {
+  texElementImage2D(target, level, internalformat, width, height, format, type,
+                    element, exception_state);
+}
+
 void WebGLRenderingContextBase::texElementImage2D(
     GLenum target,
     GLint level,
     GLint internalformat,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  TexElementImage2DInternal(target, level, internalformat, std::nullopt,
+                            std::nullopt, format, type, element,
+                            exception_state);
+}
+
+void WebGLRenderingContextBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  TexElementImage2DInternal(target, level, internalformat, width, height,
+                            format, type, element, exception_state);
+}
+
+void WebGLRenderingContextBase::TexElementImage2DInternal(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    std::optional<GLsizei> width,
+    std::optional<GLsizei> height,
     GLenum format,
     GLenum type,
     Element* element,
@@ -6701,9 +6717,9 @@ void WebGLRenderingContextBase::texElementImage2D(
     return;
   }
 
-  scoped_refptr<Image> image_for_render =
-      GetElementImage(element, "texElementImage2D()", exception_state);
-  if (!image_for_render) {
+  scoped_refptr<Image> image = GetElementImage(
+      element, width, height, "texElementImage2D()", exception_state);
+  if (!image) {
     return;
   }
 
@@ -6713,12 +6729,32 @@ void WebGLRenderingContextBase::texElementImage2D(
       .target = target,
       .level = level,
       .internalformat = internalformat,
+      .width = image->Size().width(),
+      .height = image->Size().height(),
       .format = format,
       .type = type,
   };
   GetCurrentUnpackState(params);
+  if (!ValidateTexImageBinding(params)) {
+    exception_state.ThrowTypeError("ValidateTexImageBinding failure");
+    return;
+  }
+  if (!ValidateTexFunc(params, std::nullopt, std::nullopt)) {
+    exception_state.ThrowTypeError("ValidateTexFunc failure");
+    return;
+  }
+  ImageExtractor image_extractor(
+      image.get(), params.GetDestinationAlphaType(),
+      params.unpack_colorspace_conversion
+          ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
+          : nullptr);
+  auto sk_image = image_extractor.GetSkImage();
+  if (!sk_image) {
+    exception_state.ThrowTypeError("GetSkImage failure");
+    return;
+  }
 
-  DrawElementImage(image_for_render, params, exception_state);
+  TexImageSkImage(params, std::move(sk_image));
 }
 
 void WebGLRenderingContextBase::texSubImage2D(

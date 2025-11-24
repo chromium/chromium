@@ -425,9 +425,29 @@ class MODULES_EXPORT WebGLRenderingContextBase
                     Element* element,
                     ExceptionState& exception_state);
 
+  void texElement2D(GLenum target,
+                    GLint level,
+                    GLint internalformat,
+                    GLsizei width,
+                    GLsizei height,
+                    GLenum format,
+                    GLenum type,
+                    Element* element,
+                    ExceptionState& exception_state);
+
   void texElementImage2D(GLenum target,
                          GLint level,
                          GLint internalformat,
+                         GLenum format,
+                         GLenum type,
+                         Element* element,
+                         ExceptionState& exception_state);
+
+  void texElementImage2D(GLenum target,
+                         GLint level,
+                         GLint internalformat,
+                         GLsizei width,
+                         GLsizei height,
                          GLenum format,
                          GLenum type,
                          Element* element,
@@ -1913,10 +1933,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                       HTMLImageElement*,
                                       ExceptionState&);
 
-  void DrawElementImage(scoped_refptr<Image> image,
-                        TexImageParams params,
-                        ExceptionState& exception_state);
-
   void TexImageHelperCanvasRenderingContextHost(const SecurityOrigin*,
                                                 TexImageParams params,
                                                 CanvasRenderingContextHost*,
@@ -2007,6 +2023,16 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();
+
+  void TexElementImage2DInternal(GLenum target,
+                                 GLint level,
+                                 GLint internalformat,
+                                 std::optional<GLsizei> width,
+                                 std::optional<GLsizei> height,
+                                 GLenum format,
+                                 GLenum type,
+                                 Element* element,
+                                 ExceptionState& exception_state);
 
   // Used to provide accelerated snapshots and CanvasResources holding the
   // current content.

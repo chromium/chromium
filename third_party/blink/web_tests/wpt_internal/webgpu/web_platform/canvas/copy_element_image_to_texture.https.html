@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <link rel="help" href="https://github.com/WICG/html-in-canvas" />
   <link rel="match" href="copy_element_image_to_texture-ref.html" />
+  <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
   <script src="/common/reftest-wait.js"></script>
 
   <style>
@@ -12,48 +13,31 @@
      width: 256px;
      height: 192px;
    }
-   .drawn-element {
-     width: 256px;
-     height: 192px;
-     background-color: white;
-   }
-   .css-is-awesome {
-     width:3.2rem;
-     border:.1rem solid black;
-     border-radius:.5rem;
-     padding:.2rem;
-     background:linear-gradient(45deg,rgb(240 176 176),rgb(176 240 240));
-     font-family:sans-serif;
-   }
-   .css-is-awesome::before {
-     content: "CSS IS AWESOME";
-   }
   </style>
 
-  <canvas id="cvs" width="256" height="192" layoutsubtree>
-    <div id="target" class="drawn-element">
+  <canvas layoutsubtree>
+    <div class="draw-element-wrapper">
       <div class="css-is-awesome"></div>
     </div>
   </canvas>
 
 <script type="module">
+import { resizeToPixelGrid, copyElementImageToWebGPUCanvas } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
 const adapter = await navigator.gpu.requestAdapter();
 const device = await adapter.requestDevice();
 const queue = device.queue;
-const cvs = document.getElementById('cvs');
-cvs.width = Math.ceil(256 * devicePixelRatio);
-cvs.height = Math.ceil(192 * devicePixelRatio);
-const ctx = cvs.getContext('webgpu');
+
+const cvs = document.querySelector("canvas");
+const ctx = cvs.getContext("webgpu");
 ctx.configure({
   device: device,
   format: navigator.gpu.getPreferredCanvasFormat(),
   usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+  alphaMode: "premultiplied",
 });
-const target = document.getElementById('target');
-queue.copyElementImageToTexture(
-  target, { texture: ctx.getCurrentTexture() });
-await new Promise(requestAnimationFrame);
-await new Promise(requestAnimationFrame);
+await resizeToPixelGrid(cvs);
+copyElementImageToWebGPUCanvas(queue, ctx, cvs.firstElementChild);
 takeScreenshot();
 </script>
 </html>

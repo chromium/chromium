@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -794,6 +795,25 @@ bool GPUQueue::IsValidDestinationTexture(
 void GPUQueue::copyElementImageToTexture(Element* element,
                                          GPUImageCopyTextureTagged* destination,
                                          ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(element, std::nullopt, std::nullopt,
+                                    destination, exception_state);
+}
+
+void GPUQueue::copyElementImageToTexture(Element* element,
+                                         uint32_t width,
+                                         uint32_t height,
+                                         GPUImageCopyTextureTagged* destination,
+                                         ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(element, width, height, destination,
+                                    exception_state);
+}
+
+void GPUQueue::CopyElementImageToTextureInternal(
+    Element* element,
+    std::optional<uint32_t> width,
+    std::optional<uint32_t> height,
+    GPUImageCopyTextureTagged* destination,
+    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 
   CanvasRenderingContext* context =
@@ -815,16 +835,17 @@ void GPUQueue::copyElementImageToTexture(Element* element,
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> element_image = context->GetElementImage(
-      element, "copyElementImageToTexture()", exception_state);
-  if (!element_image) {
+  scoped_refptr<StaticBitmapImage> image = context->GetElementImage(
+      element, width, height, "copyElementImageToTexture()", exception_state);
+  if (!image) {
     return;
   }
+
   wgpu::Extent3D dawn_copy_size;
-  dawn_copy_size.width = element_image->width();
-  dawn_copy_size.height = element_image->height();
-  if (!CopyFromCanvasSourceImage(element_image.get(), wgpu::Origin2D(),
-                                 dawn_copy_size, dawn_destination,
+  dawn_copy_size.width = image->Size().width();
+  dawn_copy_size.height = image->Size().height();
+  if (!CopyFromCanvasSourceImage(image.get(), wgpu::Origin2D(), dawn_copy_size,
+                                 dawn_destination,
                                  destination->premultipliedAlpha(), color_space,
                                  /*flipY*/ false)) {
     exception_state.ThrowTypeError(

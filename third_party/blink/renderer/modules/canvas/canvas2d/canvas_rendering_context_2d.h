@@ -264,7 +264,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   UniqueFontSelector* GetFontSelector() const final;
-  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const final;
   void SizeChanged() final;
 
   bool WritePixels(const SkImageInfo& orig_info,

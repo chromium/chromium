@@ -2791,7 +2791,10 @@
       "fast/events/wheel/wheelevent-in-scrolling-div.html",
       "fast/hidpi/static",
       "external/wpt/css/css-ui/caret-shape-block-zoom.html",
-      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html",
+      "wpt_internal/html/canvas/drawElementImage/scale.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2830,7 +2833,10 @@
       "http/tests/inspector-protocol/page/page-captureScreenshot-clip-emulation.js",
       "inspector-protocol/emulation/device-emulation-no-size.js",
       "external/wpt/css/css-ui/caret-shape-block-zoom.html",
-      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html",
+      "wpt_internal/html/canvas/drawElementImage/scale.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"

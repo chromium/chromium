@@ -85,7 +85,6 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -1195,30 +1194,6 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
-}
-
-gfx::Vector2dF CanvasRenderingContext2D::PhysicalPixelToCanvasGridScaleFactor()
-    const {
-  LayoutBox* canvas_box = canvas()->GetLayoutBox();
-  CHECK(canvas_box);
-
-  // As a special case, if the canvas is sized to its devicePixelContentBox,
-  // make sure the element's physical pixels are mapped 1:1 to the canvas
-  // grid to avoid any inadverent fuzziness due to rounding.
-  gfx::Size canvas_size = Host()->Size();
-  gfx::Size device_pixel_content_box =
-      ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-          LogicalSize(canvas_box->ContentLogicalWidth(),
-                      canvas_box->ContentLogicalHeight()),
-          *canvas_box, canvas_box->StyleRef());
-  if (canvas_size == device_pixel_content_box) {
-    return gfx::Vector2dF(1., 1.);
-  }
-
-  PhysicalSize physical_size =
-      To<LayoutReplaced>(canvas_box)->ReplacedContentRect().size;
-  return gfx::Vector2dF(canvas_size.width() / physical_size.width.ToFloat(),
-                        canvas_size.height() / physical_size.height.ToFloat());
 }
 
 void CanvasRenderingContext2D::SizeChanged() {
