@@ -391,6 +391,7 @@ void PasskeyTabHelper::CompletePasskeyCreation(
       params.UserEntity(), extension_input_data, &extension_output_data);
 
   // Add passkey to the passkey model and present the confirmation infobar.
+  // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
   AddNewPasskey(passkey);
 
   // Resolve the PublicKeyCredential promise.
@@ -445,6 +446,7 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
 
   // TODO(crbug.com/460485333): Update the passkey's last used time to
   // base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds().
+  // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
 
   if (assertion_data.has_value()) {
     // Resolve the PublicKeyCredential promise.

@@ -21,7 +21,7 @@ const GPM_AAGUID = new Uint8Array([
   // clang-format on
 ]);
 
-// The algorithm supported for passkey registration or attestation.
+// The algorithm supported for passkey registration or assertion.
 const ES256 = -7;
 
 // Checks whether provided aaguid is equal to Google Password Manager's aaguid.
@@ -214,11 +214,13 @@ function publicKeyCredentialDescriptorAsSerializedDescriptors(
                          }));
 }
 
+// Creates a PublicKeyCredential from the provided list of arguments.
+// The credential's type is always set to 'public-key'.
 function createPublicKeyCredential(
-    id: string, authenticatorAttachment: string, rawId: ArrayBuffer,
+    authenticatorAttachment: string, rawId: ArrayBuffer,
     response: AuthenticatorResponse): PublicKeyCredential {
   return {
-    id: id,
+    id: arrayBufferToBase64URL(rawId),
     type: 'public-key',
     authenticatorAttachment: authenticatorAttachment,
     rawId: rawId,
@@ -239,6 +241,29 @@ function createPublicKeyCredential(
   };
 }
 
+// Creates an empty credential, which will be used to resolve a Credential
+// promise so that the promise resolution is deferred to the renderer.
+function createEmptyCredential(): PublicKeyCredential {
+  const nullArray = new ArrayBuffer(0);
+  const emptyResponse: AuthenticatorResponse = {clientDataJSON: nullArray};
+  return createPublicKeyCredential('', nullArray, emptyResponse);
+}
+
+// Returns whether a credential is non empty.
+function isValidCredential(credential: Credential|null): boolean {
+  return !!credential && credential instanceof PublicKeyCredential &&
+      !!credential.id && typeof credential.id === 'string' &&
+      !!credential.authenticatorAttachment &&
+      typeof credential.authenticatorAttachment === 'string' &&
+      !!credential.rawId && credential.rawId instanceof ArrayBuffer &&
+      credential.type === 'public-key' && !!credential.response &&
+      !!credential.response.clientDataJSON &&
+      typeof credential.response.clientDataJSON === 'string';
+}
+
+// Creates a valid AuthenticatorAttestationResponse from the provided list of
+// arguments, as specified by the webauthn spec here:
+// https://www.w3.org/TR/webauthn-2/#authenticatorattestationresponse
 function createAuthenticatorAttestationResponse(
     attestationObj: ArrayBuffer, authenticatorData: ArrayBuffer,
     publicKeySpkiDer: ArrayBuffer,
@@ -335,11 +360,11 @@ function createPassthroughRegistrationRequest(
   });
 }
 
-// Creates a passthrough attestation request from the provided parameters.
+// Creates a passthrough assertion request from the provided parameters.
 // The passthrough request invokes the WebKit implementation of
 // `navigator.credentials.get()` and, upon completion, informs the browser for
 // metrics purposes.
-function createPassthroughAttestationRequest(
+function createPassthroughAssertionRequest(
     options?: CredentialRequestOptions|undefined): Promise<Credential|null> {
   sendWebKitMessage(HANDLER_NAME, {'event': 'logGetRequest'});
 
@@ -376,8 +401,8 @@ function createRegistrationRequest(
   return publicKeyCredentialPromise(publicKeyOptions.timeout);
 }
 
-// Creates an attestation request from the provided parameters.
-function createAttestationRequest(
+// Creates an assertion request from the provided parameters.
+function createAssertionRequest(
     publicKeyOptions: PublicKeyCredentialRequestOptions):
     Promise<Credential|null> {
   sendWebKitMessage(HANDLER_NAME, {
@@ -387,7 +412,7 @@ function createAttestationRequest(
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'allowCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.allowCredentials),
-  });  // Attestation request
+  });  // Assertion request
 
   return publicKeyCredentialPromise(publicKeyOptions.timeout);
 }
@@ -404,12 +429,16 @@ const credentialsContainer: CredentialsContainer = {
 
     if (shouldHandleModalPasskeyRequests() &&
         !isConditionalMediation(options) && options.publicKey.challenge) {
-      return createAttestationRequest(options.publicKey).then(_ => {
-        // TODO(crbug.com/460485333): validate result and return if valid.
-        return createPassthroughAttestationRequest(options);
+      return createAssertionRequest(options.publicKey).then(result => {
+        if (isValidCredential(result)) {
+          // TODO(crbug.com/460485333): Notification message of success here?
+          return result;
+        }
+
+        return createPassthroughAssertionRequest(options);
       });
     } else {
-      return createPassthroughAttestationRequest(options);
+      return createPassthroughAssertionRequest(options);
     }
   },
   create: function(
@@ -422,8 +451,12 @@ const credentialsContainer: CredentialsContainer = {
     if (shouldHandleModalPasskeyRequests() &&
         !isConditionalMediation(options) && options.publicKey.challenge &&
         options.publicKey.user && options.publicKey.user.id) {
-      return createRegistrationRequest(options.publicKey).then(_ => {
-        // TODO(crbug.com/460485333): validate result and return if valid.
+      return createRegistrationRequest(options.publicKey).then(result => {
+        if (isValidCredential(result)) {
+          // TODO(crbug.com/460485333): Notification message of success here?
+          return result;
+        }
+
         return createPassthroughRegistrationRequest(options);
       });
     } else {
@@ -445,10 +478,7 @@ Object.defineProperty(navigator, 'credentials', {value: credentialsContainer});
 
 // Function called from C++ to yield the passkey request back to the OS.
 function deferToRenderer(): void {
-  const nullArray = new ArrayBuffer(0);
-  const emptyResponse: AuthenticatorResponse = {clientDataJSON: nullArray};
-  const emptyCredential: PublicKeyCredential =
-      createPublicKeyCredential('', '', nullArray, emptyResponse);
+  const emptyCredential: PublicKeyCredential = createEmptyCredential();
   DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(emptyCredential);
 }
 
@@ -456,8 +486,8 @@ function deferToRenderer(): void {
 function resolveCredentialPromise(
     id64: string, response: AuthenticatorResponse): void {
   const id = decodeBase64URLToArrayBuffer(id64);
-  const credential: PublicKeyCredential = createPublicKeyCredential(
-      arrayBufferToBase64URL(id), 'platform', id, response);
+  const credential: PublicKeyCredential =
+      createPublicKeyCredential('platform', id, response);
 
   DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(credential);
 }
