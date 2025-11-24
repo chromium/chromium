@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <memory>
+#include <set>
 #include <variant>
 
 #include "base/files/file_util.h"
@@ -20,6 +21,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "net/ssl/client_cert_store.h"
 #include "remoting/base/certificate_helpers.h"
@@ -200,11 +203,47 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                      NOTREACHED();
                    }
                  },
-                 [](const BurstStruct& message) {
-                   LOG(INFO)
-                       << "Burst message received: index=" << message.index
-                       << ", burst_count=" << message.burst_count
-                       << ", payload=" << message.payload;
+                 [this](const BurstStruct& message) {
+                   if (expected_burst_count_ != message.burst_count) {
+                     // This is the first message of a new burst, or a different
+                     // burst has started.
+                     if (burst_check_timer_.IsRunning()) {
+                       burst_check_timer_.Stop();
+                     }
+                     ResetBurstState();
+
+                     burst_start_time_ = base::TimeTicks::Now();
+                     expected_burst_count_ = message.burst_count;
+                     burst_check_timer_.Start(
+                         FROM_HERE, base::Seconds(1), this,
+                         &CorpMessagingPlayground::OnBurstCheckTimerFired);
+                     LOG(INFO) << "Receiving a new burst of "
+                               << message.burst_count << " messages.";
+                   }
+
+                   auto [_, inserted] =
+                       received_burst_indices_.insert(message.index);
+
+                   if (inserted) {
+                     LOG(INFO)
+                         << "Burst message received: index=" << message.index
+                         << " (" << received_burst_indices_.size() << "/"
+                         << expected_burst_count_ << ")";
+                   } else {
+                     LOG(WARNING) << "Duplicate burst message received: index="
+                                  << message.index;
+                   }
+
+                   if (received_burst_indices_.size() ==
+                       static_cast<size_t>(expected_burst_count_)) {
+                     auto total_time =
+                         base::TimeTicks::Now() - burst_start_time_;
+                     LOG(INFO) << "All " << expected_burst_count_
+                               << " burst messages received in "
+                               << total_time.InMilliseconds() << "ms.";
+                     burst_check_timer_.Stop();
+                     ResetBurstState();
+                   }
                  },
                  [](const SimpleStruct& simple_message) {
                    LOG(INFO) << "PeerMessage received: payload="
@@ -221,6 +260,28 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                    messaging_authz_token_ = message.messaging_authz_token;
                  }),
              system_test->test_message);
+}
+
+void CorpMessagingPlayground::OnBurstCheckTimerFired() {
+  burst_timer_check_count_++;
+  if (burst_timer_check_count_ >= 5) {
+    LOG(WARNING) << "Burst message receipt timed out after 5 seconds.";
+    burst_check_timer_.Stop();
+    ResetBurstState();
+    return;
+  }
+
+  if (expected_burst_count_ > 0) {
+    size_t remaining = expected_burst_count_ - received_burst_indices_.size();
+    LOG(INFO) << "Waiting for " << remaining << " more burst messages...";
+  }
+}
+
+void CorpMessagingPlayground::ResetBurstState() {
+  received_burst_indices_.clear();
+  expected_burst_count_ = 0;
+  burst_start_time_ = base::TimeTicks();
+  burst_timer_check_count_ = 0;
 }
 
 void CorpMessagingPlayground::OnCharacterInput(char c) {

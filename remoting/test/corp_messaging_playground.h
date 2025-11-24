@@ -6,10 +6,12 @@
 #define REMOTING_TEST_CORP_MESSAGING_PLAYGROUND_H_
 
 #include <memory>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/rsa_key_pair.h"
 
@@ -44,6 +46,8 @@ class CorpMessagingPlayground {
   void SendMessage(int count = 1);
   void StartPingPongRally();
   void SendLargeMessage();
+  void OnBurstCheckTimerFired();
+  void ResetBurstState();
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
@@ -54,6 +58,14 @@ class CorpMessagingPlayground {
   std::string messaging_authz_token_;
   base::Time last_ping_sent_time_;
   base::TimeDelta ping_total_rtt_;
+
+  // Burst message related members.
+  int expected_burst_count_ = 0;
+  std::set<int> received_burst_indices_;
+  base::TimeTicks burst_start_time_;
+  base::RepeatingTimer burst_check_timer_;
+  int burst_timer_check_count_ = 0;
+
   base::WeakPtrFactory<CorpMessagingPlayground> weak_factory_{this};
 };
 
