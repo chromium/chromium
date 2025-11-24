@@ -17970,6 +17970,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.WelcomeBack.Dismissed">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the user dismisses the Welcome Back screen. iOS only.
+  </description>
+</action>
+
+<action name="IOS.WelcomeBack.Impression">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the Welcome Back screen is presented to the user. iOS only.
+  </description>
+</action>
+
 <action name="IOSAccountsSettingsCloseWithSwipe">
   <owner>msarda@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

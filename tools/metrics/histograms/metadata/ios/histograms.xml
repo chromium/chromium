@@ -7061,6 +7061,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.WelcomeBack.DetailScreen.Impression"
+    enum="IOSBestFeaturesItemType" expires_after="2026-03-30">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the type of feature displayed in welcome back. Recorded each time a
+    user clicks on a feature in the Welcome Back main screen to view more
+    details.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WelcomeBack.FeaturesClickedCount" units="count"
+    expires_after="2026-03-30">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the number of features clicked by the user within the Welcome Back
+    screen. Recorded when the Welcome Back screen is dismissed or closed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
     expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>

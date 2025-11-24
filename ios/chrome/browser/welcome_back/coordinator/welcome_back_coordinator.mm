@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -42,6 +44,8 @@
   UINavigationController* _navigationController;
   // The BestFeaturesScreenDetail coordinator.
   BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
+  // Number of time a feature was clicked in Welcome Back.
+  int _featureClickedCount;
 }
 
 #pragma mark - ChromeCoordinator
@@ -78,12 +82,19 @@
     [UISheetPresentationControllerDetent largeDetent]
   ];
 
+  _featureClickedCount = 0;
+  base::RecordAction(base::UserMetricsAction("IOS.WelcomeBack.Impression"));
+
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
+  base::RecordAction(base::UserMetricsAction("IOS.WelcomeBack.Stopped"));
+  base::UmaHistogramCounts10000("IOS.WelcomeBack.FeaturesClickedCount",
+                                _featureClickedCount);
+
   // Dismiss the presented view controller.
   if (_navigationController.presentingViewController &&
       !_navigationController.isBeingDismissed) {
@@ -122,6 +133,9 @@
                                    browser:self.browser
                           bestFeaturesItem:item];
   _detailScreenCoordinator.delegate = self;
+  ++_featureClickedCount;
+  base::UmaHistogramEnumeration("IOS.WelcomeBack.DetailScreen.Impression",
+                                item.type);
   [_detailScreenCoordinator start];
 }
 

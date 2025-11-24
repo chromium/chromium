@@ -281,6 +281,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h:BestFeaturesDetailScreenActionType) -->
 
+<!-- LINT.IfChange(IOSBestFeaturesItemType) -->
+
+<enum name="IOSBestFeaturesItemType">
+  <int value="0" label="Lens Search"/>
+  <int value="1" label="Enhanced Safe Browsing"/>
+  <int value="2" label="Locked Incognito Tabs"/>
+  <int value="3" label="Save and Autofill Passwords"/>
+  <int value="4" label="Tab Groups"/>
+  <int value="5" label="Price Tracking and Insights"/>
+  <int value="6" label="Autofill Passwords in Other Apps"/>
+  <int value="7" label="Share Passwords with Family"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/first_run/public/best_features_item.h:BestFeaturesItemType) -->
+
 <!-- LINT.IfChange(IOSBestFeaturesMainScreenActionType) -->
 
 <enum name="IOSBestFeaturesMainScreenActionType">

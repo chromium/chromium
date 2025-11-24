@@ -18,9 +18,12 @@ enum class BestFeaturesItemType {
   kTabGroups = 4,
   kPriceTrackingAndInsights = 5,
   kAutofillPasswordsInOtherApps = 6,
-  kSharePasswordsWithFamily = 7
+  kSharePasswordsWithFamily = 7,
+  kMaxValue = kSharePasswordsWithFamily,
 };
-// LINT.ThenChange(/ios/chrome/browser/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType)
+// LINT.ThenChange(
+// /ios/chrome/browser/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType,
+// /tools/metrics/histograms/metadata/ios/enums.xml:IOSBestFeaturesItemType)
 
 // Holds properties and values needed to configure the items in the Best
 // Features Screen.
