@@ -52,6 +52,15 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
             return;
         }
 
+        Long[] preselectedIds =
+                IntentUtils.safeGetSerializableExtra(
+                        getIntent(), FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
+        if (preselectedIds == null) {
+            // TODO(bbetini): Use a helper method to create an empty list when preselectedIds is
+            // null.
+            preselectedIds = new Long[0];
+        }
+
         mItemPickerCoordinator =
                 new TabItemPickerCoordinator(
                         getProfileSupplier(),
@@ -59,7 +68,8 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
                         this,
                         this.getSnackbarManager(),
                         rootView,
-                        containerView);
+                        containerView,
+                        preselectedIds);
 
         mItemPickerCoordinator.showTabItemPicker(this::handleModelFailure);
     }

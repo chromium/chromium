@@ -60,6 +60,8 @@ public class FuseboxMediator {
     // TODO(crbug.com/457825183): Supply this class name and extra string externally.
     private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
+    public static final String EXTRA_PRESELECTED_TAB_IDS =
+            "org.chromium.chrome.browser.chrome_item_picker.EXTRA_PRESELECTED_TAB_IDS";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -197,8 +199,9 @@ public class FuseboxMediator {
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
         // Don't take an action if the state isn't really changing.
-        if (mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) == isChangeable)
+        if (mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) == isChangeable) {
             return;
+        }
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
         if (!isChangeable) {
@@ -310,6 +313,13 @@ public class FuseboxMediator {
             }
         } catch (ClassNotFoundException e) {
             return;
+        }
+
+        Long[] preselectedIds = getPreselectionTabIds();
+
+        if (preselectedIds != null && preselectedIds.length > 0) {
+            // Send the IDs to the activity using the defined extra.
+            intent.putExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
         }
 
         mWindowAndroid.showCancelableIntent(
@@ -542,5 +552,30 @@ public class FuseboxMediator {
         mUseCompactUi = useCompactUi;
         mOnCompactModeChangedSupplier.set(mUseCompactUi);
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
+    }
+
+    /**
+     * @return Array of Tab IDs (as Long[]), empty if no attachments.
+     */
+    public Long[] getPreselectionTabIds() {
+        List<Long> attachedTabIds = new ArrayList<>();
+
+        for (int i = 0; i < mModelList.size(); i++) {
+            MVCListAdapter.ListItem listItem = mModelList.get(i);
+            if (listItem.type != FuseboxAttachmentType.ATTACHMENT_TAB) {
+                continue;
+            }
+
+            FuseboxAttachment attachment =
+                    listItem.model.get(FuseboxAttachmentProperties.ATTACHMENT);
+            @Nullable Tab tab = attachment.tab;
+
+            if (tab != null) {
+                attachedTabIds.add((long) tab.getId());
+            }
+        }
+
+        Long[] resultArray = attachedTabIds.toArray(new Long[0]);
+        return resultArray;
     }
 }

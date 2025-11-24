@@ -98,7 +98,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mActivity,
                         mSnackbarManager,
                         mRootView,
-                        mContainerView);
+                        mContainerView,
+                        new Long[0]);
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
@@ -162,7 +163,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mActivity,
                         mSnackbarManager,
                         mRootView,
-                        mContainerView);
+                        mContainerView,
+                        new Long[0]);
 
         coordinatorWithInvalidId.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);

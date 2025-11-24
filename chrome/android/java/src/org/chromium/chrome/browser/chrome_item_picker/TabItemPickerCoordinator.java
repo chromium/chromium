@@ -62,6 +62,7 @@ public class TabItemPickerCoordinator {
     private final SnackbarManager mSnackbarManager;
     private final OnBackPressedCallback mBackPressCallback;
     private final Callback<Boolean> mBackPressEnabledObserver;
+    private final Long[] mPreselectedTabIds;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -72,7 +73,8 @@ public class TabItemPickerCoordinator {
             Activity activity,
             SnackbarManager snackbarManager,
             ViewGroup rootView,
-            ViewGroup containerView) {
+            ViewGroup containerView,
+            Long[] preselectedTabIds) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -80,6 +82,7 @@ public class TabItemPickerCoordinator {
         mSnackbarManager = snackbarManager;
         mRootView = rootView;
         mContainerView = containerView;
+        mPreselectedTabIds = preselectedTabIds;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -217,6 +220,20 @@ public class TabItemPickerCoordinator {
                 tabs,
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
+
+        if (mPreselectedTabIds.length == 0) return;
+        Set<TabListEditorItemSelectionId> selectionSet = new HashSet<>();
+
+        for (Long id : mPreselectedTabIds) {
+            if (id == null) continue;
+            @Nullable Tab tab = mTabModelSelector.getTabById(id.intValue());
+            if (tab != null) {
+                selectionSet.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
+            }
+        }
+        if (!selectionSet.isEmpty()) {
+            controller.selectTabs(selectionSet);
+        }
     }
 
     public interface ItemPickerSelectionHandler {
