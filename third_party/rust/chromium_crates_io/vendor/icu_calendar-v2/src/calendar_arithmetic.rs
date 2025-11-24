@@ -542,7 +542,7 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
         let base_day = self.day;
         // 1. If _baseDay_ &lt; _endOfMonth_.[[Day]], then
         //   1. Let _regulatedDay_ be _baseDay_.
-        let regulated_day = if base_day < end_of_month.day {
+        let regulated_day = if base_day <= end_of_month.day {
             base_day
         } else {
             // 1. Else,

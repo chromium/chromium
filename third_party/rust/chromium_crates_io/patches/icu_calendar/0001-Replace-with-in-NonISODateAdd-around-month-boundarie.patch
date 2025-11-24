@@ -1,0 +1,30 @@
+From 8d16390761af3bb379c1137b0a724476719ac9cd Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Mon, 24 Nov 2025 22:08:39 +0000
+Subject: [PATCH] Replace < with <= in NonISODateAdd around month boundaries
+
+Uplifts https://github.com/unicode-org/icu4x/pull/7257
+
+Caused by spec bug: https://github.com/tc39/proposal-intl-era-monthcode/pull/98
+
+Change-Id: I5df814a7ef7c2c8b1e44affd34fd31d017c04b28
+---
+ .../vendor/icu_calendar-v2/src/calendar_arithmetic.rs           | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
+index 3e3078d11f663..ca186d0713c01 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
+@@ -542,7 +542,7 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
+         let base_day = self.day;
+         // 1. If _baseDay_ &lt; _endOfMonth_.[[Day]], then
+         //   1. Let _regulatedDay_ be _baseDay_.
+-        let regulated_day = if base_day < end_of_month.day {
++        let regulated_day = if base_day <= end_of_month.day {
+             base_day
+         } else {
+             // 1. Else,
+-- 
+2.52.0.460.gd25c4c69ec-goog
+
