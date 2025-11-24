@@ -161,8 +161,13 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   draw_callback(Canvas());
 
-  if (!IsValid()) {
-    return nullptr;
+  if (!surface_) {
+    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+    const auto props = GetSkSurfaceProps();
+    surface_ = SkSurfaces::Raster(info, &props);
+    if (!surface_) {
+      return nullptr;
+    }
   }
 
   // Getting the high entropy canvas operations should be done before
@@ -176,12 +181,6 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     // recording and must fallback to raster printing instead of vectorial
     // printing.
     clear_frame_ = false;
-
-    if (!surface_) {
-      const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
-      const auto props = GetSkSurfaceProps();
-      surface_ = SkSurfaces::Raster(info, &props);
-    }
 
     if (!skia_canvas_) {
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
