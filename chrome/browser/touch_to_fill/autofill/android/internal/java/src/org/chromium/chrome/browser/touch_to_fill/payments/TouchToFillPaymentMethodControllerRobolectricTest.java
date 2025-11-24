@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ERROR_SCREEN_DISMISSED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ERROR_SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED;
@@ -485,6 +487,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* selectionText= */ "Daily or 1000 installments",
                     /* isLinked= */ true,
                     /* isEligible= */ true);
+    private static final String ERROR_SCREEN_TITLE = "Something went wrong";
+    private static final String ERROR_SCREEN_DESCRIPTION =
+            "Pay later is unavailable at this time. Try again or choose another payment method.";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1660,11 +1665,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowErrorScreen() {
-        final String title = "Something went wrong";
-        final String description =
-                "Pay later is unavailable at this time. Try again or choose another payment"
-                        + " method.";
-        mCoordinator.getMediatorForTesting().showErrorScreen(title, description);
+        mCoordinator
+                .getMediatorForTesting()
+                .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
@@ -1683,11 +1686,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ListItem headerItem = sheetItems.get(0);
         assertThat(headerItem.type, is(HEADER));
         assertThat(headerItem.model.get(IMAGE_DRAWABLE_ID), is(R.drawable.error_icon));
-        assertThat(headerItem.model.get(TITLE_STRING), is(title));
+        assertThat(headerItem.model.get(TITLE_STRING), is(ERROR_SCREEN_TITLE));
 
         ListItem descriptionItem = sheetItems.get(1);
         assertThat(descriptionItem.type, is(ERROR_DESCRIPTION));
-        assertThat(descriptionItem.model.get(ERROR_DESCRIPTION_STRING), is(description));
+        assertThat(
+                descriptionItem.model.get(ERROR_DESCRIPTION_STRING), is(ERROR_SCREEN_DESCRIPTION));
 
         ListItem buttonItem = sheetItems.get(2);
         assertThat(buttonItem.type, is(FILL_BUTTON));
@@ -1696,8 +1700,32 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testDismissErrorScreenRecordsUserActions() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        mCoordinator
+                .getMediatorForTesting()
+                .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        assertEquals(
+                1,
+                mActionTester.getActionCount(TOUCH_TO_FILL_BNPL_USER_ACTION + ERROR_SCREEN_SHOWN));
+        assertEquals(
+                1,
+                mActionTester.getActionCount(
+                        TOUCH_TO_FILL_BNPL_USER_ACTION + ERROR_SCREEN_DISMISSED));
+    }
+
+    @Test
     public void testErrorScreenOkButtonCallsDelegate() {
-        mCoordinator.getMediatorForTesting().showErrorScreen("Title", "Desc");
+        mCoordinator
+                .getMediatorForTesting()
+                .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();

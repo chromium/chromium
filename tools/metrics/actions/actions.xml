@@ -5591,6 +5591,8 @@ should be able to be added at any place in this file.
   </description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
+    <variant name=".ErrorScreen.Dismissed" summary="Error screen dismissed."/>
+    <variant name=".ErrorScreen.Shown" summary="Error screen shown."/>
     <variant name=".IssuerSelectionScreen.AffirmLinkedSelected"
         summary="Linked Affirm issuer selected."/>
     <variant name=".IssuerSelectionScreen.AffirmUnlinkedSelected"
