@@ -3126,13 +3126,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Set up |dispatched_interface_request_callback| that would be invoked if the
   // interface receiver for FrameHostTestInterface was ever dispatched to the
-  // RenderFrameHostImpl.
+  // RenderFrameHostImpl. This is set on `monitor` below after the navigation
+  // commits, as the BrowserInterfaceBrokerReceiver instance may have changed
+  // during the navigation.
   base::MockCallback<base::RepeatingClosure>
       dispatched_interface_request_callback;
   auto* main_rfh = web_contents()->GetPrimaryMainFrame();
-  ScopedInterfaceRequestMonitor monitor(
-      main_rfh, mojom::FrameHostTestInterface::Name_,
-      dispatched_interface_request_callback.Get());
 
   // Set up the |test_interface request| to arrive on the BrowserInterfaceBroker
   // connection corresponding to the old document in the middle of the firing of
@@ -3143,8 +3142,15 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Also set up |navigation_finished_callback| to be invoked afterwards, as a
   // sanity check to ensure that the request injection is actually executed.
   base::MockCallback<base::RepeatingClosure> navigation_finished_callback;
+  std::optional<ScopedInterfaceRequestMonitor> monitor;
   DidFinishNavigationObserver navigation_finish_observer(
-      main_rfh, base::BindLambdaForTesting([&](NavigationHandle*) {
+      main_rfh,
+      base::BindLambdaForTesting([&](NavigationHandle* navigation_handle) {
+        monitor.emplace(static_cast<RenderFrameHostImpl*>(
+                            navigation_handle->GetRenderFrameHost()),
+                        mojom::FrameHostTestInterface::Name_,
+                        dispatched_interface_request_callback.Get());
+
         interface_broker->GetInterface(std::move(test_interface_receiver));
         std::move(navigation_finished_callback).Run();
       }));
@@ -3162,6 +3168,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // DidFinishNavigation callback will be invoked.
   EXPECT_CALL(dispatched_interface_request_callback, Run()).Times(0);
   EXPECT_CALL(navigation_finished_callback, Run());
+  // Reset the monitor to avoid its destructor expecting the same browser
+  // interface broker as it may change during the next navigation.
+  monitor.reset();
 
   // Start the same-process navigation.
   ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), second_url));
