@@ -9,12 +9,13 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkFontMgr_fuchsia.h"
+#include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
 
 namespace skia {
 
 void InitializeSkFontMgrForTest() {
-  OverrideDefaultSkFontMgr(
-      SkFontMgr_New_Fuchsia(GetTestFontsProvider().BindSync()));
+  OverrideDefaultSkFontMgr(SkFontMgr_New_Fuchsia(
+      GetTestFontsProvider().BindSync(), SkFontScanner_Make_Fontations()));
 }
 
 }  // namespace skia

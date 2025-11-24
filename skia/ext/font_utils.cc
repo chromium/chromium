@@ -18,7 +18,6 @@
 #include "third_party/skia/include/ports/SkFontMgr_android.h"
 #include "third_party/skia/include/ports/SkFontMgr_android_ndk.h"
 #include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
-#include "third_party/skia/include/ports/SkFontScanner_FreeType.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -29,14 +28,15 @@
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 #include "third_party/skia/include/ports/SkFontMgr_FontConfigInterface.h"
 #include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
-#include "third_party/skia/include/ports/SkFontScanner_FreeType.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+
 #include "base/fuchsia/process_context.h"
 #include "third_party/skia/include/ports/SkFontMgr_fuchsia.h"
+#include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -89,7 +89,8 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
 #elif BUILDFLAG(IS_FUCHSIA)
   fuchsia::fonts::ProviderSyncPtr provider;
   base::ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
-  return SkFontMgr_New_Fuchsia(std::move(provider));
+  return SkFontMgr_New_Fuchsia(std::move(provider),
+                               SkFontScanner_Make_Fontations());
 #elif BUILDFLAG(IS_WIN)
   return SkFontMgr_New_DirectWrite();
 #elif defined(SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE)
