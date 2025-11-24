@@ -138,10 +138,7 @@ source_set("passkey_util") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
   ]
-  frameworks = [
-    "AuthenticationServices.framework",
-    "Foundation.framework",
-  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {

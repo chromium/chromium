@@ -144,9 +144,9 @@ const std::string& PasskeyTabHelper::RegistrationRequestParams::RpId() const {
 
 PasskeyModel::UserEntity
 PasskeyTabHelper::RegistrationRequestParams::UserEntity() const {
-  return PasskeyModel::UserEntity(
-      user_entity_.id, user_entity_.name.has_value() ? *user_entity_.name : "",
-      user_entity_.display_name.has_value() ? *user_entity_.display_name : "");
+  return PasskeyModel::UserEntity(user_entity_.id,
+                                  user_entity_.name.value_or(""),
+                                  user_entity_.display_name.value_or(""));
 }
 
 PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}

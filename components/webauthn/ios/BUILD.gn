@@ -32,8 +32,6 @@ source_set("ios") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
-
-  frameworks = [ "AuthenticationServices.framework" ]
 }
 
 source_set("passkey_types") {

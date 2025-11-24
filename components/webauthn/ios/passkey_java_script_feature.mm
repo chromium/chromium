@@ -4,8 +4,6 @@
 
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
-#import <AuthenticationServices/AuthenticationServices.h>
-
 #import "base/base64.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
@@ -13,6 +11,7 @@
 #import "base/values.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "device/fido/fido_user_verification_requirement.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -202,38 +201,15 @@ device::PublicKeyCredentialRpEntity ExtractRpEntity(
 // Converts the provided string to a UserVerificationRequirement enum.
 device::UserVerificationRequirement ExtractUserVerification(
     const std::string* user_verification) {
-  // TODO(crbug.com/460484682): Verify that this is the correct default value.
-  device::UserVerificationRequirement user_verification_requirement =
-      device::UserVerificationRequirement::kPreferred;
-
-  if (!user_verification || user_verification->empty()) {
-    return user_verification_requirement;
+  if (!user_verification) {
+    // Fall back to the `kPreferred` UV requirement as per the WebAuthn spec.
+    return device::UserVerificationRequirement::kPreferred;
   }
 
   // TODO(crbug.com/460484682): Merge this code with
-  // UserVerificationPreferenceFromString().
-  NSString* user_verification_preference_string =
-      base::SysUTF8ToNSString(*user_verification);
-  if ([user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired]) {
-    user_verification_requirement =
-        device::UserVerificationRequirement::kRequired;
-  } else if (
-      [user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred]) {
-    user_verification_requirement =
-        device::UserVerificationRequirement::kPreferred;
-  } else if (
-      [user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
-    user_verification_requirement =
-        device::UserVerificationRequirement::kDiscouraged;
-  }
-
-  return user_verification_requirement;
+  // ShouldPerformUserVerificationForPreference().
+  return device::ConvertToUserVerificationRequirement(*user_verification)
+      .value_or(device::UserVerificationRequirement::kPreferred);
 }
 
 // Reads a list of PublicKeyCredentialDescriptor from the provided list.
