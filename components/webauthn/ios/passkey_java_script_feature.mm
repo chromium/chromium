@@ -290,6 +290,20 @@ PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
+PasskeyJavaScriptFeature::AttestationData::AttestationData(
+    std::vector<uint8_t> attestation_object,
+    std::vector<uint8_t> authenticator_data,
+    std::vector<uint8_t> public_key_spki_der,
+    std::string client_data_json)
+    : attestation_object(std::move(attestation_object)),
+      authenticator_data(std::move(authenticator_data)),
+      public_key_spki_der(std::move(public_key_spki_der)),
+      client_data_json(std::move(client_data_json)) {}
+
+PasskeyJavaScriptFeature::AttestationData::AttestationData(
+    PasskeyJavaScriptFeature::AttestationData&& other) = default;
+PasskeyJavaScriptFeature::AttestationData::~AttestationData() = default;
+
 // static
 PasskeyJavaScriptFeature* PasskeyJavaScriptFeature::GetInstance() {
   static base::NoDestructor<PasskeyJavaScriptFeature> instance;
@@ -320,14 +334,15 @@ void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
 void PasskeyJavaScriptFeature::ResolveAttestationRequest(
     web::WebFrame* web_frame,
     const std::string& credential_id,
-    std::vector<uint8_t> attestation_object,
-    std::string_view client_data_json) {
-  base::Value::List parameters;
-  parameters.Append(base::Base64Encode(credential_id));
-  parameters.Append(base::Base64Encode(attestation_object));
-  parameters.Append(client_data_json);
-  CallJavaScriptFunction(web_frame, "passkey.resolveAttestationRequest",
-                         parameters);
+    AttestationData attestation_data) {
+  CallJavaScriptFunction(
+      web_frame, "passkey.resolveAttestationRequest",
+      base::Value::List()
+          .Append(base::Base64Encode(credential_id))
+          .Append(base::Base64Encode(attestation_data.attestation_object))
+          .Append(base::Base64Encode(attestation_data.authenticator_data))
+          .Append(base::Base64Encode(attestation_data.public_key_spki_der))
+          .Append(attestation_data.client_data_json));
 }
 
 std::optional<std::string>

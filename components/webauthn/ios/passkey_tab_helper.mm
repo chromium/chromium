@@ -63,9 +63,11 @@ std::set<std::string> GetIdsFromDescriptors(
 // Utility function to create a passkey and an attestation object from the
 // provided parameters.
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
-std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
+std::pair<sync_pb::WebauthnCredentialSpecifics,
+          PasskeyJavaScriptFeature::AttestationData>
 CreatePasskeyAndAttestationObject(
     const SharedKey& trusted_vault_key,
+    std::string client_data_json,
     std::string_view rp_id,
     const PasskeyModel::UserEntity& user_entity,
     const passkey_model_utils::ExtensionInputData& extension_input_data,
@@ -84,7 +86,10 @@ CreatePasskeyAndAttestationObject(
               base::as_byte_span(passkey.credential_id()), public_key_spki_der);
 
   return {std::move(passkey),
-          std::move(serialized_attestation_object.attestation_object)};
+          PasskeyJavaScriptFeature::AttestationData(
+              std::move(serialized_attestation_object.attestation_object),
+              std::move(serialized_attestation_object.authenticator_data),
+              std::move(public_key_spki_der), std::move(client_data_json))};
 }
 
 PasskeyTabHelper::RequestParams::RequestParams()
@@ -329,17 +334,16 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   passkey_model_utils::ExtensionOutputData extension_output_data;
 
   // Create passkey and attestation object.
-  auto [passkey, attestation_object] = CreatePasskeyAndAttestationObject(
-      shared_key_list[0], params.RpId(), params.UserEntity(),
-      extension_input_data, &extension_output_data);
+  auto [passkey, attestation_data] = CreatePasskeyAndAttestationObject(
+      shared_key_list[0], std::move(client_data_json), params.RpId(),
+      params.UserEntity(), extension_input_data, &extension_output_data);
 
   // Add passkey to the passkey model and present the confirmation infobar.
   AddNewPasskey(passkey);
 
   // Resolve the PublicKeyCredential promise.
   PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
-      web_frame, passkey.credential_id(), std::move(attestation_object),
-      client_data_json);
+      web_frame, passkey.credential_id(), std::move(attestation_data));
 }
 
 // WebStateObserver

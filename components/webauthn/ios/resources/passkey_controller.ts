@@ -240,22 +240,18 @@ function createPublicKeyCredential(
 }
 
 function createAuthenticatorAttestationResponse(
-    attestationObj: ArrayBuffer,
+    attestationObj: ArrayBuffer, authenticatorData: ArrayBuffer,
+    publicKeySpkiDer: ArrayBuffer,
     clientDataJson: string): AuthenticatorAttestationResponse {
   return {
     attestationObject: attestationObj,
     clientDataJSON: stringToArrayBuffer(clientDataJson),
     getAuthenticatorData(): ArrayBuffer {
-      // TODO(crbug.com/460485333): Check if we need a real implementation.
-      // If so, provide output of AuthenticatorData::SerializeToByteArray()
-      // from MakeAttestationObjectForCreation() here.
-      return new ArrayBuffer(0);
+      return authenticatorData;
     },
     getPublicKey(): ArrayBuffer |
         null {
-          // TODO(crbug.com/460485333): Check if we need a real implementation.
-          // If so, provide `public_key_spki_der` here.
-          return null;
+          return publicKeySpkiDer;
         },
     getPublicKeyAlgorithm(): number {
       return ES256;
@@ -459,10 +455,14 @@ function deferToRenderer(): void {
 // Function called from C++ to resolve the deferred promise with a valid
 // attestation credential.
 function resolveAttestationRequest(
-    id64: string, attestationObject64: string, clientDataJson: string): void {
+    id64: string, attestationObject64: string, authenticatorData64: string,
+    publicKeySpkiDer64: string, clientDataJson: string): void {
   const attestationObj = decodeBase64URLToArrayBuffer(attestationObject64);
+  const authenticatorData = decodeBase64URLToArrayBuffer(authenticatorData64);
+  const publicKeySpkiDer = decodeBase64URLToArrayBuffer(publicKeySpkiDer64);
   const response: AuthenticatorAttestationResponse =
-      createAuthenticatorAttestationResponse(attestationObj, clientDataJson);
+      createAuthenticatorAttestationResponse(
+          attestationObj, authenticatorData, publicKeySpkiDer, clientDataJson);
 
   const id = decodeBase64URLToArrayBuffer(id64);
   const credential: PublicKeyCredential = createPublicKeyCredential(
