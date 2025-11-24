@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_constants.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -18,18 +22,16 @@ namespace {
 
 // Identifier for the table view section that lists the credentials.
 NSString* const kCredentialSectionIdentifier = @"CredentialSection";
-// Required item type for the TableViewItem initializer.
-const NSInteger kCredentialExportItemType = 0;
 
 }  // namespace
 
 @implementation CredentialExportViewController {
   // The data source that will manage the table view.
-  UITableViewDiffableDataSource<NSString*, AffiliatedGroupTableViewItem*>*
+  UITableViewDiffableDataSource<NSString*, CredentialGroupIdentifier*>*
       _dataSource;
 
-  // The complete list of credential items to be displayed.
-  NSArray<AffiliatedGroupTableViewItem*>* _items;
+  // The complete list of credential groups.
+  std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 
   // Toolbar button to toggle selecting or deselecting all credential items.
   UIBarButtonItem* _toggleAllButton;
@@ -51,9 +53,7 @@ const NSInteger kCredentialExportItemType = 0;
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.editing = YES;
-  [self.tableView registerClass:[PasswordFormContentCell class]
-         forCellReuseIdentifier:NSStringFromClass(
-                                    [PasswordFormContentCell class])];
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
 
   // Add a flexible space to ensure the button remains left-aligned.
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
@@ -84,7 +84,7 @@ const NSInteger kCredentialExportItemType = 0;
 
 - (void)didTapToggleAllButton {
   NSUInteger selectedCount = self.tableView.indexPathsForSelectedRows.count;
-  NSUInteger totalCount = _items.count;
+  NSUInteger totalCount = _affiliatedGroups.size();
 
   if (selectedCount == totalCount) {
     [self deselectAllItems];
@@ -97,22 +97,13 @@ const NSInteger kCredentialExportItemType = 0;
 
 - (void)setAffiliatedGroups:
     (std::vector<password_manager::AffiliatedGroup>)affiliatedGroups {
-  NSMutableArray<AffiliatedGroupTableViewItem*>* items =
-      [[NSMutableArray alloc] initWithCapacity:affiliatedGroups.size()];
-  for (password_manager::AffiliatedGroup& group : affiliatedGroups) {
-    AffiliatedGroupTableViewItem* item = [[AffiliatedGroupTableViewItem alloc]
-        initWithType:kCredentialExportItemType];
-    item.affiliatedGroup = std::move(group);
-    [items addObject:item];
-  }
-  _items = items;
+  _affiliatedGroups = std::move(affiliatedGroups);
 
   __weak __typeof(self) weakSelf = self;
-  [self applySnapshotWithItems:_items
-                      animated:YES
-                    completion:^{
-                      [weakSelf selectAllItems];
-                    }];
+  [self applySnapshotAnimated:YES
+                   completion:^{
+                     [weakSelf selectAllItems];
+                   }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -146,48 +137,46 @@ const NSInteger kCredentialExportItemType = 0;
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
 
   __weak __typeof(self) weakSelf = self;
-  UITableViewDiffableDataSourceCellProvider cellProvider = ^UITableViewCell*(
-      UITableView* tableView, NSIndexPath* indexPath,
-      AffiliatedGroupTableViewItem* item) {
-    __strong __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return nil;
-    }
-
-    PasswordFormContentCell* cell = [tableView
-        dequeueReusableCellWithIdentifier:NSStringFromClass(
-                                              [PasswordFormContentCell class])
-                             forIndexPath:indexPath];
-    // TODO(crbug.com/453605350): Add account info as subtitle.
-    cell.textLabel.text = item.title;
-
-    return cell;
-  };
+  UITableViewDiffableDataSourceCellProvider cellProvider =
+      ^UITableViewCell*(UITableView* tableView, NSIndexPath* indexPath,
+                        CredentialGroupIdentifier* identifier) {
+        return [weakSelf cellForTableView:tableView
+                              atIndexPath:indexPath
+                           itemIdentifier:identifier];
+      };
 
   _dataSource =
       [[UITableViewDiffableDataSource alloc] initWithTableView:self.tableView
                                                   cellProvider:cellProvider];
 
-  [self applySnapshotWithItems:_items
-                      animated:NO
-                    completion:^{
-                      [weakSelf selectAllItems];
-                    }];
+  [self applySnapshotAnimated:NO completion:nil];
 }
 
 // Builds and applies a new snapshot to the data source.
-- (void)applySnapshotWithItems:(NSArray<AffiliatedGroupTableViewItem*>*)items
-                      animated:(BOOL)animated
-                    completion:(void (^)(void))completion {
+- (void)applySnapshotAnimated:(BOOL)animated
+                   completion:(void (^)(void))completion {
   if (!_dataSource) {
+    if (completion) {
+      completion();
+    }
     return;
   }
 
-  NSDiffableDataSourceSnapshot<NSString*, AffiliatedGroupTableViewItem*>*
+  NSDiffableDataSourceSnapshot<NSString*, CredentialGroupIdentifier*>*
       snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot appendSectionsWithIdentifiers:@[ kCredentialSectionIdentifier ]];
-  [snapshot appendItemsWithIdentifiers:items
-             intoSectionWithIdentifier:kCredentialSectionIdentifier];
+
+  if (!_affiliatedGroups.empty()) {
+    [snapshot appendSectionsWithIdentifiers:@[ kCredentialSectionIdentifier ]];
+    NSMutableArray<CredentialGroupIdentifier*>* identifiers =
+        [[NSMutableArray alloc] initWithCapacity:_affiliatedGroups.size()];
+    for (const password_manager::AffiliatedGroup& group : _affiliatedGroups) {
+      CredentialGroupIdentifier* identifier =
+          [[CredentialGroupIdentifier alloc] initWithGroup:group];
+      [identifiers addObject:identifier];
+    }
+    [snapshot appendItemsWithIdentifiers:identifiers
+               intoSectionWithIdentifier:kCredentialSectionIdentifier];
+  }
 
   [_dataSource applySnapshot:snapshot
         animatingDifferences:animated
@@ -198,10 +187,10 @@ const NSInteger kCredentialExportItemType = 0;
 // Updates the title, "Continue" button state, and "Select All" button text
 // based on the current number of selected items.
 - (void)updateUIForSelection {
-  CHECK(_items.count > 0U);
+  CHECK_GT(_affiliatedGroups.size(), 0U);
 
   NSUInteger selectedCount = self.tableView.indexPathsForSelectedRows.count;
-  NSUInteger totalCount = _items.count;
+  NSUInteger totalCount = _affiliatedGroups.size();
 
   self.navigationItem.rightBarButtonItem.enabled = (selectedCount > 0);
 
@@ -230,7 +219,7 @@ const NSInteger kCredentialExportItemType = 0;
     return;
   }
 
-  NSInteger count = _items.count;
+  NSInteger count = _affiliatedGroups.size();
   for (NSInteger row = 0; row < count; row++) {
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row
                                                 inSection:sectionIndex];
@@ -273,6 +262,50 @@ const NSInteger kCredentialExportItemType = 0;
       kCredentialExportContinueButtonAccessibilityIdentifier;
   button.enabled = NO;
   return button;
+}
+
+// Helper to generate the specific subtitle text for each cell.
+- (NSString*)detailTextForGroup:
+    (const password_manager::AffiliatedGroup&)group {
+  base::span<const password_manager::CredentialUIEntry> credentials =
+      group.GetCredentials();
+
+  CHECK(!credentials.empty());
+
+  if (credentials.size() == 1) {
+    const password_manager::CredentialUIEntry& credential = credentials[0];
+    return base::SysUTF16ToNSString(credential.username);
+  }
+
+  return l10n_util::GetNSStringF(IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT,
+                                 base::NumberToString16(credentials.size()));
+}
+
+// Helper method to encapsulate cell configuration logic.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                         atIndexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(CredentialGroupIdentifier*)identifier {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView
+                                                 forIndexPath:indexPath];
+
+  const password_manager::AffiliatedGroup& group = identifier.affiliatedGroup;
+
+  TableViewCellContentConfiguration* contentConfig =
+      [[TableViewCellContentConfiguration alloc] init];
+  contentConfig.title = base::SysUTF8ToNSString(group.GetDisplayName());
+  contentConfig.subtitle = [self detailTextForGroup:group];
+  contentConfig.titleNumberOfLines = 2;
+  contentConfig.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  contentConfig.subtitleNumberOfLines = 1;
+
+  cell.contentConfiguration = contentConfig;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  // TODO(crbug.com/461479302): Load favicon.
+
+  return cell;
 }
 
 @end
