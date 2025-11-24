@@ -12,13 +12,17 @@ source_set("model") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//components/desktop_to_mobile_promos",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/pref_registry",
     "//components/prefs",
+    "//components/sync_device_info",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/browser/tips_notifications/model:utils",
   ]
@@ -64,11 +68,19 @@ source_set("unit_tests") {
     ":notification_client",
     "//base",
     "//base/test:test_support",
+    "//components/desktop_to_mobile_promos",
     "//components/prefs:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   frameworks = [ "Foundation.framework" ]
 }

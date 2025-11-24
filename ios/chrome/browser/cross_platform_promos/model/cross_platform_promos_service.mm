@@ -10,14 +10,21 @@
 #import "base/ios/block_types.h"
 #import "base/json/values_util.h"
 #import "base/time/time.h"
-#import "components/prefs/pref_registry_simple.h"
+#import "components/desktop_to_mobile_promos/pref_names.h"
+#import "components/desktop_to_mobile_promos/promos_types.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/sync_device_info/device_info.h"
+#import "components/sync_device_info/device_info_sync_service.h"
+#import "components/sync_device_info/device_info_tracker.h"
+#import "components/sync_device_info/local_device_info_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_presenter.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
@@ -33,20 +40,25 @@ const base::TimeDelta kStorageExpiry = base::Days(28);
 
 // static
 void CrossPlatformPromosService::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
+    user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kCrossPlatformPromosActiveDays);
   registry->RegisterTimePref(prefs::kCrossPlatformPromosIOS16thActiveDay,
                              base::Time());
+  registry->RegisterDictionaryPref(
+      prefs::kIOSPromoReminder,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 CrossPlatformPromosService::CrossPlatformPromosService(ProfileIOS* profile)
     : profile_(profile) {
-  // TODO(crbug.com/460783437): Observe synced pref to see if promo should be
-  // shown.
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kIOSPromoReminder,
+      base::BindRepeating(&CrossPlatformPromosService::MaybeShowPromo,
+                          weak_factory_.GetWeakPtr()));
 }
 
 CrossPlatformPromosService::~CrossPlatformPromosService() = default;
-
 void CrossPlatformPromosService::OnApplicationWillEnterForeground() {
   Update16thActiveDay();
   MaybeShowPromo();
@@ -72,8 +84,50 @@ void CrossPlatformPromosService::MaybeShowPromo() {
   if (!browser) {
     return;
   }
-  // TODO(crbug.com/460783437): Check synced pref to see if promo should be
-  // shown.
+
+  const base::Value::Dict& promo_reminder =
+      profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
+  std::optional<int> promo_type =
+      promo_reminder.FindInt(prefs::kIOSPromoReminderPromoType);
+
+  if (!promo_type) {
+    return;
+  }
+
+  // Do not show promo if the target device guid does not match the current
+  // device guid.
+  const std::string* promo_device_guid =
+      promo_reminder.FindString(prefs::kIOSPromoReminderDeviceGUID);
+  if (!promo_device_guid) {
+    return;
+  }
+
+  const syncer::DeviceInfo* local_device_info =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_)
+          ->GetLocalDeviceInfoProvider()
+          ->GetLocalDeviceInfo();
+  if (!local_device_info || local_device_info->guid() != *promo_device_guid) {
+    return;
+  }
+
+  switch (static_cast<desktop_to_mobile_promos::PromoType>(*promo_type)) {
+    case desktop_to_mobile_promos::PromoType::kLens:
+      ShowLensPromo(browser);
+      break;
+    case desktop_to_mobile_promos::PromoType::kEnhancedBrowsing:
+      ShowESBPromo(browser);
+      break;
+    case desktop_to_mobile_promos::PromoType::kPassword:
+      ShowCPEPromo(browser);
+      break;
+    default:
+      // If the promo type is unknown, clear the pref to avoid re-triggering.
+      profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
+      return;
+  }
+
+  // Clear the promo reminder pref after showing the promo.
+  profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
 }
 
 Browser* CrossPlatformPromosService::GetActiveBrowser() {

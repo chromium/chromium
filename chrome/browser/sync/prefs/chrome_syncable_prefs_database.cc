@@ -431,7 +431,7 @@ enum {
   kDockedMagnifierAcceleratorDialogHasBeenAccepted = 100363,
   kSelectToSpeakAcceleratorDialogHasBeenAccepted = 100364,
   kAccessibilityScreenMagnifierScale = 100365,
-  kIOSPromoReminder = 100366,
+  // kIOSPromoReminder = 100366, (deprecated, moved to common syncable prefs)
   kClassManagementToolsOOBEAccessCountSetting = 100367,
   kClassManagementToolsKioskReceiverCodes = 100368,
   kPinContextualTaskButton = 100369,
@@ -1864,10 +1864,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSLensPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSLensPromoOptOut, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kIOSPromoReminder,
-     {syncable_prefs_ids::kIOSPromoReminder, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #if BUILDFLAG(ENABLE_GLIC)

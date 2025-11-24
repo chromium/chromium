@@ -387,6 +387,7 @@ chromium-metrics-reviews@google.com.
   <int value="108" label="CrossDeviceMagicStackHomeModuleEnabled"/>
   <int value="109" label="ShowAiModeOmniboxButton"/>
   <int value="110" label="AutofillAiSyncedOptInStatus"/>
+  <int value="111" label="iOSPromoReminder"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -791,7 +792,7 @@ chromium-metrics-reviews@google.com.
   <int value="100363" label="DockedMagnifierAcceleratorDialogHasBeenAccepted"/>
   <int value="100364" label="SelectToSpeakAcceleratorDialogHasBeenAccepted"/>
   <int value="100365" label="AccessibilityScreenMagnifierScale"/>
-  <int value="100366" label="iOSPromoReminder"/>
+  <int value="100366" label="(obsolete) iOSPromoReminder"/>
   <int value="100367" label="ClassManagementToolsOOBEAccessCountSetting"/>
   <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
   <int value="100369" label="PinContextualTaskButton"/>

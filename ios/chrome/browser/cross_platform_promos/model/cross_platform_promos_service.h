@@ -9,23 +9,27 @@
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_change_registrar.h"
 
 namespace base {
 class Time;
 }  // namespace base
 
 class Browser;
-class PrefRegistrySimple;
 class ProfileIOS;
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 // A KeyedService that tracks user activity for cross-platform promos.
 class CrossPlatformPromosService : public KeyedService {
  public:
-  explicit CrossPlatformPromosService(ProfileIOS* profile);
+  CrossPlatformPromosService(ProfileIOS* profile);
   ~CrossPlatformPromosService() override;
 
   // Registers the profile prefs used by this service.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Called when the application enters the foreground.
   void OnApplicationWillEnterForeground();
@@ -59,6 +63,7 @@ class CrossPlatformPromosService : public KeyedService {
   base::Time FindActiveDay(size_t count);
 
   raw_ptr<ProfileIOS> profile_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<CrossPlatformPromosService> weak_factory_{this};
 };
 
