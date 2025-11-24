@@ -187,10 +187,13 @@
                                    prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _signinCoordinator.signinCompletion = ^(SigninCoordinatorResult result,
-                                          id<SystemIdentity> signinIdentity) {
-    [weakSelf signinCoordinatorCompletion:result signinIdentity:signinIdentity];
-  };
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> signinIdentity) {
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator
+                                                      result:result
+                                              signinIdentity:signinIdentity];
+      };
   [_signinCoordinator start];
 }
 
@@ -201,8 +204,12 @@
   _signinCoordinator = nil;
 }
 
-- (void)signinCoordinatorCompletion:(SigninCoordinatorResult)result
-                     signinIdentity:(id<SystemIdentity>)signinIdentity {
+- (void)
+    signinCoordinatorCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                        result:(SigninCoordinatorResult)result
+                                signinIdentity:
+                                    (id<SystemIdentity>)signinIdentity {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
   if (result == SigninCoordinatorResultSuccess && signinIdentity) {
     GaiaId gaiaID = signinIdentity.gaiaId;

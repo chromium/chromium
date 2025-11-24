@@ -683,9 +683,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   }
   [_signinCoordinator stop];
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult result,
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
                                  id<SystemIdentity>) {
-    [weakSelf signinDidCompleteWithResult:result];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator result:result];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -720,7 +721,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 #pragma mark - BookmarksHomeConsumer Helper
 
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+- (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                                  result:(SigninCoordinatorResult)result {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self.mediator signinDidCompleteWithResult:result];
   [self stopSigninCoordinator];
 }

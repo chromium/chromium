@@ -2151,14 +2151,16 @@ struct EnhancedSafeBrowsingActivePromoData
                                             fullscreenPromo:NO
                                        continuationProvider:provider];
   _signinAndHistorySyncCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf didFinishSignin];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf didFinishSigninWithCoordinator:coordinator];
       };
   [_signinAndHistorySyncCoordinator start];
 }
 
-- (void)didFinishSignin {
-  CHECK(_signinAndHistorySyncCoordinator, base::NotFatalUntil::M144);
+- (void)didFinishSigninWithCoordinator:(SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinAndHistorySyncCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
   if (_settingsAreDismissed) {
     return;

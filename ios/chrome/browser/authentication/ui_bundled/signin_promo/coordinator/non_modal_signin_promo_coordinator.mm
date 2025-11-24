@@ -108,12 +108,6 @@ constexpr CGFloat kLogoSize = 22;
   _signinCoordinator = nil;
 }
 
-// Handles sign-in coordinator completion by cleaning and dismissing the promo.
-- (void)signinCoordinatorCompletion {
-  [self stopSigninCoordinator];
-  [self.delegate dismissNonModalSignInPromo:self];
-}
-
 // Notifies the feature engagement tracker that the promo has been dismissed.
 - (void)notifyFeatureEngagementDismissed {
   if (self.bannerWasPresented) {
@@ -301,14 +295,17 @@ constexpr CGFloat kLogoSize = 22;
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf actionCallback];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf actionCallbackWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
 
-- (void)actionCallback {
+- (void)actionCallbackWithCoordinator:(SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
+  [self.delegate dismissNonModalSignInPromo:self];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {

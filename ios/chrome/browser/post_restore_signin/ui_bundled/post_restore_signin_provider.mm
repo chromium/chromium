@@ -179,7 +179,8 @@
 
   __weak __typeof(self) weakSelf = self;
   SigninCoordinatorCompletionCallback completion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
         if (result == SigninCoordinatorResultSuccess) {
           [weakSelf signinDone];
         }

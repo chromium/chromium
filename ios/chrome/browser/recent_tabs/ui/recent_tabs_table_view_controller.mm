@@ -1565,9 +1565,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
            command:(ShowSigninCommand*)command {
   CHECK_EQ(mediator, self.signinPromoViewMediator);
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult result,
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
                                  id<SystemIdentity>) {
-    [weakSelf signinDidCompleteWithResult:result];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator result:result];
   }];
   if (_signinCoordinator.viewWillPersist) {
     return;
@@ -1582,7 +1583,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - SigninPromoViewMediatorDelegate Helper
 
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+- (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                                  result:(SigninCoordinatorResult)result {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self.signinPromoViewMediator signinDidCompleteWithResult:result];
   [self stopSigninCoordinator];
   [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:YES];

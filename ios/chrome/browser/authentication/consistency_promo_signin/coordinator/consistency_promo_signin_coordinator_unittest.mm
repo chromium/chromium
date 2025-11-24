@@ -175,7 +175,8 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   __block id<SystemIdentity> signed_in_identity = nil;
   __block bool signin_completion_called = false;
   coordinator_.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
         coordinator_result = result;
         signed_in_identity = identity;
         signin_completion_called = true;

@@ -95,7 +95,8 @@ TEST_F(AddAccountSigninCoordinatorTest, StopCoordinatorWhileShowingErrorAlert) {
       showSigninWithIntent:AddAccountSigninIntent::kAddAccount]);
   __block BOOL signinCompletionCalled = NO;
   coordinator_.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
         signinCompletionCalled = YES;
       };
   [coordinator_ start];

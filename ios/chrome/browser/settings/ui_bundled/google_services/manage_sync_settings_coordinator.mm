@@ -213,6 +213,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - Private
 
+// Called when the add account coordinator is complete.
+- (void)addAccountCoordinatorCompletedWithCoordinator:
+    (SigninCoordinator*)coordinator {
+  CHECK_EQ(_addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
+  [self stopAddAccountCoordinator];
+}
+
 // Stops properly all views opened by the current coordinator.
 - (void)stopChildren {
   [self stopBulkUpload];
@@ -653,8 +660,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf stopAddAccountCoordinator];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf addAccountCoordinatorCompletedWithCoordinator:coordinator];
       };
   [_addAccountCoordinator start];
 }

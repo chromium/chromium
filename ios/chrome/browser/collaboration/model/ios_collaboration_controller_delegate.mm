@@ -578,6 +578,7 @@ void IOSCollaborationControllerDelegate::ShowLeaveOrDeleteDialog(
 
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
+    SigninCoordinator* coordinator,
     SigninCoordinatorResult sign_in_result,
     id<SystemIdentity> completion_info) {
   StopSigninCoordinator();

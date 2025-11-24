@@ -257,8 +257,10 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
-            [weakSelf currentSigninStepDidFinishWithResult:result];
+          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+            id<SystemIdentity>) {
+            [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
+                                                         result:result];
           };
       [_signinCoordinator start];
       return;
@@ -274,8 +276,10 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
-            [weakSelf currentSigninStepDidFinishWithResult:result];
+          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+            id<SystemIdentity>) {
+            [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
+                                                         result:result];
           };
       [_signinCoordinator start];
       return;
@@ -309,9 +313,11 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 }
 
 // Stops the child coordinator and prepares the next step to present.
-- (void)currentSigninStepDidFinishWithResult:(SigninCoordinatorResult)result {
+- (void)
+    currentSigninStepDidFinishWithCoordinator:(SigninCoordinator*)coordinator
+                                       result:(SigninCoordinatorResult)result {
   // TODO(crbug.com/40929259): Turn into CHECK.
-  DUMP_WILL_BE_CHECK(_signinCoordinator)
+  DUMP_WILL_BE_CHECK_EQ(_signinCoordinator, coordinator)
       << base::SysNSStringToUTF8([self description]);
   DUMP_WILL_BE_CHECK(!_historySyncPopupCoordinator)
       << base::SysNSStringToUTF8([self description]);

@@ -188,7 +188,10 @@
 }
 
 // Called on completion of the AddAccountSigninCoordinator view.
-- (void)addAccountCompletionWithIdentity:(id<SystemIdentity>)identity {
+- (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                   identity:(id<SystemIdentity>)identity {
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   self.openAddAccountOperationInProgress = NO;
   if (!identity) {
     return;
@@ -214,8 +217,10 @@
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf addAccountCompletionWithIdentity:identity];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                             identity:identity];
       };
   [_addAccountSigninCoordinator start];
   [self.logger logAccountPickerAddAccountScreenOpened];

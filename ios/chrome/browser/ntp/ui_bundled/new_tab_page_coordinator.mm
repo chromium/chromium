@@ -902,10 +902,11 @@
                                               fullscreenPromo:NO
                                          continuationProvider:
                                              DoNothingContinuationProvider()];
-    _signinCoordinator.signinCompletion = ^(
-        SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-      [weakSelf showSigninCommandDidFinish];
-    };
+    _signinCoordinator.signinCompletion =
+        ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+          id<SystemIdentity> completionIdentity) {
+          [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
+        };
     [_signinCoordinator start];
   }
 }
@@ -937,21 +938,27 @@
     // giver of the command that the command is interrupted.
     SigninCoordinatorCompletionCallback completion = command.completion;
     if (completion) {
-      completion(SigninCoordinatorResultInterrupted, nil);
+      // The coordinator argument is `nil` because this completion has never
+      // been assigned to a signinCoordinator’s `signinCompletion`. It works
+      // because the part that check the coordinator value is in the
+      // `addSigninCompletion:` below, and so not integrated in the completion
+      // function yet.
+      completion(nil, SigninCoordinatorResultInterrupted, nil);
     }
     return;
   } else if (_signinCoordinator) {
     // There may be a signin-coordinator being presented. Due to uncertainty,
     // let’s close the current sign-in coordinator and start the new one.
-    _signinCoordinator.signinCompletion(SigninCoordinatorResultInterrupted,
-                                        nil);
+    _signinCoordinator.signinCompletion(
+        _signinCoordinator, SigninCoordinatorResultInterrupted, nil);
     // The signin-completion should have unset the sign-in coordinator.
     CHECK(!_signinCoordinator, base::NotFatalUntil::M146);
   }
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult result,
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
                                  id<SystemIdentity>) {
-    [weakSelf showSigninCommandDidFinish];
+    [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
   }];
   _signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
@@ -1124,8 +1131,9 @@
                                       DoNothingContinuationProvider()];
   }
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf showSigninCommandDidFinish];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
+        [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
   signin_metrics::RecordSigninUserActionForAccessPoint(accessPoint);
@@ -1488,8 +1496,9 @@
 
 // Update the state, to take into account that the signin coordinator
 // coordinator is stopped.
-- (void)showSigninCommandDidFinish {
-  CHECK(_signinCoordinator, base::NotFatalUntil::M140);
+- (void)showSigninCommandDidFinishWithCoordinator:
+    (SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
 }
 

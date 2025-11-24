@@ -218,8 +218,9 @@
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf stopSigninCoordinator];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
+        [weakSelf signinCoordinatorCompletedWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
@@ -323,6 +324,12 @@
 }
 
 #pragma mark - Private
+
+- (void)signinCoordinatorCompletedWithCoordinator:
+    (SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  [self stopSigninCoordinator];
+}
 
 - (void)dismissButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileRecentTabsClose"));

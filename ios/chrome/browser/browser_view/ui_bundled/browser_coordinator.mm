@@ -1048,6 +1048,13 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
+- (void)signinCoordinatorCompletionWithCoordinator:
+    (SigninCoordinator*)coordinator {
+  CHECK(!coordinator || _signinCoordinator == coordinator,
+        base::NotFatalUntil::M151);
+  [self stopSigninCoordinator];
+}
+
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
@@ -2635,8 +2642,9 @@ const char kChromeAppStoreUrl[] =
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf stopSigninCoordinator];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
@@ -3228,7 +3236,8 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showFullscreenSigninPromo {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showFullscreenSigninPromoWithCompletion:^(SigninCoordinatorResult result,
+      showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
+                                                SigninCoordinatorResult result,
                                                 id<SystemIdentity>) {
         [self.promosManagerCoordinator promoWasDismissed];
       }];
@@ -3962,8 +3971,9 @@ const char kChromeAppStoreUrl[] =
 
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf stopSigninCoordinator];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
@@ -4044,8 +4054,9 @@ const char kChromeAppStoreUrl[] =
                                           DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf stopSigninCoordinator];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
@@ -4063,12 +4074,13 @@ const char kChromeAppStoreUrl[] =
                 baseViewController:self.viewController];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
         SigninCoordinatorCompletionCallback completion = command.completion;
         if (completion) {
-          completion(result, identity);
+          completion(coordinator, result, identity);
         }
-        [weakSelf stopSigninCoordinator];
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }

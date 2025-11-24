@@ -926,6 +926,20 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 #pragma mark - private
 
+- (void)webSigninCompletion:(SigninCoordinator*)coordinator
+                     result:(SigninCoordinatorResult)result
+         completionIdentity:(id<SystemIdentity>)completionIdentity
+                        URL:(const GURL&)URL {
+  CHECK_EQ(coordinator, self.signinCoordinator);
+  // If the sign-in is not successful do not load the continuation URL.
+  BOOL success = result == SigninCoordinatorResultSuccess;
+  if (!success) {
+    return;
+  }
+  UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->Load(UrlLoadParams::InCurrentTab(URL));
+}
+
 // If sign-in is disabled, switch to the personal profile and sign-out.
 - (void)signoutIfNeeded {
   AuthenticationService* authenticationService =
@@ -2315,16 +2329,12 @@ using UserFeedbackDataCallback =
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = url;
   [self startSigninCoordinatorWithCompletion:^(
-            SigninCoordinatorResult result,
+            SigninCoordinator* coordinator, SigninCoordinatorResult result,
             id<SystemIdentity> completionIdentity) {
-    // If the sign-in is not successful or the scene controller is shut down do
-    // not load the continuation URL.
-    BOOL success = result == SigninCoordinatorResultSuccess;
-    if (!success || !weakSelf) {
-      return;
-    }
-    UrlLoadingBrowserAgent::FromBrowser(weakSelf.mainInterface.browser)
-        ->Load(UrlLoadParams::InCurrentTab(copiedURL));
+    [weakSelf webSigninCompletion:coordinator
+                           result:result
+               completionIdentity:completionIdentity
+                              URL:copiedURL];
   }];
 }
 
@@ -4068,7 +4078,9 @@ using UserFeedbackDataCallback =
       signinCoordinator.signinCompletion;
   signinCoordinator.signinCompletion = nil;
   CHECK(signinCompletion, base::NotFatalUntil::M142);
-  signinCompletion(SigninCoordinatorResultInterrupted, nil);
+  // The `signinCoordinator` must be nil here, because `self.signinCoordinator`
+  // was set to `nil` above.
+  signinCompletion(nil, SigninCoordinatorResultInterrupted, nil);
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.
@@ -4083,7 +4095,12 @@ using UserFeedbackDataCallback =
   switch (statusService) {
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
       if (completion) {
-        completion(SigninCoordinatorResultDisabled, nil);
+        // The coordinator argument is `nil` because this completion has never
+        // been assigned to a signinCoordinator’s `signinCompletion`. It works
+        // because the part that check the coordinator value is in the
+        // `signinCompletedWithCoordinator:...` below, and so not integrated in
+        // the completion function yet.
+        completion(nil, SigninCoordinatorResultDisabled, nil);
       }
       [self stopSigninCoordinatorAnimated:NO];
       id<PolicyChangeCommands> handler = HandlerForProtocol(
@@ -4113,7 +4130,12 @@ using UserFeedbackDataCallback =
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
     if (completion) {
-      completion(SigninCoordinatorResultInterrupted, nil);
+      // The coordinator argument is `nil` because this completion has never
+      // been assigned to a signinCoordinator’s `signinCompletion`. It works
+      // because the part that check the coordinator value is in the
+      // `signinCompletedWithCoordinator:...` below, and so not integrated in
+      // the completion function yet.
+      completion(nil, SigninCoordinatorResultInterrupted, nil);
     }
     self.signinCoordinator = nil;
     RecordIfNeededSigninFullscreenPromoEvent(
@@ -4124,10 +4146,12 @@ using UserFeedbackDataCallback =
 
   __weak __typeof(self) weakSelf = self;
   self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf signinCompletedWithResult:result
-                                   identity:identity
-                                 completion:completion];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinCompletedWithCoordinator:coordinator
+                                          result:result
+                                        identity:identity
+                                      completion:completion];
       };
 
   // Log that the fullscreen sign-in promo UI has started.
@@ -4139,15 +4163,17 @@ using UserFeedbackDataCallback =
 }
 
 // Completion block for Signin coordinators.
-- (void)signinCompletedWithResult:(SigninCoordinatorResult)result
-                         identity:(id<SystemIdentity>)identity
-                       completion:
-                           (SigninCoordinatorCompletionCallback)completion {
-  [self stopSigninCoordinatorAnimated:YES];
+- (void)signinCompletedWithCoordinator:(SigninCoordinator*)coordinator
+                                result:(SigninCoordinatorResult)result
+                              identity:(id<SystemIdentity>)identity
+                            completion:(SigninCoordinatorCompletionCallback)
+                                           completion {
+  CHECK_EQ(coordinator, self.signinCoordinator, base::NotFatalUntil::M151);
 
   if (completion) {
-    completion(result, identity);
+    completion(coordinator, result, identity);
   }
+  [self stopSigninCoordinatorAnimated:YES];
 }
 
 #pragma mark - WebStateListObserving

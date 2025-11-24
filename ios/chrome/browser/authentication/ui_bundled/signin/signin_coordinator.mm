@@ -387,7 +387,7 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(signinResult, completionIdentity);
+  signinCompletion(self, signinResult, completionIdentity);
 }
 
 #pragma mark - BuggyAuthenticationViewOwner

@@ -106,7 +106,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
                                        PROMO_ACTION_NO_SIGNIN_PROMO
               continuationProvider:NotReachedContinuationProvider()];
     coordinator_.signinCompletion = ^(
-        SigninCoordinatorResult signinResult,
+        SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
       EXPECT_EQ(signinResult, expected_result);
       EXPECT_EQ(expected_signin_completion_identity, signinCompletionIdentity);

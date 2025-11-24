@@ -9,6 +9,7 @@
 
 #import "base/time/time.h"
 
+@class SigninCoordinator;
 @protocol SystemIdentity;
 
 // Sign-in result returned Sign-in result.
@@ -78,10 +79,13 @@ enum class SigninFullscreenPromoEvents {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSigninFullscreenPromoEvents)
 
 // Called when the sign-in dialog is closed.
-// `result` is the sign-in result state.
-// `signinCompletionIdentity` the identity that was used if any.
+// `coordinator` the SigninCoordinator to which this block was assigned. nil if
+// this block was not assigned to a signin coordinator. `result` is the sign-in
+// result state. `signinCompletionIdentity` the identity that was used if any.
 using SigninCoordinatorCompletionCallback =
-    void (^)(SigninCoordinatorResult result, id<SystemIdentity> identity);
+    void (^)(SigninCoordinator* coordinator,
+             SigninCoordinatorResult result,
+             id<SystemIdentity> identity);
 
 // Name of the accessibility identifier for the History Sync view.
 extern NSString* const kHistorySyncViewAccessibilityIdentifier;

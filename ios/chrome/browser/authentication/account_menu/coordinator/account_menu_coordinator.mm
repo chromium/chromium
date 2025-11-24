@@ -353,9 +353,9 @@ void maybeShowSettingsIPH(Browser* browser) {
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf signinCoordinatorCompletion];
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_addAccountSigninCoordinator start];
 }
@@ -538,9 +538,9 @@ void maybeShowSettingsIPH(Browser* browser) {
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf signinCoordinatorCompletion];
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_addAccountSigninCoordinator start];
 }
@@ -571,7 +571,10 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 // Clean up the add account coordinator.
-- (void)signinCoordinatorCompletion {
+- (void)signinCoordinatorCompletionWithCoordinator:
+    (SigninCoordinator*)coordinator {
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   [self.mediator accountMenuIsUsable];
   [self stopAddAccountCoordinator];
 }

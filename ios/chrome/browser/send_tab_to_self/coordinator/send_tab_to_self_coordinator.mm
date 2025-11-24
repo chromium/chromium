@@ -387,10 +387,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
       __weak __typeof(self) weakSelf = self;
       SigninCoordinatorCompletionCallback completion =
-          ^(SigninCoordinatorResult result,
+          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
             id<SystemIdentity> completionIdentity) {
             BOOL succeeded = result == SigninCoordinatorResultSuccess;
-            [weakSelf onSigninComplete:succeeded];
+            [weakSelf onSigninCompleteWithCoordinator:coordinator
+                                            succeeded:succeeded];
           };
       ChangeProfileContinuationProvider provider = base::BindRepeating(
           &CreateChangeProfileSendTabToOtherDevice, _url, self.title);
@@ -418,7 +419,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }
 
 // Called when the sign-in flow is complete.
-- (void)onSigninComplete:(BOOL)succeeded {
+- (void)onSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                              succeeded:(BOOL)succeeded {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
   if (!succeeded) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];

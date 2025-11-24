@@ -340,9 +340,11 @@
 // function immediately signs in to Chrome with the identity acquired from the
 // add-account flow after the cleanup.
 - (void)
-    addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                      completionIdentity:(id<SystemIdentity>)completionIdentity
-                             hasAccounts:(BOOL)hasAccounts {
+    addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                           SigninResult:(SigninCoordinatorResult)signinResult
+                     completionIdentity:(id<SystemIdentity>)completionIdentity
+                            hasAccounts:(BOOL)hasAccounts {
+  CHECK_EQ(self.addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED,
@@ -398,11 +400,12 @@
                              continuationProvider:_continuationProvider];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   self.addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf addAccountCompletionWithSigninResult:signinResult
-                                    completionIdentity:signinCompletionIdentity
-                                           hasAccounts:hasAccounts];
+        [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                         SigninResult:signinResult
+                                   completionIdentity:signinCompletionIdentity
+                                          hasAccounts:hasAccounts];
       };
   [self.addAccountCoordinator start];
 }

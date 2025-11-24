@@ -408,7 +408,8 @@ TEST_F(IOSCollaborationControllerDelegateTest,
       .andReturn(signin_coordinator_mock_);
 
   OCMExpect([signin_coordinator_mock_ start]).andDo(^(NSInvocation*) {
-    completion(SigninCoordinatorResultCanceledByUser, nil);
+    completion(signin_coordinator_mock_, SigninCoordinatorResultCanceledByUser,
+               nil);
   });
   OCMExpect([signin_coordinator_mock_ stop]);
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
@@ -439,7 +440,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
       .andReturn(signin_coordinator_mock_);
   OCMExpect([signin_coordinator_mock_ start]).andDo(^(NSInvocation*) {
     AcceptSyncOptIn();
-    completion(SigninCoordinatorResultSuccess,
+    completion(signin_coordinator_mock_, SigninCoordinatorResultSuccess,
                [FakeSystemIdentity fakeIdentity1]);
   });
   OCMExpect([signin_coordinator_mock_ stop]);
@@ -469,7 +470,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
       .andReturn(signin_coordinator_mock_);
   OCMExpect([signin_coordinator_mock_ start]).andDo(^(NSInvocation*) {
     DenySyncOptIn();
-    completion(SigninCoordinatorResultSuccess,
+    completion(signin_coordinator_mock_, SigninCoordinatorResultSuccess,
                [FakeSystemIdentity fakeIdentity1]);
   });
   OCMExpect([signin_coordinator_mock_ stop]);
@@ -499,7 +500,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
       .andReturn(signin_coordinator_mock_);
   OCMExpect([signin_coordinator_mock_ start]).andDo(^(NSInvocation*) {
     AcceptSyncOptIn();
-    completion(SigninCoordinatorResultSuccess,
+    completion(signin_coordinator_mock_, SigninCoordinatorResultSuccess,
                [FakeSystemIdentity fakeIdentity1]);
   });
   OCMExpect([signin_coordinator_mock_ stop]);

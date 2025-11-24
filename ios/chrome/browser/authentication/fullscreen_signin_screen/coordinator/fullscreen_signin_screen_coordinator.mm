@@ -215,19 +215,24 @@
                              continuationProvider:
                                  _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;
-  self.addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf addAccountSigninCompleteWithResult:signinResult
-                                  completionIdentity:signinCompletionIdentity];
-      };
+  self.addAccountSigninCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
+      id<SystemIdentity> signinCompletionIdentity) {
+    [weakSelf addAccountSigninCompleteWithCoordinator:coordinator
+                                         signinResult:signinResult
+                                   completionIdentity:signinCompletionIdentity];
+  };
   [self.addAccountSigninCoordinator start];
 }
 
 // Callback handling the completion of the AddAccount action.
-- (void)addAccountSigninCompleteWithResult:(SigninCoordinatorResult)signinResult
-                        completionIdentity:
-                            (id<SystemIdentity>)signinCompletionIdentity {
+- (void)addAccountSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                                   signinResult:
+                                       (SigninCoordinatorResult)signinResult
+                             completionIdentity:
+                                 (id<SystemIdentity>)signinCompletionIdentity {
+  CHECK_EQ(self.addAccountSigninCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   [self stopAddAccountCoordinator];
   if (signinResult == SigninCoordinatorResultSuccess &&
       self.accountManagerService->IsValidIdentity(signinCompletionIdentity)) {

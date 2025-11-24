@@ -294,8 +294,11 @@
   _signinCoordinator = nil;
 }
 
-- (void)addAccountCompletionWithResult:(SigninCoordinatorResult)result
-                    completionIdentity:(id<SystemIdentity>)completionIdentity {
+- (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                     result:(SigninCoordinatorResult)result
+                         completionIdentity:
+                             (id<SystemIdentity>)completionIdentity {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   if (result == SigninCoordinatorResultSuccess) {
     [self addAndSelectNewIdentity:completionIdentity];
   } else {
@@ -324,9 +327,11 @@
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf addAccountCompletionWithResult:result
-                              completionIdentity:completionIdentity];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
+        [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                               result:result
+                                   completionIdentity:completionIdentity];
       };
   [_signinCoordinator start];
 }

@@ -315,17 +315,23 @@
                                    prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult result, id<SystemIdentity> resultIdentity) {
-    [weakSelf addAccountDoneWithResult:result resultIdentity:resultIdentity];
-  };
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> resultIdentity) {
+        [weakSelf addAccountDoneWithCoordinator:coordinator
+                                         result:result
+                                 resultIdentity:resultIdentity];
+      };
   [_addAccountSigninCoordinator start];
 }
 
 // Starts the sign-in flow if the identity has been selected, otherwise, it
 // ends this coordinator.
-- (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                  resultIdentity:(id<SystemIdentity>)resultIdentity {
+- (void)addAccountDoneWithCoordinator:(SigninCoordinator*)coordinator
+                               result:(SigninCoordinatorResult)result
+                       resultIdentity:(id<SystemIdentity>)resultIdentity {
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [self stopAddAccountSigninCoordinator];

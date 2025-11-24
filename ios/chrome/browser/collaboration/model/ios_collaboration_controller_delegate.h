@@ -144,6 +144,7 @@ class IOSCollaborationControllerDelegate
 
   // Called when the authentication ui flow is complete.
   void OnAuthenticationComplete(ResultCallback result,
+                                SigninCoordinator* coordinator,
                                 SigninCoordinatorResult sign_in_result,
                                 id<SystemIdentity> completion_info);
 
