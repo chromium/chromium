@@ -391,7 +391,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void requestTypeDrawableAndTint() {
+    public void requestTypeDrawable() {
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.IMAGE_GENERATION);
@@ -400,7 +400,6 @@ public class FuseboxViewBinderUnitTest {
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
-        assertNull(mViewHolder.requestType.getCompoundDrawableTintList());
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
         FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
@@ -408,6 +407,5 @@ public class FuseboxViewBinderUnitTest {
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
-        assertNotNull(mViewHolder.requestType.getCompoundDrawableTintList());
     }
 }

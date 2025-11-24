@@ -176,4 +176,13 @@ public class ButtonCompat extends AppCompatButton {
     public void setBorderStyle(@BorderType int borderType) {
         mRippleBackgroundHelper.setBorderStyle(borderType);
     }
+
+    /**
+     * Sets the border color for the button.
+     *
+     * @param borderColor The color that is drawn around the button with the current style.
+     */
+    public void setBorderColor(ColorStateList borderColor) {
+        mRippleBackgroundHelper.setBorderColor(borderColor);
+    }
 }

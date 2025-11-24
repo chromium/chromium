@@ -72,14 +72,11 @@ found in the LICENSE file.
         android:singleLine="true"
         android:text="@string/ai_mode_entrypoint_label"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextSmall"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:buttonColor="@color/gm3_baseline_surface_container"
-        app:buttonBorderStyle="dashed"
-        app:drawableTint="?attr/colorPrimary"
-        app:buttonTextColor="@null"/>
+        app:buttonBorderStyle="solid"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/navigate_button"
