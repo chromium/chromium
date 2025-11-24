@@ -434,9 +434,12 @@ class SamlTestWithFeatures : public SamlTestBase,
     if (GetParam()) {
       enabled_features.push_back(
           features::kCheckPasswordsAgainstCryptohomeHelper);
+      enabled_features.push_back(features::kManagedLocalPinAndPassword);
     } else {
       disabled_features.push_back(
           features::kCheckPasswordsAgainstCryptohomeHelper);
+      disabled_features.push_back(features::kManagedLocalPinAndPassword);
+
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

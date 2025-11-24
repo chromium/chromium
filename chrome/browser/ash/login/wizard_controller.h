@@ -430,6 +430,7 @@ class WizardController : public OobeUI::Observer {
   void FinishAuthFactorsSetup();
   void ObtainContextAndFinalizeAuth();
   void FinalizeAuthWithContext(std::unique_ptr<UserContext> user_context);
+  void CompleteLogin();
   // End of Local authentication setup sub-group
   void OnRecommendAppsScreenExit(RecommendAppsScreen::Result result);
   void OnRemoteActivityNotificationScreenExit();

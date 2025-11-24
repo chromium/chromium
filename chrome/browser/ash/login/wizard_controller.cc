@@ -1636,6 +1636,22 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
   OnScreenExit(SamlConfirmPasswordView::kScreenId,
                SamlConfirmPasswordScreen::GetResultString(result));
   switch (result) {
+    case SamlConfirmPasswordScreen::Result::kSuccess:
+      switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
+        case WizardContext::AuthChangeFlow::kInitialSetup:
+          // TODO: b/445665662 - Move the SAML confirm password screen to after
+          // Cryptohome is mounted for initial setup.
+          [[fallthrough]];
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          // During reauthentication the SAML confirm password screen is only
+          // shown before Cryptohome is mounted.
+          CompleteLogin();
+          break;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          NOTREACHED() << "SAML confirm password screen should not be shown "
+                          "during recovery.";
+      }
+      break;
     case SamlConfirmPasswordScreen::Result::kCancel:
       LoginDisplayHost::default_host()->StartSignInScreen();
       return;
@@ -2749,6 +2765,13 @@ void WizardController::ObtainContextAndAttemptLocalAuthentication() {
       *token,
       base::BindOnce(&WizardController::AttemptLocalAuthenticationWithContext,
                      weak_factory_.GetWeakPtr()));
+}
+
+void WizardController::CompleteLogin() {
+  CHECK(wizard_context_->user_context);
+  auto user_context = std::move(wizard_context_->user_context);
+  LoginDisplayHost::default_host()->CompleteLogin(*user_context);
+  wizard_context_->user_context = nullptr;
 }
 
 void WizardController::LoginAuthenticatedWithContext(
