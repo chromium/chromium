@@ -783,7 +783,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
 
   auto& document = layout_object->GetDocument();
   const auto* box = DynamicTo<LayoutBox>(layout_object);
-  if (box && box->IsOutOfFlowPositioned()) {
+  if (layout_object->IsOutOfFlowPositioned()) {
+    CHECK(box);
     // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
     // container's writing direction. Convert it to physical.
     const PhysicalBoxStrut& insets =
@@ -809,33 +810,38 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if ((offset.IsPercent() || offset.IsCalculated()) && box &&
-      box->IsPositioned()) {
-    LayoutUnit containing_block_size;
-    if (box->IsStickyPositioned()) {
-      const LayoutBox* scroll_container = box->ContainingScrollContainer();
-      DCHECK(scroll_container);
-      bool use_inline_size =
-          is_horizontal_property == scroll_container->IsHorizontalWritingMode();
-      containing_block_size = use_inline_size
-                                  ? scroll_container->ContentLogicalWidth()
-                                  : scroll_container->ContentLogicalHeight();
+  if (layout_object->IsStickyPositioned()) {
+    if (offset.IsPercent() || offset.IsCalculated()) {
       UseCounter::Count(document, WebFeature::kPercentOrCalcStickyUsedOffset);
-    } else {
-      DCHECK(box->IsRelPositioned());
-      containing_block_size =
-          is_horizontal_property ==
-                  box->ContainingBlock()->IsHorizontalWritingMode()
-              ? box->ContainingBlockLogicalWidthForContent()
-              : box->ContainingBlockLogicalHeightForRelPositioned();
-      UseCounter::Count(document, WebFeature::kPercentOrCalcRelativeUsedOffset);
+      const LayoutBox* scroll_container =
+          layout_object->ContainingScrollContainer();
+      DCHECK(scroll_container);
+      const LayoutUnit containing_block_size =
+          is_horizontal_property == scroll_container->IsHorizontalWritingMode()
+              ? scroll_container->ContentLogicalWidth()
+              : scroll_container->ContentLogicalHeight();
+      return ZoomAdjustedPixelValue(
+          ValueForLength(offset, containing_block_size), style);
     }
 
+    return ZoomAdjustedPixelValueForLength(offset, style);
+  }
+
+  DCHECK(layout_object->IsRelPositioned());
+
+  if ((offset.IsPercent() || offset.IsCalculated()) && box) {
+    const LayoutUnit containing_block_size =
+        is_horizontal_property ==
+                box->ContainingBlock()->IsHorizontalWritingMode()
+            ? box->ContainingBlockLogicalWidthForContent()
+            : box->ContainingBlockLogicalHeightForRelPositioned();
+    UseCounter::Count(box->GetDocument(),
+                      WebFeature::kPercentOrCalcRelativeUsedOffset);
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
                                   style);
   }
 
-  if (offset.IsAuto() && layout_object->IsRelPositioned()) {
+  if (offset.IsAuto()) {
     UseCounter::Count(document, WebFeature::kAutoRelativeUsedOffset);
     // If e.g. left is auto and right is not auto, then left's computed value
     // is negative right. So we get the opposite length unit and see if it is
@@ -860,7 +866,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     }
 
     DCHECK_EQ(opposite.GetType(), Length::Type::kFixed);
-    Length negated_opposite = Length(-opposite.Pixels(), opposite.GetType());
+    Length negated_opposite(-opposite.Pixels(), opposite.GetType());
     return ZoomAdjustedPixelValueForLength(negated_opposite, style);
   }
 
