@@ -16,19 +16,24 @@ build_webui("build") {
   ]
 
   ts_files = [
+    "app_router.ts",
     "browser_proxy.ts",
-    "glic_api/glic_api.ts",
-    "glic_api_impl/conversions.ts",
     "glic_api_impl/client/glic_api_client.ts",
-    "glic_api_impl/host/glic_api_host.ts",
+    "glic_api_impl/conversions.ts",
     "glic_api_impl/glic_api_injected_client.ts",
+    "glic_api_impl/host/conversions.ts",
+    "glic_api_impl/host/gated_sender.ts",
+    "glic_api_impl/host/glic_api_host.ts",
+    "glic_api_impl/host/host_from_client.ts",
+    "glic_api_impl/host/host_to_client.ts",
+    "glic_api_impl/host/types.ts",
     "glic_api_impl/post_message_transport.ts",
     "glic_api_impl/request_types.ts",
+    "glic_api/glic_api.ts",
     "glic_app_controller.ts",
     "icons.html.ts",
     "main.ts",
     "observable.ts",
-    "app_router.ts",
     "timer.ts",
     "webview.ts",
   ]
