@@ -2512,6 +2512,11 @@ const SchemaValidatingPolicyToPreferenceMapEntry kSchemaValidatingPolicyMap[] =
     SCHEMA_ALLOW_UNKNOWN,
     SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
     SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
+  { key::kLocalAuthFactors,
+    ash::prefs::kLocalAuthFactors,
+    SCHEMA_ALLOW_UNKNOWN,
+    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
 #endif  // BUILDFLAG(IS_CHROMEOS)
   // Policies for ChromeOS - End.
 };

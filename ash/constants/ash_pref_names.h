@@ -1739,6 +1739,10 @@ inline constexpr char kQuickUnlockTimeout[] = "quick_unlock_timeout";
 inline constexpr char kLocalAuthFactorsComplexity[] =
     "ash.local_auth_factors.complexity";
 
+// A list of allowed local auth factors.
+inline constexpr char kLocalAuthFactors[] =
+    "ash.local_auth_factors.enabled_factors";
+
 // Dictionary prefs in local state that keeps information about detachable
 // bases - for example the last used base per user.
 inline constexpr char kDetachableBaseDevices[] = "ash.detachable_base.devices";
