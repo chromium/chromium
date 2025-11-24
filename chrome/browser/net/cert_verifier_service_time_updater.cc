@@ -11,10 +11,8 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
 CertVerifierServiceTimeUpdater::CertVerifierServiceTimeUpdater(
-    network_time::NetworkTimeTracker* tracker) {
-  DCHECK(tracker);
-  tracker->AddObserver(this);
-
+    network_time::NetworkTimeTracker* tracker)
+    : network_time::NetworkTimeTracker::NetworkTimeObserver(tracker) {
   // If the time is already available on construction, do an immediate update.
   network_time::TimeTracker::TimeTrackerState state;
   if (tracker->GetTrackerState(&state)) {
@@ -23,9 +21,7 @@ CertVerifierServiceTimeUpdater::CertVerifierServiceTimeUpdater(
   }
 }
 
-CertVerifierServiceTimeUpdater::~CertVerifierServiceTimeUpdater() {
-  CHECK(!IsInObserverList());
-}
+CertVerifierServiceTimeUpdater::~CertVerifierServiceTimeUpdater() = default;
 
 void CertVerifierServiceTimeUpdater::OnNetworkTimeChanged(
     network_time::TimeTracker::TimeTrackerState state) {

@@ -156,6 +156,27 @@ std::string GetServerProof(
 
 }  // namespace
 
+NetworkTimeTracker::NetworkTimeObserver::NetworkTimeObserver(
+    NetworkTimeTracker* tracker)
+    : tracker_(tracker) {
+  CHECK(tracker_);
+  tracker_->AddObserver(this);
+}
+
+void NetworkTimeTracker::NetworkTimeObserver::OnNetworkTimeTrackerDestroyed(
+    NetworkTimeTracker* tracker) {
+  CHECK_EQ(tracker_, tracker);
+  tracker_->RemoveObserver(this);
+  tracker_ = nullptr;
+}
+
+NetworkTimeTracker::NetworkTimeObserver::~NetworkTimeObserver() {
+  if (tracker_) {
+    tracker_->RemoveObserver(this);
+  }
+  CHECK(!IsInObserverList());
+}
+
 // static
 void NetworkTimeTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNetworkTimeMapping);
@@ -217,6 +238,10 @@ NetworkTimeTracker::NetworkTimeTracker(
 
 NetworkTimeTracker::~NetworkTimeTracker() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  for (auto& observer : observers_) {
+    observer.OnNetworkTimeTrackerDestroyed(this);
+  }
+  CHECK(observers_.empty());
 }
 
 void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,

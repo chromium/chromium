@@ -11,8 +11,6 @@
 class CertVerifierServiceTimeUpdater
     : public network_time::NetworkTimeTracker::NetworkTimeObserver {
  public:
-  // CertVerifierServiceTimeUpdater is expected to outlive |tracker| (and will
-  // CHECK if it's destroyed first).
   explicit CertVerifierServiceTimeUpdater(
       network_time::NetworkTimeTracker* tracker);
   ~CertVerifierServiceTimeUpdater() override;
