@@ -468,7 +468,8 @@ public class NtpCustomizationUtilsUnitTest {
     public void testSetTintForDefaultGoogleLogo() {
         ColorUtils.setInNightModeForTesting(false);
         NtpCustomizationConfigManager customizationConfigManager =
-                NtpCustomizationConfigManager.getInstance();
+                new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(customizationConfigManager);
 
         Drawable mutateDrawable = mock(Drawable.class);
         when(mDrawable.mutate()).thenReturn(mutateDrawable);
@@ -508,7 +509,8 @@ public class NtpCustomizationUtilsUnitTest {
     public void testSetTintForDefaultGoogleLogo_chromeColor() {
         ColorUtils.setInNightModeForTesting(false);
         NtpCustomizationConfigManager customizationConfigManager =
-                NtpCustomizationConfigManager.getInstance();
+                new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(customizationConfigManager);
 
         Drawable mutateDrawable = mock(Drawable.class);
         when(mDrawable.mutate()).thenReturn(mutateDrawable);
@@ -568,7 +570,9 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_flagDisabled() {
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+
         configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
 
         assertFalse(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
@@ -645,7 +649,9 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldAdjustIconTintForNtp_flagDisabled() {
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+
         configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
 
         assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
@@ -656,7 +662,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldAdjustIconTintForNtp_isTablet() {
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
 
         configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
         assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ true));
@@ -670,7 +677,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldAdjustIconTintForNtp_phone() {
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
 
         configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
         assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));

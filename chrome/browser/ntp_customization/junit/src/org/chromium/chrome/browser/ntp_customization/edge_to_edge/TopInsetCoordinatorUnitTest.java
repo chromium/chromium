@@ -105,7 +105,8 @@ public class TopInsetCoordinatorUnitTest {
         when(mNonNtpTab2.isNativePage()).thenReturn(false);
         when(mNonNtpTab2.getNativePage()).thenReturn(null);
 
-        mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+        mNtpCustomizationConfigManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
         mTopInsetCoordinator =
                 new TopInsetCoordinator(
                         mContext, mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);

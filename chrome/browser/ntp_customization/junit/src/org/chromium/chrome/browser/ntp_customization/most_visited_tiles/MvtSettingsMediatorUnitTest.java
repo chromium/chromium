@@ -86,7 +86,9 @@ public class MvtSettingsMediatorUnitTest {
     public void testOnMvtSwitchToggledAndState() {
         String histogramName = "NewTabPage.Customization.MvtEnabled";
 
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ true);
         mMediator.onMvtSwitchToggled(/* isEnabled= */ true);

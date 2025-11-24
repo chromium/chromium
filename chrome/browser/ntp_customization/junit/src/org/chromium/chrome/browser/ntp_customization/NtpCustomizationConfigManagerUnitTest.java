@@ -79,7 +79,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance());
+                () -> mNtpCustomizationConfigManager = new NtpCustomizationConfigManager());
 
         // Makes mPortraitMatrix and mLandscapeMatrix different in terms of values.
         mPortraitMatrix = new Matrix();

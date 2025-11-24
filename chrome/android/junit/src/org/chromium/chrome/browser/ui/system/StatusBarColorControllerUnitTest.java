@@ -193,18 +193,18 @@ public class StatusBarColorControllerUnitTest {
 
     @Test
     public void testAddHomepageStateListener() {
-        int size = NtpCustomizationConfigManager.getInstance().getListenersSizeForTesting();
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        int size = configManager.getListenersSizeForTesting();
 
         initialize(
                 /* isTablet= */ false,
                 /* isInDesktopWindow= */ false,
                 /* supportEdgeToEdge= */ true);
-        assertEquals(
-                size + 1, NtpCustomizationConfigManager.getInstance().getListenersSizeForTesting());
+        assertEquals(size + 1, configManager.getListenersSizeForTesting());
 
         mStatusBarColorController.onDestroy();
-        assertEquals(
-                size, NtpCustomizationConfigManager.getInstance().getListenersSizeForTesting());
+        assertEquals(size, configManager.getListenersSizeForTesting());
     }
 
     @Test
@@ -216,7 +216,9 @@ public class StatusBarColorControllerUnitTest {
         @ColorInt int currentNtpBackground = mActivity.getColor(colorInfo.backgroundColorResId);
 
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
-                NtpCustomizationConfigManager.getInstance();
+                new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(ntpCustomizationConfigManager);
+
         ntpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.CHROME_COLOR);
         ntpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);

@@ -109,7 +109,8 @@ public class NtpCustomizationConfigManager {
         return NtpCustomizationConfigManager.LazyHolder.sInstance;
     }
 
-    private NtpCustomizationConfigManager() {
+    @VisibleForTesting
+    public NtpCustomizationConfigManager() {
         mHomepageStateListeners = new ObserverList<>();
 
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
