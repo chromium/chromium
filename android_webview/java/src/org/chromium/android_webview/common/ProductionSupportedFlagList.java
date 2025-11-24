@@ -1120,6 +1120,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
                 "When enabled, TYPE_ANNOUNCE events will no longer be sent from Chrome."),
+        Flag.baseFeature(
+                ContentFeatures.ACCESSIBILITY_SEQUENTIAL_FOCUS,
+                "When enabled, keyboard focus starting point will be synchronized with"
+                        + " accessibility focus."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
