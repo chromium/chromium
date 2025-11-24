@@ -386,6 +386,7 @@ message MediaControlAction {
 // Only one of these is allowed per action.
 // Next ID: 23
 message Action {
+
   oneof action {
     ClickAction click = 1;
 
