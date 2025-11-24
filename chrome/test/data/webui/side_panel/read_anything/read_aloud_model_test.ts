@@ -13,6 +13,30 @@ suite('ReadAloudModel', () => {
     assertEquals(0, getReadAloudModel().getCurrentTextSegments().length);
   }
 
+  interface TestSegment {
+    node: Node;
+    start: number;
+    length: number;
+  }
+
+  function expectHighlightAtIndexMatches(
+      index: number, expectedSegments: TestSegment[], phrases = false) {
+    const segments =
+        getReadAloudModel().getHighlightForCurrentSegmentIndex(index, phrases);
+    assertEquals(expectedSegments.length, segments.length);
+    for (let i = 0; i < segments.length; i++) {
+      const expected = expectedSegments[i]!;
+      const actual = segments[i]!;
+      assertEquals(expected.node, actual.node.domNode());
+      assertEquals(expected.start, actual.start);
+      assertEquals(expected.length, actual.length);
+    }
+  }
+
+  function expectHighlightAtIndexMatchesEmpty(index: number, phrases = false) {
+    expectHighlightAtIndexMatches(index, [], phrases);
+  }
+
   function assertSentenceMatchesEntireSegment(sentence: string) {
     // Remove all trailing whitespace and newline characters. It's possible
     // that extra newlines may get added to the ends of sentences to ensure
@@ -1433,5 +1457,97 @@ suite('ReadAloudModel', () => {
 
         getReadAloudModel().moveSpeechForward();
         assertTextEmpty();
+      });
+
+
+  test(
+      'getHighlightForCurrentSegmentIndex returns correct nodess', async () => {
+        const paragraph = document.createElement('p');
+        const child = document.createTextNode('I\'m crossing the line!');
+        paragraph.appendChild(child);
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+
+        // Before there are any processed granularities,
+        // getHighlightForCurrentSegmentIndex should be empty.
+        assertEquals(
+            0,
+            getReadAloudModel()
+                .getHighlightForCurrentSegmentIndex(0, false)
+                .length);
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        expectHighlightAtIndexMatches(0, [{node: child, start: 0, length: 3}]);
+        expectHighlightAtIndexMatches(3, [{node: child, start: 3, length: 9}]);
+        expectHighlightAtIndexMatches(7, [{node: child, start: 7, length: 5}]);
+        expectHighlightAtIndexMatches(
+            child.textContent.length - 2,
+            [{node: child, start: 20, length: 1}]);
+        expectHighlightAtIndexMatchesEmpty(child.textContent.length);
+      });
+
+
+  test(
+      ' getHighlightForCurrentSegmentIndex sentence spans multiple nodes returns correct node',
+      async () => {
+        const paragraph = document.createElement('p');
+        // Text indices:                      0123456789012345678901234567890
+        const child1 = document.createTextNode('Never feel heavy ');
+        const child2 = document.createTextNode('or earthbound, ');
+        const child3 =
+            document.createTextNode('no worries or doubts interfere.');
+        paragraph.appendChild(child1);
+        paragraph.appendChild(child2);
+        paragraph.appendChild(child3);
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+
+        // Before there are any processed granularities,
+        // getHighlightForCurrentSegmentIndex should be empty.
+        assertEquals(
+            0,
+            getReadAloudModel()
+                .getHighlightForCurrentSegmentIndex(0, false)
+                .length);
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // Spot check that indices 0->sentence1.length() map to the first node
+        // id.
+        let baseLength: number = child1.textContent.length;
+        expectHighlightAtIndexMatches(0, [{node: child1, start: 0, length: 5}]);
+        expectHighlightAtIndexMatches(7, [{node: child1, start: 7, length: 3}]);
+
+        // The trailing whitespace is segmented with the next word.
+        expectHighlightAtIndexMatches(baseLength - 1, [
+          {node: child1, start: 16, length: 1},
+          {node: child2, start: 0, length: 2},
+        ]);
+
+        // Spot check that indices in sentence 2 map to the second node id.
+        baseLength += child2.textContent.length;
+        expectHighlightAtIndexMatches(
+            child1.textContent.length + 1,
+            [{node: child2, start: 1, length: 1}]);
+        expectHighlightAtIndexMatches(
+            26, [{node: child2, start: 9, length: 4}]);
+        expectHighlightAtIndexMatches(baseLength - 1, [
+          {node: child2, start: 14, length: 1},
+          {node: child3, start: 0, length: 2},
+        ]);
+        expectHighlightAtIndexMatches(
+            baseLength, [{node: child3, start: 0, length: 2}]);
+
+        // Spot check that indices in sentence 3 map to the third node id.
+        baseLength += child3.textContent.length;
+        expectHighlightAtIndexMatches(
+            child1.textContent.length + child2.textContent.length + 1,
+            [{node: child3, start: 1, length: 1}]);
+        expectHighlightAtIndexMatches(
+            40, [{node: child3, start: 8, length: 2}]);
+
+        // Out-of-bounds nodes return an empty array.
+        expectHighlightAtIndexMatchesEmpty(baseLength - 1);
+        expectHighlightAtIndexMatchesEmpty(535);
+        expectHighlightAtIndexMatchesEmpty(-10);
       });
 });
