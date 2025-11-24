@@ -1180,4 +1180,10 @@ BASE_DECLARE_FEATURE(kTabGroupColorOnSurface);
 // Returns true if the TabGroupColorOnSurface feature is enabled.
 bool IsTabGroupColorOnSurfaceEnabled();
 
+// Enables the AIMEligibilityServiceStartWithProfile feature.
+BASE_DECLARE_FEATURE(kAIMEligibilityServiceStartWithProfile);
+
+// Returns true if the AIMEligibilityServiceStartWithProfile feature is enabled.
+bool IsAIMEligibilityServiceStartWithProfileEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

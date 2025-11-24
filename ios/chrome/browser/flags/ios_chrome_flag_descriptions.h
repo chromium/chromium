@@ -23,6 +23,9 @@ namespace flag_descriptions {
 extern const char kAIHubNewBadgeName[];
 extern const char kAIHubNewBadgeDescription[];
 
+extern const char kAIMEligibilityServiceStartWithProfileName[];
+extern const char kAIMEligibilityServiceStartWithProfileDescription[];
+
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 

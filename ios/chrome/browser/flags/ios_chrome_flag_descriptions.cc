@@ -15,6 +15,11 @@ const char kAIHubNewBadgeName[] = "AI Hub New Badge";
 const char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
+const char kAIMEligibilityServiceStartWithProfileName[] =
+    "AIMEligibilityServiceStartWithProfile";
+const char kAIMEligibilityServiceStartWithProfileDescription[] =
+    "Start the AIM eligibility service with the profile.";
+
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =

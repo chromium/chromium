@@ -115,6 +115,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "aim-eligibility-service-start-with-profile",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "aim-server-eligibility",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 145

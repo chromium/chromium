@@ -1253,3 +1253,10 @@ BASE_FEATURE(kTabGroupColorOnSurface, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsTabGroupColorOnSurfaceEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupColorOnSurface);
 }
+
+BASE_FEATURE(kAIMEligibilityServiceStartWithProfile,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAIMEligibilityServiceStartWithProfileEnabled() {
+  return base::FeatureList::IsEnabled(kAIMEligibilityServiceStartWithProfile);
+}
