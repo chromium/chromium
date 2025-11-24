@@ -459,9 +459,6 @@ class PredictionManagerTestBase : public testing::Test {
   FakePredictionModelDownloadManager* prediction_model_download_manager()
       const {
     return static_cast<FakePredictionModelDownloadManager*>(
-        local_state_prefs_.get(),
-        base::BindRepeating(&PredictionManager::GetBaseModelDirForDownload,
-                            base::Unretained(prediction_manager())),
         prediction_manager()->prediction_model_download_manager());
   }
 
