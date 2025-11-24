@@ -6816,6 +6816,9 @@ test("unit_tests") {
       "../browser/devtools/devtools_ui_bindings_unittest.cc",
       "../browser/ui/webui/devtools/devtools_ui_data_source_unittest.cc",
     ]
+    if (!is_android) {
+      sources += [ "../browser/devtools/remote_debugging_server_unittest.cc" ]
+    }
   }
 
   # Support v8_unwinder_unittest on Android.

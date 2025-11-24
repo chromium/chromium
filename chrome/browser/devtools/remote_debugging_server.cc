@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
@@ -133,7 +134,61 @@ IsRemoteDebuggingAllowed(const std::optional<bool>& is_default_user_data_dir,
 
 }  // namespace
 
-RemoteDebuggingServer::RemoteDebuggingServer() = default;
+void RemoteDebuggingServer::StartHttpServerInApprovalMode(
+    PrefService* local_state) {
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(local_state);
+  pref_change_registrar_->Add(
+      prefs::kDevToolsRemoteDebuggingEnabled,
+      base::BindRepeating(
+          &RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange,
+          base::Unretained(this)));
+  MaybeStartOrStopServerForPrefChange();
+}
+
+void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
+  CHECK(base::FeatureList::IsEnabled(
+      ::features::kDevToolsAcceptDebuggingConnections));
+
+  PrefService* local_state = pref_change_registrar_->prefs();
+
+  // In case the policy is changed after the server was started somehow.
+  if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+    StopHttpServer();
+    is_http_server_running_ = false;
+    return;
+  }
+
+  // Latest chrome://inspect page preference value.
+  if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled)) {
+    StopHttpServer();
+    is_http_server_running_ = false;
+    return;
+  }
+
+  // TODO(crbug.com/460665929): If the default 9222 is taken,
+  // we should find a free port and report it via the chrome://inspect page.
+  int port = 9222;
+  // Used to write the selected port to a well-known location in the profile
+  // directory to bootstrap the connection process.
+  base::FilePath output_dir;
+  {
+    bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+    DCHECK(result);
+  }
+
+  if (is_http_server_running_) {
+    return;
+  }
+
+  // We do not support hosting DevTools in this mode, therefore,
+  // not passing the value of the kCustomDevtoolsFrontend switch.
+  StartHttpServer(
+      std::make_unique<TCPServerSocketFactory>(port), output_dir,
+      /*debug_frontend_dir=*/base::FilePath(),
+      content::DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly);
+  is_http_server_running_ = true;
+}
 
 // static
 void RemoteDebuggingServer::EnableTetheringForDebug() {
@@ -146,6 +201,38 @@ void RemoteDebuggingServer::EnableDefaultUserDataDirCheckForTesting() {
   g_enable_default_user_data_dir_check_for_chromium_branding_for_testing = true;
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+RemoteDebuggingServer::RemoteDebuggingServer() = default;
+
+RemoteDebuggingServer::~RemoteDebuggingServer() {
+  // Ensure Profile is alive, because the whole DevTools subsystem
+  // accesses it during shutdown.
+  DCHECK(g_browser_process->profile_manager());
+  StopHttpServer();
+  StopPipeHandler();
+}
+
+void RemoteDebuggingServer::StartHttpServer(
+    std::unique_ptr<content::DevToolsSocketFactory> factory,
+    const base::FilePath& output_dir,
+    const base::FilePath& debug_frontend_dir,
+    content::DevToolsAgentHost::RemoteDebuggingServerMode mode) {
+  content::DevToolsAgentHost::StartRemoteDebuggingServer(
+      std::move(factory), output_dir, debug_frontend_dir, mode);
+}
+
+void RemoteDebuggingServer::StopHttpServer() {
+  content::DevToolsAgentHost::StopRemoteDebuggingServer();
+}
+
+void RemoteDebuggingServer::StartPipeHandler() {
+  content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
+      base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
+}
+
+void RemoteDebuggingServer::StopPipeHandler() {
+  content::DevToolsAgentHost::StopRemoteDebuggingPipeHandler();
+}
 
 // static
 base::expected<std::unique_ptr<RemoteDebuggingServer>,
@@ -186,6 +273,8 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
                                   status);
   };
 
+  auto server = base::WrapUnique(new RemoteDebuggingServer());
+
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
     wanted_debugging = true;
     if (const auto maybe_allow_debugging =
@@ -194,8 +283,7 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
       return base::unexpected(maybe_allow_debugging.error());
     }
     being_debugged = true;
-    content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
-        base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
+    server->StartPipeHandler();
   }
 
   std::string port_str =
@@ -226,51 +314,32 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
         !maybe_allow_debugging.has_value()) {
       return base::unexpected(maybe_allow_debugging.error());
     }
+
     being_debugged = true;
-    content::DevToolsAgentHost::StartRemoteDebuggingServer(
+    server->StartHttpServer(
         std::make_unique<TCPServerSocketFactory>(port), output_dir,
-        debug_frontend_dir);
+        debug_frontend_dir,
+        content::DevToolsAgentHost::RemoteDebuggingServerMode::kDefault);
   }
 
   // `--remote-debugging-port` and `--remote-debugging-pipe`
   // take precedence over the new mode.
+#if !BUILDFLAG(IS_ANDROID)
   if (!being_debugged && base::FeatureList::IsEnabled(
                              ::features::kDevToolsAcceptDebuggingConnections)) {
-    // TODO(crbug.com/460665929): Here the preferences set by the
-    // chrome://inspect page should be checked to determine whether the server
-    // should be started.
     wanted_debugging = true;
-    // TODO(crbug.com/460665929): If the default 9222 is taken,
-    // we should find a free port and report it via the chrome://inspect page.
-    port = 9222;
-    // Used to write the selected port to a well-known location in the profile
-    // directory to bootstrap the connection process.
-    base::FilePath output_dir;
-    {
-      bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-      DCHECK(result);
+    if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+      return base::unexpected(
+          RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy);
     }
     being_debugged = true;
-    // We do not support hosting DevTools in this mode, therefore,
-    // not passing the value of the kCustomDevtoolsFrontend switch.
-    content::DevToolsAgentHost::StartRemoteDebuggingServer(
-        std::make_unique<TCPServerSocketFactory>(port), output_dir,
-        /*debug_frontend_dir=*/base::FilePath(),
-        content::DevToolsAgentHost::RemoteDebuggingServerMode::
-            kWithApprovalOnly);
+    server->StartHttpServerInApprovalMode(local_state);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (being_debugged) {
-    return base::WrapUnique(new RemoteDebuggingServer);
+    return server;
   }
 
   return base::unexpected(NotStartedReason::kNotRequested);
-}
-
-RemoteDebuggingServer::~RemoteDebuggingServer() {
-  // Ensure Profile is alive, because the whole DevTools subsystem
-  // accesses it during shutdown.
-  DCHECK(g_browser_process->profile_manager());
-  content::DevToolsAgentHost::StopRemoteDebuggingServer();
-  content::DevToolsAgentHost::StopRemoteDebuggingPipeHandler();
 }

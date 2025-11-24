@@ -9,9 +9,16 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/types/expected.h"
+#include "content/public/browser/devtools_agent_host.h"
 
+class PrefChangeRegistrar;
 class PrefService;
+
+namespace content {
+class DevToolsSocketFactory;
+}
 
 class RemoteDebuggingServer {
  public:
@@ -44,8 +51,26 @@ class RemoteDebuggingServer {
 
   virtual ~RemoteDebuggingServer();
 
+  void StartHttpServerInApprovalMode(PrefService* local_state);
+
+ protected:
+  explicit RemoteDebuggingServer();
+
+  virtual void StartHttpServer(
+      std::unique_ptr<content::DevToolsSocketFactory> factory,
+      const base::FilePath& output_dir,
+      const base::FilePath& debug_frontend_dir,
+      content::DevToolsAgentHost::RemoteDebuggingServerMode mode);
+  virtual void StopHttpServer();
+  virtual void StartPipeHandler();
+  virtual void StopPipeHandler();
+
  private:
-  RemoteDebuggingServer();
+  void MaybeStartOrStopServerForPrefChange();
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  // Used by MaybeStartOrStopServerForPrefChange to ensure that the server is
+  // only started once.
+  bool is_http_server_running_ = false;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_REMOTE_DEBUGGING_SERVER_H_
