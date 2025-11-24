@@ -289,7 +289,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Set the default colors of the system bars for this activity. */
     protected void initializeSystemBarColors(
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
-        // TODO(crbug.com/379174458): Set color from Theme.
         final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(this);
         @ColorInt
         int defaultStatusBarColor =
