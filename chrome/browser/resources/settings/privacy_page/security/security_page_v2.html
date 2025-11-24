@@ -81,6 +81,27 @@
         pref="{{prefs.generated.security_settings_bundle}}"
         label="$i18n{securityStandardBundleTitle}"
         class="card box">
+      <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:computer"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleStandardBulletOne}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:local-cafe"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleStandardBulletTwo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:sprint"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleStandardBulletThree}
+          </div>
+        </li>
+      </ul>
       <cr-button id="resetStandardBundleToDefaultsButton"
           on-click="onResetBundleToDefaultsButtonClick_"
           hidden$="[[!isResetStandardBundleToDefaultsButtonVisible_]]">
@@ -93,6 +114,27 @@
         pref="{{prefs.generated.security_settings_bundle}}"
         label="$i18n{securityEnhancedBundleTitle}"
         class="card box">
+      <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:center-focus-strong"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleEnhancedBulletOne}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:e911-emergency"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleEnhancedBulletTwo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:front-hand"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{securityBundleEnhancedBulletThree}
+          </div>
+        </li>
+      </ul>
       <cr-button id="resetEnhancedBundleToDefaultsButton"
           on-click="onResetBundleToDefaultsButtonClick_"
           hidden$="[[!isResetEnhancedBundleToDefaultsButtonVisible_]]">

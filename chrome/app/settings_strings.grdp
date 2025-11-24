@@ -1987,8 +1987,26 @@
   <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_TITLE" desc="Name of Safe Browsing standard protection">
     Standard Protection
   </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_ONE" desc="First bullet point under the security settings standard bundle section">
+    Uses on-device methods to detect threats
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_TWO" desc="Second bullet point under the security settings standard bundle section">
+    Warns you about insecure connections on the open internet
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_THREE" desc="Third bullet point under the security settings standard bundle section">
+    Prioritizes site speed over enhanced security features
+  </message>
   <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE" desc="Name of Safe Browsing enhanced protection">
     Enhanced Protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_ONE" desc="First bullet point under the security settings enhanced bundle section">
+    Sends the URL and page content to Google to detect threats faster
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_TWO" desc="Second bullet point under the security settings enhanced bundle section">
+    Warns you about all insecure connections
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_THREE" desc="Third bullet point under the security settings enhanced bundle section">
+    Slows down some unfamiliar sites to block common attacks
   </message>
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
     Enhanced
