@@ -182,7 +182,7 @@ public interface AconfigFlaggedApiDelegate {
      * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS}.
      *
      * @param view view on which the method should be called
-     * @param rect the rect to request on screen, in coordinates relative to {@code view}
+     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
      * @return whether the Android API was invoked
      */
     default boolean requestInputFocusOnScreen(View view, Rect boundsInView) {
@@ -191,11 +191,11 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
-     * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,
-     * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR}.
+     * Calls {@link View#requestRectangleOnScreen(Rect, boolean, int)} if supported, with focus type
+     * of {@link View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR}.
      *
      * @param view view on which the method should be called
-     * @param rect the rect to request on screen, in coordinates relative to {@code view}
+     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
      * @return whether the Android API was invoked
      */
     default boolean requestTextCursorOnScreen(View view, Rect boundsInView) {

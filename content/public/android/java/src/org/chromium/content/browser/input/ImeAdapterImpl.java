@@ -55,7 +55,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.blink.mojom.EventType;
@@ -68,6 +67,7 @@ import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.GestureListenerManagerImpl;
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.picker.InputDialogContainer;
@@ -1594,6 +1594,26 @@ public class ImeAdapterImpl
     }
 
     /**
+     * Converts bounds from CSS pixels to device pixels, accounting for page scale, device scale,
+     * and content Y offset.
+     *
+     * @param left left X coordinate in CSS pixels
+     * @param top top Y coordinate in CSS pixels
+     * @param right right X coordinate in CSS pixels
+     * @param bottom bottom Y coordinate in CSS pixels
+     * @return {@link Rect} with the device pixel equivalents of the provided coordinates.
+     */
+    private Rect fromCssToDevicePix(float left, float top, float right, float bottom) {
+        RenderCoordinatesImpl coords = mWebContents.getRenderCoordinates();
+        final int topOffset = coords.getContentOffsetYPixInt();
+        return new Rect(
+                (int) coords.fromLocalCssToPix(left),
+                ((int) coords.fromLocalCssToPix(top)) + topOffset,
+                (int) coords.fromLocalCssToPix(right),
+                ((int) coords.fromLocalCssToPix(bottom)) + topOffset);
+    }
+
+    /**
      * Update the cached CursorAnchorInfo data. This may or may not trigger an update to the
      * platform.
      *
@@ -1601,8 +1621,32 @@ public class ImeAdapterImpl
      *     that no update is needed.
      */
     void updateCursorAnchorInfo(InputCursorAnchorInfo cursorAnchorInfo) {
-        mCursorAnchorInfoController.updateCursorAnchorInfoData(
-                cursorAnchorInfo, getContainerView());
+        View containerView = getContainerView();
+        mCursorAnchorInfoController.updateCursorAnchorInfoData(cursorAnchorInfo, containerView);
+
+        // Request view system keep caret on screen when moved.
+        if (cursorAnchorInfo.insertionMarker != null
+                && ContentFeatureList.sAccessibilityMagnificationFollowsFocus.isEnabled()) {
+            // Convert caret bounds from CSS pixels to device pixels relative to root view.
+            var caretCss = cursorAnchorInfo.insertionMarker;
+            Rect caretPix =
+                    fromCssToDevicePix(
+                            caretCss.x,
+                            caretCss.y,
+                            caretCss.x + caretCss.width,
+                            caretCss.y + caretCss.height);
+
+            // TODO(crbug.com/450540343): when Baklava 36.1 support lands in Clank, remove delegate
+            // indirection and inline `requestRectangleOnScreen()` call.
+            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate != null && delegate.requestTextCursorOnScreen(containerView, caretPix)) {
+                // Action is performed in condition.
+            } else {
+                // Fallback to previous API (where `requestRectangleOnScreen()` calls are assumed
+                // to come from text cursor moves).
+                containerView.requestRectangleOnScreen(caretPix);
+            }
+        }
     }
 
     /**
@@ -1641,7 +1685,6 @@ public class ImeAdapterImpl
             float insertionMarkerHorizontal,
             float insertionMarkerTop,
             float insertionMarkerBottom) {
-        View containerView = getContainerView();
         mCursorAnchorInfoController.onUpdateFrameInfo(
                 scaleFactor,
                 contentOffsetYPix,
@@ -1650,29 +1693,7 @@ public class ImeAdapterImpl
                 insertionMarkerHorizontal,
                 insertionMarkerTop,
                 insertionMarkerBottom,
-                containerView);
-
-        // Request view system keeps caret on screen
-        if (hasInsertionMarker) {
-            int caretHorizontal = (int) (insertionMarkerHorizontal * scaleFactor);
-            int caretTop = (int) (insertionMarkerTop * scaleFactor + contentOffsetYPix);
-            int caretBottom = (int) (insertionMarkerBottom * scaleFactor + contentOffsetYPix);
-            android.graphics.Rect caretBounds =
-                    new android.graphics.Rect(
-                            caretHorizontal, caretTop, caretHorizontal, caretBottom);
-
-            // TODO(crbug.comb/450540343): when Baklava 36.1 support lands in Clank, remove delegate
-            // indirection and inline `requestRectangleOnScreen()` call.
-            AconfigFlaggedApiDelegate delegate =
-                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
-            if (delegate != null
-                    && delegate.requestTextCursorOnScreen(containerView, caretBounds)) {
-                /* action in condition */
-            } else if (ContentFeatureList.sAccessibilityMagnificationFollowsTextCursor
-                    .isEnabled()) {
-                containerView.requestRectangleOnScreen(caretBounds);
-            }
-        }
+                getContainerView());
     }
 
     @CalledByNative

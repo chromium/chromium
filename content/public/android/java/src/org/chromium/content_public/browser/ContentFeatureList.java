@@ -89,10 +89,10 @@ public class ContentFeatureList {
             sAccessibilityDeprecateJavaNodeCacheDisableCache =
                     sAccessibilityDeprecateJavaNodeCache.newBooleanParam("disable_cache", false);
 
-    public static final MutableFlagWithSafeDefault sAccessibilityMagnificationFollowsTextCursor =
+    public static final MutableFlagWithSafeDefault sAccessibilityMagnificationFollowsFocus =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
-                    AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_TEXT_CURSOR,
+                    AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
                     false);
 
     public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =

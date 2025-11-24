@@ -298,11 +298,9 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsInputFocusEnabled();
 
 // Propagate bounding rectangles of cursor moves to the Android platform to
-// allow Magnification to follow them. Only applies pre-Baklava 36.1, when a
-// system API was added to allow this.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kAccessibilityMagnificationFollowsTextCursor);
-AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsTextCursorEnabled();
+// allow Magnification to follow them.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnificationFollowsFocus);
+AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsFocusEnabled();
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

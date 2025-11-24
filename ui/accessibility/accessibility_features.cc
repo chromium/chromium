@@ -368,16 +368,16 @@ bool IsAccessibilityInlineLineSeparatorsEnabled() {
 
 BASE_FEATURE(kAccessibilityMagnificationFollowsInputFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityMagnificationFollowsInputEnabled() {
+bool IsAccessibilityMagnificationFollowsInputFocusEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityMagnificationFollowsInputFocus);
 }
 
-BASE_FEATURE(kAccessibilityMagnificationFollowsTextCursor,
+BASE_FEATURE(kAccessibilityMagnificationFollowsFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityMagnificationFollowsTextCursorEnabled() {
+bool IsAccessibilityMagnificationFollowsFocusEnabled() {
   return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityMagnificationFollowsTextCursor);
+      ::features::kAccessibilityMagnificationFollowsFocus);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

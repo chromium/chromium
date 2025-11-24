@@ -45,6 +45,8 @@ struct InputCursorAnchorInfo {
   TextAppearanceInfo text_appearance_info;
   // The bounding rectangles of each line in the currently focused element.
   array<gfx.mojom.Rect> visible_line_bounds;
+  // The bounding rectangle of the caret, if present.
+  gfx.mojom.Rect? insertion_marker;
   // There are two times we might send new data from Blink to the browser. The
   // first is when the IME has explicitly requested new data. When this happens,
   // we calculate new data in the renderer and once this object reaches Java, we
