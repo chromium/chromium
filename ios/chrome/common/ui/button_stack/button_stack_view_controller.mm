@@ -230,9 +230,10 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   // Add the height of the button stack.
   height += [self buttonStackHeight];
 
-  // Add the height of the navigation bar if it exists.
+  // Add the scroll view's top padding, which includes the navigation bar unless
+  // automatic content inset adjustments are disabled.
   if (self.navigationController) {
-    height += CGRectGetMaxY(self.navigationController.navigationBar.frame);
+    height += _scrollView.adjustedContentInset.top;
   }
 
   return height;

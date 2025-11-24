@@ -4,6 +4,7 @@
 
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
@@ -833,6 +834,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         constraintEqualToAnchor:self.contentView.centerXAnchor],
   ];
 
+  // Default automatic content inset adjustment.
+  UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentAutomatic;
+
   if (self.shouldHideBanner) {
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.heightAnchor constraintEqualToConstant:0],
@@ -850,12 +855,19 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           constraintEqualToAnchor:self.view.heightAnchor
                        multiplier:[self bannerMultiplier]]
     ]];
+    // When the banner fills the top space, it should go behind the navigation
+    // bar.
+    contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
   } else {
     // Default.
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor],
     ]];
+  }
+  if (UIScrollView* scrollView = base::apple::ObjCCastStrict<UIScrollView>(
+          self.contentView.superview)) {
+    scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
   }
 
   [NSLayoutConstraint activateConstraints:_bannerConstraints];
