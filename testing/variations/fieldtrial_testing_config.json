@@ -26424,6 +26424,28 @@
             ]
         }
     ],
+    "V8NewOldGenerationHeapSize": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_new_old_generation_heap_size"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ParserAblation": [
         {
             "platforms": [
