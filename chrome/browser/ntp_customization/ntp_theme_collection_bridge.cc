@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ntp_customization/ntp_theme_bridge.h"
+#include "chrome/browser/ntp_customization/ntp_theme_collection_bridge.h"
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ntp_customization/jni_headers/NtpThemeBridge_jni.h"
+#include "chrome/browser/ntp_customization/jni_headers/NtpThemeCollectionBridge_jni.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -20,18 +20,20 @@
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_NtpThemeBridge_Init(JNIEnv* env,
-                                     const JavaParamRef<jobject>& j_profile,
-                                     const JavaParamRef<jobject>& j_java_obj) {
+static jlong JNI_NtpThemeCollectionBridge_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jobject>& j_java_obj) {
   Profile* profile = Profile::FromJavaObject(j_profile);
-  NtpThemeBridge* ntp_theme_bridge =
-      new NtpThemeBridge(env, profile, j_java_obj);
-  return reinterpret_cast<intptr_t>(ntp_theme_bridge);
+  NtpThemeCollectionBridge* ntp_theme_collection_bridge =
+      new NtpThemeCollectionBridge(env, profile, j_java_obj);
+  return reinterpret_cast<intptr_t>(ntp_theme_collection_bridge);
 }
 
-NtpThemeBridge::NtpThemeBridge(JNIEnv* env,
-                               Profile* profile,
-                               const JavaParamRef<jobject>& j_java_obj)
+NtpThemeCollectionBridge::NtpThemeCollectionBridge(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaParamRef<jobject>& j_java_obj)
     : profile_(profile),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
@@ -44,7 +46,7 @@ NtpThemeBridge::NtpThemeBridge(JNIEnv* env,
   ntp_custom_background_service_->AddObserver(this);
 }
 
-void NtpThemeBridge::Destroy(JNIEnv* env) {
+void NtpThemeCollectionBridge::Destroy(JNIEnv* env) {
   if (ntp_background_service_) {
     ntp_background_service_->RemoveObserver(this);
   }
@@ -54,9 +56,9 @@ void NtpThemeBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-NtpThemeBridge::~NtpThemeBridge() = default;
+NtpThemeCollectionBridge::~NtpThemeCollectionBridge() = default;
 
-void NtpThemeBridge::GetBackgroundCollections(
+void NtpThemeCollectionBridge::GetBackgroundCollections(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_callback) {
   if (j_background_collections_callback_) {
@@ -73,7 +75,7 @@ void NtpThemeBridge::GetBackgroundCollections(
   ntp_background_service_->FetchCollectionInfo();
 }
 
-void NtpThemeBridge::GetBackgroundImages(
+void NtpThemeCollectionBridge::GetBackgroundImages(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_collection_id,
     const JavaParamRef<jobject>& j_callback) {
@@ -92,7 +94,7 @@ void NtpThemeBridge::GetBackgroundImages(
       base::android::ConvertJavaStringToUTF8(env, j_collection_id));
 }
 
-void NtpThemeBridge::OnCollectionInfoAvailable() {
+void NtpThemeCollectionBridge::OnCollectionInfoAvailable() {
   if (!j_background_collections_callback_) {
     return;
   }
@@ -110,7 +112,8 @@ void NtpThemeBridge::OnCollectionInfoAvailable() {
     jint j_hash =
         static_cast<jint>(base::PersistentHash(collection.collection_id));
     ScopedJavaLocalRef<jobject> j_collection =
-        Java_NtpThemeBridge_createCollection(env, j_id, j_label, j_url, j_hash);
+        Java_NtpThemeCollectionBridge_createCollection(env, j_id, j_label,
+                                                       j_url, j_hash);
     j_collections.push_back(j_collection);
   }
 
@@ -120,7 +123,7 @@ void NtpThemeBridge::OnCollectionInfoAvailable() {
   j_background_collections_callback_.Reset();
 }
 
-void NtpThemeBridge::OnCollectionImagesAvailable() {
+void NtpThemeCollectionBridge::OnCollectionImagesAvailable() {
   if (!j_background_images_callback_) {
     return;
   }
@@ -140,9 +143,10 @@ void NtpThemeBridge::OnCollectionImagesAvailable() {
     ScopedJavaLocalRef<jobject> j_attribution_url =
         url::GURLAndroid::FromNativeGURL(env, image.attribution_action_url);
 
-    ScopedJavaLocalRef<jobject> j_image = Java_NtpThemeBridge_createImage(
-        env, j_collection_id, j_image_url, j_preview_image_url, j_attribution,
-        j_attribution_url);
+    ScopedJavaLocalRef<jobject> j_image =
+        Java_NtpThemeCollectionBridge_createImage(
+            env, j_collection_id, j_image_url, j_preview_image_url,
+            j_attribution, j_attribution_url);
     j_images.push_back(j_image);
   }
 
@@ -152,14 +156,14 @@ void NtpThemeBridge::OnCollectionImagesAvailable() {
   j_background_images_callback_.Reset();
 }
 
-void NtpThemeBridge::OnNextCollectionImageAvailable() {}
+void NtpThemeCollectionBridge::OnNextCollectionImageAvailable() {}
 
-void NtpThemeBridge::OnNtpBackgroundServiceShuttingDown() {
+void NtpThemeCollectionBridge::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
 }
 
-ScopedJavaLocalRef<jobject> NtpThemeBridge::GetCustomBackgroundInfo(
+ScopedJavaLocalRef<jobject> NtpThemeCollectionBridge::GetCustomBackgroundInfo(
     JNIEnv* env) {
   std::optional<CustomBackground> background =
       ntp_custom_background_service_->GetCustomBackground();
@@ -172,17 +176,18 @@ ScopedJavaLocalRef<jobject> NtpThemeBridge::GetCustomBackgroundInfo(
   ScopedJavaLocalRef<jstring> j_collection_id =
       base::android::ConvertUTF8ToJavaString(env, background->collection_id);
 
-  return Java_NtpThemeBridge_createCustomBackgroundInfo(
+  return Java_NtpThemeCollectionBridge_createCustomBackgroundInfo(
       env, j_url, j_collection_id, background->is_uploaded_image,
       background->daily_refresh_enabled);
 }
 
-void NtpThemeBridge::OnCustomBackgroundImageUpdated() {
+void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_NtpThemeBridge_onCustomBackgroundImageUpdated(env, j_java_obj_);
+  Java_NtpThemeCollectionBridge_onCustomBackgroundImageUpdated(env,
+                                                               j_java_obj_);
 }
 
-void NtpThemeBridge::SetCollectionTheme(
+void NtpThemeCollectionBridge::SetThemeCollectionImage(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_collection_id,
     const JavaParamRef<jobject>& j_image_url,
@@ -203,7 +208,7 @@ void NtpThemeBridge::SetCollectionTheme(
       base::android::ConvertJavaStringToUTF8(env, j_collection_id));
 }
 
-void NtpThemeBridge::SelectLocalBackgroundImage(JNIEnv* env) {
+void NtpThemeCollectionBridge::SelectLocalBackgroundImage(JNIEnv* env) {
   if (!ntp_custom_background_service_) {
     return;
   }
@@ -211,7 +216,7 @@ void NtpThemeBridge::SelectLocalBackgroundImage(JNIEnv* env) {
   ntp_custom_background_service_->SelectLocalBackgroundImage(base::FilePath());
 }
 
-void NtpThemeBridge::ResetCustomBackground(JNIEnv* env) {
+void NtpThemeCollectionBridge::ResetCustomBackground(JNIEnv* env) {
   if (!ntp_custom_background_service_) {
     return;
   }

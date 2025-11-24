@@ -26,8 +26,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager.ThemeCollectionSelectionListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -51,7 +50,7 @@ public class NtpThemeCollectionsCoordinator {
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final RecyclerView mThemeCollectionsBottomSheetRecyclerView;
-    private final NtpThemeBridge mNtpThemeBridge;
+    private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final ImageFetcher mImageFetcher;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
     private final ComponentCallbacks mComponentCallbacks;
@@ -67,17 +66,17 @@ public class NtpThemeCollectionsCoordinator {
      * @param context The context for inflating views and accessing resources.
      * @param delegate The delegate to handle bottom sheet interactions.
      * @param profile The profile for which this coordinator is created.
-     * @param ntpThemeBridge The bridge to fetch theme data from native.
+     * @param ntpThemeCollectionManager The manager to fetch theme data.
      */
     public NtpThemeCollectionsCoordinator(
             Context context,
             BottomSheetDelegate delegate,
             Profile profile,
-            NtpThemeBridge ntpThemeBridge) {
+            NtpThemeCollectionManager ntpThemeCollectionManager) {
         mContext = context;
         mBottomSheetDelegate = delegate;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
-        mNtpThemeBridge = ntpThemeBridge;
+        mNtpThemeCollectionManager = ntpThemeCollectionManager;
 
         mItemMaxWidth =
                 mContext.getResources()
@@ -138,7 +137,7 @@ public class NtpThemeCollectionsCoordinator {
                                         mThemeCollectionsBottomSheetRecyclerView));
 
         // Fetches the theme collections.
-        mNtpThemeBridge.getBackgroundCollections(
+        mNtpThemeCollectionManager.getBackgroundCollections(
                 (collections) -> {
                     mThemeCollectionsList.clear();
                     if (collections != null) {
@@ -150,8 +149,8 @@ public class NtpThemeCollectionsCoordinator {
 
                     // After setting items, apply the current selection from the manager.
                     mNtpThemeCollectionsAdapter.setSelection(
-                            mNtpThemeBridge.getSelectedThemeCollectionId(),
-                            mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+                            mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
+                            mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
                 });
 
         mThemeCollectionSelectionListener =
@@ -166,7 +165,7 @@ public class NtpThemeCollectionsCoordinator {
                         }
                     }
                 };
-        mNtpThemeBridge.addListener(mThemeCollectionSelectionListener);
+        mNtpThemeCollectionManager.addListener(mThemeCollectionSelectionListener);
     }
 
     public void destroy() {
@@ -187,7 +186,7 @@ public class NtpThemeCollectionsCoordinator {
             mNtpSingleThemeCollectionCoordinator.destroy();
         }
 
-        mNtpThemeBridge.removeListener(mThemeCollectionSelectionListener);
+        mNtpThemeCollectionManager.removeListener(mThemeCollectionSelectionListener);
     }
 
     /**
@@ -234,7 +233,7 @@ public class NtpThemeCollectionsCoordinator {
                     new NtpSingleThemeCollectionCoordinator(
                             mContext,
                             mBottomSheetDelegate,
-                            mNtpThemeBridge,
+                            mNtpThemeCollectionManager,
                             mImageFetcher,
                             collectionId,
                             themeCollectionTitle,
@@ -265,8 +264,8 @@ public class NtpThemeCollectionsCoordinator {
         return mNtpSingleThemeCollectionCoordinator;
     }
 
-    NtpThemeBridge getNtpThemeBridgeForTesting() {
-        return mNtpThemeBridge;
+    NtpThemeCollectionManager getNtpThemeManagerForTesting() {
+        return mNtpThemeCollectionManager;
     }
 
     int getScreenWidthForTesting() {

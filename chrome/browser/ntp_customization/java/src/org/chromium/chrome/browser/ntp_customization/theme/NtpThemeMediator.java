@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -54,7 +55,7 @@ public class NtpThemeMediator {
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Callback<@Nullable Bitmap> mOnImageSelectedCallback;
     private final NtpThemeDelegate mNtpThemeDelegate;
-    private final NtpThemeBridge mNtpThemeBridge;
+    private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private @Nullable ActivityResultRegistry mActivityResultRegistry;
     private @Nullable ActivityResultLauncher<String> mActivityResultLauncher;
 
@@ -67,7 +68,7 @@ public class NtpThemeMediator {
             @Nullable ActivityResultRegistry activityResultRegistry,
             Callback<@Nullable Bitmap> onImageSelectedCallback,
             NtpThemeDelegate ntpThemeDelegate,
-            NtpThemeBridge ntpThemeBridge) {
+            NtpThemeCollectionManager ntpThemeCollectionManager) {
         mContext = context;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
         mThemePropertyModel = themePropertyModel;
@@ -76,7 +77,7 @@ public class NtpThemeMediator {
         mActivityResultRegistry = activityResultRegistry;
         mOnImageSelectedCallback = onImageSelectedCallback;
         mNtpThemeDelegate = ntpThemeDelegate;
-        mNtpThemeBridge = ntpThemeBridge;
+        mNtpThemeCollectionManager = ntpThemeCollectionManager;
 
         // Hides the back button when the theme settings bottom sheet is displayed standalone.
         mBottomSheetPropertyModel.set(
@@ -134,7 +135,7 @@ public class NtpThemeMediator {
         for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
             if (i == THEME_COLLECTION) {
                 if (sectionType != THEME_COLLECTION) {
-                    mNtpThemeBridge.setSelectedTheme(
+                    mNtpThemeCollectionManager.updateSelectedThemeCollection(
                             /* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
                 }
                 continue;
@@ -162,7 +163,7 @@ public class NtpThemeMediator {
             // previous image.
             ShareImageFileUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
             updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
-            mNtpThemeBridge.selectLocalBackgroundImage();
+            mNtpThemeCollectionManager.selectLocalBackgroundImage();
         }
 
         NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.UPLOAD_IMAGE);
@@ -233,6 +234,6 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void updateForChoosingDefaultOrChromeColorOption(@NtpBackgroundImageType int sectionType) {
         updateTrailingIconVisibilityForSectionType(sectionType);
-        mNtpThemeBridge.resetCustomBackground();
+        mNtpThemeCollectionManager.resetCustomBackground();
     }
 }

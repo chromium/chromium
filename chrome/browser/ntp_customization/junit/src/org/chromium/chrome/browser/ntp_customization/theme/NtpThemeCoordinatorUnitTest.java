@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +36,9 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -48,7 +50,7 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private Profile mProfile;
     @Mock private Runnable mDismissBottomSheet;
-    @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
+    @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJniMock;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
 
@@ -62,8 +64,8 @@ public class NtpThemeCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        NtpThemeBridgeJni.setInstanceForTesting(mNtpThemeBridgeJniMock);
-        when(mNtpThemeBridgeJniMock.init(any(), any())).thenReturn(1L);
+        NtpThemeCollectionBridgeJni.setInstanceForTesting(mNtpThemeCollectionBridgeJniMock);
+        when(mNtpThemeCollectionBridgeJniMock.init(any(), any())).thenReturn(1L);
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
 
         mCoordinator =
@@ -121,19 +123,13 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Test
     public void testOnThemeImageSelectedCallback() {
-        ArgumentCaptor<NtpThemeBridge> ntpThemeBridgeCaptor =
-                ArgumentCaptor.forClass(NtpThemeBridge.class);
-        verify(mNtpThemeBridgeJniMock).init(any(), ntpThemeBridgeCaptor.capture());
-        NtpThemeBridge ntpThemeBridge = ntpThemeBridgeCaptor.getValue();
         mMediator = spy(mCoordinator.getMediatorForTesting());
         mCoordinator.setMediatorForTesting(mMediator);
+        NtpThemeCollectionManager ntpThemeCollectionManager =
+                mCoordinator.getNtpThemeManagerForTesting();
 
-        when(mNtpThemeBridgeJniMock.getCustomBackgroundInfo(1L))
-                .thenReturn(
-                        new CustomBackgroundInfo(
-                                new GURL("http://test.com"), "collection", false, false));
-
-        ntpThemeBridge.onCustomBackgroundImageUpdated();
+        ntpThemeCollectionManager.onCustomBackgroundImageUpdated(
+                new CustomBackgroundInfo(new GURL("http://test.com"), "collection", false, false));
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
         verify(mMediator)

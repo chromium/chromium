@@ -37,7 +37,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeManager.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetView.java",
-    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeDelegate.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListItemView.java",
@@ -55,6 +54,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/CollectionImage.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/CustomBackgroundInfo.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridge.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionManager.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsUtils.java",
@@ -127,7 +128,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
-    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridge.java",
   ]
 }
 
@@ -217,7 +218,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetViewUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListItemViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconViewUnitTest.java",
@@ -229,6 +229,8 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpThemeColorInfoUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpThemeColorUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridgeUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsUtilsUnitTest.java",

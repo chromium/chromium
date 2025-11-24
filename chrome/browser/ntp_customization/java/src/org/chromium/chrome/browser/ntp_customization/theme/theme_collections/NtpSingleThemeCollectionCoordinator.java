@@ -25,8 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager.ThemeCollectionSelectionListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -57,7 +56,7 @@ public class NtpSingleThemeCollectionCoordinator {
     private final MaterialSwitchWithText mDailyUpdateSwitchButton;
     private final RecyclerView mSingleThemeCollectionBottomSheetRecyclerView;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
-    private final NtpThemeBridge mNtpThemeBridge;
+    private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final ImageFetcher mImageFetcher;
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
@@ -73,7 +72,7 @@ public class NtpSingleThemeCollectionCoordinator {
      *
      * @param context The context for inflating views and accessing resources.
      * @param delegate The delegate to handle bottom sheet interactions.
-     * @param ntpThemeBridge The bridge to fetch theme data from native.
+     * @param ntpThemeCollectionManager The manager to fetch theme data from native.
      * @param imageFetcher The fetcher to retrieve images.
      * @param collectionId The ID of the current theme collection to display.
      * @param themeCollectionTitle The title of the current theme collection.
@@ -83,7 +82,7 @@ public class NtpSingleThemeCollectionCoordinator {
     NtpSingleThemeCollectionCoordinator(
             Context context,
             BottomSheetDelegate delegate,
-            NtpThemeBridge ntpThemeBridge,
+            NtpThemeCollectionManager ntpThemeCollectionManager,
             ImageFetcher imageFetcher,
             String collectionId,
             String themeCollectionTitle,
@@ -91,7 +90,7 @@ public class NtpSingleThemeCollectionCoordinator {
             @SheetState int previousBottomSheetState) {
         mContext = context;
         mBottomSheetDelegate = delegate;
-        mNtpThemeBridge = ntpThemeBridge;
+        mNtpThemeCollectionManager = ntpThemeCollectionManager;
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
@@ -184,7 +183,7 @@ public class NtpSingleThemeCollectionCoordinator {
                         }
                     }
                 };
-        mNtpThemeBridge.addListener(mThemeCollectionSelectionListener);
+        mNtpThemeCollectionManager.addListener(mThemeCollectionSelectionListener);
     }
 
     void destroy() {
@@ -199,7 +198,7 @@ public class NtpSingleThemeCollectionCoordinator {
             mNtpThemeCollectionsAdapter.clearOnClickListeners();
         }
 
-        mNtpThemeBridge.removeListener(mThemeCollectionSelectionListener);
+        mNtpThemeCollectionManager.removeListener(mThemeCollectionSelectionListener);
     }
 
     /**
@@ -249,7 +248,7 @@ public class NtpSingleThemeCollectionCoordinator {
         if (position == RecyclerView.NO_POSITION) return;
 
         CollectionImage image = mThemeCollectionImageList.get(position);
-        mNtpThemeBridge.setCollectionTheme(image);
+        mNtpThemeCollectionManager.setThemeCollectionImage(image);
         if (!mIsThemeCollectionSelected) {
             NtpCustomizationMetricsUtils.recordThemeCollectionSelected(mThemeCollectionHash);
             mIsThemeCollectionSelected = true;
@@ -267,7 +266,7 @@ public class NtpSingleThemeCollectionCoordinator {
      *     bottom sheet.
      */
     private void fetchImagesForCollection(@SheetState int previousBottomSheetState) {
-        mNtpThemeBridge.getBackgroundImages(
+        mNtpThemeCollectionManager.getBackgroundImages(
                 mThemeCollectionId,
                 (images) -> {
                     mThemeCollectionImageList.clear();
@@ -288,8 +287,8 @@ public class NtpSingleThemeCollectionCoordinator {
                     if (!mHasDisplayedBefore) {
                         // After setting items, apply the current selection from the manager.
                         mNtpThemeCollectionsAdapter.setSelection(
-                                mNtpThemeBridge.getSelectedThemeCollectionId(),
-                                mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+                                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
+                                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
                         mHasDisplayedBefore = true;
                     }
                 });
@@ -297,9 +296,11 @@ public class NtpSingleThemeCollectionCoordinator {
 
     /** Returns whether daily refresh is enabled for the current theme collection. */
     private boolean isDailyRefreshEnabledForCurrentCollection() {
-        return mNtpThemeBridge.getSelectedThemeCollectionId() != null
-                && mNtpThemeBridge.getSelectedThemeCollectionId().equals(mThemeCollectionId)
-                && mNtpThemeBridge.getIsDailyRefreshEnabled();
+        return mNtpThemeCollectionManager.getSelectedThemeCollectionId() != null
+                && mNtpThemeCollectionManager
+                        .getSelectedThemeCollectionId()
+                        .equals(mThemeCollectionId)
+                && mNtpThemeCollectionManager.getIsDailyRefreshEnabled();
     }
 
     NtpThemeCollectionsAdapter getNtpThemeCollectionsAdapterForTesting() {

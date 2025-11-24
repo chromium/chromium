@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link NtpThemeMediator}. */
@@ -67,7 +68,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private Uri mUri;
     @Mock private NtpThemeDelegate mNtpThemeDelegate;
-    @Mock private NtpThemeBridge mNtpThemeBridge;
+    @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -130,7 +131,7 @@ public class NtpThemeMediatorUnitTest {
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mNtpCustomizationConfigManager)
                 .onBackgroundColorChanged(eq(mContext), eq(null), eq(DEFAULT));
-        verify(mNtpThemeBridge).resetCustomBackground();
+        verify(mNtpThemeCollectionManager).resetCustomBackground();
         histogramWatcher.assertExpected();
     }
 
@@ -193,23 +194,23 @@ public class NtpThemeMediatorUnitTest {
     @Test
     public void testClearThemeCollectionSelection() {
         createMediator(true);
-        clearInvocations(mNtpThemeBridge);
+        clearInvocations(mNtpThemeCollectionManager);
 
         // Action: Click default theme. This should clear the selection.
         mMediator.handleChromeDefaultSectionClick(mView);
         // Verification: Selection should be cleared.
-        verify(mNtpThemeBridge).setSelectedTheme(eq(null), eq(null));
-        clearInvocations(mNtpThemeBridge);
+        verify(mNtpThemeCollectionManager).updateSelectedThemeCollection(eq(null), eq(null));
+        clearInvocations(mNtpThemeCollectionManager);
 
         // Action: Click theme collections. This should NOT clear the selection.
         mMediator.handleThemeCollectionsSectionClick(mView);
         // Verification: clearThemeCollectionSelection should NOT be called again.
-        verify(mNtpThemeBridge, never()).setSelectedTheme(any(), any());
+        verify(mNtpThemeCollectionManager, never()).updateSelectedThemeCollection(any(), any());
 
         // Action: Click upload image. This should clear the selection.
         mMediator.onUploadImageResult(mUri);
-        verify(mNtpThemeBridge).setSelectedTheme(eq(null), eq(null));
-        clearInvocations(mNtpThemeBridge);
+        verify(mNtpThemeCollectionManager).updateSelectedThemeCollection(eq(null), eq(null));
+        clearInvocations(mNtpThemeCollectionManager);
     }
 
     @Test
@@ -280,7 +281,7 @@ public class NtpThemeMediatorUnitTest {
                         /* activityResultRegistry= */ null,
                         mOnImageSelectedCallback,
                         mNtpThemeDelegate,
-                        mNtpThemeBridge);
+                        mNtpThemeCollectionManager);
     }
 
     @Test
@@ -297,6 +298,6 @@ public class NtpThemeMediatorUnitTest {
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(IMAGE_FROM_DISK, false)));
 
-        verify(mNtpThemeBridge).resetCustomBackground();
+        verify(mNtpThemeCollectionManager).resetCustomBackground();
     }
 }

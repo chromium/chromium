@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_BRIDGE_H_
-#define CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_BRIDGE_H_
+#ifndef CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_COLLECTION_BRIDGE_H_
+#define CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_COLLECTION_BRIDGE_H_
 
 #include <jni.h>
 
@@ -19,20 +19,22 @@ class NtpCustomBackgroundService;
 
 using base::android::JavaParamRef;
 
-// The C++ counterpart to NtpThemeBridge.java. This class serves as a bridge
-// to the NTP theme services, handling theme collections and custom backgrounds
-// for the New Tab Page. It observes changes from NtpBackgroundService and
-// NtpCustomBackgroundService and communicates with the Java layer.
-class NtpThemeBridge : public NtpBackgroundServiceObserver,
-                       public NtpCustomBackgroundServiceObserver {
+// The C++ counterpart to NtpThemeCollectionBridge.java. This class serves as a
+// bridge to the NTP theme services, handling theme collections and custom
+// backgrounds for the New Tab Page. It observes changes from
+// NtpBackgroundService and NtpCustomBackgroundService and communicates with the
+// Java layer.
+class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
+                                 public NtpCustomBackgroundServiceObserver {
  public:
-  // Creates an instance of NtpThemeBridge.
-  NtpThemeBridge(JNIEnv* env,
-                 Profile* profile,
-                 const base::android::JavaParamRef<jobject>& j_java_obj);
+  // Creates an instance of NtpThemeCollectionBridge.
+  NtpThemeCollectionBridge(
+      JNIEnv* env,
+      Profile* profile,
+      const base::android::JavaParamRef<jobject>& j_java_obj);
 
-  NtpThemeBridge(const NtpThemeBridge&) = delete;
-  NtpThemeBridge& operator=(const NtpThemeBridge&) = delete;
+  NtpThemeCollectionBridge(const NtpThemeCollectionBridge&) = delete;
+  NtpThemeCollectionBridge& operator=(const NtpThemeCollectionBridge&) = delete;
 
   // Called by the Java counterpart to destroy this object.
   void Destroy(JNIEnv* env);
@@ -59,7 +61,7 @@ class NtpThemeBridge : public NtpBackgroundServiceObserver,
   // @param j_attribution_line_1 The first line of attribution text.
   // @param j_attribution_line_2 The second line of attribution text.
   // @param j_attribution_url A URL associated with the attribution text.
-  void SetCollectionTheme(
+  void SetThemeCollectionImage(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_collection_id,
       const base::android::JavaParamRef<jobject>& j_image_url,
@@ -81,7 +83,7 @@ class NtpThemeBridge : public NtpBackgroundServiceObserver,
   void ResetCustomBackground(JNIEnv* env);
 
  private:
-  ~NtpThemeBridge() override;
+  ~NtpThemeCollectionBridge() override;
 
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;
@@ -101,4 +103,4 @@ class NtpThemeBridge : public NtpBackgroundServiceObserver,
   base::android::ScopedJavaGlobalRef<jobject> j_java_obj_;
 };
 
-#endif  // CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_BRIDGE_H_
+#endif  // CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_COLLECTION_BRIDGE_H_

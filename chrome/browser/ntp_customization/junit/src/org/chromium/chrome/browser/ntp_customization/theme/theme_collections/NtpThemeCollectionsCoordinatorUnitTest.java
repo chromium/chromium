@@ -47,8 +47,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager.ThemeCollectionSelectionListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
@@ -72,7 +71,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
-    @Mock private NtpThemeBridge mNtpThemeBridge;
+    @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
     @Captor private ArgumentCaptor<Callback<List<BackgroundCollection>>> mCallbackCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
     @Captor private ArgumentCaptor<ThemeCollectionSelectionListener> mListenerCaptor;
@@ -94,7 +93,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
         mCoordinator =
                 new NtpThemeCollectionsCoordinator(
-                        mContextSpy, mBottomSheetDelegate, mProfile, mNtpThemeBridge);
+                        mContextSpy, mBottomSheetDelegate, mProfile, mNtpThemeCollectionManager);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -105,7 +104,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Test
     public void testConstructor() {
         assertNotNull(mBottomSheetView);
-        verify(mNtpThemeBridge).getBackgroundCollections(mCallbackCaptor.capture());
+        verify(mNtpThemeCollectionManager).getBackgroundCollections(mCallbackCaptor.capture());
 
         RecyclerView recyclerView =
                 mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
@@ -177,7 +176,8 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         assertFalse(learnMoreButton.hasOnClickListeners());
         verify(adapterSpy).clearOnClickListeners();
         verify(mNtpSingleThemeCollectionCoordinator).destroy();
-        verify(mNtpThemeBridge).removeListener(any(ThemeCollectionSelectionListener.class));
+        verify(mNtpThemeCollectionManager)
+                .removeListener(any(ThemeCollectionSelectionListener.class));
         verify(mContextSpy).unregisterComponentCallbacks(eq(componentCallbacks));
     }
 
@@ -186,7 +186,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         String histogramName = "NewTabPage.Customization.Theme.ThemeCollection.CollectionShow";
 
         // Populate mThemeCollectionsList in the coordinator.
-        verify(mNtpThemeBridge).getBackgroundCollections(mCallbackCaptor.capture());
+        verify(mNtpThemeCollectionManager).getBackgroundCollections(mCallbackCaptor.capture());
         List<BackgroundCollection> collections = new ArrayList<>();
         collections.add(
                 new BackgroundCollection(
@@ -245,7 +245,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
         mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
 
-        verify(mNtpThemeBridge).addListener(mListenerCaptor.capture());
+        verify(mNtpThemeCollectionManager).addListener(mListenerCaptor.capture());
         ThemeCollectionSelectionListener listener = mListenerCaptor.getValue();
 
         String collectionId = "test_id";

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,7 +43,7 @@ public class NtpThemeCoordinator {
     private final Profile mProfile;
     private final NtpThemeDelegate mNtpThemeDelegate;
     private final Runnable mDismissBottomSheetRunnable;
-    private final NtpThemeBridge mNtpThemeBridge;
+    private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final CallbackController mCallbackController = new CallbackController();
     private NtpThemeMediator mMediator;
     private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
@@ -89,8 +90,8 @@ public class NtpThemeCoordinator {
                         ? ((ComponentActivity) context).getActivityResultRegistry()
                         : null;
 
-        mNtpThemeBridge =
-                new NtpThemeBridge(
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(
                         mContext,
                         profile,
                         mCallbackController.makeCancelable(
@@ -111,7 +112,7 @@ public class NtpThemeCoordinator {
                         activityResultRegistry,
                         this::onImageSelectedForPreview,
                         mNtpThemeDelegate,
-                        mNtpThemeBridge);
+                        mNtpThemeCollectionManager);
     }
 
     /**
@@ -159,7 +160,10 @@ public class NtpThemeCoordinator {
                 if (mNtpThemeCollectionsCoordinator == null) {
                     mNtpThemeCollectionsCoordinator =
                             new NtpThemeCollectionsCoordinator(
-                                    mContext, mBottomSheetDelegate, mProfile, mNtpThemeBridge);
+                                    mContext,
+                                    mBottomSheetDelegate,
+                                    mProfile,
+                                    mNtpThemeCollectionManager);
                 }
                 mBottomSheetDelegate.showBottomSheet(THEME_COLLECTIONS);
             }
@@ -178,7 +182,7 @@ public class NtpThemeCoordinator {
         if (mNtpChromeColorsCoordinator != null) {
             mNtpChromeColorsCoordinator.destroy();
         }
-        mNtpThemeBridge.destroy();
+        mNtpThemeCollectionManager.destroy();
         mCallbackController.destroy();
     }
 
@@ -200,6 +204,10 @@ public class NtpThemeCoordinator {
 
     void setNtpThemeBottomSheetViewForTesting(NtpThemeBottomSheetView ntpThemeBottomSheetView) {
         mNtpThemeBottomSheetView = ntpThemeBottomSheetView;
+    }
+
+    NtpThemeCollectionManager getNtpThemeManagerForTesting() {
+        return mNtpThemeCollectionManager;
     }
 
     NtpThemeDelegate getNtpThemeDelegateForTesting() {

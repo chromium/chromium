@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization.theme;
+package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,19 +17,12 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
-import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
-import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
-import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -42,63 +30,39 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Unit tests for {@link NtpThemeBridge}. */
+/** Unit tests for {@link NtpThemeCollectionBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class NtpThemeBridgeUnitTest {
+public class NtpThemeCollectionBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private NtpThemeBridge.Natives mNatives;
+    @Mock private NtpThemeCollectionBridge.Natives mNatives;
     @Mock private Profile mProfile;
-    @Mock private Runnable mOnThemeImageSelectedCallback;
     @Mock private Callback<List<BackgroundCollection>> mBackgroundCollectionsCallback;
     @Mock private Callback<List<CollectionImage>> mCollectionImagesCallback;
-    @Mock private ThemeCollectionSelectionListener mListener;
-    @Mock private Context mContext;
-    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    @Mock private Callback<CustomBackgroundInfo> mOnThemeUpdatedCallback;
 
     @Captor private ArgumentCaptor<Callback<Object[]>> mObjectArrayCallbackCaptor;
 
-    private NtpThemeBridge mNtpThemeBridge;
+    private NtpThemeCollectionBridge mNtpThemeCollectionBridge;
 
     @Before
     public void setUp() {
-        NtpThemeBridgeJni.setInstanceForTesting(mNatives);
+        NtpThemeCollectionBridgeJni.setInstanceForTesting(mNatives);
         when(mNatives.init(any(), any())).thenReturn(1L);
-
-        NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.DEFAULT);
-
-        mNtpThemeBridge = new NtpThemeBridge(mContext, mProfile, mOnThemeImageSelectedCallback);
+        mNtpThemeCollectionBridge = new NtpThemeCollectionBridge(mProfile, mOnThemeUpdatedCallback);
     }
 
     @Test
     public void testInitAndDestroy() {
-        verify(mNatives).init(eq(mProfile), any(NtpThemeBridge.class));
-        mNtpThemeBridge.destroy();
+        verify(mNatives).init(eq(mProfile), any(NtpThemeCollectionBridge.class));
+        mNtpThemeCollectionBridge.destroy();
         verify(mNatives).destroy(1L);
     }
 
     @Test
-    public void testConstructorWithCustomBackground() {
-        // This test needs its own NtpThemeBridge instance to test the constructor logic.
-        CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "collection_id", false, true);
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.THEME_COLLECTION);
-        when(mNtpCustomizationConfigManager.getCustomBackgroundInfo()).thenReturn(info);
-        NtpThemeBridge ntpThemeBridge =
-                new NtpThemeBridge(mContext, mProfile, mOnThemeImageSelectedCallback);
-
-        assertEquals("collection_id", ntpThemeBridge.getSelectedThemeCollectionId());
-        assertEquals(JUnitTestGURLs.URL_1, ntpThemeBridge.getSelectedThemeCollectionImageUrl());
-        assertTrue(ntpThemeBridge.getIsDailyRefreshEnabled());
-    }
-
-    @Test
     public void testGetBackgroundCollections() {
-        mNtpThemeBridge.getBackgroundCollections(mBackgroundCollectionsCallback);
+        mNtpThemeCollectionBridge.getBackgroundCollections(mBackgroundCollectionsCallback);
         verify(mNatives).getBackgroundCollections(eq(1L), mObjectArrayCallbackCaptor.capture());
 
         // Test with null response.
@@ -123,7 +87,7 @@ public class NtpThemeBridgeUnitTest {
     @Test
     public void testGetBackgroundImages() {
         String collectionId = "test_id";
-        mNtpThemeBridge.getBackgroundImages(collectionId, mCollectionImagesCallback);
+        mNtpThemeCollectionBridge.getBackgroundImages(collectionId, mCollectionImagesCallback);
         verify(mNatives)
                 .getBackgroundImages(
                         eq(1L), eq(collectionId), mObjectArrayCallbackCaptor.capture());
@@ -163,7 +127,8 @@ public class NtpThemeBridgeUnitTest {
         String label = "label";
         GURL url = JUnitTestGURLs.EXAMPLE_URL;
         int hash = 123; // Mock hash value for testing
-        BackgroundCollection collection = NtpThemeBridge.createCollection(id, label, url, hash);
+        BackgroundCollection collection =
+                NtpThemeCollectionBridge.createCollection(id, label, url, hash);
         assertEquals(id, collection.id);
         assertEquals(label, collection.label);
         assertEquals(url, collection.previewImageUrl);
@@ -177,7 +142,7 @@ public class NtpThemeBridgeUnitTest {
         String[] attribution = new String[] {"foo", "bar"};
         GURL attributionUrl = JUnitTestGURLs.URL_3;
         CollectionImage image =
-                NtpThemeBridge.createImage(
+                NtpThemeCollectionBridge.createImage(
                         collectionId, imageUrl, previewImageUrl, attribution, attributionUrl);
         assertEquals(collectionId, image.collectionId);
         assertEquals(imageUrl, image.imageUrl);
@@ -187,37 +152,7 @@ public class NtpThemeBridgeUnitTest {
     }
 
     @Test
-    public void testThemeSelection() {
-        // Initially, selection is null.
-        assertNull(mNtpThemeBridge.getSelectedThemeCollectionId());
-        assertNull(mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
-
-        // Add a listener.
-        mNtpThemeBridge.addListener(mListener);
-
-        // Set a theme.
-        String collectionId = "test_id";
-        GURL imageUrl = JUnitTestGURLs.URL_1;
-        mNtpThemeBridge.setSelectedTheme(collectionId, imageUrl);
-
-        // Verify getters and listener callback.
-        assertEquals(collectionId, mNtpThemeBridge.getSelectedThemeCollectionId());
-        assertEquals(imageUrl, mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
-        verify(mListener).onThemeCollectionSelectionChanged(eq(collectionId), eq(imageUrl));
-
-        // Remove the listener.
-        mNtpThemeBridge.removeListener(mListener);
-        Mockito.clearInvocations(mListener);
-
-        // Set a different theme.
-        mNtpThemeBridge.setSelectedTheme("id2", JUnitTestGURLs.URL_2);
-
-        // Verify the listener was not called again.
-        verify(mListener, never()).onThemeCollectionSelectionChanged(any(), any());
-    }
-
-    @Test
-    public void testSetCollectionTheme() {
+    public void testSetThemeCollectionImage() {
         CollectionImage image =
                 new CollectionImage(
                         "collectionId",
@@ -225,9 +160,9 @@ public class NtpThemeBridgeUnitTest {
                         JUnitTestGURLs.URL_2,
                         List.of("attr1", "attr2"),
                         JUnitTestGURLs.URL_3);
-        mNtpThemeBridge.setCollectionTheme(image);
+        mNtpThemeCollectionBridge.setThemeCollectionImage(image);
         verify(mNatives)
-                .setCollectionTheme(
+                .setThemeCollectionImage(
                         1L,
                         "collectionId",
                         JUnitTestGURLs.URL_1,
@@ -239,43 +174,31 @@ public class NtpThemeBridgeUnitTest {
 
     @Test
     public void testSelectLocalBackgroundImage() {
-        mNtpThemeBridge.selectLocalBackgroundImage();
+        mNtpThemeCollectionBridge.selectLocalBackgroundImage();
         verify(mNatives).selectLocalBackgroundImage(1L);
     }
 
     @Test
     public void testResetCustomBackground() {
-        mNtpThemeBridge.resetCustomBackground();
+        mNtpThemeCollectionBridge.resetCustomBackground();
         verify(mNatives).resetCustomBackground(1L);
     }
 
     @Test
-    public void testOnCustomBackgroundImageUpdated() {
+    public void onCustomBackgroundImageUpdated() {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "collection_id", false, true);
         when(mNatives.getCustomBackgroundInfo(1L)).thenReturn(info);
 
-        mNtpThemeBridge.onCustomBackgroundImageUpdated();
+        mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
 
-        verify(mOnThemeImageSelectedCallback).run();
-        assertEquals("collection_id", mNtpThemeBridge.getSelectedThemeCollectionId());
-        assertEquals(JUnitTestGURLs.URL_1, mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
-        assertTrue(mNtpThemeBridge.getIsDailyRefreshEnabled());
+        verify(mOnThemeUpdatedCallback).onResult(info);
     }
 
     @Test
     public void testOnCustomBackgroundImageUpdated_nullInfo() {
         when(mNatives.getCustomBackgroundInfo(1L)).thenReturn(null);
-        mNtpThemeBridge.onCustomBackgroundImageUpdated();
-        verify(mOnThemeImageSelectedCallback, never()).run();
-    }
-
-    @Test
-    public void testOnCustomBackgroundImageUpdated_invalidUrl() {
-        CustomBackgroundInfo info =
-                new CustomBackgroundInfo(GURL.emptyGURL(), "collection_id", false, true);
-        when(mNatives.getCustomBackgroundInfo(1L)).thenReturn(info);
-        mNtpThemeBridge.onCustomBackgroundImageUpdated();
-        verify(mOnThemeImageSelectedCallback, never()).run();
+        mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
+        verify(mOnThemeUpdatedCallback).onResult(null);
     }
 }
