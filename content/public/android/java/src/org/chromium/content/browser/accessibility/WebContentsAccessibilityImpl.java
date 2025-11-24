@@ -54,8 +54,8 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
-import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
@@ -828,6 +828,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
             mDelegate.getWebContents().removeUserData(WebContentsAccessibilityImpl.class);
         }
+        mBroadcastReceiver = null;
         TraceEvent.end("WebContentsAccessibilityImpl.destroy");
     }
 
