@@ -354,18 +354,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net_HttpJob_TotalTimeSuccess_Priorities"
-    separator=".">
-  <suffix name="Priority0" label="THROTTLED or MINIMUM_PRIORITY"/>
-  <suffix name="Priority1" label="IDLE"/>
-  <suffix name="Priority2" label="LOWEST or DEFAULT_PRIORITY"/>
-  <suffix name="Priority3" label="LOW"/>
-  <suffix name="Priority4" label="MEDIUM"/>
-  <suffix name="Priority5" label="HIGHEST or MAXIMUM_PRIORITY"/>
-  <affected-histogram name="Net.HttpJob.TotalTimeSuccess"/>
-  <affected-histogram name="ResourceScheduler.RequestQueuingDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NetHttpContentLengthType2" separator=".">
   <suffix name="BypassedDRP"
       label="Bytes of traffic that bypassed the Data Reduction Proxy"/>

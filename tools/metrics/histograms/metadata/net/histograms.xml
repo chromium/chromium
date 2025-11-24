@@ -3431,7 +3431,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpJob.TotalTimeSuccess" units="ms" expires_after="never">
+<histogram name="Net.HttpJob.TotalTimeSuccess{Priority}" units="ms"
+    expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
@@ -3439,7 +3440,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until we
     are done reading, for jobs when we read until no more data is available.
+    {Priority}
   </summary>
+  <token key="Priority">
+    <variant name="" summary=""/>
+    <variant name="Priority0" summary="THROTTLED or MINIMUM_PRIORITY"/>
+    <variant name="Priority1" summary="IDLE"/>
+    <variant name="Priority2" summary="LOWEST or DEFAULT_PRIORITY"/>
+    <variant name="Priority3" summary="LOW"/>
+    <variant name="Priority4" summary="MEDIUM"/>
+    <variant name="Priority5" summary="HIGHEST or MAXIMUM_PRIORITY"/>
+  </token>
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime{TotalTimeToHttpsGoogle}" units="ms"

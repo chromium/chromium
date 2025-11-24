@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -482,7 +481,6 @@ TEST_F(ResourceSchedulerTest, OneIsolatedLowRequest) {
 }
 
 TEST_F(ResourceSchedulerTest, OneLowLoadsUntilCriticalComplete) {
-  base::HistogramTester histogram_tester;
   network_quality_estimator_.SetAndNotifyObserversOfEffectiveConnectionType(
       net::EFFECTIVE_CONNECTION_TYPE_4G);
   InitializeScheduler();
@@ -503,15 +501,6 @@ TEST_F(ResourceSchedulerTest, OneLowLoadsUntilCriticalComplete) {
   high.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(low2->started());
-
-  histogram_tester.ExpectTotalCount(
-      "ResourceScheduler.RequestQueuingDuration.Priority" +
-          base::NumberToString(net::HIGHEST),
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ResourceScheduler.RequestQueuingDuration.Priority" +
-          base::NumberToString(net::LOWEST),
-      2);
 }
 
 TEST_F(ResourceSchedulerTest, MaxRequestsPerHostForSpdyWhenNotDelayable) {

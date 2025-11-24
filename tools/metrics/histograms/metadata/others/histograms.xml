@@ -7161,16 +7161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ResourceScheduler.RequestQueuingDuration" units="ms"
-    expires_after="2022-01-02">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The amount of time the ResourceScheduler queued a request. Recorded in
-    separate histograms based on the request loading priority at the time the
-    request was dequeued.
-  </summary>
-</histogram>
-
 <histogram name="Sanitize.SanitizeEvent" enum="SanitizeEvent"
     expires_after="2026-05-10">
   <owner>behnoodm@chromium.org</owner>

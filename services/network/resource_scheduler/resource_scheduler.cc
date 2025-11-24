@@ -14,9 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
@@ -767,15 +764,6 @@ class ResourceScheduler::Client
           net::NetLogEventType::RESOURCE_SCHEDULER_REQUEST_STARTED, "trigger",
           RequestStartTriggerString(trigger));
     }
-
-    DCHECK(!request->url_request()->creation_time().is_null());
-    base::TimeDelta queuing_duration =
-        ticks_now - request->url_request()->creation_time();
-    base::UmaHistogramMediumTimes(
-        "ResourceScheduler.RequestQueuingDuration.Priority" +
-            base::NumberToString(
-                request->get_request_priority_params().priority),
-        queuing_duration);
 
     // Update the start time of the non-delayble request.
     if (!RequestAttributesAreSet(request->attributes(), kAttributeDelayable))
