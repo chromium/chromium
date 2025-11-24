@@ -733,7 +733,7 @@ std::string MakeGuid(size_t last_digit) {
   return base::StringPrintf("00000000-0000-0000-0000-%012zu", last_digit);
 }
 
-std::string kElvisProfileGuid = MakeGuid(1);
+const std::string kElvisProfileGuid = MakeGuid(1);
 
 class MockCreditCardAccessManager : public CreditCardAccessManager {
  public:
@@ -1408,10 +1408,6 @@ class BrowserAutofillManagerTest
   }
 
   syncer::TestSyncService& sync_service() { return sync_service_; }
-
-  FormDataImporter& form_data_importer() {
-    return *autofill_client().GetFormDataImporter();
-  }
 
   MockSingleFieldFillRouter& single_field_fill_router() {
     return static_cast<MockSingleFieldFillRouter&>(
@@ -2186,7 +2182,8 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_WithDuplicates) {
 
   // Add a duplicate profile.
   AutofillProfile duplicate_profile =
-      *personal_data().address_data_manager().GetProfileByGUID(MakeGuid(1));
+      *personal_data().address_data_manager().GetProfileByGUID(
+          kElvisProfileGuid);
   personal_data().address_data_manager().AddProfile(duplicate_profile);
 
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -4023,9 +4020,9 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
 
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
-  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(kElvisProfileGuid);
 
   // Remove the filled profile and simulate form submission. Since the
   // `personal_data()`'s auto accept imports for testing is enabled, expect
@@ -4058,7 +4055,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   const std::map<std::string, std::string> expected_field_filling_stats_data = {
       {"Accepted fields", base::NumberToString(n_fields)},
       {"Corrected to same type", "0"},
@@ -4097,7 +4094,7 @@ TEST_F(
   FormsSeen({form});
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
 
   EXPECT_CALL(autofill_client(), TriggerUserPerceptionOfAutofillSurvey)
       .Times(0);
@@ -4278,7 +4275,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
 
   // Simulate form submission.
@@ -4466,7 +4463,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
   // Refill the address data with all the field values.
   response_data = AutofillFormAndGetResults(
-      response_data, *response_data.fields().begin(), MakeGuid(1));
+      response_data, *response_data.fields().begin(), kElvisProfileGuid);
 
   expected_address_fill_data.first = "Elvis";
   expected_address_fill_data.phone = "2345678901";
@@ -4573,7 +4570,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
 
   FormFieldData& field = test_api(form).field(0);
@@ -7793,9 +7790,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
-  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(kElvisProfileGuid);
 
   // Remove the filled profile and simulate form submission. Since the
   // `personal_data()`'s auto accept imports for testing is enabled, expect
@@ -7819,9 +7816,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 
   // Fill the form.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
-  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(kElvisProfileGuid);
 
   // Remove the filled profile and simulate form submission. Since the
   // `personal_data()`'s auto accept imports for testing is enabled, expect
