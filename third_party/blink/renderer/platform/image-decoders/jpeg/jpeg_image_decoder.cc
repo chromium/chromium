@@ -475,7 +475,7 @@ class JPEGImageReader final {
         if (!decoder_->IgnoresColorSpace()) {
           // Extract the ICC profile data without copying it (the function
           // ColorProfile::Create will make its own copy).
-          sk_sp<SkData> profile_data =
+          auto profile_data =
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
             std::unique_ptr<ColorProfile> profile =
@@ -1027,8 +1027,7 @@ bool JPEGImageDecoder::HasC2PAManifest() const {
   }
 
   // C2PA manifests are contained in APP11 blocks in JUMBF format
-  sk_sp<SkData> jumbf_data =
-      metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
+  auto jumbf_data = metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
   if (!jumbf_data) {
     return false;
   }
