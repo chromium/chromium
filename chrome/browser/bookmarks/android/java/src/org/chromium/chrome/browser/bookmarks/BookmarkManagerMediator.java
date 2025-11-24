@@ -1824,8 +1824,6 @@ class BookmarkManagerMediator
 
     // The shopping filter should only be visible if the shopping feature is enabled and
     // there's at least one price-tracked bookmark available.
-    // TODO(crbug.com/40279892): Make this method private when price-tracking utils are mocked
-    // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {
         if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
