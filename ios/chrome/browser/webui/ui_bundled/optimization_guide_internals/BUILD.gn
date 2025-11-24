@@ -8,6 +8,7 @@ source_set("optimization_guide_internals") {
     "optimization_guide_internals_ui.mm",
   ]
   deps = [
+    "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/optimization_guide/optimization_guide_internals/webui",

@@ -7,6 +7,7 @@
 #import "components/grit/optimization_guide_internals_resources.h"
 #import "components/grit/optimization_guide_internals_resources_map.h"
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
+#import "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -101,7 +102,15 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
 
 void OptimizationGuideInternalsUI::RequestMqlsLogs(
     RequestMqlsLogsCallback callback) {
-  // MQLS is not enabled on iOS. There will be no MQLS logs.
-  std::move(callback).Run({});
-  return;
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  auto* service = OptimizationGuideServiceFactory::GetForProfile(profile);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+  optimization_guide::ModelQualityLogsUploaderService* mqls_uploader_service =
+      service->GetModelQualityLogsUploaderService();
+  std::vector<optimization_guide_internals::mojom::MqlsLogPtr> mqls_logs =
+      mqls_uploader_service->GetMqlsLogsForWebUI();
+  std::move(callback).Run(std::move(mqls_logs));
 }
