@@ -48,7 +48,7 @@ Corresponding DEPS entry would look like:
 
 ## How to avoid accidental Git submodule updates?
 
-The simplest approach is to always run gclient sync after updating chromium
+The simplest approach is to always run `gclient sync -D` after updating chromium
 checkout (e.g. after `git pull`, or `git checkout`). You can automate that by
 adding post-checkout hook (example below). To confirm there are no changes, run
 `git status`. If you use `git commit -a`, check the "Changes to be committed"
@@ -63,7 +63,7 @@ directory, edit `.git/hooks/post-checkout`:
 #!/bin/sh
 
 set -u
-gclient sync
+gclient sync -D
 ```
 
 and set it to be executable: `chmod +x .git/hooks/post-checkout`. Repeat the
