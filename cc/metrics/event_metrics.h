@@ -472,6 +472,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   ~ScrollUpdateEventMetrics() override;
 
+  // Note: Synthetic scroll updates (see `is_synthetic_`) should never be
+  // coalesced.
   void CoalesceWith(const ScrollUpdateEventMetrics& newer_scroll_update);
 
   ScrollUpdateEventMetrics* AsScrollUpdate() override;
@@ -580,6 +582,9 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
     return scroll_jank_v4_;
   }
 
+  void set_is_synthetic(bool is_synthetic) { is_synthetic_ = is_synthetic; }
+  bool is_synthetic() const { return is_synthetic_; }
+
  protected:
   ScrollUpdateEventMetrics(EventType type,
                            ScrollType scroll_type,
@@ -618,6 +623,20 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   // The scroll delta may not be actually applied. Event if it is consumed. This
   // denotes that a scroll did actually occur.
   bool did_scroll_ = false;
+
+  // Whether the scroll update is a synthetic event, which was predicted by
+  // Chrome (see `blink::ScrollPredictor::GenerateSyntheticScrollUpdate()`). In
+  // contrast to real scroll updates, metrics cannot blindly "trust" synthetic
+  // scroll updates' input generation timestamps
+  // (`GetDispatchStageTimestamp(DispatchStage::kGenerated)`) and raw scroll
+  // deltas (`delta_`) because the scroll updates didn't originate from
+  // hardware/OS.
+  // TODO(crbug.com/456180776): For now, while we incrementally implement
+  // support for synthetic scroll updates in the scroll jank v4 metric, this
+  // field is only set to true in unit tests. Set this to true in
+  // `blink::ScrollPredictor::GenerateSyntheticScrollUpdate()` once the metric
+  // fully supports synthetic scroll updates.
+  bool is_synthetic_ = false;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {

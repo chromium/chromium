@@ -770,6 +770,8 @@ ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
 
 void ScrollUpdateEventMetrics::CoalesceWith(
     const ScrollUpdateEventMetrics& newer_scroll_update) {
+  DCHECK(!is_synthetic_);
+  DCHECK(!newer_scroll_update.is_synthetic_);
   EventMetrics::CoalesceWith(newer_scroll_update);
   last_timestamp_ = newer_scroll_update.last_timestamp_;
   delta_ += newer_scroll_update.delta_;
