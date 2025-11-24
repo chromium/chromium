@@ -72,6 +72,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   /// Whether the pasteboard currently has strings.
   BOOL _pasteboardHasStrings;
   OmniboxPresentationContext _presentationContext;
+  /// Whether to force disable the return key.
+  BOOL _forceDisableReturnKey;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -515,6 +517,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (BOOL)hasText {
   // Returns YES when `allowsReturnKeyWithEmptyText` to enable the 'Go' key in
   // the keyboard.
+  if (_forceDisableReturnKey) {
+    return NO;
+  }
   return self.allowsReturnKeyWithEmptyText || [super hasText];
 }
 
@@ -803,6 +808,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
     case kReturnKey: {
+      if (_forceDisableReturnKey) {
+        return NO;
+      }
       NSString* trimmedText =
           [self.text stringByTrimmingCharactersInSet:
                          [NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1158,6 +1166,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];
+}
+
+- (void)forceDisableReturnKey:(BOOL)forceDisable {
+  _forceDisableReturnKey = forceDisable;
+  [self reloadInputViews];
 }
 
 @end

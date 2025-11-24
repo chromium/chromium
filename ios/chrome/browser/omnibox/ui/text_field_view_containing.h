@@ -26,10 +26,17 @@
 @property(nonatomic, weak) id<TextFieldViewContainingHeightDelegate>
     heightDelegate;
 
+// The number of lines in the text field.
 @property(nonatomic, readonly) NSUInteger numberOfLines;
 
+// Hide the leading image in the omnibox.
 - (void)hideLeadingImage:(BOOL)hideLeadingImage;
+
+// Sets the alpha value for the leading image.
 - (void)setLeadingImageAlpha:(BOOL)alpha;
+
+// Whether to force disable the return key on the keyboard.
+- (void)forceDisableReturnKey:(BOOL)forceDisable;
 
 @end
 

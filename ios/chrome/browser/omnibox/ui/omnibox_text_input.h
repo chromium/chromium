@@ -130,6 +130,9 @@
 /// Current omnibox font.
 - (UIFont*)currentFont;
 
+// Force disable the return key.
+- (void)forceDisableReturnKey:(BOOL)forceDisable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_TEXT_INPUT_H_

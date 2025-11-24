@@ -333,6 +333,10 @@ UIButton* CreateClearButton() {
   _leadingImageView.alpha = alpha;
 }
 
+- (void)forceDisableReturnKey:(BOOL)forceDisable {
+  [_textInputView forceDisableReturnKey:forceDisable];
+}
+
 - (void)updateLeadingConstraint {
   _textInputViewLeadingConstraint.active = NO;
 

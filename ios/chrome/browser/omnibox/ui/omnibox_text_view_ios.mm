@@ -67,6 +67,9 @@ using enum OmniboxKeyboardAction;
 
   /// The omnibox typing attributes.
   NSDictionary<NSAttributedStringKey, id>* _omniboxTypingAttributes;
+
+  /// Whether to force disable the return key.
+  BOOL _forceDisableReturnKey;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -513,6 +516,9 @@ using enum OmniboxKeyboardAction;
 - (BOOL)hasText {
   // Returns YES when `allowsReturnKeyWithEmptyText` to enable the 'Go' key in
   // the keyboard.
+  if (_forceDisableReturnKey) {
+    return NO;
+  }
   return self.allowsReturnKeyWithEmptyText || [super hasText];
 }
 
@@ -808,6 +814,9 @@ using enum OmniboxKeyboardAction;
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
     case kReturnKey: {
+      if (_forceDisableReturnKey) {
+        return NO;
+      }
       NSString* trimmedText =
           [self.text stringByTrimmingCharactersInSet:
                          [NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1184,6 +1193,11 @@ using enum OmniboxKeyboardAction;
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];
+}
+
+- (void)forceDisableReturnKey:(BOOL)forceDisable {
+  _forceDisableReturnKey = forceDisable;
+  [self reloadInputViews];
 }
 
 @end

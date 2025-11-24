@@ -81,7 +81,8 @@ const CGFloat kGlowEffectDuration = 0.9;
 const CGFloat kGlowEffectWidth = 2.0f;
 /// Duration of a change in compact mode.
 const CGFloat kCompactModeAnimationDuration = 0.1;
-
+/// The opacity once the send button is disabled.
+const CGFloat kSendButtonDisabledOpacity = 0.5;
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
 
@@ -261,6 +262,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
         animatingDifferences:YES
                   completion:^{
                     [weakSelf updateCarouselFade];
+                    [weakSelf updateSendButtonStateIfNeeded];
                   }];
 }
 
@@ -292,7 +294,39 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>* newSnapshot =
       [currentSnapshot copy];
   [newSnapshot reconfigureItemsWithIdentifiers:@[ itemToUpdate ]];
-  [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
+  __weak __typeof__(self) weakSelf = self;
+  [_dataSource applySnapshot:newSnapshot
+        animatingDifferences:YES
+                  completion:^{
+                    [weakSelf updateSendButtonStateIfNeeded];
+                  }];
+}
+
+- (void)updateSendButtonStateIfNeeded {
+  NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>*
+      currentSnapshot = _dataSource.snapshot;
+
+  BOOL allLoaded = YES;
+  for (ComposeboxInputItem* item in currentSnapshot.itemIdentifiers) {
+    if (item.state != ComposeboxInputItemState::kLoaded) {
+      allLoaded = NO;
+      break;
+    }
+  }
+
+  [self enableSendButton:allLoaded];
+}
+
+- (void)enableSendButton:(BOOL)enableSending {
+  if (enableSending) {
+    _sendButton.alpha = 1;
+    _sendButton.enabled = YES;
+    [_editView forceDisableReturnKey:NO];
+  } else {
+    _sendButton.alpha = kSendButtonDisabledOpacity;
+    _sendButton.enabled = NO;
+    [_editView forceDisableReturnKey:YES];
+  }
 }
 
 - (void)hideLensAndMicButton:(BOOL)hidden {
