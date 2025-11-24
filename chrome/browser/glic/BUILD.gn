@@ -451,6 +451,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "glic_settings_util_interactive_uitest.cc",
     "glic_user_status_interactive_uitest.cc",
+    "host/glic_actor_autofill_interactive_uitest.cc",
     "host/glic_actor_click_tool_interactive_uitest.cc",
     "host/glic_actor_drag_and_release_tool_interactive_uitest.cc",
     "host/glic_actor_general_interactive_uitest.cc",
