@@ -12,6 +12,8 @@ Follow the steps below to dispatch alerts via the
 This should be named `kFeatureName` and placed at the bottom of the file.
 If you have an existing `WebFeature` that can be used instead.
 
+This step should be skipped for deprecations only reported via the browser process.
+
 ## (2) [deprecation.json5](/third_party/blink/renderer/core/frame/deprecation/deprecation.json5)
 
 Add a new dictionary to `data` like follows:
@@ -27,12 +29,14 @@ Add a new dictionary to `data` like follows:
   milestone: 123,
 },
 ```
+
 Both `chrome_status_feature` and `milestone` are optional.
-More than one `web_features` can be added if needed.
+
+At least one `web_features` must be listed, unless an exemption for browser process only reporting is added via [`EXEMPTED_FROM_RENDERER_GENERATION`](/third_party/blink/renderer/core/frame/deprecation/PRESUBMIT.py).
 
 ## (3) Count the deprecation
 
-Pick one (or both if needed) of the following methods.
+Pick one (or all if needed) of the following methods.
 
 ### (3a) Call `Deprecation::CountDeprecation`
 
@@ -51,6 +55,10 @@ The [`DeprecateAs`](https://chromium.googlesource.com/chromium/src/+/refs/heads/
 [DeprecateAs=FeatureName] void myDeprecatedFunction();
 ```
 
+### (3c) Browser Process Reporting
+
+Add the type you need to [`DeprecationIssueType`](/third_party/blink/public/mojom/devtools/inspector_issue.mojom) and [`DeprecationIssueTypeToProtocol`](/content/browser/devtools/devtools_instrumentation.cc), then report the issue by building an `InspectorIssueInfo` and passing it to `RenderFrameHost::ReportInspectorIssue` as this [example](https://chromium-review.googlesource.com/c/chromium/src/+/7165867) does.
+
 ## (4) Test
 
 Please do not skip this step! Examples can be found in:
@@ -60,6 +68,8 @@ Tests in this folder can be run like:
 ```
 third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
 ```
+
+For deprecations that require a c++ browsertest to trigger, see this [example](https://chromium-review.googlesource.com/c/chromium/src/+/7165867).
 
 ## (5) Merge steps 1-4 in a `chromium/src` CL
 

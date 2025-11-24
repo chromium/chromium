@@ -76,7 +76,8 @@ namespace {
 namespace AttributionReportingIssueTypeEnum =
     protocol::Audits::AttributionReportingIssueTypeEnum;
 
-const char kPrivacySandboxExtensionsAPI[] = "PrivacySandboxExtensionsAPI";
+const char kExampleBrowserProcessDeprecation[] =
+    "ExampleBrowserProcessDeprecation";
 const char kRelatedWebsiteSets[] = "RelatedWebsiteSets";
 
 template <typename Handler, typename... MethodArgs, typename... Args>
@@ -511,8 +512,8 @@ BuildFederatedAuthUserInfoRequestIssue(
 const char* DeprecationIssueTypeToProtocol(
     blink::mojom::DeprecationIssueType error_type) {
   switch (error_type) {
-    case blink::mojom::DeprecationIssueType::kPrivacySandboxExtensionsAPI:
-      return kPrivacySandboxExtensionsAPI;
+    case blink::mojom::DeprecationIssueType::kExampleBrowserProcessDeprecation:
+      return kExampleBrowserProcessDeprecation;
     case blink::mojom::DeprecationIssueType::kRelatedWebsiteSets:
       return kRelatedWebsiteSets;
   }

@@ -340,7 +340,7 @@ struct GenericIssueDetails {
 };
 
 enum DeprecationIssueType {
-  kPrivacySandboxExtensionsAPI,
+  kExampleBrowserProcessDeprecation,
   kRelatedWebsiteSets,
 };
 
