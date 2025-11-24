@@ -2145,6 +2145,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.ReadAnything.ShownDurationMax1Day" units="ms"
+    expires_after="2026-03-22">
+  <owner>alfredohiguera@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how long the ReadAnything side panel entry was open for (capped at
+    24 hours). It is recorded in SidePanelEntry::OnEntryHidden when the entry is
+    hidden (ie. switching entries or the side panel closing). This is similar to
+    SidePanel.ReadAnything.ShownDuration but with a longer duration cap.
+  </summary>
+</histogram>
+
 <histogram name="{SidePanelType}.OpenDuration" units="ms"
     expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>

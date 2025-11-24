@@ -218,6 +218,18 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::PanelType type,
       base::StrCat({GetSidePanelNameFor(type), ".",
                     SidePanelEntryIdToHistogramName(id), ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
+  // To measure extended usage times, Read Anything also needs a higher maximum
+  // than what's supported by the standard ShownDuration histogram.
+  if (type == SidePanelEntry::PanelType::kContent &&
+      id == SidePanelEntryId::kReadAnything) {
+    // TODO(crbug.com/456824119): Consider removing the standard ShownDuration
+    // histogram for Read Anything after this one has gathered enough data.
+    base::UmaHistogramCustomTimes("SidePanel.ReadAnything.ShownDurationMax1Day",
+                                  base::TimeTicks::Now() - shown_timestamp,
+                                  /*min=*/base::Seconds(1),
+                                  /*max=*/base::Hours(24),
+                                  /*buckets=*/100);
+  }
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
