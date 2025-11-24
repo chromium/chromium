@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 
+#include <algorithm>
 #include <functional>
 #include <utility>
 #include <variant>
@@ -11,8 +12,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -37,6 +40,49 @@
 namespace autofill {
 
 namespace {
+
+// Only emit directly to UMA - do not pass anywhere else, or you might hit
+// NOTREACHED() in enum switches.
+constexpr ActorFormFillingError kActorFormFillingSuccessForMetrics =
+    static_cast<ActorFormFillingError>(0);
+
+void RecordMetrics(std::string_view histogram_prefix,
+                   base::TimeTicks start_time,
+                   ActorFormFillingError outcome) {
+  base::UmaHistogramTimes(base::StrCat({histogram_prefix, ".Latency"}),
+                          base::TimeTicks::Now() - start_time);
+  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Outcome"}),
+                                outcome);
+}
+
+// Records the latency and result of filling suggestions. `is_payments_fill`
+// indicates whether any of the accepted suggestions was a payments suggestion.
+// It returns the unmodified `result` to enable usage in chained callbacks.
+base::expected<void, ActorFormFillingError> RecordFillSuggestionsMetrics(
+    base::TimeTicks start_time,
+    bool is_payments_fill,
+    base::expected<void, ActorFormFillingError> result) {
+  const ActorFormFillingError outcome =
+      result.error_or(kActorFormFillingSuccessForMetrics);
+  RecordMetrics("Autofill.Actor.FillSuggestions.Any", start_time, outcome);
+  RecordMetrics(
+      is_payments_fill
+          ? "Autofill.Actor.FillSuggestions.WithPaymentInformation"
+          : "Autofill.Actor.FillSuggestions.WithoutPaymentInformation",
+      start_time, outcome);
+  return result;
+}
+
+// Records the latency and result of getting suggestions.
+// It returns the unmodified `result` to enable usage in chained callbacks.
+base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>
+RecordGetSuggestionsMetrics(base::TimeTicks start_time,
+                            base::expected<std::vector<ActorFormFillingRequest>,
+                                           ActorFormFillingError> result) {
+  RecordMetrics("Autofill.Actor.GetSuggestions", start_time,
+                result.error_or(kActorFormFillingSuccessForMetrics));
+  return result;
+}
 
 struct ActorSuggestionWithFillData {
   ActorSuggestion suggestion;
@@ -297,6 +343,10 @@ ActorFormFillingServiceImpl::FillData::operator=(FillData&&) = default;
 
 ActorFormFillingServiceImpl::FillData::~FillData() = default;
 
+bool ActorFormFillingServiceImpl::FillData::HasPaymentsPayload() const {
+  return std::holds_alternative<CreditCard>(filling_payload);
+}
+
 ActorFormFillingServiceImpl::ActorFormFillingServiceImpl() = default;
 
 ActorFormFillingServiceImpl::~ActorFormFillingServiceImpl() = default;
@@ -306,19 +356,24 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     base::span<const FillRequest> fill_requests,
     base::OnceCallback<void(base::expected<std::vector<ActorFormFillingRequest>,
                                            ActorFormFillingError>)> callback) {
+  auto callback_with_metrics =
+      base::BindOnce(&RecordGetSuggestionsMetrics, base::TimeTicks::Now())
+          .Then(std::move(callback));
+
   using enum ActorFormFillingError;
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
       maybe_client = GetAutofillManager(tab);
   if (!maybe_client.has_value()) {
-    std::move(callback).Run(base::unexpected(maybe_client.error()));
+    std::move(callback_with_metrics)
+        .Run(base::unexpected(maybe_client.error()));
     return;
   }
   const AutofillManager& autofill_manager = maybe_client.value();
 
   // Fill requests should not be empty.
   if (fill_requests.empty()) {
-    std::move(callback).Run(base::unexpected(kOther));
+    std::move(callback_with_metrics).Run(base::unexpected(kOther));
     return;
   }
 
@@ -341,14 +396,14 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         break;
       default:
         // Invalid request type.
-        std::move(callback).Run(base::unexpected(kOther));
+        std::move(callback_with_metrics).Run(base::unexpected(kOther));
         return;
     }
 
     // For now, we require that every form is fillable.
     // TODO(crbug.com/455788947): Consider weakening this condition.
     if (data.empty()) {
-      std::move(callback).Run(base::unexpected(kNoSuggestions));
+      std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
       return;
     }
 
@@ -362,7 +417,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       requests.back().suggestions.emplace_back(std::move(entry.suggestion));
     }
   }
-  std::move(callback).Run(std::move(requests));
+  std::move(callback_with_metrics).Run(std::move(requests));
 }
 
 void ActorFormFillingServiceImpl::FillSuggestions(
@@ -370,11 +425,23 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     base::span<const ActorFormFillingSelection> chosen_suggestions,
     base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
         callback) {
+  const bool is_payments_fill = std::ranges::any_of(
+      chosen_suggestions, [&](const ActorFormFillingSelection& selection) {
+        const FillData* fill_data =
+            base::FindOrNull(fill_data_, selection.selected_suggestion_id);
+        return fill_data && fill_data->HasPaymentsPayload();
+      });
+  auto callback_with_metrics =
+      base::BindOnce(&RecordFillSuggestionsMetrics, base::TimeTicks::Now(),
+                     is_payments_fill)
+          .Then(std::move(callback));
+
   // Helper to make the early returns less verbose.
-  auto post_error = [&callback](const base::Location& location,
-                                ActorFormFillingError error) {
+  auto post_error = [&callback_with_metrics](const base::Location& location,
+                                             ActorFormFillingError error) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        location, base::BindOnce(std::move(callback), base::unexpected(error)));
+        location, base::BindOnce(std::move(callback_with_metrics),
+                                 base::unexpected(error)));
   };
 
   using enum ActorFormFillingError;
@@ -425,7 +492,7 @@ void ActorFormFillingServiceImpl::FillSuggestions(
       FROM_HERE,
       base::BindOnce([](auto) {}, std::make_unique<ActorFillingObserver>(
                                       autofill_manager.client(), all_field_ids,
-                                      std::move(callback))),
+                                      std::move(callback_with_metrics))),
       ActorFillingObserver::GetMaximumTimeout());
 
   // Fill.

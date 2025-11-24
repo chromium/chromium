@@ -59,6 +59,9 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
     FillData& operator=(FillData&&);
     ~FillData();
 
+    // Returns whether the payload corresponds to a payments instrument.
+    bool HasPaymentsPayload() const;
+
     // Fields that represents the form sections that are supposed to be filled.
     std::vector<FieldGlobalId> field_ids;
     Payload filling_payload;

@@ -42,6 +42,17 @@ chromium-metrics-reviews@google.com.
                to be filled and assigned to the control case."/>
 </variants>
 
+<variants name="Autofill.Actor.FillingComposition">
+  <variant name="Any"
+      summary="Emitted regardless of the accepted suggestion type."/>
+  <variant name="WithoutPaymentInformation"
+      summary="Emmitted only if none of the accepted suggestions contains
+               payment information."/>
+  <variant name="WithPaymentInformation"
+      summary="Emitted only if at least one of the accepted suggestions
+               contains payment information."/>
+</variants>
+
 <!-- LINT.IfChange(Autofill.Ai.EntityRecordType) -->
 
 <variants name="Autofill.Ai.EntityRecordType">
@@ -932,6 +943,65 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     This metric serves as a sanity check for the guarding logic (the number of
     `false`s is expected to be extremly low) and will be removed with the
     `kAutofillPopupDontAcceptNonVisibleEnoughSuggestion` feature.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Actor.FillSuggestions.{FillingComposition}.Latency"
+    units="ms" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Measures the time between the call to FillSuggestions and the execution of
+    the callback. Emitted whenever the callback is executed (which is guaranteed
+    to always happen once for every call).
+
+    {FillingComposition}
+  </summary>
+  <token key="FillingComposition" variants="Autofill.Actor.FillingComposition"/>
+</histogram>
+
+<histogram name="Autofill.Actor.FillSuggestions.{FillingComposition}.Outcome"
+    units="ActorFormFillingOutcome" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Measures the outcome of a call to FillSuggestions. Emitted whenever the
+    callback is executed (which is guaranteed to always happen once for every
+    call).
+
+    {FillingComposition}
+  </summary>
+  <token key="FillingComposition" variants="Autofill.Actor.FillingComposition"/>
+</histogram>
+
+<histogram name="Autofill.Actor.GetSuggestions.Latency" units="ms"
+    expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Measures the time between the call to
+    ActorFormFillingService::GetSuggestions and the execution of the callback.
+    Emitted whenever the callback is executed (which is guaranteed to always
+    happen once for every call).
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Actor.GetSuggestions.Outcome"
+    units="ActorFormFillingOutcome" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Measures the outcome of a call to ActorFormFillingService::GetSuggestions.
+    Emitted whenever the callback is executed (which is guaranteed to always
+    happen once for every call).
   </summary>
 </histogram>
 

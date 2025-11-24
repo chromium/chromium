@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -97,6 +98,43 @@ FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
 // Returns the value that `group` would fill into a field with a certain `type`.
 std::u16string GetFillValue(const FormGroup& group, FieldType type) {
   return group.GetInfo(AutofillType(FieldTypeSet({type})), "en-us");
+}
+
+constexpr ActorFormFillingError kActorFormFillingSuccessForMetrics =
+    static_cast<ActorFormFillingError>(0);
+
+void ExpectGetSuggestionsOutcome(ActorFormFillingError error,
+                                 base::HistogramTester& histogram_tester,
+                                 const base::Location& location = FROM_HERE) {
+  histogram_tester.ExpectUniqueSample("Autofill.Actor.GetSuggestions.Outcome",
+                                      error, 1, location);
+  histogram_tester.ExpectTotalCount("Autofill.Actor.GetSuggestions.Latency", 1,
+                                    location);
+}
+
+void ExpectFillSuggestionsOutcome(bool is_payments_fill,
+                                  ActorFormFillingError error,
+                                  base::HistogramTester& histogram_tester,
+                                  const base::Location& location = FROM_HERE) {
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.FillSuggestions.Any.Outcome", error, 1, location);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Actor.FillSuggestions.Any.Latency", 1, location);
+  if (is_payments_fill) {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Actor.FillSuggestions.WithPaymentInformation.Outcome", error,
+        1, location);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Actor.FillSuggestions.WithPaymentInformation.Latency", 1,
+        location);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Actor.FillSuggestions.WithoutPaymentInformation.Outcome",
+        error, 1, location);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Actor.FillSuggestions.WithoutPaymentInformation.Latency", 01,
+        location);
+  }
 }
 
 class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
@@ -242,33 +280,47 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
 // Tests that a `kNoSuggestions` error is returned if we cannot find the form
 // specified in the request.
 TEST_F(ActorFormFillingServiceTest, UnfindableForm) {
+  base::HistogramTester histogram_tester;
   GetSuggestionsFuture future;
+
   service().GetSuggestions(tab(), {UnfindableFillRequest()},
                            future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
+
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kNoSuggestions,
+                              histogram_tester);
 }
 
 // Tests that a `kOther` error is returned if the fill request is empty.
 TEST_F(ActorFormFillingServiceTest, EmptyFillRequest) {
+  base::HistogramTester histogram_tester;
   GetSuggestionsFuture future;
+
   service().GetSuggestions(tab(), /*fill_requests=*/{}, future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kOther));
+
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kOther, histogram_tester);
 }
 
 // Tests that a `kOther` error is returned if invalid request data is passed.
 TEST_F(ActorFormFillingServiceTest, InvalidRequestData) {
+  base::HistogramTester histogram_tester;
   GetSuggestionsFuture future;
+
   service().GetSuggestions(
       tab(), /*fill_requests=*/
       {FillRequest{static_cast<ActorFormFillingRequest::RequestedData>(234),
                    {FieldGlobalId()}}},
       future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kOther));
+
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kOther, histogram_tester);
 }
 
 // Tests that a suggestion is returned when invoking on an address form and
 // that the suggestion can be used for filling.
 TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
+  base::HistogramTester histogram_tester;
   FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
                                       {.server_type = ADDRESS_HOME_LINE1},
                                       {.server_type = ADDRESS_HOME_CITY}}});
@@ -291,6 +343,12 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
   EXPECT_THAT(driver().last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(GetProfile1(), NAME_FULL))));
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
+                               kActorFormFillingSuccessForMetrics,
+                               histogram_tester);
 }
 
 // Tests that filling an "actor form" that is split across two Autofill forms
@@ -333,6 +391,7 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
 // Tests that a suggestion generation and filling work with simple credit card
 // forms.
 TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
+  base::HistogramTester histogram_tester;
   const CreditCard card = test::GetCreditCard();
   payments_data_manager().AddCreditCard(card);
   FormData form =
@@ -359,6 +418,12 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
   EXPECT_THAT(driver().last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(card, CREDIT_CARD_NAME_FULL))));
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/true,
+                               kActorFormFillingSuccessForMetrics,
+                               histogram_tester);
 }
 
 // Tests that filling a credit card after fetching it from the server works.
@@ -413,6 +478,7 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
 // Tests that even if a credit card fetch is ongoing, there is a timeout if
 // fills do not complete after a minute.
 TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
+  base::HistogramTester histogram_tester;
   const CreditCard card = test::GetMaskedServerCard();
   payments_data_manager().AddCreditCard(card);
   FormData form =
@@ -451,6 +517,12 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
   EXPECT_TRUE(fill_future.IsReady());
   EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
   EXPECT_THAT(driver().last_filled_values(), IsEmpty());
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/true,
+                               ActorFormFillingError::kNoForm,
+                               histogram_tester);
 }
 
 // Tests that a `kOther` error is returned if an invalid suggestion id is passed
@@ -466,6 +538,7 @@ TEST_F(ActorFormFillingServiceTest, FillWithInvalidSuggestionId) {
 // Tests that a `kOther` error is returned if an invalid suggestion id is passed
 // for filling.
 TEST_F(ActorFormFillingServiceTest, FillButFormIsGone) {
+  base::HistogramTester histogram_tester;
   FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
                                       {.server_type = ADDRESS_HOME_LINE1},
                                       {.server_type = ADDRESS_HOME_CITY}}});
@@ -484,11 +557,18 @@ TEST_F(ActorFormFillingServiceTest, FillButFormIsGone) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+  ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
+                               ActorFormFillingError::kNoForm,
+                               histogram_tester);
 }
 
 // Tests that `kAutofillNotAvailable` is returned if the tab has no web
 // contents.
 TEST(ActorFormFillingServiceWithoutAutofillTest, NoWebContents) {
+  base::HistogramTester histogram_tester;
   tabs::MockTabInterface mock_tab;
   ON_CALL(mock_tab, GetContents()).WillByDefault(Return(nullptr));
 
@@ -498,6 +578,9 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoWebContents) {
                          future.GetCallback());
   EXPECT_THAT(future.Get(),
               ErrorIs(ActorFormFillingError::kAutofillNotAvailable));
+
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kAutofillNotAvailable,
+                              histogram_tester);
 }
 
 // Tests that `kAutofillNotAvailable` is returned if the tab has no

@@ -18,16 +18,26 @@ namespace autofill {
 
 // Describes errors that can error either during suggestion generation or
 // during form filling by an actor.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// There is intentionally no entry valued 0 here because 0 is emitted to UMA
+// histograms in the success case.
+// LINT.IfChange(ActorFormFillingError)
 enum class ActorFormFillingError {
+  // kSuccess = 0,
   // Any other reason that the form could not be filled.
-  kOther,
+  kOther = 1,
   // Autofill is not available on this page.
-  kAutofillNotAvailable,
+  kAutofillNotAvailable = 2,
   // The form to be filled was not found.
-  kNoForm,
+  kNoForm = 3,
   // There are no suggestions.
-  kNoSuggestions,
+  kNoSuggestions = 4,
+  kMaxValue = kNoSuggestions,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ActorFormFillingOutcome)
 
 std::ostream& operator<<(std::ostream& os, ActorFormFillingError error);
 

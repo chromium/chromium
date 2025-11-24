@@ -26,6 +26,18 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActorFormFillingOutcome) -->
+
+<enum name="ActorFormFillingOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Other error"/>
+  <int value="2" label="Autofill not available"/>
+  <int value="3" label="Form not found"/>
+  <int value="4" label="Suggestion not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/glic/actor_form_filling_types.h:ActorFormFillingError) -->
+
 <enum name="AndroidAutofillAvailabilityStatus">
   <summary>
     Describes whether Android Autofill was available. If not, it splits the
