@@ -8,7 +8,7 @@
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getRemoteFrameToken, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getFormIdentifier, isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFormControlElements, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -169,43 +169,6 @@ class FormSubmissionReportManager {
 }
 
 const gFormSubmissionReportManager = new FormSubmissionReportManager();
-
-/**
- * Returns an array of control elements in a form.
- *
- * This method is based on the logic in method
- *     void WebFormElement::getFormControlElements(
- *         WebVector<WebFormControlElement>&) const
- * in chromium/src/third_party/WebKit/Source/WebKit/chromium/src/
- * WebFormElement.cpp.
- *
- * @param form A form element for which the control elements are returned.
- * @return An array of form control elements.
- */
-function getFormControlElements(form: HTMLFormElement|null): Element[] {
-  if (!form) {
-    return [];
-  }
-  const results: Element[] = [];
-  // Get input and select elements from form.elements.
-  // According to
-  // http://www.w3.org/TR/2011/WD-html5-20110525/forms.html, form.elements are
-  // the "listed elements whose form owner is the form element, with the
-  // exception of input elements whose type attribute is in the Image Button
-  // state, which must, for historical reasons, be excluded from this
-  // particular collection." In WebFormElement.cpp, this method is implemented
-  // by returning elements in form's associated elements that have tag 'INPUT'
-  // or 'SELECT'. Check if input Image Buttons are excluded in that
-  // implementation. Note for Autofill, as input Image Button is not
-  // considered as autofillable elements, there is no impact on Autofill
-  // feature.
-  for (const element of form.elements) {
-    if (isFormControlElement(element)) {
-      results.push(element);
-    }
-  }
-  return results;
-}
 
 /**
  * Returns an array of iframe elements that are descendents of `root`.
@@ -494,7 +457,6 @@ function reportDetectedFormSubmission(
 
 gCrWebLegacy.form = {
   wasEditedByUser,
-  getFormControlElements,
   getIframeElements,
   getFieldIdentifier,
   getFieldName,

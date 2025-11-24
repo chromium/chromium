@@ -5,7 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFormControlElements, getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -341,7 +341,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   // Individual control elements may be left with 'input' event listeners but
   // they are harmless.
   const formResetListener = function(evt) {
-    const controlElements = __gCrWeb.form.getFormControlElements(evt.target);
+    const controlElements = getFormControlElements(evt.target);
     for (let i = 0; i < controlElements.length; ++i) {
       controlElements[i].removeAttribute('chrome-autofilled');
       controlElements[i].isAutofilled = false;
@@ -384,7 +384,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
   const form = __gCrWeb.form.getFormElementFromRendererId(formUniqueID);
 
   const controlElements = form ?
-      __gCrWeb.form.getFormControlElements(form) :
+      getFormControlElements(form) :
       fillUtil.getUnownedAutofillableFormFieldElements(
           document.all,
           /*fieldsets=*/[]);
@@ -623,7 +623,7 @@ __gCrWeb.autofill.extractAutofillableElementsFromSet = function(
  * @return {Array<FormControlElement>} The array of autofillable elements.
  */
 __gCrWeb.autofill.extractAutofillableElementsInForm = function(formElement) {
-  const controlElements = __gCrWeb.form.getFormControlElements(formElement);
+  const controlElements = getFormControlElements(formElement);
   return __gCrWeb.autofill.extractAutofillableElementsFromSet(controlElements);
 };
 
@@ -638,7 +638,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
   for (const formName in data) {
     const form = getFormElementFromIdentifier(formName);
     const formData = data[formName];
-    const controlElements = __gCrWeb.form.getFormControlElements(form);
+    const controlElements = getFormControlElements(form);
     for (let i = 0; i < controlElements.length; ++i) {
       const element = controlElements[i];
       if (!inferenceUtil.isAutofillableElement(element)) {

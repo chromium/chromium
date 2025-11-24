@@ -4,6 +4,7 @@
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getFormControlElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -113,10 +114,12 @@ function findInputByFieldRendererID(
  * @param form A form element for which the input elements
  *   are returned.
  */
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
 function getFormInputElements(form: HTMLFormElement): HTMLInputElement[] {
-  return gCrWebLegacy.form.getFormControlElements(form).filter((element: Element) => {
-    return element.tagName === 'INPUT';
-  });
+  return getFormControlElements(form).filter(
+      (element: Element): element is HTMLInputElement => {
+        return element.tagName === 'INPUT';
+      });
 }
 
 /**
