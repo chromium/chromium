@@ -281,6 +281,19 @@ bool CommandLine::Init(int argc, const char* const* argv) {
 }
 
 // static
+bool CommandLine::Init(const StringVector& argv) {
+  if (current_process_commandline_) {
+    // If this is intentional, Reset() must be called first. If we are using
+    // the shared build mode, we have to share a single object across multiple
+    // shared libraries.
+    return false;
+  }
+
+  current_process_commandline_ = new CommandLine(argv);
+  return true;
+}
+
+// static
 void CommandLine::Reset() {
   DCHECK(current_process_commandline_);
   delete current_process_commandline_;

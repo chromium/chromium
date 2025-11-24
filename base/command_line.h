@@ -114,6 +114,7 @@ class BASE_EXPORT CommandLine {
   // return value should take responsibility for calling Reset().
   // TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
   static bool Init(int argc, const char* const* argv);
+  static bool Init(const StringVector& argv);
 
   // Destroys the current process CommandLine singleton. This is necessary if
   // you want to reset the base library to its initial state (for example, in an
