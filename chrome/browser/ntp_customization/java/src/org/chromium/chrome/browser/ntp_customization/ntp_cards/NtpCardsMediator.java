@@ -47,9 +47,8 @@ public class NtpCardsMediator {
                     ModuleType.SINGLE_TAB, Pref.TAB_RESUMPTION_HOME_MODULE_ENABLED,
                     ModuleType.PRICE_CHANGE, Pref.PRICE_TRACKING_HOME_MODULE_ENABLED,
                     ModuleType.SAFETY_HUB, Pref.SAFETY_CHECK_HOME_MODULE_ENABLED,
-                    // We only need one "Chrome Tips" module
-                    // TODO(crbug.com/441782354): Update this once Chrome Tips pref is available
-                    ModuleType.DEFAULT_BROWSER_PROMO, "");
+                    // We only need one "Chrome Tips" module.
+                    ModuleType.DEFAULT_BROWSER_PROMO, Pref.TIPS_HOME_MODULE_ENABLED);
     // LINT.ThenChange()
 
     private final PropertyModel mContainerPropertyModel;
