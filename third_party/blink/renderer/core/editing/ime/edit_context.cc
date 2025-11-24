@@ -399,7 +399,8 @@ void EditContext::updateText(uint32_t start,
     }
   }
 
-  text_ = text_.Substring(0, start) + new_text + text_.Substring(end);
+  text_ =
+      StrCat({StringView(text_, 0, start), new_text, StringView(text_, end)});
 
   if (RuntimeEnabledFeatures::
           EditContextHandleTextOrSelectionUpdateDuringCompositionEnabled()) {
@@ -492,8 +493,9 @@ bool EditContext::SetComposition(
 
   // Update the selection and buffer if the composition range has changed.
   String update_text(text);
-  text_ = text_.Substring(0, actual_replacement_range.StartOffset()) +
-          update_text + text_.Substring(actual_replacement_range.EndOffset());
+  text_ = StrCat({StringView(text_, 0, actual_replacement_range.StartOffset()),
+                  update_text,
+                  StringView(text_, actual_replacement_range.EndOffset())});
 
   // Fire textupdate and textformatupdate events to JS.
   // Note the EditContext's internal selection start is a global offset while
@@ -602,8 +604,8 @@ void EditContext::OnCancelComposition() {
   DCHECK(has_composition_);
 
   // Delete the text in the composition range
-  text_ = text_.Substring(0, composition_range_start_) +
-          text_.Substring(composition_range_end_);
+  text_ = StrCat({StringView(text_, 0, composition_range_start_),
+                  StringView(text_, composition_range_end_)});
 
   // Place the selection where the deleted composition had been
   SetSelection(composition_range_start_, composition_range_start_);
@@ -620,8 +622,8 @@ bool EditContext::InsertText(const WebString& text) {
   TRACE_EVENT1("ime", "EditContext::InsertText", "text", text.Utf8());
 
   String update_text(text);
-  text_ = text_.Substring(0, OrderedSelectionStart()) + update_text +
-          text_.Substring(OrderedSelectionEnd());
+  text_ = StrCat({StringView(text_, 0, OrderedSelectionStart()), update_text,
+                  StringView(text_, OrderedSelectionEnd())});
   uint32_t update_range_start = OrderedSelectionStart();
   uint32_t update_range_end = OrderedSelectionEnd();
   SetSelection(OrderedSelectionStart() + update_text.length(),
@@ -728,8 +730,9 @@ bool EditContext::CommitText(const WebString& text,
     }
   }
 
-  text_ = text_.Substring(0, actual_replacement_range.StartOffset()) +
-          update_text + text_.Substring(actual_replacement_range.EndOffset());
+  text_ = StrCat({StringView(text_, 0, actual_replacement_range.StartOffset()),
+                  update_text,
+                  StringView(text_, actual_replacement_range.EndOffset())});
   SetSelection(actual_replacement_range.StartOffset() + update_text.length(),
                actual_replacement_range.StartOffset() + update_text.length());
 
@@ -774,8 +777,8 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
                std::to_string(before) + ", " + std::to_string(after));
   before = std::min(before, static_cast<int>(OrderedSelectionStart()));
   after = std::min(after, static_cast<int>(text_.length()));
-  text_ = text_.Substring(0, OrderedSelectionStart() - before) +
-          text_.Substring(OrderedSelectionEnd() + after);
+  text_ = StrCat({StringView(text_, 0, OrderedSelectionStart() - before),
+                  StringView(text_, OrderedSelectionEnd() + after)});
   const uint32_t update_range_start = OrderedSelectionStart() - before;
   const uint32_t update_range_end = OrderedSelectionEnd() + after;
   SetSelection(OrderedSelectionStart() - before,
@@ -796,9 +799,10 @@ void EditContext::DeleteSurroundingText(int before, int after) {
       update_range_start,
       OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start));
   CHECK_GE(selection_end_, selection_start_);
-  text_ = text_.Substring(0, update_range_start) +
-          text_.Substring(selection_start_, selection_end_ - selection_start_) +
-          text_.Substring(update_range_end);
+  text_ = StrCat(
+      {StringView(text_, 0, update_range_start),
+       StringView(text_, selection_start_, selection_end_ - selection_start_),
+       StringView(text_, update_range_end)});
   String update_event_text(
       text_.Substring(selection_start_, selection_end_ - selection_start_));
 

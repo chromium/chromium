@@ -357,7 +357,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // let prefix be the result of generating a prefix providing as input map,
     // ns, and prefix index
     if (element.hasAttribute(
-            AtomicString(String(g_xmlns_with_colon + prefix)))) {
+            AtomicString(StrCat({g_xmlns_with_colon, prefix})))) {
       prefix = GeneratePrefix(ns);
     } else {
       // 12.5.2. Add prefix to map given namespace ns.
