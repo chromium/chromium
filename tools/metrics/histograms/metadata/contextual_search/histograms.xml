@@ -82,6 +82,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.ContextMenuEntry.Clicked.{ContextualSearchSource}"
+    enum="BooleanOccurred" expires_after="2026-03-29">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Number of times the context menu entrypoint on the {ContextualSearchSource}
+    was clicked. Recorded when the context menu is clicked. This does not mean
+    that a file was added, just simply that the entrypoint was clicked.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>

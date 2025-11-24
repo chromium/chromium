@@ -122,6 +122,7 @@ export class ContextMenuEntrypointElement extends
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
   protected maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
+  private metricsSource_: string = loadTimeData.getString('composeboxSource');
 
   constructor() {
     super();
@@ -172,6 +173,10 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onEntrypointClick_() {
+    const metricName =
+        'ContextualSearch.ContextMenuEntry.Clicked.' + this.metricsSource_;
+    chrome.metricsPrivate.recordBoolean(metricName, true);
+
     if (this.entrypointName === 'Omnibox') {
       const entrypoint =
           this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
@@ -183,9 +188,6 @@ export class ContextMenuEntrypointElement extends
       return;
     }
 
-    const metricName =
-        'NewTabPage.' + this.entrypointName + '.ContextMenuEntry.Clicked';
-    chrome.metricsPrivate.recordBoolean(metricName, true);
     this.showMenuAtEntrypoint_();
   }
 
