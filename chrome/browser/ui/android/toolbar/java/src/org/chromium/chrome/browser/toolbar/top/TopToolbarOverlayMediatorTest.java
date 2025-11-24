@@ -44,6 +44,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
@@ -65,6 +67,7 @@ public class TopToolbarOverlayMediatorTest {
 
     @Mock private Tab mTab2;
     @Mock private ObservableSupplier<Tab> mTabSupplier;
+    @Mock private ToolbarProgressBar mProgressBar;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -73,6 +76,10 @@ public class TopToolbarOverlayMediatorTest {
 
     @Captor private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<ClipDrawableProgressBar.ProgressBarObserver> mProgressBarObserverCaptor;
+
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
@@ -113,13 +120,16 @@ public class TopToolbarOverlayMediatorTest {
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
                         /* manualVisibilityControl= */ false,
-                        mCaptureResourceIdSupplier);
+                        mCaptureResourceIdSupplier,
+                        mProgressBar);
 
         mMediator.setIsAndroidViewVisible(true);
 
         // Ensure the observer is added to the initial tab.
         verify(mTabSupplier).addObserver(mActivityTabObserverCaptor.capture());
         setTabSupplierTab(mTab);
+
+        verify(mProgressBar).addObserver(mProgressBarObserverCaptor.capture());
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mBrowserControlsStateProvider).addObserver(mBrowserControlsObserverCaptor.capture());
@@ -243,7 +253,8 @@ public class TopToolbarOverlayMediatorTest {
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
                         /* manualVisibilityControl= */ false,
-                        mCaptureResourceIdSupplier);
+                        mCaptureResourceIdSupplier,
+                        mProgressBar);
         mMediator.setIsAndroidViewVisible(true);
 
         if (isBcivEnabled()) {
@@ -270,7 +281,7 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
-    public void testProgressUpdate_phone() {
+    public void testProgressUpdate_phone_fromTabObserver() {
         mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
 
         mTabObserverCaptor.getValue().onLoadProgressChanged(mTab, 0.25f);
@@ -285,11 +296,34 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    public void testProgressUpdate_phone_fromProgressBar() {
+        mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
+
+        mProgressBarObserverCaptor.getValue().onVisibleProgressUpdated();
+
+        assertNotNull(
+                "The progress bar data should be populated.",
+                mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+    }
+
+    @Test
     public void testProgressUpdate_tablet() {
         TopToolbarOverlayMediator.setIsTabletForTesting(true);
         mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
 
         mTabObserverCaptor.getValue().onLoadProgressChanged(mTab, 0.25f);
+
+        assertNull(
+                "The progress bar data should be still be empty.",
+                mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+    }
+
+    @Test
+    public void testProgressUpdate_tablet_fromProgressBar() {
+        TopToolbarOverlayMediator.setIsTabletForTesting(true);
+        mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
+
+        mProgressBarObserverCaptor.getValue().onVisibleProgressUpdated();
 
         assertNull(
                 "The progress bar data should be still be empty.",

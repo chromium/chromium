@@ -86,12 +86,16 @@ public class ToolbarProgressBarTest {
 
                                     Resources res = activity.getResources();
                                     int heightPx;
-                                    if (ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled()) {
-                                        heightPx = res.getDimensionPixelSize(
-                                                R.dimen.toolbar_progress_bar_increased_height);
+                                    if (ChromeFeatureList.sAndroidProgressBarVisualUpdate
+                                            .isEnabled()) {
+                                        heightPx =
+                                                res.getDimensionPixelSize(
+                                                        R.dimen
+                                                                .toolbar_progress_bar_increased_height);
                                     } else {
-                                        heightPx = res.getDimensionPixelSize(
-                                                R.dimen.toolbar_progress_bar_height);
+                                        heightPx =
+                                                res.getDimensionPixelSize(
+                                                        R.dimen.toolbar_progress_bar_height);
                                     }
 
                                     View anchor = new View(activity);
@@ -105,10 +109,11 @@ public class ToolbarProgressBarTest {
                                             new ToolbarProgressBarAnimatingView(activity, null);
                                     mProgressBar = new ToolbarProgressBar(activity, null);
                                     mProgressBar.setAnimatingView(mProgressBarAnimatingView);
-                                    mThemeColor = SemanticColorUtils.getToolbarBackgroundPrimary(
-                                            mActivity);
+                                    mThemeColor =
+                                            SemanticColorUtils.getToolbarBackgroundPrimary(
+                                                    mActivity);
                                     mProgressBar.setThemeColor(mThemeColor, false);
-                                    mProgressBar.setProgressBarObserver(mMockProgressBarObserver);
+                                    mProgressBar.addObserver(mMockProgressBarObserver);
 
                                     view.addView(
                                             mProgressBar,

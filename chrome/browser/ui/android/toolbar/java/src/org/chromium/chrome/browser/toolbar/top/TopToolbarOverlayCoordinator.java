@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -55,7 +56,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled,
-            ObservableSupplier<Long> captureResourceIdSupplier) {
+            ObservableSupplier<Long> captureResourceIdSupplier,
+            @Nullable ToolbarProgressBar progressBar) {
         // If BCIV is enabled, we always show the hairline on the composited
         // toolbar, and let renderer+viz control the visibility during scrolls.
         mContext = context;
@@ -91,7 +93,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         suppressToolbarSceneLayerSupplier,
                         layoutsToShowOn,
                         isVisibilityManuallyControlled,
-                        captureResourceIdSupplier);
+                        captureResourceIdSupplier,
+                        progressBar);
     }
 
     /**

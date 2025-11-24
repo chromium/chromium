@@ -373,7 +373,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             suppressToolbarSceneLayerSupplier,
                             layoutsToShowOn,
                             /* isVisibilityManuallyControlled= */ false,
-                            captureResourceIdSupplier);
+                            captureResourceIdSupplier,
+                            mToolbarLayout.getProgressBar());
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
         }

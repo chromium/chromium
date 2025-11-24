@@ -17,9 +17,9 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.ImageView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
@@ -44,8 +44,6 @@ public class ClipDrawableProgressBar extends ImageView {
         public @Nullable OffsetTag offsetTag;
     }
 
-    /** An observer for visible progress updates. */
-    @VisibleForTesting
     public interface ProgressBarObserver {
         /**
          * A notification that the visible progress has been updated. This may not coincide with
@@ -90,7 +88,7 @@ public class ClipDrawableProgressBar extends ImageView {
     private int mViewWidth;
 
     /** An observer of updates to the progress bar. */
-    private @Nullable ProgressBarObserver mProgressBarObserver;
+    private final ObserverList<ProgressBarObserver> mObservers = new ObserverList<>();
 
     /**
      * Create the progress bar with a custom height.
@@ -178,11 +176,8 @@ public class ClipDrawableProgressBar extends ImageView {
         return false;
     }
 
-    /** @param observer An update observer for the progress bar. */
-    @VisibleForTesting
-    public void setProgressBarObserver(ProgressBarObserver observer) {
-        assert mProgressBarObserver == null;
-        mProgressBarObserver = observer;
+    public void addObserver(ProgressBarObserver observer) {
+        mObservers.addObserver(observer);
     }
 
     /**
@@ -219,7 +214,10 @@ public class ClipDrawableProgressBar extends ImageView {
         } else {
             getDrawable().setLevel(Math.round(progress * DRAWABLE_MAX_LEVEL));
         }
-        if (mProgressBarObserver != null) mProgressBarObserver.onVisibleProgressUpdated();
+
+        for (ProgressBarObserver observer : mObservers) {
+            observer.onVisibleProgressUpdated();
+        }
     }
 
     /**
@@ -432,8 +430,10 @@ public class ClipDrawableProgressBar extends ImageView {
             mCompositedLayersVisibility = VISIBLE;
         }
 
-        if (oldVisibility != mCompositedLayersVisibility && mProgressBarObserver != null) {
-            mProgressBarObserver.onCompositedLayersVisibilityChanged();
+        if (oldVisibility != mCompositedLayersVisibility) {
+            for (ProgressBarObserver observer : mObservers) {
+                observer.onCompositedLayersVisibilityChanged();
+            }
         }
 
         updateInternalVisibility();

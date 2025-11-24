@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.ProgressBarObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -79,6 +81,8 @@ public class TopToolbarOverlayMediator {
 
     /** An observer of the browser controls offsets. */
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
+
+    private final ProgressBarObserver mProgressBarObserver;
 
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -157,7 +161,8 @@ public class TopToolbarOverlayMediator {
             ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean manualVisibilityControl,
-            ObservableSupplier<Long> captureResourceIdSupplier) {
+            ObservableSupplier<Long> captureResourceIdSupplier,
+            @Nullable ToolbarProgressBar progressBar) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
@@ -310,6 +315,27 @@ public class TopToolbarOverlayMediator {
                     }
                 };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
+
+        mProgressBarObserver =
+                new ProgressBarObserver() {
+                    @Override
+                    public void onVisibleProgressUpdated() {
+                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+                            updateProgress();
+                        }
+                    }
+
+                    @Override
+                    public void onCompositedLayersVisibilityChanged() {
+                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+                            updateProgress();
+                        }
+                    }
+                };
+        if (progressBar != null) {
+            progressBar.addObserver(mProgressBarObserver);
+        }
+
         mIsBrowserControlsAndroidViewVisible =
                 mBrowserControlsStateProvider.getAndroidControlsVisibility() == View.VISIBLE;
     }

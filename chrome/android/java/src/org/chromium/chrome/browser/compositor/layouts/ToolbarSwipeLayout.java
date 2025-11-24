@@ -159,7 +159,8 @@ public class ToolbarSwipeLayout extends Layout {
                             new ObservableSupplierImpl<>(false),
                             LayoutType.TOOLBAR_SWIPE,
                             /* isVisibilityManuallyControlled= */ true,
-                            captureResourceIdSupplier);
+                            captureResourceIdSupplier,
+                            null);
             mLeftToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mLeftToolbarOverlay);
 
@@ -176,7 +177,8 @@ public class ToolbarSwipeLayout extends Layout {
                             new ObservableSupplierImpl<>(false),
                             LayoutType.TOOLBAR_SWIPE,
                             /* isVisibilityManuallyControlled= */ true,
-                            captureResourceIdSupplier);
+                            captureResourceIdSupplier,
+                            null);
             mRightToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mRightToolbarOverlay);
         }
@@ -596,10 +598,10 @@ public class ToolbarSwipeLayout extends Layout {
                 viewport, contentViewport, tabContentManager, resourceManager, browserControls);
 
         if (mSceneLayer != null) {
-            int background_color = getBackgroundColor();
+            int backgroundColor = getBackgroundColor();
 
-            mSceneLayer.update(mLeftTab, true, background_color);
-            mSceneLayer.update(mRightTab, false, background_color);
+            mSceneLayer.update(mLeftTab, true, backgroundColor);
+            mSceneLayer.update(mRightTab, false, backgroundColor);
         }
     }
 
