@@ -754,7 +754,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                                 new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
                     });
 
-            ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_logo), isDisplayed()));
+            ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_icon), isDisplayed()));
         }
     }
 

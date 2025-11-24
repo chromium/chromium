@@ -76,7 +76,7 @@ class FullscreenSigninViewBinder {
             updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
             int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
-            LayoutParams params = view.getLogo().getLayoutParams();
+            LayoutParams params = view.getIcon().getLayoutParams();
 
             // TODO(crbug.com/390418475): Remove the if block below and
             // fullscreen_signin_logo_default_height when fre_product_logo will be a VectorDrawable
@@ -91,8 +91,8 @@ class FullscreenSigninViewBinder {
             } else {
                 params.height = LayoutParams.WRAP_CONTENT;
             }
-            view.getLogo().setImageResource(logoId);
-            view.getLogo().setLayoutParams(params);
+            view.getIcon().setImageResource(logoId);
+            view.getIcon().setLayoutParams(params);
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
             String text = model.get(FullscreenSigninProperties.TITLE_STRING);
             view.getTitle().setText(text);

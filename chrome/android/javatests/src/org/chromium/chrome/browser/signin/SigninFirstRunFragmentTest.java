@@ -1571,7 +1571,7 @@ public class SigninFirstRunFragmentTest {
                                     SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
                 });
 
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_logo), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_icon), isDisplayed()));
     }
 
     /**

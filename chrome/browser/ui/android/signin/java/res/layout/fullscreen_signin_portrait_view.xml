@@ -39,7 +39,7 @@ found in the LICENSE file.
                 android:visibility="invisible" />
 
             <ImageView
-                android:id="@+id/fre_logo"
+                android:id="@+id/fre_icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"

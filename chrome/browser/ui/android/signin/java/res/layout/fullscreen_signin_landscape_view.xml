@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/fre_logo"
+        android:id="@+id/fre_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="90dp"
@@ -27,7 +27,7 @@ found in the LICENSE file.
             android:layout_height="0dp"
             android:layout_alignParentTop="true"
             android:layout_above="@id/fre_footer_viewgroup"
-            android:layout_toEndOf="@id/fre_logo"
+            android:layout_toEndOf="@id/fre_icon"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="24dp"
             android:fadeScrollbars="false"
@@ -103,7 +103,7 @@ found in the LICENSE file.
         android:id="@+id/fre_footer_viewgroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/fre_logo"
+        android:layout_toEndOf="@id/fre_icon"
         android:layout_alignParentBottom="true">
 
         <org.chromium.ui.widget.TextViewWithClickableSpans
@@ -123,7 +123,7 @@ found in the LICENSE file.
         android:layout_marginBottom="120dp"
         android:layout_marginEnd="60dp"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@id/fre_logo">
+        android:layout_toEndOf="@id/fre_icon">
 
         <ProgressBar
             android:id="@+id/fre_signin_progress_spinner"

@@ -875,7 +875,7 @@ public class FirstRunIntegrationTest {
                                         SemanticColorUtils.getDefaultBgColor(firstRunActivity)));
                     });
 
-            onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
+            onView(withId(R.id.fre_icon)).check(matches(isDisplayed()));
             onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                     .check(matches(isDisplayed()));
         }
