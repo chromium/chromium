@@ -1039,6 +1039,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Newly Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPageActionMenuFeatureType) -->
+
+<enum name="IOSPageActionMenuFeatureType">
+  <int value="0" label="Translate"/>
+  <int value="1" label="PopupBlocker"/>
+  <int value="2" label="CameraPermission"/>
+  <int value="3" label="MicrophonePermission"/>
+  <int value="4" label="PriceTracking"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSPageActionMenuFeatureType) -->
+
 <enum name="IOSPageLoadCountNavigationType">
   <int value="0" label="Chrome URL Navigation"/>
   <int value="1" label="Same Document Web Navigation"/>

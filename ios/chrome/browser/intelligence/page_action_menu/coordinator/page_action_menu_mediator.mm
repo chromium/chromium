@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -271,9 +272,13 @@ const CGFloat kFeatureRowIconSize = 20;
   web::Permission permission;
   switch (featureType) {
     case PageActionMenuCameraPermission:
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kCameraPermission);
       permission = web::PermissionCamera;
       break;
     case PageActionMenuMicrophonePermission:
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kMicrophonePermission);
       permission = web::PermissionMicrophone;
       break;
     case PageActionMenuTranslate:
@@ -300,6 +305,8 @@ const CGFloat kFeatureRowIconSize = 20;
 
   // Translate feature.
   if ([self isFeatureAvailable:PageActionMenuTranslate]) {
+    RecordPageActionMenuFeatureRowShown(
+        IOSPageActionMenuFeatureType::kTranslate);
     PageActionMenuFeature* translateFeature = [[PageActionMenuFeature alloc]
         initWithFeatureType:PageActionMenuTranslate
                       title:l10n_util::GetNSString(
@@ -316,6 +323,8 @@ const CGFloat kFeatureRowIconSize = 20;
 
   // Popup blocker feature.
   if ([self isFeatureAvailable:PageActionMenuPopupBlocker]) {
+    RecordPageActionMenuFeatureRowShown(
+        IOSPageActionMenuFeatureType::kPopupBlocker);
     PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]
         initWithFeatureType:PageActionMenuPopupBlocker
                       title:l10n_util::GetNSString(
@@ -337,6 +346,8 @@ const CGFloat kFeatureRowIconSize = 20;
 
   // Camera permission feature.
   if ([self isFeatureAvailable:PageActionMenuCameraPermission]) {
+    RecordPageActionMenuFeatureRowShown(
+        IOSPageActionMenuFeatureType::kCameraPermission);
     PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
         initWithFeatureType:PageActionMenuCameraPermission
                       title:l10n_util::GetNSString(
@@ -350,6 +361,8 @@ const CGFloat kFeatureRowIconSize = 20;
 
   // Microphone permission feature.
   if ([self isFeatureAvailable:PageActionMenuMicrophonePermission]) {
+    RecordPageActionMenuFeatureRowShown(
+        IOSPageActionMenuFeatureType::kMicrophonePermission);
     PageActionMenuFeature* micFeature = [[PageActionMenuFeature alloc]
         initWithFeatureType:PageActionMenuMicrophonePermission
                       title:l10n_util::GetNSString(
@@ -362,6 +375,8 @@ const CGFloat kFeatureRowIconSize = 20;
   }
   // Price tracking feature.
   if ([self isFeatureAvailable:PageActionMenuPriceTracking]) {
+    RecordPageActionMenuFeatureRowShown(
+        IOSPageActionMenuFeatureType::kPriceTracking);
     PageActionMenuFeature* priceTrackingFeature = [[PageActionMenuFeature alloc]
         initWithFeatureType:PageActionMenuPriceTracking
                       title:l10n_util::GetNSString(
@@ -393,6 +408,9 @@ const CGFloat kFeatureRowIconSize = 20;
 
   GURL currentUrl = _webState->GetLastCommittedURL();
 
+  RecordPageActionMenuFeatureRowUsed(
+      IOSPageActionMenuFeatureType::kPopupBlocker);
+
   // Open each blocked popup and allow future popups from this site.
   for (const auto& popup : popups) {
     web::WebState::OpenURLParams params(popup.popup_url, popup.referrer,
@@ -420,6 +438,8 @@ const CGFloat kFeatureRowIconSize = 20;
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
+
+  RecordPageActionMenuFeatureRowUsed(IOSPageActionMenuFeatureType::kTranslate);
 
   translateClient->GetTranslateManager()->RevertTranslation();
 
@@ -491,6 +511,9 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
     return;
   }
 
+  RecordPageActionMenuFeatureRowSettingsOpened(
+      IOSPageActionMenuFeatureType::kPriceTracking);
+
   [self.contextualSheetHandler openContextualSheet];
 }
 
@@ -505,6 +528,9 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
+
+  RecordPageActionMenuFeatureRowSettingsOpened(
+      IOSPageActionMenuFeatureType::kTranslate);
 
   translate::TranslateManager* translateManager =
       translateClient->GetTranslateManager();

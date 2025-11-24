@@ -4319,6 +4319,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PageActionMenu.FeatureRowSettingsOpened"
+    enum="IOSPageActionMenuFeatureType" expires_after="2026-11-21">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records when users navigate to settings or detailed views from Page Action
+    Menu feature rows.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PageActionMenu.FeatureRowShown"
+    enum="IOSPageActionMenuFeatureType" expires_after="2026-11-21">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records when feature rows are displayed in the Page Action Menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PageActionMenu.FeatureRowUsed"
+    enum="IOSPageActionMenuFeatureType" expires_after="2026-11-21">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records when users interact with feature actions (buttons, toggles) in Page
+    Action Menu feature rows.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PageContext.{Task}.{Status}.Latency" units="ms"
     expires_after="2026-07-21">
   <owner>nicolasmacbeth@google.com</owner>
