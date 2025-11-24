@@ -5739,6 +5739,7 @@ static_library("browser") {
       "//chromeos/ash/components/nearby/common/client",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/policy",
+      "//chromeos/ash/components/policy/policy_blocklist_service",
       "//chromeos/ash/components/quickoffice",
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/settings",

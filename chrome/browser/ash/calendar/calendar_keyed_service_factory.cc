@@ -8,9 +8,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/user_manager/user.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -36,7 +36,7 @@ CalendarKeyedServiceFactory::CalendarKeyedServiceFactory()
               .Build()) {
   // LINT.IfChange(Deps)
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
-  DependsOn(ChromePolicyBlocklistServiceFactory::GetInstance());
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   // LINT.ThenChange(//chrome/browser/ash/calendar/calendar_keyed_service.h:Deps)
 }
@@ -64,7 +64,7 @@ std::unique_ptr<KeyedService>
           : nullptr;
   return std::make_unique<CalendarKeyedService>(
       user->GetAccountId(), profile->GetPrefs(), app_service_proxy,
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory());
 }

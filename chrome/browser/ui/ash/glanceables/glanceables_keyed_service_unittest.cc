@@ -10,11 +10,11 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +32,7 @@ std::unique_ptr<GlanceablesKeyedService> BuildService(Profile* profile) {
           ->GetUserByBrowserContext(profile)
           ->GetAccountId(),
       profile->GetPrefs(), apps::AppServiceProxyFactory::GetForProfile(profile),
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
 }

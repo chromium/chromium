@@ -18,11 +18,11 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -36,7 +36,7 @@ namespace {
 std::unique_ptr<CalendarClientImpl> BuildClient(Profile* profile) {
   return std::make_unique<CalendarClientImpl>(
       profile->GetPrefs(), apps::AppServiceProxyFactory::GetForProfile(profile),
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       CalendarKeyedServiceFactory::GetInstance()->GetService(profile));
 }
 

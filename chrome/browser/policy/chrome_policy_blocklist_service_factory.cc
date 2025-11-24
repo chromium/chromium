@@ -13,12 +13,19 @@
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 
-// TODO(crbug.com/454904366): Remove all dependencies on this factory that
-// reside inside //chrome/browser/ash/
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
+#endif
+
 // static
 PolicyBlocklistService* ChromePolicyBlocklistServiceFactory::GetForProfile(
     Profile* profile) {
-
+#if BUILDFLAG(IS_CHROMEOS)
+  // See comment AshPolicyBlocklistServiceFactory as to what's going on here.
+  if (!profile->IsIncognitoProfile()) {
+    return ash::AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile);
+  }
+#endif
   return static_cast<PolicyBlocklistService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

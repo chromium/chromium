@@ -7,10 +7,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -47,7 +47,7 @@ AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
               .WithRegular(ProfileSelection::kOwnInstance)
               .Build()) {
   // LINT.IfChange(Deps)
-  DependsOn(ChromePolicyBlocklistServiceFactory::GetInstance());
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
   // LINT.ThenChange(//chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h:Deps)
 }
 
@@ -60,7 +60,7 @@ std::unique_ptr<KeyedService> AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
   auto* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AlwaysOnVpnPreConnectUrlAllowlistService>(
       profile->GetPrefs(),
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile));
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile));
 }
 
 bool AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::

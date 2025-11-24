@@ -127,6 +127,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
 namespace ash {
@@ -145,6 +146,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   apps::ArcAppsFactory::GetInstance();
   AppSyncUIStateFactory::GetInstance();
   arc::ArcServiceLauncher::EnsureFactoriesBuilt();
+  AshPolicyBlocklistServiceFactory::GetInstance();
   AuthErrorObserverFactory::GetInstance();
 
   BirchKeyedServiceFactory::GetInstance();

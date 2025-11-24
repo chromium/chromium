@@ -27,11 +27,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -195,7 +195,7 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
     return TasksClientImpl(
         profile->GetPrefs(),
         apps::AppServiceProxyFactory::GetForProfile(profile),
-        ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         base::BindLambdaForTesting(
             [&](signin::OAuthConsumerId oauth_consumer_id,
                 const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
@@ -299,7 +299,7 @@ class TasksClientImplTest : public testing::Test {
     client_ = std::make_unique<TasksClientImpl>(
         profile->GetPrefs(),
         apps::AppServiceProxyFactory::GetForProfile(profile),
-        ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         create_request_sender_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(

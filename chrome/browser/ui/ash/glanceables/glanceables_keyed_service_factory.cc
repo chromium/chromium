@@ -10,12 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
@@ -69,7 +69,7 @@ GlanceablesKeyedServiceFactory::GlanceablesKeyedServiceFactory()
               .Build()) {
   // LINT.IfChange(Deps)
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
-  DependsOn(ChromePolicyBlocklistServiceFactory::GetInstance());
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   // LINT.ThenChange(//chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h:Deps)
 }
@@ -94,7 +94,7 @@ GlanceablesKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetUserByBrowserContext(profile)
           ->GetAccountId(),
       profile->GetPrefs(), app_service_proxy,
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
 }

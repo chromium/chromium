@@ -72,6 +72,7 @@ static_library("net") {
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//chromeos/ash/components/sync_wifi",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc",

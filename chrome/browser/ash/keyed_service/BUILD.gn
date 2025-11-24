@@ -94,6 +94,7 @@ static_library("keyed_service") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//printing/buildflags",
 
     # Currently ArcApps is a KeyedService.
