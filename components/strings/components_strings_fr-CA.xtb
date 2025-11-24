@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{Le téléchargement du fichier a été bloqué}one{Le téléchargement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le téléchargement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
 <translation id="2923275635648511531">Produits solaires et de bronzage</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
+<translation id="2925032407415783182">Enregistrer le billet d'événement dans Portefeuille</translation>
 <translation id="2925454999967523701">Bouton Créer un document, activez-le pour créer rapidement un nouveau document Google</translation>
 <translation id="2925673989565098301">Mode de livraison rapide</translation>
 <translation id="2928426578619531300">Utilisateur affilié</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">Le format d'URL « <ph name="URL_PATTERN" /> » comporte un chemin défini. Les chemins ne sont pas pris en charge pour cette clé, veuillez supprimer le chemin et réessayer. Par exemple *://exemple.com/ =&gt; *://exemple.com",</translation>
 <translation id="3395827396354264108">Mode de ramassage</translation>
 <translation id="3399161914051569225">Accessoires connectés</translation>
-<translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site faisait appel à TLS 1.0 ou à TLS 1.1, qui sont des versions obsolètes et qui seront désactivées à l'avenir. Une fois qu'elles seront désactivées, les utilisateurs ne seront pas en mesure de charger ce site. Le serveur devrait activer TLS 1.2 ou une version ultérieure.</translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
@@ -1727,6 +1727,7 @@
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3795624560191557077">Vous avez récemment modifié un mot de passe trouvé dans une violation de données publique. En cas de problème, le gestionnaire de mots de passe Google peut vous aider à vous connecter.</translation>
 <translation id="3799805948399000906">Police demandée</translation>
+<translation id="3800436529451849929">À partir de <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Vous visitez souvent cette page</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803481123869276674">Lorsque vous effectuez des achats sur Chrome, vous verrez le portefeuille électronique comme option</translation>
@@ -2426,6 +2427,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4930153903256238152">Grande capacité</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4932035752129140860">Le texte que vous collez ou que vous joignez est envoyé à Google Cloud ou à des tiers afin d'être analysé. Par exemple, il peut être analysé pour déterminer s'il contient des données confidentielles et peut être stocké en fonction des politiques de l'entreprise et être visible pour votre administrateur.</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4933788293078559286">Payer avec Pix</translation>
 <translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936134414789135531">Impossible de trouver le <ph name="VALUE_NAME" /> inséré.</translation>
@@ -2969,6 +2971,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5847181246682413476">Alimentations électriques</translation>
 <translation id="584902713199270089">Rencontres et services personnels</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
+<translation id="5851868085455377790">Émetteur</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>

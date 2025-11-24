@@ -1427,6 +1427,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1949980990364952348">Nama apl</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1951823516285577843">Cari alternatif</translation>
+<translation id="1953626242273481999">Benarkan penyahpepijatan jauh?</translation>
 <translation id="1953796913175502363">Sediakan profil kerja anda</translation>
 <translation id="1954597385941141174">Tapak boleh meminta untuk menyambung kepada peranti USB</translation>
 <translation id="1954813140452229842">Ralat melekapkan perkongsian. Sila semak bukti kelayakan anda dan cuba lagi.</translation>
@@ -1810,6 +1811,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2220572644011485463">PIN atau kata laluan</translation>
 <translation id="222115440608612541">Tukar tema pada waktu matahari terbit dan terbenam</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Aplikasi luar mahukan kawalan penuh bagi sesi Chrome ini untuk penyahpepijatan. Hal ini termasuk akses kepada data anda yang disimpan, kuki dan data laman serta keupayaan untuk menavigasi kepada mana-mana URL.
+
+Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini dengan apl yang dipercayai sahaja.</translation>
 <translation id="222201875806112242">Sumber media tidak bernama.</translation>
 <translation id="2224337661447660594">Tiada Internet</translation>
 <translation id="2224444042887712269">Tetapan ini milik <ph name="OWNER_EMAIL" />.</translation>
@@ -1918,6 +1922,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2294081976975808113">Privasi skrin</translation>
 <translation id="2294358108254308676">Adakah anda mahu memasang <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Semak tetapan anda</translation>
+<translation id="229524410604268773">Matikan dalam tetapan</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> hasil carian</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> menghendaki peranti berada dalam talian semasa log masuk ke <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Penemuan Peranti</translation>

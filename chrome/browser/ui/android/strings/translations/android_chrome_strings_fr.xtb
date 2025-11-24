@@ -248,7 +248,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Échec de 1 téléchargement}one{Échec de # téléchargement}other{Échec de # téléchargements}}</translation>
 <translation id="2067805253194386918">texte</translation>
 <translation id="2072027001582274150">Onglets inutilisés ou en double</translation>
-<translation id="2074527029802029717">Retirer l'onglet</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">Pour terminer la configuration de la saisie automatique, redémarrez Chrome maintenant. Vos onglets seront rouverts automatiquement.</translation>
@@ -1808,7 +1807,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8540136935098276800">Saisissez une URL dont le format est correct</translation>
 <translation id="854522910157234410">Ouvrir cette page</translation>
 <translation id="8547466829003330976">Examiner un PDF avec l'IA</translation>
-<translation id="855081842937141170">Épingler l'onglet</translation>
 <translation id="8551513938758868521">Verrouiller les onglets de navigation privée quand vous fermez Chrome</translation>
 <translation id="8559961053328923750">Chrome limite la quantité totale de données que les sites peuvent partager via le navigateur pour mesurer les performances des annonces</translation>
 <translation id="8559990750235505898">Proposer de traduire les pages dans d'autres langues</translation>
@@ -1928,6 +1926,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en navigation privée</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9086455579313502267">Impossible d'accéder au réseau.</translation>
+<translation id="9093915805850895575">Ouvrir dans une fenêtre Chrome</translation>
 <translation id="909756639352028172">Pour bénéficier de l'expérience la plus personnalisée, ajoutez Chrome à l'activité sur le Web et les applications, ainsi qu'aux services Google associés</translation>
 <translation id="9099220545925418560">D'après votre historique de navigation. Ce paramètre est désactivé.</translation>
 <translation id="9100610230175265781">Phrase secrète requise</translation>

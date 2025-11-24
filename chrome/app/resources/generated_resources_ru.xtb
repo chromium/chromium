@@ -1419,6 +1419,7 @@
 <translation id="1949980990364952348">Название приложения</translation>
 <translation id="1951012854035635156">Ассистент</translation>
 <translation id="1951823516285577843">Найти аналог</translation>
+<translation id="1953626242273481999">Разрешить удаленную отладку?</translation>
 <translation id="1953796913175502363">Настройте рабочий профиль</translation>
 <translation id="1954597385941141174">Разрешить сайтам отправлять запрос на подключение к USB-устройствам</translation>
 <translation id="1954813140452229842">Не удалось подключить ресурс. Проверьте учетные данные и повторите попытку.</translation>
@@ -1802,6 +1803,9 @@
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="222115440608612541">Включает автоматическое переключение между светлой и тёмной темами.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Внешнее приложение запрашивает полный контроль над этим сеансом Chrome для отладки, в том числе доступ к сохраненной информации, файлам cookie и данным сайта, а также возможность перехода по любому URL.
+
+Эту функцию следует включать только веб-разработчикам и использовать только с доверенными приложениями.</translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
 <translation id="2224337661447660594">Нет подключения к интернету</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
@@ -1907,6 +1911,7 @@
 <translation id="2294081976975808113">Конфиденциальность данных на экране</translation>
 <translation id="2294358108254308676">Установить <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Проверьте настройки</translation>
+<translation id="229524410604268773">Отключить в настройках</translation>
 <translation id="2295864384543949385">Результатов: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">По правилам домена <ph name="DOMAIN_NAME" /> для входа в аккаунт <ph name="EMAIL" /> устройство должно быть подключено к интернету.</translation>
 <translation id="2296218178174497398">Обнаружение устройств</translation>

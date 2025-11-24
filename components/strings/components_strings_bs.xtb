@@ -1169,6 +1169,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2922792708490674">{0,plural, =1{Blokirano je preuzimanje fajla}one{Blokirano je preuzimanje <ph name="FILE_COUNT" /> fajla}few{Blokirano je preuzimanje <ph name="FILE_COUNT" /> fajla}other{Blokirano je preuzimanje <ph name="FILE_COUNT" /> fajlova}}</translation>
 <translation id="2923275635648511531">Proizvodi za zaštitu od sunca i tamnjenje</translation>
 <translation id="292371311537977079">Postavke Chromea</translation>
+<translation id="2925032407415783182">Sačuvajte kartu za događaj u Novčaniku</translation>
 <translation id="2925454999967523701">Dugme Kreiraj dokument, aktivirajte da brzo kreirate novi Google dokument</translation>
 <translation id="2925673989565098301">Način dostave</translation>
 <translation id="2928426578619531300">Korisnik-partner</translation>
@@ -1464,7 +1465,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3392028486601120379">Uzorak URL-a "<ph name="URL_PATTERN" />" ima navedenu putanju. Putanje nisu podržane za ovaj ključ. Uklonite putanju i pokušajte ponovno. Npr., *://primjer.com/ =&gt; *://primjer.com",</translation>
 <translation id="3395827396354264108">Način preuzimanja</translation>
 <translation id="3399161914051569225">Nosive tehnologije</translation>
-<translation id="3399930248910934354">Otvori postavke Chromea</translation>
 <translation id="3399952811970034796">Adresa za isporuku</translation>
 <translation id="3402261774528610252">Veza korištena za učitavanje ove web lokacije je koristila verzije TLS 1.0 ili TLS 1.1, koje su zastarjele i u budućnosti će se onemogućiti. Kada se onemoguće, korisnici neće moću učitati ovu web lokaciju. Server treba omogućiti verziju TLS 1.2 ili noviju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
@@ -1727,6 +1727,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3793574014653384240">Broj nedavnih padova aplikacija i uzroci</translation>
 <translation id="3795624560191557077">Nedavno ste promijenili lozinku pronađenu u javnom narušavanju podataka. U slučaju problema vam Google upravitelj lozinki može pomoći da se prijavite.</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
+<translation id="3800436529451849929">S web-lokacije <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Često posjećujete</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803481123869276674">E-novčanik će se prikazivati kao opcija prilikom izvršavanja kupovina u Chromeu</translation>
@@ -2426,6 +2427,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4930153903256238152">Veliki kapacitet</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4932035752129140860">Tekst koji zalijepite ili priložite se šalje na Google Cloud ili trećim stranama na analizu. Naprimjer, može se skenirati radi otkrivanja postojanja osjetljivih podataka i može se pohraniti na osnovu pravila kompanije i biti vidljiv vašem administratoru.</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Plaćajte putem Pixa</translation>
 <translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936134414789135531">Pronalaženje umetnute stavke <ph name="VALUE_NAME" /> nije uspjelo.</translation>
@@ -2969,6 +2971,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5847181246682413476">Napajanja električnom energijom</translation>
 <translation id="584902713199270089">Upoznavanja i lični kontakti</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
+<translation id="5851868085455377790">Izdaje:</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5862579898803147654">Slagač 8</translation>

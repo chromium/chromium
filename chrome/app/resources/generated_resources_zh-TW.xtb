@@ -1764,6 +1764,7 @@
 <translation id="2192505247865591433">來源：</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2192881772486983655">「<ph name="THIRD_PARTY_NTP_MANAGER" />」正在管理你的新分頁，在新分頁中開啟</translation>
+<translation id="2192982266585216032">付款(&amp;P)</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2195331105963583686">你仍然可以在該時間點之後使用這部 <ph name="DEVICE_TYPE" />，但屆時這部裝置將無法自動取得軟體和安全性更新</translation>
 <translation id="2195729137168608510">電子郵件保護</translation>
@@ -2991,6 +2992,7 @@
 <translation id="3022072018423103125">高原</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> 將從這部 Chromebook 中移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音內容。</translation>
+<translation id="3023204744987201088">聯絡資訊(&amp;C)</translation>
 <translation id="3023464535986383522">隨選朗讀</translation>
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3027296729579831126">開啟鄰近分享功能</translation>
@@ -6454,7 +6456,7 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
 <translation id="5453829744223920473">你的子女可以像在課堂上一樣，使用所有學校應用程式、書籤和資源。由學校設定基本規則。</translation>
 <translation id="5454166040603940656">提供者：<ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">加入更多搜尋字詞</translation>
+<translation id="5457082343331641453">加入搜尋字詞</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除你電腦中的相片、音樂及其他媒體</translation>
 <translation id="5457795687441958389">保持登出狀態</translation>
@@ -7919,6 +7921,7 @@
 <translation id="6495261233408033662">關閉已開啟的分頁</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi 連線</translation>
 <translation id="6495453178162183932">主題已更新為預設的 Chrome 主題</translation>
+<translation id="6496641546298525838">你的裝置</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選全部語言(&amp;A)</translation>
@@ -9741,6 +9744,7 @@
 <translation id="7759809451544302770">選填</translation>
 <translation id="7760176388948986635">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用這部裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自這部裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含任何身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
+<translation id="776324966908034528">瀏覽器 Proxy 設定由多個來源控管</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
 <translation id="7764527477537408401">在新視窗中開啟分頁群組</translation>
@@ -10994,6 +10998,7 @@
 <translation id="8616441548384109662">將「<ph name="CONTACT_NAME" />」加為聯絡人</translation>
 <translation id="8617601976406256334">要刪除 <ph name="SITE_NAME" /> 的網站資料和權限嗎？</translation>
 <translation id="8617748779076050570">安全連線 ID：<ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">聯絡資訊(&amp;C)</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">禁止在裝置上安裝網頁應用程式</translation>
 <translation id="8619803522055190423">投射陰影</translation>
@@ -11595,6 +11600,7 @@
 <translation id="90033698482696970">要自動掃描可用的 eSIM 設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
 <translation id="9005774573776346118">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">貴機構</translation>
 <translation id="9008133509889712539">網站「<ph name="ORIGIN" />」想使用應用程式開啟這個連結。</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9008201858626224558">「<ph name="SUBPAGE_TITLE" />」詳細資料頁面返回按鈕</translation>

@@ -1764,6 +1764,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2192505247865591433">Da:</translation>
 <translation id="219283042927675668">Schede nel gruppo</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestisce la pagina Nuova scheda, si apre in una nuova scheda</translation>
+<translation id="2192982266585216032">&amp;Pagamenti</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2195331105963583686">Dopo tale periodo, potrai continuare a usare questo dispositivo <ph name="DEVICE_TYPE" />, che però non riceverà più automaticamente aggiornamenti software e di sicurezza.</translation>
 <translation id="2195729137168608510">Protezione email</translation>
@@ -2991,6 +2992,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3022072018423103125">Alture</translation>
 <translation id="3022361196600037287">Il dispositivo <ph name="DEVICE" /> verrà rimosso da questo Chromebook e non verrà salvato in <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Non ho capito.</translation>
+<translation id="3023204744987201088">&amp;Dati di contatto</translation>
 <translation id="3023464535986383522">Seleziona per ascoltare</translation>
 <translation id="3024374909719388945">Usa orologio 24 ore</translation>
 <translation id="3027296729579831126">Attiva Condivisione nelle vicinanze</translation>
@@ -7928,6 +7930,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6495261233408033662">Chiudi le schede aperte</translation>
 <translation id="6495266441917713704">Impossibile trasferire il Wi-Fi</translation>
 <translation id="6495453178162183932">Tema aggiornato con il predefinito di Chrome</translation>
+<translation id="6496641546298525838">Il tuo dispositivo</translation>
 <translation id="6497784818439587832">Modifica le dimensioni del display per ingrandire o ridurre gli elementi visualizzati sullo schermo</translation>
 <translation id="6497789971060331894">Scorrimento invertito del mouse</translation>
 <translation id="6498249116389603658">&amp;Tutte le tue lingue</translation>
@@ -9751,6 +9754,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7759809451544302770">Facoltativo</translation>
 <translation id="7760176388948986635">Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione di questo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti da questo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificare nessuna persona per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.</translation>
 <translation id="7762024824096060040">Impossibile usare questo account</translation>
+<translation id="776324966908034528">Le impostazioni del proxy del browser sono controllate da più origini</translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> da <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Apri il gruppo in una nuova finestra</translation>
@@ -11004,6 +11008,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8616441548384109662">Aggiungi <ph name="CONTACT_NAME" /> ai tuoi contatti</translation>
 <translation id="8617601976406256334">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">ID connessione sicura: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Dati di contatto</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Non possono installare le app web sul tuo dispositivo</translation>
 <translation id="8619803522055190423">Ombreggiatura</translation>
@@ -11605,6 +11610,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="90033698482696970">Cercare automaticamente i profili eSIM disponibili?</translation>
 <translation id="9003647077635673607">Consenti su tutti i siti web</translation>
 <translation id="9005774573776346118">Accedi come <ph name="EMAIL" /> per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
+<translation id="9006511997799670136">La tua organizzazione</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> vuole aprire questo link in un'app.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Pulsante Indietro pagina dei dettagli <ph name="SUBPAGE_TITLE" /></translation>

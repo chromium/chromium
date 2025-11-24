@@ -1761,6 +1761,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Pestañas en el grupo</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> administra tu página Nueva pestaña (se abre en una pestaña nueva)</translation>
+<translation id="2192982266585216032">&amp;Pagos</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2195331105963583686">De todos modos, podrás usar tu <ph name="DEVICE_TYPE" /> después de ese momento, pero ya no recibirá actualizaciones automáticas de software y seguridad</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -2988,6 +2989,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3022072018423103125">Tierras altas</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> se quitará de esta Chromebook y no se guardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">No entendí.</translation>
+<translation id="3023204744987201088">&amp;Información de contacto</translation>
 <translation id="3023464535986383522">Seleccionar para pronunciar</translation>
 <translation id="3024374909719388945">Utilizar reloj de 24 horas</translation>
 <translation id="3027296729579831126">Activar Compartir con Nearby</translation>
@@ -7929,6 +7931,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6495261233408033662">Cerrar pestañas abiertas</translation>
 <translation id="6495266441917713704">No se puede transferir la conexión Wi-Fi</translation>
 <translation id="6495453178162183932">Se actualizó el tema a Chrome predeterminado</translation>
+<translation id="6496641546298525838">Tu dispositivo</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -9752,6 +9755,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7760176388948986635">Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de este dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificar a ninguna persona para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
 <translation id="7762024824096060040">No se puede usar esta cuenta</translation>
+<translation id="776324966908034528">Varias fuentes controlan la configuración del proxy del navegador</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Abrir grupo en una ventana nueva</translation>
@@ -11005,6 +11009,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8616441548384109662">Agregar a <ph name="CONTACT_NAME" /> a tus contactos</translation>
 <translation id="8617601976406256334">¿Quieres borrar los datos y permisos de <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">ID de conexión segura: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Información de contacto</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">No pueden instalar apps web en tu dispositivo</translation>
 <translation id="8619803522055190423">Sombra paralela</translation>
@@ -11606,6 +11611,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="90033698482696970">¿Quieres buscar perfiles de eSIM disponibles automáticamente?</translation>
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
 <translation id="9005774573776346118">Para ver tus contraseñas, favoritos y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Tu organización</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> quiere abrir este vínculo en una app.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botón Atrás de la página de detalles de <ph name="SUBPAGE_TITLE" /></translation>

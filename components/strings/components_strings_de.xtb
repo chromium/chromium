@@ -1169,6 +1169,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2922792708490674">{0,plural, =1{Datei kann nicht heruntergeladen werden}other{<ph name="FILE_COUNT" /> Dateien können nicht heruntergeladen werden}}</translation>
 <translation id="2923275635648511531">Bräunungs- und Sonnenschutzprodukte</translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
+<translation id="2925032407415783182">Veranstaltungsticket in Wallet speichern</translation>
 <translation id="2925454999967523701">Button „Dokument erstellen“ – aktivieren, um schnell ein neues Google-Dokument zu erstellen</translation>
 <translation id="2925673989565098301">Lieferoption</translation>
 <translation id="2928426578619531300">Nutzer verknüpft</translation>
@@ -1464,7 +1465,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3392028486601120379">Im URL-Muster „<ph name="URL_PATTERN" />“ ist ein Pfad angegeben. Für diesen Schlüssel werden keine Pfade unterstützt. Bitte entferne den Pfad und versuch es noch einmal. Beispiel: *://beispiel.de/ =&gt; *://beispiel.de</translation>
 <translation id="3395827396354264108">Abholoption</translation>
 <translation id="3399161914051569225">Am Körper tragbare Technologie</translation>
-<translation id="3399930248910934354">Chrome-Einstellungen öffnen</translation>
 <translation id="3399952811970034796">Lieferadresse</translation>
 <translation id="3402261774528610252">Diese Website wurde unter Verwendung von TLS 1.0 oder TLS 1.1 geladen. Diese Versionen wurden eingestellt und werden zukünftig deaktiviert. Sobald sie deaktiviert wurden, können Nutzer diese Website nicht mehr aufrufen. Auf dem Server sollte TLS 1.2 oder höher laufen.</translation>
 <translation id="3405664148539009465">Schriftarten anpassen</translation>
@@ -1725,6 +1725,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
 <translation id="3795624560191557077">Du hast vor Kurzem ein Passwort geändert, das in einer öffentlichen Datenpanne gefunden wurde. Bei Problemen kann der Google Passwortmanager dir bei der Anmeldung helfen.</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
+<translation id="3800436529451849929">Von <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Diese Seite besuchst du häufig</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803481123869276674">Wenn du in Chrome einkaufst, wird die Option für das E‑Wallet angezeigt</translation>
@@ -2424,6 +2425,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4930153903256238152">Hohe Kapazität</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
 <translation id="4932035752129140860">Eingefügter oder angehängter Text wird zur Analyse an Google Cloud oder Dritte gesendet. Er kann beispielsweise auf sensible Daten geprüft, gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Mit Pix bezahlen</translation>
 <translation id="4934780484581617878">Fensterverwaltung</translation>
 <translation id="4936134414789135531">Der angegebene „<ph name="VALUE_NAME" />“-Wert wurde nicht gefunden.</translation>
@@ -2967,6 +2969,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5847181246682413476">Stromversorgung</translation>
 <translation id="584902713199270089">Dating und Partnervermittlung</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
+<translation id="5851868085455377790">Aussteller</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5862579898803147654">Stapelfach 8</translation>

@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{此文件已被禁止下载}other{<ph name="FILE_COUNT" /> 个文件已被禁止下载}}</translation>
 <translation id="2923275635648511531">防晒和美黑产品</translation>
 <translation id="292371311537977079">Chrome 设置</translation>
+<translation id="2925032407415783182">将活动门票保存到 Google 钱包</translation>
 <translation id="2925454999967523701">“创建文档”按钮，激活它即可快速创建新的 Google 文档</translation>
 <translation id="2925673989565098301">递送方式</translation>
 <translation id="2928426578619531300">已关联的用户</translation>
@@ -1462,7 +1463,6 @@
 <translation id="3392028486601120379">网址格式“<ph name="URL_PATTERN" />”中指定了路径。此键不支持路径。请移除该路径，然后重试。例如 *://example.com/ =&gt; *://example.com</translation>
 <translation id="3395827396354264108">取货方式</translation>
 <translation id="3399161914051569225">穿戴式技术</translation>
-<translation id="3399930248910934354">打开 Chrome 设置</translation>
 <translation id="3399952811970034796">递送地址</translation>
 <translation id="3402261774528610252">用于加载此网站的连接使用的是 TLS 1.0 或 TLS 1.1，这两个 TLS 版本都已过时，将在不久后完全停用。届时，用户将无法再加载此网站。服务器应启用 TLS 1.2 或更高版本。</translation>
 <translation id="3405664148539009465">自定义字体</translation>
@@ -1723,6 +1723,7 @@
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
 <translation id="3795624560191557077">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
 <translation id="3799805948399000906">请求的字体</translation>
+<translation id="3800436529451849929">来自 <ph name="SITE" /></translation>
 <translation id="3801297763951514916">您经常访问</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803481123869276674">当您在 Chrome 中购物时，可看到电子钱包选项</translation>
@@ -2422,6 +2423,7 @@
 <translation id="4930153903256238152">大容量</translation>
 <translation id="4930714375720679147">开启</translation>
 <translation id="4932035752129140860">系统会将您粘贴或附加的文字发送给 Google Cloud 或第三方以供分析。例如，这些文字可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
+<translation id="4932733599132424254">日期</translation>
 <translation id="4933788293078559286">使用 Pix 付款</translation>
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
@@ -2965,6 +2967,7 @@
 <translation id="5847181246682413476">电力供应</translation>
 <translation id="584902713199270089">约会与交友</translation>
 <translation id="5851548754964597211">标签列表</translation>
+<translation id="5851868085455377790">颁发者</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">开启</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>

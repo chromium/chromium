@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{ፋይል ከመውረድ ታግዷል}one{<ph name="FILE_COUNT" /> ፋይል ከመውረድ ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች ከመውረድ ታግደዋል}}</translation>
 <translation id="2923275635648511531">የፀሐይ እንክብካቤ እና የቆዳ ቀለም ምርቶች</translation>
 <translation id="292371311537977079">የChrome ቅንብሮች</translation>
+<translation id="2925032407415783182">የክስተት ቲኬትን ወደ Wallet ያስቀምጡ</translation>
 <translation id="2925454999967523701">የሰነድ አዝራር ይፍጠሩ፣ የGoogle ሰነድ በፍጥነት ለመፍጠር ያግብሩ</translation>
 <translation id="2925673989565098301">የማድረሻ ስልት</translation>
 <translation id="2928426578619531300">በተጠቃሚ የተጋራ</translation>
@@ -1463,7 +1464,6 @@
 <translation id="3392028486601120379">የዩአርኤል ስርዓተ ጥለቱ «<ph name="URL_PATTERN" />» የተገለጸ ዱካ አለው። ለዚህ ቁልፍ ዱካዎች አይደገፉም፣ እባክዎ ዱካውን ያስወግዱ እና እንደገና ይሞክሩ። ለምሳሌ *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">የመውሰጃ ዘዴ</translation>
 <translation id="3399161914051569225">ተለባሽ ቴክኖሎጂ</translation>
-<translation id="3399930248910934354">የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="3399952811970034796">የመላኪያ አድራሻ</translation>
 <translation id="3402261774528610252">ይህን ጣቢያ ለመጫን ሥራ ላይ የዋለው ግንኙነት TLS 1.0 ወይም TLS 1.1 ነው የተጠቀመው፣ እነዚህም የተቋረጡ እና ለወደፊቱ የሚሰናከሉ ናቸው። አንዴ ከተሰናከለ በኋላ ተጠቃሚዎች ይህን ጣቢያ እንዳይጭኑት ይከለከላሉ። አገልጋዩ TLS 1.2 ወይም ከዚያ በኋላ ማንቃት አለበት።</translation>
 <translation id="3405664148539009465">ቅርጸ-ቁምፊዎችን አብጅ</translation>
@@ -1726,6 +1726,7 @@
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
 <translation id="3795624560191557077">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ Google የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
+<translation id="3800436529451849929">ከ<ph name="SITE" /></translation>
 <translation id="3801297763951514916">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3803481123869276674">Chrome ውስጥ ግዢዎችን ሲፈፅሙ ኢ-ኪስ ቦርሳን እንደ አማራጭ ይመልከቱ</translation>
@@ -2425,6 +2426,7 @@
 <translation id="4930153903256238152">ትልቅ የመያዝ አቅም</translation>
 <translation id="4930714375720679147">አብራ</translation>
 <translation id="4932035752129140860">እርስዎ የሚለጥፉት ወይም ዓባሪ የሚያያይዙት ጽሁፍ ወደ Google ደመና ወይም ሦስተኛ ወገኖች ለትንታኔ ይላካል። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ሊቃኝ እና በኩባንያ መመሪያዎች መሠረት ሊከማች እና ለአስተዳዳሪዎ የሚታይ ሊሆን ይችላል።</translation>
+<translation id="4932733599132424254">ቀን</translation>
 <translation id="4933788293078559286">በPix ይክፈሉ</translation>
 <translation id="4934780484581617878">የመስኮት አስተዳደር</translation>
 <translation id="4936134414789135531">ያስገቡት <ph name="VALUE_NAME" /> ሊገኝ አልቻለም።</translation>
@@ -2968,6 +2970,7 @@
 <translation id="5847181246682413476">የኃይል አቅርቦቶች</translation>
 <translation id="584902713199270089">ለፍቅር መገናኘት እና ራስን ማስተዋወቅ</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
+<translation id="5851868085455377790">ሰጪው</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5862579898803147654">ቁልል 8</translation>

@@ -1169,6 +1169,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2922792708490674">{0,plural, =1{Lokað er á niðurhal skráar}one{Lokað er á niðurhal <ph name="FILE_COUNT" /> skráar}other{Lokað er á niðurhal <ph name="FILE_COUNT" /> skráa}}</translation>
 <translation id="2923275635648511531">Sólarhúðvörur og brúnkuvörur</translation>
 <translation id="292371311537977079">Stillingar Chrome</translation>
+<translation id="2925032407415783182">Vistaðu miða á viðburð í Veski</translation>
 <translation id="2925454999967523701">Hnappurinn „Búa til skjal“, virkjaðu til að búa til nýtt Google-skjal á skjótan hátt</translation>
 <translation id="2925673989565098301">Afhendingarmáti</translation>
 <translation id="2928426578619531300">Tengt notanda</translation>
@@ -1464,7 +1465,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3392028486601120379">Vefslóðarmynstrið „<ph name="URL_PATTERN" />“ er með tilgreinda vefslóð. Slóðir eru ekki studdar fyrir þennan lykil, fjarlægja þarf slóðina og reyna aftur, t.d. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Afhendingarmáti</translation>
 <translation id="3399161914051569225">Tækni sem notandi ber á sér</translation>
-<translation id="3399930248910934354">Opna stillingar Chrome</translation>
 <translation id="3399952811970034796">Sendingarheimilisfang</translation>
 <translation id="3402261774528610252">Tengingin sem er notuð til að hlaða þessu vefsvæði notaði TLS 1.0 eða TLS 1.1, úreltar útgáfur sem verða gerðar óvirkar í framtíðinni. Þegar þær hafa verið gerðar óvirkar geta notendur ekki hlaðið þessu vefsvæði. Virkja ætti TLS 1.2 eða nýrri útgáfu á þjóninum.</translation>
 <translation id="3405664148539009465">Sérsníða letur</translation>
@@ -1727,6 +1727,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3793574014653384240">Fjöldi nýlegra hruntilvika og orsakir þeirra</translation>
 <translation id="3795624560191557077">Aðgangsorðið þitt, sem þú skiptir nýlega um, fannst í opinberu öryggisbroti. Google-aðgangsorðastjórnun getur hjálpað þér að skrá inn ef þú lendir í vandræðum.</translation>
 <translation id="3799805948399000906">Beðið um leturgerð</translation>
+<translation id="3800436529451849929">Af <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Þú skoðar oft</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803481123869276674">Sjáðu rafveski sem valkost þegar þú gengur frá kaupum í Chrome</translation>
@@ -2426,6 +2427,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4930153903256238152">Stór bakki</translation>
 <translation id="4930714375720679147">Kveikja</translation>
 <translation id="4932035752129140860">Texti sem þú límir eða hengir við er sendur til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum og kunna að vera geymdar í samræmi við stefnu fyrirtækisins og vera sýnilegar fyrir kerfisstjóra.</translation>
+<translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4933788293078559286">Borga með Pix</translation>
 <translation id="4934780484581617878">Gluggastjórnun</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> sem sett var inn fannst ekki.</translation>
@@ -2969,6 +2971,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5847181246682413476">Aflgjafar</translation>
 <translation id="584902713199270089">Stefnumóta- og einkamálaauglýsingar</translation>
 <translation id="5851548754964597211">Flipalisti</translation>
+<translation id="5851868085455377790">Útgefandi</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5862579898803147654">Staflari 8</translation>

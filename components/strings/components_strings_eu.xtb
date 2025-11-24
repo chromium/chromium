@@ -1169,6 +1169,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2922792708490674">{0,plural, =1{Fitxategia ezin da deskargatu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira deskargatu}}</translation>
 <translation id="2923275635648511531">Eguzkitako krema eta beltzarantzeko produktuak</translation>
 <translation id="292371311537977079">Chrome-ren ezarpenak</translation>
+<translation id="2925032407415783182">Gorde sarrera Diru-zorroa zerbitzuan</translation>
 <translation id="2925454999967523701">Dokumentu bat sortzeko botoia: aktiba ezazu Google-ko dokumentu bat bizkor sortzeko</translation>
 <translation id="2925673989565098301">Entregatzeko modua</translation>
 <translation id="2928426578619531300">Afiliatutako erabiltzailea</translation>
@@ -1461,7 +1462,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3392028486601120379"><ph name="URL_PATTERN" /> URL ereduak bide-izen bat dauka zehaztuta. Tekla honekin ezin da idatzi bide-izenik. Kendu bide-izena eta saiatu berriro (adib., *://example.com/ =&gt; *://example.com").</translation>
 <translation id="3395827396354264108">Jasotze-metodoa</translation>
 <translation id="3399161914051569225">Soinean eramateko gailuek darabilten teknologia</translation>
-<translation id="3399930248910934354">Ireki Chrome-ren ezarpenak</translation>
 <translation id="3399952811970034796">Entregatzeko helbidea</translation>
 <translation id="3402261774528610252">Webgunea kargatzeko erabilitako konexioa TLS 1.0 edo TLS 1.1 da, baina hura zaharkituta dago eta desgaitu egingo da etorkizunean. Desgaitu ondoren, erabiltzaileek ezingo dute kargatu webgunea. Zerbitzariak TLS 1.2 bertsioa edo berriago bat gaitu behar du.</translation>
 <translation id="3405664148539009465">Pertsonalizatu letrak</translation>
@@ -1723,6 +1723,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3793574014653384240">azkenaldian gertatutako hutsegiteen kopurua eta arrazoiak</translation>
 <translation id="3795624560191557077">Datuen isilpekotasunaren urratze publiko batean aurkitu zen pasahitz bat aldatu duzu duela gutxi. Arazorik baduzu, Google-ren Pasahitz-kudeatzailea zerbitzuak saioa hasten lagun diezazuke.</translation>
 <translation id="3799805948399000906">Eskatutako letra</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> webgunetik</translation>
 <translation id="3801297763951514916">Maiz bisitatzen duzu</translation>
 <translation id="380329542618494757">Izena</translation>
 <translation id="3803481123869276674">Chrome-n erosketak egitean, izan diru-zorro digitala kontuan</translation>
@@ -2422,6 +2423,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4930153903256238152">Edukiera handia</translation>
 <translation id="4930714375720679147">Aktibatu</translation>
 <translation id="4932035752129140860">Itsasten edo eransten dituzun testuak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke testuetan kontuzko datuak edo malwarea bilatzea, eta agian enpresaren gidalerroen arabera gordeko dira baita zure administratzailearentzat ikusgai egon ere.</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Ordaindu Pix erabilita</translation>
 <translation id="4934780484581617878">Leihoen kudeaketa</translation>
 <translation id="4936134414789135531">Ezin izan da aurkitu sartutako <ph name="VALUE_NAME" />.</translation>
@@ -2965,6 +2967,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5847181246682413476">Elikatze-iturriak</translation>
 <translation id="584902713199270089">Zitetarako eta gauza pertsonaletarako zerbitzuak</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
+<translation id="5851868085455377790">Jaulkitzailea</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5862579898803147654">8. pilatzailea</translation>

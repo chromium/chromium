@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}one{<ph name="FILE_COUNT" /> টা ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}other{<ph name="FILE_COUNT" /> টা ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="2923275635648511531">ছান কেয়াৰ আৰু টেনিং প্ৰ’ডাক্ট</translation>
 <translation id="292371311537977079">Chromeৰ ছেটিং</translation>
+<translation id="2925032407415783182">Walletত অনুষ্ঠানৰ টিকেট ছেভ কৰক</translation>
 <translation id="2925454999967523701">নথি সৃষ্টি কৰাৰ বুটাম, এখন নতুন Google Doc ক্ষিপ্ৰতাৰে সৃষ্টি কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="2925673989565098301">ডেলিভাৰীৰ পদ্ধতি</translation>
 <translation id="2928426578619531300">ব্যৱহাৰকাৰী অনুমোদিত</translation>
@@ -1462,7 +1463,6 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URLৰ আৰ্হিটোত এটা পথ নিৰ্দিষ্ট কৰা আছে। এই কীটোৰ বাবে পথ সমৰ্থিত নহয়, অনুগ্ৰহ কৰি পথটো আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক। উদাহৰণ- *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">পিক্‌আপৰ পদ্ধতি</translation>
 <translation id="3399161914051569225">পৰিধানযোগ্য প্ৰযুক্তিবিদ্যা</translation>
-<translation id="3399930248910934354">Chromeৰ ছেটিং খোলক</translation>
 <translation id="3399952811970034796">ডেলিভেৰীৰ ঠিকনা</translation>
 <translation id="3402261774528610252">এই ছাইটটো ল’ড কৰিবলৈ ব্যৱহাৰ কৰা সংযোগটোৱে TLS 1.0 অথবা TLS 1.1 ব্যৱহাৰ কৰিছে, যিবোৰ অপ্ৰচলিত আৰু ভৱিষ্যতে সেইবোৰক অক্ষম কৰা হ’ব। অক্ষম কৰাৰ পাছত, ব্যৱহাৰকাৰীসকলক এই ছাইটটো ল’ড কৰিবলৈ দিয়া নহ’ব। ছার্ভাৰটোৱে TLS 1.2 অথবা তাতকৈ পাছৰ সংস্কৰণ সক্ষম কৰিব লাগে।</translation>
 <translation id="3405664148539009465">ফ’ণ্ট কাষ্টমাইজ কৰক</translation>
@@ -2422,6 +2422,7 @@
 <translation id="4930153903256238152">সৰহীয়া বহনক্ষমতা</translation>
 <translation id="4930714375720679147">অন কৰক</translation>
 <translation id="4932035752129140860">আপুনি পে’ষ্ট বা সংলগ্ন কৰা পাঠ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, এইটো সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
+<translation id="4932733599132424254">তাৰিখ</translation>
 <translation id="4933788293078559286">Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4934780484581617878">ৱিণ্ড’ পৰিচালনা</translation>
 <translation id="4936134414789135531">ভৰোৱা <ph name="VALUE_NAME" /> বিচাৰি পাব পৰা নগ’ল।</translation>
@@ -2965,6 +2966,7 @@
 <translation id="5847181246682413476">পাৱাৰ ছাপ্লাই</translation>
 <translation id="584902713199270089">ডে’টিং আৰু ব্যক্তিগত সেৱা</translation>
 <translation id="5851548754964597211">টেবৰ তালিকা</translation>
+<translation id="5851868085455377790">প্ৰদানকাৰী</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
 <translation id="5862579898803147654">ষ্টেকাৰ ৮</translation>

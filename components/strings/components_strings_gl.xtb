@@ -1169,6 +1169,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2922792708490674">{0,plural, =1{Bloqueouse a descarga do ficheiro}other{Bloqueouse a descarga de <ph name="FILE_COUNT" /> ficheiros}}</translation>
 <translation id="2923275635648511531">Produtos bronceadores e protección solar</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
+<translation id="2925032407415783182">Gardar a entrada do evento en Wallet</translation>
 <translation id="2925454999967523701">Botón para crear documentos. Actívao para crear rapidamente un documento de Google</translation>
 <translation id="2925673989565098301">Método de entrega</translation>
 <translation id="2928426578619531300">Usuario afiliado</translation>
@@ -1464,7 +1465,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3392028486601120379">O padrón do URL "<ph name="URL_PATTERN" />" ten unha ruta especificada. Esta clave non admite rutas. Elimina a ruta en téntao de novo. Por exemplo: *://exemplo.com/ =&gt; *://exemplo.com",</translation>
 <translation id="3395827396354264108">Método de recollida</translation>
 <translation id="3399161914051569225">Tecnoloxía poñible</translation>
-<translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3399952811970034796">Enderezo de entrega</translation>
 <translation id="3402261774528610252">A conexión coa que se cargou este sitio utilizou TLS 1.0 ou TLS 1.1, as cales son versións obsoletas que se desactivarán no futuro. Cando se desactiven, evitarase que os usuarios carguen este sitio. O servidor debería activar TLS 1.2 ou unha versión superior.</translation>
 <translation id="3405664148539009465">Personalizar tipos de letra</translation>
@@ -1727,6 +1727,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
 <translation id="3795624560191557077">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais de Google pode axudarche a iniciar sesión.</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
+<translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Acceso frecuente</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803481123869276674">Cando fagas compras en Chrome, verás o moedeiro electrónico como opción</translation>
@@ -2426,6 +2427,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4930153903256238152">Gran capacidade</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932035752129140860">O texto que pegues ou anexes enviarase a Google Cloud ou a terceiros para a súa análise. Por exemplo, podería examinarse para ver se contén datos confidenciais e almacenarse en función das políticas da empresa. Tamén podería velo a persoa administradora.</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Pagar con Pix</translation>
 <translation id="4934780484581617878">Xestión de ventás</translation>
 <translation id="4936134414789135531">Non se puido atopar o valor indicado ("<ph name="VALUE_NAME" />").</translation>
@@ -2969,6 +2971,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5847181246682413476">Subministracións eléctricas</translation>
 <translation id="584902713199270089">Citas e anuncios persoais</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
+<translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862579898803147654">Amontoador 8</translation>

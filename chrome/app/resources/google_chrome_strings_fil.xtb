@@ -79,6 +79,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Inirerekomenda ng Chrome na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chrome na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chrome na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
 <translation id="1832046143430087831">Pinapabilis ang mga site gamit ang V8 na engine ng Chrome pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chrome. Naka-off ang setting na ito.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
+<translation id="1843347690926158494">Maghanap sa tab na ito gamit ang Google Lens</translation>
 <translation id="1849248141818021764">Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
@@ -167,6 +168,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2841525013647267359">Isalin mula sa</translation>
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2853415089995957805">Nagpi-preload ang Chrome ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
+<translation id="2856481144859256719">Palaging Ipakita ang AI Mode sa Shortcut ng Google Search</translation>
 <translation id="2857540653560290388">Inilulunsad ang Chrome...</translation>
 <translation id="286025080868315611">Alamin kung bakit bina-block ng Chrome ang ilang pag-download</translation>
 <translation id="2861074815332034794">Ina-update ang Chrome (<ph name="PROGRESS_PERCENT" />)</translation>

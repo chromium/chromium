@@ -1415,6 +1415,7 @@
 <translation id="1949980990364952348">ઍપનું નામ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">વિકલ્પ શોધો</translation>
+<translation id="1953626242273481999">રિમોટ ડિબગીંગને મંજૂરી આપીએ?</translation>
 <translation id="1953796913175502363">તમારી ઑફિસની પ્રોફાઇલનું સેટઅપ કરો</translation>
 <translation id="1954597385941141174">સાઇટ USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="1954813140452229842">શેર માઉન્ટ કરવામાં ભૂલ આવી. કૃપા કરીને તમારા ઓળખપત્રો ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -1798,6 +1799,9 @@
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="222115440608612541">સૂર્યોદય અને સૂર્યાસ્ત વખતે થીમ સ્વિચ કરો</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">કોઈ બહારની ઍપ આ Chrome સત્રમાં સંપૂર્ણ નિયંત્રણ ઇચ્છે છે, જેથી તેને ડિબગ કરી શકાય. આમાં તમારો સાચવેલો ડેટા, કુકી અને સાઇટના ડેટાનો ઍક્સેસ અને કોઈપણ URL પર નૅવિગેટ કરવાની ક્ષમતા શામેલ છે.
+
+માત્ર વેબ ડેવલપર દ્વારા જ આ સુવિધા ચાલુ થવી જોઈએ અને માત્ર વિશ્વસનીય ઍપ સાથે જ તેનો ઉપયોગ થવો જોઈએ.</translation>
 <translation id="222201875806112242">નામ વગરનો મીડિયા સૉર્સ</translation>
 <translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
@@ -1904,6 +1908,7 @@
 <translation id="2294081976975808113">સ્ક્રીનની પ્રાઇવસી</translation>
 <translation id="2294358108254308676">શું તમે <ph name="PRODUCT_NAME" /> ઇન્સ્ટોલ કરવા માંગો છો?</translation>
 <translation id="229477815107578534">તમારા સેટિંગનો રિવ્યૂ કરો</translation>
+<translation id="229524410604268773">સેટિંગમાં બંધ કરો</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> પરિણામ</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" />માં સાઇન ઇન કરતી વખતે <ph name="DOMAIN_NAME" /> માટે જરૂરી છે કે ડિવાઇસ ઑનલાઇન હોય</translation>
 <translation id="2296218178174497398">ઉપકરણ શોધ</translation>

@@ -1775,6 +1775,7 @@
 <translation id="2192505247865591433">Од:</translation>
 <translation id="219283042927675668">Картички во група</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> управува со вашата страницата во нова картичка (се отвора во нова картичка)</translation>
+<translation id="2192982266585216032">&amp;Плаќања</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2195331105963583686">Сѐ уште ќе може да го користите овој <ph name="DEVICE_TYPE" /> после тој период, но веќе нема да добива автоматски софтверски и безбедносни ажурирања</translation>
 <translation id="2195729137168608510">Заштита на е-пошта</translation>
@@ -3005,6 +3006,7 @@
 <translation id="3022072018423103125">Планинска област</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> ќе се отстрани од овој Chromebook и нема да се зачува на <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Не го разбрав тоа.</translation>
+<translation id="3023204744987201088">&amp;Податоци за контакт</translation>
 <translation id="3023464535986383522">Изберете за говор</translation>
 <translation id="3024374909719388945">Користи 24-часовен часовник</translation>
 <translation id="3027296729579831126">Вклучете „Споделување во близина“</translation>
@@ -7946,6 +7948,7 @@
 <translation id="6495261233408033662">Затвори ги отворените картички</translation>
 <translation id="6495266441917713704">Не може да се префрли Wi-Fi</translation>
 <translation id="6495453178162183932">Темата се замени со стандардна тема на Chrome</translation>
+<translation id="6496641546298525838">Вашиот уред</translation>
 <translation id="6497784818439587832">Променете ја големината на екранот за да се намалат или зголемат ставките на екранот</translation>
 <translation id="6497789971060331894">Обратно лизгање на глувчето</translation>
 <translation id="6498249116389603658">&amp;Сите ваши јазици</translation>
@@ -9770,6 +9773,7 @@
 <translation id="7759809451544302770">Изборно</translation>
 <translation id="7760176388948986635">Дозволете апликациите, веб-сајтовите и услугите за ChromeOS и Android со дозвола за локација да ја користат локацијата на уредов. „Прецизност на локација“ обезбедува попрецизна локација за апликациите и услугите за Android. За таа цел, Google повремено обработува податоци за сензорите на уредот и безжичните сигнали од уредов за да ги прибира локациите од безжичните сигнали со колективна соработка. Овие се користат без да се идентификуваат поединци за да се подобруваат прецизноста на локацијата и локациските услуги, а и да се подобруваат, обезбедуваат и одржуваат услугите на Google според легитимните интереси на Google и трети страни за да се задоволат потребите на корисниците.</translation>
 <translation id="7762024824096060040">Не може да се користи сметкава</translation>
+<translation id="776324966908034528">Поставките за прокси на прелистувачот ги контролираат повеќе извори</translation>
 <translation id="7764225426217299476">Додај адреса</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> од <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Отворање група во нов прозорец</translation>
@@ -11025,6 +11029,7 @@
 <translation id="8616441548384109662">Додај го/ја <ph name="CONTACT_NAME" /> во контактите</translation>
 <translation id="8617601976406256334">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">ID на безбедна врска: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Податоци за контакт</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Сајтови без дозвола да бараат да инсталираат апликации за прелистувач на уредот</translation>
 <translation id="8619803522055190423">Со сенка</translation>
@@ -11627,6 +11632,7 @@
 <translation id="90033698482696970">Да се скенира автоматски за достапни профили на eSIM?</translation>
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>
 <translation id="9005774573776346118">За да ги добиете лозинките, обележувачите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Вашата организација</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> сака да го отвори линков во апликација.</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
 <translation id="9008201858626224558">Копче за назад до страницата со детали за <ph name="SUBPAGE_TITLE" /></translation>

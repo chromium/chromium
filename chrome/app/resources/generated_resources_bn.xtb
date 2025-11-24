@@ -1428,6 +1428,7 @@
 <translation id="1949980990364952348">অ্যাপের নাম</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">বিকল্প খুঁজুন</translation>
+<translation id="1953626242273481999">রিমোট ডিবাগিংয়ের অনুমতি দিতে চান?</translation>
 <translation id="1953796913175502363">আপনার অফিস প্রোফাইল সেট-আপ করুন</translation>
 <translation id="1954597385941141174">USB ডিভাইসের সাথে কানেক্ট করতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="1954813140452229842">মাউন্টিং শেয়ারে সমস্যা। অনুগ্রহ করে আপনার ক্রেডেনশিয়াল যাচাই করে আবার চেষ্টা করুন।</translation>
@@ -1775,6 +1776,7 @@
 <translation id="2192505247865591433">এর থেকে:</translation>
 <translation id="219283042927675668">গ্রুপে থাকা ট্যাব</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> আপনার নতুন ট্যাব পৃষ্ঠা ম্যানেজ করছে, এটি নতুন ট্যাবে খোলে</translation>
+<translation id="2192982266585216032">&amp;পেমেন্ট</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2195331105963583686">সেই সময়ের পরে এখনও আপনি এই <ph name="DEVICE_TYPE" /> ব্যবহার করতে পারবেন, কিন্তু এখানে সফ্টওয়্যার এবং নিরাপত্তা সংক্রান্ত অটোমেটিক আপডেট আর পাবেন না</translation>
 <translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
@@ -1810,6 +1812,9 @@
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="222115440608612541">সূর্যোদয় এবং সূর্যাস্তের থিমে পাল্টান</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">একটি এক্সটার্নাল অ্যাপ এই Chrome সেশন ডিবাগ করার জন্য এতে সম্পূর্ণ কন্ট্রোল চায়। এর মধ্যে আপনার সেভ করা ডেটা, কুকি ও সাইট ডেটা অ্যাক্সেস করা এবং যেকোনও URL-এ নেভিগেট করার ক্ষমতা অন্তর্ভুক্ত।
+
+শুধু ওয়েব ডেভেলপাররা এই ফিচার চালু করা উচিত এবং শুধু বিশ্বস্ত অ্যাপের সাথে এটি ব্যবহার করা উচিত।</translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়া সোর্স</translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
@@ -1918,6 +1923,7 @@
 <translation id="2294081976975808113">স্ক্রিন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="2294358108254308676">আপনি কি <ph name="PRODUCT_NAME" /> ইনস্টল করতে চান?</translation>
 <translation id="229477815107578534">আপনার সেটিংস পর্যালোচনা করুন</translation>
+<translation id="229524410604268773">সেটিংস থেকে বন্ধ করুন</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" />টি ফলাফল</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" />-এর নিয়ম অনুযায়ী <ph name="EMAIL" />-এ সাইন-ইন করার সময়ে ডিভাইস অনলাইনে থাকতে হবে</translation>
 <translation id="2296218178174497398">ডিভাইস আবিষ্কার</translation>
@@ -3005,6 +3011,7 @@
 <translation id="3022072018423103125">হাইল্যান্ড</translation>
 <translation id="3022361196600037287">Chromebook থেকে <ph name="DEVICE" /> সরিয়ে দেওয়া হবে এবং <ph name="PRIMARY_EMAIL" />-এ সেভ করা হবে না।</translation>
 <translation id="3022978424994383087">বুঝতে পারিনি।</translation>
+<translation id="3023204744987201088">&amp;যোগাযোগের তথ্য</translation>
 <translation id="3023464535986383522">বাছুন ও শুনুন</translation>
 <translation id="3024374909719388945">24-ঘন্টার ঘড়ি ব্যবহার করুন</translation>
 <translation id="3027296729579831126">'নিয়ারবাই শেয়ার' ফিচারটি চালু করুন</translation>
@@ -7947,6 +7954,7 @@
 <translation id="6495261233408033662">খোলা থাকা ট্যাব বন্ধ করুন</translation>
 <translation id="6495266441917713704">ওয়াই-ফাই ট্রান্সফার করা যাচ্ছে না</translation>
 <translation id="6495453178162183932">ডিফল্ট Chrome-এ থিম আপডেট করা হয়েছে</translation>
+<translation id="6496641546298525838">আপনার ডিভাইস</translation>
 <translation id="6497784818439587832">স্ক্রিনে কোনও আইটেম বড় বা ছোট করে দেখার জন্য ডিসপ্লে সাইজ পরিবর্তন করা</translation>
 <translation id="6497789971060331894">মাউস উল্টো দিকে স্ক্রল করা</translation>
 <translation id="6498249116389603658">&amp;আপনার সব ভাষা</translation>
@@ -9772,6 +9780,7 @@
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7760176388948986635">লোকেশন অ্যাক্সেস করার অনুমতি থাকা ChromeOS ও Android অ্যাপ, ওয়েবসাইট ও পরিষেবাকে এই ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। 'লোকেশন অ্যাকুরেসি' সেটিং Android অ্যাপ ও পরিষেবার জন্য আরও নিখুঁত লোকেশন প্রদান করে। এটি করতে, নির্দিষ্ট সময়ের ব্যবধানে Google এই ডিভাইস থেকে ওয়্যারলেস সিগন্যাল ও ডিভাইস সেন্সর বিষয়ক তথ্য নিয়ে প্রসেস করে, যাতে ওয়্যারলেস সিগন্যালের লোকেশন ক্রাউডসোর্স করা যায়। এগুলি যেকোনও স্বতন্ত্র ব্যক্তিকে শনাক্ত না করেই করা হয়, যাতে 'লোকেশন অ্যাকুরেসি' সেটিং এবং লোকেশন-ভিত্তিক পরিষেবাকে আরও উন্নত করা যায় এবং ব্যবহারকারীর প্রয়োজনীয়তা পূরণ করতে, Google ও থার্ড-পার্টির আইনগত স্বার্থের উপর ভিত্তি করে, Google-এর পরিষেবা প্রদান ও উন্নতি করা যায় এবং তা বজায় রাখা যায়।</translation>
 <translation id="7762024824096060040">এই অ্যাকাউন্ট ব্যবহার করা যাচ্ছে না</translation>
+<translation id="776324966908034528">ব্রাউজার প্রক্সি সেটিংস একাধিক সোর্স কন্ট্রোল করে</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> থেকে <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">নতুন উইন্ডোয় গ্রুপ খুলুন</translation>
@@ -11025,6 +11034,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />-কে আপনার পরিচিতিতে যোগ করুন</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" />-এর সাইট ডেটা ও অনুমতি মুছবেন?</translation>
 <translation id="8617748779076050570">নিরাপদ কানেকশন আইডি: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;যোগাযোগের তথ্য</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">আপনার ডিভাইসে ওয়েব অ্যাপ ইস্টল করার অনুমতি নেই</translation>
 <translation id="8619803522055190423">ড্রপ শ্যাডো</translation>
@@ -11627,6 +11637,7 @@
 <translation id="90033698482696970">উপলভ্য থাকা ই-সিম প্রোফাইলের জন্য অটোমেটিক স্ক্যান করবেন?</translation>
 <translation id="9003647077635673607">সমস্ত ওয়েবসাইটে অনুমতি দিন</translation>
 <translation id="9005774573776346118">আপনার সব ডিভাইসে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
+<translation id="9006511997799670136">আপনার প্রতিষ্ঠান</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> কোনও অ্যাপে এই লিঙ্ক খুলতে চায়।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />-এর বিবরণ পৃষ্ঠাতে ফিরে যাওয়ার বোতাম</translation>

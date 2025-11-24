@@ -1169,6 +1169,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2922792708490674">{0,plural, =1{No se ha podido descargar el archivo}other{No se han podido descargar <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="2923275635648511531">Productos de protección solar y bronceado</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
+<translation id="2925032407415783182">Guardar entrada en Wallet</translation>
 <translation id="2925454999967523701">Botón Crear documento: actívalo para crear un nuevo documento de Google rápidamente</translation>
 <translation id="2925673989565098301">Método de entrega</translation>
 <translation id="2928426578619531300">Usuario afiliado</translation>
@@ -1464,7 +1465,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3392028486601120379">Se ha especificado una ruta en el patrón de URL "<ph name="URL_PATTERN" />". No se admiten rutas para esta clave. Elimina la ruta e inténtalo de nuevo. Por ejemplo, *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Método de recogida</translation>
 <translation id="3399161914051569225">Tecnología wearable</translation>
-<translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3399952811970034796">Dirección de entrega</translation>
 <translation id="3402261774528610252">La conexión que se usa para cargar este sitio web utiliza TLS 1.0 o TLS 1.1, que están obsoletas y se inhabilitarán en el futuro. Cuando se inhabiliten, los usuarios no podrán cargar este sitio web. El servidor debería habilitar el uso de TLS 1.2 o versiones posteriores.</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
@@ -1727,6 +1727,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
 <translation id="3795624560191557077">Hace poco has cambiado una contraseña que se ha encontrado en una brecha de seguridad de datos públicos. Si tienes problemas, el Gestor de contraseñas de Google puede ayudarte a iniciar sesión.</translation>
 <translation id="3799805948399000906">Fuente solicitada</translation>
+<translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Lo visitas a menudo</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803481123869276674">Cuando hagas compras en Chrome, verás tu cartera electrónica como opción</translation>
@@ -2426,6 +2427,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4930153903256238152">Gran capacidad</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932035752129140860">El texto que pegas o adjuntas se envía a Google Cloud o a terceros para que se analice. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlo.</translation>
+<translation id="4932733599132424254">Fecha</translation>
 <translation id="4933788293078559286">Pagar con Pix</translation>
 <translation id="4934780484581617878">Gestión de ventanas</translation>
 <translation id="4936134414789135531">No se ha encontrado el <ph name="VALUE_NAME" /> insertado.</translation>
@@ -2969,6 +2971,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5847181246682413476">Adaptadores de corriente</translation>
 <translation id="584902713199270089">Citas y anuncios personales</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
+<translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862579898803147654">Apilador 8</translation>

@@ -1629,21 +1629,6 @@ A política do dispositivo é equivalente à política do usuário <ph name="SEC
           Se esta política for ativada, a lista de contas definidas por ela será adicionada às configurações de contas do Kerberos.
 
           Se esta política for desativada ou não estiver definida, nenhuma conta será adicionada às configurações de contas do Kerberos, e todas as contas adicionadas anteriormente com essa política serão removidas. O usuário ainda poderá adicionar contas manualmente se a política "Os usuários podem adicionar contas do Kerberos" estiver ativada.</translation>
-<translation id="2103906574050962342">A definição desta política configura regras que selecionam qual proxy o navegador usa, dependendo do URL de destino e de outras condições. Esta política terá precedência sobre as configurações de proxy definidas pela política <ph name="PROXY_SETTINGS_POLICY_NAME" />, pela API de extensão <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou pelas configurações manuais do usuário, se alguma delas estiver definida.
-
-Se a política não for definida, isso não vai afetar outras políticas de proxy ou configurações do usuário.
-
-Quando o navegador precisa decidir qual proxy usar, as entradas da política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> são avaliadas em sequência até que uma delas corresponda a pelo menos um dos hosts de URL em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se todas as entradas em <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> são atendidas. O valor em <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> será usado como proxy para essa correspondência. Se nenhuma correspondência for encontrada, as configurações de proxy vão voltar para o que está definido na política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-As entradas do campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondem a valores de string de arquivos PAC, como:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-A primeira entrada acessível será usada como proxy.
-
-O campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> tem uma lista de condições que precisam ser atendidas para que a regra de substituição seja usada para decidir o proxy. Se for deixado sem definição, a entrada será usada desde que tenha correspondência com pelo menos um host em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-
-A condição <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se o <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fornecido pode ser resolvido para um endereço IP. Se o valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> for "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", a condição será considerada atendida. Se o valor for definido como <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, a condição será considerada atendida se a resolução falhar.</translation>
 <translation id="2104418465060359056">Fornecer informações sobre extensões e plug-ins</translation>
 <translation id="210652463860415362">Aceitar conteúdo da Web usando o recurso de transporte do dicionário por compactação</translation>
 <translation id="2106627642643925514">Modifica o modo padrão de impressão com PIN. Se o modo não estiver disponível, a política será ignorada.</translation>
@@ -1918,6 +1903,7 @@ A política afeta apenas o modo de navegação anônima. Se quiser bloquear URLs
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
 <translation id="225830954785359083">Impedir que as páginas mostrem pop-ups durante o descarregamento</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
+<translation id="2262701937800507517">Usar a ordem de criptografia padrão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Permitir o uso de gerenciadores de senhas de terceiros no <ph name="PRODUCT_NAME" /> no <ph name="ANDROID_NAME" /></translation>
 <translation id="2266422599396179941">Permitir que os usuários enviem feedback</translation>
 <translation id="2268891553068901979">Se a política for definida como ativada, a sincronização do <ph name="GOOGLE_DRIVE_NAME" /> no app Arquivos do <ph name="PRODUCT_OS_NAME" /> será desativada quando estiver em uma conexão celular. Os dados serão sincronizados com o Drive apenas quando houver conexão a uma rede Wi-Fi ou de Ethernet.
@@ -2712,6 +2698,23 @@ Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será
 <translation id="2812417768214606683">Esta política especifica uma lista de dispositivos de armazenamento USB isentos das políticas de <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> e <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 As entradas são pares de identificador de fornecedor e identificador de produto USB que reconhecem o modelo específico do dispositivo USB.</translation>
+<translation id="2816735327277809365">Esta política configura o <ph name="PRODUCT_OS_NAME" /> de modo que o produto ordene as criptografias no TLS 1.3 para refletir uma preferência por algoritmos que foram aprovados por um regime de compliance específico ao fazer solicitações de rede na tela de login.
+
+A definição desta política não garante que algoritmos específicos sejam negociados.
+
+Esta política existe para permitir que operadores de servidores que querem oferecer suporte a clientes com e sem requisitos de compliance façam a diferenciação entre esses clientes e usem apenas determinados algoritmos não padrão com maior força criptográfica para aqueles que os preferem explicitamente.
+
+Definir a política como "<ph name="CNSA_NAME" />" configura o <ph name="PRODUCT_OS_NAME" /> para preferir cifras necessárias para a compliance com as versões 1.0 e 2.0 do Commercial National Security Algorithm Suite (CNSA 1.0 e 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
+
+Se a política não for definida ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_OS_NAME" /> vai usar as criptografias padrão.
+
+A definição desta política não é necessária para a segurança. A criptografia padrão usada pelo <ph name="PRODUCT_OS_NAME" /> é forte o suficiente para resistir a um ataque de força bruta usando toda a energia do Sol.
+
+A definição desta política vai fazer com que o <ph name="PRODUCT_OS_NAME" /> fique mais lento ao fazer solicitações de rede na tela de login.
+
+Esta política afeta apenas o TLS 1.3 e o QUIC, e não as versões anteriores do TLS.
+
+A política do dispositivo é equivalente à política do usuário <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />, mas se aplica ao perfil de login na tela de login.</translation>
 <translation id="2816964824289752181">Ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="2818074121667686266">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para acesso de captura de áudio, exceto para URLs configurados na lista AudioCaptureAllowedUrls.
 
@@ -5150,6 +5153,25 @@ Se a política não for definida, as origens de Apps Isolados da Web poderão pe
 
       Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">Configurar o URL da página "Nova guia"</translation>
+<translation id="4485667899983529614">Esta política configura o <ph name="PRODUCT_OS_NAME" /> para ordenar os algoritmos de contrato de chave preferidos (grupos aceitos) no TLS 1.3 para refletir uma preferência por algoritmos que foram aprovados por um regime de compliance específico ao fazer solicitações de rede na tela de login.
+
+A definição desta política não garante que algoritmos específicos sejam negociados.
+
+Esta política existe para permitir que operadores de servidores que querem oferecer suporte a clientes com e sem requisitos de compliance façam a diferenciação entre esses clientes e usem apenas determinados algoritmos não padrão com maior força criptográfica para aqueles que os preferem explicitamente.
+
+Definir a política como "<ph name="CNSA2_NAME" />" configura o <ph name="PRODUCT_OS_NAME" /> para preferir métodos de troca de chaves necessários para a compliance com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
+
+Se a política não for definida ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_OS_NAME" /> vai usar os métodos de troca de chaves padrão.
+
+Se esta política for definida com um valor que configure o <ph name="PRODUCT_OS_NAME" /> para preferir um algoritmo de contrato de chave pós-quântica, mas <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> estiver desativada, a configuração de <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> terá precedência.
+
+A definição desta política não é necessária para a segurança. A criptografia padrão usada pelo <ph name="PRODUCT_OS_NAME" /> é forte o suficiente para resistir a um ataque de força bruta usando toda a energia do Sol.
+
+A definição desta política vai fazer com que o <ph name="PRODUCT_OS_NAME" /> fique mais lento ao fazer solicitações de rede na tela de login.
+
+Esta política afeta apenas o TLS 1.3 e o QUIC, e não as versões anteriores do TLS.
+
+A política do dispositivo é equivalente à política do usuário <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, mas se aplica ao perfil de login na tela de login.</translation>
 <translation id="4488959486611931919">Observação: nenhum site falhou desde que o Chrome passou a bloquear esses cookies por padrão na versão M118. Por isso, essa funcionalidade não será configurável e esta política não terá efeito a partir da versão M127.
 
 Esta política fornece uma desativação temporária para mudanças na forma como o Chrome lida com cookies definidos pelo JavaScript e que contêm determinados caracteres de controle (NULL, retorno de carro e feed de linha).
@@ -5696,6 +5718,7 @@ Esta política é temporária e será removida assim que o cancelamento de eco d
 <translation id="4802905909524200151">Configurar o comportamento de atualização do firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">É sempre reinicializado quando o usuário sai.</translation>
 <translation id="4807950475297505572">Os usuários menos utilizados ​​recentemente serão removidos até que haja espaço livre suficiente</translation>
+<translation id="4808129082654355104">Preferir algoritmos de criptografia específicos para TLS na tela de login do dispositivo</translation>
 <translation id="4812270373673968774">Se a política for definida como "Sempre", a estante do <ph name="PRODUCT_OS_NAME" /> será ocultada automaticamente. Se ela for definida como "Nunca", a estante nunca será ocultada automaticamente.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão decidir se a estante é ocultada automaticamente ou não.</translation>
@@ -6562,6 +6585,7 @@ Se a política for desativada, os usuários não poderão enviar senhas do Geren
 O recurso não ficará disponível se a sincronização de senhas estiver desativada, seja pelas configurações do usuário ou pela ativação da política <ph name="SYNC_DISABLED" />.
 
 As contas gerenciadas não podem participar nem criar um grupo familiar. Por isso, elas não podem compartilhar senhas.</translation>
+<translation id="5326771913945855850">Usar os grupos padrão compatíveis do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="532848608876725157">Ativar DNS sobre HTTPS com substituto inseguro</translation>
 <translation id="5328965694451556034">Informar login/logout</translation>
 <translation id="5329018127554115226">O modo de alta eficiência vai ser desativado.</translation>
@@ -9908,6 +9932,15 @@ Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.g
 <translation id="7341773449551289679">Lista de permissões de armazenamento externo</translation>
 <translation id="7343004974628511824">Realizar verificações de interceptação de DNS</translation>
 <translation id="7343497214039883642">Arquivo de configuração de impressora empresarial para dispositivos</translation>
+<translation id="7344533124201531786">Configure a lista de domínios em que <ph name="PRODUCT_NAME" /> precisa desativar <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
+
+Se um domínio estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> será desativado para ele.
+
+Se um domínio não estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> vai estar disponível para ele.
+
+Se a política for deixada sem definição, <ph name="PASSWORD_MANAGER_NAME" /> vai ficar disponível para todos os domínios.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Desativar a entrada de áudio</translation>
 <translation id="7358299261566939984">Ativar ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Ativar o <ph name="LACROS_NAME" /></translation>
@@ -10280,12 +10313,6 @@ Se ela for desativada ou deixada sem definição, as políticas de nuvem no nív
 Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
 
 As políticas que precisam ser mescladas também precisam ser definidas na <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> ou <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Esta política será ignorada se nenhuma das duas mencionadas acima for configurada.</translation>
-<translation id="7643151458117317518">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
-
-Se a política for desativada, a configuração de medição de anúncio também vai ser desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="7643883929273267746">Contas restritas que estão visíveis no <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Esta política é uma orientação geral para todas as regras definidas na política DataLeakPreventionRulesList.
       Se ela for definida como verdadeira, os relatórios em tempo real de eventos para prevenção de vazamentos de dados serão ativados.
@@ -10376,6 +10403,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 <translation id="7712245244073542805">Impressão da plataforma pelo processo do navegador.</translation>
 <translation id="7713608076604149344">Restrições de downloads</translation>
 <translation id="7713845740295404764">Informar eventos de login/logout</translation>
+<translation id="7715155449217638248">Preferir algoritmos de troca de chaves específicos para TLS na tela de login do dispositivo</translation>
 <translation id="7715711044277116530">Percentual pelo qual calcular o intervalo de escurecimento da tela no modo de apresentação</translation>
 <translation id="7715838249298819250">Não permitir a Captura de Texto.</translation>
 <translation id="7716020145539921591">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -11608,12 +11636,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="8549906780629620346">Ativar a recuperação de conta</translation>
 <translation id="855182606166519378">Os usuários não podem iniciar atualizações de firmware</translation>
 <translation id="8553491595730354263">Permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
-<translation id="8554750769356971993">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site pode ser desativada para os usuários.
-
-Se ela for desativada, a configuração de anúncios sugeridos pelo site também vai ser desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos pelo site no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="8559221882677768248">Desativar o recurso Selecionar para Ouvir na tela de login</translation>
 <translation id="8561512522781085002">As configurações PageUp/Page Down usam o atalho que contém a tecla modificadora de pesquisa</translation>
 <translation id="8562398722263115493">O recurso Quero ajuda para escrever é um assistente de escrita baseado em IA para conteúdos curtos na Web. As sugestões são baseadas nos comandos inseridos pelo usuário e no conteúdo da página da Web.

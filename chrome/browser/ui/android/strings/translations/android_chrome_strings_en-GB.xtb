@@ -248,7 +248,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2072027001582274150">Unused or duplicate tabs</translation>
-<translation id="2074527029802029717">Unpin tab</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">To finish setting up autofill, restart Chrome now. Your tabs will automatically reopen.</translation>
@@ -972,7 +971,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5174700554036517242">Tab is back to initial height</translation>
 <translation id="5180063720319462041">Page translated to <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5190835502935405962">Bookmarks Bar</translation>
+<translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="5197649123261764478">Easily access your bookmarks</translation>
 <translation id="5204967432542742771">Enter password</translation>
@@ -1808,7 +1807,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
 <translation id="854522910157234410">Open this page:</translation>
 <translation id="8547466829003330976">Review PDF with AI</translation>
-<translation id="855081842937141170">Pin tab</translation>
 <translation id="8551513938758868521">Lock Incognito tabs when you leave Chrome</translation>
 <translation id="8559961053328923750">Chrome limits the total amount of data that sites can share through the browser to measure ad performance</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
@@ -1928,6 +1926,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9081543426177426948">Sites that you visit aren’t saved in Incognito</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9086455579313502267">Unable to access the network</translation>
+<translation id="9093915805850895575">Open in Chrome window</translation>
 <translation id="909756639352028172">To get the most personalised experience, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="9099220545925418560">Based on your browsing history. This setting is off.</translation>
 <translation id="9100610230175265781">Passphrase required</translation>

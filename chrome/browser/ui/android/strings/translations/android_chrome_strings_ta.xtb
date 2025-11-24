@@ -248,7 +248,6 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் தோல்வியடைந்தது}other{# பதிவிறக்கங்கள் தோல்வியடைந்தன}}</translation>
 <translation id="2067805253194386918">உரை</translation>
 <translation id="2072027001582274150">பயன்படுத்தப்படாத அல்லது நகல் பக்கங்கள்</translation>
-<translation id="2074527029802029717">தாவலைப் பிரித்தெடு</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2088833076121753253">தானாக நிரப்புதல் அமைவை நிறைவுசெய்ய Chromeமை இப்போது மீண்டும் தொடங்குங்கள். உங்கள் பக்கங்கள் தானாகவே மீண்டும் திறக்கப்படும்.</translation>
@@ -1808,7 +1807,6 @@
 <translation id="8540136935098276800">சரியான வடிவமைப்பில் URLலை உள்ளிடவும்</translation>
 <translation id="854522910157234410">இந்தப் பக்கத்தைத் திற</translation>
 <translation id="8547466829003330976">AI மூலம் PDFஐச் சரிபார்</translation>
-<translation id="855081842937141170">தாவலைப் பொருத்து</translation>
 <translation id="8551513938758868521">Chromeமில் இருந்து வெளியேறும்போது மறைநிலைப் பக்கங்களைப் பூட்டு</translation>
 <translation id="8559961053328923750">விளம்பரச் செயல்திறனை அளவிட உலாவி மூலம் தளங்கள் பகிரக்கூடிய தரவின் மொத்த அளவை Chrome கட்டுப்படுத்துகிறது</translation>
 <translation id="8559990750235505898">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்ப்பதற்கான சலுகை</translation>

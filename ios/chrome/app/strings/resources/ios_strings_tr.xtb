@@ -342,6 +342,7 @@
 <translation id="2245007488813216650">Çevriliyor…</translation>
 <translation id="2249119578464404734">Ekranın üst kısmındaki arama simgesine dokunun</translation>
 <translation id="2251686759395008410">Menü → Geçmiş</translation>
+<translation id="2252378061043785266">Bu Siteyi Asla Gösterme</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> için Drive'a kaydediliyor.</translation>
 <translation id="2256933947031277845">Kuruluşunuz yalnızca belirli hesaplarla oturum açmanıza izin vermektedir.</translation>
 <translation id="2257567812274161158">Senkronizasyon çalışmıyor.</translation>
@@ -1046,7 +1047,7 @@
 <translation id="5055015094595227120">Tam konum</translation>
 <translation id="5055551113846164633">Bu işlem, bu cihaza kaydedilen adresleri siler. Ayrıca, <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı adresler de silinir.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> sorun bulundu.</translation>
-<translation id="5056587122125565772">Görüntü oluştur</translation>
+<translation id="5056587122125565772">Resim oluştur</translation>
 <translation id="5059136629401106827">Tamam</translation>
 <translation id="5062321486222145940">Google Drive'ı yükle</translation>
 <translation id="5067540696062462445">İndirilenler</translation>

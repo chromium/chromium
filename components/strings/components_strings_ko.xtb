@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{파일 다운로드 차단됨}other{파일 <ph name="FILE_COUNT" />개의 다운로드 차단됨}}</translation>
 <translation id="2923275635648511531">썬케어 및 태닝 제품</translation>
 <translation id="292371311537977079">Chrome 설정</translation>
+<translation id="2925032407415783182">월렛에 이벤트 티켓을 저장하세요</translation>
 <translation id="2925454999967523701">문서 만들기 버튼, 새 Google 문서를 빠르게 만들려면 활성화하세요.</translation>
 <translation id="2925673989565098301">배달 방법</translation>
 <translation id="2928426578619531300">연결된 사용자</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">URL 패턴 "<ph name="URL_PATTERN" />"에 지정된 경로가 있습니다. 이 키에는 경로가 지원되지 않습니다. *://example.com/ =&gt; *://example.com"과 같이 경로를 삭제한 후 다시 시도해 주세요.</translation>
 <translation id="3395827396354264108">수령 방법</translation>
 <translation id="3399161914051569225">웨어러블 기술</translation>
-<translation id="3399930248910934354">Chrome 설정 열기</translation>
 <translation id="3399952811970034796">배달 주소</translation>
 <translation id="3402261774528610252">이 사이트를 로드하는 데 사용된 연결에는 TLS 1.0 또는 TLS 1.1이 사용되었으며, 이러한 TLS는 지원이 중단되어 향후 사용 중지될 예정입니다. 사용 중지된 후에는 사용자가 이 사이트를 로드할 수 없습니다. 서버에서 TLS 1.2 이상을 사용해야 합니다.</translation>
 <translation id="3405664148539009465">글꼴 맞춤설정</translation>
@@ -1727,6 +1727,7 @@
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
 <translation id="3795624560191557077">최근에 공개 정보 유출로 인해 노출된 비밀번호를 변경했습니다. 문제가 발생하면 Google 비밀번호 관리자를 통해 로그인할 수 있습니다.</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
+<translation id="3800436529451849929">출처: <ph name="SITE" /></translation>
 <translation id="3801297763951514916">자주 방문함</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803481123869276674">Chrome에서 구매할 때 전자 지갑 옵션이 표시됩니다.</translation>
@@ -2426,6 +2427,7 @@
 <translation id="4930153903256238152">대용량</translation>
 <translation id="4930714375720679147">사용 설정</translation>
 <translation id="4932035752129140860">붙여넣거나 첨부하는 텍스트는 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
+<translation id="4932733599132424254">날짜</translation>
 <translation id="4933788293078559286">Pix로 결제</translation>
 <translation id="4934780484581617878">창 관리</translation>
 <translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
@@ -2969,6 +2971,7 @@
 <translation id="5847181246682413476">전원 공급 장치</translation>
 <translation id="584902713199270089">만남 및 데이트</translation>
 <translation id="5851548754964597211">탭 목록</translation>
+<translation id="5851868085455377790">발행기관</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862579898803147654">스태커 8</translation>

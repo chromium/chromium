@@ -1592,21 +1592,6 @@ Bu cihaz politikası, mevcut <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NA
           Bu politika etkinleştirilirse politika tarafından tanımlanmış hesapların listesi Kerberos Hesapları ayarlarına eklenir.
 
           Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları ayarlarına hiçbir hesap eklenmez ve bu politikayla daha önce eklenen tüm hesaplar silinir. "Kullanıcılar Kerberos hesapları ekleyebilir" politikası etkinse kullanıcılar yine de manuel olarak hesap ekleyebilirler.</translation>
-<translation id="2103906574050962342">Bu politika ayarlandığında, hedef URL'ye ve diğer koşullara bağlı olarak tarayıcının kullanacağı proxy'yi belirleyen kurallar yapılandırılır. Bu politika; <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası, <ph name="PROXY_SETTINGS_EXTENSION_API" /> uzantı API'si veya manuel kullanıcı ayarları aracılığıyla belirlenen proxy ayarlarına göre öncelikli olur.
-
-Politika ayarlanmadan bırakılırsa diğer proxy politikaları veya kullanıcı ayarları etkilenmez.
-
-Tarayıcının, kullanacağı proxy'ye karar vermesi gerektiğinde <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> kapsamındaki URL ana makinelerinden en az biriyle eşleşen bir giriş bulunana ve <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> kapsamındaki tüm girişler karşılanana kadar <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikasının girişleri sırayla değerlendirilir. Bu tür bir eşleşme için proxy olarak <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> içindeki değer kullanılır. Eşleşme bulunamazsa proxy ayarları, <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasında ayarlanan değerlere geri döner.
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> alan girişleri, PAC dosyalarının dize değerlerine karşılık gelir. Örneğin:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Ulaşılabilecek ilk giriş, proxy olarak kullanılır.
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> alanı, geçersiz kılma kuralı kullanılarak proxy'ye karar verilmesi için karşılanması gereken koşulların listesini içerir. Ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içinde en az bir ana makine eşleştiği sürece giriş kullanılır.
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> koşulu, sağlanan DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> öğesinin bir IP adresine çözümlenip çözümlenemediğini kontrol eder. <ph name="PROXY_OVERRIDE_RULES_RESULT" /> değeri "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />" ise koşul karşılanmış kabul edilir. Değer <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> olarak ayarlanmışsa çözüm başarısız olduğunda koşul karşılanmış kabul edilir.</translation>
 <translation id="2104418465060359056">Uzantı ve Eklenti bilgilerini bildirme</translation>
 <translation id="210652463860415362">Sıkıştırılmış sözlük aktarım özelliğini kullanan web içeriklerini kabul et</translation>
 <translation id="2106627642643925514">Varsayılan PIN ile yazdırma modunu geçersiz kılar. Mod kullanılamıyorsa bu politika yoksayılır.</translation>
@@ -1871,6 +1856,7 @@ Bu politika yalnızca Gizli modu etkiler. URL'leri tüm kullanıcı profillerind
 <translation id="2258126710006312594">Uzaktan erişim kullanıcılarının ana makineye/ana makineden dosya aktarımı yapmalarına izin ver</translation>
 <translation id="225830954785359083">Sayfaların yüklemesi kaldırılırken pop-up göstermesini engelle</translation>
 <translation id="2261648512244797294">Kullanımdan kaldırılan privet yazdırmayı devre dışı bırak</translation>
+<translation id="2262701937800507517"><ph name="PRODUCT_OS_NAME" /> ürünündeki varsayılan şifre sırasını kullan</translation>
 <translation id="2263881357524831360"><ph name="ANDROID_NAME" /> sistemindeki <ph name="PRODUCT_NAME" /> içinde üçüncü taraf şifre yöneticileri kullanılmasına izin ver</translation>
 <translation id="2266422599396179941">Kullanıcıların geri bildirim göndermelerine izin ver</translation>
 <translation id="2268891553068901979">Politika, Etkin değerine ayarlanırsa hücresel bağlantı kullanılırken <ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasında <ph name="GOOGLE_DRIVE_NAME" /> senkronizasyonu devre dışı bırakılır. Yalnızca kablosuz ağ veya Ethernet bağlantısı kullanılırken veriler Drive ile senkronize edilir.
@@ -2648,6 +2634,23 @@ Politikayı ayarlamadan bırakırsanız <ph name="BLOCK_POPUPS_POLICY_NAME" /> p
 <translation id="2812417768214606683">Bu politika, <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> ve <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" /> politikalarından muaf tutulacak USB depolama cihazlarının listesini belirtir.
 
 Girişler, belirli bir USB cihaz modelini tanımlamak için kullanılan USB Tedarikçi Tanımlayıcısı ve Ürün Tanımlayıcısı çiftlerinden oluşur.</translation>
+<translation id="2816735327277809365">Bu politika, oturum açma ekranından ağ isteklerinde bulunurken TLS 1.3'te şifreleme şifrelerini belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için <ph name="PRODUCT_OS_NAME" /> ürününü yapılandırır.
+
+Bu politikanın ayarlanması, belirli herhangi bir algoritmada anlaşılacağını garanti edilmez.
+
+Bu politika, uyumluluk gereksinimlerini karşılayan ve karşılamayan istemcileri desteklemek isteyen sunucu operatörlerinin, bu istemcileri ayırt etmesine ve yalnızca açıkça tercih edecek şekilde yapılandırılmış istemciler için kriptografik gücü artırılmış belirli, varsayılan olmayan algoritmaları kullanmasına olanak tanımak amacıyla tasarlanmıştır.
+
+Politika, "<ph name="CNSA_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, Commercial National Security Algorithm Suite 1.0 ve 2.0 (CNSA 1.0 ve 2.0) ile uygunluk için gerekli olan şifreleri tercih edecek şekilde yapılandırılır.
+
+Politika ayarlanmazsa veya "<ph name="DEFAULT_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, varsayılan şifrelerini kullanacak şekilde yapılandırılır.
+
+Güvenlik için bu politikanın ayarlanması gerekmez. <ph name="PRODUCT_OS_NAME" /> tarafından kullanılan varsayılan kriptografi, Güneş'teki tüm enerjiyi kullanarak yapılacak kaba kuvvet saldırısına dayanacak kadar güçlüdür.
+
+Bu politika ayarlanırsa giriş ekranından ağ isteklerinde bulunurken<ph name="PRODUCT_OS_NAME" /> daha yavaş çalışır.
+
+Bu politika yalnızca TLS 1.3 ve QUIC'i etkiler. TLS'nin önceki sürümlerini etkilemez.
+
+Bu cihaz politikası, mevcut <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" /> kullanıcı politikası ile aynıdır ancak giriş ekranındaki oturum açma profilinde geçerlidir.</translation>
 <translation id="2816964824289752181">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
 <translation id="2818074121667686266">Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcılardan ses yakalama için erişim izni istenir (AudioCaptureAllowedUrls listesinde ayarlanan URL'ler hariç).
 
@@ -5070,6 +5073,25 @@ Politika ayarlanmadan bırakılırsa yalıtılmış web uygulaması kaynakları 
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.</translation>
 <translation id="4485425108474077672">Yeni Sekme sayfasının URL'sini yapılandır</translation>
+<translation id="4485667899983529614">Bu politika, oturum açma ekranından ağ isteklerinde bulunurken TLS 1.3'te tercih edilen anahtar anlaşması algoritmalarını (desteklenen gruplar) belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için <ph name="PRODUCT_OS_NAME" /> ürününü yapılandırır.
+
+Bu politikanın ayarlanması, belirli herhangi bir algoritmada anlaşılacağını garanti edilmez.
+
+Bu politika, uyumluluk gereksinimlerini karşılayan ve karşılamayan istemcileri desteklemek isteyen sunucu operatörlerinin, bu istemcileri ayırt etmesine ve yalnızca açıkça tercih edecek şekilde yapılandırılmış istemciler için kriptografik gücü artırılmış belirli, varsayılan olmayan algoritmaları kullanmasına olanak tanımak amacıyla tasarlanmıştır.
+
+Politika, "<ph name="CNSA2_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) ile uygunluk için gerekli olan anahtar değişim yöntemlerini tercih edecek şekilde yapılandırılır.
+
+Politika ayarlanmazsa veya "<ph name="DEFAULT_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, varsayılan anahtar değişimi yöntemlerini kullanacak şekilde yapılandırılır.
+
+Bu politika, <ph name="PRODUCT_OS_NAME" /> ürününü kuantum sonrası anahtar anlaşması algoritmasını tercih edecek şekilde yapılandıracak bir değere ayarlanır ancak <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" />, Devre Dışı bırakılmışsa <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> için ayarlar daha önceliklidir.
+
+Güvenlik için bu politikanın ayarlanması gerekmez. <ph name="PRODUCT_OS_NAME" /> tarafından kullanılan varsayılan kriptografi, Güneş'teki tüm enerjiyi kullanarak yapılacak kaba kuvvet saldırısına dayanacak kadar güçlüdür.
+
+Bu politika ayarlanırsa giriş ekranından ağ isteklerinde bulunurken<ph name="PRODUCT_OS_NAME" /> daha yavaş çalışır.
+
+Bu politika yalnızca TLS 1.3 ve QUIC'i etkiler. TLS'nin önceki sürümlerini etkilemez.
+
+Bu cihaz politikası, mevcut <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" /> kullanıcı politikası ile aynıdır ancak giriş ekranındaki oturum açma profilinde geçerlidir.</translation>
 <translation id="4488959486611931919">Not: Chrome'un M118'den itibaren bu çerezleri varsayılan olarak engellemeye başlamasından bu yana site kesintisi bildirilmediğinden, M127 sürümünden itibaren bu işlev yapılandırılamaz (ve bu politikanın herhangi bir geçerliliği olmayacaktır).
 
 Bu politika, Chrome'un belirli kontrol karakterlerini (NULL, satır başı karakteri ve satır feed'i) içeren JavaScript aracılığıyla ayarlanmış çerezleri işleme şekliyle ilgili değişiklikler için geçici bir devre dışı bırakma seçeneği sunar.
@@ -5588,6 +5610,7 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
 <translation id="4802905909524200151"><ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımını güncelleme davranışını yapılandır</translation>
 <translation id="4804828344300125154">Kullanıcı oturumu kapatıldığında her zaman cihazı yeniden başlat.</translation>
 <translation id="4807950475297505572">Yeterli boş alan sağlanıncaya kadar en seyrek kullanılan kullanıcılar kaldırılır</translation>
+<translation id="4808129082654355104">Cihazın giriş ekranı için TLS'de belirli şifreleme şifre algoritmalarını tercih edin</translation>
 <translation id="4812270373673968774">Politikayı Always (Her zaman) değerine ayarlamak, <ph name="PRODUCT_OS_NAME" /> rafını otomatik gizler. Politikayı Never (Hiçbir zaman) değerine ayarlamak, rafın otomatik gizlenmesine hiçbir zaman izin vermez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa rafın otomatik gizlenip gizlenmeyeceğine kullanıcı karar verir.</translation>
@@ -6428,6 +6451,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Şifre Yöneticisi
 Şifre senkronizasyonu kapalıysa (kullanıcı ayarlarından veya <ph name="SYNC_DISABLED" /> politikasının Etkin değerine ayarlanmasından dolayı) bu özellik kullanılamaz.
 
 Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluşturamadığı için şifre paylaşamaz.</translation>
+<translation id="5326771913945855850"><ph name="PRODUCT_OS_NAME" /> ürünündeki varsayılan desteklenen grupları kullan</translation>
 <translation id="532848608876725157">DNS-over-HTTPS'i güvenli olmayan geçişle etkinleştir</translation>
 <translation id="5328965694451556034">Girişi/çıkışı raporla</translation>
 <translation id="5329018127554115226">Yüksek Verimlilik Modu devre dışı bırakılır.</translation>
@@ -9680,6 +9704,15 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
 <translation id="7341773449551289679">Harici Depolama İzin Verilenler Listesi</translation>
 <translation id="7343004974628511824">DNS müdahale kontrolleri gerçekleştir</translation>
 <translation id="7343497214039883642">Cihazlar için kurumsal yazıcı yapılandırma dosyası</translation>
+<translation id="7344533124201531786"><ph name="PRODUCT_NAME" /> tarafından <ph name="PASSWORD_MANAGER_NAME" /> hizmetinin devre dışı bırakılacağı alanların listesini yapılandırın. Bu durumda Kaydet ve Doldur iş akışları devre dışı bırakılır ve bu web sitelerindeki şifreler kaydedilemez veya web formlarında otomatik olarak doldurulamaz.
+
+Listede yer alan bir alan için <ph name="PASSWORD_MANAGER_NAME" /> devre dışı bırakılır.
+
+Listede yer almayan bir alan için <ph name="PASSWORD_MANAGER_NAME" /> kullanılabilir.
+
+Politika ayarlanmadan bırakılırsa <ph name="PASSWORD_MANAGER_NAME" /> tüm alanlar için kullanılabilir.
+
+Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.</translation>
 <translation id="7357148531287978404">Ses girişini devre dışı bırak</translation>
 <translation id="7358299261566939984">ServiceWorkerAutoPreload'u etkinleştir</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> tarayıcısını etkinleştir</translation>
@@ -10052,12 +10085,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
 Yalnızca güvenli kullanıcılardan gelen politikalar öncelikli olabilir. Güvenli kullanıcı, tarayıcısını <ph name="CHROME_ENTERPRISE_CORE_NAME" /> ile yöneten kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar varsayılan olarak öncelikli olur.
 
 Birleştirilmesi gereken politikaların aynı zamanda <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> veya <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> içerisinde de ayarlanması gerekir. Yukarıda bahsedilen iki politika da yapılandırılmamışsa bu politika yok sayılır.</translation>
-<translation id="7643151458117317518"><ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
-
-Bu politikayı Devre Dışı değerine ayarlarsanız reklam ölçümü ayarı kullanıcılarınız için devre dışı bırakılır.
-Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarını etkinleştirebilir veya devre dışı bırakabilir.
-
-Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> politikasının Devre Dışı değerine ayarlanması gerekir.</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> içinde görülebilen hesapları kısıtlama</translation>
 <translation id="7648664871086956188">Bu politika, DataLeakPreventionRulesList politikasında belirtilen tüm kurallar için genel bir anahtardır.
       Bu politikayı Doğru değerine ayarlamak, veri sızıntısı önleme etkinliklerinin gerçek zamanlı raporlamasını etkinleştirir.
@@ -10148,6 +10175,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 <translation id="7712245244073542805">Tarayıcı işleminden platform yazdırma.</translation>
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>
 <translation id="7713845740295404764">Giriş/çıkış etkinliklerini raporla</translation>
+<translation id="7715155449217638248">Cihaz giriş ekranı için TLS'de belirli anahtar değişimi algoritmalarını tercih edin</translation>
 <translation id="7715711044277116530">Sunum modunda ekranın kararma gecikmesinin ölçekleneceği yüzde</translation>
 <translation id="7715838249298819250">Metin yakalama özelliğine izin verme</translation>
 <translation id="7716020145539921591">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
@@ -11360,12 +11388,6 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="8549906780629620346">Hesap kurtarmayı etkinleştir</translation>
 <translation id="855182606166519378">Kullanıcılar, donanım yazılımı güncellemeleri başlatamaz</translation>
 <translation id="8553491595730354263">İstemci bağlantıları kabul edilirken uzaktan erişim ana makinesinin PIN ve eşleme kimlik doğrulama yöntemlerini kullanmasına izin verir</translation>
-<translation id="8554750769356971993"><ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
-
-Bu politikayı Devre Dışı değerine ayarlarsanız site tarafından önerilen reklam ayarı kullanıcılarınız için devre dışı bırakılır.
-Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarını etkinleştirebilir veya devre dışı bırakabilir.
-
-Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> politikasının Devre Dışı değerine ayarlanması gerekir.</translation>
 <translation id="8559221882677768248">Giriş ekranında seç ve dinle özelliğini devre dışı bırak</translation>
 <translation id="8561512522781085002">PageUp/PageDown ayarları, arama tuşu değiştiriciyi içeren kısayolu kullanır</translation>
 <translation id="8562398722263115493">Yazmama yardım et, web'deki kısa içerikler için yapay zekadan yararlanarak yazım konusunda destek sunar. Önerilen içerikler, kullanıcının girdiği istemlere ve web sayfasındaki içeriklere göre belirlenir.

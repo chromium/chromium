@@ -1765,6 +1765,7 @@
 <translation id="2192505247865591433">बाट:</translation>
 <translation id="219283042927675668">समूहमा भएका ट्याबहरू</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> ले तपाईंको नयाँ ट्याब नामक पेज व्यवस्थापन गरिरहेको छ, नयाँ ट्याबमा खुल्छ</translation>
+<translation id="2192982266585216032">&amp;भुक्तानीहरू</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="2195331105963583686">तपाईं उक्त समयपछि पनि यो <ph name="DEVICE_TYPE" /> प्रयोग गरिरहन सक्नु हुने छ तर यसले सफ्टवेयर तथा सुरक्षासम्बन्धी स्वचालित अपडेटहरू भने प्राप्त गर्ने छैन</translation>
 <translation id="2195729137168608510">इमेल संरक्षण</translation>
@@ -2993,6 +2994,7 @@
 <translation id="3022072018423103125">पहाडी क्षेत्र</translation>
 <translation id="3022361196600037287">यो Chromebook बाट <ph name="DEVICE" /> हटाइने छ र उक्त डिभाइस अब <ph name="PRIMARY_EMAIL" /> मा सेभ गरिने छैन।</translation>
 <translation id="3022978424994383087">मैले बुझिनँ।</translation>
+<translation id="3023204744987201088">&amp;सम्पर्क जानकारी</translation>
 <translation id="3023464535986383522">सेलेक्ट टु स्पिक सुविधा</translation>
 <translation id="3024374909719388945">24-घण्टे घडी प्रयोग गर्नुहोस</translation>
 <translation id="3027296729579831126">नजिकैका डिभाइससँग सेयर गर्ने सुविधा अन गर्नुहोस्</translation>
@@ -7930,6 +7932,7 @@
 <translation id="6495261233408033662">खोलिएका ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="6495266441917713704">Wi-Fi ट्रान्स्फर गर्न सकिएन</translation>
 <translation id="6495453178162183932">थिम अपडेट गरी Chrome को डिफल्ट थिम लागू गरिएको छ</translation>
+<translation id="6496641546298525838">तपाईंको डिभाइस</translation>
 <translation id="6497784818439587832">स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो बनाउन डिस्प्लेको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="6497789971060331894">माउस विपरीत दिशामा स्क्रोल गर्ने कार्य</translation>
 <translation id="6498249116389603658">&amp;तपाईँका सबै भाषाहरू</translation>
@@ -9752,6 +9755,7 @@
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7760176388948986635">लोकेसन प्रयोग गर्ने अनुमति पाएका ChromeOS र Android एप, वेबसाइट तथा सेवाहरूलाई यो डिभाइसको लोकेसन प्रयोग गर्न दिनुहोस्। "लोकेसनको सटीकता" ले Android एप तथा सेवाहरूलाई अझ सटीक लोकेसन प्रदान गर्छ। यो कार्य गर्न Google ले समय समयमा यो डिभाइसका सेन्सर तथा वायरलेस सिग्नलका बारेमा जानकारी प्रोसेस गरी वायरलेस सिग्नलका लोकेसनहरू क्राउडसोर्स गर्छ। लोकेसनको सटीकता तथा लोकेसनमा आधारित सेवाहरूको गुणस्तर सुधार गर्न र प्रयोगकर्ताका आवश्यकता पूरा गर्ने Google तथा तेस्रो पक्षहरूका वैध चासोका आधारमा Google का सेवाहरू प्रदान गर्न, कायम राख्न तथा सुधार गर्न यो जानकारी कुनै पनि व्यक्तिको पहिचान नखुलाइकन प्रयोग गरिन्छ।</translation>
 <translation id="7762024824096060040">यो खाता प्रयोग गर्न मिल्दैन</translation>
+<translation id="776324966908034528">एकभन्दा बढी स्रोतहरूले ब्राउजरका प्रोक्सीसम्बन्धी सेटिङ नियन्त्रण गर्छन्</translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> देखि <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">यो ट्याब समूह नयाँ विन्डोमा खोल्नुहोस्</translation>
@@ -11004,6 +11008,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> लाई आफ्नो कन्ट्याक्टमा समावेश गर्नुहोस्</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> को साइट डेटा मेटाउनुका साथै यो साइटलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
 <translation id="8617748779076050570">सुरक्षित कनेक्सन ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;सम्पर्क जानकारी</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">तपाईंको डिभाइसमा वेब एप इन्स्टल गर्ने अनुमति नदिइएको</translation>
 <translation id="8619803522055190423">ड्रप स्याडो</translation>
@@ -11605,6 +11610,7 @@
 <translation id="90033698482696970">उपलब्ध भएका eSIM प्रोफाइलहरू खोज्न स्वतः स्क्यान गर्ने हो?</translation>
 <translation id="9003647077635673607">सबै वेबसाइटहरूमा अनुमति दिनुहोस्</translation>
 <translation id="9005774573776346118">आफ्ना सबै डिभाइसमा आफ्ना पासवर्ड र बुकमार्कलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
+<translation id="9006511997799670136">तपाईंको सङ्गठन</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> यो लिंक कुनै एपमा खोल्न चाहन्छ।</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> को विवरणसम्बन्धी पेजको 'पछाडि जानुहोस्' बटन</translation>

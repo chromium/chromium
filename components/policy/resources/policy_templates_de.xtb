@@ -1561,21 +1561,6 @@ Diese Geräterichtlinie entspricht der vorhandenen Nutzerrichtlinie „<ph name=
           Ist die Richtlinie aktiviert, wird die Liste der Konten, die durch die Richtlinie definiert ist, den Einstellungen für Kerberos-Konten hinzugefügt.
 
           Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden den Einstellungen für Kerberos-Konten keine Konten hinzugefügt und alle zuvor über diese Richtlinie hinzugefügten Konten werden entfernt. Nutzer können jedoch trotzdem Konten manuell hinzufügen, wenn die Richtlinie „Nutzer können Kerberos-Konten hinzufügen“ aktiviert ist.</translation>
-<translation id="2103906574050962342">Wenn du diese Richtlinie festlegst, werden Regeln konfiguriert, über die der vom Browser verwendete Proxy je nach der Ziel-URL und anderen Bedingungen ausgewählt wird. Diese Richtlinie hat Vorrang vor den Proxy-Einstellungen, die über die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, die Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ oder manuelle Nutzereinstellungen festgelegt werden, sofern vorhanden.
-
-Wenn die Richtlinie nicht festgelegt ist, hat dies keine Auswirkungen auf andere Proxy-Richtlinien oder Nutzereinstellungen.
-
-Wenn die Proxy-Auswahl über den Browser getroffen wird, werden die Einträge der Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach ausgewertet, bis ein Eintrag eine Übereinstimmung mit mindestens einem der URL-Hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> hat und alle Einträge in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> erfüllt sind. Der Wert in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> wird als Proxy für eine solche Übereinstimmung verwendet. Wenn keine Übereinstimmung gefunden wird, werden die Proxy-Einstellungen auf die in der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ festgelegten Werte zurückgesetzt.
-
-Die Einträge im Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ entsprechen Stringwerten von PAC-Dateien wie:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Der erste erreichbare Eintrag wird als Proxy verwendet.
-
-Das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ enthält eine Liste von Bedingungen, die alle erfüllt sein müssen, damit die Überschreibungsregel zur Auswahl des zu verwendenden Proxys genutzt wird. Bei Nichtfestlegung wird der Eintrag verwendet, solange mindestens ein Host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> übereinstimmt.
-
-Die Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ prüft, ob das angegebene DNS „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ in eine IP-Adresse aufgelöst werden kann. Wenn der Wert von <ph name="PROXY_OVERRIDE_RULES_RESULT" /> „<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />“ ist, gilt die Bedingung als erfüllt. Wenn der Wert stattdessen auf „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“ festgelegt ist, gilt die Bedingung als erfüllt, wenn die Auflösung fehlgeschlagen ist.</translation>
 <translation id="2104418465060359056">Daten von Erweiterungen und Plug-ins erfassen</translation>
 <translation id="210652463860415362">Webinhalte akzeptieren, die die Funktion für den komprimierten Wörterbuchtransport verwenden</translation>
 <translation id="2106627642643925514">Hiermit wird der Standardmodus für den PIN-Druck überschrieben. Wenn der Modus nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
@@ -1840,6 +1825,7 @@ Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Verwende die Richtli
 <translation id="2258126710006312594">Nutzern mit Remote-Zugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="225830954785359083">Verhindern, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
+<translation id="2262701937800507517">Standardreihenfolge von <ph name="PRODUCT_OS_NAME" /> für Chiffren verwenden</translation>
 <translation id="2263881357524831360">Verwendung von Drittanbieter-Passwortmanagern in <ph name="PRODUCT_NAME" /> unter <ph name="ANDROID_NAME" /> erlauben</translation>
 <translation id="2266422599396179941">Zulassen, dass Nutzer Feedback geben</translation>
 <translation id="2268891553068901979">Wenn die Richtlinie aktiviert ist, wird bei einer Mobilfunkverbindung die Synchronisierung zwischen <ph name="GOOGLE_DRIVE_NAME" /> und der App „Dateien“ von <ph name="PRODUCT_OS_NAME" /> deaktiviert. Dateien werden nur mit Drive synchronisiert, wenn eine WLAN- oder Ethernet-Verbindung besteht.
@@ -2582,6 +2568,23 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLI
 <translation id="2812417768214606683">Durch diese Richtlinie wird eine Liste von USB-Speichergeräten festgelegt, die von den Richtlinien „<ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" />“ und „<ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />“ ausgenommen sind.
 
 Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt‑ID des jeweiligen USB-Gerätemodells.</translation>
+<translation id="2816735327277809365">Diese Richtlinie konfiguriert <ph name="PRODUCT_OS_NAME" /> so, dass bei Netzwerkanfragen vom Anmeldebildschirm aus die bevorzugten Chiffren für Verschlüsselungen für TLS 1.3 so angeordnet werden, dass Algorithmen Vorrang erhalten, die von einer bestimmten Compliance-Regelung zugelassen sind.
+
+Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
+
+Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
+
+Wird die Richtlinie auf „<ph name="CNSA_NAME" />“ festgelegt, wird <ph name="PRODUCT_OS_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 1.0 und 2.0 (CNSA 1.0 und 2.0) erforderlichen Chiffren bevorzugt werden.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_OS_NAME" /> die standardmäßigen Chiffren.
+
+Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_OS_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
+
+Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_OS_NAME" /> beim Senden von Netzwerkanfragen vom Anmeldebildschirm aus langsamer.
+
+Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.
+
+Diese Geräterichtlinie entspricht der Nutzerrichtlinie „<ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />“, gilt aber stattdessen für das Anmeldeprofil auf dem Anmeldebildschirm.</translation>
 <translation id="2816964824289752181"><ph name="DESK_API_NAME" /> für <ph name="PRODUCT_OS_NAME" />-Steuerung über Drittanbieter aktivieren</translation>
 <translation id="2818074121667686266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Zugriff für Audioaufnahmen beim Nutzer nachgefragt. Ausgenommen sind URLs in der Liste "AudioCaptureAllowedUrls".
 
@@ -4952,6 +4955,25 @@ Wenn sie nicht konfiguriert ist, können Ursprünge der isolierten Web-App den Z
 
       Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">URL für "Neuer Tab"-Seite konfigurieren</translation>
+<translation id="4485667899983529614">Diese Richtlinie konfiguriert <ph name="PRODUCT_OS_NAME" /> so, dass bei Netzwerkanfragen vom Anmeldebildschirm aus die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) für TLS 1.3 so angeordnet werden, dass Algorithmen Vorrang erhalten, die von einer bestimmten Compliance-Regelung zugelassen sind.
+
+Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
+
+Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
+
+Wird die Richtlinie auf „<ph name="CNSA2_NAME" />“ festgelegt, wird <ph name="PRODUCT_OS_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) erforderlichen Methoden zum Schlüsselaustausch bevorzugt werden.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_OS_NAME" /> die standardmäßigen Methoden für den Schlüsselaustausch.
+
+Wenn diese Richtlinie auf einen Wert festgelegt wird, sodass <ph name="PRODUCT_OS_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bevorzugt, <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> aber deaktiviert ist, hat die Einstellung von <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> Vorrang.
+
+Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_OS_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
+
+Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_OS_NAME" /> beim Senden von Netzwerkanfragen vom Anmeldebildschirm aus langsamer.
+
+Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.
+
+Diese Geräterichtlinie entspricht der Nutzerrichtlinie „<ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />“, gilt aber stattdessen für das Anmeldeprofil auf dem Anmeldebildschirm.</translation>
 <translation id="4488959486611931919">Hinweis: Seit Chrome diese Cookies ab M118 standardmäßig blockiert, wurde keine Websitebeschädigung gemeldet. Daher kann diese Funktion ab M127 nicht konfiguriert werden und diese Richtlinie ist dann nicht mehr wirksam.
 
 Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Cookies widerrufen, die per JavaScript mit bestimmten Steuerzeichen festgelegt werden (NULL, Zeilenumbruch und Zeilenvorschub).
@@ -5468,6 +5490,7 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
 <translation id="4802905909524200151">Updateverhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware konfigurieren</translation>
 <translation id="4804828344300125154">Nach Nutzerabmeldung immer neu starten.</translation>
 <translation id="4807950475297505572">Die am längsten nicht verwendeten Nutzer werden entfernt, bis genügend freier Speicherplatz vorhanden ist.</translation>
+<translation id="4808129082654355104">Bestimmte Algorithmen für Verschlüsselungschiffren für TLS für den Anmeldebildschirm des Geräts bevorzugen</translation>
 <translation id="4812270373673968774">Wenn die Richtlinie auf "Always" gesetzt ist, wird die Ablage von <ph name="PRODUCT_OS_NAME" /> automatisch ausgeblendet. Ist sie auf "Never" gesetzt, wird die Ablage nie automatisch ausgeblendet.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Falls die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Ablage automatisch ausgeblendet werden soll.</translation>
@@ -6310,6 +6333,7 @@ Ist die Richtlinie deaktiviert, können Nutzer keine Passwörter vom Passwortman
 Die Funktion ist nicht verfügbar, wenn die Synchronisierung von Passwörtern deaktiviert ist (entweder über die Nutzereinstellungen oder wenn die Richtlinie „<ph name="SYNC_DISABLED" />“ aktiviert ist).
 
 Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen und können daher keine Passwörter teilen.</translation>
+<translation id="5326771913945855850">Standardmäßig unterstützte Gruppen von <ph name="PRODUCT_OS_NAME" /> verwenden</translation>
 <translation id="532848608876725157">DoH-Modus mit unsicherem Fallback-Verhalten aktivieren</translation>
 <translation id="5328965694451556034">Anmeldung/Abmeldung melden</translation>
 <translation id="5329018127554115226">Der Modus für hohe Effizienz wird deaktiviert.</translation>
@@ -9482,6 +9506,15 @@ Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findes
 <translation id="7341773449551289679">Zulassungsliste für externe Speichergeräte</translation>
 <translation id="7343004974628511824">DNS-Abfangprüfungen ausführen</translation>
 <translation id="7343497214039883642">Unternehmensdrucker-Konfigurationsdatei für Geräte</translation>
+<translation id="7344533124201531786">Konfiguriere die Liste der Domains, in denen <ph name="PRODUCT_NAME" /> den <ph name="PASSWORD_MANAGER_NAME" /> deaktivieren soll. Dadurch werden die Workflows „Speichern“ und „Ausfüllen“ deaktiviert, sodass Passwörter für diese Websites nicht gespeichert oder automatisch in Webformularen ausgefüllt werden.
+
+Wenn eine Domain in der Liste aufgeführt ist, wird der <ph name="PASSWORD_MANAGER_NAME" /> für diese deaktiviert.
+
+Ist eine Domain nicht in der Liste enthalten, ist der <ph name="PASSWORD_MANAGER_NAME" /> für diese verfügbar.
+
+Wenn die Richtlinie nicht konfiguriert ist, ist der <ph name="PASSWORD_MANAGER_NAME" /> für alle Domains verfügbar.
+
+Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Audioeingabe deaktivieren</translation>
 <translation id="7358299261566939984">„ServiceWorkerAutoPreload“ aktivieren</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aktivieren</translation>
@@ -9845,12 +9878,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Cloud-Richt
 Nur Richtlinien, die von sicheren Nutzern stammen, dürfen priorisiert werden. Ein sicherer Nutzer ist mit der Organisation verknüpft, die seinen Browser mithilfe von <ph name="CHROME_ENTERPRISE_CORE_NAME" /> verwaltet. Alle anderen Richtlinien auf Nutzerebene haben standardmäßig Vorrang.
 
 Richtlinien, die zusammengeführt werden müssen, müssen außerdem entweder in <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> oder <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> eingerichtet sein. Diese Richtlinie wird ignoriert, wenn keine der beiden zuvor erwähnten Richtlinien konfiguriert ist.</translation>
-<translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.
-
-Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Anzeigenanalyse für Nutzer deaktiviert.
-Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse auf ihrem Gerät aktivieren oder deaktivieren.
-
-Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648664871086956188">Mit dieser Richtlinie werden alle in der Richtlinie DataLeakPreventionRulesList definierten Regeln gesteuert.
       Wenn die Richtlinie auf „True“ gesetzt ist, werden Echtzeitberichte zur Verhinderung von Datenlecks aktiviert.
@@ -9941,6 +9968,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
 <translation id="7712245244073542805">Drucken über die Plattform aus einem Browserprozess.</translation>
 <translation id="7713608076604149344">Download-Einschränkungen</translation>
 <translation id="7713845740295404764">Anmelde-/Abmeldeereignisse melden</translation>
+<translation id="7715155449217638248">Bestimmte Algorithmen zum Schlüsselaustausch für TLS für den Anmeldebildschirm des Geräts bevorzugen</translation>
 <translation id="7715711044277116530">Prozentsatz für die Skalierung der Spanne für die Bildschirmabdunkelung im Präsentationsmodus</translation>
 <translation id="7715838249298819250">Texterfassung nicht zulassen.</translation>
 <translation id="7716020145539921591">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
@@ -11128,12 +11156,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="8549906780629620346">Kontowiederherstellung aktivieren</translation>
 <translation id="855182606166519378">Nutzer dürfen keine Firmware-Updates starten</translation>
 <translation id="8553491595730354263">Ermöglicht dem Host für den Remote-Zugriff, eine PIN- und Kopplungsauthentifizierung beim Akzeptieren von Clientverbindungen zu verwenden</translation>
-<translation id="8554750769356971993">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert werden kann.
-
-Wenn die Richtlinie deaktiviert ist, wird die Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.
-Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.
-
-Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="8559221882677768248">„Vorlesen“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="8561512522781085002">In den Einstellungen von „Bild-auf“ und „Bild-ab“ wird die Tastenkombination verwendet, die den Suchmodifikator enthält</translation>
 <translation id="8562398722263115493">„Formuliere für mich“ ist ein KI‑basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.

@@ -1169,6 +1169,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2922792708490674">{0,plural, =1{Stažení souboru je blokováno}few{Stažení <ph name="FILE_COUNT" /> souborů je blokováno}many{Stažení <ph name="FILE_COUNT" /> souboru je blokováno}other{Stažení <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
 <translation id="2923275635648511531">Opalovací přípravky</translation>
 <translation id="292371311537977079">Nastavení Chromu</translation>
+<translation id="2925032407415783182">Uložte si vstupenku na akci do Peněženky</translation>
 <translation id="2925454999967523701">Tlačítko Vytvořit dokument, aktivací rychle vytvoříte nový Dokument Google</translation>
 <translation id="2925673989565098301">Způsob doručení</translation>
 <translation id="2928426578619531300">Přidružený uživatel</translation>
@@ -1461,7 +1462,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3392028486601120379">Vzor adresy URL <ph name="URL_PATTERN" /> má zadanou cestu. Cesty u tohoto klíče nejsou podporovány. Odstraňte cestu a zkuste to znovu, např. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Způsob vyzvednutí</translation>
 <translation id="3399161914051569225">Nositelná elektronika</translation>
-<translation id="3399930248910934354">Otevřít nastavení Chromu</translation>
 <translation id="3399952811970034796">Adresa doručení</translation>
 <translation id="3402261774528610252">Připojení použité k načtení tohoto webu použilo protokol TLS 1.0 nebo TLS 1.1, který již není podporován a v budoucnu bude deaktivován. Po deaktivaci již uživatelé nebudou moci tento web načíst. Na serveru je třeba aktivovat protokol TLS 1.2 nebo novější.</translation>
 <translation id="3405664148539009465">Personalizovat písma</translation>
@@ -1723,6 +1723,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3793574014653384240">Počty a příčiny nedávných selhání</translation>
 <translation id="3795624560191557077">Nedávno jste změnili heslo, které bylo nalezeno ve zveřejněném úniku dat. V případě potíží vám s přihlášením může pomoct Správce hesel Google.</translation>
 <translation id="3799805948399000906">Požadováno písmo</translation>
+<translation id="3800436529451849929">Z webu <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Často navštěvujete</translation>
 <translation id="380329542618494757">Název</translation>
 <translation id="3803481123869276674">Při nakupování v Chromu zobrazovat jako možnost elektronickou peněženku</translation>
@@ -2422,6 +2423,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4930153903256238152">Velká kapacita</translation>
 <translation id="4930714375720679147">Zapnout</translation>
 <translation id="4932035752129140860">Text, který vložíte nebo připojíte, se odešle k analýze do služby Google Cloud nebo třetím stranám. Může se u něj například kontrolovat přítomnost citlivých údajů může být uchováván v souladu se zásadami společnosti a může k němu mít přístup váš administrátor.</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Platit pomocí služby Pix</translation>
 <translation id="4934780484581617878">Správa oken</translation>
 <translation id="4936134414789135531">Vloženou hodnotu <ph name="VALUE_NAME" /> se nepodařilo najít.</translation>
@@ -2965,6 +2967,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5847181246682413476">Dodávky elektrické energie</translation>
 <translation id="584902713199270089">Seznamování a osobní inzerce</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
+<translation id="5851868085455377790">Vydavatel</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>

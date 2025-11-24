@@ -1169,6 +1169,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2922792708490674">{0,plural, =1{Dosyanın indirilmesi engellendi}other{<ph name="FILE_COUNT" /> dosyanın indirilmesi engellendi}}</translation>
 <translation id="2923275635648511531">Güneş Bakım ve Bronzlaşma Ürünleri</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
+<translation id="2925032407415783182">Etkinlik biletini Cüzdan'a kaydedin</translation>
 <translation id="2925454999967523701">Doküman oluştur düğmesi, hızlıca yeni bir Google Dokümanı oluşturmak için etkinleştirin</translation>
 <translation id="2925673989565098301">Teslimat Yöntemi</translation>
 <translation id="2928426578619531300">Kullanıcıyla ilişkili</translation>
@@ -1464,7 +1465,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URL kalıbında, belirtilmiş bir yol mevcut. Yollar bu anahtarda desteklenmez. Lütfen yolu kaldırıp tekrar deneyin. Örneğin, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Alım yöntemi</translation>
 <translation id="3399161914051569225">Giyilebilir Teknoloji Ürünleri</translation>
-<translation id="3399930248910934354">Chrome Ayarlarını Aç</translation>
 <translation id="3399952811970034796">Teslimat Adresi</translation>
 <translation id="3402261774528610252">Bu siteyi yüklemek için kullanılan bağlantı, kullanımdan kaldırılan ve ileride devre dışı bırakılacak olan TLS 1.0 veya TLS 1.1 kullandı. Devre dışı bırakıldığında, kullanıcıların bu siteyi yüklemeleri engellenir. Sunucu TLS 1.2 veya sonraki sürümleri etkinleştirmelidir.</translation>
 <translation id="3405664148539009465">Yazı tiplerini özelleştir</translation>
@@ -1727,6 +1727,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3793574014653384240">Son zamanlarda meydana gelen kilitlenmelerin sayısı ve nedenleri</translation>
 <translation id="3795624560191557077">Yakın zamanda, herkese açık bir veri ihlalinde tespit edilen bir şifreyi değiştirdiniz. Sorun yaşamanız durumunda Google Şifre Yöneticisi oturum açmanıza yardımcı olabilir.</translation>
 <translation id="3799805948399000906">Yazı tipi istendi</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> web sitesinden</translation>
 <translation id="3801297763951514916">Sık ziyaret ediyorsunuz</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803481123869276674">Chrome'da alışveriş yaparken e-cüzdan seçeneği gösterilir</translation>
@@ -2426,6 +2427,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4930153903256238152">Yüksek kapasite</translation>
 <translation id="4930714375720679147">Etkinleştir</translation>
 <translation id="4932035752129140860">Yapıştırdığınız veya eklediğiniz metin analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, hassas veriler içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
+<translation id="4932733599132424254">Tarih</translation>
 <translation id="4933788293078559286">Pix ile ödeyin</translation>
 <translation id="4934780484581617878">Pencere yönetimi</translation>
 <translation id="4936134414789135531">Eklenen <ph name="VALUE_NAME" /> değeri bulunamadı.</translation>
@@ -2969,6 +2971,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5847181246682413476">Güç Kaynakları</translation>
 <translation id="584902713199270089">Arkadaşlık ve Kişisel</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
+<translation id="5851868085455377790">Sertifikayı Veren</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5862579898803147654">Yığınlayıcı 8</translation>
@@ -4019,7 +4022,7 @@ Ek ayrıntılar:
 <translation id="7525804896095537619">Ad alanı boş bırakılamaz</translation>
 <translation id="7526934274050461096">Bu siteye bağlantınız gizli değil</translation>
 <translation id="7529884293139707752">Evde eğitim</translation>
-<translation id="7530215951451994972">Resim oluşturma</translation>
+<translation id="7530215951451994972">Resim Oluştur</translation>
 <translation id="7531464389616946220">Kartı tara</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, yer işaretlerinde arama yapmak için Enter tuşuna basın</translation>
 <translation id="7534987659046836932">Zarf C7</translation>

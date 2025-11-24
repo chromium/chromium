@@ -1765,6 +1765,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2192505247865591433">Allikas:</translation>
 <translation id="219283042927675668">Grupi vahelehed</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> haldab teie uut vahelehte, avaneb uuel vahelehel</translation>
+<translation id="2192982266585216032">Maksed</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2195331105963583686">Saate seadet <ph name="DEVICE_TYPE" /> pärast seda siiski kasutada, kuid see ei saa enam automaatseid tarkvara- ja turvavärskendusi</translation>
 <translation id="2195729137168608510">Meilikaitse</translation>
@@ -2995,6 +2996,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3022072018423103125">Mägismaad</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> eemaldatakse sellest Chromebookist ja seda ei salvestata kontole <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Ei saanud aru.</translation>
+<translation id="3023204744987201088">Kontaktteave</translation>
 <translation id="3023464535986383522">Vali ja kuula</translation>
 <translation id="3024374909719388945">Kasuta 24 h kella</translation>
 <translation id="3027296729579831126">Läheduses jagamise sisselülitamine</translation>
@@ -7936,6 +7938,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6495261233408033662">Sule avatud vahelehed</translation>
 <translation id="6495266441917713704">Ei saa WiFi-ühendust üle kanda</translation>
 <translation id="6495453178162183932">Uueks teemaks määrati Chrome'i vaiketeema</translation>
+<translation id="6496641546298525838">Teie seade</translation>
 <translation id="6497784818439587832">Muutke kuvamissuurust, et ekraanil kuvatud üksused väiksemaks või suuremaks teha</translation>
 <translation id="6497789971060331894">Hiirega tagurpidi kerimine</translation>
 <translation id="6498249116389603658">&amp;Kõik teie keeled</translation>
@@ -9759,6 +9762,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7759809451544302770">Valikuline</translation>
 <translation id="7760176388948986635">Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel selle seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja selle seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse ühtki isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada.</translation>
 <translation id="7762024824096060040">Ei saa seda kontot kasutada</translation>
+<translation id="776324966908034528">Brauseri puhverserveri seadeid juhivad mitmed allikad</translation>
 <translation id="7764225426217299476">Lisa aadress</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> asukohast <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Ava grupp uues aknas</translation>
@@ -11012,6 +11016,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8616441548384109662">Lisa <ph name="CONTACT_NAME" /> minu kontaktide hulka</translation>
 <translation id="8617601976406256334">Kas kustutada saidi <ph name="SITE_NAME" /> andmed ja load?</translation>
 <translation id="8617748779076050570">Turvalise ühenduse ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">Kontaktteave</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Veebirakenduste teie seadmesse installimine pole lubatud</translation>
 <translation id="8619803522055190423">Langev vari</translation>
@@ -11613,6 +11618,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="90033698482696970">Kas soovite saadaolevaid eSIM-i profiile automaatselt otsida?</translation>
 <translation id="9003647077635673607">Luba kõikidel veebisaitidel</translation>
 <translation id="9005774573776346118">Kõigis oma seadmetes paroolidele, järjehoidjatele ja muule sisule juurdepääsuks logige sisse kontoga <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Teie organisatsioon</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> soovib avada selle lingi rakenduses.</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9008201858626224558">Üksikasjade lehe <ph name="SUBPAGE_TITLE" /> tagasiliikumise nupp</translation>

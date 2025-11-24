@@ -1169,6 +1169,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2922792708490674">{0,plural, =1{File blocked from downloading}other{<ph name="FILE_COUNT" /> files blocked from downloading}}</translation>
 <translation id="2923275635648511531">Sun Care and Tanning Products</translation>
 <translation id="292371311537977079">Chrome settings</translation>
+<translation id="2925032407415783182">Save event ticket to Wallet</translation>
 <translation id="2925454999967523701">Create doc button, activate to quickly create a new Google Doc</translation>
 <translation id="2925673989565098301">Delivery Method</translation>
 <translation id="2928426578619531300">User affiliated</translation>
@@ -1464,7 +1465,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3392028486601120379">The URL pattern '<ph name="URL_PATTERN" />' has a path specified. Paths are not supported for this key; please remove the path and try again, e.g. *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Pickup method</translation>
 <translation id="3399161914051569225">Wearable technology</translation>
-<translation id="3399930248910934354">Open Chrome settings</translation>
 <translation id="3399952811970034796">Delivery address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
 <translation id="3405664148539009465">Customise fonts</translation>
@@ -1727,6 +1727,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3793574014653384240">Numbers and causes of the crashes that occurred recently</translation>
 <translation id="3795624560191557077">You recently changed a password found in a public data breach. In case of trouble, Google Password Manager can help you sign in.</translation>
 <translation id="3799805948399000906">Font requested</translation>
+<translation id="3800436529451849929">From <ph name="SITE" /></translation>
 <translation id="3801297763951514916">You visit often</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803481123869276674">When you make purchases in Chrome, see eWallet as an option</translation>
@@ -2426,6 +2427,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4930153903256238152">Large capacity</translation>
 <translation id="4930714375720679147">Turn On</translation>
 <translation id="4932035752129140860">Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4933788293078559286">Pay with Pix</translation>
 <translation id="4934780484581617878">Window management</translation>
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
@@ -2579,7 +2581,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5180662470511508940">Keyboard lock not allowed</translation>
 <translation id="5187079891181379721">Corporate Events</translation>
 <translation id="5190072300954988691">Camera and microphone not allowed</translation>
-<translation id="5190835502935405962">Bookmarks Bar</translation>
+<translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="5200063972779787617">Save address in account</translation>
@@ -2604,7 +2606,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5233071178832586743">Managed profile, browser and some device information is accessible to your administrator. They can see information such as the following:</translation>
 <translation id="5234764350956374838">Dismiss</translation>
-<translation id="5238301240406177137">Save in Account</translation>
+<translation id="5238301240406177137">Save in account</translation>
 <translation id="5239119062986868403">Typical price</translation>
 <translation id="5239623327352565343">Location allowed</translation>
 <translation id="5241048084654737238">Confirming that card info can't be saved</translation>
@@ -2969,6 +2971,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5847181246682413476">Power Supplies</translation>
 <translation id="584902713199270089">Dating and personals</translation>
 <translation id="5851548754964597211">Tab list</translation>
+<translation id="5851868085455377790">Issuer</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
@@ -4805,7 +4808,7 @@ Additional details:
 <translation id="8833007469711500369">Washers and Dryers</translation>
 <translation id="8834962751196791179">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV sci-fi and fantasy shows</translation>
-<translation id="883848425547221593">Other Bookmarks</translation>
+<translation id="883848425547221593">Other bookmarks</translation>
 <translation id="8842351563145134519">Payment methods available to be filled on touch opened at half height.</translation>
 <translation id="884264119367021077">Delivery address</translation>
 <translation id="8849032795302265570">Easily manage how your employees browse the web</translation>

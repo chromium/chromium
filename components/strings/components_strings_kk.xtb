@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{Файлды жүктеп алуға блок қойылған}other{<ph name="FILE_COUNT" /> файлды жүктеп алуға блок қойылған}}</translation>
 <translation id="2923275635648511531">Күн күтімі және күнге күю өнімдері</translation>
 <translation id="292371311537977079">Chrome параметрлері</translation>
+<translation id="2925032407415783182">Іс-шара билетін Wallet-ке сақтау</translation>
 <translation id="2925454999967523701">"Құжат жасау" түймесі, жаңа Google құжатын жылдам жасау үшін белсендіріңіз</translation>
 <translation id="2925673989565098301">Жеткізу әдісі</translation>
 <translation id="2928426578619531300">Үлестес пайдаланушы</translation>
@@ -1463,7 +1464,6 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URL өрнегінде жол көрсетілген. Бұл кілтте жол көрсетуге болмайды. Жолды жойып, әрекетті қайталап көріңіз (мысалы, *://example.com/ =&gt; *://example.com").</translation>
 <translation id="3395827396354264108">Таңдау әдісі</translation>
 <translation id="3399161914051569225">Денеге тағылатын құрылғылар</translation>
-<translation id="3399930248910934354">Chrome параметрлерін ашу</translation>
 <translation id="3399952811970034796">Жеткізу мекенжайы</translation>
 <translation id="3402261774528610252">Бұл сайтты жүктеуге қолданылған байланыс үшін ескірген және алдағы уақытта өшірілетін TLS 1.0 немесе TLS 1.1 протоколы пайдаланылған. Ол өшірілгеннен кейін, пайдаланушылар бұл сайтқа кіре алмайды. Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы қосылуы тиіс.</translation>
 <translation id="3405664148539009465">Қаріптерді реттеу</translation>
@@ -1726,6 +1726,7 @@
 <translation id="3793574014653384240">Жақында болған бұзылудың сандары мен себептері</translation>
 <translation id="3795624560191557077">Баршаға ашық қолды болған деректерден табылған құпия сөзіңізді жақында өзгерттіңіз. Қиындық туындаса, Google Password Manager аккаунтқа кіруге көмектесе алады.</translation>
 <translation id="3799805948399000906">Қаріп сұралды</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> сайтынан</translation>
 <translation id="3801297763951514916">Жиі кіресіз</translation>
 <translation id="380329542618494757">Аты</translation>
 <translation id="3803481123869276674">Chrome-да тауар сатып алатын кезде, электрондық әмиян опция ретінде көрсетіледі.</translation>
@@ -2425,6 +2426,7 @@
 <translation id="4930153903256238152">Үлкен сыйымдылық</translation>
 <translation id="4930714375720679147">Қосу</translation>
 <translation id="4932035752129140860">Сіз қоятын немесе тіркейтін мәтін Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, ол құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
+<translation id="4932733599132424254">Күні</translation>
 <translation id="4933788293078559286">Pix-пен төлеу</translation>
 <translation id="4934780484581617878">Терезені басқару</translation>
 <translation id="4936134414789135531">Енгізілген <ph name="VALUE_NAME" /> табылмады.</translation>
@@ -2968,6 +2970,7 @@
 <translation id="5847181246682413476">Қуат көздері</translation>
 <translation id="584902713199270089">Танысу және жеке өмір</translation>
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
+<translation id="5851868085455377790">Эмитент</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Қосу</translation>
 <translation id="5862579898803147654">8-жинастырушы</translation>

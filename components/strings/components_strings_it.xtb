@@ -1169,6 +1169,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2922792708490674">{0,plural, =1{Download del file bloccato}other{Download di <ph name="FILE_COUNT" /> file bloccato}}</translation>
 <translation id="2923275635648511531">Abbronzanti e prodotti per la protezione dal sole</translation>
 <translation id="292371311537977079">Impostazioni di Chrome</translation>
+<translation id="2925032407415783182">Salva il biglietto per un evento su Wallet</translation>
 <translation id="2925454999967523701">Pulsante Crea documento, attiva per creare rapidamente un nuovo documento Google</translation>
 <translation id="2925673989565098301">Metodo di consegna</translation>
 <translation id="2928426578619531300">Utente affiliato</translation>
@@ -1461,7 +1462,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3392028486601120379">È stato specificato un percorso per il pattern URL "<ph name="URL_PATTERN" />". I percorsi non sono supportati per questa chiave. Rimuovi il percorso e riprova. Ad esempio *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">Metodo di ritiro</translation>
 <translation id="3399161914051569225">Tecnologia indossabile</translation>
-<translation id="3399930248910934354">Apri Impostazioni di Chrome</translation>
 <translation id="3399952811970034796">Indirizzo di consegna</translation>
 <translation id="3402261774528610252">La connessione utilizzata per caricare il sito usava TLS 1.0 o TLS 1.1, che ora sono obsoleti e in futuro verranno disattivati. In seguito alla disattivazione, gli utenti non potranno caricare questo sito. Il server dovrà abilitare TLS 1.2 o versione successiva.</translation>
 <translation id="3405664148539009465">Personalizza caratteri</translation>
@@ -1724,6 +1724,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3793574014653384240">Numero e cause degli arresti anomali che si sono verificati di recente</translation>
 <translation id="3795624560191557077">Di recente hai modificato una password compromessa nell'ambito di una violazione dei dati pubblici. In caso di problemi, Gestore delle password di Google può aiutarti ad accedere.</translation>
 <translation id="3799805948399000906">Nome carattere richiesto</translation>
+<translation id="3800436529451849929">Da <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visiti spesso questa pagina</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803481123869276674">Quando fai acquisti su Chrome, vedi l'opzione e-wallet</translation>
@@ -2423,6 +2424,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4930153903256238152">Capacità elevata</translation>
 <translation id="4930714375720679147">Attiva</translation>
 <translation id="4932035752129140860">Il testo che incolli o alleghi viene inviato a Google Cloud o a terze parti per essere analizzato. Ad esempio, potrebbe essere analizzato per rilevare dati sensibili, essere archiviato in base alle policy aziendali ed essere visibile al tuo amministratore.</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Paga con Pix</translation>
 <translation id="4934780484581617878">Gestione delle finestre</translation>
 <translation id="4936134414789135531">Impossibile trovare l'elemento <ph name="VALUE_NAME" /> inserito.</translation>
@@ -2966,6 +2968,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5847181246682413476">Alimentatori</translation>
 <translation id="584902713199270089">Incontri e annunci personali</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
+<translation id="5851868085455377790">Autorità emittente</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5862579898803147654">Fascicolatore 8</translation>

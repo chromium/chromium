@@ -96,7 +96,7 @@
 <translation id="11635448457105324">Butoni "Menaxho adresat". Aktivizoje për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1165174597379888365">Faqja është vizituar</translation>
-<translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}}</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}}</translation>
 <translation id="1167877250265821930">Shkarkimi i gjuhës <ph name="LANGUAGE" /> dështoi</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1174644974616730562">Zarf kinez nr. 1</translation>
@@ -1167,6 +1167,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2922792708490674">{0,plural, =1{Shkarkimi i skedarit është bllokuar}other{Shkarkimi i <ph name="FILE_COUNT" /> skedarëve është bllokuar}}</translation>
 <translation id="2923275635648511531">Produkte për nxirjen dhe kujdesin ndaj diellit</translation>
 <translation id="292371311537977079">Cilësimet e Chrome</translation>
+<translation id="2925032407415783182">Ruaje biletën e ngjarjes te "Portofoli"</translation>
 <translation id="2925454999967523701">Butoni "Krijo dokument". Aktivizoje për të krijuar me shpejtësi një "Dokument të ri të Google"</translation>
 <translation id="2925673989565098301">Mënyra e dorëzimit</translation>
 <translation id="2928426578619531300">Përdorues i lidhur</translation>
@@ -1462,7 +1463,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3392028486601120379">Motivi i URL-së "<ph name="URL_PATTERN" />" ka një shteg të specifikuar. Shtigjet nuk mbështeten për këtë çelës. Hiqe shtegun dhe provo përsëri. Për shembull *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Mënyra e marrjes</translation>
 <translation id="3399161914051569225">Teknologji që vishet</translation>
-<translation id="3399930248910934354">Hap "Cilësimet" e Chrome</translation>
 <translation id="3399952811970034796">Adresa e dorëzimit</translation>
 <translation id="3402261774528610252">Lidhja e përdorur për të ngarkuar këtë sajt ka përdorur versionin TLS 1.0 ose TLS 1.1, të cilët janë të vjetëruar dhe do të çaktivizohen në të ardhmen. Pasi të çaktivizohen, përdoruesit nuk do të lejohen ta ngarkojnë këtë sajt. Serveri duhet të aktivizojë versionin TLS 1.2 ose një version të mëvonshëm.</translation>
 <translation id="3405664148539009465">Personalizo shkrimin</translation>
@@ -1725,6 +1725,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3793574014653384240">Shifrat dhe shkaqet e përplasjeve që kanë ndodhur së fundi</translation>
 <translation id="3795624560191557077">Së fundi ke ndryshuar një fjalëkalim të gjetur në një nxjerrje të paautorizuar të të dhënave publike. Në rast se ke probleme, "Menaxheri i fjalëkalimeve i Google" mund të të ndihmojë të identifikohesh.</translation>
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
+<translation id="3800436529451849929">Nga <ph name="SITE" /></translation>
 <translation id="3801297763951514916">E viziton shpesh</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803481123869276674">Kur bën blerje në Chrome, shiko "Portofolin elektronik" si opsion</translation>
@@ -2424,6 +2425,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4930153903256238152">Kapaciteti i madh</translation>
 <translation id="4930714375720679147">Aktivizo</translation>
 <translation id="4932035752129140860">Teksti që ngjit ose bashkëngjit i dërgohet Google Cloud ose palëve të treta për analizim. Për shembull, ai mund të skanohet për të dhëna delikate dhe mund të ruhet bazuar në politikat e kompanisë dhe të jetë i dukshëm për administratorin tënd.</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Paguaj me Pix</translation>
 <translation id="4934780484581617878">Menaxhimi i dritareve</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> që është futur nuk mund të gjendej.</translation>
@@ -2966,6 +2968,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5847181246682413476">Burime energjie</translation>
 <translation id="584902713199270089">Takime dashurie dhe personale</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
+<translation id="5851868085455377790">Publikuesi</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5862579898803147654">Stivuesi 8</translation>

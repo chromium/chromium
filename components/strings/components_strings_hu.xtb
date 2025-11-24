@@ -1169,6 +1169,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2922792708490674">{0,plural, =1{A fájl letöltése le van tiltva}other{<ph name="FILE_COUNT" /> fájl letöltése le van tiltva}}</translation>
 <translation id="2923275635648511531">Napozási és barnító termékek</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
+<translation id="2925032407415783182">Belépőjegy mentése a Walletbe</translation>
 <translation id="2925454999967523701">Dokumentum létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új Google-dokumentumot.</translation>
 <translation id="2925673989565098301">Kézbesítési mód</translation>
 <translation id="2928426578619531300">Felhasználó társítva</translation>
@@ -1462,7 +1463,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3392028486601120379">A(z) „<ph name="URL_PATTERN" />” URL-mintához elérési út van megadva. Ennél a kulcsnál nem használható elérési út. Távolítsa el az útvonalat, majd próbálkozzon újra, pl.: *://example.com/ =&gt; *://example.com”,</translation>
 <translation id="3395827396354264108">Átvételi mód</translation>
 <translation id="3399161914051569225">Hordható technológia</translation>
-<translation id="3399930248910934354">Chrome-beállítások megnyitása</translation>
 <translation id="3399952811970034796">Szállítási cím</translation>
 <translation id="3402261774528610252">A webhely betöltésére használt kapcsolat a TLS 1.0 vagy a TLS 1.1 protokollt használta, amelyek elavultak, és a jövőben le lesznek tiltva. A letiltásuk után a felhasználók nem fogják tudni betölteni ezt a webhelyet. A szerveren a TLS 1.2-es vagy újabb verzióját kell használni.</translation>
 <translation id="3405664148539009465">Betűtípusok testreszabása</translation>
@@ -1725,6 +1725,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3793574014653384240">A nemrégiben előfordult összeomlások száma és kiváltó okai</translation>
 <translation id="3795624560191557077">Nemrég módosított egy olyan jelszót, amely egy nyilvános adatvédelmi incidensben volt érintett. Probléma esetén a Google Jelszókezelő segíthet a bejelentkezésben.</translation>
 <translation id="3799805948399000906">Kért betűtípus</translation>
+<translation id="3800436529451849929">A(z) <ph name="SITE" /> webhelyről</translation>
 <translation id="3801297763951514916">Ön által gyakran felkeresett</translation>
 <translation id="380329542618494757">Név</translation>
 <translation id="3803481123869276674">Amikor a Chrome-ban vásárol, megjelenik lehetőségként az elektronikus pénztárca</translation>
@@ -2423,6 +2424,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4930153903256238152">Nagy kapacitás</translation>
 <translation id="4930714375720679147">Bekapcsolás</translation>
 <translation id="4932035752129140860">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a beillesztett és a csatolt szövegeket. Például előfordulhat, hogy bizalmas adatokat keresnek, a vállalati irányelvek alapján tárolják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
+<translation id="4932733599132424254">Dátum</translation>
 <translation id="4933788293078559286">Fizetés a Pix szolgáltatással</translation>
 <translation id="4934780484581617878">Ablakkezelés</translation>
 <translation id="4936134414789135531">A beillesztett <ph name="VALUE_NAME" /> nem található.</translation>
@@ -2966,6 +2968,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5847181246682413476">Tápegységek</translation>
 <translation id="584902713199270089">Párkeresés és ismerkedés</translation>
 <translation id="5851548754964597211">Laplista</translation>
+<translation id="5851868085455377790">Kiállító</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5862579898803147654">8. kötegelő</translation>

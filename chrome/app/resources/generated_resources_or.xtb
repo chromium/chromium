@@ -1761,6 +1761,7 @@
 <translation id="2192505247865591433">ଠାରୁ:</translation>
 <translation id="219283042927675668">ଗୋଷ୍ଠୀରେ ଥିବା ଟାବଗୁଡ଼ିକ</translation>
 <translation id="2192881772486983655">ଆପଣଙ୍କ ନୂଆ ଟାବ ପୃଷ୍ଠାକୁ <ph name="THIRD_PARTY_NTP_MANAGER" /> ପରିଚାଳନା କରୁଛନ୍ତି, ନୂଆ ଟାବରେ ଖୋଲେ</translation>
+<translation id="2192982266585216032">&amp;ପେମେଣ୍ଟ</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
 <translation id="2195331105963583686">ଆପଣ ସେହି ସମୟ ପରେ ମଧ୍ୟ <ph name="DEVICE_TYPE" /> ବ୍ୟବହାର କରିପାରିବେ, କିନ୍ତୁ ଏହା ଆଉ ସ୍ୱଚାଳିତ ସଫ୍ଟୱେୟାର ଏବଂ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍‍ଗୁଡ଼ିକ ପାଇବ ନାହିଁ।</translation>
 <translation id="2195729137168608510">ଇମେଲ୍ ସୁରକ୍ଷା</translation>
@@ -2989,6 +2990,7 @@
 <translation id="3022072018423103125">ହାଇଲାଣ୍ଡ</translation>
 <translation id="3022361196600037287">ଏହି Chromebookରୁ <ph name="DEVICE" />କୁ କାଢ଼ି ଦିଆଯିବ ଏବଂ ଏହା <ph name="PRIMARY_EMAIL" />ରେ ସେଭ ହେବ ନାହିଁ।</translation>
 <translation id="3022978424994383087">ତାହା ବୁଝିହେଲା ନହିଁ।</translation>
+<translation id="3023204744987201088">&amp;କଣ୍ଟାକ୍ଟ ସୂଚନା</translation>
 <translation id="3023464535986383522">ସିଲେକ୍ଟ ଟୁ ସ୍ପିକ୍</translation>
 <translation id="3024374909719388945">24-ଘଣ୍ଟିଆ ଘଣ୍ଟା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3027296729579831126">Nearby Share ଚାଲୁ କରନ୍ତୁ</translation>
@@ -7925,6 +7927,7 @@
 <translation id="6495261233408033662">ଖୋଲାଥିବା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6495266441917713704">ୱାଇ-ଫାଇ ଟ୍ରାନ୍ସଫର କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6495453178162183932">ଡିଫଲ୍ଟ Chromeରେ ଥିମ ଅପଡେଟ କରାଯାଇଛି</translation>
+<translation id="6496641546298525838">ଆପଣଙ୍କ ଡିଭାଇସ</translation>
 <translation id="6497784818439587832">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଛୋଟ କିମ୍ବା ବଡ଼ କରିବା ପାଇଁ ଡିସପ୍ଲେ ଆକାର ବଦଳାନ୍ତୁ</translation>
 <translation id="6497789971060331894">ମାଉସ୍ ରିଭର୍ସ ସ୍କ୍ରୋଲିଂ</translation>
 <translation id="6498249116389603658">&amp;ଆପଣଙ୍କର ସମସ୍ତ ଭାଷା</translation>
@@ -9749,6 +9752,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7759809451544302770">ଇଚ୍ଛାଧୀନ</translation>
 <translation id="7760176388948986635">ଲୋକେସନ ଅନୁମତି ଥିବା ChromeOS ଏବଂ Android ଆପ୍ସ, ୱେବସାଇଟ ଓ ସେବାଗୁଡ଼ିକୁ ଏହି ଡିଭାଇସର ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ। ଲୋକେସନ ସଠିକତା Android ଆପ୍ସ ଏବଂ ସେବାଗୁଡ଼ିକ ପାଇଁ ଅଧିକ ସଠିକ ଲୋକେସନ ପ୍ରଦାନ କରିଥାଏ। ଏହା କରିବା ପାଇଁ Google ପର୍ଯ୍ୟାୟକ୍ରମେ ଡିଭାଇସ ସେନ୍ସର ଏବଂ ୱାୟାରଲେସ ସିଗନାଲଗୁଡ଼ିକ ବିଷୟରେ ଥିବା ସୂଚନାକୁ ଏହି ଡିଭାଇସରୁ Crowdsource ୱାୟାରଲେସ ସିଗନାଲ ଲୋକେସନକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରିଥାଏ। କୌଣସି ବ୍ୟକ୍ତିଙ୍କୁ ଚିହ୍ନଟ ନକରି ଲୋକେସନ ସଠିକତା ଏବଂ ଲୋକେସନ-ଆଧାରିତ ସେବାଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ଏବଂ ୟୁଜରଙ୍କ ଆବଶ୍ୟକତାକୁ ପୂରଣ କରିବା ପାଇଁ Google ଏବଂ ତୃତୀୟ ପକ୍ଷର ବୈଧ ସ୍ୱାର୍ଥ ଆଧାରରେ Googleର ସେବାଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା, ପ୍ରଦାନ କରିବା ଏବଂ ବଜାୟ ରଖିବା ପାଇଁ ଏଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଏ।</translation>
 <translation id="7762024824096060040">ଏହି ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="776324966908034528">ବ୍ରାଉଜରର ପ୍ରକ୍ସି ସେଟିଂସ ଏକାଧିକ ସୋର୍ସ ଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହୁଏ</translation>
 <translation id="7764225426217299476">ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> ରୁ <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">ନୂଆ ୱିଣ୍ଡୋରେ ଗୋଷ୍ଠୀ ଖୋଲନ୍ତୁ</translation>
@@ -11000,6 +11004,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8616441548384109662">ଆପଣଙ୍କ ଯୋଗାଯୋଗରେ <ph name="CONTACT_NAME" />ଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> ପାଇଁ ସାଇଟ ଡାଟା ଓ ଅନୁମତିଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="8617748779076050570">ସୁରକ୍ଷିତ ସଂଯୋଗ ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;କଣ୍ଟାକ୍ଟ ସୂଚନା</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">ଆପଣଙ୍କ ଡିଭାଇସରେ ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="8619803522055190423">ଡ୍ରପ୍ ଶାଡୋ</translation>
@@ -11601,6 +11606,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="90033698482696970">ଉପଲବ୍ଧ eSIM ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ପାଇଁ ସ୍ୱତଃ ସ୍କାନ କରିବେ?</translation>
 <translation id="9003647077635673607">ସମସ୍ତ ୱେବ୍‌ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="9005774573776346118">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="9006511997799670136">ଆପଣଙ୍କର ସଂସ୍ଥା</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> ଏହି ଲିଙ୍କକୁ ଏକ ଆପରେ ଖୋଲିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="9008201768610948239">ଅଣଦେଖା କରନ୍ତୁ</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />ର ବିବରଣୀ ପୃଷ୍ଠାରେ 'ପଛକୁ ଫେରନ୍ତୁ' ବଟନ</translation>

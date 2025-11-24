@@ -1170,6 +1170,7 @@
 <translation id="2922792708490674">{0,plural, =1{फ़ाइल को डाउनलोड करने से रोका गया}one{<ph name="FILE_COUNT" /> फ़ाइल को डाउनलोड करने से रोका गया}other{<ph name="FILE_COUNT" /> फ़ाइलों को डाउनलोड करने से रोका गया}}</translation>
 <translation id="2923275635648511531">टैनिंग और सूरज की रोशनी से त्वचा की देखभाल करने वाले प्रॉडक्ट</translation>
 <translation id="292371311537977079">Chrome की सेटिंग</translation>
+<translation id="2925032407415783182">इवेंट के टिकट को Wallet में सेव करें</translation>
 <translation id="2925454999967523701">'दस्तावेज़ बनाएं' बटन, फटाफट नया Google दस्तावेज़ बनाने के लिए इसे चालू करें</translation>
 <translation id="2925673989565098301">डिलीवरी का तरीका</translation>
 <translation id="2928426578619531300">उपयोगकर्ता के खाते से जुड़े</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">यूआरएल पैटर्न "<ph name="URL_PATTERN" />" के पाथ की जानकारी दी गई है. इस कुंजी के लिए पाथ काम नहीं करते. कृपया पाथ हटाएं और फिर से कोशिश करें. उदाहरण *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">पिकअप का तरीका</translation>
 <translation id="3399161914051569225">पहने जाने वाले डिवाइस</translation>
-<translation id="3399930248910934354">Chrome की 'सेटिंग' खाेलें</translation>
 <translation id="3399952811970034796">डिलीवरी का पता</translation>
 <translation id="3402261774528610252">इस साइट को लोड करने में इस्तेमाल हुआ कनेक्शन TLS 1.0 या TLS 1.1 का इस्तेमाल कर रहा है. ये वर्शन रोक दिए गए हैं और आने वाले समय में इन्हें बंद कर दिया जाएगा. बंद होने के बाद, उपयोगकर्ता इस साइट को लोड नहीं कर पाएंगे. सर्वर पर TLS 1.2 या इसके बाद का वर्शन चालू होना चाहिए.</translation>
 <translation id="3405664148539009465">फ़ॉन्‍ट को पसंद के मुताबिक बनाएं</translation>
@@ -1727,6 +1727,7 @@
 <translation id="3793574014653384240">हाल ही में बंद होने की संख्या और वजहें</translation>
 <translation id="3795624560191557077">आपने हाल ही में उस पासवर्ड को बदला जो सार्वजनिक तौर पर लीक हुआ था. अगर आपको नए पासवर्ड से साइन इन करने में समस्या आती है, तो Google Password Manager की मदद से साइन इन किया जा सकता है.</translation>
 <translation id="3799805948399000906">फ़ॉन्ट का अनुरोध किया गया</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> से</translation>
 <translation id="3801297763951514916">आपके डिवाइस पर अक्सर खोला जाने वाला टैब</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803481123869276674">Chrome पर खरीदारी करते समय, विकल्प के तौर पर इलेक्ट्रॉनिक वॉलेट को जोड़ें</translation>
@@ -2426,6 +2427,7 @@
 <translation id="4930153903256238152">ज़्यादा क्षमता</translation>
 <translation id="4930714375720679147">चालू करें</translation>
 <translation id="4932035752129140860">आपके चिपकाए गए या अटैच किए गए टेक्स्ट को, विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी के लिए इसे स्कैन किया जा सकता है. साथ ही, इसे कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और यह आपके एडमिन को दिख सकता है.</translation>
+<translation id="4932733599132424254">तारीख</translation>
 <translation id="4933788293078559286">Pix से पेमेंट करें</translation>
 <translation id="4934780484581617878">विंडो मैनेजमेंट</translation>
 <translation id="4936134414789135531">डाला गया <ph name="VALUE_NAME" /> नहीं मिला.</translation>
@@ -2969,6 +2971,7 @@
 <translation id="5847181246682413476">पावर सप्लाई</translation>
 <translation id="584902713199270089">डेटिंग और पर्सनल</translation>
 <translation id="5851548754964597211">टैब सूची</translation>
+<translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>

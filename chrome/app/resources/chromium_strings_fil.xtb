@@ -109,6 +109,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238130810669087193">Para makuha ang iyong mga address at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang address na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="2241627712206172106">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chromium sa paraang gusto nila.</translation>
+<translation id="2283803047247799269">Maghanap sa tab na ito gamit ang Paghahanap ng Larawan</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Inirerekomenda ng Chromium na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
 <translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
@@ -166,6 +167,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
 <translation id="2850691299438350830">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
+<translation id="2856481144859256719">Palaging Ipakita ang AI Mode sa Shortcut ng Google Search</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">Tungkol sa &amp;Chromium</translation>
 <translation id="2915996080311180594">I-restart sa Ibang Pagkakataon</translation>

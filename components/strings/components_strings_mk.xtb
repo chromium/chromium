@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{Датотека е блокирана за преземање}one{<ph name="FILE_COUNT" /> датотека се блокирани за преземање}other{<ph name="FILE_COUNT" /> датотеки се блокирани за преземање}}</translation>
 <translation id="2923275635648511531">Производи за сончање и потемнување</translation>
 <translation id="292371311537977079">Поставки за Chrome</translation>
+<translation id="2925032407415783182">Зачувајте го билетот за настанот во Wallet</translation>
 <translation id="2925454999967523701">Копче за создавање документ, активирајте го за да набрзина создадете нов документ на Google</translation>
 <translation id="2925673989565098301">Начин на испорака</translation>
 <translation id="2928426578619531300">Корисникот е партнер</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">URL-шемата „<ph name="URL_PATTERN" />“ има одредено патека. Патеките не се поддржани за овој клуч, отстранете ја патеката и обидете се повторно. На пр., *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Метод за подигнување</translation>
 <translation id="3399161914051569225">Технологија на уреди за носење</translation>
-<translation id="3399930248910934354">Отворете ги поставките за Chrome</translation>
 <translation id="3399952811970034796">Адреса за испорака</translation>
 <translation id="3402261774528610252">Врската за вчитување на сајтов користеше TLS 1.0 или TLS 1.1, што се застарени и ќе бидат оневозможени во иднина. Штом ќе се оневозможат, корисниците нема да можат да го вчитуваат сајтов. Серверот треба да овозможи TLS 1.2 или понова верзија.</translation>
 <translation id="3405664148539009465">Приспособете ги фонтовите</translation>
@@ -1727,6 +1727,7 @@
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3795624560191557077">Неодамна променивте лозинка најдена при јавен упад во податоци. Ако се соочите со проблем, Google Password Manager може да ви помогне да се најавите.</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
+<translation id="3800436529451849929">Од <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Го отворате ова често</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803481123869276674">Кога купувате во Chrome, погледнете ја eWallet како опција</translation>
@@ -2426,6 +2427,7 @@
 <translation id="4930153903256238152">Голем капацитет</translation>
 <translation id="4930714375720679147">Вклучи</translation>
 <translation id="4932035752129140860">Текстот што ќе го залепите или приложите се испраќа до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенира за да се провери дали содржи чувствителни податоци и можеби ќе се складира согласно со правилата на компанијата и ќе биде видлив за администраторот.</translation>
+<translation id="4932733599132424254">Датум</translation>
 <translation id="4933788293078559286">Плаќајте со Pix</translation>
 <translation id="4934780484581617878">Управување со прозорци</translation>
 <translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
@@ -2969,6 +2971,7 @@
 <translation id="5847181246682413476">Напојувања</translation>
 <translation id="584902713199270089">Запознавање и лични огласи</translation>
 <translation id="5851548754964597211">Список со картички</translation>
+<translation id="5851868085455377790">Издавач</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>

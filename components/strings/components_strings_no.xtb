@@ -1465,7 +1465,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3392028486601120379">Det er angitt en bane i nettadressemønsteret «<ph name="URL_PATTERN" />». Baner støttes ikke for denne nøkkelen. Fjern banen og prøv på nytt. Eksempel: *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">Hentemetode</translation>
 <translation id="3399161914051569225">Hapå-teknologi</translation>
-<translation id="3399930248910934354">Åpne Chrome-innstillingene</translation>
 <translation id="3399952811970034796">Leveringsadresse</translation>
 <translation id="3402261774528610252">Tilkoblingen som ble brukt til å laste inn dette nettstedet, brukte TLS 1.0 eller TLS 1.1, som er foreldet og kommer til å bli slått av i fremtiden. Når det er slått av, blir brukerne hindret i å laste inn dette nettstedet. Tjeneren bør slå på TLS 1.2 eller nyere.</translation>
 <translation id="3405664148539009465">Tilpass skrifttyper</translation>
@@ -1728,6 +1727,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3793574014653384240">Tall for og årsaker til krasjene som har forekommet nylig</translation>
 <translation id="3795624560191557077">Du har nylig endret et passord som ble funnet i et offentlig databrudd. Hvis du har problemer, kan Google Passordlagring hjelpe deg med å logge på.</translation>
 <translation id="3799805948399000906">Forespurt skrifttype</translation>
+<translation id="3800436529451849929">Fra <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Du besøker nettstedet ofte</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803481123869276674">Når du kjøper noe i Chrome, kan du se e-lommebok som et alternativ</translation>
@@ -2427,6 +2427,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4930153903256238152">Stor kapasitet</translation>
 <translation id="4930714375720679147">Slå på</translation>
 <translation id="4932035752129140860">Tekst du limer inn eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. Dataene kan for eksempel bli skannet for sensitive data, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
+<translation id="4932733599132424254">Dato</translation>
 <translation id="4933788293078559286">Betal med Pix</translation>
 <translation id="4934780484581617878">Vindusadministrering</translation>
 <translation id="4936134414789135531">Fant ikke angitt <ph name="VALUE_NAME" />.</translation>
@@ -2970,6 +2971,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5847181246682413476">Strømforsyninger</translation>
 <translation id="584902713199270089">Dating og kontaktannonser</translation>
 <translation id="5851548754964597211">Faneliste</translation>
+<translation id="5851868085455377790">Utsteder </translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5862579898803147654">Hylle 8</translation>

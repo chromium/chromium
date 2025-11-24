@@ -1414,6 +1414,7 @@
 <translation id="1949980990364952348">アプリ名</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1951823516285577843">代わりの拡張機能を探す</translation>
+<translation id="1953626242273481999">リモート デバッグを許可しますか？</translation>
 <translation id="1953796913175502363">仕事用プロフィールの設定</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
@@ -1797,6 +1798,9 @@
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="222115440608612541">日の出と日の入りに合わせてテーマを切り替えます</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">外部アプリが、この Chrome セッションをデバッグするため完全に制御することを求めています。これには、保存されたデータ、Cookie、サイトデータへのアクセス、任意の URL への移動などが含まれます。
+
+この機能は、ウェブ デベロッパーが信頼できるアプリでのみ使用してください。</translation>
 <translation id="222201875806112242">名前のないメディアソース</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
@@ -1901,6 +1905,7 @@
 <translation id="2294081976975808113">画面のプライバシー</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> をインストールしますか？</translation>
 <translation id="229477815107578534">設定をご確認ください</translation>
+<translation id="229524410604268773">[設定] でオフにする</translation>
 <translation id="2295864384543949385">検索結果 <ph name="NUM_RESULTS" /> 件</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> は <ph name="EMAIL" /> のログイン時にデバイスをオンラインにするよう求めています</translation>
 <translation id="2296218178174497398">デバイス検出</translation>

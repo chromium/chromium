@@ -79,6 +79,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="1832046143430087831">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is off.</translation>
 <translation id="1838374766361614909">Clear search</translation>
+<translation id="1843347690926158494">Search this tab with Google Lens</translation>
 <translation id="1849248141818021764">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
@@ -167,6 +168,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2841525013647267359">Translate from</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
+<translation id="2856481144859256719">Always show AI Mode in Google Search shortcut</translation>
 <translation id="2857540653560290388">Launching Chrome...</translation>
 <translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>

@@ -1416,6 +1416,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1949980990364952348">Ilova nomi</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Muqobilini topish</translation>
+<translation id="1953626242273481999">Masofadan nosozliklarni tuzatish uchun ruxsat berilsinmi?</translation>
 <translation id="1953796913175502363">Ish profilini sozlang</translation>
 <translation id="1954597385941141174">Saytlar USB qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="1954813140452229842">Umumiy ruxsat berishda xatolik yuz berdi. Hisob axborotini tekshiring va qaytadan urining.</translation>
@@ -1799,6 +1800,9 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="222115440608612541">Mavzularni quyosh chiqishi va botishida almashtirish</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Tashqi ilova xatolarni tuzatish uchun bu Chrome seansini toʻliq boshqarmoqchi. Bunga saqlangan maʼlumotlar, cookie fayllar va sayt maʼlumotlariga kirish hamda istalgan URL manzilga kirish imkoniyati kiradi.
+
+Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan ishlatishi kerak.</translation>
 <translation id="222201875806112242">Nomsiz media manba</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
@@ -1907,6 +1911,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2294081976975808113">Ekran maxfiyligi</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" />’ni o‘rnatmoqchimisiz?</translation>
 <translation id="229477815107578534">Sozlamalarni tekshiring</translation>
+<translation id="229524410604268773">Sozlamalardan faolsizlantirish</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> ta natija</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> domeni qoidalariga muvofiq, <ph name="EMAIL" /> hisobiga kirish uchun qurilma internetga ulanishi shart</translation>
 <translation id="2296218178174497398">Qurilmalarni aniqlash</translation>

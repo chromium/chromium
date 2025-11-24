@@ -1169,6 +1169,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2922792708490674">{0,plural, =1{Téléchargement bloqué pour le fichier}one{Téléchargement bloqué pour <ph name="FILE_COUNT" /> fichier}other{Téléchargement bloqué pour <ph name="FILE_COUNT" /> fichiers}}</translation>
 <translation id="2923275635648511531">Produits de protection solaire et de bronzage</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
+<translation id="2925032407415783182">Enregistrer le billet pour un événement dans Wallet</translation>
 <translation id="2925454999967523701">Bouton "Créer un document" à activer pour créer rapidement un document Google Docs</translation>
 <translation id="2925673989565098301">Mode de livraison</translation>
 <translation id="2928426578619531300">Utilisateur affilié</translation>
@@ -1464,7 +1465,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3392028486601120379">Le format d'URL "<ph name="URL_PATTERN" />" a un chemin d'accès spécifié. Les chemins d'accès ne sont pas compatibles avec cette clé. Veuillez supprimer le chemin et réessayer. Par exemple *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Mode d'enlèvement</translation>
 <translation id="3399161914051569225">Accessoires connectés</translation>
-<translation id="3399930248910934354">Accéder aux paramètres de Chrome</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site l'a fait au moyen de TLS 1.0 ou TLS 1.1, qui sont obsolètes et seront désactivés à l'avenir. Une fois ces protocoles désactivés, les utilisateurs ne seront plus autorisés à charger ce site. Le serveur doit activer TLS 1.2 ou version ultérieure.</translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
@@ -1727,6 +1727,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3795624560191557077">Vous avez récemment modifié un mot de passe qui a été exposé lors d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe de Google peut vous aider à vous connecter.</translation>
 <translation id="3799805948399000906">Police demandée</translation>
+<translation id="3800436529451849929">Source : <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Vous le consultez fréquemment</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803481123869276674">Lorsque vous effectuez des achats sur Chrome, l'option "e-portefeuille" s'affiche</translation>
@@ -2426,6 +2427,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4930153903256238152">Grande capacité</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4932035752129140860">Le texte que vous collez ou joignez est envoyé à Google Cloud ou à des tiers pour analyse. Il peut par exemple être analysé pour rechercher des données sensibles, être stocké conformément aux règles de l'entreprise et être visible par votre administrateur.</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4933788293078559286">Payer avec Pix</translation>
 <translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936134414789135531">La <ph name="VALUE_NAME" /> insérée est introuvable.</translation>
@@ -2969,6 +2971,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5847181246682413476">Alimentation électrique</translation>
 <translation id="584902713199270089">Rencontres</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
+<translation id="5851868085455377790">Émetteur</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>

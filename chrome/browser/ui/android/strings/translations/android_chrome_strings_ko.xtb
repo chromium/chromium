@@ -248,7 +248,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="2067805253194386918">텍스트</translation>
 <translation id="2072027001582274150">사용하지 않거나 중복된 탭</translation>
-<translation id="2074527029802029717">탭 고정 해제</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2088833076121753253">자동 완성 설정을 완료하려면 지금 Chrome을 다시 시작하세요. 탭이 자동으로 다시 열립니다</translation>
@@ -1808,7 +1807,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
 <translation id="8547466829003330976">AI로 PDF 검토</translation>
-<translation id="855081842937141170">탭 고정</translation>
 <translation id="8551513938758868521">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="8559961053328923750">Chrome은 사이트에서 광고 실적을 측정하기 위해 브라우저를 통해 공유할 수 있는 데이터의 총량을 제한합니다.</translation>
 <translation id="8559990750235505898">다른 언어로 된 페이지의 번역 옵션 제공</translation>
@@ -1928,6 +1926,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
+<translation id="9093915805850895575">Chrome 창에서 열기</translation>
 <translation id="909756639352028172">최적의 맞춤형 환경을 이용하려면 웹 및 앱 활동과 연결된 Google 서비스에 Chrome을 포함합니다.</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>

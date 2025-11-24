@@ -1424,6 +1424,7 @@
 <translation id="1949980990364952348">Аппын нэр</translation>
 <translation id="1951012854035635156">Туслах</translation>
 <translation id="1951823516285577843">Өөр өргөтгөл олох</translation>
+<translation id="1953626242273481999">Алсын дебаг хийхийг зөвшөөрөх үү?</translation>
 <translation id="1953796913175502363">Ажлын профайлаа тохируулна уу</translation>
 <translation id="1954597385941141174">Сайтууд USB төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="1954813140452229842">Хуваалцлыг залгаж чадсангүй. Мандат үнэмлэхээ шалгаад дахин оролдоно уу.</translation>
@@ -1771,6 +1772,7 @@
 <translation id="2192505247865591433">Хэнээс:</translation>
 <translation id="219283042927675668">Бүлэг дэх табууд</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> таны шинэ табын хуудсыг удирдаж байгаа ба шинэ табд нээгдэнэ</translation>
+<translation id="2192982266585216032">&amp;Төлбөр</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
 <translation id="2195331105963583686">Та энэ <ph name="DEVICE_TYPE" />-г ийм хугацааны дараа ашиглах боломжтой хэвээр байх боловч энэ нь программ хангамж болон аюулгүй байдлын автомат шинэчлэлтийг авах боломжгүй байна.</translation>
 <translation id="2195729137168608510">И-мэйл хамгаалалт</translation>
@@ -1806,6 +1808,9 @@
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="222115440608612541">Нар мандах болон нар жаргах үед загваруудыг сэлгээрэй</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Гаднын апп энэ Chrome-н харилцан үйлдлийг дебаг хийхийн тулд бүрэн хянахыг хүсэж байна. Үүнд таны хадгалсан өгөгдөл, күүки, сайтын өгөгдөлд хандах эрх болон дурын URL руу шилжих чадвар багтана.
+
+Зөвхөн веб хөгжүүлэгчид энэ онцлогийг асааж, зөвхөн итгэмжлэгдсэн аппуудтай ашиглах ёстой.</translation>
 <translation id="222201875806112242">Нэргүй медиа эх сурвалж</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2224444042887712269">Энэ тохиргоо нь <ph name="OWNER_EMAIL" />-д хамаатай.</translation>
@@ -1914,6 +1919,7 @@
 <translation id="2294081976975808113">Дэлгэцийн нууцлал</translation>
 <translation id="2294358108254308676">Та <ph name="PRODUCT_NAME" />-ыг суулгахыг хүсч байна уу?</translation>
 <translation id="229477815107578534">Тохиргоогоо шалгана уу</translation>
+<translation id="229524410604268773">Тохиргооноос унтраах</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> илэрц</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" />-д нэвтрэх үед <ph name="DOMAIN_NAME" /> төхөөрөмжийг онлайн байхыг шаардана</translation>
 <translation id="2296218178174497398">Төхөөрөмж илрүүлэлт</translation>
@@ -3001,6 +3007,7 @@
 <translation id="3022072018423103125">Уулархаг нутаг</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />-г энэ Chromebook-с хасах бөгөөд <ph name="PRIMARY_EMAIL" />-д хадгалахгүй.</translation>
 <translation id="3022978424994383087">Үүнийг ойлгосонгүй.</translation>
+<translation id="3023204744987201088">&amp;Холбоо барих мэдээлэл</translation>
 <translation id="3023464535986383522">Ярихаар сонгох</translation>
 <translation id="3024374909719388945">24-цагийг ашиглах</translation>
 <translation id="3027296729579831126">Ойролцоо хуваалцах онцлогийг асаах</translation>
@@ -7941,6 +7948,7 @@
 <translation id="6495261233408033662">Нээлттэй табуудыг хаах</translation>
 <translation id="6495266441917713704">Wi-Fi-г шилжүүлэх боломжгүй</translation>
 <translation id="6495453178162183932">Загварыг Өгөгдмөл Chrome руу шинэчилсэн</translation>
+<translation id="6496641546298525838">Таны төхөөрөмж</translation>
 <translation id="6497784818439587832">Дэлгэц дээрх зүйлсээ жижигрүүлэх эсвэл томруулахын тулд дэлгэцийн хэмжээг өөрчлөөрэй</translation>
 <translation id="6497789971060331894">Хулганыг урвуу гүйлгэх</translation>
 <translation id="6498249116389603658">&amp;Таны бүх хэл</translation>
@@ -9763,6 +9771,7 @@
 <translation id="7759809451544302770">Сонголтын</translation>
 <translation id="7760176388948986635">Байршлын зөвшөөрөлтэй ChromeOS, Android апп, вебсайт, үйлчилгээнүүдэд энэ төхөөрөмжийн байршлыг ашиглахыг зөвшөөрнө үү. Байршлын нарийвчлал Android апп, үйлчилгээнүүдийг илүү нарийвчилсан байршлаар хангадаг. Ингэхийн тулд Google утасгүй дохионы байршлыг нийтийн оролцоотой цуглуулах зорилгоор энэ төхөөрөмжөөс төхөөрөмжийн мэдрэгч, утасгүй дохионы мэдээллийг үе үе боловсруулдаг. Эдгээрийг аливаа хувь хүнийг тодорхойлолгүйгээр байршлын нарийвчлал, байршилд тулгуурласан үйлчилгээнүүдийг сайжруулах, Google-н, гуравдагч талуудын хэрэглэгчдийн хэрэгцээг хангах хууль ёсны ашиг сонирхолд тулгуурлан Google-н үйлчилгээнүүдийг сайжруулах, хэвийн үргэлжлүүлэх, үйлчилгээнүүдээр хангахад ашигладаг.</translation>
 <translation id="7762024824096060040">Энэ бүртгэлийг ашиглах боломжгүй</translation>
+<translation id="776324966908034528">Хөтчийн прокси тохиргоог олон эх сурвалжаас хянадаг</translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />-н <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">Бүлгийг шинэ цонхонд нээх</translation>
@@ -11014,6 +11023,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />-г харилцагчид руугаа нэмэх</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" />-н сайтын өгөгдөл болон зөвшөөрлийг устгах уу?</translation>
 <translation id="8617748779076050570">Аюулгүй холболтын ID: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Холбоо барих мэдээлэл</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Таны төхөөрөмж дээр веб аппуудыг суулгах зөвшөөрөлгүй</translation>
 <translation id="8619803522055190423">Сүүдэр буулгах</translation>
@@ -11613,6 +11623,7 @@
 <translation id="90033698482696970">Боломжтой eSIM профайлууд байгаа эсэхийг автоматаар скан хийх үү?</translation>
 <translation id="9003647077635673607">Бүх вебсайт дээр зөвшөөрөх</translation>
 <translation id="9005774573776346118">Нууц үг, хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
+<translation id="9006511997799670136">Танай байгууллага</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> энэ холбоосыг аппад нээхийг хүсэж байна.</translation>
 <translation id="9008201768610948239">Алгас</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />-н дэлгэрэнгүй мэдээллийн хуудасны буцах товч</translation>

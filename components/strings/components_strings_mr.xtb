@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{फाइल डाउनलोड करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल डाउनलोड करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="2923275635648511531">सन केअर आणि टॅनिंग उत्पादने</translation>
 <translation id="292371311537977079">Chrome सेटिंग्ज</translation>
+<translation id="2925032407415783182">Wallet मध्ये इव्हेंटचे तिकीट सेव्ह करा</translation>
 <translation id="2925454999967523701">दस्तऐवज तयार करा बटण, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="2925673989565098301">वितरण पद्धत</translation>
 <translation id="2928426578619531300">वापरकर्त्याशी संलग्न</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">URL पॅटर्न "<ph name="URL_PATTERN" />" मध्ये पाथ नमूद केलेला आहे. या कीसाठी पाथना सपोर्ट नाही, कृपया पाथ काढून टाका आणि पुन्हा प्रयत्न करा. उदा. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">पिकअप पद्धत</translation>
 <translation id="3399161914051569225">वेअरेबल तंत्रज्ञान</translation>
-<translation id="3399930248910934354">Chrome सेटिंग्ज उघडा</translation>
 <translation id="3399952811970034796">वितरण पत्ता</translation>
 <translation id="3402261774528610252">कनेक्शनने ही साइट लोड करण्यासाठी कालबाह्य झालेले TLS 1.0 किंवा TLS 1.1 वापरले आहेत. ते भविष्यात बंद केले जातील. बंद केल्यानंतर, वापरकर्त्यांना ही साइट लोड करण्यापासून प्रतिबंधित केले जाईल. सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर सुरू करणे आवश्यक आहे.</translation>
 <translation id="3405664148539009465">फॉंट कस्टमाइझ करा</translation>
@@ -1726,6 +1726,7 @@
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
 <translation id="3795624560191557077">तुम्ही अलीकडेच सार्वजनिक डेटा भंगामध्ये आढळलेला पासवर्ड बदलला आहे. समस्या असल्यास, Google Password Manager हे तुम्हाला साइन इन करण्यात मदत करू शकते.</translation>
 <translation id="3799805948399000906">फॉन्टची विनंती केली</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> साइटवरून</translation>
 <translation id="3801297763951514916">तुम्ही अनेकदा भेट देता</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803481123869276674">तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून ईवॉलेट पहा</translation>
@@ -2425,6 +2426,7 @@
 <translation id="4930153903256238152">जास्त क्षमता</translation>
 <translation id="4930714375720679147">सुरू करा</translation>
 <translation id="4932035752129140860">तुम्ही पेस्ट किंवा अटॅच केलेला मजकूर विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवला जातो. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केला जाऊ शकतो व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतो.</translation>
+<translation id="4932733599132424254">तारीख</translation>
 <translation id="4933788293078559286">Pix वापरून पेमेंट करा</translation>
 <translation id="4934780484581617878">विंडो व्यवस्थापन</translation>
 <translation id="4936134414789135531">घातलेले <ph name="VALUE_NAME" /> आढळले नाही.</translation>
@@ -2968,6 +2970,7 @@
 <translation id="5847181246682413476">वीज पुरवठ्याच्या वस्तू</translation>
 <translation id="584902713199270089">डेटिंग आणि वैयक्तिक गोष्टी</translation>
 <translation id="5851548754964597211">टॅब सूची</translation>
+<translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5862579898803147654">स्टॅकर ८</translation>

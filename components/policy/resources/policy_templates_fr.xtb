@@ -1563,21 +1563,6 @@ Cette règle relative aux appareils est équivalente à la règle relative aux u
           Si cette règle est activée, la liste des comptes qu'elle définit est ajoutée aux paramètres de comptes Kerberos.
 
           Si cette règle est désactivée ou si elle n'est pas définie, aucun compte n'est ajouté aux paramètres de comptes Kerberos, et tous ceux déjà ajoutés avec cette règle sont supprimés. Les utilisateurs peuvent toujours ajouter des comptes manuellement si la règle KerberosAddAccountsAllowed est activée.</translation>
-<translation id="2103906574050962342">Configurer cette règle permet de sélectionner le proxy que le navigateur utilise en fonction de l'URL de destination et d'autres conditions. Cette règle est prioritaire sur les paramètres de proxy définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />, l'API d'extension <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou manuellement dans les paramètres utilisateur, le cas échéant.
-
-Si cette règle n'est pas configurée, cela n'a aucune incidence sur les autres règles de proxy et les paramètres utilisateur.
-
-Lorsque le navigateur doit décider quel proxy utiliser, les entrées de la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sont évaluées dans l'ordre jusqu'à ce qu'une entrée corresponde à au moins un des hôtes d'URL dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> et que toutes les entrées de <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> remplissent les conditions. En cas de correspondance, la valeur de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sera utilisée comme proxy. Si aucune correspondance n'est trouvée, les paramètres de proxy seront ceux définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Les entrées du champ <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondent à des valeurs de chaîne de fichiers PAC, telles que :
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-La première entrée accessible sera utilisée comme proxy.
-
-Le champ <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contient une liste de conditions qui doivent toutes être remplies pour que la règle de remplacement serve à déterminer le proxy à utiliser. Si ce champ n'est pas défini, l'entrée sera utilisée tant qu'au moins un hôte dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspondra.
-
-La condition <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> vérifie si l’<ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fourni peut être résolu en une adresse IP. La condition est considérée comme remplie, si la valeur de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> est "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />". Si la valeur est définie sur <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condition est considérée comme remplie si la résolution a échoué.</translation>
 <translation id="2104418465060359056">Enregistrer les informations des extensions et des plug-ins</translation>
 <translation id="210652463860415362">Accepter les contenus Web à l'aide de la fonctionnalité de transport de compression par dictionnaire</translation>
 <translation id="2106627642643925514">Remplace le mode d'impression par code défini par défaut. Si le mode est indisponible, cette règle est ignorée.</translation>
@@ -1842,6 +1827,7 @@ Cette règle ne s'applique qu'au mode navigation privée. Pour bloquer des URL p
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
+<translation id="2262701937800507517">Utiliser l'ordre des algorithmes de chiffrement par défaut de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Autoriser l'utilisation de gestionnaires de mots de passe tiers dans <ph name="PRODUCT_NAME" /> sous <ph name="ANDROID_NAME" /></translation>
 <translation id="2266422599396179941">Autoriser les utilisateurs à envoyer des commentaires</translation>
 <translation id="2268891553068901979">Si cette règle est activée, <ph name="GOOGLE_DRIVE_NAME" /> ne se synchronise pas avec l'application Fichiers sur <ph name="PRODUCT_OS_NAME" /> lorsque l'utilisateur est connecté à un réseau mobile. Les données sont seulement synchronisées avec Google Drive si l'utilisateur est connecté à un réseau Wi-Fi ou Ethernet.
@@ -2584,6 +2570,23 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2812417768214606683">Cette règle spécifie une liste d'appareils de stockage USB qui sont exclus des règles <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> et <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit qui identifient le modèle d'appareil USB spécifique.</translation>
+<translation id="2816735327277809365">Cette règle configure <ph name="PRODUCT_OS_NAME" /> afin que, lors de l'envoi de requêtes réseau depuis l'écran de connexion, soient ordonnés ses algorithmes de chiffrement préférés dans TLS 1.3 selon une préférence pour les algorithmes qui ont été approuvés par un régime de conformité spécifique.
+
+Si elle est configurée, cela ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Elle permet aux opérateurs de serveurs, qui souhaitent prendre en charge les clients avec et sans exigences de conformité, de faire la distinction entre ces clients et d'appliquer uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue aux clients explicitement configurés pour les privilégier.
+
+Si vous définissez la règle sur "<ph name="CNSA_NAME" />", <ph name="PRODUCT_OS_NAME" /> privilégie les algorithmes de chiffrement requis pour la conformité avec les versions 1.0 et 2.0 de la suite Commercial National Security Algorithm (CNSA 1.0 et 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_OS_NAME" /> utilise ses algorithmes de chiffrement par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_OS_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> sera plus lent lors de l'envoi de requêtes réseau depuis l'écran de connexion.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
 <translation id="2816964824289752181">Activer <ph name="DESK_API_NAME" /> pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers</translation>
 <translation id="2818074121667686266">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture audio, sauf si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
 
@@ -4430,11 +4433,11 @@ Si cette règle n'est pas configurée, la fréquence par défaut (1 jour) est a
 <translation id="4122473079291425973">Fiches affichées sur la page Nouvel onglet si du contenu est disponible, avec toutefois la possibilité pour l'utilisateur de modifier ce paramètre</translation>
 <translation id="4122565688998751716">Cette règle est obsolète (veuillez utiliser la règle <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> à la place).
 
-Elle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications natives sur Linux.
+Elle détermine si <ph name="PRODUCT_NAME" /> utilisera les notifications natives sur Linux.
 
-Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications natives.
+Si elle est définie sur True ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilisera les notifications natives.
 
-Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications natives. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
+Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les notifications natives. Le Centre des messages de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
 <translation id="4126966979883096890">Permet de dresser la liste des formats d'URL des sites qui accordent automatiquement l'autorisation d'utiliser des polices locales. Cela étend la capacité des sites à voir les informations sur les polices locales.
 
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Tout chemin d'accès dans le format d'URL est donc ignoré.
@@ -4954,6 +4957,25 @@ Si cette règle n'est pas configurée, les origines d'applis Web isolées peuven
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
+<translation id="4485667899983529614">Cette règle configure <ph name="PRODUCT_OS_NAME" /> afin que, lors de l'envoi de requêtes réseau depuis l'écran de connexion, soient ordonnées ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 selon une préférence pour les algorithmes qui ont été approuvés par un régime de conformité spécifique.
+
+Si elle est configurée, cela ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Elle permet aux opérateurs de serveurs, qui souhaitent prendre en charge les clients avec et sans exigences de conformité, de faire la distinction entre ces clients et d'appliquer uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue aux clients explicitement configurés pour les privilégier.
+
+Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_OS_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_OS_NAME" /> utilise ses méthodes d'échange de clés par défaut.
+
+Si cette règle est définie sur une valeur qui configure <ph name="PRODUCT_OS_NAME" /> de sorte à privilégier un algorithme d'accord de clé post-quantique, mais que <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> est désactivé, le paramètre de <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> prévaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_OS_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> sera plus lent lors de l'envoi de requêtes réseau depuis l'écran de connexion.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
 <translation id="4488959486611931919">Remarque : Aucune panne de site n'a été signalée depuis que Chrome a commencé à bloquer ces cookies par défaut à partir de M118. Cette fonctionnalité ne sera donc plus configurable (et cette règle n'aura aucun effet) à partir de M127.
 
 Cette règle permet de désactiver temporairement les modifications apportées à la façon dont Chrome traite les cookies définis via JavaScript qui contiennent certains caractères de contrôle (NULL, retour chariot et saut de ligne).
@@ -5480,6 +5502,7 @@ Cette règle est temporaire et sera supprimée dès le lancement de l'annulation
 <translation id="4802905909524200151">Configurer le comportement de la fonctionnalité de mise à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Redémarrer à chaque déconnexion de l'utilisateur.</translation>
 <translation id="4807950475297505572">Les comptes utilisateurs utilisés le moins récemment sont supprimés jusqu'à ce que l'espace libre soit suffisant.</translation>
+<translation id="4808129082654355104">Privilégier des algorithmes de chiffrement spécifiques pour TLS pour l'écran de connexion de l'appareil</translation>
 <translation id="4812270373673968774">Si cette règle est définie sur "Always", l'étagère <ph name="PRODUCT_OS_NAME" /> est masquée automatiquement. Si cette règle est définie sur "Never", l'étagère n'est jamais masquée automatiquement.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, les utilisateurs choisissent si l'étagère doit être masquée automatiquement ou non.</translation>
@@ -6097,11 +6120,11 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="5205352023880027050">Ne pas activer la fonctionnalité EphemeralNetworkPolicies.</translation>
 <translation id="5205385499831960279">Appliquer des restrictions aux requêtes adressées à des points de terminaison du réseau local</translation>
 <translation id="5206454085187851382">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
-<translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications système sur Linux.
+<translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilisera les notifications système sur Linux.
 
-Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications système.
+Si elle est définie sur True ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilisera les notifications système.
 
-Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications système. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
+Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les notifications système. Le Centre des messages de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
 <translation id="5207700504551161524">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de connexion.
 
 Chaque élément doit correspondre à une URL faisant référence à un fichier image. L'image doit être au format JPEG et elle ne doit pas dépasser 8 Mo. Les URL non valides et images non compatibles seront ignorées. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et les conservera dans un cache local.
@@ -6313,6 +6336,7 @@ Si cette règle est désactivée, l'utilisateur ne peut pas envoyer de mots de p
 Cette fonctionnalité n'est pas disponible si la synchronisation des mots de passe est désactivée (soit dans les paramètres de l'utilisateur, soit si la règle <ph name="SYNC_DISABLED" /> est activée).
 
 Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne peuvent donc pas partager de mots de passe.</translation>
+<translation id="5326771913945855850">Utiliser les groupes compatibles par défaut de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
 <translation id="5329018127554115226">Le mode Haute efficacité sera désactivé.</translation>
@@ -9498,6 +9522,15 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7341773449551289679">Liste d'autorisation de stockage externe</translation>
 <translation id="7343004974628511824">Procéder aux contrôles d'interception DNS</translation>
 <translation id="7343497214039883642">Fichier de configuration des imprimantes d'entreprise pour des appareils</translation>
+<translation id="7344533124201531786">Configurez la liste des domaines sur lesquels <ph name="PRODUCT_NAME" /> doit désactiver le <ph name="PASSWORD_MANAGER_NAME" />. Cela signifie que les workflows d'enregistrement et de remplissage seront désactivés, de sorte que les mots de passe de ces sites Web ne pourront pas être enregistrés ou remplis automatiquement dans des formulaires Web.
+
+Si un domaine figure dans la liste, le <ph name="PASSWORD_MANAGER_NAME" /> sera désactivé pour ce domaine.
+
+Si un domaine n'est pas présent dans la liste, le <ph name="PASSWORD_MANAGER_NAME" /> sera disponible pour ce domaine.
+
+Si cette règle n'est pas configurée, le <ph name="PASSWORD_MANAGER_NAME" /> sera disponible pour tous les domaines.
+
+Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Désactiver l'entrée audio</translation>
 <translation id="7358299261566939984">Activer ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Activer <ph name="LACROS_NAME" /></translation>
@@ -9863,12 +9896,6 @@ Si cette règle est désactivée ou si elle n'est pas configurée, les règles c
 Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
 
 Les règles à fusionner doivent aussi être définies dans <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> ou <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Cette règle sera ignorée si aucune des règles mentionnées ci-dessus n'est configurée.</translation>
-<translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Cette règle est une option générale pour toutes les règles définies dans la règle DataLeakPreventionRulesList.
       Si cette règle est définie sur "True", le reporting en temps réel des événements de prévention des fuites de données sera activée.
@@ -9960,6 +9987,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7712245244073542805">Impression de plate-forme à partir d'un processus de navigateur.</translation>
 <translation id="7713608076604149344">Restrictions de téléchargement</translation>
 <translation id="7713845740295404764">Signaler les événements de connexion/déconnexion</translation>
+<translation id="7715155449217638248">Privilégier des algorithmes d'échange de clés spécifiques pour TLS pour l'écran de connexion de l'appareil</translation>
 <translation id="7715711044277116530">Pourcentage d'adaptation du délai d'assombrissement de l'écran en mode Présentation</translation>
 <translation id="7715838249298819250">Ne pas autoriser la Capture de texte</translation>
 <translation id="7716020145539921591">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
@@ -11149,12 +11177,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="8549906780629620346">Activer la récupération de compte</translation>
 <translation id="855182606166519378">Les utilisateurs ne peuvent pas lancer de mises à jour du micrologiciel</translation>
 <translation id="8553491595730354263">Permet à l'hôte d'accès à distance d'utiliser des authentifications par code ou association lorsqu'il accepte des connexions client</translation>
-<translation id="8554750769356971993">Règle permettant de décider si le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre des annonces suggérées par le site <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Désactiver Sélectionner pour écouter sur l'écran de connexion</translation>
 <translation id="8561512522781085002">Les paramètres Page précédente/Page suivante utilisent le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="8562398722263115493">M'aider à écrire est un assistant de rédaction basé sur l'IA pour les contenus courts sur le Web. Le contenu suggéré dépend des prompts saisis par l'utilisateur et du contenu de la page Web.

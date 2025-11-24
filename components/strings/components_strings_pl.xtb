@@ -1169,6 +1169,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2922792708490674">{0,plural, =1{Pobieranie pliku zostało zablokowane}few{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Pobieranie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="2923275635648511531">Produkty do opalania i ochrony przed słońcem</translation>
 <translation id="292371311537977079">Ustawienia Chrome</translation>
+<translation id="2925032407415783182">Zapisz bilet na wydarzenie w Portfelu</translation>
 <translation id="2925454999967523701">Przycisk Utwórz dokument; aktywuj, aby szybko utworzyć nowy dokument Google</translation>
 <translation id="2925673989565098301">Metoda dostawy</translation>
 <translation id="2928426578619531300">Użytkownik jest powiązany</translation>
@@ -1464,7 +1465,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3392028486601120379">Wzorzec adresu URL „<ph name="URL_PATTERN" />” ma określoną ścieżkę. W przypadku tego klucza ścieżki nie są obsługiwane. Usuń ścieżkę i spróbuj ponownie, np. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Metoda odbioru</translation>
 <translation id="3399161914051569225">Urządzenia do noszenia</translation>
-<translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3399952811970034796">Adres dostawy</translation>
 <translation id="3402261774528610252">Do połączenia z tą stroną użyto protokołu TLS 1.0 lub 1.1. Obie te wersje zostały wycofane, a w przyszłości zostaną wyłączone. Po ich wyłączeniu użytkownicy nie będą mogli otwierać tej strony. Serwer powinien korzystać z protokołu TLS w wersji 1.2 lub nowszej.</translation>
 <translation id="3405664148539009465">Dostosuj czcionki</translation>
@@ -1727,6 +1727,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
 <translation id="3795624560191557077">Ostatnio zmieniono hasło, które zostało ujawnione w wyniku naruszenia bezpieczeństwa danych. W razie problemów z logowaniem skorzystaj z pomocy Menedżera haseł Google.</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
+<translation id="3800436529451849929">Ze strony <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Często odwiedzasz</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803481123869276674">Podczas zakupów w Chrome wyświetlaj e-portfel jako opcję</translation>
@@ -2426,6 +2427,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4930153903256238152">Duża pojemność</translation>
 <translation id="4930714375720679147">Włącz</translation>
 <translation id="4932035752129140860">Wklejony lub dołączony tekst jest wysyłany do Google Cloud lub innych firm w celu przeanalizowania. Może zostać na przykład przeskanowany pod kątem danych wrażliwych, a także może być przechowywany zgodnie z zasadami firmy i widoczny dla administratora.</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Zapłać przez Pix</translation>
 <translation id="4934780484581617878">Zarządzanie oknami</translation>
 <translation id="4936134414789135531">Nie udało się znaleźć wstawionej wartości <ph name="VALUE_NAME" />.</translation>
@@ -2969,6 +2971,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5847181246682413476">Zasilacze i ładowarki</translation>
 <translation id="584902713199270089">Randki i ogłoszenia towarzyskie</translation>
 <translation id="5851548754964597211">Lista kart</translation>
+<translation id="5851868085455377790">Wystawca</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862579898803147654">Układarka 8</translation>

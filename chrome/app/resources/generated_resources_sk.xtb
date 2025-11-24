@@ -1766,6 +1766,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2192505247865591433">Zdroj:</translation>
 <translation id="219283042927675668">Karty v skupine</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> spravuje stránku na novej karte, otvorí sa na novej karte</translation>
+<translation id="2192982266585216032">&amp;Platby</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2195331105963583686">Po tomto dátume budete môcť <ph name="DEVICE_TYPE" /> naďalej používať, ale už nebude dostávať automatické aktualizácie softvéru a zabezpečenia</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
@@ -2993,6 +2994,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3022072018423103125">Vysočina</translation>
 <translation id="3022361196600037287">Zariadenie <ph name="DEVICE" /> bude z tohto Chromebooku odstránené a do účtu <ph name="PRIMARY_EMAIL" /> sa neuloží.</translation>
 <translation id="3022978424994383087">Nebolo rozumieť.</translation>
+<translation id="3023204744987201088">&amp;Kontaktné údaje</translation>
 <translation id="3023464535986383522">Počúvanie vybraného textu</translation>
 <translation id="3024374909719388945">Použiť 24-hodinový režim hodín</translation>
 <translation id="3027296729579831126">Zapnúť Zdieľanie nablízku</translation>
@@ -7932,6 +7934,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6495261233408033662">Zavrieť otvorené karty</translation>
 <translation id="6495266441917713704">Wi‐Fi sa nedá preniesť</translation>
 <translation id="6495453178162183932">Motív bol aktualizovaný na predvolený v Chrome</translation>
+<translation id="6496641546298525838">Vaše zariadenie</translation>
 <translation id="6497784818439587832">Zmenou veľkosti zobrazenia môžete položky na obrazovke zmenšiť alebo zväčšiť</translation>
 <translation id="6497789971060331894">Obrátené posúvanie myšou</translation>
 <translation id="6498249116389603658">&amp;Všetky vaše jazyky</translation>
@@ -9758,6 +9761,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7759809451544302770">Voliteľné</translation>
 <translation id="7760176388948986635">Povoľte aplikáciám, webom a službám pre ChromeOS a Android s povoleným prístupom k polohe používať polohu tohto zariadenia. Presnosť určovania polohy poskytuje aplikáciám aj službám pre Android presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z tohto zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie kohokoľvek totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov.</translation>
 <translation id="7762024824096060040">Tento účet sa nedá použiť</translation>
+<translation id="776324966908034528">Nastavenia proxy servera prehliadača ovládajú viaceré zdroje</translation>
 <translation id="7764225426217299476">Pridať adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z domény <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Otvoriť skupinu v novom okne</translation>
@@ -11011,6 +11015,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8616441548384109662">Pridať používateľa <ph name="CONTACT_NAME" /> do kontaktov</translation>
 <translation id="8617601976406256334">Chcete odstrániť dáta a povolenia webu <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Bezpečný spojovací kód: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Kontaktné údaje</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Nemôžu žiadať o povolenie inštalovať webové aplikácie vo vašom zariadení</translation>
 <translation id="8619803522055190423">Vrhnutý tieň</translation>
@@ -11614,6 +11619,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="90033698482696970">Chcete automaticky vyhľadávať dostupné profily eSIM?</translation>
 <translation id="9003647077635673607">Povoliť na všetkých webových stránkach</translation>
 <translation id="9005774573776346118">Ak chcete mať heslá, záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Vaša organizácia</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> chce otvoriť tento odkaz v aplikácii.</translation>
 <translation id="9008201768610948239">Ignorovať</translation>
 <translation id="9008201858626224558">Tlačidlo, pomocou ktorého sa vrátite na informačnú stránku <ph name="SUBPAGE_TITLE" />.</translation>

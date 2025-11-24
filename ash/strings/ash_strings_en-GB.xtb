@@ -129,7 +129,7 @@
 <translation id="1404963891829069586">Focus sounds</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
-<translation id="141170878022560212">Middle Button</translation>
+<translation id="141170878022560212">Middle button</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
 <translation id="1414919006379339073">Close current window</translation>
 <translation id="1415846719612499304">Show network list. <ph name="STATE_TEXT" />.</translation>
@@ -320,7 +320,7 @@
 <translation id="2088116547584365419">games</translation>
 <translation id="2093792000875799555">Steam for Chromebook news</translation>
 <translation id="209965399369889474">Not connected to network</translation>
-<translation id="2107581415810719320">Other Button <ph name="BUTTON_NUMBER" /></translation>
+<translation id="2107581415810719320">Other button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
 <translation id="2108303511227308752">The Alt + Backspace keyboard shortcut has changed. To use the Delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2115680839221566783">Battery at <ph name="PERCENTAGE" />%. Charging on hold.</translation>

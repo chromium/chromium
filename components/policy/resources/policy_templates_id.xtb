@@ -1630,21 +1630,6 @@ Kebijakan perangkat ini setara dengan kebijakan pengguna yang ada, <ph name="SEC
           Jika kebijakan ini diaktifkan, daftar akun yang ditentukan oleh kebijakan akan ditambahkan ke setelan Akun Kerberos.
 
           Jika kebijakan ini dinonaktifkan atau tidak ditetapkan, tidak ada akun yang akan ditambahkan ke setelan Akun Kerberos dan semua akun yang sebelumnya ditambahkan dengan kebijakan ini akan dihapus. Pengguna masih dapat menambahkan akun secara manual jika kebijakan 'Pengguna dapat menambahkan akun Kerberos' diaktifkan.</translation>
-<translation id="2103906574050962342">Menyetel kebijakan ini akan mengonfigurasi aturan yang menentukan proxy mana yang digunakan browser, bergantung pada URL tujuan dan kondisi lainnya. Kebijakan ini akan lebih diutamakan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan pengguna manual jika ada yang disetel.
-
-Jika kebijakan ini tidak disetel, kebijakan proxy atau setelan pengguna lainnya tidak akan terpengaruh.
-
-Saat browser perlu memutuskan proxy mana yang akan digunakan, entri dari kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri cocok dengan setidaknya satu host URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan jika semua entri di <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> terpenuhi. Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sesuai dengan nilai string file PAC seperti:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Entri pertama yang dapat dijangkau akan digunakan sebagai proxy.
-
-Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantian dapat digunakan untuk menentukan proxy yang akan digunakan. Jika kebijakan ini tidak disetel, entri akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
-
-Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS yang diberikan <ph name="PROXY_OVERRIDE_RULES_HOST" /> dapat di-resolve ke alamat IP. Jika nilai <ph name="PROXY_OVERRIDE_RULES_RESULT" /> adalah "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", kondisi tersebut dianggap terpenuhi. Jika nilai tersebut disetel ke <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, kondisi akan dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="2104418465060359056">Melaporkan informasi Ekstensi dan Plugin</translation>
 <translation id="210652463860415362">Terima konten web yang menggunakan fitur transpor kamus kompresi</translation>
 <translation id="2106627642643925514">Mengganti mode pencetakan PIN default. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
@@ -1921,6 +1906,7 @@ Kebijakan ini hanya memengaruhi mode Samaran. Untuk memblokir URL bagi semua pro
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
+<translation id="2262701937800507517">Gunakan urutan cipher default <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Izinkan penggunaan Pengelola Sandi Pihak Ketiga di <ph name="PRODUCT_NAME" /> di <ph name="ANDROID_NAME" /></translation>
 <translation id="2266422599396179941">Izinkan pengguna mengirim masukan</translation>
 <translation id="2268891553068901979">Jika kebijakan disetel ke Aktif, sinkronisasi <ph name="GOOGLE_DRIVE_NAME" /> di aplikasi File <ph name="PRODUCT_OS_NAME" /> akan dinonaktifkan saat terhubung melalui koneksi seluler. Data hanya disinkronkan ke Drive saat terhubung melalui Wi-Fi atau Ethernet.
@@ -2718,6 +2704,23 @@ Jika kebijakan tidak disetel, <ph name="BLOCK_POPUPS_POLICY_NAME" /> akan berlak
 <translation id="2812417768214606683">Kebijakan ini menentukan daftar perangkat penyimpanan USB yang dikecualikan dari kebijakan <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> dan <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Entri untuk kebijakan ini berupa pasangan ID Vendor dan Kode Produk USB yang mengidentifikasi model perangkat USB tertentu.</translation>
+<translation id="2816735327277809365">Kebijakan ini mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk mengurutkan cipher enkripsi pilihannya di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui oleh skema kepatuhan tertentu, saat membuat permintaan jaringan dari layar login.
+
+Menyetel kebijakan ini tidak menjamin bahwa algoritma tertentu akan digunakan.
+
+Kebijakan ini dibuat bagi operator server, yang ingin mendukung klien dengan dan tanpa persyaratan kepatuhan, agar dapat membedakan kedua klien tersebut. Kebijakan ini hanya menggunakan algoritma non-default tertentu dengan peningkatan kekuatan kriptografi untuk klien yang secara eksplisit dikonfigurasi untuk memilih algoritma.
+
+Menyetel kebijakan ke '<ph name="CNSA_NAME" />' akan mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk memilih cipher yang diperlukan agar sesuai dengan Commercial National Security Algorithm Suite versi 1.0 dan 2.0 (CNSA 1.0 dan 2.0).
+
+Jika kebijakan ini tidak disetel atau disetel ke '<ph name="DEFAULT_NAME" />', <ph name="PRODUCT_OS_NAME" /> akan dikonfigurasi untuk menggunakan cipher defaultnya.
+
+Setelan kebijakan ini tidak diperlukan untuk keamanan. Kriptografi default yang digunakan oleh <ph name="PRODUCT_OS_NAME" /> sudah cukup kuat untuk menahan serangan brute force bahkan dengan daya sebesar Matahari.
+
+Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> akan menjadi lebih lambat saat membuat permintaan jaringan dari layar login.
+
+Kebijakan ini hanya memengaruhi TLS 1.3 dan QUIC; kebijakan ini tidak memengaruhi TLS versi sebelumnya.
+
+Kebijakan perangkat ini setara dengan kebijakan pengguna, <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />, tetapi berlaku untuk profil yang login di layar login.</translation>
 <translation id="2816964824289752181">Aktifkan <ph name="DESK_API_NAME" /> untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga</translation>
 <translation id="2818074121667686266">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dimintai akses perekaman audio kecuali untuk URL yang ditentukan dalam daftar AudioCaptureAllowedUrls.
 
@@ -5161,6 +5164,25 @@ Jika kebijakan ini tidak disetel, origin Aplikasi Web Terisolasi akan meminta ak
 
       Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">Mengonfigurasi URL halaman Tab Baru</translation>
+<translation id="4485667899983529614">Kebijakan ini mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk mengurutkan algoritma perjanjian kunci pilihannya (grup yang didukung) di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui oleh skema kepatuhan tertentu, saat membuat permintaan jaringan dari layar login.
+
+Menyetel kebijakan ini tidak menjamin bahwa algoritma tertentu akan digunakan.
+
+Kebijakan ini dibuat bagi operator server, yang ingin mendukung klien dengan dan tanpa persyaratan kepatuhan, agar dapat membedakan kedua klien tersebut. Kebijakan ini hanya menggunakan algoritma non-default tertentu dengan peningkatan kekuatan kriptografi untuk klien yang secara eksplisit dikonfigurasi untuk memilih algoritma.
+
+Menyetel kebijakan ke '<ph name="CNSA2_NAME" />' akan mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk memilih metode pertukaran kunci yang diperlukan agar sesuai dengan Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Jika kebijakan ini tidak disetel, atau disetel ke '<ph name="DEFAULT_NAME" />', <ph name="PRODUCT_OS_NAME" /> akan dikonfigurasi untuk menggunakan metode pertukaran kunci defaultnya.
+
+Jika kebijakan ini disetel ke nilai yang akan mengonfigurasi <ph name="PRODUCT_OS_NAME" /> untuk memilih algoritma perjanjian kunci pasca-kuantum, tetapi <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> disetel ke Nonaktif, setelan <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> akan diprioritaskan.
+
+Setelan kebijakan ini tidak diperlukan untuk keamanan. Kriptografi default yang digunakan oleh <ph name="PRODUCT_OS_NAME" /> sudah cukup kuat untuk menahan serangan brute force bahkan dengan daya sebesar Matahari.
+
+Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> akan menjadi lebih lambat saat membuat permintaan jaringan dari layar login.
+
+Kebijakan ini hanya memengaruhi TLS 1.3 dan QUIC; kebijakan ini tidak memengaruhi TLS versi sebelumnya.
+
+Kebijakan perangkat ini setara dengan kebijakan pengguna, <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, tetapi berlaku untuk profil yang login di layar login.</translation>
 <translation id="4488959486611931919">Catatan: Tidak ada kerusakan situs yang telah dilaporkan sejak Chrome mulai memblokir cookie ini secara default mulai M118, sehingga fungsi ini tidak akan dapat dikonfigurasi (dan kebijakan ini tidak akan terpengaruh) mulai M127.
 
 Kebijakan ini memberikan penghentian sementara untuk perubahan cara Chrome menangani cookie yang ditetapkan melalui JavaScript yang berisi karakter kontrol tertentu (NULL, enter, dan line feed).
@@ -5707,6 +5729,7 @@ Kebijakan ini bersifat sementara dan akan dihapus segera setelah pengurangan gem
 <translation id="4802905909524200151">Mengonfigurasi perilaku update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Selalu reboot saat pengguna logout.</translation>
 <translation id="4807950475297505572">Pengguna yang paling jarang digunakan dihapus sampai terdapat cukup ruang kosong</translation>
+<translation id="4808129082654355104">Memilih algoritma cipher enkripsi tertentu untuk TLS untuk layar login perangkat</translation>
 <translation id="4812270373673968774">Jika kebijakan ditetapkan ke Selalu (Always), rak <ph name="PRODUCT_OS_NAME" /> akan disembunyikan secara otomatis. Jika kebijakan ditetapkan ke Tidak Pernah (Never), rak tidak akan pernah disembunyikan secara otomatis.
 
       Jika Anda menetapkan kebijakan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, pengguna akan menentukan untuk menyembunyikan rak secara otomatis atau tidak.</translation>
@@ -6577,6 +6600,7 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengirim sandi dari Pen
 Fitur ini tidak tersedia jika sinkronisasi Sandi dinonaktifkan (melalui setelan pengguna ataupun dengan menyetel kebijakan <ph name="SYNC_DISABLED" /> ke Aktif).
 
 Akun terkelola tidak memenuhi syarat untuk bergabung atau membuat grup keluarga, sehingga tidak dapat berbagi sandi.</translation>
+<translation id="5326771913945855850">Gunakan grup default yang didukung <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="532848608876725157">Aktifkan DNS-over-HTTPS dengan fallback yang tidak aman</translation>
 <translation id="5328965694451556034">Melaporkan login/logout</translation>
 <translation id="5329018127554115226">Mode Efisiensi Tinggi akan dinonaktifkan.</translation>
@@ -9936,6 +9960,15 @@ Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph nam
 <translation id="7341773449551289679">Daftar yang Diberi Akses ke Penyimpanan Eksternal</translation>
 <translation id="7343004974628511824">Lakukan pemeriksaan intersepsi DNS</translation>
 <translation id="7343497214039883642">File konfigurasi printer perusahaan untuk perangkat</translation>
+<translation id="7344533124201531786">Konfigurasi daftar domain tempat <ph name="PRODUCT_NAME" /> harus menonaktifkan <ph name="PASSWORD_MANAGER_NAME" />. Artinya, alur kerja Simpan dan Isi Otomatis akan dinonaktifkan, sehingga sandi untuk situs tersebut tidak dapat disimpan atau diisi otomatis ke formulir web.
+
+Jika ada domain dalam daftar, <ph name="PASSWORD_MANAGER_NAME" /> akan dinonaktifkan untuk domain tersebut.
+
+Jika domain tidak ada dalam daftar, <ph name="PASSWORD_MANAGER_NAME" /> akan tersedia untuk domain tersebut.
+
+Jika kebijakan ini tidak disetel, <ph name="PASSWORD_MANAGER_NAME" /> akan tersedia untuk semua domain.
+
+Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Nonaktifkan input audio</translation>
 <translation id="7358299261566939984">Aktifkan ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Aktifkan <ph name="LACROS_NAME" /></translation>
@@ -10308,12 +10341,6 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, kebijakan cloud tingk
 Hanya kebijakan yang berasal dari pengguna aman yang dapat diprioritaskan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
 
 Kebijakan yang perlu digabungkan juga harus disetel di <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> atau <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Kebijakan ini akan diabaikan jika tidak satu pun dari dua kebijakan yang disebutkan sebelumnya dikonfigurasi.</translation>
-<translation id="7643151458117317518">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
-
-Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
-Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
-
-Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.</translation>
 <translation id="7643883929273267746">Batasi akun yang terlihat di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Kebijakan ini adalah tombol umum untuk semua aturan yang ditentukan dalam kebijakan DataLeakPreventionRulesList.
       Jika kebijakan ini disetel ke Benar (True), pelaporan real-time peristiwa pencegahan kebocoran data akan diaktifkan.
@@ -10404,6 +10431,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="7712245244073542805">Pencetakan platform dari proses browser.</translation>
 <translation id="7713608076604149344">Batasan download</translation>
 <translation id="7713845740295404764">Laporkan peristiwa login/logout</translation>
+<translation id="7715155449217638248">Pilih algoritma pertukaran kunci tertentu untuk TLS di layar login perangkat</translation>
 <translation id="7715711044277116530">Persentase yang digunakan untuk menskalakan penundaan layar redup dalam mode presentasi</translation>
 <translation id="7715838249298819250">Jangan izinkan Pengambilan Teks.</translation>
 <translation id="7716020145539921591">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -11628,12 +11656,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="8549906780629620346">Aktifkan pemulihan akun</translation>
 <translation id="855182606166519378">Pengguna tidak dapat memulai update firmware</translation>
 <translation id="8553491595730354263">Izinkan host akses jarak jauh menggunakan autentikasi PIN dan penyambungan saat menerima koneksi klien</translation>
-<translation id="8554750769356971993">Kebijakan untuk mengontrol apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
-
-Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Iklan yang disarankan situs akan dinonaktifkan untuk pengguna Anda.
-Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
-
-Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.</translation>
 <translation id="8559221882677768248">Nonaktifkan fitur klik untuk diucapkan di layar login</translation>
 <translation id="8561512522781085002">Setelan PageUp/PageDown menggunakan pintasan yang berisi pengubah penelusuran</translation>
 <translation id="8562398722263115493">Bantu Tulis adalah asisten penulisan berbasis AI untuk konten pendek di web. Saran konten didasarkan pada perintah yang dimasukkan oleh pengguna dan konten halaman web.

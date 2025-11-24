@@ -1563,21 +1563,6 @@ Dit apparaatbeleid is vergelijkbaar met het bestaande gebruikersbeleid <ph name=
           Als dit beleid aanstaat, wordt de lijst met accounts die is gespecificeerd door het beleid, toegevoegd aan de instellingen voor Kerberos-accounts.
 
           Als dit beleid uitstaat of niet is ingesteld, worden er geen accounts toegevoegd aan de instellingen voor Kerberos-accounts en worden alle accounts verwijderd die eerder zijn toegevoegd via dit beleid. Gebruikers kunnen nog altijd handmatig accounts toevoegen als het beleid 'Gebruikers kunnen Kerberos-accounts toevoegen' aanstaat.</translation>
-<translation id="2103906574050962342">Als je dit beleid instelt, configureer je regels die selecteren welke proxy de browser gebruikt, afhankelijk van de URL van de bestemming en andere voorwaarden. Dit beleid heeft voorrang op proxyinstellingen die zijn ingesteld via het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />, de extensie-API <ph name="PROXY_SETTINGS_EXTENSION_API" /> of handmatige gebruikersinstellingen (als die zijn ingesteld).
-
-Als je het beleid niet instelt, heeft dit geen effect op andere proxybeleidsregels of gebruikersinstellingen.
-
-Als de browser moet beslissen welk proxy moet worden gebruikt, worden de items van het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> in volgorde geëvalueerd totdat een item overeenkomt met minstens een van de URL-hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> en als aan alle items in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> is voldaan. De waarde in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> wordt gebruikt als proxy voor een dergelijke overeenkomst. Als er geen overeenkomst wordt gevonden, vallen de proxy-instellingen terug op wat is ingesteld in het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-De veldinvoer <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> komt overeen met tekenreekswaarden van PAC-bestanden, zoals:
-  * DIRECT
-  * PROXY host:poort
-  * HTTPS host:poort
-De eerste bereikbare invoer wordt gebruikt als proxy.
-
-Het veld <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> bevat een lijst met voorwaarden waaraan allemaal moet worden voldaan voordat de overschrijvingsregel wordt gebruikt om te bepalen welke proxy moet worden gebruikt. Als je dit niet instelt, wordt de vermelding gebruikt zolang er minstens één host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> overeenkomt.
-
-De voorwaarde <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> controleert of de ingevoerde DNS-naam <ph name="PROXY_OVERRIDE_RULES_HOST" /> kan worden omgezet in een IP-adres. Als de waarde van <ph name="PROXY_OVERRIDE_RULES_RESULT" /> <ph name="PROXY_OVERRIDE_RULES_RESOLVES" /> is, wordt de voorwaarde als voldaan beschouwd. Als de waarde in plaats daarvan is ingesteld op <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, wordt de voorwaarde als voldaan beschouwd als de omzetting is mislukt.</translation>
 <translation id="2104418465060359056">Gegevens over extensies en plug-ins rapporteren</translation>
 <translation id="210652463860415362">Webcontent accepteren via de compressiefunctie voor woordenboekoverdracht</translation>
 <translation id="2106627642643925514">Hiermee wordt de standaardmodus voor afdrukken met pincode overschreven. Als de modus niet beschikbaar is, wordt dit beleid genegeerd.</translation>
@@ -1841,6 +1826,7 @@ Dit beleid is alleen van toepassing op de incognitomodus. Als je URL's wilt blok
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
+<translation id="2262701937800507517">Standaard coderingsvolgorde van <ph name="PRODUCT_OS_NAME" /> gebruiken</translation>
 <translation id="2263881357524831360">Toestaan dat wachtwoordmanagers van derden worden gebruikt in <ph name="PRODUCT_NAME" /> op <ph name="ANDROID_NAME" /></translation>
 <translation id="2266422599396179941">Toestaan dat gebruikers feedback indienen</translation>
 <translation id="2268891553068901979">Als je het beleid toepast, wordt <ph name="GOOGLE_DRIVE_NAME" />-synchronisatie uitgezet in de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> als de gebruiker een mobiele verbinding gebruikt. Gegevens worden alleen naar Drive gesynchroniseerd bij een verbinding met wifi of ethernet.
@@ -2582,6 +2568,23 @@ Als je het beleid niet instelt, is <ph name="BLOCK_POPUPS_POLICY_NAME" /> van to
 <translation id="2812417768214606683">Met dit beleid wordt een lijst met USB-opslagapparaten aangegeven die zijn uitgesloten van de beleidsregels <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> en <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat het specifieke USB-apparaatmodel kan worden geïdentificeerd.</translation>
+<translation id="2816735327277809365">Met dit beleid stel je <ph name="PRODUCT_OS_NAME" /> in om de voorkeursversleutelingsalgoritmen in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime, als er netwerkverzoeken worden gedaan vanaf het inlogscherm.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> zo ingesteld dat het de voorkeur geeft aan versleutelingen die nodig zijn voor naleving van de Commercial National Security Algorithm Suite versie 1.0 en 2.0 (CNSA 1.0 en 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> ingesteld om de standaardcijfers te gebruiken.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_OS_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_OS_NAME" /> trager als je netwerkverzoeken doet vanaf het inlogscherm.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
+
+Dit apparaatbeleid is vergelijkbaar met het gebruikersbeleid <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="2816964824289752181"><ph name="DESK_API_NAME" /> aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden</translation>
 <translation id="2818074121667686266">Als je het beleid toepast of niet instelt, wordt gebruikers in een prompt om toegang tot audio-opnamen gevraagd, met uitzondering van de URL's die zijn ingesteld in de lijst AudioCaptureAllowedUrls.
 
@@ -4948,6 +4951,25 @@ Als je het beleid niet instelt, kunnen geïsoleerde web-app-oorsprongen om toega
 
       Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="4485425108474077672">De URL van de pagina 'Nieuw tabblad' configureren</translation>
+<translation id="4485667899983529614">Met dit beleid stel je <ph name="PRODUCT_OS_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime, als je netwerkverzoeken doet vanaf het inlogscherm.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
+
+Als je dit beleid instelt op een waarde waarmee je <ph name="PRODUCT_OS_NAME" /> instelt om een algoritme voor de post-quantum sleutelovereenkomst te gebruiken, maar <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> niet toepast, heeft de instelling van <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> voorrang.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_OS_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_OS_NAME" /> trager als je netwerkverzoeken doet vanaf het inlogscherm.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
+
+Dit apparaatbeleid is vergelijkbaar met het gebruikersbeleid <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="4488959486611931919">Opmerking: Er zijn geen sitebreuken gemeld sinds Chrome deze cookies standaard is gaan blokkeren vanaf M118. Deze functionaliteit is vanaf M127 dus niet meer instelbaar (en dit beleid heeft geen effect).
 
 Dit beleid biedt een tijdelijke afmelding voor wijzigingen in de manier waarop Chrome omgaat met cookies die zijn ingesteld via JavaScript en die bepaalde besturingstekens bevatten (NULL, regelterugloop en regelopschuiving).
@@ -5464,6 +5486,7 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 <translation id="4802905909524200151">Updategedrag voor <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware configureren</translation>
 <translation id="4804828344300125154">Altijd opnieuw opstarten na uitloggen gebruiker.</translation>
 <translation id="4807950475297505572">De gebruikers die het langst geleden gebruikt zijn, worden verwijderd totdat er voldoende vrije ruimte is</translation>
+<translation id="4808129082654355104">Specifieke versleutelingsalgoritmen voor TLS gebruiken voor het inlogscherm van het apparaat</translation>
 <translation id="4812270373673968774">Als je het beleid instelt op 'Always', wordt de <ph name="PRODUCT_OS_NAME" />-plank automatisch verborgen. Als je het beleid instelt op 'Never', wordt de plank nooit automatisch verborgen.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers zelf aangeven of de plank automatisch moet worden verborgen.</translation>
@@ -6283,6 +6306,7 @@ Als je het beleid uitzet, kunnen gebruikers geen wachtwoorden van Wachtwoordmana
 De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via de gebruikersinstellingen of als het beleid <ph name="SYNC_DISABLED" /> aanstaat).
 
 Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een maken en kunnen daarom geen wachtwoorden delen.</translation>
+<translation id="5326771913945855850">Standaard ondersteunde groepen van <ph name="PRODUCT_OS_NAME" /> gebruiken</translation>
 <translation id="532848608876725157">DNS-over-HTTPS met onbeveiligde fallback aanzetten</translation>
 <translation id="5328965694451556034">Inloggen/uitloggen rapporteren</translation>
 <translation id="5329018127554115226">De modus voor hoge efficiëntie wordt uitgezet.</translation>
@@ -9451,6 +9475,15 @@ Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in d
 <translation id="7341773449551289679">Toelatingslijst voor externe opslag</translation>
 <translation id="7343004974628511824">Controles voor DNS-onderschepping uitvoeren</translation>
 <translation id="7343497214039883642">Configuratiebestand voor zakelijke printers voor apparaten</translation>
+<translation id="7344533124201531786">Stel de lijst met domeinen in waarvoor <ph name="PRODUCT_NAME" /> <ph name="PASSWORD_MANAGER_NAME" /> moet uitzetten. Dit betekent dat de workflows Opslaan en Invullen worden uitgezet, zodat wachtwoorden voor die websites niet worden opgeslagen of automatisch worden ingevuld in webformulieren.
+
+Als een domein in de lijst staat, wordt <ph name="PASSWORD_MANAGER_NAME" /> voor dat domein uitgezet.
+
+Als een domein niet in de lijst staat, is <ph name="PASSWORD_MANAGER_NAME" /> beschikbaar voor dat domein.
+
+Als je het beleid niet instelt, is <ph name="PASSWORD_MANAGER_NAME" /> beschikbaar voor alle domeinen.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="7357148531287978404">Audio-invoer uitzetten</translation>
 <translation id="7358299261566939984">ServiceWorkerAutoPreload aanzetten</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aanzetten</translation>
@@ -9816,12 +9849,6 @@ Als je het beleid niet toepast of niet instelt, kunnen cloudbeleidsregels op geb
 Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen voorrang krijgen. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
 
 Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> of <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Dit beleid wordt genegeerd als geen van de twee eerder genoemde beleidsregels is ingesteld.</translation>
-<translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting aan- of uitzetten op hun apparaat.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.</translation>
 <translation id="7643883929273267746">Accounts die zichtbaar zijn in <ph name="PRODUCT_NAME" /> beperken</translation>
 <translation id="7648664871086956188">Dit beleid is een algemene schakelaar voor alle regels die zijn gedefinieerd in het beleid DataLeakPreventionRulesList.
       Als je dit beleid instelt op True, wordt realtime rapportage van gebeurtenissen ter voorkoming van datalekken aangezet.
@@ -9912,6 +9939,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7712245244073542805">Platformgebaseerd afdrukken vanuit een browserproces.</translation>
 <translation id="7713608076604149344">Downloadbeperkingen</translation>
 <translation id="7713845740295404764">Inlog-/uitloggebeurtenissen rapporteren</translation>
+<translation id="7715155449217638248">Specifieke sleuteluitwisselingsalgoritmen voor TLS gebruiken voor het inlogscherm van het apparaat</translation>
 <translation id="7715711044277116530">Percentage waarmee de dimvertraging van het scherm in de presentatiemodus wordt geschaald</translation>
 <translation id="7715838249298819250">Tekst vastleggen niet toestaan</translation>
 <translation id="7716020145539921591">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -11098,12 +11126,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="8549906780629620346">Accountherstel activeren</translation>
 <translation id="855182606166519378">Gebruikers mogen geen firmware-updates starten</translation>
 <translation id="8553491595730354263">Staat toe dat de host voor externe toegang pincode- en koppelingsverificaties gebruikt bij de acceptatie van clientverbindingen</translation>
-<translation id="8554750769356971993">Beleid waarmee je kunt bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor door sites voorstelde advertenties uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties op hun apparaat aan- of uitzetten.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.</translation>
 <translation id="8559221882677768248">'Selecteer om voor te lezen' op het inlogscherm uitzetten</translation>
 <translation id="8561512522781085002">De instellingen voor PageUp/PageDown gebruiken de sneltoets met de functietoets Zoeken</translation>
 <translation id="8562398722263115493">Help me met schrijven is een op AI gebaseerde schrijfassistent voor korte content op het web. Voorgestelde content is gebaseerd op prompts die de gebruiker heeft ingevoerd en de content van de webpagina.

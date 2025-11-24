@@ -1169,6 +1169,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2922792708490674">{0,plural, =1{Bestand kan niet worden gedownload}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden gedownload}}</translation>
 <translation id="2923275635648511531">Producten voor zonbescherming en bruin worden</translation>
 <translation id="292371311537977079">Chrome-instellingen</translation>
+<translation id="2925032407415783182">Evenementticket opslaan in Wallet</translation>
 <translation id="2925454999967523701">Knop Document maken. Activeer deze om snel een nieuw Google-document te maken.</translation>
 <translation id="2925673989565098301">Bezorgingsmethode</translation>
 <translation id="2928426578619531300">Gebruiker aangesloten</translation>
@@ -1461,7 +1462,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3392028486601120379">Voor het URL-patroon <ph name="URL_PATTERN" /> is een pad opgegeven. Paden worden niet ondersteund voor deze sleutel. Verwijder het pad en probeer het opnieuw. Bijvoorbeeld: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Ophaalmethode</translation>
 <translation id="3399161914051569225">Wearables</translation>
-<translation id="3399930248910934354">Chrome-instellingen openen</translation>
 <translation id="3399952811970034796">Bezorgadres</translation>
 <translation id="3402261774528610252">De verbinding waarmee deze site is geladen, gebruikte TLS 1.0 of TLS 1.1. Deze versies zijn verouderd en worden in de toekomst niet meer gebruikt. Dan kunnen gebruikers deze site niet meer laden. Voor de server moet TLS 1.2 of hoger worden gebruikt.</translation>
 <translation id="3405664148539009465">Lettertypen aanpassen</translation>
@@ -1722,6 +1722,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3793574014653384240">Aantallen en oorzaken van de crashes die onlangs hebben plaatsgevonden</translation>
 <translation id="3795624560191557077">Je hebt recent een wachtwoord gewijzigd dat is gevonden bij een openbaar gegevenslek. Als je problemen ondervindt, kan Google Wachtwoordmanager je helpen inloggen.</translation>
 <translation id="3799805948399000906">Lettertype aangevraagd</translation>
+<translation id="3800436529451849929">Van <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Vaak bezocht</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803481123869276674">Als je aankopen doet in Chrome, zie je eWallet als optie</translation>
@@ -2420,6 +2421,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4930153903256238152">Hoge capaciteit</translation>
 <translation id="4930714375720679147">Aanzetten</translation>
 <translation id="4932035752129140860">Tekst die je plakt of bijvoegt, wordt voor analyse naar Google Cloud of naar derden gestuurd. Deze kan bijvoorbeeld worden gescand op gevoelige gegevens en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Betalen met Pix</translation>
 <translation id="4934780484581617878">Vensterbeheer</translation>
 <translation id="4936134414789135531">De ingevoegde <ph name="VALUE_NAME" /> kan niet worden gevonden.</translation>
@@ -2963,6 +2965,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5847181246682413476">Stroomvoorziening</translation>
 <translation id="584902713199270089">Daten en contactadvertenties</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
+<translation id="5851868085455377790">Uitgever</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5862579898803147654">Stapeleenheid 8</translation>
@@ -4888,7 +4891,7 @@ Aanvullende informatie:
 <translation id="9004367719664099443">VR-sessie is bezig</translation>
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
 <translation id="9008201768610948239">Negeren</translation>
-<translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van één site}other{Van # sites}}</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van 1 site}other{Van # sites}}</translation>
 <translation id="9014705027639070815">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, bijvoorbeeld informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="9018120810758822233">Geef je beveiligingscode voor <ph name="CREDIT_CARD" /> op</translation>
 <translation id="901834265349196618">e-mail</translation>

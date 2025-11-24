@@ -1417,6 +1417,7 @@
 <translation id="1949980990364952348">ชื่อแอป</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1951823516285577843">ค้นหาทางเลือก</translation>
+<translation id="1953626242273481999">อนุญาตให้ใช้การแก้ไขข้อบกพร่องจากระยะไกลใช่ไหม</translation>
 <translation id="1953796913175502363">ตั้งค่าโปรไฟล์งาน</translation>
 <translation id="1954597385941141174">เว็บไซต์ขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
 <translation id="1954813140452229842">เกิดข้อผิดพลาดขณะต่อเชื่อมพื้นที่แชร์ โปรดตรวจสอบข้อมูลรับรองแล้วลองอีกครั้ง</translation>
@@ -1800,6 +1801,9 @@
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="222115440608612541">เปลี่ยนธีมตอนพระอาทิตย์ขึ้นและพระอาทิตย์ตก</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">แอปภายนอกต้องการควบคุมเซสชัน Chrome นี้อย่างเต็มรูปแบบเพื่อแก้ไขข้อบกพร่อง ซึ่งรวมถึงการเข้าถึงข้อมูลที่บันทึกไว้ คุกกี้และข้อมูลเว็บไซต์ และความสามารถในการไปยัง URL ใดก็ได้
+
+เฉพาะนักพัฒนาเว็บเท่านั้นที่ควรเปิดใช้ฟีเจอร์นี้ และควรใช้กับแอปที่เชื่อถือได้เท่านั้น</translation>
 <translation id="222201875806112242">แหล่งที่มาของสื่อซึ่งไม่มีชื่อ</translation>
 <translation id="2224337661447660594">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="2224444042887712269">การตั้งค่านี้เป็นของ <ph name="OWNER_EMAIL" /></translation>
@@ -1905,6 +1909,7 @@
 <translation id="2294081976975808113">ความเป็นส่วนตัวของหน้าจอ</translation>
 <translation id="2294358108254308676">คุณต้องการติดตั้ง <ph name="PRODUCT_NAME" /> หรือไม่</translation>
 <translation id="229477815107578534">ตรวจสอบการตั้งค่า</translation>
+<translation id="229524410604268773">ปิดในการตั้งค่า</translation>
 <translation id="2295864384543949385">ผลการค้นหา <ph name="NUM_RESULTS" /> รายการ</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> กำหนดให้อุปกรณ์ออนไลน์เมื่อลงชื่อเข้าใช้ <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">การค้นพบอุปกรณ์</translation>

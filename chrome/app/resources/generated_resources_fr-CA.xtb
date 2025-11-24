@@ -1418,6 +1418,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1949980990364952348">Nom de l'application</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Trouver une extension de remplacement</translation>
+<translation id="1953626242273481999">Autoriser le débogage à distance?</translation>
 <translation id="1953796913175502363">Configurer votre profil professionnel</translation>
 <translation id="1954597385941141174">Les sites peuvent demander à se connecter à des appareils USB</translation>
 <translation id="1954813140452229842">Erreur lors du partage. Veuillez vérifier vos authentifiants et réessayer.</translation>
@@ -1765,6 +1766,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2192505247865591433">De :</translation>
 <translation id="219283042927675668">Onglets dans le groupe</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> gère la page de votre Nouvel onglet, s'ouvre dans un nouvel onglet</translation>
+<translation id="2192982266585216032">&amp;Paiements</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2195331105963583686">Vous pourrez toujours utiliser cet appareil (<ph name="DEVICE_TYPE" />) après cela, mais il ne recevra plus les mises à jour logicielles et de sécurité automatiques</translation>
 <translation id="2195729137168608510">Protection du courrier électronique</translation>
@@ -1800,6 +1802,9 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="222115440608612541">Changez de thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Une appli externe souhaite avoir le contrôle total de cette session Chrome pour la déboguer. Cela comprend l'accès à vos données enregistrées, à vos témoins et à vos données relatives aux sites, ainsi que la possibilité d'accéder à n'importe quelle URL.
+
+Seuls les développeurs Web doivent activer cette fonctionnalité, et ils ne doivent l'utiliser qu'avec des applications de confiance.</translation>
 <translation id="222201875806112242">Source multimédia anonyme</translation>
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
@@ -1905,6 +1910,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2294081976975808113">Confidentialité de l'écran</translation>
 <translation id="2294358108254308676">Voulez-vous installer <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Vérifiez vos paramètres</translation>
+<translation id="229524410604268773">Désactiver dans les paramètres</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> résultats</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> exige que l'appareil soit en ligne au moment de la connexion au compte <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Détection d'appareils</translation>
@@ -2994,6 +3000,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3022072018423103125">Hauts plateaux</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> sera retiré de ce Chromebook et ne sera pas enregistré dans <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Je n'ai pas compris.</translation>
+<translation id="3023204744987201088">&amp;Coordonnées</translation>
 <translation id="3023464535986383522">Sélectionner pour énoncer</translation>
 <translation id="3024374909719388945">Utiliser l'horloge au format 24 heures</translation>
 <translation id="3027296729579831126">Activer la fonctionnalité Partage à proximité</translation>
@@ -7933,6 +7940,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6495261233408033662">Fermer les onglets ouverts</translation>
 <translation id="6495266441917713704">Impossible de transférer le Wi-Fi</translation>
 <translation id="6495453178162183932">Thème mis à jour vers Chrome par défaut</translation>
+<translation id="6496641546298525838">Votre appareil</translation>
 <translation id="6497784818439587832">Modifier la taille d'affichage pour rétrécir ou agrandir les éléments sur votre écran</translation>
 <translation id="6497789971060331894">Défilement inversé de la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -9757,6 +9765,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7760176388948986635">Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de cet appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par cet appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans identifier les personnes concernées pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs.</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
+<translation id="776324966908034528">Les paramètres du mandataire du navigateur sont contrôlés par plusieurs sources</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Ouvrir le groupe dans une nouvelle fenêtre</translation>
@@ -11009,6 +11018,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8616441548384109662">Ajouter <ph name="CONTACT_NAME" /> à vos contacts</translation>
 <translation id="8617601976406256334">Supprimer les autorisations et les données relatives aux sites pour <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Identifiant de connexion sécurisé : <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Coordonnées</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Non autorisés à demander d'installer des applis Web sur votre appareil</translation>
 <translation id="8619803522055190423">Ombre portée</translation>
@@ -11610,6 +11620,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="90033698482696970">Rechercher automatiquement les profils eSIM disponibles?</translation>
 <translation id="9003647077635673607">Autoriser sur tous les sites</translation>
 <translation id="9005774573776346118">Pour obtenir vos mots de passe, vos favoris et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Votre organisation</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> souhaite ouvrir ce lien dans une appli.</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9008201858626224558">Bouton retour vers la page de détails de <ph name="SUBPAGE_TITLE" /></translation>

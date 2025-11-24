@@ -11960,7 +11960,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="930991362911221750">Cho phép <ph name="APP_NAME" /> xem thẻ này?</translation>
 <translation id="931273044114601262">Được phép trên trang web này</translation>
 <translation id="93140074055951850">Các ứng dụng Android đã dừng hoạt động</translation>
-<translation id="932327136139879170">Trang chủ</translation>
+<translation id="932327136139879170">Nhà riêng</translation>
 <translation id="932508678520956232">Không thể chạy in.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Hệ thống không thể kiểm tra bảo mật do tệp này có dung lượng quá lớn. Bạn có thể tải lên tệp có dung lượng tối đa là 50 MB.}other{Hệ thống không thể kiểm tra bảo mật do một số tệp trong số này có dung lượng quá lớn. Bạn có thể tải lên tệp có dung lượng tối đa là 50 MB.}}</translation>
 <translation id="93343527085570547">Nếu bạn muốn yêu cầu thay đổi nội dung vì lý do pháp lý, hãy truy cập <ph name="BEGIN_LINK1" />trang Trợ giúp pháp lý<ph name="END_LINK1" />. Một số thông tin về tài khoản và hệ thống có thể được gửi đến Google. Chúng tôi sẽ dùng thông tin bạn cung cấp để xử lý các sự cố kỹ thuật cũng như cải thiện dịch vụ theo <ph name="BEGIN_LINK2" />Chính sách quyền riêng tư<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ<ph name="END_LINK3" /> của chúng tôi.</translation>

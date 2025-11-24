@@ -1170,6 +1170,7 @@
 <translation id="2922792708490674">{0,plural, =1{ফাইল ডাউনলোড করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল ডাউনলোড করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল ডাউনলোড করা যাবে না}}</translation>
 <translation id="2923275635648511531">সূর্য রশ্মি থেকে যত্ন ও ট্যানিং প্রোডাক্ট</translation>
 <translation id="292371311537977079">Chrome সেটিংস</translation>
+<translation id="2925032407415783182">Wallet-এ ইভেন্টের টিকিট সেভ করুন</translation>
 <translation id="2925454999967523701">'ডকুমেন্ট তৈরি করুন' বোতাম, চটপট নতুন Google Doc তৈরি করতে এটি চালু করুন</translation>
 <translation id="2925673989565098301">ডেলিভারির পদ্ধতি</translation>
 <translation id="2928426578619531300">ব্যবহারকারী অনুমোদিত</translation>
@@ -1465,7 +1466,6 @@
 <translation id="3392028486601120379">URL প্যাটার্নে একটি "<ph name="URL_PATTERN" />" পাথ নির্দিষ্ট করা আছে। এই কীয়ের জন্য পাথটি কাজ করে না, পাথটি সরিয়ে দিয়ে আবার চেষ্টা করুন। যেমন- *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">পিকআপের পদ্ধতি</translation>
 <translation id="3399161914051569225">পরে থাকা যায় এমন ডিভাইস</translation>
-<translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
 <translation id="3399952811970034796">ডেলিভারির ঠিকানা</translation>
 <translation id="3402261774528610252">এই সাইট লোড করার জন্য যে কানেকশন ব্যবহার করা হয়েছে সেটি TLS 1.0 বা TLS 1.1 ব্যবহার করেছে যা শীঘ্রই বন্ধ করা হবে এবং ভবিষ্যতে আর পাওয়া যাবে না। একবার বন্ধ হয়ে যাওয়ার পরে, ব্যবহারকারীরা আর এই সাইটটি লোড করতে পারবেন না। সার্ভারটিতে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সন চালু করতে হবে।</translation>
 <translation id="3405664148539009465">হরফগুলি কাস্টমাইজ করুন</translation>
@@ -1728,6 +1728,7 @@
 <translation id="3793574014653384240">সম্প্রতি হওয়া ক্র্যাশের সংখ্যা এবং কারণ</translation>
 <translation id="3795624560191557077">সর্বজনীন ডেটার নিরাপত্তা লঙ্ঘনে পাওয়া গেছে এমন একটি পাসওয়ার্ড আপনি সম্প্রতি পরিবর্তন করেছেন। সমস্যার ক্ষেত্রে, Google Password Manager আপনাকে সাইন-ইন করার জন্য সাহায্য করতে পারে।</translation>
 <translation id="3799805948399000906">ফন্টের অনুরোধ করা হয়েছে</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> সাইট থেকে</translation>
 <translation id="3801297763951514916">আপনি প্রায়শই ভিজিট করেন</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803481123869276674">Chrome-এ কেনাকাটা করার সময় বিকল্প হিসেবে eWallet দেখুন</translation>
@@ -2427,6 +2428,7 @@
 <translation id="4930153903256238152">অধিক ক্ষমতা সম্পন্ন</translation>
 <translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4932035752129140860">আপনার পেস্ট বা অ্যাটাচ করা টেক্সট, Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য রয়েছে কিনা তা জানার জন্য এটি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর তা দেখতে পেতে পারেন।</translation>
+<translation id="4932733599132424254">তারিখ</translation>
 <translation id="4933788293078559286">Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="4934780484581617878">উইন্ডো ম্যানেজমেন্ট</translation>
 <translation id="4936134414789135531">যোগ করা <ph name="VALUE_NAME" /> পাওয়া যায়নি।</translation>
@@ -2970,6 +2972,7 @@
 <translation id="5847181246682413476">ইলেকট্রিক সাপ্লাই</translation>
 <translation id="584902713199270089">ডেটিং ও ব্যক্তিগত</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
+<translation id="5851868085455377790">ইস্যুকারী</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>

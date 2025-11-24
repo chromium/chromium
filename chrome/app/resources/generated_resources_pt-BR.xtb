@@ -1775,6 +1775,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Guias no grupo</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> está gerenciando sua página "Nova guia". Abre em uma nova guia</translation>
+<translation id="2192982266585216032">&amp;Pagamentos</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2195331105963583686">Você ainda poderá usar este <ph name="DEVICE_TYPE" /> após esse período, mas ele não receberá mais atualizações automáticas de software e segurança</translation>
 <translation id="2195729137168608510">Proteção de e-mail</translation>
@@ -3004,6 +3005,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3022072018423103125">Cordilheira</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não será salvo em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendi.</translation>
+<translation id="3023204744987201088">&amp;Dados de contato</translation>
 <translation id="3023464535986383522">Selecionar para Ouvir</translation>
 <translation id="3024374909719388945">Usar relógio no formato 24 horas</translation>
 <translation id="3027296729579831126">Ativar "Compartilhar por proximidade"</translation>
@@ -6477,7 +6479,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona off-line)</translation>
 <translation id="5453829744223920473">A criança pode usar todos os apps, favoritos e recursos da escola, exatamente como faz na sala de aula. A escola define as regras básicas.</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">Adicionar à pesquisa</translation>
+<translation id="5457082343331641453">Adicione à pesquisa</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
 <translation id="5457795687441958389">Continuar sem fazer login</translation>
@@ -7947,6 +7949,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6495261233408033662">Fechar guias abertas</translation>
 <translation id="6495266441917713704">Não foi possível transferir o Wi-Fi</translation>
 <translation id="6495453178162183932">O tema foi atualizado para o padrão do Chrome</translation>
+<translation id="6496641546298525838">Seu dispositivo</translation>
 <translation id="6497784818439587832">Mude o tamanho da tela para aumentar ou diminuir os itens nela.</translation>
 <translation id="6497789971060331894">Rolagem reversa do mouse</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
@@ -9772,6 +9775,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7760176388948986635">Permitir que apps, sites e serviços do ChromeOS e do Android com permissão de localização usem o local do dispositivo. A Precisão de Local fornece dados mais precisos para apps e serviços Android. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar nenhum indivíduo para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários.</translation>
 <translation id="7762024824096060040">Não é possível usar esta conta</translation>
+<translation id="776324966908034528">As configurações de proxy do navegador são controladas por várias fontes</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Abrir grupo em uma nova janela</translation>
@@ -11025,6 +11029,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8616441548384109662">Adicionar <ph name="CONTACT_NAME" /> aos contatos</translation>
 <translation id="8617601976406256334">Excluir os dados e as permissões do site <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Código da conexão segura: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Dados de contato</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Não podem instalar apps da Web no dispositivo</translation>
 <translation id="8619803522055190423">Sombra projetada</translation>
@@ -11627,6 +11632,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os websites</translation>
 <translation id="9005774573776346118">Para acessar senhas, favoritos e muito mais em todos os seus dispositivos, faça login com a conta <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Sua organização</translation>
 <translation id="9008133509889712539">O site <ph name="ORIGIN" /> quer abrir este link em um app.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botão "Voltar" da página de detalhes do <ph name="SUBPAGE_TITLE" /></translation>

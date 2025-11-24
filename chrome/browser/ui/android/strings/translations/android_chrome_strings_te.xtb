@@ -248,7 +248,6 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ విఫలమైంది}other{# డౌన్‌లోడ్‌లు విఫలమయ్యాయి}}</translation>
 <translation id="2067805253194386918">వచనం</translation>
 <translation id="2072027001582274150">ఉపయోగించని లేదా డూప్లికేట్ ట్యాబ్‌లు</translation>
-<translation id="2074527029802029717">ట్యాబ్‌కు పిన్ తీసివేయండి</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
 <translation id="2088833076121753253">ఆటోఫిల్ సెటప్‌ను పూర్తి చేయడానికి, ఇప్పుడే Chromeను రీస్టార్ట్ చేయండి. మీ ట్యాబ్‌లు ఆటోమేటిక్‌గా మళ్లీ తెరవబడతాయి.</translation>
@@ -1453,7 +1452,7 @@
 <translation id="7117485132243600300">మీరు ఫాలో అయ్యే కంటెంట్‌ను, సూచించిన టాపిక్‌లను, సెర్చ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />‌ను మూసివేయండి</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 సైట్ కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}other{# సైట్‌ల కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}}</translation>
-<translation id="7138678301420049075">ఇతర</translation>
+<translation id="7138678301420049075">ఇతరం</translation>
 <translation id="7140829094791862589">మాన్యువల్ ఆర్డర్‌లో క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="7146622961999026732">ఈ సైట్‌లు, యాప్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి <ph name="BEGIN_LINK" />మరింత సమాచారాన్ని పొందండి<ph name="END_LINK" />.</translation>
@@ -1806,7 +1805,6 @@
 <translation id="8540136935098276800">సరిగ్గా ఫార్మాట్ చేసిన URLను ఎంటర్ చేయండి</translation>
 <translation id="854522910157234410">ఈ పేజీని తెరవండి</translation>
 <translation id="8547466829003330976">AI సహాయంతో PDFని రివ్యూ చేయండి</translation>
-<translation id="855081842937141170">ట్యాబ్‌ను పిన్ చేయి</translation>
 <translation id="8551513938758868521">మీరు Chrome నుండి నిష్క్రమించినప్పుడు అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి</translation>
 <translation id="8559961053328923750">యాడ్ పనితీరును అంచనా వేయడానికి బ్రౌజర్ ద్వారా సైట్‌లు షేర్ చేయగల డేటా మొత్తాన్ని Chrome పరిమితం చేస్తుంది</translation>
 <translation id="8559990750235505898">ఇతర భాషలలో పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
@@ -1926,6 +1924,7 @@
 <translation id="9081543426177426948">మీరు సందర్శించే సైట్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు</translation>
 <translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9086455579313502267">నెట్‌వర్క్‌ని యాక్సెస్ చేయడం సాధ్యం కాలేదు</translation>
+<translation id="9093915805850895575">Chrome విండోలో తెరవండి</translation>
 <translation id="909756639352028172">అత్యంత వ్యక్తిగతీకరించిన ఎక్స్‌పీరియన్స్‌ను పొందడానికి, వెబ్ &amp; యాప్ యాక్టివిటీ, లింక్ అయిన Google సర్వీస్‌లలో Chromeను చేర్చండి</translation>
 <translation id="9099220545925418560">మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>

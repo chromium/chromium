@@ -1770,6 +1770,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2192505247865591433">От:</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> управлява новия раздел в браузъра ви, отваря се в нов раздел</translation>
+<translation id="2192982266585216032">&amp;Плащания</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
 <translation id="2195729137168608510">Защита за имейли</translation>
@@ -3000,6 +3001,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3022072018423103125">Възвишения</translation>
 <translation id="3022361196600037287">Устройството <ph name="DEVICE" /> ще бъде премахнато от този Chromebook и няма да бъде запазено в(ъв) <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Не разбрахме това.</translation>
+<translation id="3023204744987201088">&amp;Информация за връзка</translation>
 <translation id="3023464535986383522">Прочитане на глас</translation>
 <translation id="3024374909719388945">Използване на 24-часов часовник</translation>
 <translation id="3027296729579831126">Включване на „Споделяне наблизо“</translation>
@@ -7943,6 +7945,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6495261233408033662">Затваряне на отворените раздели</translation>
 <translation id="6495266441917713704">Wi-Fi не може да се прехвърли</translation>
 <translation id="6495453178162183932">Темата е актуализирана до основната за Chrome</translation>
+<translation id="6496641546298525838">Вашето устройство</translation>
 <translation id="6497784818439587832">С промяната на размера на елементите на екрана ги смалявате или увеличавате</translation>
 <translation id="6497789971060331894">Обратно превъртане с мишката</translation>
 <translation id="6498249116389603658">&amp;Всичките ви езици</translation>
@@ -9766,6 +9769,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7760176388948986635">Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на това устройство, ако имат съответното разрешение. „Точност на местоположението“ предоставя на приложенията и услугите за Android по-точни данни за местоположението. За целта Google периодично обработва информацията от сензорите на това устройство и безжичните сигнали от него, за да определя местоположенията на съответните сигнали посредством отворена ангажираност. Използваме тези данни, без да идентифицираме лицата, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите.</translation>
 <translation id="7762024824096060040">Не можете да използвате този профил</translation>
+<translation id="776324966908034528">Настройките за прокси сървър на браузъра се контролират от няколко източника</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> от <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Отваряне на групата в нов прозорец</translation>
@@ -11019,6 +11023,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8616441548384109662">Добавяне на <ph name="CONTACT_NAME" /> към контактите ви</translation>
 <translation id="8617601976406256334">Да се изтрият ли данните и разрешенията за <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Идентификатор на защитената връзка: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Информация за връзка</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Без разрешение за инсталиране на уеб приложения на устройството ви</translation>
 <translation id="8619803522055190423">Сянка</translation>
@@ -11620,6 +11625,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="90033698482696970">Да се сканира ли автоматично за налични потребителски профили за електронна SIM карта?</translation>
 <translation id="9003647077635673607">Разрешаване за всички уебсайтове</translation>
 <translation id="9005774573776346118">За да получите своите пароли, отметки и др. на всичките си устройства, влезте като <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">Вашата организация</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> иска да отвори тази връзка в приложение.</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9008201858626224558">Бутон за връщане назад на страницата с подробности за <ph name="SUBPAGE_TITLE" /></translation>

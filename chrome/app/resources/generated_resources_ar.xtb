@@ -1421,6 +1421,7 @@
 <translation id="1949980990364952348">اسم التطبيق</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1951823516285577843">بحث عن بديل</translation>
+<translation id="1953626242273481999">السماح بتصحيح الأخطاء عن بُعد؟</translation>
 <translation id="1953796913175502363">إعداد ملف العمل</translation>
 <translation id="1954597385941141174">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة USB</translation>
 <translation id="1954813140452229842">حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من بيانات الاعتماد وإعادة المحاولة.</translation>
@@ -1769,6 +1770,7 @@
 <translation id="2192505247865591433">من:</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2192881772486983655">تتم حاليًا إدارة صفحة علامة التبويب الجديدة من قِبل <ph name="THIRD_PARTY_NTP_MANAGER" />. ويتم فتح الصفحة في علامة تبويب جديدة</translation>
+<translation id="2192982266585216032">&amp;عمليات الدفع</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2195331105963583686">سيظل بإمكانك استخدام هذا الجهاز <ph name="DEVICE_TYPE" /> بعد تلك الفترة، ولكن لن يتلقى الجهاز تحديثات تلقائية للبرامج والأمان بعد ذلك.</translation>
 <translation id="2195729137168608510">حماية البريد الإلكتروني</translation>
@@ -1804,6 +1806,9 @@
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="222115440608612541">التبديل بين الوضع الفاتح والداكن عند شروق الشمس وعند غروبها</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">‏يريد تطبيق خارجي التحكّم بالكامل في جلسة Chrome هذه لتصحيح أخطائها، ويشمل ذلك الوصول إلى بياناتك المحفوظة وملفات تعريف الارتباط وبيانات الموقع الإلكتروني، وإمكانية الانتقال إلى أي عنوان URL.
+
+ويجب أن يفعِّل هذه الميزة المطوّرون على الويب فقط وألا يستخدموها إلا مع التطبيقات الموثوقة.</translation>
 <translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
 <translation id="2224337661447660594">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
@@ -1909,6 +1914,7 @@
 <translation id="2294081976975808113">خصوصية الشاشة</translation>
 <translation id="2294358108254308676">هل تريد تثبيت <ph name="PRODUCT_NAME" />؟</translation>
 <translation id="229477815107578534">مراجعة الإعدادات</translation>
+<translation id="229524410604268773">الإيقاف من خلال "الإعدادات"</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> نتيجة</translation>
 <translation id="2296022312651137376">يتطلّب النطاق <ph name="DOMAIN_NAME" /> أن يكون جهازك متصلاً بالإنترنت عند تسجيل الدخول إلى عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="2296218178174497398">اكتشاف الأجهزة</translation>
@@ -2996,6 +3002,7 @@
 <translation id="3022072018423103125">مرتفعات</translation>
 <translation id="3022361196600037287">‏ستتم إزالة <ph name="DEVICE" /> من جهاز Chromebook هذا ولن يتم حفظه في حساب <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">لم يتم استيعاب هذا.</translation>
+<translation id="3023204744987201088">&amp;معلومات الاتصال</translation>
 <translation id="3023464535986383522">الاستماع والاختيار</translation>
 <translation id="3024374909719388945">استخدام تنسيق 24 ساعة</translation>
 <translation id="3027296729579831126">تفعيل ميزة "المشاركة عن قرب"</translation>
@@ -7935,6 +7942,7 @@
 <translation id="6495261233408033662">إغلاق علامات التبويب المفتوحة</translation>
 <translation id="6495266441917713704">‏يتعذّر نقل بيانات شبكة Wi-Fi</translation>
 <translation id="6495453178162183932">‏تم التغيير إلى المظهر التلقائي في Chrome</translation>
+<translation id="6496641546298525838">جهازك</translation>
 <translation id="6497784818439587832">يمكنك تغيير حجم العرض لتصغير حجم العناصر التي تظهر على الشاشة أو تكبيرها.</translation>
 <translation id="6497789971060331894">التمرير العكسي عبر الماوس</translation>
 <translation id="6498249116389603658">&amp;جميع اللغات</translation>
@@ -9766,6 +9774,7 @@
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7760176388948986635">‏يمكنك أن تمنح إذن استخدام موقع هذا الجهاز الجغرافي لكلّ من تطبيقات ChromeOS وAndroid والمواقع الإلكترونية والخدمات المسموح لها بتحديد الموقع الجغرافي. يتيح الإعداد "دقة الموقع الجغرافي" تزويد تطبيقات وخدمات Android ببيانات موقعك الجغرافي بشكل أكثر دقة. ولإجراء ذلك، تعالج Google بشكل دوري المعلومات حول أدوات الاستشعار بجهازك والإشارات اللاسلكية التي يرسلها لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية. وتُستخدَم هذه المعلومات بدون الكشف عن هوية أي مستخدم لتحسين دقة الموقع الجغرافي والخدمات المستنِدة إليه، وتحسين خدمات Google وتقديمها وصيانتها استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين.</translation>
 <translation id="7762024824096060040">لا يمكن استخدام هذا الحساب</translation>
+<translation id="776324966908034528">يتم التحكّم في إعدادات خادم وكيل المتصفّح من خلال مصادر متعددة</translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> من <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">فتح المجموعة في نافذة جديدة</translation>
@@ -11020,6 +11029,7 @@
 <translation id="8616441548384109662">إضافة <ph name="CONTACT_NAME" /> إلى جهات الاتصال</translation>
 <translation id="8617601976406256334">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />؟</translation>
 <translation id="8617748779076050570">رمز إتمام الاتصال الآمن: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;معلومات الاتصال</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">المواقع الإلكترونية التي لا يُسمح لها بتثبيت تطبيقات الويب على جهازك</translation>
 <translation id="8619803522055190423">تظليل القطرات</translation>
@@ -11625,6 +11635,7 @@
 <translation id="90033698482696970">‏هل تريد إجراء بحث تلقائي عن الملفات الشخصية المتوفّرة لشريحة eSIM؟</translation>
 <translation id="9003647077635673607">السماح على جميع المواقع الإلكترونية</translation>
 <translation id="9005774573776346118">للوصول إلى كلمات المرور والإشارات المرجعية وغيرهما على جميع أجهزتك، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
+<translation id="9006511997799670136">مؤسستك</translation>
 <translation id="9008133509889712539">يطلب <ph name="ORIGIN" /> فتح هذا الرابط في تطبيق.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
 <translation id="9008201858626224558">زر الرجوع إلى صفحة تفاصيل <ph name="SUBPAGE_TITLE" /></translation>

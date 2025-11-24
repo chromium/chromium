@@ -1757,6 +1757,7 @@
 <translation id="2192505247865591433">来源：</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" />正在管理您的新标签页，将在新标签页中打开</translation>
+<translation id="2192982266585216032">支付方式(&amp;P)</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2195331105963583686">在此之后，您仍能使用此 <ph name="DEVICE_TYPE" />，但它将无法继续自动完成软件更新和安全更新</translation>
 <translation id="2195729137168608510">电子邮件保护</translation>
@@ -2983,6 +2984,7 @@
 <translation id="3022072018423103125">高原</translation>
 <translation id="3022361196600037287">系统会将“<ph name="DEVICE" />”从此 Chromebook 中移除，并且不会将其保存到 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">无法解析您所说的内容。</translation>
+<translation id="3023204744987201088">联系信息(&amp;C)</translation>
 <translation id="3023464535986383522">随选朗读</translation>
 <translation id="3024374909719388945">使用24小时制</translation>
 <translation id="3027296729579831126">开启“附近分享”功能</translation>
@@ -7916,6 +7918,7 @@
 <translation id="6495261233408033662">关闭已打开的标签页</translation>
 <translation id="6495266441917713704">无法迁移 Wi-Fi</translation>
 <translation id="6495453178162183932">主题已更新为默认 Chrome 主题</translation>
+<translation id="6496641546298525838">您的设备</translation>
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
 <translation id="6498249116389603658">所选全部语言(&amp;A)</translation>
@@ -9739,6 +9742,7 @@
 <translation id="7759809451544302770">可选</translation>
 <translation id="7760176388948986635">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="7762024824096060040">无法使用此账号</translation>
+<translation id="776324966908034528">浏览器代理设置由多个来源控制</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />，来自 <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">在新窗口中打开群组</translation>
@@ -10992,6 +10996,7 @@
 <translation id="8616441548384109662">将“<ph name="CONTACT_NAME" />”添加到您的通讯录</translation>
 <translation id="8617601976406256334">为 <ph name="SITE_NAME" /> 删除网站数据和权限？</translation>
 <translation id="8617748779076050570">安全配对号码：<ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">联系信息(&amp;C)</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">不允许在设备上安装 Web 应用</translation>
 <translation id="8619803522055190423">阴影</translation>
@@ -11593,6 +11598,7 @@
 <translation id="90033698482696970">自动扫描查找可用的 eSIM 卡配置文件？</translation>
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>
 <translation id="9005774573776346118">如需在您的所有设备上获取密码、书签等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
+<translation id="9006511997799670136">您的组织</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> 想在应用中打开此链接。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9008201858626224558">“<ph name="SUBPAGE_TITLE" />”详情页面上的返回按钮</translation>

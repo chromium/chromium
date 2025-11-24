@@ -1430,6 +1430,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1949980990364952348">Programos pavadinimas</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1951823516285577843">Rasti alternatyvą</translation>
+<translation id="1953626242273481999">Leisti nuotolinį derinimą?</translation>
 <translation id="1953796913175502363">Darbo profilio nustatymas</translation>
 <translation id="1954597385941141174">Svetainėse gali būti prašoma prisijungti prie USB įrenginių</translation>
 <translation id="1954813140452229842">Klaida įdedant bendrinamą objektą. Patikrinkite prisijungimo duomenis ir bandykite dar kartą.</translation>
@@ -1813,6 +1814,9 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="222115440608612541">Perjunkite temas saulei patekėjus ir nusileidus</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Išorinė programa nori visiškai valdyti šį „Chrome“ seansą, kad galėtų jį derinti. Tai apima prieigą prie išsaugotų duomenų, slapukų ir svetainės duomenų bei galimybę pereiti prie bet kurio URL.
+
+Šią funkciją turėtų įjungti tik žiniatinklio kūrėjai ir naudoti tik su patikimomis programomis.</translation>
 <translation id="222201875806112242">Medijos šaltinis be pavadinimo</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2224444042887712269">Šis nustatymas priklauso <ph name="OWNER_EMAIL" />.</translation>
@@ -1921,6 +1925,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2294081976975808113">Ekrano privatumas</translation>
 <translation id="2294358108254308676">Ar norite įdiegti „<ph name="PRODUCT_NAME" />“?</translation>
 <translation id="229477815107578534">Nustatymų peržiūra</translation>
+<translation id="229524410604268773">Išjungti nustatymuose</translation>
 <translation id="2295864384543949385">Rezultatų: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> reikalauja, kad jungiantis prie <ph name="EMAIL" /> įrenginys būtų prijungtas prie interneto</translation>
 <translation id="2296218178174497398">Įrenginio suradimas</translation>

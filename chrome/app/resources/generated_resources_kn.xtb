@@ -1420,6 +1420,7 @@
 <translation id="1949980990364952348">ಆ್ಯಪ್ ಹೆಸರು</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">ಪರ್ಯಾಯವನ್ನು ಹುಡುಕಿ</translation>
+<translation id="1953626242273481999">ರಿಮೋಟ್ ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಅನುಮತಿಸಬೇಕೇ?</translation>
 <translation id="1953796913175502363">ನಿಮ್ಮ ಉದ್ಯೋಗದ ಪ್ರೊಫೈಲ್‌ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="1954597385941141174">ಸೈಟ್‌ಗಳು USB ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1954813140452229842">ಹಂಚಿಕೆಯನ್ನು ಅಳವಡಿಸುವುದರಲ್ಲಿ ದೋಷವಿದೆ. ನಿಮ್ಮ ರುಜುವಾತುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1803,6 +1804,9 @@
 <translation id="2220572644011485463">ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="222115440608612541">ಸೂರ್ಯೋದಯ ಮತ್ತು ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಥೀಮ್‌ಗಳನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ಬಾಹ್ಯ ಆ್ಯಪ್, ಈ Chrome ಸೆಶನ್ ಅನ್ನು ಡೀಬಗ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಅದರ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವನ್ನು ಬಯಸುತ್ತದೆ. ಇದು ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಡೇಟಾ, ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಮತ್ತು ಯಾವುದೇ URL ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡುವ ಸಾಮರ್ಥ್ಯವನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.
+
+ವೆಬ್ ಡೆವಲಪರ್‌ಗಳು ಮಾತ್ರ ಈ ಫೀಚರ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕು ಮತ್ತು ವಿಶ್ವಾಸಾರ್ಹ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಮಾತ್ರ ಬಳಸಬೇಕು.</translation>
 <translation id="222201875806112242">ಹೆಸರಿಸದ ಮಾಧ್ಯಮ ಮೂಲ</translation>
 <translation id="2224337661447660594">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
 <translation id="2224444042887712269">ಈ ಸೆಟ್ಟಿಂಗ್ <ph name="OWNER_EMAIL" /> ಗೆ ಸೇರಿರುತ್ತದೆ.</translation>
@@ -1911,6 +1915,7 @@
 <translation id="2294081976975808113">ಸ್ಕ್ರೀನ್‌ ಗೌಪ್ಯತೆ</translation>
 <translation id="2294358108254308676">ನೀವು <ph name="PRODUCT_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="229477815107578534">ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="229524410604268773">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ <ph name="DOMAIN_NAME" /> ಡೊಮೇನ್‌ಗೆ ಸಾಧನವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರಬೇಕು</translation>
 <translation id="2296218178174497398">ಸಾಧನದ ಅನ್ವೇಷಣೆ</translation>

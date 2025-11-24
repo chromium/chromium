@@ -1614,21 +1614,6 @@ Questa policy del dispositivo è equivalente alla policy per gli utenti esistent
           Se questa policy viene attivata, l'elenco degli account definiti dalla policy viene aggiunto alle impostazioni dell'account Kerberos.
 
           Se questa policy viene disattivata o non è configurata, nessun account viene aggiunto alle impostazioni dell'account Kerberos e tutti gli account aggiunti in precedenza con questa policy vengono rimossi. Gli utenti possono comunque aggiungere manualmente gli account se la policy "Gli utenti possono aggiungere account Kerberos" viene attivata.</translation>
-<translation id="2103906574050962342">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
-
-Se la policy non viene configurata, non influisce su altre policy del proxy o impostazioni utente.
-
-Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non corrisponde ad almeno uno degli host URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se tutte le voci in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> sono soddisfatte. Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corrispondono a valori stringa dei file PAC, ad esempio:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-La prima voce raggiungibile verrà utilizzata come proxy.
-
-Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
-
-La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="2104418465060359056">Segnala i dati delle estensioni e dei plug-in</translation>
 <translation id="210652463860415362">Accetta i contenuti web che usano la funzionalità di trasporto dei dizionari di compressione</translation>
 <translation id="2106627642643925514">Consente di sostituire la modalità di stampa PIN predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
@@ -9708,6 +9693,15 @@ Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le l
 <translation id="7341773449551289679">Lista consentita per l'unità di archiviazione esterna</translation>
 <translation id="7343004974628511824">Esegui controlli dell'intercettazione DNS</translation>
 <translation id="7343497214039883642">File di configurazione delle stampanti aziendali per i dispositivi</translation>
+<translation id="7344533124201531786">Configura l'elenco di domini in cui <ph name="PRODUCT_NAME" /> deve disattivare <ph name="PASSWORD_MANAGER_NAME" />. Ciò significa che i workflow di salvataggio e compilazione verranno disattivati, in modo che le password di questi siti web non possano essere salvate o inserite automaticamente nei moduli web.
+
+Se un dominio è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> verrà disattivato per quel dominio.
+
+Se un dominio non è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per il dominio.
+
+Se la policy non viene configurata, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per tutti i domini.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Disattiva l'input audio</translation>
 <translation id="7358299261566939984">Abilita ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Attiva <ph name="LACROS_NAME" /></translation>
@@ -10074,12 +10068,6 @@ Se la policy viene impostata su Disattivata o se non viene impostata, non è pos
 Soltanto le policy derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Tutte le altre policy a livello di utente avranno la precedenza per impostazione predefinita.
 
 Le policy da unire devono essere impostate anche nella policy <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> o <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Questa policy viene ignorata se non viene configurata nessuna delle due policy sopra indicate.</translation>
-<translation id="7643151458117317518">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
-
-Se imposti questa policy su Disabled, l'impostazione relativa alla misurazione degli annunci verrà disattivata per i tuoi utenti.
-Se la imposti su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Questa policy è un'opzione generica per tutte le regole definite nella policy DataLeakPreventionRulesList.
       Se questa policy viene impostata su True, viene attivata la generazione di rapporti in tempo reale degli eventi di prevenzione di fughe di dati.
@@ -11373,12 +11361,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="8549906780629620346">Attiva recupero dell'account</translation>
 <translation id="855182606166519378">Gli utenti non possono avviare gli aggiornamenti firmware</translation>
 <translation id="8553491595730354263">Consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
-<translation id="8554750769356971993">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.
-
-Se imposti questa policy su Disabled, l'impostazione relativa agli annunci suggeriti dai siti verrà disattivata per i tuoi utenti.
-Se la imposti su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.</translation>
 <translation id="8559221882677768248">Disattiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="8561512522781085002">Le impostazioni di Pagina su/Pagina giù usano la scorciatoia che contiene il tasto di modifica Ricerca</translation>
 <translation id="8562398722263115493">Aiutami a scrivere è un assistente di scrittura basato sull'AI per creare contenuti brevi sul web. I contenuti suggeriti si basano sui prompt inseriti dall'utente e sui contenuti della pagina web.

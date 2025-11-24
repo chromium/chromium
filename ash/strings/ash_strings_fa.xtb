@@ -814,7 +814,7 @@
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3743775386021959186">«تمرکز» روشن است، <ph name="REMAINING_TIME" /> باقی مانده است</translation>
 <translation id="3750403286520637847">پنهان کردن پیشنهاد آب‌وهوا</translation>
-<translation id="3756485814916578707">درحال ارسال محتوای صفحه</translation>
+<translation id="3756485814916578707">درحال پخش محتوای صفحه‌نمایش</translation>
 <translation id="3765841382945324995">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> از <ph name="OLD_SHORTCUT" /> به <ph name="NEW_SHORTCUT" /> تغییر کرده است</translation>
 <translation id="3765841986579723851">امروز ویرایش شده است</translation>
 <translation id="3772109172035555611">‏سفارشی‌سازی TrackPoint</translation>
@@ -1350,7 +1350,7 @@
 <translation id="5503884284981862082">‏باز کردن/ بستن «دستیار Google»</translation>
 <translation id="550391772491508736">ازسرگیری پخش محتوا</translation>
 <translation id="5506975627792768506">روشن یا خاموش کردن ذره‌بین</translation>
-<translation id="5507778598655387680">‫<ph name="VOLUME_LEVEL" />، با فشار دادن کلید «ورود»، دستگاه بی‌صدا خواهد شد.</translation>
+<translation id="5507778598655387680">‫<ph name="VOLUME_LEVEL" />، با فشار دادن کلید «ورود»، دستگاه صامت خواهد شد.</translation>
 <translation id="5512042095225963688">حذف واژه قبلی</translation>
 <translation id="5519005148254860683">‏ازهم باز کردن Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -1382,7 +1382,7 @@
 <translation id="5586388332127302891">ذره‌بین متصل فعال شد. برای خاموش کردن آن، کلیدهای <ph name="ACCELERATOR" /> را دوباره فشار دهید.</translation>
 <translation id="5587506661873751671">درحال بارگیری <ph name="DOWNLOAD_PERCENT" />٪</translation>
 <translation id="558849140439112033">برای انتخاب ناحیه گرفتن عکس، بکشید</translation>
-<translation id="5590609058453685222">«تذکر میکروفون خاموش» روشن است. اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
+<translation id="5590609058453685222">«تذکر میکروفون خاموش» روشن است. اگر هنگام صامت بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">‏مرورگر Chrome</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
@@ -1662,7 +1662,7 @@
 <translation id="6495322433318104734">درحال نمایش محافظ صفحه‌نمایش؛ برای خارج شدن، دکمه‌ای را فشار دهید</translation>
 <translation id="6495400115277918834">«تصویر در تصویر» شروع شد، برای کانونی کردن، دگرساز+تبدیل+ر را فشار دهید</translation>
 <translation id="6497418457565568043">«مزاحم نشوید» روشن است</translation>
-<translation id="6501401484702599040">ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
+<translation id="6501401484702599040">پخش محتوای صفحه‌نمایش در <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">برنامه «میان‌برهای مهم» را با «<ph name="NEW_SHORTCUT" />» باز کنید.</translation>
 <translation id="6507618042428827377">رفتن به روش ورودی بعدی دردسترس</translation>
 <translation id="6508923215158854599">‏مطمئن شوید Chromebook روشن و به همان شبکه Wi-Fi متصل باشد که دستگاه Chromecast شما متصل است.</translation>
@@ -1839,7 +1839,7 @@
 <translation id="7066646422045619941">این شبکه توسط سرپرست شما غیرفعال شده است.</translation>
 <translation id="7067196344162293536">چرخش خودکار</translation>
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
-<translation id="7076878155205969899">بی‌صدا کردن</translation>
+<translation id="7076878155205969899">صامت کردن</translation>
 <translation id="7083848064787091821">تمرکز</translation>
 <translation id="7084678090004350185">روشن/ خاموش کردن نقطه اتصال. نقطه اتصال روشن است، <ph name="DEVICECOUNT" /> دستگاه متصل است.</translation>
 <translation id="7086931198345821656">‏برای این به‌روزرسانی، باید روی <ph name="DEVICE_TYPE" /> شما Powerwash اعمال شود. همه داده‌ها حذف خواهد شد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
@@ -2144,7 +2144,7 @@
 <translation id="8088141034189573826">برای گزینه‌های بیشتر، از کلید جهش استفاده کنید. برای دسترسی به همه میزکارها، از کلیدهای راست‌بر و چپ‌بر استفاده کنید.</translation>
 <translation id="8091153018031979607">در <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> شروع می‌شود</translation>
 <translation id="8092380135549145188">کنترل‌های پیمایش</translation>
-<translation id="8098591350844501178">توقف ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
+<translation id="8098591350844501178">توقف پخش محتوای صفحه‌نمایش در <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">برداشتن سنجاق برنامه از قفسه</translation>
 <translation id="8113423164597455979">روشن، همه برنامه‌ها</translation>
 <translation id="8113515504791187892">دکمه «انتخاب برای شنیدن»</translation>

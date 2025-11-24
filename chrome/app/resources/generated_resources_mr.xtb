@@ -1427,6 +1427,7 @@
 <translation id="1949980990364952348">अ‍ॅपचे नाव</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">पर्याय शोधा</translation>
+<translation id="1953626242273481999">रिमोट डीबगिंगला अनुमती द्यायची आहे का?</translation>
 <translation id="1953796913175502363">तुमची कार्य प्रोफाइल सेट करा</translation>
 <translation id="1954597385941141174">साइट USB डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="1954813140452229842">शेअर माउंट करताना एरर आली. कृपया तुमची क्रेडेंशियल तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -1774,6 +1775,7 @@
 <translation id="2192505247865591433">द्वारा:</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> हे तुमचे नवीन टॅब हे पेज व्यवस्थापित करत आहे, नवीन टॅबमध्ये उघडते</translation>
+<translation id="2192982266585216032">&amp;पेमेंट</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2195331105963583686">तुम्ही त्यानंतर तरीही हे <ph name="DEVICE_TYPE" /> वापरू शकाल पण ते यापुढे ऑटोमॅटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळवू शकणार नाही</translation>
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
@@ -1809,6 +1811,9 @@
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="222115440608612541">सूर्योदय आणि सूर्यास्ताच्यावेळी थीम स्विच करा</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">एका बाह्य अ‍ॅपला हे Chrome सेशन डीबग करण्यासाठी त्यावर पूर्ण नियंत्रण हवे आहे. यामध्ये, तुमचा सेव्ह केलेला डेटा, कुकी व साइट डेटा यांचा अ‍ॅक्सेस आणि कोणत्याही URL वर नेव्हिगेट करण्याची क्षमता यांचा समावेश आहे.
+
+फक्त वेब डेव्हलपरनी हे वैशिष्ट्य सुरू केले पाहिजे आणि ते फक्त विश्वसनीय ॲप्ससह वापरले पाहिजे.</translation>
 <translation id="222201875806112242">अनामित मीडिया स्रोत</translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
 <translation id="2224444042887712269">ही सेटिंग <ph name="OWNER_EMAIL" /> च्या मालकीची आहे.</translation>
@@ -1917,6 +1922,7 @@
 <translation id="2294081976975808113">स्क्रीन गोपनीयता</translation>
 <translation id="2294358108254308676">तुम्ही <ph name="PRODUCT_NAME" /> स्‍थापित करू इच्छिता?</translation>
 <translation id="229477815107578534">तुमच्या सेटिंग्जचे परीक्षण करा</translation>
+<translation id="229524410604268773">सेटिंग्जमध्ये बंद करा</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> परिणाम</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> च्या <ph name="EMAIL" /> मध्ये साइन इन करताना डिव्हाइस ऑनलाइन असणे आवश्यक आहे</translation>
 <translation id="2296218178174497398">डिव्हाइस शोध</translation>
@@ -3004,6 +3010,7 @@
 <translation id="3022072018423103125">डोंगराळ प्रदेश</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> हे या Chromebook वरून काढून टाकले जाईल आणि <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केले जाणार नाही.</translation>
 <translation id="3022978424994383087">ते समजू शकले नाही.</translation>
+<translation id="3023204744987201088">&amp;संपर्क माहिती</translation>
 <translation id="3023464535986383522">बोलण्यासाठी निवडा</translation>
 <translation id="3024374909719388945">24-तासांचे घड्याळ वापरा</translation>
 <translation id="3027296729579831126">Nearby सह शेअरिंग सुरू करा</translation>
@@ -7946,6 +7953,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6495261233408033662">उघडलेले टॅब बंद करा</translation>
 <translation id="6495266441917713704">वाय-फाय ट्रान्सफर करू शकत नाही</translation>
 <translation id="6495453178162183932">थीम ही डीफॉल्ट Chrome वर अपडेट केली आहे</translation>
+<translation id="6496641546298525838">तुमचे डिव्हाइस</translation>
 <translation id="6497784818439587832">तुमच्या स्क्रीनवरील आयटम लहान किंवा मोठे करण्यासाठी डिस्प्लेचा आकार बदला</translation>
 <translation id="6497789971060331894">माउस रिव्हर्स स्क्रोलिंग</translation>
 <translation id="6498249116389603658">&amp;आपल्या सर्व भाषा</translation>
@@ -9769,6 +9777,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7760176388948986635">स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स, वेबसाइट व सेवांना या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. स्थान अचूकता हे Android अ‍ॅप्स आणि सेवांसाठी अधिक अचूक स्थान पुरवते. हे करण्यासाठी, Google हे वायरलेस सिग्नल स्थानांना क्राउडसोर्स करण्याकरिता डिव्हाइस सेन्सर आणि या डिव्हाइसच्या वायरलेस सिग्नलबद्दलच्या माहितीवर वेळोवेळी प्रक्रिया करते. स्थान अचूकता आणि स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी व वापरकर्त्यांच्या गरजा पूर्ण करण्यासाठी Google च्या आणि तृतीय पक्षांच्या कायदेशीर हितसंबंधांवर आधारित Google सेवांमध्ये सुधारणा करण्यासाठी, त्या पुरवण्यासाठी व त्यांची देखभाल करण्यासाठी ही माहिती कोणत्याही व्यक्तीला न ओळखता वापरली जाते.</translation>
 <translation id="7762024824096060040">हे खाते वापरू शकत नाही</translation>
+<translation id="776324966908034528">ब्राउझर प्रॉक्सी सेटिंग्ज एकाहून अधिक स्रोतांद्वारे नियंत्रित केली जातात</translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> वरून <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">नवीन विंडोमध्ये गट उघडा</translation>
@@ -11022,6 +11031,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> यांना तुमच्या संपर्कांमध्ये जोडा</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> साठी साइट डेटा आणि परवानग्या हटवायच्या आहेत का?</translation>
 <translation id="8617748779076050570">सुरक्षित कनेक्शन आयडी: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;संपर्क माहिती</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">तुमच्या डिव्हाइसवर वेब अ‍ॅप्स इंस्टॉल करण्याची अनुमती नाही</translation>
 <translation id="8619803522055190423">ड्रॉप शॅडो</translation>
@@ -11624,6 +11634,7 @@ I feel - विटांची इमारत</translation>
 <translation id="90033698482696970">उपलब्ध eSIM प्रोफाइल आपोआप स्कॅन करायच्या आहेत का?</translation>
 <translation id="9003647077635673607">सर्व वेबसाइटवर अनुमती द्या</translation>
 <translation id="9005774573776346118">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
+<translation id="9006511997799670136">तुमची संस्‍था</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> ला ही लिंक एका ॲपमध्ये उघडायची आहे.</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> च्या तपशील पेजवरील मागे जा बटण</translation>

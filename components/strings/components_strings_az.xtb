@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{Faylın endirilməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın endirilməsi bloklandı}}</translation>
 <translation id="2923275635648511531">Günəş baxımı və qaralma məhsulları</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
+<translation id="2925032407415783182">Tədbir biletini Pulqabıda yadda saxlayın</translation>
 <translation id="2925454999967523701">"Sənəd yaradın" düyməsi, aktivləşdirərək cəld yeni Google Sənəd yaradın</translation>
 <translation id="2925673989565098301">Çatdırılma Üsulu</translation>
 <translation id="2928426578619531300">İstifadəçi ilə bağlı</translation>
@@ -1462,7 +1463,6 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" keçid modeli üçün yol təyin edilib. Bu açar üçün yollar dəstəklənmir, yolu silib yenidən cəhd edin. Məs. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Götürmə üsulu</translation>
 <translation id="3399161914051569225">Daşına Bilən Texnologiya</translation>
-<translation id="3399930248910934354">Chrome Ayarlarını açın</translation>
 <translation id="3399952811970034796">Çatdırılma Ünvanı</translation>
 <translation id="3402261774528610252">Bu saytı yükləmək üçün istifadə edilən bağlantı köhnələn və gələcəkdə söndürüləcək TLS 1.0 və ya TLS 1.1 versiyasından istifadə etdi. Söndürüldükdən sonra istifadəçilərin bu saytı yükləməsinin qarşısı alınacaq. Server TLS 1.2 və ya daha sonrakı versiyanı aktivləşdirməlidir.</translation>
 <translation id="3405664148539009465">Şriftləri fərdiləşdirin</translation>
@@ -1723,6 +1723,7 @@
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>
 <translation id="3795624560191557077">Yaxın günlərdə ictimai data pozuntusunda aşkar edilmiş parolu dəyişmisiniz. Hər hansı problem yaranarsa, Google Şifrə Meneceri sizə hesabınıza daxil olmaqda kömək edə bilər.</translation>
 <translation id="3799805948399000906">Şrift üzrə sorğu göndərildi</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> saytından</translation>
 <translation id="3801297763951514916">Tez-tez daxil olursunuz</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803481123869276674">Chrome-da alış-veriş etdiyiniz zaman e-pulqabını seçim kimi görün</translation>
@@ -2422,6 +2423,7 @@
 <translation id="4930153903256238152">Böyük tutum</translation>
 <translation id="4930714375720679147">Aktiv Edin</translation>
 <translation id="4932035752129140860">Əlavə etdiyiniz mətn təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. O, həssas data ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
+<translation id="4932733599132424254">Tarix</translation>
 <translation id="4933788293078559286">Pix ilə ödəyin</translation>
 <translation id="4934780484581617878">Pəncərə idarəetməsi</translation>
 <translation id="4936134414789135531">Daxil edilən <ph name="VALUE_NAME" /> tapılmadı.</translation>
@@ -2965,6 +2967,7 @@
 <translation id="5847181246682413476">Enerji ləvazimatları</translation>
 <translation id="584902713199270089">Görüş və Şəxslər</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
+<translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>

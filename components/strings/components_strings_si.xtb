@@ -1169,6 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{ගොනුව බාගැනීමෙන් අවහිර කර ඇත}one{ගොනු <ph name="FILE_COUNT" />ක් බාගැනීමෙන් අවහිර කර ඇත}other{ගොනු <ph name="FILE_COUNT" />ක් බාගැනීමෙන් අවහිර කර ඇත}}</translation>
 <translation id="2923275635648511531">හිරු රැකවරණ සහ සම් පදම් කිරීමේ නිෂ්පාදන</translation>
 <translation id="292371311537977079">Chrome සැකසීම්</translation>
+<translation id="2925032407415783182">සිදුවීම් ප්‍රවේශපත්‍රය Wallet වෙත සුරකින්න</translation>
 <translation id="2925454999967523701">ලේඛනය තනන්න බොත්තම, ඉක්මනින් නව Google ලේඛනයක් තැනීමට සක්‍රිය කරන්න</translation>
 <translation id="2925673989565098301">බෙදා හැරීමේ ක්‍රමය</translation>
 <translation id="2928426578619531300">පරිශීලක අනුබද්ධ</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3392028486601120379">URL රටාව "<ph name="URL_PATTERN" />" හි නිශ්චිත මාර්ගයක් ඇත. මෙම යතුර සඳහා මාර්ග සහය නොදක්වයි, මාර්ගය ඉවත් කර නැවත උත්සාහ කරන්න. උදා. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">භාර ගැනීමේ ක්‍රමය</translation>
 <translation id="3399161914051569225">පළඳිය හැකි තාක්‍ෂණය</translation>
-<translation id="3399930248910934354">Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="3399952811970034796">බෙදා හැරීමේ ලිපිනය</translation>
 <translation id="3402261774528610252">මෙම වෙබ් අඩවිය පූරණ කිරීමට භාවිත කළ සම්බන්ධතාව TLS 1.0 හෝ TLS 1.1 භාවිත කළා, ඒවා අත හැර තිබෙන අතර අනාගතයේදී අබල කෙරේ. වරක් අබල කළ විට, පරිශීලකයින් මෙම වෙබ් අඩවිය පූරණ කිරීම වළක්වනු ලැබේ. සේවාදායකය TLS 1.2 හෝ පසු අනුවාදය සබල කළ යුතුය.</translation>
 <translation id="3405664148539009465">ෆොන්ට අභිරුචිකරණය කරන්න</translation>
@@ -1727,6 +1727,7 @@
 <translation id="3793574014653384240">මෑතදී සිදු වූ බිඳ වැටීම් සංඛ්‍යාව සහ හේතු</translation>
 <translation id="3795624560191557077">ඔබ මෑතක දී පොදු දත්ත කඩ කිරීමක දී හමු වූ මුරපදයක් වෙනස් කළා. ගැටලුවක් ඇති වුවහොත්, Google මුරපද කළමනාකරු හට ඔබට පුරනය වීමට උදවු කළ හැක.</translation>
 <translation id="3799805948399000906">අකුරු වර්ගය ඉල්ලුවා</translation>
+<translation id="3800436529451849929"><ph name="SITE" /> වෙතින්</translation>
 <translation id="3801297763951514916">ඔබ නිතර පැමිණෙයි</translation>
 <translation id="380329542618494757">නම</translation>
 <translation id="3803481123869276674">ඔබ Chrome හි මිල දී ගැනීම් සිදු කරන විට, විකල්පයක් ලෙස ඉ-පසුම්බිය බලන්න</translation>
@@ -2426,6 +2427,7 @@
 <translation id="4930153903256238152">විශාල ධාරිතාව</translation>
 <translation id="4930714375720679147">ක්‍රියාත්මක කරන්න</translation>
 <translation id="4932035752129140860">විශ්ලේෂණය සඳහා ඔබ අලවන හෝ අමුණන පෙළ Google Cloud හෝ තෙවන පාර්ශ්ව වෙත යවයි. උදාහරණයක් ලෙස, එය සංවේදී දත්ත සඳහා ස්කෑන් කළ හැකි අතර සමාගම් ප්‍රතිපත්ති මත පදනම්ව ගබඩා කර ඔබේ පරිපාලකයාට දෘශ්‍යමාන විය හැක.</translation>
+<translation id="4932733599132424254">දිනය</translation>
 <translation id="4933788293078559286">Pix සමග ගෙවන්න</translation>
 <translation id="4934780484581617878">කවුළු කළමනාකරණය</translation>
 <translation id="4936134414789135531">ඇතුළත් කළ <ph name="VALUE_NAME" /> සොයා ගත නොහැකි විය.</translation>
@@ -2969,6 +2971,7 @@
 <translation id="5847181246682413476">බල සැපයුම්</translation>
 <translation id="584902713199270089">පෙම්හමු සහ පුද්ගලික</translation>
 <translation id="5851548754964597211">ටැබ ලැයිස්තුව</translation>
+<translation id="5851868085455377790">නිකුත්කරන්නා</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
 <translation id="5862579898803147654">අට්ටිය 8</translation>
