@@ -57,9 +57,9 @@ std::tuple<bool, int64_t> ParseScopeMetadataId(
     return std::make_tuple(false, 0);
 
   int64_t scope_id = 0;
-  std::string_view part(UNSAFE_TODO(key.data() + prefix_size),
-                        key.size() - prefix_size);
-  bool decode_success = DecodeVarInt(&part, &scope_id);
+  std::string_view key_without_prefix =
+      std::string_view(key.begin(), key.end()).substr(prefix_size);
+  bool decode_success = DecodeVarInt(&key_without_prefix, &scope_id);
   DCHECK_GE(scope_id, 0);
   return std::make_tuple(decode_success, scope_id);
 }
