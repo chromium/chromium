@@ -28,33 +28,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_DOM_WINDOW_CRYPTO_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_DOM_WINDOW_CRYPTO_H_
+#include "third_party/blink/renderer/modules/crypto/global_crypto.h"
 
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
+#include "third_party/blink/renderer/modules/crypto/crypto.h"
 
 namespace blink {
 
-class Crypto;
-class LocalDOMWindow;
+GlobalCrypto& GlobalCrypto::From(WindowOrWorkerGlobalScope& context) {
+  GlobalCrypto* supplement = context.GetGlobalCrypto();
+  if (!supplement) {
+    supplement = MakeGarbageCollected<GlobalCrypto>();
+    context.SetGlobalCrypto(supplement);
+  }
+  return *supplement;
+}
 
-class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
-                              public GarbageCollectedMixin {
- public:
-  static DOMWindowCrypto& From(LocalDOMWindow&);
-  static Crypto* crypto(LocalDOMWindow&);
+Crypto* GlobalCrypto::crypto(WindowOrWorkerGlobalScope& context) {
+  return GlobalCrypto::From(context).crypto();
+}
 
-  DOMWindowCrypto() = default;
+Crypto* GlobalCrypto::crypto() const {
+  if (!crypto_) {
+    crypto_ = MakeGarbageCollected<Crypto>();
+  }
+  return crypto_.Get();
+}
 
-  Crypto* crypto() const;
-
-  void Trace(Visitor*) const override;
-
- private:
-  mutable Member<Crypto> crypto_;
-};
+void GlobalCrypto::Trace(Visitor* visitor) const {
+  visitor->Trace(crypto_);
+}
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_DOM_WINDOW_CRYPTO_H_

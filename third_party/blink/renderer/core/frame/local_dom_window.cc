@@ -2564,7 +2564,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(audio_renderer_sink_cache_window_observer_);
   visitor->Trace(css_animation_worklet_);
   visitor->Trace(credential_manager_proxy_);
-  visitor->Trace(dom_window_crypto_);
   visitor->Trace(dom_window_digital_goods_);
   visitor->Trace(dom_window_launch_queue_);
   visitor->Trace(dom_window_storage_);
@@ -2595,6 +2594,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(window_shared_storage_impl_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
+  WindowOrWorkerGlobalScope::Trace(visitor);
 }
 
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {

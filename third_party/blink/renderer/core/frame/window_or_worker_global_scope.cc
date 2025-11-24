@@ -63,4 +63,8 @@ String WindowOrWorkerGlobalScope::crossOriginEmbedderPolicy() {
   }
 }
 
+void WindowOrWorkerGlobalScope::Trace(Visitor* visitor) const {
+  visitor->Trace(global_crypto_);
+}
+
 }  // namespace blink

@@ -79,7 +79,6 @@ class WorkerNavigator;
 class WorkerThread;
 class WorkerPerformance;
 class FontFaceSetWorker;
-class WorkerGlobalScopeCrypto;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -335,15 +334,6 @@ class CORE_EXPORT WorkerGlobalScope
     font_face_set_worker_ = font_face_set_worker;
   }
 
-  ForwardDeclaredMember<WorkerGlobalScopeCrypto> GetWorkerGlobalScopeCrypto()
-      const {
-    return worker_global_scope_crypto_;
-  }
-  void SetWorkerGlobalScopeCrypto(ForwardDeclaredMember<WorkerGlobalScopeCrypto>
-                                      worker_global_scope_crypto) {
-    worker_global_scope_crypto_ = worker_global_scope_crypto;
-  }
-
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -477,7 +467,6 @@ class CORE_EXPORT WorkerGlobalScope
       global_performance_impl_;
 
   Member<FontFaceSetWorker> font_face_set_worker_;
-  ForwardDeclaredMember<WorkerGlobalScopeCrypto> worker_global_scope_crypto_;
 };
 
 template <>

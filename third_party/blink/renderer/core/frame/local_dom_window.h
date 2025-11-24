@@ -106,7 +106,6 @@ class CSSAnimationWorklet;
 class CachedPermissionStatus;
 class ContainerTiming;
 class CredentialManagerProxy;
-class DOMWindowCrypto;
 class DOMWindowDigitalGoods;
 class DOMWindowLaunchQueue;
 class DOMWindowStorage;
@@ -751,14 +750,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     credential_manager_proxy_ = credential_manager_proxy;
   }
 
-  ForwardDeclaredMember<DOMWindowCrypto> GetDOMWindowCrypto() const {
-    return dom_window_crypto_;
-  }
-  void SetDOMWindowCrypto(
-      ForwardDeclaredMember<DOMWindowCrypto> dom_window_crypto) {
-    dom_window_crypto_ = dom_window_crypto;
-  }
-
   ForwardDeclaredMember<DOMWindowDigitalGoods> GetDOMWindowDigitalGoods()
       const {
     return dom_window_digital_goods_;
@@ -1160,7 +1151,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       audio_renderer_sink_cache_window_observer_;
   ForwardDeclaredMember<CSSAnimationWorklet> css_animation_worklet_;
   ForwardDeclaredMember<CredentialManagerProxy> credential_manager_proxy_;
-  ForwardDeclaredMember<DOMWindowCrypto> dom_window_crypto_;
   ForwardDeclaredMember<DOMWindowDigitalGoods> dom_window_digital_goods_;
   ForwardDeclaredMember<DOMWindowLaunchQueue> dom_window_launch_queue_;
   ForwardDeclaredMember<DOMWindowStorage> dom_window_storage_;

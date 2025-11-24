@@ -28,35 +28,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/crypto/worker_global_scope_crypto.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
 
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/crypto/crypto.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
-WorkerGlobalScopeCrypto& WorkerGlobalScopeCrypto::From(
-    WorkerGlobalScope& context) {
-  WorkerGlobalScopeCrypto* supplement = context.GetWorkerGlobalScopeCrypto();
-  if (!supplement) {
-    supplement = MakeGarbageCollected<WorkerGlobalScopeCrypto>();
-    context.SetWorkerGlobalScopeCrypto(supplement);
-  }
-  return *supplement;
-}
+class Crypto;
+class WindowOrWorkerGlobalScope;
 
-Crypto* WorkerGlobalScopeCrypto::crypto(WorkerGlobalScope& context) {
-  return WorkerGlobalScopeCrypto::From(context).crypto();
-}
+class GlobalCrypto final : public GarbageCollected<GlobalCrypto>,
+                           public GarbageCollectedMixin {
+ public:
+  static Crypto* crypto(WindowOrWorkerGlobalScope&);
+  Crypto* crypto() const;
 
-Crypto* WorkerGlobalScopeCrypto::crypto() const {
-  if (!crypto_)
-    crypto_ = MakeGarbageCollected<Crypto>();
-  return crypto_.Get();
-}
+  GlobalCrypto() = default;
 
-void WorkerGlobalScopeCrypto::Trace(Visitor* visitor) const {
-  visitor->Trace(crypto_);
-}
+  void Trace(Visitor*) const override;
+
+ private:
+  static GlobalCrypto& From(WindowOrWorkerGlobalScope&);
+
+  mutable Member<Crypto> crypto_;
+};
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
