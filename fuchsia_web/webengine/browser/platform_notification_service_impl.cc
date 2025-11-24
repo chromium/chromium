@@ -58,7 +58,10 @@ void PlatformNotificationServiceImpl::GetDisplayedNotificationsForOrigin(
     DisplayedNotificationsCallback callback) {
   std::move(callback).Run(std::set<std::string>{}, false);
 }
-void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {}
+
+void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {
+  NOTIMPLEMENTED();
+}
 
 base::Time PlatformNotificationServiceImpl::ReadNextTriggerTimestamp() {
   return base::Time::Max();
