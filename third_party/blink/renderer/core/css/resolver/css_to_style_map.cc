@@ -64,25 +64,8 @@ void CSSToStyleMap::MapFillAttachment(StyleResolverState&,
     layer->SetAttachment(FillLayer::InitialFillAttachment(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
-  switch (identifier_value->GetValueID()) {
-    case CSSValueID::kFixed:
-      layer->SetAttachment(EFillAttachment::kFixed);
-      break;
-    case CSSValueID::kScroll:
-      layer->SetAttachment(EFillAttachment::kScroll);
-      break;
-    case CSSValueID::kLocal:
-      layer->SetAttachment(EFillAttachment::kLocal);
-      break;
-    default:
-      return;
-  }
+  layer->SetAttachment(
+      To<CSSIdentifierValue>(value).ConvertTo<EFillAttachment>());
 }
 
 void CSSToStyleMap::MapFillClip(StyleResolverState&,
@@ -92,13 +75,7 @@ void CSSToStyleMap::MapFillClip(StyleResolverState&,
     layer->SetClip(FillLayer::InitialFillClip(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
-  layer->SetClip(identifier_value->ConvertTo<EFillBox>());
+  layer->SetClip(To<CSSIdentifierValue>(value).ConvertTo<EFillBox>());
 }
 
 void CSSToStyleMap::MapFillCompositingOperator(StyleResolverState&,
@@ -109,14 +86,8 @@ void CSSToStyleMap::MapFillCompositingOperator(StyleResolverState&,
         FillLayer::InitialFillCompositingOperator(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
   layer->SetCompositingOperator(
-      identifier_value->ConvertTo<CompositingOperator>());
+      To<CSSIdentifierValue>(value).ConvertTo<CompositingOperator>());
 }
 
 void CSSToStyleMap::MapFillBlendMode(StyleResolverState&,
@@ -126,13 +97,7 @@ void CSSToStyleMap::MapFillBlendMode(StyleResolverState&,
     layer->SetBlendMode(FillLayer::InitialFillBlendMode(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
-  layer->SetBlendMode(identifier_value->ConvertTo<BlendMode>());
+  layer->SetBlendMode(To<CSSIdentifierValue>(value).ConvertTo<BlendMode>());
 }
 
 void CSSToStyleMap::MapFillOrigin(StyleResolverState&,
@@ -142,13 +107,7 @@ void CSSToStyleMap::MapFillOrigin(StyleResolverState&,
     layer->SetOrigin(FillLayer::InitialFillOrigin(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
-  layer->SetOrigin(identifier_value->ConvertTo<EFillBox>());
+  layer->SetOrigin(To<CSSIdentifierValue>(value).ConvertTo<EFillBox>());
 }
 
 void CSSToStyleMap::MapFillImage(StyleResolverState& state,
@@ -173,11 +132,9 @@ void CSSToStyleMap::MapFillRepeat(StyleResolverState&,
     layer->SetRepeat(FillLayer::InitialFillRepeat(layer->GetType()));
     return;
   }
-
-  if (const auto* repeat = DynamicTo<CSSRepeatStyleValue>(value)) {
-    layer->SetRepeat({repeat->x()->ConvertTo<EFillRepeat>(),
-                      repeat->y()->ConvertTo<EFillRepeat>()});
-  }
+  auto& repeat = To<CSSRepeatStyleValue>(value);
+  layer->SetRepeat({repeat.x()->ConvertTo<EFillRepeat>(),
+                    repeat.y()->ConvertTo<EFillRepeat>()});
 }
 
 void CSSToStyleMap::MapFillMaskMode(StyleResolverState&,
@@ -187,13 +144,7 @@ void CSSToStyleMap::MapFillMaskMode(StyleResolverState&,
     layer->SetMaskMode(FillLayer::InitialFillMaskMode(layer->GetType()));
     return;
   }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    return;
-  }
-
-  layer->SetMaskMode(identifier_value->ConvertTo<EFillMaskMode>());
+  layer->SetMaskMode(To<CSSIdentifierValue>(value).ConvertTo<EFillMaskMode>());
 }
 
 void CSSToStyleMap::MapFillSize(StyleResolverState& state,
@@ -205,47 +156,40 @@ void CSSToStyleMap::MapFillSize(StyleResolverState& state,
     return;
   }
 
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair()) {
-    return;
+  EFillSizeType fill_size_type = EFillSizeType::kSizeLength;
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kContain:
+        fill_size_type = EFillSizeType::kContain;
+        break;
+      case CSSValueID::kCover:
+        fill_size_type = EFillSizeType::kCover;
+        break;
+      default:
+        // 'auto' is handled below.
+        break;
+    }
   }
+  layer->SetSizeType(fill_size_type);
 
-  if (identifier_value &&
-      identifier_value->GetValueID() == CSSValueID::kContain) {
-    layer->SetSizeType(EFillSizeType::kContain);
-  } else if (identifier_value &&
-             identifier_value->GetValueID() == CSSValueID::kCover) {
-    layer->SetSizeType(EFillSizeType::kCover);
-  } else {
-    layer->SetSizeType(EFillSizeType::kSizeLength);
-  }
-
-  LengthSize b = FillLayer::InitialFillSizeLength(layer->GetType());
-
-  if (identifier_value &&
-      (identifier_value->GetValueID() == CSSValueID::kContain ||
-       identifier_value->GetValueID() == CSSValueID::kCover)) {
-    layer->SetSizeLength(b);
+  if (fill_size_type != EFillSizeType::kSizeLength) {
+    layer->SetSizeLength(FillLayer::InitialFillSizeLength(layer->GetType()));
     return;
   }
 
   Length first_length;
   Length second_length;
 
-  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+  if (auto* pair = DynamicTo<CSSValuePair>(value)) {
     first_length =
         StyleBuilderConverter::ConvertLengthOrAuto(state, pair->First());
     second_length =
         StyleBuilderConverter::ConvertLengthOrAuto(state, pair->Second());
   } else {
-    DCHECK(value.IsPrimitiveValue() || value.IsIdentifierValue());
     first_length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
-    second_length = Length();
   }
 
-  b.SetWidth(first_length);
-  b.SetHeight(second_length);
-  layer->SetSizeLength(b);
+  layer->SetSizeLength(LengthSize(first_length, second_length));
 }
 
 void CSSToStyleMap::MapFillPositionX(StyleResolverState& state,
@@ -256,26 +200,15 @@ void CSSToStyleMap::MapFillPositionX(StyleResolverState& state,
     return;
   }
 
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair()) {
-    return;
-  }
-
-  Length length;
-  auto* pair = DynamicTo<CSSValuePair>(value);
-  if (pair) {
-    length = To<CSSPrimitiveValue>(pair->Second())
-                 .ConvertToLength(state.CssToLengthConversionData());
-  } else {
-    length = StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
-                                                          CSSValueID::kRight>(
-        state, value);
-  }
-
-  layer->SetPositionX(length);
-  if (pair) {
+  if (auto* pair = DynamicTo<CSSValuePair>(value)) {
+    layer->SetPositionX(
+        To<CSSPrimitiveValue>(pair->Second())
+            .ConvertToLength(state.CssToLengthConversionData()));
     layer->SetBackgroundXOrigin(To<CSSIdentifierValue>(pair->First())
                                     .ConvertTo<BackgroundEdgeOrigin>());
+  } else {
+    layer->SetPositionX(StyleBuilderConverter::ConvertPositionLength<
+                        CSSValueID::kLeft, CSSValueID::kRight>(state, value));
   }
 }
 
@@ -287,26 +220,15 @@ void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
     return;
   }
 
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair()) {
-    return;
-  }
-
-  Length length;
-  auto* pair = DynamicTo<CSSValuePair>(value);
-  if (pair) {
-    length = To<CSSPrimitiveValue>(pair->Second())
-                 .ConvertToLength(state.CssToLengthConversionData());
-  } else {
-    length = StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
-                                                          CSSValueID::kBottom>(
-        state, value);
-  }
-
-  layer->SetPositionY(length);
-  if (pair) {
+  if (auto* pair = DynamicTo<CSSValuePair>(value)) {
+    layer->SetPositionY(
+        To<CSSPrimitiveValue>(pair->Second())
+            .ConvertToLength(state.CssToLengthConversionData()));
     layer->SetBackgroundYOrigin(To<CSSIdentifierValue>(pair->First())
                                     .ConvertTo<BackgroundEdgeOrigin>());
+  } else {
+    layer->SetPositionY(StyleBuilderConverter::ConvertPositionLength<
+                        CSSValueID::kTop, CSSValueID::kBottom>(state, value));
   }
 }
 
