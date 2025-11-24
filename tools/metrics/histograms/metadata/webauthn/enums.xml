@@ -259,6 +259,17 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Other device error"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationDeduplicatedType) -->
+
+<enum name="WebAuthenticationDeduplicatedType">
+  <int value="0" label="Google Password Manager Passkey"/>
+  <int value="1" label="Platform Passkey"/>
+  <int value="2" label="Password"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/credential_sorter.h:WebAuthnDeduplicatedType) -->
+
 <enum name="WebAuthenticationEnclaveEvent">
   <int value="0" label="Onboarding sheet was shown to the user"/>
   <int value="1"
@@ -469,17 +480,6 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Conditional Create (Passkey Upgrade) Failure"/>
   <int value="19" label="Blocked by actor task"/>
 </enum>
-
-<!-- LINT.IfChange(WebAuthenticationMechanismDeduplicatedType) -->
-
-<enum name="WebAuthenticationMechanismDeduplicatedType">
-  <int value="0" label="Enclave Passkey"/>
-  <int value="1" label="Platform Passkey"/>
-  <int value="2" label="Password"/>
-  <int value="3" label="Other"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/webauthn/mechanism_sorter.h:WebAuthnMechanismDeduplicatedType) -->
 
 <!-- LINT.IfChange(ErrorUIEventType) -->
 

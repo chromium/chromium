@@ -5,20 +5,22 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_VIEW_H_
 
+#include <utility>
+
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "url/gurl.h"
 
-namespace password_manager {
-class PasskeyCredential;
-class UiCredential;
-}
 
 // This class represents the interface used for communicating between the Touch
 // To Fill controller with the Android frontend.
 class TouchToFillView {
  public:
   using IsOriginSecure = base::StrongAlias<class IsOriginSecureTag, bool>;
+  using Credential = std::variant<password_manager::PasskeyCredential,
+                                  password_manager::UiCredential>;
 
   enum ShowFlags {
     kNone = 0,

@@ -16,8 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "components/password_manager/core/browser/origin_credential_store.h"
-#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "ui/android/view_android.h"
