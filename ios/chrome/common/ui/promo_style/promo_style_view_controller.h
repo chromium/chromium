@@ -40,7 +40,37 @@ enum class ActionButtonsVisibility {
 };
 
 // A base view controller for the common UI controls in the new Promo
-// Style screens.
+// Style screens. The main content consists of a banner, a header image, a
+// title, a subtitle, and screen-specific content. It can have action buttons at
+// the bottom, and a disclaimer above them.
+//
+// The layout is structured as follows:
+//
+// +--------------------------------+
+// |          navigationBar         |
+// |  +--------------------------+  |
+// |  |  dismissBtn |  helpBtn   |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |           scrollView           |
+// |  +--------------------------+  |
+// |  |          banner          |  |
+// |  +--------------------------+  |
+// |  |       headerImage        |  |
+// |  +--------------------------+  |
+// |  |         titleText        |  |
+// |  +--------------------------+  |
+// |  |        subtitleText      |  |
+// |  +--------------------------+  |
+// |  |     specificContentView  |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |        disclaimerText          |
+// +--------------------------------+
+// |      primaryActionButton       |
+// +--------------------------------+
+// |     secondaryActionButton      |
+// +--------------------------------+
 @interface PromoStyleViewController
     : ButtonStackViewController <UITextViewDelegate>
 
