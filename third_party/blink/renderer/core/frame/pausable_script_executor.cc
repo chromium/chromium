@@ -408,7 +408,7 @@ void PausableScriptExecutor::HandleResults(
           }
           if (std::unique_ptr<base::Value> new_value = converter->FromV8Value(
                   results.back(), script_state_->GetContext())) {
-            value = base::Value::FromUniquePtrValue(std::move(new_value));
+            value = std::move(*std::move(new_value));
           }
         }
         break;
