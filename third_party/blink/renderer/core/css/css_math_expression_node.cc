@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -4086,6 +4088,8 @@ class CSSMathExpressionNodeParser {
         return RuntimeEnabledFeatures::CSSMediaProgressNotationEnabled();
       case CSSValueID::kContainerProgress:
         return RuntimeEnabledFeatures::CSSContainerProgressNotationEnabled();
+      case CSSValueID::kRandom:
+        return RuntimeEnabledFeatures::CSSRandomFunctionEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
@@ -4434,6 +4438,11 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 1;
         min_argument_count = 1;
         break;
+      case CSSValueID::kRandom:
+        DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
+        max_argument_count = 3;
+        min_argument_count = 2;
+        break;
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         break;
@@ -4446,6 +4455,20 @@ class CSSMathExpressionNodeParser {
       CSSMathExpressionNode* rounding_strategy = ParseRoundingStrategy(stream);
       if (rounding_strategy) {
         nodes.push_back(rounding_strategy);
+      }
+    }
+
+    // Parse the (optional) <random-value-sharing> argument of the random()
+    // function.
+    std::optional<RandomValueSharing> random_value_sharing =
+        RandomValueSharing::Parse(stream);
+    if (function_id == CSSValueID::kRandom) {
+      if (random_value_sharing.has_value() &&
+          !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+        return nullptr;
+      }
+      if (!random_value_sharing.has_value()) {
+        random_value_sharing = RandomValueSharing::Auto();
       }
     }
 
@@ -4564,7 +4587,20 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSiblingCount:
         // Handled above.
         return nullptr;
-
+      case CSSValueID::kRandom: {
+        DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
+        DCHECK_GE(nodes.size(), 2u);
+        DCHECK_LE(nodes.size(), 3u);
+        CalculationResultCategory category = DetermineComparisonCategory(nodes);
+        if (category == CalculationResultCategory::kCalcOther) {
+          return nullptr;
+        }
+        const CSSMathExpressionNode* step =
+            (nodes.size() == 3) ? nodes[2] : nullptr;
+        return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+            category, *random_value_sharing,
+            /* min= */ nodes[0], /* max= */ nodes[1], /* step= */ step);
+      }
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return nullptr;
@@ -5194,6 +5230,255 @@ CSSMathExpressionSiblingFunction::ComputeValueInCanonicalUnit(
 
 void CSSMathExpressionSiblingFunction::Trace(Visitor* visitor) const {
   visitor->Trace(function_);
+  CSSMathExpressionNode::Trace(visitor);
+}
+
+bool RandomValueSharing::IsFixed() const {
+  return std::holds_alternative<double>(value_);
+}
+double RandomValueSharing::GetFixed() const {
+  DCHECK(std::holds_alternative<double>(value_));
+  return std::get<double>(value_);
+}
+bool RandomValueSharing::IsAuto() const {
+  return !std::holds_alternative<IdentElementShared>(value_) ||
+         std::get<IdentElementShared>(value_).ident.IsNull();
+}
+AtomicString RandomValueSharing::GetIdent() const {
+  if (!std::holds_alternative<IdentElementShared>(value_)) {
+    return g_null_atom;
+  }
+  return std::get<IdentElementShared>(value_).ident;
+}
+bool RandomValueSharing::IsElementShared() const {
+  return std::holds_alternative<IdentElementShared>(value_) &&
+         std::get<IdentElementShared>(value_).is_element_shared;
+}
+
+std::optional<RandomValueSharing> RandomValueSharing::Parse(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return std::nullopt;
+  }
+
+  CSSParserToken token = stream.Peek();
+  if (token.Value() == "fixed") {
+    CSSParserTokenStream::State savepoint = stream.Save();
+    stream.ConsumeIncludingWhitespace();
+    token = stream.Peek();
+    if (token.GetType() == kNumberToken && token.NumericValue() >= 0 &&
+        token.NumericValue() <= 1) {
+      return RandomValueSharing(
+          stream.ConsumeIncludingWhitespace().NumericValue());
+    }
+    stream.Restore(savepoint);
+    return std::nullopt;
+  }
+
+  wtf_size_t offset = stream.Offset();
+
+  bool element_shared = false;
+  if (token.Value() == "element-shared") {
+    element_shared = true;
+    stream.ConsumeIncludingWhitespace();
+  }
+
+  token = stream.Peek();
+  if (stream.Peek().GetType() != kIdentToken) {
+    return RandomValueSharing(element_shared);
+  }
+
+  AtomicString ident = g_null_atom;
+  if (token.Value() == "auto") {
+    stream.ConsumeIncludingWhitespace();
+  }
+
+  if (token.Value().ToString().StartsWith("--")) {
+    ident = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  }
+
+  token = stream.Peek();
+  if (!element_shared && stream.Peek().GetType() == kIdentToken &&
+      token.Value() == "element-shared") {
+    element_shared = true;
+    stream.ConsumeIncludingWhitespace();
+  }
+
+  if (stream.Offset() == offset) {
+    return std::nullopt;
+  }
+  return RandomValueSharing(ident, element_shared);
+}
+
+String RandomValueSharing::CssText() const {
+  StringBuilder result;
+  if (IsFixed()) {
+    result.Append("fixed ");
+    result.AppendNumber(GetFixed());
+  }
+  if (GetIdent()) {
+    result.Append(GetIdent());
+  }
+  if (IsElementShared()) {
+    if (!result.empty()) {
+      result.Append(" ");
+    }
+    result.Append("element-shared");
+  }
+  return result.ToString();
+}
+
+bool RandomValueSharing::operator==(const RandomValueSharing& other) const {
+  if (std::holds_alternative<IdentElementShared>(value_) &&
+      std::holds_alternative<IdentElementShared>(other.value_)) {
+    return std::get<IdentElementShared>(value_) ==
+           std::get<IdentElementShared>(other.value_);
+  }
+  if (std::holds_alternative<double>(value_) &&
+      std::holds_alternative<double>(other.value_)) {
+    return std::get<double>(value_) == std::get<double>(other.value_);
+  }
+  return false;
+}
+
+CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
+    CalculationResultCategory category,
+    RandomValueSharing random_value_sharing,
+    const CSSMathExpressionNode* min,
+    const CSSMathExpressionNode* max,
+    const CSSMathExpressionNode* step)
+    : CSSMathExpressionNode(category,
+                            /*has_comparisons=*/false,
+                            /*has_anchor_functions=*/false,
+                            /*needs_tree_scope_population=*/false),
+      random_value_sharing_(random_value_sharing),
+      min_(min),
+      max_(max),
+      step_(step) {}
+
+CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
+  return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+      category_, random_value_sharing_, min_, max_, step_);
+}
+
+bool CSSMathExpressionRandomFunction::IsComputationallyIndependent() const {
+  return min_->IsComputationallyIndependent() &&
+         max_->IsComputationallyIndependent() &&
+         (step_ && step_->IsComputationallyIndependent());
+}
+
+bool CSSMathExpressionRandomFunction::IsElementDependent() const {
+  return !random_value_sharing_.IsElementShared();
+}
+
+bool CSSMathExpressionRandomFunction::HasInvalidAnchorFunctions(
+    const CSSLengthResolver& length_resolver) const {
+  return min_->HasInvalidAnchorFunctions(length_resolver) ||
+         max_->HasInvalidAnchorFunctions(length_resolver) ||
+         (step_ && step_->HasInvalidAnchorFunctions(length_resolver));
+}
+
+bool CSSMathExpressionRandomFunction::MayHaveRelativeUnit() const {
+  return min_->MayHaveRelativeUnit() || max_->MayHaveRelativeUnit() ||
+         (step_ && step_->MayHaveRelativeUnit());
+}
+
+#if DCHECK_IS_ON()
+bool CSSMathExpressionRandomFunction::InvolvesPercentageComparisons() const {
+  return min_->InvolvesPercentageComparisons() ||
+         max_->InvolvesPercentageComparisons() ||
+         (step_ && step_->InvolvesPercentageComparisons());
+}
+#endif
+
+double CSSMathExpressionRandomFunction::ComputeDouble(
+    const CSSLengthResolver& length_resolver) const {
+  const Element* element = length_resolver.GetElement();
+  // TODO(crbug.com/413385732): Pass correct property name and property value
+  // index.
+  double random_base_value =
+      element->GetDocument().GetStyleEngine().GetCachedRandomBaseValue(
+          random_value_sharing_, element, AtomicString(""), 0);
+  double min = min_->ComputeNumber(length_resolver);
+  double max = max_->ComputeNumber(length_resolver);
+  if (max < min) {
+    max = min;
+  }
+
+  if (std::isinf(min)) {
+    return min;
+  }
+
+  if (std::isinf(max - min) || std::isnan(min) || std::isnan(max)) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+
+  if (!step_) {
+    return min + random_base_value * (max - min);
+  }
+
+  double step = step_->ComputeNumber(length_resolver);
+
+  if (std::isinf(step)) {
+    return min;
+  }
+
+  if (std::isnan(step)) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+
+  if (step <= 0) {
+    return min + random_base_value * (max - min);
+  }
+
+  int n = (max - min) / step;
+  // step_index = round(down, random_base_value * (n + 1), 1);
+  int step_index = ClampTo<int>(EvaluateSteppedValueFunction(
+      CSSMathOperator::kRoundDown, random_base_value * (n + 1), 1.0));
+  return min + step_index * step;
+}
+
+double CSSMathExpressionRandomFunction::ComputeLengthPx(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK(!HasPercentage());
+  DCHECK_EQ(Category(), kCalcLength);
+  return ComputeDouble(length_resolver);
+}
+
+String CSSMathExpressionRandomFunction::CustomCSSText() const {
+  StringBuilder result;
+  result.Append("random(");
+  String random_value_sharing_str = random_value_sharing_.CssText();
+  if (!random_value_sharing_str.empty()) {
+    result.Append(random_value_sharing_str);
+    result.Append(", ");
+  }
+  result.Append(min_->CustomCSSText());
+  result.Append(", ");
+  result.Append(max_->CustomCSSText());
+  if (step_) {
+    result.Append(", ");
+    result.Append(step_->CustomCSSText());
+  }
+  result.Append(')');
+  return result.ToString();
+}
+
+bool CSSMathExpressionRandomFunction::operator==(
+    const CSSMathExpressionNode& exp) const {
+  if (!exp.IsRandomFunction()) {
+    return false;
+  }
+  const CSSMathExpressionRandomFunction& other =
+      To<CSSMathExpressionRandomFunction>(exp);
+  return random_value_sharing_ == other.random_value_sharing_ &&
+         min_ == other.min_ && max_ == other.max_ && step_ == other.step_;
+}
+
+void CSSMathExpressionRandomFunction::Trace(Visitor* visitor) const {
+  visitor->Trace(min_);
+  visitor->Trace(max_);
+  visitor->Trace(step_);
   CSSMathExpressionNode::Trace(visitor);
 }
 

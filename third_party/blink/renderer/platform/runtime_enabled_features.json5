@@ -1606,6 +1606,10 @@
       depends_on: ["PseudoElementsFocusable"],
     },
     {
+      name: "CSSRandomFunction",
+      status: "test",
+    },
+    {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
       // selectively enable resize corner for textarea via UA stylesheet, but
       // unintentionally exposed to author sheets. UA rule is now using

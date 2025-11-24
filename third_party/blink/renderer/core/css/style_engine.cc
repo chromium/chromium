@@ -34,6 +34,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
+#include "base/rand_util.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -4698,6 +4699,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(anchored_element_dirty_set_);
   visitor->Trace(user_rule_set_groups_);
   visitor->Trace(functional_media_query_results_);
+  visitor->Trace(random_base_value_cache_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -4894,6 +4896,24 @@ void StyleEngine::RevisitStyleSheetForInspector(
   if (features) {
     RevisitStyleRulesForInspector(*features, contents->ChildRules());
   }
+}
+
+double StyleEngine::GetCachedRandomBaseValue(
+    RandomValueSharing random_value_sharing,
+    const Element* element,
+    AtomicString property_name,
+    size_t property_value_index) {
+  RandomCachingKey* random_caching_key = RandomCachingKey::Create(
+      random_value_sharing, element, property_name, property_value_index);
+  auto it = random_base_value_cache_.find(random_caching_key);
+  if (it != random_base_value_cache_.end()) {
+    return it->value;
+  }
+  double value = random_value_sharing.IsFixed()
+                     ? random_value_sharing.GetFixed()
+                     : base::RandDouble();
+  random_base_value_cache_.insert(random_caching_key, value);
+  return value;
 }
 
 }  // namespace blink

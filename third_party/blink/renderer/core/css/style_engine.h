@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
 #include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/pending_sheet_type.h"
+#include "third_party/blink/renderer/core/css/random_caching_key.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
@@ -781,6 +782,23 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // has changed.
   void RoutesMayHaveChanged() { SetNeedsActiveStyleUpdate(GetDocument()); }
 
+  // Returns a random base value for CSS random() function.
+  // @param random_value_sharing <random-value-sharing> parameter of CSS
+  // random() function.
+  // https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
+  // @param element Pointer to the Element on which CSS random() function is
+  // used. Only used if RandomValueSharing is not element shared.
+  // @param property_name Name of the property CSS random() function is used.
+  // Only used if RandomValueSharing::isAuto() returns true.
+  // @param property_value_index Index of the random function among other random
+  // functions in the same property value. Only used if
+  // RandomValueSharing::isAuto() returns true.
+  // https://drafts.csswg.org/css-values-5/#random-caching
+  double GetCachedRandomBaseValue(RandomValueSharing random_value_sharing,
+                                  const Element* element,
+                                  AtomicString property_name,
+                                  size_t property_value_index);
+
  private:
   void UpdateCounters(const Element& element,
                       CountersAttachmentContext& context);
@@ -1232,6 +1250,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // [1] CSSParserImpl::ConsumeMediaRule
   HeapHashMap<Member<const MediaQuerySet>, bool>
       functional_media_query_results_;
+
+  // Cache for random base values which are used for generating random values
+  // using CSS random() function.
+  // https://drafts.csswg.org/css-values-5/#random-caching
+  using RandomValueCache = HeapHashMap<Member<RandomCachingKey>, double>;
+  RandomValueCache random_base_value_cache_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

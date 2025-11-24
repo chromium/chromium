@@ -1618,6 +1618,9 @@
     "log",
     "exp",
 
+    // Random functions
+    "random",
+
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
     "infinity",

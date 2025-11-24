@@ -208,6 +208,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsContainerFeature() const { return false; }
   virtual bool IsSiblingFunction() const { return false; }
   virtual bool IsCalcSize() const { return false; }
+  virtual bool IsRandomFunction() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -965,7 +966,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   bool IsAnchor() const { return type_ == CSSAnchorQueryType::kAnchor; }
   bool IsAnchorSize() const { return type_ == CSSAnchorQueryType::kAnchorSize; }
 
-  // TODO(crbug.com/1309178): This is not entirely correct, since "math
+  // TODO(crbug.com/40059176): This is not entirely correct, since "math
   // function" should refer to functions defined in [1]. We may need to clean up
   // the terminology in the code.
   // [1] https://drafts.csswg.org/css-values-4/#math
@@ -1057,7 +1058,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
                               /*needs_tree_scope_population=*/true),
         function_(function) {}
 
-  // TODO(crbug.com/1309178): This is not entirely correct, since "math
+  // TODO(crbug.com/40059176): This is not entirely correct, since "math
   // function" should refer to functions defined in [1]. We may need to clean up
   // the terminology in the code.
   // [1] https://drafts.csswg.org/css-values-4/#math
@@ -1139,6 +1140,129 @@ template <>
 struct DowncastTraits<CSSMathExpressionSiblingFunction> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsSiblingFunction();
+  }
+};
+
+// <random-value-sharing> = [ [ auto | <dashed-ident> ] || element-shared ]
+//                          | fixed <number [0,1]>
+// https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
+class RandomValueSharing {
+ public:
+  static std::optional<RandomValueSharing> Parse(CSSParserTokenStream& stream);
+  static RandomValueSharing Auto() { return RandomValueSharing(); }
+  bool IsFixed() const;
+  double GetFixed() const;
+  bool IsAuto() const;
+  AtomicString GetIdent() const;
+  bool IsElementShared() const;
+  bool operator==(const RandomValueSharing& other) const;
+  String CssText() const;
+
+ private:
+  struct IdentElementShared {
+    IdentElementShared() = default;
+    explicit IdentElementShared(bool element_shared)
+        : is_element_shared(element_shared) {}
+    IdentElementShared(AtomicString identifier, bool element_shared)
+        : ident(identifier), is_element_shared(element_shared) {}
+    bool operator==(const IdentElementShared& other) const {
+      return ident == other.ident &&
+             is_element_shared == other.is_element_shared;
+    }
+    AtomicString ident;
+    bool is_element_shared = false;
+  };
+  RandomValueSharing() = default;
+  explicit RandomValueSharing(bool is_element_shared)
+      : value_(IdentElementShared(is_element_shared)) {}
+  RandomValueSharing(AtomicString ident, bool is_element_shared)
+      : value_(IdentElementShared(ident, is_element_shared)) {}
+
+  explicit RandomValueSharing(double fixed) : value_(fixed) {}
+  std::variant<IdentElementShared, double> value_ = IdentElementShared();
+};
+
+// <random()> = random( <random-value-sharing>? , <calc-sum>, <calc-sum>,
+// <calc-sum>? ) https://drafts.csswg.org/css-values-5/#random
+class CORE_EXPORT CSSMathExpressionRandomFunction final
+    : public CSSMathExpressionNode {
+ public:
+  explicit CSSMathExpressionRandomFunction(
+      CalculationResultCategory category,
+      RandomValueSharing random_value_sharing,
+      const CSSMathExpressionNode* min,
+      const CSSMathExpressionNode* max,
+      const CSSMathExpressionNode* step);
+  CSSMathExpressionNode* Copy() const override;
+  bool IsRandomFunction() const final { return true; }
+  double DoubleValue() const final { NOTREACHED(); }
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
+  double ComputeLengthPx(const CSSLengthResolver&) const final;
+  bool AccumulateLengthArray(CSSLengthArray&, double multiplier) const final {
+    return false;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+  const CalculationExpressionNode* ToCalculationExpression(
+      const CSSLengthResolver&) const final {
+    NOTREACHED();
+  }
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final {
+    return std::nullopt;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    NOTREACHED();
+  }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+  }
+  String CustomCSSText() const final;
+  bool operator==(const CSSMathExpressionNode& other) const final;
+  bool IsComputationallyIndependent() const final;
+  bool IsElementDependent() const final;
+  // TODO(crbug.com/40059176): This is not entirely correct, since "math
+  // function" should refer to functions defined in [1]. We may need to clean up
+  // the terminology in the code.
+  // [1] https://drafts.csswg.org/css-values-4/#math
+  bool IsMathFunction() const final { return true; }
+  bool MayHaveRelativeUnit() const final;
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final { NOTREACHED(); }
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const final {
+    NOTREACHED();
+  }
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final;
+#endif
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    NOTREACHED();
+  }
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
+  void Trace(Visitor* visitor) const final;
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver&) const final;
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
+
+ private:
+  RandomValueSharing random_value_sharing_;
+  Member<const CSSMathExpressionNode> min_;
+  Member<const CSSMathExpressionNode> max_;
+  Member<const CSSMathExpressionNode> step_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionRandomFunction> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsRandomFunction();
   }
 };
 
