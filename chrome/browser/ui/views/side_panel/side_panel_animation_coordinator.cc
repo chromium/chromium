@@ -80,6 +80,8 @@ bool AnimationSpecification::IsSequenceRunning(
 SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
     SidePanel* side_panel)
     : views::AnimationDelegateViews(side_panel) {
+  animation_.SetTweenType(gfx::Tween::Type::LINEAR);
+
   const bool is_content_height_panel =
       side_panel->type() == SidePanelEntry::PanelType::kContent;
 
