@@ -22,8 +22,10 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
@@ -866,6 +868,17 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // If this layer is at the bottom of the stacker, the hairline should be visible.
         boolean isToolbarAtTheBottom = mTopControlsStacker.isLayerAtBottom(getTopControlType());
         mToolbarLayout.setHairlineVisibility(isToolbarAtTheBottom);
+    }
+
+    @Override
+    public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP
+                || !BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                || mOverlayCoordinator == null) {
+            return;
+        }
+
+        mOverlayCoordinator.setOffsetTagInfo(offsetTagsInfo);
     }
 
     @Override

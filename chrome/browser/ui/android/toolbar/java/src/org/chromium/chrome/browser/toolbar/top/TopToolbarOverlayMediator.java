@@ -120,9 +120,8 @@ public class TopToolbarOverlayMediator {
     private final ObservableSupplier<Long> mCaptureResourceIdSupplier;
     private float mViewportHeight;
 
-    private @Nullable OffsetTag mTopControlsOffsetTag;
+    private @Nullable BrowserControlsOffsetTagsInfo mBrowserControlsOffsetTagsInfo;
     private @Nullable OffsetTag mTopProgressBarOffsetTag;
-    private @Nullable OffsetTag mBottomControlsOffsetTag;
     private @Nullable OffsetTag mBottomProgressBarOffsetTag;
 
     private float mAnimatedProgress;
@@ -294,9 +293,11 @@ public class TopToolbarOverlayMediator {
                             @BrowserControlsState int constraints,
                             boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
-                            mBottomControlsOffsetTag = offsetTagsInfo.getBottomControlsOffsetTag();
-                            updateOffsetTag();
+                            // Offset tag application is handled by external when
+                            // #isTopControlsRefactorOffsetEnabled is enabled.
+                            if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
+                                updateOffsetTag(offsetTagsInfo);
+                            }
                             if (shouldUpdateOffsets) {
                                 applyContentOffsetToModel(
                                         mBrowserControlsStateProvider.getContentOffset());
@@ -307,7 +308,7 @@ public class TopToolbarOverlayMediator {
                     @Override
                     public void onControlsPositionChanged(int controlsPosition) {
                         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
-                            updateOffsetTag();
+                            updateOffsetTag(mBrowserControlsOffsetTagsInfo);
                             if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
                                 updateProgress();
                             }
@@ -373,13 +374,21 @@ public class TopToolbarOverlayMediator {
         return originalContentOffset - offset;
     }
 
-    private void updateOffsetTag() {
-        if (getControlsPosition() == ControlsPosition.TOP) {
-            mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, mTopControlsOffsetTag);
-        } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
-            mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, mBottomControlsOffsetTag);
-        } else {
+    void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        mBrowserControlsOffsetTagsInfo = offsetTagsInfo;
+
+        if (offsetTagsInfo == null || getControlsPosition() == ControlsPosition.NONE) {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);
+        } else if (getControlsPosition() == ControlsPosition.TOP) {
+            mModel.set(
+                    TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                    offsetTagsInfo.getTopControlsOffsetTag());
+        } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
+            mModel.set(
+                    TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                    offsetTagsInfo.getBottomControlsOffsetTag());
+        } else {
+            assert false : "Unknown control position.";
         }
     }
 

@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -118,6 +119,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Set the yOffset */
     public void setYOffset(float yOffset) {
         mMediator.setYOffset(yOffset);
+    }
+
+    /** Set the offset tag from the current browser controls instance. */
+    public void setOffsetTagInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagInfo) {
+        mMediator.updateOffsetTag(offsetTagInfo);
     }
 
     /**
