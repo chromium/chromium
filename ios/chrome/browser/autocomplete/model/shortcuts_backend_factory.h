@@ -17,6 +17,7 @@ namespace ios {
 // ProfileIOS.
 class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
+  // This can be null if shortcuts are not eligibile.
   static scoped_refptr<ShortcutsBackend> GetForProfile(ProfileIOS* profile);
   static scoped_refptr<ShortcutsBackend> GetForProfileIfExists(
       ProfileIOS* profile);

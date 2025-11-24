@@ -14,7 +14,7 @@
 OmniboxShortcutsHelper::OmniboxShortcutsHelper(
     ShortcutsBackend* shortcuts_backend)
     : shortcuts_backend_(shortcuts_backend) {
-  CHECK(shortcuts_backend_);
+  // shorcuts_backend is not available in incognito.
 }
 
 OmniboxShortcutsHelper::~OmniboxShortcutsHelper() {
@@ -26,7 +26,7 @@ void OmniboxShortcutsHelper::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     web::WebState* web_state) {
-  if (web_state) {
+  if (web_state && shortcuts_backend_) {
     const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
     if (web_state_tracker_.find(web_state_id) == web_state_tracker_.end()) {
       scoped_observations_.AddObservation(web_state);
