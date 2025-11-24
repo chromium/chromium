@@ -5611,6 +5611,9 @@ should be able to be added at any place in this file.
         summary="Linked Zip issuer selected."/>
     <variant name=".IssuerSelectionScreen.ZipUnlinkedSelected"
         summary="Unlinked Zip issuer selected."/>
+    <variant name=".ProgressScreen.Dismissed"
+        summary="Progress screen dismissed."/>
+    <variant name=".ProgressScreen.Shown" summary="Progress screen shown."/>
   </token>
 </action>
 

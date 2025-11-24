@@ -264,7 +264,7 @@ class TouchToFillPaymentMethodMediator {
 
     // LINT.IfChange
 
-    // TODO(crbug.com/438785863): Add ToS, progress, and error screen user actions.
+    // TODO(crbug.com/438785863): Add ToS and error screen user actions.
     @VisibleForTesting
     static final String TOUCH_TO_FILL_BNPL_USER_ACTION = "Autofill.TouchToFill.Bnpl.UserAction";
 
@@ -305,6 +305,10 @@ class TouchToFillPaymentMethodMediator {
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED =
             ".IssuerSelectionScreen.SettingsLinkSelected";
+
+    @VisibleForTesting static final String PROGRESS_SCREEN_SHOWN = ".ProgressScreen.Shown";
+
+    @VisibleForTesting static final String PROGRESS_SCREEN_DISMISSED = ".ProgressScreen.Dismissed";
 
     // LINT.ThenChange(/tools/metrics/actions/actions.xml)
 
@@ -651,6 +655,8 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_progress_sheet_closed);
         mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_progress_screen);
         mModel.set(VISIBLE, true);
+
+        recordTouchToFillBnplUserAction(PROGRESS_SCREEN_SHOWN);
     }
 
     /**
@@ -822,6 +828,8 @@ class TouchToFillPaymentMethodMediator {
             if (mSuggestions != null) {
                 if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
                     recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_DISMISSED);
+                } else if (mModel.get(CURRENT_SCREEN) == PROGRESS_SCREEN) {
+                    recordTouchToFillBnplUserAction(PROGRESS_SCREEN_DISMISSED);
                 }
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
