@@ -872,6 +872,10 @@ std::unique_ptr<ui::Layer> View::RecreateLayer() {
   return old_layer;
 }
 
+bool View::GetClipLayerToVisibleBounds() const {
+  return clip_layer_to_visible_bounds_;
+}
+
 void View::SetClipLayerToVisibleBounds(bool clip_layer) {
   if (clip_layer_to_visible_bounds_ == clip_layer) {
     return;
@@ -890,6 +894,8 @@ void View::SetClipLayerToVisibleBounds(bool clip_layer) {
   }
 
   UpdateLayerClipForVisibleBounds(remove_layer_clip);
+
+  OnPropertyChanged(&clip_layer_to_visible_bounds_, kPropertyEffectsNone);
 }
 
 // RTL positioning -------------------------------------------------------------
@@ -4061,6 +4067,7 @@ ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, X)
 ADD_PROPERTY_METADATA(int, Y)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
+ADD_PROPERTY_METADATA(bool, ClipLayerToVisibleBounds)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kMarginsKey)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInternalPaddingKey)
 ADD_CLASS_PROPERTY_METADATA(LayoutAlignment, kCrossAxisAlignmentKey)

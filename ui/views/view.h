@@ -807,6 +807,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // When set to true, the layer will be masked to the view's visible bounds.
   // A client should not modify the layer's `clip_rect`, which will be updated
   // by the view.
+  bool GetClipLayerToVisibleBounds() const;
   void SetClipLayerToVisibleBounds(bool clip_layer);
 
   // RTL positioning -----------------------------------------------------------
@@ -2770,6 +2771,7 @@ VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
 VIEW_BUILDER_PROPERTY(bool, Visible)
 VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
 VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
+VIEW_BUILDER_PROPERTY(bool, ClipLayerToVisibleBounds)
 END_VIEW_BUILDER
 
 }  // namespace views
