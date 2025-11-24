@@ -162,6 +162,9 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
 
 void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+#if DCHECK_IS_ON()
+  has_been_shut_down_.store(true);
+#endif
   weak_ptr_factory_.InvalidateWeakPtrs();
   owning_task_runner()->PostTask(
       FROM_HERE, BindOnce(&AutofillWebDataBackendImpl::ResetUserData,
@@ -194,6 +197,9 @@ void AutofillWebDataBackendImpl::RemoveObserver(
 
 AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
   DCHECK(!user_data_);  // Forgot to call ResetUserData?
+#if DCHECK_IS_ON()
+  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
+#endif
 }
 
 WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
@@ -262,6 +268,9 @@ void AutofillWebDataBackendImpl::NotifyOfIbanChanged(const IbanChange& change) {
 void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
     syncer::DataType data_type) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+#if DCHECK_IS_ON()
+  DCHECK(!has_been_shut_down_.load());
+#endif
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<AutofillWebDataBackendImpl> self,
