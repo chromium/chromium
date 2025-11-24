@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -208,7 +209,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     if (infobarTypeBadgeStatePair.first ==
         InfobarType::kInfobarTypePermissions) {
       // TODO(crbug.com/458307626): Migrate to LocationBarBadge.
-      if (IsProactiveSuggestionsFrameworkEnabled() && self.webState) {
+      if (IsProactiveSuggestionsFrameworkEnabled() && self.webState &&
+          !self.webState->GetBrowserState()->IsOffTheRecord()) {
         // Check camera permission.
         if (self.webState->GetStateForPermission(web::PermissionCamera) ==
             web::PermissionStateAllowed) {
@@ -416,7 +418,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
   NSArray<id<BadgeItem>>* badges = self.badges;
 
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsProactiveSuggestionsFrameworkEnabled() && self.webState &&
+      !self.webState->GetBrowserState()->IsOffTheRecord()) {
     [self handleMultiBadgeDisplay:badges];
   } else {
     [self handleSingleBadgeDisplay:badges];
