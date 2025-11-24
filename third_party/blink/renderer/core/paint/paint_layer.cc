@@ -1807,6 +1807,9 @@ PaintLayer* PaintLayer::HitTestChildren(
     if (child_layer->IsReplacedNormalFlowStacking())
       return false;
 
+    // TODO(crbug.com/421927605): Handle scoped ::view-transition pseudos as an
+    // overlay instead of in z-index order.
+
     // Avoid the call to child_layer.HitTestLayer() if possible.
     if (stop_layer == this &&
         !IsHitCandidateForStopNode(child_layer->GetLayoutObject(), stop_node)) {

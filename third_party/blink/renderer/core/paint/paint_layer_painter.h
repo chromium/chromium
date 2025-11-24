@@ -60,6 +60,9 @@ class CORE_EXPORT PaintLayerPainter {
       GraphicsContext&,
       const LayoutBoxModelObject&,
       const EffectPaintPropertyNodeOrAlias*);
+  PaintResult PaintTransitionPseudos(GraphicsContext&,
+                                     const LayoutBoxModelObject&,
+                                     PaintFlags);
 
   PaintLayer& paint_layer_;
 };

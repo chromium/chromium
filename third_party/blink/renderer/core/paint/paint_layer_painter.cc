@@ -479,8 +479,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     PaintWithPhase(PaintPhase::kSelfOutlineOnly, context, paint_flags);
   }
 
-  if (should_paint_content && !selection_drag_image_only) {
-    if (const auto* properties = object.FirstFragment().PaintProperties()) {
+  if (const auto* properties = object.FirstFragment().PaintProperties()) {
+    if (should_paint_content && !selection_drag_image_only) {
       if (properties->Mask()) {
         if (object.IsSVGForeignObject()) {
           SVGMaskPainter::Paint(context, object, object);
@@ -490,6 +490,12 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       }
       if (properties->ClipPathMask())
         ClipPathClipper::PaintClipPathAsMaskImage(context, object, object);
+    }
+    if (PaintTransitionPseudos(context, object, paint_flags) ==
+        kMayBeClippedByCullRect) {
+      result = kMayBeClippedByCullRect;
+    }
+    if (should_paint_content && !selection_drag_image_only) {
       PaintTransitionScopeSnapshotIfNeeded(context, object, parent_effect);
     }
   }
@@ -523,6 +529,26 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
                      std::move(layer), gfx::Point(), &properties);
 }
 
+PaintResult PaintLayerPainter::PaintTransitionPseudos(
+    GraphicsContext& context,
+    const LayoutBoxModelObject& object,
+    PaintFlags paint_flags) {
+  const Element* element = DynamicTo<Element>(object.GetNode());
+  if (!element) {
+    return kFullyPainted;
+  }
+  LayoutBoxModelObject* pseudo_layout_object = DynamicTo<LayoutBoxModelObject>(
+      element->PseudoElementLayoutObject(kPseudoIdViewTransition));
+  if (!pseudo_layout_object) {
+    return kFullyPainted;
+  }
+  PaintLayer* pseudo_layer = pseudo_layout_object->Layer();
+  if (!pseudo_layer || pseudo_layer->Parent() != &paint_layer_) {
+    return kFullyPainted;
+  }
+  return PaintLayerPainter(*pseudo_layer).Paint(context, paint_flags);
+}
+
 PaintResult PaintLayerPainter::PaintChildren(
     PaintLayerIteration children_to_visit,
     GraphicsContext& context,
@@ -531,11 +557,13 @@ PaintResult PaintLayerPainter::PaintChildren(
   if (!paint_layer_.HasSelfPaintingLayerDescendant())
     return result;
 
-  if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
+  LayoutObject& layout_object = paint_layer_.GetLayoutObject();
+  if (layout_object.ChildPaintBlockedByDisplayLock()) {
     return result;
+  }
 
   // Prevent canvas fallback content from being rendered.
-  if (IsA<HTMLCanvasElement>(paint_layer_.GetLayoutObject().GetNode())) {
+  if (IsA<HTMLCanvasElement>(layout_object.GetNode())) {
     return result;
   }
 
@@ -543,6 +571,14 @@ PaintResult PaintLayerPainter::PaintChildren(
   while (PaintLayer* child = iterator.Next()) {
     if (child->IsReplacedNormalFlowStacking())
       continue;
+
+    if (!layout_object.IsViewTransitionRoot() &&
+        ViewTransitionUtils::IsViewTransitionRoot(child->GetLayoutObject())) {
+      // Skip scoped ::view-transition pseudo, which is painted separately by
+      // PaintTransitionPseudos so that it is top of all other children of the
+      // scope regardless of their z-index.
+      continue;
+    }
 
     if (PaintLayerPainter(*child).Paint(context, paint_flags) ==
         kMayBeClippedByCullRect)
