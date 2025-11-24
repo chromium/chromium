@@ -668,7 +668,9 @@ void StyleCascade::ApplyViewportUnitAffecting(CascadeResolver& resolver) {
 
   // This should take care of any v* units on the root element for the remainder
   // of this style resolution.
-  state_.SubtractScrollbarsFromViewportUnits(to_subtract);
+  if (RuntimeEnabledFeatures::SmallerViewportUnitsEnabled()) {
+    state_.SubtractScrollbarsFromViewportUnits(to_subtract);
+  }
 
   state_.StyleBuilder().SetUnconditionalScrollbarSize(to_subtract);
 }
