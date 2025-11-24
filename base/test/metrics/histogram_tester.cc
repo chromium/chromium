@@ -25,7 +25,8 @@ namespace base {
 HistogramTester::HistogramTester() {
   // Record any histogram data that exists when the object is created so it can
   // be subtracted later.
-  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms(
+           /*include_persistent=*/true, HistogramBase::kNoFlags)) {
     InsertOrAssign(histograms_snapshot_, histogram->histogram_name(),
                    histogram->SnapshotSamples());
   }
@@ -147,7 +148,8 @@ int64_t HistogramTester::GetTotalSum() const {
 
 int64_t HistogramTester::GetTotalSumForPrefix(std::string_view prefix) const {
   int result = 0;
-  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms(
+           /*include_persistent=*/true, HistogramBase::kNoFlags)) {
     if (!StartsWith(histogram->histogram_name(), prefix,
                     CompareCase::SENSITIVE)) {
       continue;
@@ -188,7 +190,8 @@ absl::flat_hash_map<std::string, std::vector<Bucket>>
 HistogramTester::GetAllSamplesForPrefix(std::string_view prefix) const {
   absl::flat_hash_map<std::string, std::vector<Bucket>> samples;
 
-  for (const HistogramBase* histogram : StatisticsRecorder::GetHistograms()) {
+  for (const HistogramBase* histogram : StatisticsRecorder::GetHistograms(
+           /*include_persistent=*/true, HistogramBase::kNoFlags)) {
     std::string_view histogram_name = histogram->histogram_name();
     if (!StartsWith(histogram_name, prefix, CompareCase::SENSITIVE)) {
       continue;
@@ -241,7 +244,8 @@ HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
   CountsMap result;
 
   // Find candidate matches by using the logic built into GetSnapshot().
-  for (const HistogramBase* histogram : StatisticsRecorder::GetHistograms()) {
+  for (const HistogramBase* histogram : StatisticsRecorder::GetHistograms(
+           /*include_persistent=*/true, HistogramBase::kNoFlags)) {
     if (!StartsWith(histogram->histogram_name(), prefix,
                     CompareCase::SENSITIVE)) {
       continue;
@@ -283,7 +287,8 @@ HistogramTester::GetHistogramSamplesSinceCreation(
 std::string HistogramTester::GetAllHistogramsRecorded() const {
   std::string output;
 
-  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms(
+           /*include_persistent=*/true, HistogramBase::kNoFlags)) {
     std::unique_ptr<HistogramSamples> named_samples =
         histogram->SnapshotSamples();
 
