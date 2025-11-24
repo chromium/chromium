@@ -340952,7 +340952,11 @@
    },
    "connection-allowlist": {
     "tentative": {
-     "fetch.window.js.headers": [
+     "fetch-wildcard.sub.window.js.sub.headers": [
+      "c83d573d8a4e5d8f6a614074384ef36168dc47d6",
+      []
+     ],
+     "fetch.sub.window.js.headers": [
       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
       []
      ]
@@ -436710,7 +436714,7 @@
      []
     ],
     "MediaStreamTrackProcessor.worker-expected.txt": [
-     "682f7a4426dc5e7ac54d6845ddb75ea5871091a0",
+     "78c183653aa94d87bb950e5cf5b70cac5a426bb9",
      []
     ],
     "VideoTrackGenerator-with-window-tracks.https-expected.txt": [
@@ -507977,10 +507981,24 @@
    },
    "connection-allowlist": {
     "tentative": {
-     "fetch.window.js": [
-      "82c864e302fc37dcc3c541192d491230fcca23db",
+     "fetch-wildcard.sub.window.js": [
+      "e51045b1785e1cd93be0a75e65e272157ac39c20",
       [
-       "connection-allowlist/tentative/fetch.window.html",
+       "connection-allowlist/tentative/fetch-wildcard.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "fetch.sub.window.js": [
+      "c8223534861d9ff668be3a2fcc6b875d9a044378",
+      [
+       "connection-allowlist/tentative/fetch.sub.window.html",
        {
         "script_metadata": [
          [
@@ -559127,7 +559145,7 @@
       ]
      ],
      "document-active-view-transition.html": [
-      "7c04a2596fabc114a3e3bd27e1001a26ee4afe13",
+      "6a4bcf9e385e7d1b4d7c8b8fc9fc611e88837fe8",
       [
        null,
        {}
@@ -703183,7 +703201,7 @@
      ]
     ],
     "MediaStreamTrackProcessor.worker.js": [
-     "000078c1d3d974ddd36636cc61ab888e01cf0cf8",
+     "9e379112bd7158e6112e67211751f7450ccc5611",
      [
       "mediacapture-insertable-streams/MediaStreamTrackProcessor.worker.html",
       {
