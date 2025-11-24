@@ -1377,6 +1377,84 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
   }
 }
 
+// Tests that correct values for the
+// Event.ScrollJank.EmptyGestureScrollUpdateFrame histogram are recorded.
+TEST_P(InputHandlerProxyEventQueueTest, EmptyGestureScrollUpdateHistogram) {
+  cc::InputHandlerScrollResult scroll_result_did_scroll_;
+  scroll_result_did_scroll_.did_scroll = true;
+
+  cc::InputHandlerScrollResult scroll_result_did_not_scroll_;
+  scroll_result_did_not_scroll_.did_scroll = false;
+
+  base::HistogramTester histogram_tester;
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+
+  input_handler_proxy_->SetScrollEventDispatchMode(
+      cc::InputHandlerClient::ScrollEventDispatchMode::
+          kDispatchScrollEventsUntilDeadline,
+      0.333);
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
+      .Times(1);
+
+  // If input mapping and queue refactoring are disabled, the first update is
+  // dispatched and the following ones are enqueued and then dispatched. The
+  // mock will return 'did not scroll' for the first two and 'did scroll' for
+  // the third one.
+  if (!IsRefactorCompositorThreadEventQueueEnabled() ||
+      !IsUpdateScrollPredictorInputMappingEnabled()) {
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+        .WillOnce(testing::Return(scroll_result_did_not_scroll_))
+        .WillOnce(testing::Return(scroll_result_did_not_scroll_))
+        .WillOnce(testing::Return(scroll_result_did_scroll_));
+  }
+
+  // If input mapping and queue refactoring are enabled, all updates are
+  // enqueued and then dispatched. The mock will return 'did not scroll' for the
+  // first one and 'did scroll' for the second one.
+  if (IsRefactorCompositorThreadEventQueueEnabled() &&
+      IsUpdateScrollPredictorInputMappingEnabled()) {
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+        .WillOnce(testing::Return(scroll_result_did_not_scroll_))
+        .WillOnce(testing::Return(scroll_result_did_scroll_));
+  }
+
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(2);
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame();
+
+  if (!IsRefactorCompositorThreadEventQueueEnabled() ||
+      !IsUpdateScrollPredictorInputMappingEnabled()) {
+    // The first (empty) scroll update will be dispatched immediately.
+    HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
+  }
+
+  // This is the only update in the queue and the mock returned 'did not
+  // scroll', so the histogram value should be false.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
+  DeliverInputForBeginFrame();
+  GetInputHandlerProxy()->DispatchQueuedInputEventsHelper();
+
+  histogram_tester.ExpectBucketCount(
+      "Event.ScrollJank.EmptyGestureScrollUpdateFrame", false, 1);
+
+  // This is the only update in the queue and the mock returned 'did scroll', so
+  // the histogram value should be true.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
+  DeliverInputForBeginFrame();
+  GetInputHandlerProxy()->DispatchQueuedInputEventsHelper();
+
+  histogram_tester.ExpectBucketCount(
+      "Event.ScrollJank.EmptyGestureScrollUpdateFrame", true, 1);
+}
+
 // Verifies that when the `filter_out_empty_updates` parameter for the
 // SendEmptyGestureScrollUpdate feature is set to true, empty
 // GestureScrollUpdates are discarded on the renderer side.

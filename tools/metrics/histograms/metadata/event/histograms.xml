@@ -677,6 +677,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.ScrollJank.EmptyGestureScrollUpdateFrame" enum="Boolean"
+    expires_after="M145">
+  <owner>oksamyt@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Whether an empty gesture scroll update caused a frame to be produced when it
+    is the only input (as a result of resampling).
+  </summary>
+</histogram>
+
 <histogram name="Event.ScrollJank.FrameStageCalculationResult"
     enum="ScrollJankFrameStageCalculationResult" expires_after="2026-03-10">
   <owner>petrcermak@chromium.org</owner>

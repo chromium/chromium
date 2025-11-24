@@ -1273,6 +1273,12 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   cc::InputHandlerScrollResult scroll_result =
       input_handler_->ScrollUpdate(cc::ScrollState(scroll_state_data), delay);
 
+  if (is_only_empty_gsu_in_queue_) {
+    UMA_HISTOGRAM_BOOLEAN("Event.ScrollJank.EmptyGestureScrollUpdateFrame",
+                          scroll_result.did_scroll);
+  }
+  is_only_empty_gsu_in_queue_ = false;
+
   TRACE_EVENT(
       "input,input.scrolling",
       "InputHandlerProxy::HandleGestureScrollUpdate_Result",
@@ -1731,6 +1737,15 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
       GenerateSyntheticScrollPredictionFromFutureEvent(args);
     }
   }
+
+  if (compositor_event_queue_->size() == 1) {
+    const WebInputEvent* event = compositor_event_queue_->FirstOriginalEvent();
+    is_only_empty_gsu_in_queue_ = static_cast<const WebGestureEvent*>(event)
+                                          ->data.scroll_update.delta_x == 0 &&
+                                  static_cast<const WebGestureEvent*>(event)
+                                          ->data.scroll_update.delta_y == 0;
+  }
+
   ProcessQueuedEventsUpToSampleTime(args, sample_time);
 
   if (!queue_flushed_callback_.is_null()) {
