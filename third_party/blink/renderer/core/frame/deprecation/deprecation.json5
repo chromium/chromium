@@ -521,6 +521,15 @@
       milestone: 106,
     },
     {
+      name: "StorageAccessAPI_requestStorageAccessFor_Method",
+      message: "`document.requestStorageAccessFor` is deprecated and will be removed. See https://privacysandbox.com/news/update-on-plans-for-privacy-sandbox-technologies/ for more details.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when the `document.requestStorageAccessFor` API is called. The placeholder will always be the string `document.requestStorageAccessFor`.",
+      web_features: [
+        "kStorageAccessAPI_requestStorageAccessFor_Method",
+      ],
+      chrome_status_feature: 5162221567082496,
+    },
+    {
       name: "TextToSpeech_DisallowedByAutoplay",
       message: "`speechSynthesis.speak()` without user activation is deprecated and will be removed.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when the speech synthesis API is called before the page receives a user activation.",
