@@ -72,10 +72,13 @@ source_set("unit_tests") {
     ":js_tests",
     "//base/test:test_support",
     "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/ios",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

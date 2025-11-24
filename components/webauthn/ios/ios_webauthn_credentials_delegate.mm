@@ -24,14 +24,14 @@ void IOSWebAuthnCredentialsDelegate::SelectPasskey(
   NOTIMPLEMENTED();
 }
 
-base::expected<
-    const std::vector<password_manager::PasskeyCredential>*,
-    password_manager::WebAuthnCredentialsDelegate::PasskeysUnavailableReason>
+base::expected<const std::vector<password_manager::PasskeyCredential>*,
+               IOSWebAuthnCredentialsDelegate::PasskeysUnavailableReason>
 IOSWebAuthnCredentialsDelegate::GetPasskeys() const {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
-  return base::unexpected(
-      IOSWebAuthnCredentialsDelegate::PasskeysUnavailableReason::kNotReceived);
+  if (!passkeys_.has_value()) {
+    return base::unexpected(PasskeysUnavailableReason::kNotReceived);
+  }
+
+  return base::ok(&*passkeys_);
 }
 
 void IOSWebAuthnCredentialsDelegate::NotifyForPasskeysDisplay() {
@@ -61,6 +61,11 @@ bool IOSWebAuthnCredentialsDelegate::HasPendingPasskeySelection() {
 base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
 IOSWebAuthnCredentialsDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
+    std::vector<password_manager::PasskeyCredential> credentials) {
+  passkeys_ = std::move(credentials);
 }
 
 }  // namespace webauthn

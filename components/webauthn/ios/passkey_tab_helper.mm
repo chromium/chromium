@@ -9,9 +9,11 @@
 #import "base/check_deref.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "crypto/hash.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -230,19 +232,23 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
     return;
   }
 
+  // Get available passkeys for the request.
+  std::vector<password_manager::PasskeyCredential> filtered_passkeys =
+      password_manager::PasskeyCredential::FromCredentialSpecifics(
+          GetFilteredPasskeys(params));
+
   IOSPasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_.get(),
                                                                web_frame);
   CHECK(driver);
 
-  password_manager::WebAuthnCredentialsDelegate* delegate =
-      client_->GetWebAuthnCredentialsDelegateForDriver(driver);
-  if (delegate) {
-    // TODO(crbug.com/462121114): Pass filtered passkeys to the delegate.
-  }
+  IOSWebAuthnCredentialsDelegate* delegate =
+      static_cast<IOSWebAuthnCredentialsDelegate*>(
+          client_->GetWebAuthnCredentialsDelegateForDriver(driver));
+  CHECK(delegate);
 
-  // TODO(crbug.com/460485333): Handle this event.
-  PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+  // Send available passkeys to the WebAuthnCredentialsDelegate.
+  delegate->OnCredentialsReceived(std::move(filtered_passkeys));
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(

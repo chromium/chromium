@@ -8,11 +8,19 @@
 #import "base/rand_util.h"
 #import "base/strings/to_string.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/passkey_java_script_feature.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace webauthn {
 
@@ -55,7 +63,7 @@ sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
 
 // Builds RequestParams using the default rp id.
 PasskeyTabHelper::RequestParams BuildRequestParams() {
-  std::string frame_id = "";
+  std::string frame_id = web::kMainFakeFrameId;
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
   return PasskeyTabHelper::RequestParams(
@@ -99,16 +107,22 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegateForDriver(
       IOSPasswordManagerDriver* driver) override {
-    return nullptr;
+    return &delegate_;
   }
+
+  IOSWebAuthnCredentialsDelegate* delegate() { return &delegate_; }
+
+ private:
+  IOSWebAuthnCredentialsDelegate delegate_;
 };
 
 class PasskeyTabHelperTest : public PlatformTest {
  public:
   PasskeyTabHelperTest() {
-    PasskeyTabHelper::CreateForWebState(
-        &fake_web_state_, passkey_model_.get(),
-        std::make_unique<FakeIOSPasskeyClient>());
+    auto client = std::make_unique<FakeIOSPasskeyClient>();
+    client_ = client.get();
+    PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
+                                        std::move(client));
   }
 
  protected:
@@ -127,11 +141,30 @@ class PasskeyTabHelperTest : public PlatformTest {
     return passkey_tab_helper()->GetFilteredPasskeys(params);
   }
 
+  // Sets up a web frame manager with a web frame.
+  void SetUpWebFramesManagerAndWebFrame() {
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    frames_manager->AddWebFrame(web::FakeWebFrame::CreateMainWebFrame());
+    fake_web_state_.SetWebFramesManager(
+        PasskeyJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+        std::move(frames_manager));
+  }
+
+  // Sets up the IOSPasswordManagerDriver needed to retreive the
+  // WebAuthnCredentialsDelegate.
+  void SetUpIOSPasswordManagerDriver() {
+    IOSPasswordManagerDriverFactory::CreateForWebState(
+        &fake_web_state_, OCMStrictClassMock([SharedPasswordController class]),
+        &password_manager_);
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<PasskeyModel> passkey_model_ =
       std::make_unique<TestPasskeyModel>();
   web::FakeWebState fake_web_state_;
+  raw_ptr<FakeIOSPasskeyClient> client_ = nullptr;
+  password_manager::MockPasswordManager password_manager_;
 };
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequested) {
@@ -253,6 +286,35 @@ TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
   filtered_passkeys =
       GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
   EXPECT_EQ(filtered_passkeys.size(), 2u);
+}
+
+// Tests that the IOSWebAuthnCredentialsDelegate receives the available passkeys
+// when a passkey assertion request is processed.
+TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
+  SetUpWebFramesManagerAndWebFrame();
+  SetUpIOSPasswordManagerDriver();
+
+  // Add passkey with `kCredentialId`.
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  // Verify that the delegate has no passkeys initially.
+  auto passkeys_before = client_->delegate()->GetPasskeys();
+  ASSERT_FALSE(passkeys_before.has_value());
+  EXPECT_EQ(passkeys_before.error(),
+            password_manager::WebAuthnCredentialsDelegate::
+                PasskeysUnavailableReason::kNotReceived);
+
+  PasskeyTabHelper::AssertionRequestParams params =
+      BuildAssertionRequestParams({});
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // Verify that the delegate has recevied the passkey.
+  auto passkeys_after = client_->delegate()->GetPasskeys();
+  ASSERT_TRUE(passkeys_after.has_value());
+  EXPECT_EQ(passkeys_after.value()->size(), 1u);
+  EXPECT_EQ(passkeys_after.value()->at(0).credential_id(),
+            AsByteVector(kCredentialId));
 }
 
 }  // namespace webauthn
