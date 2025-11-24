@@ -253,10 +253,11 @@ class ConfigureGeminiCliUnittest(fake_filesystem_unittest.TestCase):
         })
 
 
-class GetGeminiCliArgumentsUnittest(unittest.TestCase):
+class GetGeminiCliArgumentsUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for the `_get_gemini_cli_arguments` function."""
 
     def setUp(self):
+        super().setUpPyfakefs()
         get_sandbox_flags_patcher = unittest.mock.patch(
             'gemini_provider._get_sandbox_flags')
         self.mock_get_sandbox_flags = get_sandbox_flags_patcher.start()
@@ -268,17 +269,17 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         self.mock_get_sandbox_image_tag = get_sandbox_image_tag_patcher.start()
         self.addCleanup(get_sandbox_image_tag_patcher.stop)
 
-        get_system_prompt_patcher = unittest.mock.patch(
-            'gemini_provider._get_system_prompt')
-        self.mock_get_system_prompt = get_system_prompt_patcher.start()
-        self.addCleanup(get_system_prompt_patcher.stop)
-
         gemini_helpers_patcher = unittest.mock.patch(
             'gemini_provider.gemini_helpers.get_gemini_executable')
         self.mock_gemini_helpers = gemini_helpers_patcher.start()
         self.addCleanup(gemini_helpers_patcher.stop)
         self.mock_gemini_helpers.return_value = 'gemini'
 
+        load_templates_patcher = unittest.mock.patch(
+            'gemini_provider._load_templates')
+        self.mock_load_templates = load_templates_patcher.start()
+        self.addCleanup(load_templates_patcher.stop)
+        self.mock_load_templates.return_value = ''
 
     def test_default_arguments(self):
         """Tests that default arguments are correct."""
@@ -296,6 +297,9 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
                          gemini_provider.DEFAULT_TIMEOUT_SECONDS)
         self.assertEqual(args.user_prompt, user_prompt)
         self.assertEqual(args.console_width, 80)
+        self.assertEqual(args.system_prompt, '')
+        self.assertEqual(args.template_prompt, '')
+        self.mock_load_templates.assert_called_once_with([])
 
     def test_custom_gemini_cli_bin(self):
         """Tests that a custom gemini_cli_bin is used."""
@@ -387,44 +391,32 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         self.assertEqual(error, '')
         self.assertEqual(args.console_width, 99)
 
-
-class GetSystemPromptUnittest(unittest.TestCase):
-    """Unit tests for the `_get_system_prompt` function."""
-
-    def setUp(self):
-        load_templates_patcher = unittest.mock.patch(
-            'gemini_provider._load_templates')
-        self.mock_load_templates = load_templates_patcher.start()
-        self.addCleanup(load_templates_patcher.stop)
-
-    def test_no_prompt(self):
-        """Tests that an empty string is returned when there is no prompt."""
-        self.mock_load_templates.return_value = ''
-        provider_config = {}
-
-        prompt = gemini_provider._get_system_prompt(provider_config)
-
-        self.assertEqual(prompt, '')
-        self.mock_load_templates.assert_called_once_with([])
-
     def test_system_prompt_only(self):
         """Tests that the system prompt is returned w/o templates."""
-        self.mock_load_templates.return_value = ''
         provider_config = {'system_prompt': 'System prompt'}
+        provider_vars = {}
+        user_prompt = 'test prompt'
 
-        prompt = gemini_provider._get_system_prompt(provider_config)
+        args, error = gemini_provider._get_gemini_cli_arguments(
+            provider_vars, provider_config, user_prompt)
 
-        self.assertEqual(prompt, 'System prompt')
-        self.mock_load_templates.assert_called_once_with([])
+        self.assertEqual(error, '')
+        self.assertEqual(args.system_prompt, 'System prompt')
+        self.assertEqual(args.template_prompt, '')
 
     def test_templates_only(self):
         """Tests that the template prompt is returned w/o a system prompt."""
         self.mock_load_templates.return_value = 'Template prompt'
         provider_config = {'templates': ['template1.txt']}
+        provider_vars = {}
+        user_prompt = 'test prompt'
 
-        prompt = gemini_provider._get_system_prompt(provider_config)
+        args, error = gemini_provider._get_gemini_cli_arguments(
+            provider_vars, provider_config, user_prompt)
 
-        self.assertEqual(prompt, 'Template prompt')
+        self.assertEqual(error, '')
+        self.assertEqual(args.system_prompt, '')
+        self.assertEqual(args.template_prompt, 'Template prompt')
         self.mock_load_templates.assert_called_once_with(['template1.txt'])
 
     def test_system_prompt_and_templates(self):
@@ -434,17 +426,24 @@ class GetSystemPromptUnittest(unittest.TestCase):
             'system_prompt': 'System prompt',
             'templates': ['template1.txt']
         }
+        provider_vars = {}
+        user_prompt = 'test prompt'
 
-        prompt = gemini_provider._get_system_prompt(provider_config)
+        args, error = gemini_provider._get_gemini_cli_arguments(
+            provider_vars, provider_config, user_prompt)
 
-        self.assertEqual(prompt, 'System prompt\n\nTemplate prompt')
+        self.assertEqual(error, '')
+        self.assertEqual(args.system_prompt, 'System prompt')
+        self.assertEqual(args.template_prompt, 'Template prompt')
         self.mock_load_templates.assert_called_once_with(['template1.txt'])
 
 
-class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
+class RunGeminiCliWithOutputStreamingUnittest(fake_filesystem_unittest.TestCase
+                                              ):
     """Unit tests for the `_run_gemini_cli_with_output_streaming` function."""
 
     def setUp(self):
+        super().setUpPyfakefs()
         popen_patcher = unittest.mock.patch('subprocess.Popen')
         self.mock_popen = popen_patcher.start()
         self.addCleanup(popen_patcher.stop)
@@ -463,6 +462,7 @@ class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
             env={},
             timeout_seconds=10,
             system_prompt='system prompt',
+            template_prompt='',
             user_prompt='user prompt',
             console_width=80,
         )
@@ -495,6 +495,7 @@ class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
             env={},
             timeout_seconds=10,
             system_prompt='system prompt',
+            template_prompt='',
             user_prompt='user prompt',
             console_width=80,
         )
@@ -770,16 +771,16 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
             get_gemini_cli_arguments_patcher.start())
         self.addCleanup(get_gemini_cli_arguments_patcher.stop)
 
-        run_gemini_cli_with_output_streaming_patcher = unittest.mock.patch(
-            'gemini_provider._run_gemini_cli_with_output_streaming')
-        self.mock_run_gemini_cli_with_output_streaming = (
-            run_gemini_cli_with_output_streaming_patcher.start())
-        self.addCleanup(run_gemini_cli_with_output_streaming_patcher.stop)
+        popen_patcher = unittest.mock.patch('subprocess.Popen')
+        self.mock_popen = popen_patcher.start()
+        self.addCleanup(popen_patcher.stop)
 
         self.mock_process = unittest.mock.MagicMock()
+        self.mock_process.stdin = unittest.mock.MagicMock()
+        self.mock_process.stdout.readline.side_effect = ['test output\n', '']
+        self.mock_process.poll.return_value = 0
         self.mock_process.returncode = 0
-        self.mock_run_gemini_cli_with_output_streaming.return_value = (
-            self.mock_process, ['test output'])
+        self.mock_popen.return_value = self.mock_process
 
         configure_gemini_cli_patcher = unittest.mock.patch(
             'gemini_provider._configure_gemini_cli')
@@ -801,11 +802,13 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
                 env={},
                 timeout_seconds=10,
                 system_prompt='system prompt',
+                template_prompt='template prompt',
                 user_prompt='user prompt',
                 console_width=80,
             ),
             '',
         )
+        self.fs.create_file('GEMINI.md')
 
         result = gemini_provider.call_api('test prompt', options, context)
 
@@ -815,9 +818,9 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
             context['vars'], options['config'], 'test prompt')
         self.mock_configure_gemini_cli.assert_called_once_with(
             pathlib.Path('/fake/home'), unittest.mock.ANY)
-        self.mock_run_gemini_cli_with_output_streaming.assert_called_once()
+        self.mock_popen.assert_called_once()
         with pathlib.Path('GEMINI.md').open(encoding='utf-8') as prompt_file:
-            self.assertEqual(prompt_file.read(), 'system prompt')
+            self.assertEqual(prompt_file.read(), 'template prompt')
 
     def test_get_gemini_cli_arguments_fails(self):
         """Tests when _get_gemini_cli_arguments returns an error."""
@@ -829,7 +832,7 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
 
         self.assertIn('error', result)
         self.assertEqual(result['error'], 'Fake error')
-        self.mock_run_gemini_cli_with_output_streaming.assert_not_called()
+        self.mock_popen.assert_not_called()
 
     def test_process_fails(self):
         """Tests when the gemini-cli process fails."""
@@ -842,14 +845,14 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
                 env={},
                 timeout_seconds=10,
                 system_prompt='system prompt',
+                template_prompt='',
                 user_prompt='user prompt',
                 console_width=80,
             ),
             '',
         )
         self.mock_process.returncode = 1
-        self.mock_run_gemini_cli_with_output_streaming.return_value = (
-            self.mock_process, ['test output'])
+        self.fs.create_file('GEMINI.md')
 
         result = gemini_provider.call_api('test prompt', options, context)
 
@@ -867,13 +870,15 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
                 env={},
                 timeout_seconds=123,
                 system_prompt='system prompt',
+                template_prompt='',
                 user_prompt='user prompt',
                 console_width=80,
             ),
             '',
         )
-        self.mock_run_gemini_cli_with_output_streaming.side_effect = (
-            subprocess.TimeoutExpired(cmd='gemini', timeout=123))
+        self.mock_process.wait.side_effect = (subprocess.TimeoutExpired(
+            cmd='gemini', timeout=123))
+        self.fs.create_file('GEMINI.md')
 
         result = gemini_provider.call_api('test prompt', options, context)
 
@@ -892,13 +897,14 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
                 env={},
                 timeout_seconds=123,
                 system_prompt='system prompt',
+                template_prompt='',
                 user_prompt='user prompt',
                 console_width=80,
             ),
             '',
         )
-        self.mock_run_gemini_cli_with_output_streaming.side_effect = (
-            FileNotFoundError())
+        self.mock_popen.side_effect = FileNotFoundError()
+        self.fs.create_file('GEMINI.md')
 
         result = gemini_provider.call_api('test prompt', options, context)
 
@@ -916,13 +922,14 @@ class CallApiUnittest(fake_filesystem_unittest.TestCase):
                 env={},
                 timeout_seconds=123,
                 system_prompt='system prompt',
+                template_prompt='',
                 user_prompt='user prompt',
                 console_width=80,
             ),
             '',
         )
-        self.mock_run_gemini_cli_with_output_streaming.side_effect = (
-            RuntimeError('Fake unexpected error'))
+        self.mock_popen.side_effect = RuntimeError('Fake unexpected error')
+        self.fs.create_file('GEMINI.md')
 
         result = gemini_provider.call_api('test prompt', options, context)
 

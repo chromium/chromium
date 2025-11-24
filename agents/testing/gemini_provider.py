@@ -47,6 +47,8 @@ class GeminiCliArguments:
     timeout_seconds: int
     # The system prompt that gemini-cli will be run with.
     system_prompt: str
+    # The template prompt that gemini-cli will be run with.
+    template_prompt: str
     # The user prompt to pass to gemini-cli
     user_prompt: str
     # How wide to treat the console that gemini-cli is run in.
@@ -325,6 +327,7 @@ def _get_gemini_cli_arguments(
         ),
         timeout_seconds=timeout_seconds,
         system_prompt=_get_system_prompt(provider_config),
+        template_prompt=_load_templates(provider_config.get('templates', [])),
         user_prompt=user_prompt,
         console_width=int(provider_vars.get('console_width', 80)),
     ), ''
@@ -339,15 +342,7 @@ def _get_system_prompt(provider_config: dict[str, Any]) -> str:
     Returns:
         A string to use as the system prompt for the test.
     """
-    system_prompt = provider_config.get('system_prompt', '')
-    templates = provider_config.get('templates', [])
-    template_prompt = _load_templates(templates)
-    if template_prompt:
-        if system_prompt:
-            system_prompt = f'{system_prompt}\n\n{template_prompt}'
-        else:
-            system_prompt = template_prompt
-    return system_prompt
+    return provider_config.get('system_prompt', '')
 
 
 def _run_gemini_cli_with_output_streaming(
@@ -370,29 +365,42 @@ def _run_gemini_cli_with_output_streaming(
     process = None
     combined_output = []
     try:
-        process = subprocess.Popen(  # pylint: disable=consider-using-with
-            arguments.command,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            universal_newlines=True,
-            env=arguments.env,
-        )
-        process.stdin.write(arguments.user_prompt)
-        process.stdin.close()
-        logging.info('--- Streaming Output (Timeout: %ss) ---',
-                     arguments.timeout_seconds)
-        output_thread = threading.Thread(
-            target=_stream_reader,
-            args=(process.stdout, combined_output, arguments.console_width),
-            daemon=True,
-        )
-        output_thread.start()
-        process.wait(timeout=arguments.timeout_seconds)
-        output_thread.join(timeout=5)
-        logging.info('\n--- End of Stream ---')
-        return process, combined_output
+        pathlib.Path('GEMINI.md').write_text(arguments.template_prompt,
+                                             encoding='utf-8')
+        with tempfile_ext.mkstemp_closed(suffix='.md') as system_prompt_path:
+
+            # If a system prompt is included in the test it should replace the
+            # gemini cli system prompt and is not just another user prompt.
+            env = arguments.env
+            if arguments.system_prompt:
+                system_prompt_path.write_text(arguments.system_prompt,
+                                              encoding='utf-8')
+                env['GEMINI_SYSTEM_MD'] = str(system_prompt_path)
+
+            process = subprocess.Popen(  # pylint: disable=consider-using-with
+                arguments.command,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                universal_newlines=True,
+                env=env,
+            )
+            process.stdin.write(arguments.user_prompt)
+            process.stdin.close()
+            logging.info('--- Streaming Output (Timeout: %ss) ---',
+                         arguments.timeout_seconds)
+            output_thread = threading.Thread(
+                target=_stream_reader,
+                args=(process.stdout, combined_output,
+                      arguments.console_width),
+                daemon=True,
+            )
+            output_thread.start()
+            process.wait(timeout=arguments.timeout_seconds)
+            output_thread.join(timeout=5)
+            logging.info('\n--- End of Stream ---')
+            return process, combined_output
     finally:
         if process and process.poll() is None:
             process.kill()
@@ -566,15 +574,12 @@ def _run_gemini_cli_with_telemetry_output(
                                                 DEFAULT_EXTENSIONS),
                             home_dir=gcli_arguments.home_dir)
         _apply_changes(provider_config.get('changes', []))
-        # CWD should be the repo root.
-        with pathlib.Path('GEMINI.md').open('w',
-                                            encoding='utf-8') as prompt_file:
-            prompt_file.write(gcli_arguments.system_prompt)
 
     process = None
     combined_output: list[str] = []
     metrics = {
         'system_prompt': gcli_arguments.system_prompt,
+        'template_prompt': gcli_arguments.template_prompt,
         'user_prompt': gcli_arguments.user_prompt,
     }
     try:
