@@ -1030,7 +1030,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(sharing_manager().PinTabs(tab_handles));
+    std::move(callback).Run(sharing_manager().PinTabs(
+        tab_handles, GlicPinTrigger::kWebClientUnknown));
   }
 
   void UnpinTabs(const std::vector<int32_t>& tab_ids,
@@ -1039,10 +1040,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(sharing_manager().UnpinTabs(tab_handles));
+    std::move(callback).Run(sharing_manager().UnpinTabs(
+        tab_handles, GlicUnpinTrigger::kWebClientUnknown));
   }
 
-  void UnpinAllTabs() override { sharing_manager().UnpinAllTabs(); }
+  void UnpinAllTabs() override {
+    sharing_manager().UnpinAllTabs(GlicUnpinTrigger::kWebClientUnknown);
+  }
 
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
                   CreateTaskCallback callback) override {
