@@ -76,9 +76,13 @@ def main(argv):
   def append_to_env(var, vals):
     os.environ[var] = os.environ.get(var, '') + ' ' + ' '.join(vals)
 
-  # https://crbug.com/1166707
-  append_to_env('CXXFLAGS',
-                ['-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS'])
+  append_to_env(
+      'CXXFLAGS',
+      [
+          '-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_FAST',
+          # https://crbug.com/1166707
+          '-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS',
+      ])
 
   if options.use_custom_libcxx:
     libcxx_dir = os.path.join(gn_build_dir, 'libc++')
