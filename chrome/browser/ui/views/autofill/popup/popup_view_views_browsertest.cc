@@ -24,7 +24,8 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/core/browser/fake_plus_address_allocator.h"
-#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -591,9 +592,7 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
 
   std::vector<Suggestion> GetPlusAddressSuggestion(
       const std::vector<std::string>& affiliated_plus_addresses) {
-    plus_addresses::PlusAddressSuggestionHelper helper;
-    FormData form = autofill::test::CreateTestSignupFormData();
-    return helper.GetSuggestions(affiliated_plus_addresses);
+    return service_.GetSuggestionsFromPlusAddresses(affiliated_plus_addresses);
   }
 
  private:
@@ -601,13 +600,14 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
 
   plus_addresses::FakePlusAddressAllocator allocator_;
   plus_addresses::FakePlusAddressSettingService setting_service_;
+  plus_addresses::FakePlusAddressService service_;
 };
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
                        Filling) {
   setting_service().set_has_accepted_notice(true);
   PrepareSuggestions(
-      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{"foo@moo.com"}));
+      GetPlusAddressSuggestion({plus_addresses::test::kFakePlusAddress}));
   ShowAndVerifyUi();
 }
 

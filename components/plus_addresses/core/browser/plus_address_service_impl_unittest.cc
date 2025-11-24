@@ -53,7 +53,6 @@
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
-#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 #include "components/plus_addresses/core/browser/plus_address_test_environment.h"
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
@@ -1237,9 +1236,6 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
 }
 
 // Tests that for all password forms filling suggestions are offered.
-// TODO(crbug.com/322279583): Move to
-// `plus_address_suggestion_helper_unittest`, since this should make it
-// easier to test.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);

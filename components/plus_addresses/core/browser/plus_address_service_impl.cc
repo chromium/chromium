@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/core/browser/plus_address_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
@@ -39,7 +40,6 @@
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_jit_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
-#include "components/plus_addresses/core/browser/plus_address_suggestion_helper.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
@@ -55,6 +55,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace plus_addresses {
@@ -114,6 +115,33 @@ bool IsSiteExcluded(const url::Origin& origin) {
 std::string GetPlusAddressFromPlusProfile(
     const PlusProfile& affiliated_profile) {
   return affiliated_profile.plus_address.value();
+}
+
+// Returns a suggestion to fill an existing plus address.
+Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
+  Suggestion suggestion = Suggestion(std::move(plus_address),
+                                     SuggestionType::kFillExistingPlusAddress);
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+  }
+  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  return suggestion;
+}
+
+std::vector<autofill::Suggestion> GetSuggestions(
+    const std::vector<std::string>& affiliated_plus_addresses) {
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(affiliated_plus_addresses.size());
+  for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
+    suggestions.push_back(CreateFillPlusAddressSuggestion(
+        base::UTF8ToUTF16(affiliated_plus_address)));
+  }
+  // It is required by `autofill::SuggestionGenerator` that this function should
+  // not filter plus addresses and should return an `autofill::Suggestion`
+  // object for each of them.
+  CHECK_EQ(suggestions.size(), affiliated_plus_addresses.size());
+  return suggestions;
 }
 
 }  // namespace
@@ -297,8 +325,7 @@ void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
 
 std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses) {
-  std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionHelper().GetSuggestions(plus_addresses);
+  std::vector<Suggestion> suggestions = GetSuggestions(plus_addresses);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 
@@ -310,7 +337,11 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
 }
 
 Suggestion PlusAddressServiceImpl::GetManagePlusAddressSuggestion() const {
-  return PlusAddressSuggestionHelper::GetManagePlusAddressSuggestion();
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
+      SuggestionType::kManagePlusAddress);
+  suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
+  return suggestion;
 }
 
 void PlusAddressServiceImpl::ReservePlusAddress(
