@@ -311,13 +311,6 @@ class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
     UkmBrowserTestBase::SetUpInProcessBrowserTestFixture();
   }
 
-  void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    secondary_account_helper::InitNetwork();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    UkmBrowserTestBase::SetUpOnMainThread();
-  }
-
  private:
   base::CallbackListSubscription test_signin_client_subscription_;
 };
