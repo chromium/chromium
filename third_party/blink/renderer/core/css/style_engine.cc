@@ -3244,7 +3244,8 @@ bool StyleEngine::UpdateRootFontRelativeUnits(
   bool root_font_glyphs_changed =
       !old_root_style ||
       (UsesGlyphRelativeUnits() &&
-       old_root_style->GetFont() != new_root_style->GetFont());
+       !base::ValuesEquivalent<Font>(old_root_style->GetFont(),
+                                     new_root_style->GetFont()));
   bool root_line_height_changed =
       !old_root_style ||
       (UsesLineHeightUnits() &&

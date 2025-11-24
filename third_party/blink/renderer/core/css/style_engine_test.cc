@@ -7603,4 +7603,47 @@ TEST_F(StyleEngineTest, MissingVarArgument_IdentFunctionDisabled) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(StyleEngineTest, UpdateRootFontRelativeUnits_NoRecalcForNonInherited) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      :root { font-family: sans-serif; font-size: 16px; }
+      div { width: 10rem; height: 100ch; }
+    </style>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Verify that the document is using root font-relative units (rem).
+  ASSERT_TRUE(GetStyleEngine().UsesRootFontRelativeUnits())
+      << "Document should be using root font-relative units (rem)";
+  // Also verify glyph-relative units (ch) are tracked.
+  ASSERT_TRUE(GetStyleEngine().UsesGlyphRelativeUnits())
+      << "Document should be using glyph-relative units (ch)";
+
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  Element* root = GetDocument().documentElement();
+  ASSERT_TRUE(root);
+  root->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  unsigned after_count = GetStyleEngine().StyleForElementCount();
+
+  // Only the root element should be restyled since background-color is
+  // non-inherited and doesn't affect font metrics (which would impact rem/ch).
+  EXPECT_EQ(1u, after_count - before_count)
+      << "Changing root background-color should not trigger recalc cascade for "
+         "descendant elements using rem/ch units";
+}
+
 }  // namespace blink
