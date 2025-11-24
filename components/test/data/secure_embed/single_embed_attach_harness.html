@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<script>
+  // Create and attach the embed element. Called from the browser test with the
+  // content_id
+  function createEmbed(contentId) {
+    const embed = document.createElement('embed');
+    embed.setAttribute('data-content-id', contentId);
+    embed.setAttribute('type', 'application/x-google-chrome-secure-embed');
+    document.body.appendChild(embed);
+  }
+
+  // Changes the data-content-id attribute on the embed element.
+  function setDataContentId(contentId) {
+    const embed = document.querySelector('embed');
+    if (embed) {
+      embed.setAttribute('data-content-id', contentId);
+    }
+  }
+</script>
+</head>
+<body>
+</body>
+</html>
