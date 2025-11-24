@@ -1144,7 +1144,7 @@ class JavascriptOptimizerOmnibarIconBrowserTest_WithFlag
 class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
     : public JavascriptOptimizerOmnibarIconBrowserTest {};
 
-// TODO(crbug.com/458714131): Re-enable this test
+// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
                        DISABLED_IconShowsWhenOptimizationsDisabled) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -1169,7 +1169,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
   EXPECT_FALSE(GetOmnibarIconVisible());
 }
 
-// TODO(crbug.com/458714131): Re-enable this test
+// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
     DISABLED_IconShowsWhenNavigatingToPageWhereOptimizationsDisabled) {
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetOmnibarIconVisible());
 }
 
-// TODO(crbug.com/458714131): Re-enable this test
+// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
     DISABLED_IconDisappearsWhenNavigatingToPageWhereOptimizationsNotDisabled) {
