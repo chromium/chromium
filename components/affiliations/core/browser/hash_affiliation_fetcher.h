@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_HASH_AFFILIATION_FETCHER_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_HASH_AFFILIATION_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -69,7 +70,7 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
       const std::string& serialized_response,
       AffiliationFetcherInterface::ParsedFetchResponse* result) const;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   std::vector<FacetURI> requested_facet_uris_;
   base::OnceCallback<void(FetchResult)> result_callback_;

@@ -255,14 +255,14 @@ bool HashAffiliationFetcher::ParseResponse(
 }
 
 void HashAffiliationFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(result_callback_);
   FetchResult fetch_result;
   fetch_result.network_status = simple_url_loader_->NetError();
   base::TimeDelta fetch_time = fetch_timer_.Elapsed();
   // Note that invoking the |delegate_| may destroy |this| synchronously, so the
   // invocation must happen last.
-  bool success = simple_url_loader_->NetError() == net::OK;
+  bool success = response_body && simple_url_loader_->NetError() == net::OK;
   std::optional<net::HttpStatusCode> response_code;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

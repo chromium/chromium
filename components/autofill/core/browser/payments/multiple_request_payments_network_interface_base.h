@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -75,7 +76,7 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
     InitializeResourceRequest();
 
     // Callback from `simple_url_loader_`.
-    void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+    void OnSimpleLoaderComplete(std::optional<std::string> response_body);
     void OnSimpleLoaderCompleteInternal(int response_code,
                                         const std::string& data);
 

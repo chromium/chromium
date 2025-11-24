@@ -5,7 +5,9 @@
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -213,7 +215,7 @@ MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
 }
 
 void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
-    OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+    OnSimpleLoaderComplete(std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -223,12 +225,8 @@ void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
     response_code = net::ERR_TIMED_OUT;
   }
 
-  std::string data;
-  if (response_body) {
-    data = std::move(*response_body);
-  }
-
-  OnSimpleLoaderCompleteInternal(response_code, data);
+  OnSimpleLoaderCompleteInternal(response_code,
+                                 std::move(response_body).value_or(""));
 }
 
 void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::

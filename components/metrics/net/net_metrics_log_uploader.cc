@@ -4,7 +4,9 @@
 
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
+#include <optional>
 #include <sstream>
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -592,7 +594,7 @@ void NetMetricsLogUploader::HTTPFallbackAborted() {
 
 // The callback is only invoked if |url_loader_| it was bound against is alive.
 void NetMetricsLogUploader::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();

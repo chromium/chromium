@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -171,7 +172,7 @@ class RequestImpl : public WebHistoryService::Request {
     is_pending_ = true;
   }
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body) {
     response_code_ = -1;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {
@@ -192,7 +193,7 @@ class RequestImpl : public WebHistoryService::Request {
       return;
     }
     if (response_body) {
-      response_body_ = std::move(*response_body);
+      response_body_ = std::move(response_body).value();
     } else {
       response_body_.clear();
     }

@@ -4,6 +4,8 @@
 
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
 
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -191,7 +193,7 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
     std::optional<std::vector<std::string>> fingerprints,
     std::map<std::string, std::set<std::string>> target_values,
     RelationshipCheckResultCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();

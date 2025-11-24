@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -1061,7 +1062,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
     FormRequestData request_data,
     base::TimeTicks request_start,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Move the loader out of the active loaders list.
   std::unique_ptr<network::SimpleURLLoader> simple_loader = std::move(*it);
   url_loaders_.erase(it);
@@ -1076,7 +1077,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   // Even if the server does not fill the response body when responding, the
   // corresponding response string will be at least instantiated and empty.
   // Having the response body a nullptr probably reflects a problem.
-  const bool success = IsHttpSuccess(response_code) && response_body != nullptr;
+  const bool success = IsHttpSuccess(response_code) && response_body;
   loader_backoff_.InformOfRequest(success);
 
   // Log the HTTP response or error code and request duration.
@@ -1096,8 +1097,6 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   }
 
   if (!success) {
-    std::string error_message =
-        (response_body != nullptr) ? *response_body : "";
     base::UmaHistogramCounts100000(
         GetMetricName(request_data.request_type, "FailingPayloadSize"),
         request_data.payload.length());
@@ -1135,7 +1134,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   if (request_data.callback) {
     std::move(request_data.callback)
         .Release()
-        .Run(QueryResponse(std::move(*response_body),
+        .Run(QueryResponse(std::move(response_body).value(),
                            std::move(request_data.form_signatures)));
   }
 }

@@ -5,6 +5,8 @@
 #include "components/feed/core/v2/feed_network_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -414,7 +416,7 @@ class FeedNetworkImpl::NetworkFetch {
                                        signed_in_status, &request);
   }
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response) {
     const network::mojom::URLResponseHead* loader_response_info =
         simple_loader_->ResponseInfo();
     std::optional<network::URLLoaderCompletionStatus> completion_status =
@@ -464,7 +466,7 @@ class FeedNetworkImpl::NetworkFetch {
           loader_response_info->headers->response_code();
       response_info.response_body_bytes = response->size();
 
-      response_body = std::move(*response);
+      response_body = std::move(response).value();
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
         CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(

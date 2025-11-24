@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -116,7 +120,7 @@ void PaymentsNetworkInterfaceBase::InitializeResourceRequest() {
 }
 
 void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -126,12 +130,8 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
     response_code = net::ERR_TIMED_OUT;
   }
 
-  std::string data;
-  if (response_body) {
-    data = std::move(*response_body);
-  }
-
-  OnSimpleLoaderCompleteInternal(response_code, data);
+  OnSimpleLoaderCompleteInternal(response_code,
+                                 std::move(response_body).value_or(""));
 }
 
 void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(

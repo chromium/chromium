@@ -4,6 +4,8 @@
 
 #include "components/captive_portal/core/captive_portal_detector.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/features.h"
@@ -79,9 +81,8 @@ void CaptivePortalDetector::StartProbe(
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   simple_loader_->SetAllowHttpErrorResults(true);
-  network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback =
-      base::BindOnce(&CaptivePortalDetector::OnSimpleLoaderComplete,
-                     base::Unretained(this));
+  network::SimpleURLLoader::BodyAsStringCallback callback = base::BindOnce(
+      &CaptivePortalDetector::OnSimpleLoaderComplete, base::Unretained(this));
   state_ = State::kProbe;
   simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       loader_factory_, std::move(callback));
@@ -94,7 +95,7 @@ void CaptivePortalDetector::Cancel() {
 }
 
 void CaptivePortalDetector::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kProbe);
   CHECK(FetchingURL());

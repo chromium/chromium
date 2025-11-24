@@ -539,7 +539,7 @@ void PopularSitesImpl::FetchPopularSites() {
 }
 
 void PopularSitesImpl::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   simple_url_loader_.reset();
 
   if (!response_body) {

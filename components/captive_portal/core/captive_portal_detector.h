@@ -6,6 +6,8 @@
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_DETECTOR_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -71,7 +73,7 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
  private:
   friend class CaptivePortalDetectorTestBase;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   void OnSimpleLoaderCompleteInternal(int net_error,
                                       int response_code,
