@@ -898,19 +898,19 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
     // When the popup is open, focus on the AI Mode page action icon is handled
     // by `OmniboxPopupSelection` and `OmniboxEditModel`. And normally, when the
     // popup is closed, the user can focus the AI Mode page action icon with
-    // standard keyboard navigation. However, when the popup is closed and the
-    // keyboard accessibility setting is disabled (which currently only is
-    // possible on Mac), tab traversal will move directly from the omnibox to
-    // the web contents. In order to keep the behavior of the AI Mode page
-    // action icon consistent with the popup open case, where it can always be
-    // focused with tab traversal, special logic is required. The approach used
-    // here is to retain focus in the omnibox but change the focus indicators to
-    // show the page action icon as focused. If the user attempts to activate
-    // the page action icon with <space> or <return>, these events will still be
-    // handled by the omnibox in `HandleKeyEvent`, which has a special cases for
-    // when the page action icon has this "fake" focus.
-    if (GetAiModePageActionIconView() &&
-        !GetFocusManager()->keyboard_accessible()) {
+    // standard keyboard navigation. However, on Mac only, when the popup is
+    // closed and the keyboard accessibility setting is disabled, tab traversal
+    // will move directly from the omnibox to the web contents. In order to keep
+    // the behavior of the AI Mode page action icon consistent with the popup
+    // open case, where it can always be focused with tab traversal, special
+    // logic is required. The approach used here is to retain focus in the
+    // omnibox but change the focus indicators to show the page action icon as
+    // focused. If the user attempts to activate the page action icon with
+    // <space> or <return>, these events will still be handled by the omnibox in
+    // `HandleKeyEvent`, which has a special cases for when the page action icon
+    // has this "fake" focus.
+#if BUILDFLAG(IS_MAC)
+    if (AimButtonVisible() && !GetFocusManager()->keyboard_accessible()) {
       if (!event.IsShiftDown()) {
         if (aim_page_action_icon_has_fake_focus_) {
           // If the page action icon already has focus and the user presses
@@ -940,6 +940,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
       }
       return true;
     }
+#endif
     return false;
   }
 }
@@ -1557,22 +1558,25 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
     // 1. Entering keyword mode.
     //    TODO(crbug.com/439564633): This case seems obsolete. Investigate
     //    whether it can be removed.
-    // 2. The popup is open (in this case, <tab> events will be handled by
+    // 2. On Mac only: The AIM page action icon is present and the keyboard
+    //    accessibility setting is disabled. See comments in
+    //    `HandleEarlyTabActions` for more details on this case.
+    // 3. The popup is open (in this case, <tab> events will be handled by
     //    `OmniboxPopupSelection`.
-    // 3. The AIM page action icon is present and the keyboard accessibility
-    //    setting is disabled. See comments in `HandleEarlyTabActions` for more
-    //    details on this case.
     if ((controller()->edit_model()->is_keyword_hint() &&
          !event.IsShiftDown()) ||
-        controller()->IsPopupOpen() ||
-        (GetAiModePageActionIconView() &&
-         !GetFocusManager()->keyboard_accessible())) {
+#if BUILDFLAG(IS_MAC)
+        (AimButtonVisible() && !GetFocusManager()->keyboard_accessible()) ||
+#endif
+        controller()->IsPopupOpen()) {
       return true;
     }
   }
+
   if (event.key_code() == ui::VKEY_ESCAPE && !event.IsShiftDown()) {
     return true;
   }
+
   return Textfield::SkipDefaultKeyEventProcessing(event);
 }
 
