@@ -54,9 +54,8 @@ class SyncServiceImplHarness {
   using SetUserSettingsCallback =
       base::OnceCallback<void(syncer::SyncUserSettings*)>;
 
-  static std::unique_ptr<SyncServiceImplHarness> Create(
-      Profile* profile,
-      SigninType signin_type);
+  static std::unique_ptr<SyncServiceImplHarness> Create(Profile* profile,
+                                                        SigninType signin_type);
   ~SyncServiceImplHarness();
 
   SyncServiceImplHarness(const SyncServiceImplHarness&) = delete;
@@ -179,23 +178,42 @@ class SyncServiceImplHarness {
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }
 
-  // Enables history sync. This includes UserSelectableType::kHistory, and
-  // UserSelectableType::kTabs. Returns true on success.
+  // Enables the history-related sync types. This includes
+  // UserSelectableType::kHistory and UserSelectableType::kTabs. The user must
+  // already be signed in, or this will have no effect. Returns true on success.
   [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
 
-  // Enables sync for a particular selectable sync type (will enable sync for
-  // all corresponding datatypes). Returns true on success.
+  // Enables Sync-the-feature for a particular selectable type. If
+  // Sync-the-feature is already enabled, this just means turning on the type
+  // via EnableSelectableType(type). Otherwise, sets up Sync-the-feature with
+  // only this type enabled. Returns true on success.
   [[nodiscard]] bool EnableSyncForType(syncer::UserSelectableType type);
 
-  // Disables sync for a particular selectable sync type (will enable sync for
-  // all corresponding datatypes). Returns true on success.
+  // Disables a particular selectable type. Returns true on success.
+  // TODO(crbug.com/353425612): Replace all calls to this with
+  // DisableSelectableType(type) which is identical.
   [[nodiscard]] bool DisableSyncForType(syncer::UserSelectableType type);
 
-  // Enables sync for all registered sync datatypes. Returns true on success.
+  // Enables Sync-the-feature for all registered sync datatypes. Returns true on
+  // success.
+  // TODO(crbug.com/353425612): Replace all calls to this with either
+  // SetupSync() or EnableAllSelectableTypes().
   [[nodiscard]] bool EnableSyncForRegisteredDatatypes();
 
   // Disables sync for all sync datatypes. Returns true on success.
+  // TODO(crbug.com/353425612): Replace all calls to this with
+  // DisableAllSelectableTypes() which is identical.
   [[nodiscard]] bool DisableSyncForAllDatatypes();
+
+  // Enables/disables a particular selectable type. The user must already be
+  // signed in, or this has no effect.
+  [[nodiscard]] bool EnableSelectableType(syncer::UserSelectableType type);
+  [[nodiscard]] bool DisableSelectableType(syncer::UserSelectableType type);
+
+  // Enables/disables all available selectable types. The user must already be
+  // signed in, or this has no effect.
+  [[nodiscard]] bool EnableAllSelectableTypes();
+  [[nodiscard]] bool DisableAllSelectableTypes();
 
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;

@@ -513,6 +513,11 @@ bool SyncServiceImplHarness::EnableSyncForType(
     return result;
   }
 
+  return EnableSelectableType(type);
+}
+
+bool SyncServiceImplHarness::EnableSelectableType(
+    syncer::UserSelectableType type) {
   if (service() == nullptr) {
     LOG(ERROR) << "EnableSyncForType(): service() is null.";
     return false;
@@ -542,34 +547,39 @@ bool SyncServiceImplHarness::EnableSyncForType(
 
 bool SyncServiceImplHarness::DisableSyncForType(
     syncer::UserSelectableType type) {
+  return DisableSelectableType(type);
+}
+
+bool SyncServiceImplHarness::DisableSelectableType(
+    syncer::UserSelectableType type) {
   DVLOG(1) << GetClientInfoString(
-      "DisableSyncForType(" +
+      "DisableSelectableType(" +
       std::string(syncer::GetUserSelectableTypeName(type)) + ")");
 
   if (service() == nullptr) {
-    LOG(ERROR) << "DisableSyncForType(): service() is null.";
+    LOG(ERROR) << "DisableSelectableType(): service() is null.";
     return false;
   }
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
   if (!selected_types.Has(type)) {
-    DVLOG(1) << "DisableSyncForType(): Sync already disabled for type "
-             << syncer::GetUserSelectableTypeName(type) << " on "
-             << profile_debug_name_ << ".";
+    DVLOG(1) << "DisableSelectableType(): "
+             << syncer::GetUserSelectableTypeName(type)
+             << " already disabled on " << profile_debug_name_ << ".";
     return true;
   }
 
   selected_types.Remove(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
   if (AwaitSyncTransportActive()) {
-    DVLOG(1) << "DisableSyncForType(): Disabled sync for type "
+    DVLOG(1) << "DisableSelectableType(): Disabled "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("DisableSyncForDatatype failed");
+  DVLOG(0) << GetClientInfoString("DisableSelectableType failed");
   return false;
 }
 
@@ -583,39 +593,44 @@ bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
     return result;
   }
 
+  return EnableAllSelectableTypes();
+}
+
+bool SyncServiceImplHarness::EnableAllSelectableTypes() {
   if (service() == nullptr) {
-    LOG(ERROR) << "EnableSyncForRegisteredDatatypes(): service() is null.";
+    LOG(ERROR) << "EnableAllSelectableTypes(): service() is null.";
     return false;
   }
 
-  service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/true,
-      service()->GetUserSettings()->GetRegisteredSelectableTypes());
+  service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true, {});
 
   if (AwaitSyncTransportActive()) {
-    DVLOG(1)
-        << "EnableSyncForRegisteredDatatypes(): Enabled sync for all datatypes "
-        << "on " << profile_debug_name_ << ".";
+    DVLOG(1) << "EnableAllSelectableTypes(): Enabled all types on "
+             << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("EnableSyncForRegisteredDatatypes failed");
+  DVLOG(0) << GetClientInfoString("EnableAllSelectableTypes() failed.");
   return false;
 }
 
 bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
-  DVLOG(1) << GetClientInfoString("DisableSyncForAllDatatypes");
+  return DisableAllSelectableTypes();
+}
+
+bool SyncServiceImplHarness::DisableAllSelectableTypes() {
+  DVLOG(1) << GetClientInfoString("DisableAllSelectableTypes");
 
   if (service() == nullptr) {
-    LOG(ERROR) << "DisableSyncForAllDatatypes(): service() is null.";
+    LOG(ERROR) << "DisableAllSelectableTypes(): service() is null.";
     return false;
   }
 
   service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
-  DVLOG(1) << "DisableSyncForAllDatatypes(): Disabled sync for all "
-           << "datatypes on " << profile_debug_name_;
+  DVLOG(1) << "DisableAllSelectableTypes(): Disabled all types on "
+           << profile_debug_name_ << ".";
   return true;
 }
 
