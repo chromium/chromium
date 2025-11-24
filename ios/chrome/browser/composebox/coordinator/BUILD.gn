@@ -27,6 +27,7 @@ source_set("coordinator") {
     "web_state_deferred_executor.mm",
   ]
   deps = [
+    ":constants",
     "//components/application_locale_storage",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
@@ -101,4 +102,12 @@ source_set("coordinator") {
     "//ui/base",
   ]
   frameworks = [ "PDFKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "composebox_constants.h",
+    "composebox_constants.mm",
+  ]
+  deps = [ "//base" ]
 }

@@ -1386,6 +1386,11 @@
       <message name="IDS_IOS_COMPOSEBOX_GALLERY_ACTION" desc="The contextual menu option for opening the gallery picker. [iOS only].">
         Gallery
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED" desc="Message displayed in a snackbar when the user tries to attach more than the maximum allowed number of attachments. [iOS only].">
+        {COUNT, plural,
+        =1 {Add up to 1 file, tab, or image}
+        other {Add up to {COUNT} files, tabs, or images}}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION" desc="The contextual menu option for opening the tab picker for selection. [iOS only].">
         Tabs
       </message>

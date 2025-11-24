@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_mediator.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
+#import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_consumer.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -108,8 +110,15 @@
 }
 
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
-  CHECK(self.modeHolder.mode == TabGridMode::kSelection);
-  if (itemID.type == GridItemType::kTab) {
+  CHECK_EQ(self.modeHolder.mode, TabGridMode::kSelection);
+  CHECK_EQ(itemID.type, GridItemType::kTab);
+  if (![self.selectedEditingItems containItem:itemID] &&
+      self.selectedEditingItems.tabsCount >= kAttachmentLimit) {
+    ComposeboxSnackbarPresenter* snackbar =
+        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+    [snackbar showAttachmentLimitSnackbar];
+    return;
+  }
     web::WebState* webState = GetWebState(
         self.webStateList,
         WebStateSearchCriteria{
@@ -133,7 +142,6 @@
                               updateSnapshotForWebState:webState->GetWeakPtr()
                                                  itemID:itemID];
                         }];
-    }
   }
   [super userTappedOnItemID:itemID];
 }
