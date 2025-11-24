@@ -386,6 +386,17 @@ TEST_F(PasskeyUnlockManagerTest,
   histogram_tester.ExpectBucketCount("WebAuthentication.PasskeyReadiness",
                                      false, 1);
 }
+TEST_F(PasskeyUnlockManagerTest,
+       LogsPasskeyCountHistogramWhenPasskeyModelReady) {
+  passkey_model()->SetReady(false);
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+  base::HistogramTester histogram_tester;
+  SetUpPasskeyUnlockManager();
+
+  passkey_model()->SetReady(true);
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount", 1, 1);
+}
 
 }  // namespace
 

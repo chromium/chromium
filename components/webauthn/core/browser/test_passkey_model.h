@@ -21,6 +21,8 @@ class TestPasskeyModel : public PasskeyModel {
   TestPasskeyModel();
   ~TestPasskeyModel() override;
 
+  void SetReady(bool is_ready);
+
   // PasskeyModel:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -72,6 +74,7 @@ class TestPasskeyModel : public PasskeyModel {
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
   base::ObserverList<Observer> observers_;
+  bool is_ready_ = true;
 };
 
 }  // namespace webauthn

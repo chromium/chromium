@@ -258,6 +258,8 @@ void PasskeyUnlockManager::OnPasskeyModelShuttingDown() {}
 void PasskeyUnlockManager::OnPasskeyModelIsReady(bool is_ready) {
   UpdateHasPasskeys();
   ComputeShouldDisplayErrorUiAndNotifyObservers();
+  // If the passkey model wasn't ready on startup, record the histogram now.
+  MaybeRecordDelayedPasskeyCountHistogram();
 }
 
 void PasskeyUnlockManager::OnStateChanged(syncer::SyncService* sync) {
