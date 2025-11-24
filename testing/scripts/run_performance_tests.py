@@ -337,6 +337,12 @@ def upload_simple_test_results(return_code, benchmark_name):
   else:
     summary = '<p>Benchmark passed</p>'
 
+  struct_test_dict = {
+      'coarseName': None,
+      'fineName': None,
+      'caseNameComponents': [benchmark_name],
+  }
+
   result_json = {
       'testResults': [{
           'testId': benchmark_name,
@@ -347,6 +353,7 @@ def upload_simple_test_results(return_code, benchmark_name):
               'key': 'exit_code',
               'value': str(return_code)
           }],
+          'testIdStructured': struct_test_dict,
       }]
   }
 
