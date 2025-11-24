@@ -253,6 +253,19 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
   {% endfor %}
 
+ public:
+  inline unsigned HashInheritedBitFields() const {
+    // TODO(sesse): It is possible that rapidhash is overkill for hashing
+    // what amounts to ~40 bits of data.
+    Data inherited_data;
+    memset(&inherited_data, 0, sizeof(inherited_data));
+    {% for field in computed_style.fields|rejectattr('requires_tracing')|selectattr('is_inherited') %}
+      inherited_data.{{field.name}} = data_.{{field.name}};
+    {% endfor %}
+    return rapidhash(reinterpret_cast<uint8_t*>(&inherited_data),
+                     sizeof(inherited_data));
+  }
+
  protected:
   // Constructor and destructor are protected so that only the parent class ComputedStyle
   // can instantiate this class.

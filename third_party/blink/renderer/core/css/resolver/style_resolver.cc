@@ -2708,10 +2708,21 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     const MatchResult& match_result) {
   Element& element = state.GetElement();
 
+  // Add in a couple of fields from the parent to the hash; this reduces the
+  // number of differs-by-inherited-fields mismatches the MPC needs to filter
+  // out. We pick out a couple of fields that seem to be commonly causing
+  // mismatches (from eyeballing some test suite data) and are cheap to hash;
+  // it would be nice to add e.g. Color() too, but it's much more expensive.
+  unsigned inherited_hash =
+      state.IsForHighlight()
+          ? state.OriginatingElementStyle()->InheritedVariables().GetHash()
+          : state.ParentStyle()->InheritedVariables().GetHash();
+  inherited_hash ^= state.ParentStyle()->HashInheritedBitFields();
+  inherited_hash ^= HashFloat(
+      state.ParentStyle()->GetFont()->GetFontDescription().ComputedSize());
   MatchedPropertiesCache::Key key(
-      match_result, state.IsForHighlight()
-                        ? state.OriginatingElementStyle()->InheritedVariables()
-                        : state.ParentStyle()->InheritedVariables());
+      match_result,
+      MatchedPropertiesCache::Key::AdditionalHash(inherited_hash));
 
   bool can_use_cache = match_result.IsCacheable();
   // NOTE: Do not add anything here without also adding it to

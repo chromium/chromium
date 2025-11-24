@@ -39,7 +39,6 @@ namespace blink {
 class ComputedStyle;
 class ComputedStyleBuilder;
 class StyleResolverState;
-class StyleInheritedVariables;
 
 class CORE_EXPORT CachedMatchedProperties final
     : public GarbageCollected<CachedMatchedProperties> {
@@ -115,7 +114,10 @@ class CORE_EXPORT MatchedPropertiesCache {
     STACK_ALLOCATED();
 
    public:
-    Key(const MatchResult&, const StyleInheritedVariables& inherited_variables);
+    struct AdditionalHash {
+      unsigned hash;
+    };
+    Key(const MatchResult&, AdditionalHash additional_hash);
 
     bool IsCacheable() const { return result_.IsCacheable(); }
 
