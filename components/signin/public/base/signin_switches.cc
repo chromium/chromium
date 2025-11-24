@@ -233,7 +233,7 @@ BASE_FEATURE_PARAM(bool,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Kill switch for the OAuthMultilogin cookies standard binding.
 BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBinding,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,
