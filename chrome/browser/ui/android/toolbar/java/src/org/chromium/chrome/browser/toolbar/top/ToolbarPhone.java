@@ -29,6 +29,7 @@ import android.transition.ChangeTransform;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.transition.Transition.TransitionListener;
 import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
@@ -962,15 +963,35 @@ public class ToolbarPhone extends ToolbarLayout
     private void onNtpScrollChanged(float scrollFraction) {
         if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-            if (ntpDelegate.hasCompletedFirstLayout()) updateButtonsTranslationY();
+            if (!ntpDelegate.hasCompletedFirstLayout()) {
+                // If the NTP has not completed its first layout, but we're getting a scroll update,
+                // we're likely navigating to a NTP. Immediately hide the location bar in this case,
+                // as the fakebox will soon show.
+                if (isLocationBarShownInNtp()) {
+                    mLocationBar.getPhoneCoordinator().setAlpha(0.f);
+                    mActiveLocationBarBackgroundView.setAlpha(0.f);
+                }
+                // Also skip the updates below, since we won't be able to derive the correct
+                // properties (translationY, etc.) yet.
+                return;
+            }
+
+            updateButtonsTranslationY();
             updateToolbarBackgroundFromState(mVisualState);
             updateLocationBarTranslationOnScroll();
+            float oldScrollFraction = mNtpSearchBoxScrollFraction;
             if (scrollFraction > 0.f && mNtpSearchBoxScrollFraction != 1.f) {
                 mNtpSearchBoxScrollFraction = 1.f;
                 createAndRunNtpFocusAnimatorRefactored();
-            } else if (scrollFraction <= 0.f && mNtpSearchBoxScrollFraction == 1.f) {
+            } else if (scrollFraction <= 0.f && mNtpSearchBoxScrollFraction != 0.f) {
                 mNtpSearchBoxScrollFraction = 0.f;
                 createAndRunNtpFocusAnimatorRefactored();
+            }
+            // If the scroll fraction was previously uninitialized, we likely just navigated to a
+            // NTP. We want to update the location bar's state, but suppress the associated
+            // animations, so allow the transition to start, then immediately end it here.
+            if (oldScrollFraction == UNINITIALIZED_FRACTION) {
+                endFocusTransition(/* hasFocus= */ false);
             }
             return;
         }
@@ -2524,20 +2545,8 @@ public class ToolbarPhone extends ToolbarLayout
                 new TransitionListenerAdapter() {
                     @Override
                     public void onTransitionStart(Transition transition) {
-                        // Ensure visibility during the animation.
-                        if (isLocationBarShownInNtp()) {
-                            // Needed for the NTP transition, to prevent the real location bar from
-                            // getting clipped while outside of its parent's bounds during the
-                            // translation to/from the fakebox's position.
-                            setAncestorsShouldClipChildren(false);
-                            setClipToPadding(false);
-
-                            NewTabPageDelegate ntpDelegate =
-                                    getToolbarDataProvider().getNewTabPageDelegate();
-                            ntpDelegate.setSearchBoxAlpha(0.f);
-                        }
-                        mLocationBar.getPhoneCoordinator().setAlpha(1.f);
-                        mActiveLocationBarBackgroundView.setAlpha(1.f);
+                        super.onTransitionStart(transition);
+                        onFocusTransitionStart();
                     }
 
                     @Override
@@ -2549,27 +2558,7 @@ public class ToolbarPhone extends ToolbarLayout
                     @Override
                     public void onTransitionEnd(Transition transition) {
                         super.onTransitionEnd(transition);
-                        mUrlFocusChangeInProgress = false;
-                        mRefactoredNtpStartingOffset = 0.f;
-
-                        if (isLocationBarShownInNtp()) {
-                            setAncestorsShouldClipChildren(true);
-                            setClipToPadding(true);
-
-                            if (mNtpSearchBoxScrollFraction == 0.f) {
-                                NewTabPageDelegate ntpDelegate =
-                                        getToolbarDataProvider().getNewTabPageDelegate();
-                                ntpDelegate.setSearchBoxAlpha(1.f);
-                                if (!hasFocus) {
-                                    // When unfocusing, the NTP state may be reset. If that is the
-                                    // case, we need to re-grab the correct scroll translation here.
-                                    updateLocationBarTranslationOnScroll();
-                                    mLocationBar.getPhoneCoordinator().setAlpha(0.f);
-                                    mActiveLocationBarBackgroundView.setAlpha(0.f);
-                                }
-                            }
-                        }
-                        mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
+                        onFocusTransitionEnd(hasFocus);
                     }
                 });
 
@@ -2644,6 +2633,64 @@ public class ToolbarPhone extends ToolbarLayout
                     mNtpSearchBoxBounds.right - getFocusedRightPositionOfLocationBarBackground();
             mLocationBar.getPhoneCoordinator().setTranslationY(translationY);
         }
+    }
+
+    private void onFocusTransitionStart() {
+        if (mLocationBar.isDestroyed()) return;
+        // Ensure visibility during the animation.
+        if (isLocationBarShownInNtp()) {
+            // Needed for the NTP transition, to prevent the real location bar from getting clipped
+            // while outside of its parent's bounds during the translation to/from the fakebox's
+            // position.
+            setAncestorsShouldClipChildren(false);
+            setClipToPadding(false);
+
+            NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
+            ntpDelegate.setSearchBoxAlpha(0.f);
+        }
+        mLocationBar.getPhoneCoordinator().setAlpha(1.f);
+        mActiveLocationBarBackgroundView.setAlpha(1.f);
+    }
+
+    private void onFocusTransitionEnd(boolean hasFocus) {
+        if (mLocationBar.isDestroyed()) return;
+
+        mUrlFocusChangeInProgress = false;
+        mRefactoredNtpStartingOffset = 0.f;
+
+        if (isLocationBarShownInNtp()) {
+            setAncestorsShouldClipChildren(true);
+            setClipToPadding(true);
+
+            if (mNtpSearchBoxScrollFraction != 1.f) {
+                NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
+                ntpDelegate.setSearchBoxAlpha(1.f);
+                if (!hasFocus) {
+                    // When unfocusing, the NTP state may be reset. If that is the case, we need to
+                    // update the scroll translation here.
+                    updateLocationBarTranslationOnScroll();
+                    mLocationBar.getPhoneCoordinator().setAlpha(0.f);
+                    mActiveLocationBarBackgroundView.setAlpha(0.f);
+                }
+            }
+        }
+        mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
+    }
+
+    /**
+     * The refactored flow uses a {@link TransitionManager} to handle the its animations. Evidently,
+     * when {@link TransitionManager#endTransitions} is called, it immediately removes all pending
+     * transitions, effectively allowing the next update cycle to run as expected, without kicking
+     * off the delayed transitions. As a result, the {@link TransitionListener} events
+     * (onTransitionStart, etc.) also are skipped. Our implementation relies on these events being
+     * called, so manually call them when ending the focus transitions early.
+     *
+     * @param hasFocus {@code True} if the URL bar has focus at the end of the transition.
+     */
+    private void endFocusTransition(boolean hasFocus) {
+        onFocusTransitionStart();
+        TransitionManager.endTransitions(this);
+        onFocusTransitionEnd(hasFocus);
     }
 
     // ToolbarDataProvider.Observer implementation.
@@ -3272,7 +3319,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
         } else {
-            TransitionManager.endTransitions(this);
+            endFocusTransition(urlHasFocus());
         }
 
         if (mBrandColorTransitionAnimation != null && mBrandColorTransitionAnimation.isRunning()) {
