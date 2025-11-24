@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -46,6 +47,38 @@ TEST(DOMParserTest, DomParserDocumentUsesNoQuirksMode) {
   Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "<!doctype html>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InNoQuirksMode());
+}
+
+// Regression test for https://crbug.com/1310198
+// DOMParser-created documents should have accessible styleSheets collections.
+TEST(DOMParserTest, DomParserDocumentStyleSheetsAccessible) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* parser = DOMParser::Create(scope.GetScriptState());
+
+  // Test with a single style element
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
+      "<style>div { color: green; }</style>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document, nullptr);
+  StyleSheetList& style_sheets = document->StyleSheets();
+  EXPECT_EQ(style_sheets.length(), 1u);
+
+  // Test with multiple style elements
+  Document* document_multi = parser->ParseFromStringWithoutTrustedTypes(
+      "<style>div { color: green; }</style><style>p { color: red; }</style>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document_multi, nullptr);
+  StyleSheetList& style_sheets_multi = document_multi->StyleSheets();
+  EXPECT_EQ(style_sheets_multi.length(), 2u);
+
+  // Test with no style elements
+  Document* document_empty = parser->ParseFromStringWithoutTrustedTypes(
+      "<div>No styles</div>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document_empty, nullptr);
+  StyleSheetList& style_sheets_empty = document_empty->StyleSheets();
+  EXPECT_EQ(style_sheets_empty.length(), 0u);
 }
 
 }  // namespace

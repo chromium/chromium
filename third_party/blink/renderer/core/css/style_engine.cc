@@ -308,9 +308,7 @@ const HeapVector<Member<StyleSheet>>& StyleEngine::StyleSheetsForStyleSheetList(
     TreeScope& tree_scope) {
   DCHECK(document_);
   StyleSheetCollection& collection = EnsureStyleSheetCollectionFor(tree_scope);
-  if (document_->IsActive()) {
-    collection.UpdateStyleSheetList();
-  }
+  collection.UpdateStyleSheetList();
   return collection.StyleSheetsForStyleSheetList();
 }
 
