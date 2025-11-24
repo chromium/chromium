@@ -193,7 +193,7 @@ class FuseboxViewBinder {
                 borderColor =
                         ColorStateList.valueOf(
                                 SemanticColorUtils.getColorPrimaryContainer(context));
-                textAppearanceRes = R.style.TextAppearance_TextSmall_Primary;
+                textAppearanceRes = R.style.TextAppearance_TextSmall_Accent1;
                 @ColorInt int colorPrimary = SemanticColorUtils.getColorPrimary(context);
                 startDrawable =
                         assumeNonNull(context.getDrawable(R.drawable.search_spark_black_24dp))
