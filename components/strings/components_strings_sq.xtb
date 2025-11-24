@@ -95,7 +95,7 @@
 <translation id="11635448457105324">Butoni "Menaxho adresat". Aktivizoje për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1165174597379888365">Faqja është vizituar</translation>
-<translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}}</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}}</translation>
 <translation id="1167877250265821930">Shkarkimi i gjuhës <ph name="LANGUAGE" /> dështoi</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1174644974616730562">Zarf kinez nr. 1</translation>

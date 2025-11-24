@@ -2444,7 +2444,7 @@
 <translation id="4989542687859782284">دردسترس نیست</translation>
 <translation id="4989809363548539747">این افزایه پشتیبانی نمی‌شود</translation>
 <translation id="4990241977441916452">پاکت آ۲</translation>
-<translation id="4992066212339426712">باصدا کردن</translation>
+<translation id="4992066212339426712">صدادار کردن</translation>
 <translation id="4994095017621319069">‫۱ گروه زبانه دیگر دردسترس نیست</translation>
 <translation id="4995474875135717171">اصلاح‌شده در:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت جستجوی سایت و موتور جستجوی پیش‌فرض، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -2920,7 +2920,7 @@
 <translation id="577804500166306874">نتیجه درحال بار شدن است</translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
 <translation id="5783700460098783980">لوازم سفر و چمدان</translation>
-<translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="57838592816432529">صامت کردن</translation>
 <translation id="5783922175933467571">پیوند <ph name="TAB_GROUP_DISPLAY_NAME" /> ظرف ۴۸ ساعت منقضی می‌شود</translation>
 <translation id="5784606427469807560">هنگام تأیید کارت مشکلی پیش آمد. اتصال اینترنتتان را بررسی و دوباره امتحان کنید.</translation>
 <translation id="5785756445106461925">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر قفل صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
@@ -3657,7 +3657,7 @@
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">مدیریت کردن دسترسی به کوکی‌های طرف سوم</translation>
-<translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
+<translation id="6979440798594660689">صامت (پیش‌فرض)</translation>
 <translation id="6987806006823772670">پاکت (روکش‌دار)</translation>
 <translation id="6989256887001961296">این محتوا مسدود شده است.</translation>
 <translation id="6989763994942163495">نمایش تنظیمات پیشرفته ...</translation>
@@ -4986,7 +4986,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> از یک پروتکل پشتیبانی‌نشده استفاده می‌کند.</translation>
 <translation id="918454845714257218">کد <ph name="SIDE_OF_CARD" /> را بررسی و دوباره امتحان کنید</translation>
 <translation id="9186203289258525843">‏دکمه «تنظیم Chrome به‌عنوان مرورگر پیش‌فرض»؛ برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم، آن را فعال کنید</translation>
-<translation id="9186371298532546532">از این نشانی در مکان‌های بیشتری استفاده کنید</translation>
+<translation id="9186371298532546532">از این نشانی در جا‌های بیشتری استفاده کنید</translation>
 <translation id="9189468832660648522">‫<ph name="MEMBER_FIRST_NAME" /> این زبانه را تغییر داد</translation>
 <translation id="9189789270972826888">اگر جزئیات کارت کامل نشده است، روی جزئیات کارت در پایین کلیک کنید تا کپی و جای‌گذاری شود. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">موضوع‌های قدیمی‌تر از ۴ هفته به‌طور خودکار حذف می‌شوند</translation>

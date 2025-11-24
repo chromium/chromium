@@ -7604,7 +7604,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6248988683584659830">설정 검색</translation>
 <translation id="6249200942125593849">접근성 관리</translation>
 <translation id="6250186368828697007">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
-<translation id="6250887692313997958">분할 보기에 추가할 탭을 선택하세요</translation>
+<translation id="6250887692313997958">분할 뷰에 추가할 탭을 선택하세요</translation>
 <translation id="6251870443722440887">GDI 핸들</translation>
 <translation id="6251924700383757765">개인정보처리방침</translation>
 <translation id="625369703868467034">네트워크 상태</translation>
@@ -10465,7 +10465,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> 삭제</translation>
 <translation id="8230446983261649357">사이트의 이미지 표시 허용 안함</translation>
-<translation id="8231438895476693774">새 분할 보기에 탭 추가</translation>
+<translation id="8231438895476693774">새 분할 뷰에 탭 추가</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> 데이터 삭제</translation>
 <translation id="8233028084277069927">지금 열기</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
@@ -11944,7 +11944,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="930991362911221750"><ph name="APP_NAME" />에서 이 탭을 보도록 허용하시겠습니까?</translation>
 <translation id="931273044114601262">이 사이트에서 허용됨</translation>
 <translation id="93140074055951850">Android 앱이 중지되었습니다</translation>
-<translation id="932327136139879170">홈</translation>
+<translation id="932327136139879170">집</translation>
 <translation id="932508678520956232">인쇄를 시작할 수 없습니다.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{파일이 너무 커서 보안 확인을 할 수 없습니다. 최대 50MB 크기의 파일을 업로드할 수 있습니다.}other{일부 파일이 너무 커서 보안 확인을 할 수 없습니다. 최대 50MB 크기의 파일을 업로드할 수 있습니다.}}</translation>
 <translation id="93343527085570547">법적인 이유로 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말 페이지<ph name="END_LINK1" />로 이동하세요. 일부 계정 및 시스템 정보가 Google에 전송될 수 있습니다. Google에서는 제공해 주신 정보를 <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />에 따라 사용하여 기술적인 문제를 해결하고 서비스를 개선합니다.</translation>

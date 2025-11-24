@@ -1236,7 +1236,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1828901632669367785">Printo duke përdorur dialogun e sistemit...</translation>
 <translation id="1829129547161959350">Pinguini</translation>
 <translation id="1829192082282182671">&amp;Zvogëlo</translation>
-<translation id="1830550083491357902">I pa identifikuar</translation>
+<translation id="1830550083491357902">I paidentifikuar</translation>
 <translation id="1831848493690504725">Nuk mund të lidhemi me Google nëpërmjet rrjetit të lidhur. Provo të zgjedhësh një rrjet tjetër ose të kontrollosh cilësimet e rrjetit ose cilësimet e proxy-it (nëse po përdor një proxy).</translation>
 <translation id="1832414451155700364">Zgjidh nëse do të sinkronizosh historikun dhe skedat</translation>
 <translation id="1832459821645506983">Po, jam dakord</translation>
@@ -3196,7 +3196,9 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ky aplikacion është bllokuar}other{Disa aplikacione janë bllokuar}}</translation>
 <translation id="3185454065699440434">Lejo shtesat në <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Matja e reklamave</translation>
-<translation id="3187556136478864255">Mund ta shikosh pajisjen e transmetimit në <ph name="BEGIN_LINK" />aplikacionin Google Home<ph name="END_LINK" />?</translation>
+<translation id="3187556136478864255">Mund ta shikosh pajisjen e transmetimit në
+    <ph name="BEGIN_LINK" />
+    aplikacionin Google Home<ph name="END_LINK" />?</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3188465121994729530">Mesatarja e lëvizshme</translation>
 <translation id="3189187154924005138">Kursori i madh</translation>
@@ -3790,7 +3792,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3608460311600621471">Jep një arsye për printimin e këtyre të dhënave:</translation>
 <translation id="3608730769702025110">Hapi 3 nga 4: Rishiko informacionet e identifikueshme personalisht</translation>
 <translation id="3609277884604412258">Kërkimi i shpejtë</translation>
-<translation id="3610241585790874201">Nuk lejohet të ruajnë të dhëna në pajisjen tënde</translation>
+<translation id="3610241585790874201">Nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="3610369246614755442">Ventilatori i stacionit ka nevojë për shërbim</translation>
 <translation id="3610961622607302617">Ndrysho fjalëkalimin për <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Shko te faqja e abonimit</translation>
@@ -9873,7 +9875,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7849264908733290972">Hape &amp;imazhin në një skedë të re</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
 <translation id="7850320739366109486">Mos shqetëso</translation>
-<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor, sa memorie përdor zakonisht dhe të dhënat e diagnostike dhe të përdorimit të aplikacionit për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android.<ph name="END_PARAGRAPH1" />
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor, sa memorie përdor zakonisht dhe të dhënat diagnostike dhe të përdorimit të aplikacionit për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes sate me ChromeOS. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktiv për "Llogarinë tënde të Google", të dhënat e tua të Android mund të ruhen në atë llogari. Mund t'i shikosh të dhënat, t'i fshish ato dhe të ndryshosh cilësimet e tua të llogarisë tek account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851457902707056880">Identifikimi është i kufizuar vetëm për llogarinë e zotëruesit. Rindize dhe identifikohu me llogarinë e zotëruesit. Kompjuteri do të rindizet për 30 sekonda.</translation>

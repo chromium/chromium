@@ -338,7 +338,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4828579605166583682">Google Chrome po përpiqet të zëvendësojë fjalëkalimet ekzistuese. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="4842397268809523050">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
-<translation id="4851866215237571846"><ph name="EXISTING_USER" /> është identifikuar tashmë.  Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4851866215237571846"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>
 <translation id="4873783916118289636">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chrome</translation>
 <translation id="4885446229353981848">Shfaq gjithmonë shkurtoren e "Lentes së Google"</translation>
@@ -709,7 +709,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8834965163890861871">Google Chrome po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8843516219908676469">Chrome i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome rekomandon që ta heqësh atë}other{Chrome rekomandon që t'i heqësh ato}}</translation>
-<translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
+<translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si "Administrator".</translation>
 <translation id="8865415417596392024">Të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="8883862939660515976">Pyet "Lenten e Google" për këtë imazh</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>

@@ -240,7 +240,7 @@ Things to consider:
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6301717043141881464">To easily get your saved passwords in your other apps, choose Chromium for Autofill</translation>
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>
-<translation id="6325378625795868881">Use Chrome anytime that you tap links in messages and other apps.</translation>
+<translation id="6325378625795868881">Use Chrome whenever you tap links in messages and other apps.</translation>
 <translation id="6387994184698195448">Keep up with helpful Chromium tips and more.</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6433172051771630690">Tips on getting the most out of Chromium.</translation>
@@ -351,7 +351,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="9031260906956926157">Some of your Chromium data hasn't been saved in your Google Account yet.
 Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
-<translation id="9050790730841755540">Use Chrome anytime that you tap links in other apps.</translation>
+<translation id="9050790730841755540">Use Chrome whenever you tap links in other apps.</translation>
 <translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9105645282262300612">Chromium tip: Search what you see</translation>

@@ -201,7 +201,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1129348283834595293">Viễn tưởng công nghệ cao</translation>
 <translation id="1129420403709586868">Xem ảnh và nội dung nghe nhìn trên điện thoại</translation>
 <translation id="1129850422003387628">Quản lý ứng dụng</translation>
-<translation id="1130116586186908674">Tạo chế độ xem chia đôi màn hình</translation>
+<translation id="1130116586186908674">Tạo chế độ xem màn hình chia đôi</translation>
 <translation id="1130430615924359526">{0,plural, =1{Đóng cửa sổ ẩn danh}other{Đóng cửa sổ ẩn danh (# cửa sổ)}}</translation>
 <translation id="113050636487300043">Chọn một tên và bảng màu để phân biệt giữa các hồ sơ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Thuộc nhóm <ph name="GROUP_NAME" /></translation>
@@ -7603,7 +7603,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
 <translation id="6249200942125593849">Quản lý chế độ a11y</translation>
 <translation id="6250186368828697007">Khi bạn chia sẻ màn hình, thông tin chi tiết sẽ bị ẩn</translation>
-<translation id="6250887692313997958">Chọn một thẻ để thêm vào chế độ xem chia đôi màn hình</translation>
+<translation id="6250887692313997958">Chọn một thẻ để thêm vào chế độ màn hình chia đôi</translation>
 <translation id="6251870443722440887">Định danh GDI</translation>
 <translation id="6251924700383757765">Chính sách bảo mật</translation>
 <translation id="625369703868467034">Tình trạng mạng</translation>
@@ -10466,7 +10466,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8230326817897075865">Xoá <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Không cho phép trang web hiển thị hình ảnh</translation>
-<translation id="8231438895476693774">Thêm thẻ vào chế độ xem phân tách mới</translation>
+<translation id="8231438895476693774">Thêm thẻ vào chế độ màn hình chia đôi mới</translation>
 <translation id="823226567613548870">xoá dữ liệu của bạn trong <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Mở ngay</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>
@@ -11945,7 +11945,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="930991362911221750">Cho phép <ph name="APP_NAME" /> xem thẻ này?</translation>
 <translation id="931273044114601262">Được phép trên trang web này</translation>
 <translation id="93140074055951850">Các ứng dụng Android đã dừng hoạt động</translation>
-<translation id="932327136139879170">Trang chủ</translation>
+<translation id="932327136139879170">Nhà riêng</translation>
 <translation id="932508678520956232">Không thể chạy in.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Hệ thống không thể kiểm tra bảo mật do tệp này có dung lượng quá lớn. Bạn có thể tải lên tệp có dung lượng tối đa là 50 MB.}other{Hệ thống không thể kiểm tra bảo mật do một số tệp trong số này có dung lượng quá lớn. Bạn có thể tải lên tệp có dung lượng tối đa là 50 MB.}}</translation>
 <translation id="93343527085570547">Nếu bạn muốn yêu cầu thay đổi nội dung vì lý do pháp lý, hãy truy cập <ph name="BEGIN_LINK1" />trang Trợ giúp pháp lý<ph name="END_LINK1" />. Một số thông tin về tài khoản và hệ thống có thể được gửi đến Google. Chúng tôi sẽ dùng thông tin bạn cung cấp để xử lý các sự cố kỹ thuật cũng như cải thiện dịch vụ theo <ph name="BEGIN_LINK2" />Chính sách quyền riêng tư<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ<ph name="END_LINK3" /> của chúng tôi.</translation>

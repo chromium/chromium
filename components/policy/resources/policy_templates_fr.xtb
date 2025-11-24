@@ -4456,11 +4456,11 @@ Si cette règle n'est pas configurée, la fréquence par défaut (1 jour) est a
 <translation id="4122473079291425973">Fiches affichées sur la page Nouvel onglet si du contenu est disponible, avec toutefois la possibilité pour l'utilisateur de modifier ce paramètre</translation>
 <translation id="4122565688998751716">Cette règle est obsolète (veuillez utiliser la règle <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> à la place).
 
-Elle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications natives sur Linux.
+Elle détermine si <ph name="PRODUCT_NAME" /> utilisera les notifications natives sur Linux.
 
-Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications natives.
+Si elle est définie sur True ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilisera les notifications natives.
 
-Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications natives. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
+Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les notifications natives. Le Centre des messages de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
 <translation id="412697421478384751">Autoriser les utilisateurs à définir des codes ayant un niveau de sécurité faible pour le code de l'écran de verrouillage</translation>
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
@@ -6072,11 +6072,11 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="5205352023880027050">Ne pas activer la fonctionnalité EphemeralNetworkPolicies.</translation>
 <translation id="5205385499831960279">Appliquer des restrictions aux requêtes adressées à des points de terminaison du réseau local</translation>
 <translation id="5206454085187851382">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
-<translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications système sur Linux.
+<translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilisera les notifications système sur Linux.
 
-Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications système.
+Si elle est définie sur True ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilisera les notifications système.
 
-Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications système. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
+Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les notifications système. Le Centre des messages de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
 <translation id="5207700504551161524">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de connexion.
 
 Chaque élément doit correspondre à une URL faisant référence à un fichier image. L'image doit être au format JPEG et elle ne doit pas dépasser 8 Mo. Les URL non valides et images non compatibles seront ignorées. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et les conservera dans un cache local.

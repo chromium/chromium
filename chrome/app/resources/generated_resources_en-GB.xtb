@@ -3104,7 +3104,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3104948640446684649">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Last unsuccessful update</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
-<translation id="3105820656234755131">Password Updated</translation>
+<translation id="3105820656234755131">Password updated</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
 <translation id="3108931485517391283">Can't receive</translation>
@@ -4420,7 +4420,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3988124842897276887">This tab is connected to a USB device</translation>
 <translation id="3988996860813292272">Select time zone</translation>
-<translation id="3989635538409502728">Sign Out</translation>
+<translation id="3989635538409502728">Sign out</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near this device to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google uses this information collected from this device to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs. This information is not used to identify any individual.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in this device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine this device's location, which may impact the availability and accuracy of locations for Android apps and services such as Google Maps.<ph name="END_PARAGRAPH3" />
@@ -6171,7 +6171,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
     <ph name="BR" />
     <ph name="BR" />
     Visible as <ph name="DEVICE_TYPE" />…</translation>
-<translation id="5238301240406177137">Save in Account</translation>
+<translation id="5238301240406177137">Save in account</translation>
 <translation id="523862956770478816">Site permissions</translation>
 <translation id="5240247138804326767">Arrange split view</translation>
 <translation id="5240931875940563122">Sign in with Android phone</translation>

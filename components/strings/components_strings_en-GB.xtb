@@ -2565,7 +2565,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5180662470511508940">Keyboard lock not allowed</translation>
 <translation id="5187079891181379721">Corporate Events</translation>
 <translation id="5190072300954988691">Camera and microphone not allowed</translation>
-<translation id="5190835502935405962">Bookmarks Bar</translation>
+<translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="5200063972779787617">Save address in account</translation>
@@ -2590,7 +2590,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5233071178832586743">Managed profile, browser and some device information is accessible to your administrator. They can see information such as the following:</translation>
 <translation id="5234764350956374838">Dismiss</translation>
-<translation id="5238301240406177137">Save in Account</translation>
+<translation id="5238301240406177137">Save in account</translation>
 <translation id="5239119062986868403">Typical price</translation>
 <translation id="5239623327352565343">Location allowed</translation>
 <translation id="5241048084654737238">Confirming that card info can't be saved</translation>
@@ -4772,7 +4772,7 @@ Additional details:
 <translation id="8833007469711500369">Washers and Dryers</translation>
 <translation id="8834962751196791179">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV sci-fi and fantasy shows</translation>
-<translation id="883848425547221593">Other Bookmarks</translation>
+<translation id="883848425547221593">Other bookmarks</translation>
 <translation id="8842351563145134519">Payment methods available to be filled on touch opened at half height.</translation>
 <translation id="884264119367021077">Delivery address</translation>
 <translation id="8849032795302265570">Easily manage how your employees browse the web</translation>

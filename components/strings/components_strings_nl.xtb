@@ -4854,7 +4854,7 @@ Aanvullende informatie:
 <translation id="9004367719664099443">VR-sessie is bezig</translation>
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
 <translation id="9008201768610948239">Negeren</translation>
-<translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van één site}other{Van # sites}}</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van 1 site}other{Van # sites}}</translation>
 <translation id="9014705027639070815">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, bijvoorbeeld informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="9018120810758822233">Geef je beveiligingscode voor <ph name="CREDIT_CARD" /> op</translation>
 <translation id="901834265349196618">e-mail</translation>

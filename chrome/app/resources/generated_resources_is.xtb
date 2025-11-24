@@ -2779,7 +2779,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2873744479411987024">Með hærri endurnýjunartíðni færðu mýkri og skýrari mynd. Hærri endurnýjunartíðni getur haft áhrif á rafhlöðuendingu.</translation>
 <translation id="2873956234023215251">Ekki tókst að setja forrit upp. Eitthvað fór úrskeiðis.</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
-<translation id="2875698561019555027">(Chrome villusíður)</translation>
+<translation id="2875698561019555027">(Chrome-villusíður)</translation>
 <translation id="2876336351874743617">Fingur 2</translation>
 <translation id="2876369937070532032">Sendir vefslóð sumra síðna sem þú skoðar til Google, þegar öryggi þitt er í hættu</translation>
 <translation id="2876484123356705658">Velja tímabil</translation>
@@ -3357,7 +3357,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3295241308788901889">Sendir út flipa</translation>
 <translation id="3297105622164376095">Heimilt að sýna tilkynningar um innskráningu þriðja aðila</translation>
 <translation id="3297462367919448805">Þetta tæki fær ekki sjálfvirkar hugbúnaðaruppfærslur lengur en þú getur kveikt á framlengdum öryggisuppfærslum.</translation>
-<translation id="3297536526040732495">Tengir þessi gögn tímabundið við Google reikninginn þinn þegar þú ert skráð(ur) inn til að auka öryggi þitt í Google forritum</translation>
+<translation id="3297536526040732495">Tengir þessi gögn tímabundið við Google-reikninginn þinn þegar þú ert skráð(ur) inn til að auka öryggi þitt í Google-forritum</translation>
 <translation id="329838636886466101">Gera við</translation>
 <translation id="3298789223962368867">Ógild vefslóð slegin inn</translation>
 <translation id="32991397311664836">Tæki:</translation>
@@ -5047,7 +5047,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="443196770280837407">Opna Gemini með flýtilykli</translation>
 <translation id="4432621511648257259">Rangt aðgangsorð</translation>
 <translation id="4434611816075088065">Það er ekkert annað sem krefst athygli þinnar núna</translation>
-<translation id="443503224864902151">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo hægt sé að eyða samstilltum gögnum.</translation>
+<translation id="443503224864902151">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo að hægt sé að eyða samstilltum gögnum.</translation>
 <translation id="4437879751057074691">Bjóðast til að vista aðgangsorð og aðgangslykla</translation>
 <translation id="4437947179446780764">Bættu við þjónustuveitanda sérsniðins DNS</translation>
 <translation id="4438043733494739848">Gegnsætt</translation>
@@ -9300,7 +9300,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7441830548568730290">Aðrir notendur</translation>
 <translation id="744341768939279100">Búa til nýjan prófíl</translation>
 <translation id="744366959743242014">Hleður gögnum. Þetta gæti tekið nokkrar sekúndur.</translation>
-<translation id="7443806024147773267">Hafðu aðgang að aðgangsorðunum þínum hvenær sem þú ert skráð(ur) inn á Google reikninginn þinn</translation>
+<translation id="7443806024147773267">Hafðu aðgang að aðgangsorðunum þínum hvenær sem þú ert skráð(ur) inn á Google-reikninginn þinn</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Aftur verður lokað á fótspor í dag}=1{Aftur verður lokað á fótspor á morgun}one{Aftur verður lokað á fótspor eftir # dag}other{Aftur verður lokað á fótspor eftir # daga}}</translation>
 <translation id="7444983668544353857">Slökkva á <ph name="NETWORKDEVICE" /></translation>
 <translation id="7446716846072322308">Þetta verður til þess að <ph name="TOTAL_USAGE" /> af gögnum sem <ph name="SITE_NAME" /> geymir og tengdum vefsvæðum verður eytt</translation>
@@ -10105,7 +10105,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7984068253310542383">Spegla <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985528042147759910">Veita ytri aukabúnaði aðgang að minninu?</translation>
 <translation id="7986295104073916105">Lesa og breyta stillingum vistaðra aðgangsorða</translation>
-<translation id="7986764869610100215">Við þetta virkjast stöðug deiling USB-tækja með gestum. Þegar tæki hefur verið deilt með gesti mun það sjálfkrafa reyna að tengjast þeim gesti. Ef tækið er aftengt handvirkt slokknar á þessari tilteknu stöðugu deilingu og ef slökkt er á eiginleikanum alfarið verða allar stöðugar deilingar endurstilltar. Ertu viss?</translation>
+<translation id="7986764869610100215">Við þetta virkjast stöðug deiling USB-tækja með gestum. Þegar tæki hefur verið deilt með gesti mun það sjálfkrafa reyna að tengjast þeim gesti. Ef tækið er aftengt handvirkt slökknar á þessari tilteknu stöðugu deilingu og ef slökkt er á eiginleikanum alfarið verða allar stöðugar deilingar endurstilltar. Ertu viss?</translation>
 <translation id="798779949890829624">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7987814697832569482">Tengjast alltaf í gegnum þetta VPN-net</translation>
 <translation id="7988355189918024273">Virkja aðgengiseiginleika</translation>

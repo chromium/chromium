@@ -531,7 +531,7 @@
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3347558044552027859">مدرن</translation>
-<translation id="3359218928534347896">تغییر وضعیت بی‌صدا بودن میکروفون</translation>
+<translation id="3359218928534347896">تغییر وضعیت صامت بودن میکروفون</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">سوشی</translation>
 <translation id="3368922792935385530">متصل</translation>
@@ -1076,7 +1076,7 @@
 <translation id="5763838252932650682">درحال بازراه‌اندازی و به‌روزرسانی <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">افزایش روشنایی نمایشگر</translation>
 <translation id="5779818640587041940">روشن ماندن صفحه‌نمایش درحین ضبط</translation>
-<translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="57838592816432529">صامت کردن</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
 <translation id="5790391387506209808">لاجورد</translation>
 <translation id="5816802250591013230">میان‌بری اختصاص داده نشده است</translation>
@@ -1602,7 +1602,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">فعال کردن حالت رنگ خودکار</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
-<translation id="8045012663542226664">بی‌صدا کردن میکروفون</translation>
+<translation id="8045012663542226664">صامت کردن میکروفون</translation>
 <translation id="8054112564438735763">بژ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> روی پس‌زمینه <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
@@ -1728,7 +1728,7 @@
 <translation id="86356131183441916">بنفش روشن</translation>
 <translation id="8647595191512746911">ترانویسی</translation>
 <translation id="8650852232143958317">‏فایل‌های Gmail و Google Drive خود را همراهتان ببرید</translation>
-<translation id="8651481478098336970">بی‌صدا کردن</translation>
+<translation id="8651481478098336970">صامت کردن</translation>
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655828773034788261">نشانی وب هم‌رسانی:</translation>
 <translation id="8660881923941176839">پوند</translation>
