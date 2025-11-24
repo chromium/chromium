@@ -1432,7 +1432,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChangedEncrypted"
-    enum="TrackedPreference" expires_after="2025-12-26">
+    enum="TrackedPreference" expires_after="2026-01-20">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1443,7 +1443,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChangedViaHmacFallback"
-    enum="TrackedPreference" expires_after="2025-12-26">
+    enum="TrackedPreference" expires_after="2026-01-20">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1485,7 +1485,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceClearedViaHmacFallback"
-    enum="TrackedPreference" expires_after="2025-12-26">
+    enum="TrackedPreference" expires_after="2026-01-20">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1676,7 +1676,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedResetViaHmacFallback"
-    enum="TrackedPreference" expires_after="2025-12-26">
+    enum="TrackedPreference" expires_after="2026-01-20">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
