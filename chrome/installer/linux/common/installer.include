@@ -289,6 +289,23 @@ stage_install_common() {
       icon_suffix="_canary"
     fi
   fi
+
+  # For security reasons, a custom URI scheme handler is only registered for
+  # Google Chrome in stable and extended stable channels, and for all Chromium
+  # builds. For other Google Chrome channels (beta, dev, canary), the handler
+  # is omitted by setting URI_SCHEME to an empty string. The full handler string
+  # with a trailing semicolon is included here for direct use in the MimeType
+  # field of the .desktop file.
+  local URI_SCHEME=""
+  if [ "$BRANDING" = "google_chrome" ]; then
+    # Register for stable and extended stable channels (i.e., not beta, unstable, canary).
+    if [[ "$CHANNEL" != "beta" && "$CHANNEL" != "unstable" && "$CHANNEL" != "canary" ]]; then
+      URI_SCHEME="x-scheme-handler/google-chrome;"
+    fi
+  else
+    # Register for all Chromium builds.
+    URI_SCHEME="x-scheme-handler/chromium;"
+  fi
   local icon_sizes="16 24 32 48 64 128 256"
   LOGO_RESOURCES_PNG=""
   for size in ${icon_sizes}; do

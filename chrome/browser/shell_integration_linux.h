@@ -93,6 +93,7 @@ std::string GetDesktopFileContentsForCommand(
     const std::string& categories,
     const std::string& mime_type,
     bool no_display,
+    std::string_view extra_mime_types,
     std::set<web_app::DesktopActionInfo> action_info);
 
 // Returns contents for a .desktop file that launches chrome at the given url
@@ -122,6 +123,9 @@ base::FilePath GetMimeTypesRegistrationFilename(
 // passed to `xdg-mime` to register one or more custom MIME types in Linux.
 std::string GetMimeTypesRegistrationFileContents(
     const apps::FileHandlers& file_handlers);
+
+// Returns the mime type handler for direct launch.
+std::string GetDirectLaunchMimeTypeHandler();
 
 // Windows that correspond to web apps need to have a deterministic (and
 // different) WMClass than normal chrome windows so the window manager groups

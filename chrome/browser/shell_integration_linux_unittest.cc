@@ -280,7 +280,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
     const char* const categories;
     const char* const mime_type;
     bool nodisplay;
-    const char* const expected_output;
+    std::string expected_output;
   };
   const auto test_cases = std::to_array<TestCases>({
       // Real-world case.
@@ -386,7 +386,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Terminal=false\n"
        "Type=Application\n"
        "Name=Paint\n"
-       "MimeType=image/png;image/jpg\n"
+       "MimeType=image/png;image/jpg;" +
+           shell_integration_linux::GetDirectLaunchMimeTypeHandler() + "\n"
        "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %U\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
@@ -406,6 +407,23 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"},
+
+      // Test setting mime type with static scheme handlers.
+      {"https://test.app", "Test App", "chrome-https__test.app", "App",
+       "image/png;image/jpeg", false,
+
+       "#!/usr/bin/env xdg-open\n"
+       "[Desktop Entry]\n"
+       "Version=1.0\n"
+       "Terminal=false\n"
+       "Type=Application\n"
+       "Name=Test App\n"
+       "MimeType=image/png;image/jpeg;" +
+           shell_integration_linux::GetDirectLaunchMimeTypeHandler() + "\n"
+       "Exec=/opt/google/chrome/google-chrome --app=https://test.app/ %U\n"
+       "Icon=chrome-https__test.app\n"
+       "Categories=App\n"
+       "StartupWMClass=test.app\n"},
   });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
