@@ -221,6 +221,15 @@ public class UrlBar extends AutocompleteEditText {
         setHorizontalFadingEdgeEnabled(true);
         setVerticalScrollBarEnabled(false);
         setElegantTextHeight(true);
+        if (OmniboxFeatures.sUrlBarWithoutLigatures.isEnabled()) {
+            // Explanation of Settings applied below:
+            // - liga=0 - disable conventional, standard ligatures (fi -> ﬀ ,fi -> ﬁ, ...)
+            // - clig=0 - disable contextual ligatures (st->ﬆ, ft-> ﬅ, ...)
+            // - calt=0 - disable contextual alternates (th, oo, tt, ...) - glyphs that may
+            //            look differently at the beginning / middle / end of a word
+            // - dlig=0 - disable decorative ligatures (sp, Th, ...)
+            setFontFeatureSettings("liga=0, clig=0, calt=0, dlig=0");
+        }
         // Use a global draw instead of View#onDraw in case this View is not visible.
         FirstDrawDetector.waitForFirstDraw(
                 this,

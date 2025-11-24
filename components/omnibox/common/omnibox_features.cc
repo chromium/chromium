@@ -380,6 +380,9 @@ BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
 // factors.
 BASE_FEATURE(kOmniboxImprovementForLFF, DISABLED);
 
+// If enabled, disables ligatures in the URL bar on Android.
+BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -388,6 +391,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxTouchDownTriggerForPrefetch,
       &kOmniboxAsyncViewInflation,
       &kRichAutocompletion,
+      &kUrlBarWithoutLigatures,
       &kUseFusedLocationProvider,
       &kJumpStartOmnibox,
       &kAndroidHubSearchTabGroups,

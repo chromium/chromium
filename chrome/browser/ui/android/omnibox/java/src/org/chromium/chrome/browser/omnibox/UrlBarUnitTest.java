@@ -66,6 +66,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
@@ -1087,5 +1088,17 @@ public class UrlBarUnitTest {
         mUrlBar.onTextChanged("text 2", 0, 0, 6);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(callback, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES)
+    public void testUrlBarWithoutLigaturesEnabled() {
+        assertEquals("liga=0, clig=0, calt=0, dlig=0", mUrlBar.getFontFeatureSettings());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES)
+    public void testUrlBarWithoutLigaturesDisabled() {
+        assertNull(mUrlBar.getFontFeatureSettings());
     }
 }

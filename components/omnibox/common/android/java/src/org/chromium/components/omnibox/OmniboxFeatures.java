@@ -106,6 +106,9 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sUrlBarWithoutLigatures =
+            newFlag(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES, FeatureState.ENABLED_IN_PROD);
+
     /**
      * Whether GeolocationHeader should use {@link
      * com.google.android.gms.location.FusedLocationProviderClient} to determine the location sent
