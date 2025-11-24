@@ -154,6 +154,7 @@ source_set("unit_tests") {
     sources += [
       "win/media_foundation_renderer_integration_test.cc",
       "win/media_foundation_renderer_unittest.cc",
+      "win/media_foundation_stream_wrapper_unittest.cc",
     ]
     deps += [ "//media/test:pipeline_integration_test_base" ]
     libs = [

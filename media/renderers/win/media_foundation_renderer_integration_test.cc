@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/time/time.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_util.h"
@@ -122,6 +124,54 @@ TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback_MediaSource) {
   ASSERT_TRUE(WaitUntilOnEnded());
   source.Shutdown();
   Stop();
+}
+
+TEST_F(MediaFoundationRendererIntegrationTest, SeekWhilePaused) {
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "SeekWhilePaused test requires VP9 decoder.";
+  }
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+
+  base::TimeDelta duration(pipeline_->GetMediaDuration());
+  base::TimeDelta start_seek_time(duration / 4);
+  base::TimeDelta seek_time(duration * 3 / 4);
+
+  Play();
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(start_seek_time));
+  Pause();
+  ASSERT_TRUE(Seek(seek_time));
+  EXPECT_EQ(seek_time, pipeline_->GetMediaTime());
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+
+  // Make sure seeking after reaching the end works as expected.
+  Pause();
+  ASSERT_TRUE(Seek(seek_time));
+  EXPECT_EQ(seek_time, pipeline_->GetMediaTime());
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
+TEST_F(MediaFoundationRendererIntegrationTest, SeekWhilePlaying) {
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "SeekWhilePlaying test requires VP9 decoder.";
+  }
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+
+  base::TimeDelta duration(pipeline_->GetMediaDuration());
+  base::TimeDelta start_seek_time(duration / 4);
+  base::TimeDelta seek_time(duration * 3 / 4);
+
+  Play();
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(start_seek_time));
+  ASSERT_TRUE(Seek(seek_time));
+  EXPECT_GE(pipeline_->GetMediaTime(), seek_time);
+  ASSERT_TRUE(WaitUntilOnEnded());
+
+  // Make sure seeking after reaching the end works as expected.
+  ASSERT_TRUE(Seek(seek_time));
+  EXPECT_GE(pipeline_->GetMediaTime(), seek_time);
+  ASSERT_TRUE(WaitUntilOnEnded());
 }
 
 TEST_F(MediaFoundationRendererIntegrationTest,

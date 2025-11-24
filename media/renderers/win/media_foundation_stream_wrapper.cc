@@ -135,6 +135,13 @@ void MediaFoundationStreamWrapper::SetSelected(bool selected) {
 
   base::AutoLock auto_lock(lock_);
   selected_ = selected;
+
+  // If the stream isn't selected, reset the buffering_post_flush_samples_ state
+  // because no samples should be received until the stream is selected and
+  // starts.
+  if (!selected) {
+    buffering_post_flush_samples_ = false;
+  }
 }
 
 bool MediaFoundationStreamWrapper::IsSelected() {
@@ -164,17 +171,23 @@ void MediaFoundationStreamWrapper::SetEnabled(bool enabled) {
   ProcessRequestsIfPossible();
 }
 
-void MediaFoundationStreamWrapper::SetFlushed(bool flushed) {
-  DVLOG_FUNC(2) << "flushed=" << flushed;
+void MediaFoundationStreamWrapper::Flush() {
+  DVLOG_FUNC(2);
 
   base::AutoLock auto_lock(lock_);
-  flushed_ = flushed;
-  if (flushed_) {
-    DVLOG_FUNC(2) << "flush buffer_queue_";
-    buffer_queue_.clear();
-    while (!post_flush_buffers_.empty()) {
-      post_flush_buffers_.pop();
-    }
+
+  // buffering_post_flush_samples_ state is only relevant when the stream is
+  // selected. No samples should be received until the stream is selected and
+  // starts.
+  if (selected_) {
+    DVLOG_FUNC(2) << "buffering_post_flush_samples_=true";
+    buffering_post_flush_samples_ = true;
+  }
+
+  DVLOG_FUNC(2) << "flush buffer_queue_";
+  buffer_queue_.clear();
+  while (!post_flush_buffers_.empty()) {
+    post_flush_buffers_.pop();
   }
 }
 
@@ -191,7 +204,7 @@ void MediaFoundationStreamWrapper::SetLastStartPosition(
   // time. Only VT_I8 will be used based on start of presentation:
   // https://learn.microsoft.com/en-us/windows/win32/api/mfidl/nf-mfidl-imfmediasession-start
   if (start_position->vt == VT_I8) {
-    base::AutoLock auto_lock(lock_);
+    lock_.AssertAcquired();
     last_start_time_ = start_position->hVal.QuadPart;
   }
 }
@@ -199,10 +212,13 @@ void MediaFoundationStreamWrapper::SetLastStartPosition(
 HRESULT MediaFoundationStreamWrapper::QueueStartedEvent(
     const PROPVARIANT* start_position) {
   DVLOG_FUNC(2);
+  base::AutoLock auto_lock(lock_);
 
   // Save the new start position in the stream.
   SetLastStartPosition(start_position);
 
+  DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
+  buffering_post_flush_samples_ = false;
   state_ = State::kStarted;
   RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
       MEStreamStarted, GUID_NULL, S_OK, start_position));
@@ -212,10 +228,13 @@ HRESULT MediaFoundationStreamWrapper::QueueStartedEvent(
 HRESULT MediaFoundationStreamWrapper::QueueSeekedEvent(
     const PROPVARIANT* start_position) {
   DVLOG_FUNC(2);
+  base::AutoLock auto_lock(lock_);
 
   // Save the new start position in the stream.
   SetLastStartPosition(start_position);
 
+  DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
+  buffering_post_flush_samples_ = false;
   state_ = State::kStarted;
   RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
       MEStreamSeeked, GUID_NULL, S_OK, start_position));
@@ -379,7 +398,7 @@ bool MediaFoundationStreamWrapper::ServicePostFlushSampleRequest() {
   HRESULT hr = S_OK;
 
   base::AutoLock auto_lock(lock_);
-  if (flushed_ && state_ == State::kStarted &&
+  if (buffering_post_flush_samples_ && state_ == State::kStarted &&
       last_start_time_ != kInvalidTime) {
     // Video may freeze during consecutive backward seek since MF does not
     // cancel previous pending seek, while Chromium's source starts new seek
@@ -407,7 +426,7 @@ bool MediaFoundationStreamWrapper::ServicePostFlushSampleRequest() {
     }
     return false;
 
-  } else if ((flushed_ && state_ != State::kStarted) ||
+  } else if ((buffering_post_flush_samples_ && state_ != State::kStarted) ||
              post_flush_buffers_.empty()) {
     return false;
   }
@@ -461,7 +480,7 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
 
       // Push |buffer| to process later if needed. Otherwise, process it
       // immediately.
-      if (flushed_ || !post_flush_buffers_.empty()) {
+      if (buffering_post_flush_samples_ || !post_flush_buffers_.empty()) {
         DVLOG_FUNC(3) << "push buffer.";
         post_flush_buffers_.push(buffer);
       } else {
