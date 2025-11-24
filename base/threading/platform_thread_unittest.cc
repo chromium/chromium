@@ -288,8 +288,7 @@ class ThreadTypeTestThread : public FunctionTestThread {
 
 class ThreadPriorityTestThread : public FunctionTestThread {
  public:
-  ThreadPriorityTestThread(ThreadType thread_type,
-                           ThreadPriorityForTest priority)
+  ThreadPriorityTestThread(ThreadType thread_type, ThreadType priority)
       : thread_type_(thread_type), priority(priority) {}
 
  private:
@@ -303,12 +302,13 @@ class ThreadPriorityTestThread : public FunctionTestThread {
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), thread_type_);
     if (PlatformThread::CanChangeThreadType(ThreadType::kDefault,
                                             thread_type_)) {
-      EXPECT_EQ(PlatformThread::GetCurrentThreadPriorityForTest(), priority);
+      EXPECT_EQ(PlatformThread::GetCurrentEffectiveThreadTypeForTest(),
+                priority);
     }
   }
 
   const ThreadType thread_type_;
-  const ThreadPriorityForTest priority;
+  const ThreadType priority;
 };
 
 void TestSetCurrentThreadType() {
@@ -333,7 +333,7 @@ void TestSetCurrentThreadType() {
 }
 
 void TestPriorityResultingFromThreadType(ThreadType thread_type,
-                                         ThreadPriorityForTest priority) {
+                                         ThreadType priority) {
   ThreadPriorityTestThread thread(thread_type, priority);
   PlatformThreadHandle handle;
 
@@ -423,26 +423,26 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 
 TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kBackground,
-                                      ThreadPriorityForTest::kBackground);
+                                      ThreadType::kBackground);
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
-                                      ThreadPriorityForTest::kUtility);
+                                      ThreadType::kUtility);
 
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
-                                      ThreadPriorityForTest::kNormal);
+                                      ThreadType::kDefault);
   TestPriorityResultingFromThreadType(ThreadType::kDisplayCritical,
-                                      ThreadPriorityForTest::kDisplay);
+                                      ThreadType::kDisplayCritical);
   TestPriorityResultingFromThreadType(ThreadType::kRealtimeAudio,
-                                      ThreadPriorityForTest::kRealtimeAudio);
+                                      ThreadType::kRealtimeAudio);
 #if BUILDFLAG(IS_WIN)
   // Currently only on Windows, kInteractive maps to a higher priority than
   // kDisplayCritical.
   TestPriorityResultingFromThreadType(ThreadType::kInteractive,
-                                      ThreadPriorityForTest::kInteractive);
+                                      ThreadType::kInteractive);
 #else
   // On other platforms, kInteractive maps to the same priority as
   // kDisplayCritical.
   TestPriorityResultingFromThreadType(ThreadType::kInteractive,
-                                      ThreadPriorityForTest::kDisplay);
+                                      ThreadType::kDisplayCritical);
 #endif
 }
 

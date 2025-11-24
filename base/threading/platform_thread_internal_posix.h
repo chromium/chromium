@@ -15,16 +15,16 @@ namespace base {
 
 namespace internal {
 
-struct ThreadPriorityToNiceValuePairForTest {
-  ThreadPriorityForTest priority;
+struct ThreadTypeToNiceValuePairForTest {
+  ThreadType priority;
   int nice_value;
 };
 
 // The elements must be listed in the order of decreasing priority (highest
 // priority first), that is, in the order of increasing nice values (lowest nice
 // value first).
-extern const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[7];
+extern const ThreadTypeToNiceValuePairForTest
+    kThreadTypeToNiceValueMapForTest[7];
 
 // Returns the nice value matching |priority| based on the platform-specific
 // implementation of kThreadTypeToNiceValueMap.
@@ -43,11 +43,10 @@ BASE_EXPORT void InvalidateTidCache();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Returns the ThreadPrioirtyForTest matching |nice_value| based on the
-// platform-specific implementation of kThreadPriorityToNiceValueMapForTest.
-ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value);
+// platform-specific implementation of kThreadTypeToNiceValueMapForTest.
+ThreadType NiceValueToThreadTypeForTest(int nice_value);
 
-std::optional<ThreadPriorityForTest>
-GetCurrentThreadPriorityForPlatformForTest();
+std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest();
 
 int GetCurrentThreadNiceValue();
 int GetThreadNiceValue(PlatformThreadId id);

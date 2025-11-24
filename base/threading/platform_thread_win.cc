@@ -466,7 +466,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 }  // namespace internal
 
 // static
-ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
   static_assert(
       THREAD_PRIORITY_IDLE < 0,
       "THREAD_PRIORITY_IDLE is >= 0 and will incorrectly cause errors.");
@@ -479,19 +479,19 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   static_assert(
       THREAD_PRIORITY_NORMAL == 0,
       "The logic below assumes that THREAD_PRIORITY_NORMAL is zero. If it is "
-      "not, ThreadPriorityForTest::kBackground may be incorrectly detected.");
+      "not, ThreadType::kBackground may be incorrectly detected.");
   static_assert(THREAD_PRIORITY_ABOVE_NORMAL >= 0,
                 "THREAD_PRIORITY_ABOVE_NORMAL is < 0 and will incorrectly be "
-                "translated to ThreadPriorityForTest::kBackground.");
+                "translated to ThreadType::kBackground.");
   static_assert(THREAD_PRIORITY_HIGHEST >= 0,
                 "THREAD_PRIORITY_HIGHEST is < 0 and will incorrectly be "
-                "translated to ThreadPriorityForTest::kBackground.");
+                "translated to ThreadType::kBackground.");
   static_assert(THREAD_PRIORITY_TIME_CRITICAL >= 0,
                 "THREAD_PRIORITY_TIME_CRITICAL is < 0 and will incorrectly be "
-                "translated to ThreadPriorityForTest::kBackground.");
+                "translated to ThreadType::kBackground.");
   static_assert(THREAD_PRIORITY_ERROR_RETURN >= 0,
                 "THREAD_PRIORITY_ERROR_RETURN is < 0 and will incorrectly be "
-                "translated to ThreadPriorityForTest::kBackground.");
+                "translated to ThreadType::kBackground.");
 
   const int priority =
       ::GetThreadPriority(PlatformThread::CurrentHandle().platform_handle());
@@ -501,23 +501,23 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   // THREAD_PRIORITY_LOWEST and THREAD_PRIORITY_BELOW_NORMAL are other possible
   // negative values.
   if (priority < THREAD_PRIORITY_BELOW_NORMAL) {
-    return ThreadPriorityForTest::kBackground;
+    return ThreadType::kBackground;
   }
 
   switch (priority) {
     case THREAD_PRIORITY_BELOW_NORMAL:
-      return ThreadPriorityForTest::kUtility;
+      return ThreadType::kUtility;
     case THREAD_PRIORITY_NORMAL:
-      return ThreadPriorityForTest::kNormal;
+      return ThreadType::kDefault;
     case kWinDisplayPriority1:
       [[fallthrough]];
     case kWinDisplayPriority2:
     case THREAD_PRIORITY_ABOVE_NORMAL:
-      return ThreadPriorityForTest::kDisplay;
+      return ThreadType::kDisplayCritical;
     case THREAD_PRIORITY_HIGHEST:
-      return ThreadPriorityForTest::kInteractive;
+      return ThreadType::kInteractive;
     case THREAD_PRIORITY_TIME_CRITICAL:
-      return ThreadPriorityForTest::kRealtimeAudio;
+      return ThreadType::kRealtimeAudio;
     case THREAD_PRIORITY_ERROR_RETURN:
       DPCHECK(false) << "::GetThreadPriority error";
   }

@@ -132,21 +132,14 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 }  // namespace internal
 
 // static
-ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
   // Fuchsia doesn't provide a way to get the current thread's priority.
   // Use ThreadType stored in TLS as a proxy.
   const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
-  switch (thread_type) {
-    case ThreadType::kBackground:
-    case ThreadType::kUtility:
-    case ThreadType::kDefault:
-      return ThreadPriorityForTest::kNormal;
-    case ThreadType::kDisplayCritical:
-    case ThreadType::kInteractive:
-      return ThreadPriorityForTest::kDisplay;
-    case ThreadType::kRealtimeAudio:
-      return ThreadPriorityForTest::kRealtimeAudio;
+  if (thread_type == ThreadType::kInteractive) {
+    return ThreadType::kDisplayCritical;
   }
+  return thread_type;
 }
 
 }  // namespace base

@@ -319,10 +319,10 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 }  // namespace internal
 
 // static
-ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
   if ([NSThread.currentThread threadPriority] == 1.0) {
     // Set to 1 for a non-fixed thread.)
-    return ThreadPriorityForTest::kRealtimeAudio;
+    return ThreadType::kRealtimeAudio;
   }
 
   qos_class_t qos_class;
@@ -330,15 +330,15 @@ ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
   pthread_get_qos_class_np(pthread_self(), &qos_class, &relative_priority);
   switch (qos_class) {
     case QOS_CLASS_BACKGROUND:
-      return ThreadPriorityForTest::kBackground;
+      return ThreadType::kBackground;
     case QOS_CLASS_UTILITY:
-      return ThreadPriorityForTest::kUtility;
+      return ThreadType::kUtility;
     case QOS_CLASS_USER_INITIATED:
-      return ThreadPriorityForTest::kNormal;
+      return ThreadType::kDefault;
     case QOS_CLASS_USER_INTERACTIVE:
-      return ThreadPriorityForTest::kDisplay;
+      return ThreadType::kDisplayCritical;
     default:
-      return ThreadPriorityForTest::kNormal;
+      return ThreadType::kDefault;
   }
 }
 

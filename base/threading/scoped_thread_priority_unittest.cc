@@ -37,25 +37,24 @@ class ScopedThreadPriorityTest : public testing::Test {
   void SetUp() override {
     // Ensures the default thread priority is set.
     PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
-    ASSERT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    ASSERT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
 };
 
 using ScopedThreadPriorityDeathTest = ScopedThreadPriorityTest;
 
 #if BUILDFLAG(IS_WIN)
-void FunctionThatBoostsPriorityOnFirstInvoke(
-    ThreadPriorityForTest expected_priority) {
+void FunctionThatBoostsPriorityOnFirstInvoke(ThreadType expected_priority) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   EXPECT_EQ(expected_priority,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 }
 
 void FunctionThatBoostsPriorityOnEveryInvoke() {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
-  EXPECT_EQ(base::ThreadPriorityForTest::kNormal,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  EXPECT_EQ(base::ThreadType::kDefault,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -109,11 +108,11 @@ TEST_F(ScopedThreadPriorityTest, WithoutPriorityBoost) {
   // Validates that a thread at normal priority keep the same priority.
   {
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-    EXPECT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    EXPECT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
-  EXPECT_EQ(ThreadPriorityForTest::kNormal,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  EXPECT_EQ(ThreadType::kDefault,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -125,11 +124,11 @@ TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
   PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
   {
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-    EXPECT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    EXPECT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
-  EXPECT_EQ(ThreadPriorityForTest::kBackground,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  EXPECT_EQ(ThreadType::kBackground,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
@@ -144,19 +143,19 @@ TEST_F(ScopedThreadPriorityTest, NestedScope) {
 
   {
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-    EXPECT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    EXPECT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      EXPECT_EQ(ThreadPriorityForTest::kNormal,
-                PlatformThread::GetCurrentThreadPriorityForTest());
+      EXPECT_EQ(ThreadType::kDefault,
+                PlatformThread::GetCurrentEffectiveThreadTypeForTest());
     }
-    EXPECT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    EXPECT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
 
-  EXPECT_EQ(ThreadPriorityForTest::kBackground,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  EXPECT_EQ(ThreadType::kBackground,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
@@ -169,9 +168,8 @@ TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnFirstInvoke) {
 
   PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
 
-  FunctionThatBoostsPriorityOnFirstInvoke(base::ThreadPriorityForTest::kNormal);
-  FunctionThatBoostsPriorityOnFirstInvoke(
-      base::ThreadPriorityForTest::kBackground);
+  FunctionThatBoostsPriorityOnFirstInvoke(base::ThreadType::kDefault);
+  FunctionThatBoostsPriorityOnFirstInvoke(base::ThreadType::kBackground);
 
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
@@ -188,8 +186,8 @@ TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnEveryInvoke) {
 }
 
 TEST_F(ScopedThreadPriorityTest, TaskMonitoringBoost) {
-  ASSERT_EQ(ThreadPriorityForTest::kNormal,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  ASSERT_EQ(ThreadType::kDefault,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
   {
     // A `TaskMonitoringScopedBoostPriority` object with a callback that always
@@ -197,18 +195,18 @@ TEST_F(ScopedThreadPriorityTest, TaskMonitoringBoost) {
     TaskMonitoringScopedBoostPriority scoped_boost_priority(
         ThreadType::kInteractive, BindRepeating([]() { return true; }));
     // Not boosted before `WillProcessTask` is called.
-    ASSERT_EQ(ThreadPriorityForTest::kNormal,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    ASSERT_EQ(ThreadType::kDefault,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
     // After `WillProcessTask` is called, the thread priority should be boosted.
     scoped_boost_priority.WillProcessTask(PendingTask(), false);
-    ASSERT_EQ(ThreadPriorityForTest::kInteractive,
-              PlatformThread::GetCurrentThreadPriorityForTest());
+    ASSERT_EQ(ThreadType::kInteractive,
+              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
 
   // Back to normal outside the scope.
-  ASSERT_EQ(ThreadPriorityForTest::kNormal,
-            PlatformThread::GetCurrentThreadPriorityForTest());
+  ASSERT_EQ(ThreadType::kDefault,
+            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 }
 
 #endif  // BUILDFLAG(IS_WIN)

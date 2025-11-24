@@ -186,18 +186,6 @@ enum class ThreadType : int {
   kMaxValue = kRealtimeAudio,
 };
 
-// Cross-platform mapping of physical thread priorities. Used by tests to verify
-// the underlying effects of SetCurrentThreadType.
-enum class ThreadPriorityForTest : int {
-  kBackground,
-  kUtility,
-  kNormal,
-  kDisplay,
-  kInteractive,
-  kRealtimeAudio,
-  kMaxValue = kRealtimeAudio,
-};
-
 // A namespace for low-level thread functions.
 class BASE_EXPORT PlatformThreadBase {
  public:
@@ -334,7 +322,11 @@ class BASE_EXPORT PlatformThreadBase {
   // explicitly set default size then returns 0.
   static size_t GetDefaultThreadStackSize();
 
-  static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
+  // Returns the ThreadType that corresponds to the current OS thread settings.
+  // Note that this returns a canonical ThreadType for the settings and may not
+  // match the exact ThreadType set if multiple ThreadTypes map to the same OS
+  // thread settings.
+  static ThreadType GetCurrentEffectiveThreadTypeForTest();
 
  protected:
   static void SetNameCommon(const std::string& name);

@@ -15,11 +15,11 @@
 
 namespace base::internal {
 
-ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
+ThreadType NiceValueToThreadTypeForTest(int nice_value) {
   // Try to find a priority that best describes |nice_value|. If there isn't
   // an exact match, this method returns the closest priority whose nice value
   // is higher (lower priority) than |nice_value|.
-  for (const auto& pair : kThreadPriorityToNiceValueMapForTest) {
+  for (const auto& pair : kThreadTypeToNiceValueMapForTest) {
     if (pair.nice_value >= nice_value) {
       return pair.priority;
     }
@@ -27,7 +27,7 @@ ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
 
   // Reaching here means |nice_value| is more than any of the defined
   // priorities. The lowest priority is suitable in this case.
-  return ThreadPriorityForTest::kBackground;
+  return ThreadType::kBackground;
 }
 
 int GetCurrentThreadNiceValue() {

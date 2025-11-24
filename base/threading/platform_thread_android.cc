@@ -48,13 +48,10 @@ static bool ShouldBoostDisplayCriticalThreadPriority() {
 // - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10
 //   value. Contrary to the matching Java APi in Android <13, this does not
 //   restrict the thread to (subset of) little cores.
-const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[7] = {
-        {ThreadPriorityForTest::kRealtimeAudio, -16},
-        {ThreadPriorityForTest::kDisplay, -4},
-        {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kUtility, 1},
-        {ThreadPriorityForTest::kBackground, 10},
+const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
+    {ThreadType::kRealtimeAudio, -16}, {ThreadType::kDisplayCritical, -4},
+    {ThreadType::kDefault, 0},         {ThreadType::kUtility, 1},
+    {ThreadType::kBackground, 10},
 };
 
 // - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value and can
@@ -114,12 +111,11 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
 }
 
-std::optional<ThreadPriorityForTest>
-GetCurrentThreadPriorityForPlatformForTest() {
+std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_ThreadUtils_isThreadPriorityAudio(
           env, PlatformThread::CurrentId().raw())) {
-    return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
+    return std::make_optional(ThreadType::kRealtimeAudio);
   }
   return std::nullopt;
 }

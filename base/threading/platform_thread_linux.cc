@@ -91,13 +91,10 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 
 namespace internal {
 
-const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[7] = {
-        {ThreadPriorityForTest::kRealtimeAudio, -10},
-        {ThreadPriorityForTest::kDisplay, -8},
-        {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kUtility, 2},
-        {ThreadPriorityForTest::kBackground, 10},
+const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
+    {ThreadType::kBackground, 10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
@@ -124,8 +121,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   internal::SetThreadType(getpid(), thread_id, thread_type, IsViaIPC(false));
 }
 
-std::optional<ThreadPriorityForTest>
-GetCurrentThreadPriorityForPlatformForTest() {
+std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
@@ -133,7 +129,7 @@ GetCurrentThreadPriorityForPlatformForTest() {
       maybe_sched_rr == SCHED_RR &&
       maybe_realtime_prio.sched_priority ==
           PlatformThreadLinux::kRealTimeAudioPrio.sched_priority) {
-    return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
+    return std::make_optional(ThreadType::kRealtimeAudio);
   }
   return std::nullopt;
 }

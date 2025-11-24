@@ -375,17 +375,17 @@ bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
 }
 
 // static
-ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
   // Mirrors SetCurrentThreadPriority()'s implementation.
   auto platform_specific_priority =
-      internal::GetCurrentThreadPriorityForPlatformForTest();  // IN-TEST
+      internal::GetCurrentEffectiveThreadTypeForPlatformForTest();  // IN-TEST
   if (platform_specific_priority) {
     return platform_specific_priority.value();
   }
 
   int nice_value = internal::GetCurrentThreadNiceValue();
 
-  return internal::NiceValueToThreadPriorityForTest(nice_value);  // IN-TEST
+  return internal::NiceValueToThreadTypeForTest(nice_value);  // IN-TEST
 }
 
 #endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
