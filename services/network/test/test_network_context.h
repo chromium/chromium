@@ -374,7 +374,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void FlushMatchingCachedClientCert(
       const scoped_refptr<net::X509Certificate>& certificate) override {}
   void RevokeNetworkForNonces(
-      std::vector<mojom::NonceAndAllowlistedUrlsPtr> nonces_to_urls,
+      std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patternss,
       RevokeNetworkForNoncesCallback callback) override {}
   void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override {
   }

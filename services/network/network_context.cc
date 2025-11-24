@@ -59,6 +59,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -3506,14 +3507,28 @@ void NetworkContext::FlushMatchingCachedClientCert(
 }
 
 void NetworkContext::RevokeNetworkForNonces(
-    std::vector<mojom::NonceAndAllowlistedUrlsPtr> nonces_to_urls,
+    std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patterns,
     RevokeNetworkForNoncesCallback callback) {
-  for (auto& entry : nonces_to_urls) {
+  for (auto& entry : nonces_to_patterns) {
     const base::UnguessableToken& nonce = entry->nonce;
-    const std::vector<GURL>& allowlisted_urls = entry->allowlisted_urls;
 
-    network_revocation_nonces_[nonce].insert(allowlisted_urls.begin(),
-                                             allowlisted_urls.end());
+    // Accessing `network_revocation_nonces_[nonce]` here ensures that if it's
+    // not already present in the set, it's default-constructed. This is
+    // important, as an empty `entry->allowlisted_patterns` represents complete
+    // network revocation.
+    auto& revocation_set = network_revocation_nonces_[nonce];
+    for (const std::string& pattern : entry->allowlisted_patterns) {
+      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+          pattern, /*base_url=*/nullptr);
+      if (!matcher.has_value()) {
+        // TODO(crbug.com/447954811): This case should result in an issue
+        // delivered to the devtools console (and ideally we'd avoid it
+        // entirely by parsing these strings as URL Patterns when initially
+        // parsing the header rather than here when enforcing it).
+        continue;
+      }
+      revocation_set.insert(std::move(matcher.value()));
+    }
 
     // CancelRequestsIfNonceMatchesAndUrlNotExempted is not needed for
     // connection allowlist since there should not be any ongoing
@@ -3630,23 +3645,19 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
   }
 
   // For connection allowlist feature, network_revocation_nonces_ map contains
-  // the allowed URLs.
+  // the allowed URL Patterns.
   // Note that the network_revocation_exemptions_ check below which was added
   // to enable fenced frames testing is orthogonal to this feature.
   // If there are no allowlisted URLs then it is assumed that all network URLs
   // are restricted (unless exempted for FF testing).
-  // TODO(crbug.com/447954811): Come back to this once we have more agreement on
-  // the mechanism. Ideally, these should be treated as URLPatterns. For now,
-  // we're just treating them as origins.
-  const std::set<GURL>& allowlisted_urls =
-      network_revocation_nonces_.find(nonce)->second;
-  CHECK(
-      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) ||
-      allowlisted_urls.empty());
-  url::Origin origin = url::Origin::Create(url);
-  for (const GURL& allowed_url : allowlisted_urls) {
-    if (origin.IsSameOriginWith(url::Origin::Create(allowed_url))) {
-      return true;
+  if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    const std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>&
+        allowlisted_patterns = network_revocation_nonces_.find(nonce)->second;
+    for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
+         allowlisted_patterns) {
+      if (pattern->Match(url)) {
+        return true;
+      }
     }
   }
 

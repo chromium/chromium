@@ -520,11 +520,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   // `NetworkContext::RevokeNetworkForNonces` directly. This is because this
   // function saves the nonces so that they can be restored in case of a
   // `NetworkService` crash.
-  // TODO(crbug.com/447954811): Connection Allowlists: Convert allowlisted urls
-  // to URLPattern. Currently they are simply used for checking if they are
-  // same-origin with the target URL.
   void RevokeNetworkForNoncesInNetworkContext(
-      const std::map<base::UnguessableToken, std::set<GURL>>& nonces_to_urls,
+      const std::map<base::UnguessableToken, std::set<std::string>>&
+          nonces_to_patterns,
       base::OnceClosure callback);
 
   // Forward the call to `NetworkContext::ClearNonces` and remove the stored
@@ -943,10 +941,11 @@ class CONTENT_EXPORT StoragePartitionImpl
 #endif
 
   // A copy of the network restriction nonces and their corresponding URL
-  // allowlistsin `NetworkContext`. It is used for restoring the
+  // allowlists in `NetworkContext`. It is used for restoring the
   // `NetworkContext` nonces when there is a `NetworkService`
   // crash.
-  std::map<base::UnguessableToken, std::set<GURL>> network_revocation_nonces_;
+  std::map<base::UnguessableToken, std::set<std::string>>
+      network_revocation_nonces_;
 
   // We need to delay deleting stale session cookies until after the cookie db
   // has initialized, otherwise we will bypass lazy loading and block.

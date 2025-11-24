@@ -963,11 +963,15 @@ interface DurableMessageCollector {
       => (mojo_base.mojom.BigBuffer? message);
 };
 
-// If allowlisted_urls is empty then it falls back to the earlier use case of
-// all network revoked (only applicable to fenced frames).
-struct NonceAndAllowlistedUrls {
+// If allowlisted_patterns is empty then it falls back to the earlier use case
+// of all network revoked (only applicable to fenced frames).
+struct NonceAndAllowlistedPatterns {
   mojo_base.mojom.UnguessableToken nonce;
-  array<url.mojom.Url> allowlisted_urls;
+  // TODO(crbug.com/447954811): It would be ideal for us to have a URLPattern
+  // representation in mojo rather than using a string here. Moving
+  // `blink::SafeUrlPattern` somewhere usable by both the network service
+  // and Blink might be a reasonable approach in the future.
+  array<string> allowlisted_patterns;
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -1787,8 +1791,9 @@ interface NetworkContext {
   // 2. Used for connection-allowlist (see
   // https://github.com/WICG/connection-allowlists). Network from the
   // URLLoaderfactory whose `network_restriction_id` matches `nonces` will only
-  // be allowed to `allowlisted_urls` and blocked otherwise.
-  RevokeNetworkForNonces(array<NonceAndAllowlistedUrls> nonces_to_urls) => ();
+  // be allowed to `allowlisted_patterns` and blocked otherwise.
+  RevokeNetworkForNonces(
+      array<NonceAndAllowlistedPatterns> nonces_to_patterns) => ();
 
   // Clients should clear nonces tagged for network revocation using
   // `StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay` instead of

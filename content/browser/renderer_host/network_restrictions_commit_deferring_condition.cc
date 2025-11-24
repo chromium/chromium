@@ -77,10 +77,10 @@ NetworkRestrictionsCommitDeferringCondition::WillCommitNavigation(
     return Result::kProceed;
   }
 
-  std::set<GURL> allowlisted_urls;
-  for (const auto& url_string :
+  std::set<std::string> allowlisted_patterns;
+  for (const auto& pattern_string :
        policy_container_policies.connection_allowlists.enforced->allowlist) {
-    allowlisted_urls.insert(GURL(url_string));
+    allowlisted_patterns.insert(pattern_string);
   }
 
   // Defer the commit until the network restrictions have been applied.
@@ -88,7 +88,7 @@ NetworkRestrictionsCommitDeferringCondition::WillCommitNavigation(
       ->current_frame_host()
       ->GetStoragePartition()
       ->RevokeNetworkForNoncesInNetworkContext(
-          {{*network_restrictions_id, std::move(allowlisted_urls)}},
+          {{*network_restrictions_id, std::move(allowlisted_patterns)}},
           base::BindOnce(
               &NetworkRestrictionsCommitDeferringCondition::OnRevokeComplete,
               weak_factory_.GetWeakPtr(), std::move(resume)));

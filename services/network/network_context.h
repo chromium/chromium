@@ -116,6 +116,10 @@ namespace url_matcher {
 class URLMatcher;
 }
 
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
+
 namespace network {
 class CookieManager;
 class HostResolver;
@@ -566,7 +570,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void FlushMatchingCachedClientCert(
       const scoped_refptr<net::X509Certificate>& certificate) override;
   void RevokeNetworkForNonces(
-      std::vector<mojom::NonceAndAllowlistedUrlsPtr> nonces_to_urls,
+      std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patterns,
       RevokeNetworkForNoncesCallback callback) override;
   void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override;
   void ExemptUrlFromNetworkRevocationForNonce(
@@ -1086,7 +1090,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // and membership is checked with `IsNetworkForNonceAndUrlAllowed`.
   // For details on use cases, please see RevokeNetworkForNonces in
   // `interface NetworkContext` in network_context.mojom.
-  std::map<base::UnguessableToken, std::set<GURL>> network_revocation_nonces_;
+  std::map<base::UnguessableToken,
+           std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>>
+      network_revocation_nonces_;
 
   // A data structure that tracks urls that should be exempted from network
   // revocation, to facilitate testing.
