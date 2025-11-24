@@ -100,6 +100,8 @@ void PasskeyUnlockManager::NotifyObservers() {
 void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
   NavigateParams params(GetSingletonTabNavigateParams(
       browser, GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url()));
+  // Allow the window to close itself.
+  params.opened_by_another_window = true;
   Navigate(&params);
 }
 
