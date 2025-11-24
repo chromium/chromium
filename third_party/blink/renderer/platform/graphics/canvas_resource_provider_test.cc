@@ -717,7 +717,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 }
 
 TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
-  std::unique_ptr<CanvasResourceProvider> provider =
+  auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
   Vector<cc::DrawImage> images = {

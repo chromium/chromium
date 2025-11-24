@@ -277,6 +277,10 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
               .gpu_rasterization);
   }
 
+  if (ContextProviderWrapper()) {
+    ContextProviderWrapper()->AddObserver(this);
+  }
+
   if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
   }
@@ -325,11 +329,22 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
     return;
   }
 
+  if (ContextProviderWrapper()) {
+    ContextProviderWrapper()->RemoveObserver(this);
+  }
+
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
 
   GetFlushForImageListener()->RemoveObserver(this);
+}
+
+void CanvasResourceProviderSharedImage::OnContextDestroyed() {
+  if (skia_canvas_) {
+    skia_canvas_->reset_image_provider();
+  }
+  canvas_image_provider_.reset();
 }
 
 base::WeakPtr<CanvasResourceProviderSharedImage>
@@ -1466,7 +1481,6 @@ CanvasResourceProvider::CanvasResourceProvider(
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
@@ -1482,8 +1496,6 @@ CanvasResourceProvider::CanvasResourceProvider(
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
-  if (context_provider_wrapper_)
-    context_provider_wrapper_->RemoveObserver(this);
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
 
   // Last chance for outstanding GPU timers to record metrics.
@@ -1600,12 +1612,6 @@ void CanvasResourceProvider::RecordingCleared() {
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas() {
   return recorder_->getRecordingCanvas();
-}
-
-void CanvasResourceProvider::OnContextDestroyed() {
-  if (skia_canvas_)
-    skia_canvas_->reset_image_provider();
-  canvas_image_provider_.reset();
 }
 
 void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {

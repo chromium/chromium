@@ -91,8 +91,7 @@ enum class RasterMode {
 //   3) Call Snapshot() to acquire a bitmap with the rendered image in it.
 
 class PLATFORM_EXPORT CanvasResourceProvider
-    : public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public base::CheckedObserver,
+    : public base::CheckedObserver,
       public CanvasMemoryDumpClient,
       public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host {
@@ -213,9 +212,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ImageOrientation orientation) = 0;
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
-
-  // WebGraphicsContext3DProvider::DestructionObserver implementation.
-  void OnContextDestroyed() override;
 
   MemoryManagedPaintCanvas& Canvas();
   // FlushCanvas and preserve recording only if IsPrinting or
@@ -438,6 +434,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
 // * Layers may be overlay candidates.
 class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     : public CanvasResourceProvider,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver {
  public:
@@ -554,6 +551,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<CanvasResource> ProduceCanvasResource() {
     return ProduceCanvasResource(FlushReason::kOther);
   }
+
+  // WebGraphicsContext3DProvider::DestructionObserver implementation.
+  void OnContextDestroyed() override;
 
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
