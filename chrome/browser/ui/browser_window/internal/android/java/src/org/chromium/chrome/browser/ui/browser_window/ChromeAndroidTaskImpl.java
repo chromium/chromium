@@ -524,11 +524,24 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void showInactive() {
+        // ShowInactive is used to create an unfocused window. Due to the current api limitation,
+        // an active window is created first and then deactivated to activate another window.
+        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture(mState.get()))) return;
+
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.SHOW_INACTIVE);
             return;
         }
 
+        synchronized (mActivityScopedObjectsLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null || !isActiveInternalLocked(activityWindowAndroid)) {
+                return;
+            }
+            mPendingActionManager.requestAction(PendingAction.SHOW_INACTIVE);
+            mState.set(State.PENDING_UPDATE);
+        }
         ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
     }
 
@@ -699,11 +712,11 @@ final class ChromeAndroidTaskImpl
             }
         }
         if (mState.get() == State.PENDING_UPDATE) {
-            var actions =
-                    mPendingActionManager.getAndClearTargetPendingActions(
-                            isTopResumedActivity
-                                    ? new int[] {PendingAction.ACTIVATE, PendingAction.SHOW}
-                                    : new int[] {PendingAction.DEACTIVATE});
+            int[] settledActions =
+                    isTopResumedActivity
+                            ? new int[] {PendingAction.ACTIVATE, PendingAction.SHOW}
+                            : new int[] {PendingAction.DEACTIVATE, PendingAction.SHOW_INACTIVE};
+            var actions = mPendingActionManager.getAndClearTargetPendingActions(settledActions);
             maybeSetStateIdle(actions);
         }
 

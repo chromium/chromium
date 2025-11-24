@@ -1238,6 +1238,40 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void showInactive_whenPendingUpdate_isActiveReturnsFalse() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
+        Assert.assertTrue("Set up task to be active", chromeAndroidTask.isActive());
+
+        // Act.
+        chromeAndroidTask.showInactive();
+        assertEquals(
+                "Future state of isActive() should be false when showInactive() is pending",
+                false,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertFalse("isActive is false while pending", chromeAndroidTask.isActive());
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+
+        // Assert
+        Assert.assertNull(
+                "Future state of showInactive() should be cleared when showInactive() is completed",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertFalse(chromeAndroidTask.isActive());
+    }
+
+    @Test
     public void close_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var task =
