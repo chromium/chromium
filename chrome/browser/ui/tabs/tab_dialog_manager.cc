@@ -407,7 +407,6 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
   widget_ = nullptr;
   params_.reset();
-  showing_modal_ui_.reset();
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   browser_window_widget_observer_.reset();
@@ -416,6 +415,10 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   tab_interface_->GetBrowserWindowInterface()
       ->capabilities()
       ->SetWebContentsBlocked(tab_interface_->GetContents(), /*blocked=*/false);
+  // Resetting ScopedTabModalUI may cause the showing of a new dialog.
+  // Leaving it at the end of the function to prevent its side effects
+  // from being overridden.
+  showing_modal_ui_.reset();
 }
 
 views::Widget* TabDialogManager::GetHostWidget() const {
