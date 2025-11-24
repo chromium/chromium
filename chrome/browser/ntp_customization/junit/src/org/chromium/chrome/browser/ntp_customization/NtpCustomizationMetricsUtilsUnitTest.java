@@ -24,7 +24,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
@@ -121,6 +124,7 @@ public class NtpCustomizationMetricsUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testRecordNtpThemeType() {
         String histogramName = "NewTabPage.Customization.Theme.Type";
         @NtpBackgroundImageType
@@ -138,6 +142,19 @@ public class NtpCustomizationMetricsUtilsUnitTest {
         }
 
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testRecordNtpThemeType_flagDisabled() {
+        String histogramName = "NewTabPage.Customization.Theme.Type";
+        @NtpBackgroundImageType int backgroundImageTypes = IMAGE_FROM_DISK;
+
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(backgroundImageTypes);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, DEFAULT);
+        NtpCustomizationMetricsUtils.recordNtpThemeType();
+        histogramWatcher.assertExpected();
     }
 
     @Test

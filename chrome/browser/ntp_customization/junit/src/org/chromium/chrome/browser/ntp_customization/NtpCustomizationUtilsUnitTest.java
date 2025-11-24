@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 
@@ -155,6 +156,14 @@ public class NtpCustomizationUtilsUnitTest {
 
         assertEquals(
                 imageType, NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetAndSetNtpBackgroundImageType_flagDisabled() {
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(IMAGE_FROM_DISK);
+
+        assertEquals(DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
     }
 
     @Test

@@ -69,7 +69,7 @@ public class NtpCustomizationMetricsUtils {
      * @param themeType The type of the NTP customization theme.
      */
     public static void recordNtpThemeType() {
-        int themeType = NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference();
+        int themeType = NtpCustomizationUtils.getNtpBackgroundImageType();
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_THEME_TYPE, themeType, NtpBackgroundImageType.NUM_ENTRIES);
     }

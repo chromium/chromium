@@ -112,8 +112,7 @@ public class NtpCustomizationConfigManager {
     private NtpCustomizationConfigManager() {
         mHomepageStateListeners = new ObserverList<>();
 
-        mBackgroundImageType =
-                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference();
+        mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK
                 || mBackgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
             mIsInitialized = true;

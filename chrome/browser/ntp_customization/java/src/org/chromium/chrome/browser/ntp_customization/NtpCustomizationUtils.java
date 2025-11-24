@@ -312,6 +312,18 @@ public class NtpCustomizationUtils {
     }
 
     /**
+     * Gets the current NTP's background image type from the SharedPreference. Returns
+     * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
+     */
+    public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
+        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            return NtpBackgroundImageType.DEFAULT;
+        }
+
+        return getNtpBackgroundImageTypeFromSharedPreference();
+    }
+
+    /**
      * Saves the background image if it isn't null, otherwise removes the file.
      *
      * @param backgroundImageBitmap The bitmap of the background image.
