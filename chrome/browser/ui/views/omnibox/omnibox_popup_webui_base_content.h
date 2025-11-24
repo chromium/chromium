@@ -76,6 +76,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   bool top_rounded_corners() const { return top_rounded_corners_; }
 
  private:
+  void OnMenuClosed();
+
   raw_ptr<OmniboxPopupPresenterBase> popup_presenter_ = nullptr;
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   raw_ptr<OmniboxPopupPresenterBase> omnibox_popup_presenter_ = nullptr;

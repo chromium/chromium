@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
@@ -27,9 +28,11 @@ class OmniboxPopupFileSelector;
 class OmniboxContextMenu : public views::MenuDelegate,
                            public ui::MenuModelDelegate {
  public:
-  explicit OmniboxContextMenu(views::Widget* parent_widget,
-                              OmniboxPopupFileSelector* file_selector,
-                              content::WebContents* web_contents);
+  explicit OmniboxContextMenu(
+      views::Widget* parent_widget,
+      OmniboxPopupFileSelector* file_selector,
+      content::WebContents* web_contents,
+      base::RepeatingClosure on_menu_closed = base::RepeatingClosure());
 
   ~OmniboxContextMenu() override;
 
@@ -46,6 +49,7 @@ class OmniboxContextMenu : public views::MenuDelegate,
   int GetMaxWidthForMenu(views::MenuItemView* menu) override;
   bool IsCommandEnabled(int command_id) const override;
   bool IsCommandVisible(int command_id) const override;
+  void OnMenuClosed(views::MenuItemView* menu) override;
 
   // ui::MenuModelDelegate:
   void OnIconChanged(int command_id) override;
@@ -58,6 +62,8 @@ class OmniboxContextMenu : public views::MenuDelegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
   // The menu itself. This is owned by `menu_runner_`.
   raw_ptr<views::MenuItemView> menu_;
+  // Optional callback to run after ExecuteCommand is called.
+  base::RepeatingClosure on_menu_closed_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_

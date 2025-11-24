@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -104,7 +105,9 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
       GetWidget(), location_bar_view_->GetOmniboxPopupFileSelector(),
       location_bar_view_->GetOmniboxPopupAimPresenter()
           ->GetWebUIContent()
-          ->GetWebContents());
+          ->GetWebContents(),
+      base::BindRepeating(&OmniboxPopupWebUIBaseContent::OnMenuClosed,
+                          base::Unretained(this)));
   context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
 }
 
@@ -156,6 +159,10 @@ bool OmniboxPopupWebUIBaseContent::PreHandleGestureEvent(
   }
 #endif
   return false;
+}
+
+void OmniboxPopupWebUIBaseContent::OnMenuClosed() {
+  context_menu_.reset();
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)
