@@ -1281,6 +1281,11 @@ class CONTENT_EXPORT WebContentsImpl
   bool ShouldPreserveAbortedURLs() override;
   void NotifyNavigationStateChangedFromController(
       InvalidateTypes changed_flags) override;
+#if BUILDFLAG(IS_ANDROID)
+  scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() override;
+  gfx::ColorSpace GetOutputColorSpace(gfx::ContentColorUsage color_usage,
+                                      bool needs_alpha) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;

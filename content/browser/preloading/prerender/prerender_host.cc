@@ -231,6 +231,21 @@ bool PrerenderHost::PrerenderFrameTreeDelegate::ShouldPreserveAbortedURLs() {
   return false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+PrerenderHost::PrerenderFrameTreeDelegate::GetRasterContextProvider() {
+  NOTREACHED();
+}
+
+gfx::ColorSpace PrerenderHost::PrerenderFrameTreeDelegate::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  NOTREACHED();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 PrerenderHost::LoadingOutcome
 PrerenderHost::PrerenderFrameTreeDelegate::WaitForLoadStopForTesting() {
   LoadingOutcome status = LoadingOutcome::kLoadingCompleted;

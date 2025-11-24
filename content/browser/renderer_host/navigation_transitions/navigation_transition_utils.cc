@@ -193,7 +193,6 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
 void CacheScreenshotFromSharedImageProvider(
     base::WeakPtr<NavigationControllerImpl> controller,
     base::WeakPtr<NavigationRequest> navigation_request,
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
     NavigationTransitionData::UniqueId screenshot_id,
     bool is_copied_from_embedder,
     int copy_output_request_sequence,
@@ -219,8 +218,7 @@ void CacheScreenshotFromSharedImageProvider(
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
       std::move(shared_image_provider), screenshot_id,
-      supports_etc_non_power_of_two, std::move(raster_context_provider),
-      bound_screenshot_callback);
+      supports_etc_non_power_of_two, bound_screenshot_callback);
   NavigationEntryScreenshotCache* cache =
       controller->GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
@@ -259,11 +257,11 @@ void CacheScreenshotSharedImageImpl(
   }
 
   CacheScreenshotFromSharedImageProvider(
-      controller, navigation_request, raster_context_provider, screenshot_id,
-      is_copied_from_embedder, copy_output_request_sequence,
-      supports_etc_non_power_of_two,
+      controller, navigation_request, screenshot_id, is_copied_from_embedder,
+      copy_output_request_sequence, supports_etc_non_power_of_two,
       NavigationEntryScreenshot::SharedImageHolder::Create(
-          std::move(shared_image), std::move(release_callback)));
+          std::move(raster_context_provider), std::move(shared_image),
+          std::move(release_callback)));
 }
 
 bool EnableNativePageScreenshotIntoHardwareBuffer() {
@@ -278,8 +276,6 @@ bool EnableNativePageScreenshotIntoHardwareBuffer() {
 void CacheScreenshotHardwareBufferImpl(
     base::WeakPtr<NavigationControllerImpl> controller,
     base::WeakPtr<NavigationRequest> navigation_request,
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    gfx::ColorSpace color_space,
     NavigationTransitionData::UniqueId screenshot_id,
     int copy_output_request_sequence,
     bool supports_etc_non_power_of_two,
@@ -311,11 +307,11 @@ void CacheScreenshotHardwareBufferImpl(
   }
 
   CacheScreenshotFromSharedImageProvider(
-      controller, navigation_request, raster_context_provider, screenshot_id,
+      controller, navigation_request, screenshot_id,
       /*is_copied_from_embedder=*/true, copy_output_request_sequence,
       supports_etc_non_power_of_two,
       NavigationEntryScreenshot::HardwareBufferHolder::Create(
-          raster_context_provider, color_space, std::move(hardware_buffer),
+          controller->delegate(), std::move(hardware_buffer),
           std::move(release_callback)));
 }
 
@@ -585,24 +581,12 @@ bool NavigationTransitionUtils::
                              .copy_output_request_sequence();
   bool copied_via_delegate;
   if (EnableNativePageScreenshotIntoHardwareBuffer()) {
-    auto context_provider = GetRasterContextProviderOrSetMissReason(
-        rwhv, navigation_request, last_committed_entry);
-    if (!context_provider) {
-      return false;
-    }
-    auto display = rwhv->GetNativeView()
-                       ->GetWindowAndroid()
-                       ->GetDisplayWithWindowColorSpace();
-    auto color_space = display.GetColorSpaces().GetOutputColorSpace(
-        gfx::ContentColorUsage::kSRGB, /*needs_alpha=*/false);
-
     copied_via_delegate =
         navigation_request.GetDelegate()->MaybeCopyContentAreaAsHardwareBuffer(
             base::BindOnce(
                 &CacheScreenshotHardwareBufferImpl,
                 navigation_controller.GetWeakPtr(),
-                navigation_request.GetWeakPtr(), std::move(context_provider),
-                color_space,
+                navigation_request.GetWeakPtr(),
                 last_committed_entry->navigation_transition_data().unique_id(),
                 request_sequence,
                 SupportsETC1NonPowerOfTwo(navigation_request)));

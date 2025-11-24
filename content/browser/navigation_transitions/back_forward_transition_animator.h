@@ -24,7 +24,7 @@ class Layer;
 class SolidColorLayer;
 class SurfaceLayer;
 class UIResourceLayer;
-}
+}  // namespace cc::slim
 
 namespace ui {
 class InputFilter;
@@ -489,7 +489,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // New layer for `screenshot_`.
   scoped_refptr<cc::slim::Layer> screenshot_layer_;
-  base::ScopedClosureRunner screenshot_layer_closure_;
 
   // A copy of old surface, covering the entire old page from when the
   // navigation commits to the end of the invoke animation (where the old page

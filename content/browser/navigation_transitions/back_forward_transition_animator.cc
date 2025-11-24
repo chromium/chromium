@@ -116,16 +116,19 @@ bool ShouldUseFallbackScreenshot(
     gfx::Size screen_size = animation_manager->web_contents_view_android()
                                 ->GetNativeView()
                                 ->GetPhysicalBackingSize();
-    use_fallback_screenshot = screenshot_size != screen_size;
     if (screenshot_size != screen_size) {
       cache_hit_or_miss_reason = NavigationTransitionData::
           CacheHitOrMissReason::kCacheMissScreenshotOrientation;
+    } else if (!screenshot->IsValid()) {
+      cache_hit_or_miss_reason = NavigationTransitionData::
+          CacheHitOrMissReason::kCacheMissFailedReadBack;
     } else {
       // TODO(crbug.com/377566662): Identify why the cache hit or miss reason is
       // not set correctly at this point. This is to avoid the crashes addressed
       // in crbug.com/377338996.
       cache_hit_or_miss_reason =
           NavigationTransitionData::CacheHitOrMissReason::kCacheHit;
+      use_fallback_screenshot = false;
     }
   }
 
@@ -458,7 +461,6 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
     screenshot_layer_->RemoveFromParent();
     screenshot_layer_.reset();
-    screenshot_layer_closure_.RunAndReset();
   }
 
   ResetLiveOverlayLayer();
@@ -1712,8 +1714,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
       screenshot_layer->SetUIResourceId(ui_resource_id_);
       screenshot_layer_ = std::move(screenshot_layer);
     } else {
-      std::tie(screenshot_layer_, screenshot_layer_closure_) =
-          screenshot_->CreateTextureLayer();
+      screenshot_layer_ = screenshot_->CreateTextureLayer();
     }
   }
   screenshot_layer_->SetIsDrawable(true);

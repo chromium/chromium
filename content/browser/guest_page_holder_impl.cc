@@ -217,6 +217,21 @@ void GuestPageHolderImpl::UpdateOverridingUserAgent() {
   owner_web_contents_->UpdateOverridingUserAgent();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+GuestPageHolderImpl::GetRasterContextProvider() {
+  NOTREACHED();
+}
+
+gfx::ColorSpace GuestPageHolderImpl::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  NOTREACHED();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
   if (!audio_stream_factory_) {
     audio_stream_factory_ = owner_web_contents_->CreateAudioStreamFactory(

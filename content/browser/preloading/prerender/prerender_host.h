@@ -498,6 +498,12 @@ class CONTENT_EXPORT PrerenderHost {
     void ActivateAndShowRepostFormWarningDialog() override;
     bool ShouldPreserveAbortedURLs() override;
     void UpdateOverridingUserAgent() override {}
+#if BUILDFLAG(IS_ANDROID)
+    scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider()
+        override;
+    gfx::ColorSpace GetOutputColorSpace(gfx::ContentColorUsage color_usage,
+                                        bool needs_alpha) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
     LoadingOutcome WaitForLoadStopForTesting();
 

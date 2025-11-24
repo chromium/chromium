@@ -240,10 +240,12 @@
 #include "base/android/device_info.h"
 #include "base/android/scoped_service_binding_batch.h"
 #include "base/check.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
+#include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/android/child_process_importance.h"
@@ -7588,6 +7590,36 @@ void WebContentsImpl::NotifyNavigationStateChangedFromController(
     InvalidateTypes changed_flags) {
   NotifyNavigationStateChanged(changed_flags);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+WebContentsImpl::GetRasterContextProvider() {
+  auto window = GetTopLevelNativeWindow();
+  if (!window) {
+    return nullptr;
+  }
+
+  auto* compositor = static_cast<CompositorImpl*>(window->GetCompositor());
+  if (!compositor) {
+    return nullptr;
+  }
+  return compositor->GetRasterContextProvider();
+}
+
+gfx::ColorSpace WebContentsImpl::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  auto window = GetTopLevelNativeWindow();
+  if (!window) {
+    return gfx::ColorSpace();
+  }
+  return window->GetDisplayWithWindowColorSpace()
+      .GetColorSpaces()
+      .GetOutputColorSpace(color_usage, needs_alpha);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 input::TouchEmulator* WebContentsImpl::GetTouchEmulator(
     bool create_if_necessary) {

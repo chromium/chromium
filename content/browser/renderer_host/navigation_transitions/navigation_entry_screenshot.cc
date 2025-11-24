@@ -25,6 +25,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -109,19 +110,60 @@ gfx::Size GetSizeFromHardwareBuffer(AHardwareBuffer* hardware_buffer) {
 
 }  // namespace
 
+scoped_refptr<cc::slim::TextureLayer>
+NavigationEntryScreenshot::SharedImageProvider::CreateTextureLayer() {
+  DCHECK(IsValid());
+  auto layer = cc::slim::TextureLayer::Create(this);
+  pending_transferable_resource_ = true;
+  layer->SetContentsOpaque(true);
+  layer->NotifyUpdatedResource();
+  return layer;
+}
+
+bool NavigationEntryScreenshot::SharedImageProvider::
+    PrepareTransferableResource(
+        viz::TransferableResource* transferable_resource,
+        viz::ReleaseCallback* release_callback) {
+  if (!pending_transferable_resource_) {
+    return false;
+  }
+  pending_transferable_resource_ = false;
+  auto shared_image = Get();
+  if (!shared_image) {
+    return false;
+  }
+  // By the time the screenshot is created, the shared_image is already
+  // finalized, so no sync token is necessary.
+  gpu::SyncToken sync_token;
+  *transferable_resource = viz::TransferableResource::Make(
+      shared_image, viz::TransferableResource::ResourceSource::kUI, sync_token);
+  *release_callback =
+      base::BindOnce(&NavigationEntryScreenshot::SharedImageProvider::DoRelease,
+                     base::WrapRefCounted(this));
+  return true;
+}
+
+void NavigationEntryScreenshot::SharedImageProvider::DoRelease(
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {}
+
+NavigationEntryScreenshot::SharedImageProvider::SharedImageProvider() = default;
+NavigationEntryScreenshot::SharedImageProvider::~SharedImageProvider() =
+    default;
+
 // static
 scoped_refptr<NavigationEntryScreenshot::SharedImageProvider>
 NavigationEntryScreenshot::SharedImageHolder::Create(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     viz::ReleaseCallback release_callback) {
-  return new SharedImageHolder(std::move(shared_image),
+  return new SharedImageHolder(std::move(context_provider),
+                               std::move(shared_image),
                                std::move(release_callback));
 }
 
-viz::ReleaseCallback
-NavigationEntryScreenshot::SharedImageHolder::CreateCallback() {
-  return base::BindOnce(&SharedImageHolder::DoReleaseCallback,
-                        base::WrapRefCounted(this));
+bool NavigationEntryScreenshot::SharedImageHolder::IsValid() const {
+  return !!context_provider_;
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -133,75 +175,122 @@ gfx::Size NavigationEntryScreenshot::SharedImageHolder::Size() const {
   return shared_image_->size();
 }
 
+scoped_refptr<viz::RasterContextProvider>
+NavigationEntryScreenshot::SharedImageHolder::GetContextProvider() {
+  return context_provider_;
+}
+
+void NavigationEntryScreenshot::SharedImageHolder::OnContextLost() {
+  context_provider_->RemoveObserver(this);
+  context_provider_.reset();
+  shared_image_.reset();
+}
+
 NavigationEntryScreenshot::SharedImageHolder::~SharedImageHolder() {
   if (release_callback_) {
     std::move(release_callback_).Run(destruction_sync_token_, is_lost_);
   }
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+  }
 }
 
 NavigationEntryScreenshot::SharedImageHolder::SharedImageHolder(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     viz::ReleaseCallback release_callback)
-    : shared_image_(std::move(shared_image)),
-      release_callback_(std::move(release_callback)) {}
+    : context_provider_(std::move(context_provider)),
+      shared_image_(std::move(shared_image)),
+      release_callback_(std::move(release_callback)) {
+  context_provider_->AddObserver(this);
+}
 
-void NavigationEntryScreenshot::SharedImageHolder::DoReleaseCallback(
+void NavigationEntryScreenshot::SharedImageHolder::DoRelease(
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   destruction_sync_token_ = sync_token;
   is_lost_ = is_lost_ || is_lost;
+  pending_transferable_resource_ = true;
 }
 
 // static
 scoped_refptr<NavigationEntryScreenshot::SharedImageProvider>
 NavigationEntryScreenshot::HardwareBufferHolder::Create(
-    scoped_refptr<viz::RasterContextProvider> context_provider,
-    gfx::ColorSpace color_space,
+    NavigationControllerDelegate* nav_controller_delegate,
     ScopedHardwareBufferHandle hardware_buffer,
     base::ScopedClosureRunner release_callback) {
-  return new HardwareBufferHolder(std::move(context_provider), color_space,
+  return new HardwareBufferHolder(nav_controller_delegate,
                                   std::move(hardware_buffer),
                                   std::move(release_callback));
 }
-viz::ReleaseCallback
-NavigationEntryScreenshot::HardwareBufferHolder::CreateCallback() {
-  return base::BindOnce(
-      [](scoped_refptr<HardwareBufferHolder>, const gpu::SyncToken&, bool) {},
-      base::WrapRefCounted(this));
+
+bool NavigationEntryScreenshot::HardwareBufferHolder::IsValid() const {
+  return true;
 }
 
 scoped_refptr<gpu::ClientSharedImage>
 NavigationEntryScreenshot::HardwareBufferHolder::Get() {
-  if (context_provider_->RasterInterface()->GetGraphicsResetStatusKHR() !=
-      GL_NO_ERROR) {
-    return nullptr;
-  }
   if (!cached_shared_image_) {
+    auto context_provider = GetContextProvider();
+    if (!context_provider) {
+      return nullptr;
+    }
+    auto color_space = nav_controller_delegate_->GetOutputColorSpace(
+        gfx::ContentColorUsage::kSRGB,
+        /*needs_alpha=*/false);
     cached_shared_image_ =
-        context_provider_->SharedImageInterface()->CreateSharedImage(
-            {viz::SinglePlaneFormat::kRGBA_8888, size_, color_space_,
+        context_provider->SharedImageInterface()->CreateSharedImage(
+            {viz::SinglePlaneFormat::kRGBA_8888, size_, color_space,
              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                 gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                 // TODO(crbug.com/461842857): Add
+                 // gpu::SHARED_IMAGE_USAGE_SCANOUT.
                  gpu::SHARED_IMAGE_USAGE_RASTER_READ,
              "NESHardwareBufferHolderGet"},
             gfx::GpuMemoryBufferHandle(hardware_buffer_.Clone()));
   }
   return cached_shared_image_;
 }
+
 gfx::Size NavigationEntryScreenshot::HardwareBufferHolder::Size() const {
   return size_;
 }
 
-NavigationEntryScreenshot::HardwareBufferHolder::~HardwareBufferHolder() =
-    default;
+scoped_refptr<viz::RasterContextProvider>
+NavigationEntryScreenshot::HardwareBufferHolder::GetContextProvider() {
+  if (!cached_context_provider_) {
+    cached_context_provider_ =
+        nav_controller_delegate_->GetRasterContextProvider();
+    if (cached_context_provider_) {
+      cached_context_provider_->AddObserver(this);
+    }
+  }
+  return cached_context_provider_;
+}
+
+void NavigationEntryScreenshot::HardwareBufferHolder::DoRelease(
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
+  pending_transferable_resource_ = true;
+}
+
+void NavigationEntryScreenshot::HardwareBufferHolder::OnContextLost() {
+  cached_context_provider_->RemoveObserver(this);
+  cached_context_provider_.reset();
+  cached_shared_image_.reset();
+  pending_transferable_resource_ = true;
+}
+
+NavigationEntryScreenshot::HardwareBufferHolder::~HardwareBufferHolder() {
+  if (cached_context_provider_) {
+    cached_context_provider_->RemoveObserver(this);
+  }
+}
 
 NavigationEntryScreenshot::HardwareBufferHolder::HardwareBufferHolder(
-    scoped_refptr<viz::RasterContextProvider> context_provider,
-    gfx::ColorSpace color_space,
+    NavigationControllerDelegate* nav_controller_delegate,
     ScopedHardwareBufferHandle hardware_buffer,
     base::ScopedClosureRunner release_callback)
-    : context_provider_(context_provider),
-      color_space_(color_space),
+    : nav_controller_delegate_(nav_controller_delegate),
       hardware_buffer_(std::move(hardware_buffer)),
       size_(GetSizeFromHardwareBuffer(hardware_buffer_.get())),
       release_callback_(std::move(release_callback)) {}
@@ -238,7 +327,6 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     scoped_refptr<SharedImageProvider> shared_image_provider,
     NavigationTransitionData::UniqueId unique_id,
     bool supports_etc_non_power_of_two,
-    scoped_refptr<viz::RasterContextProvider> context_provider,
     ScreenshotCallback screenshot_callback)
     : performance_scenarios::MatchingScenarioObserver(
           performance_scenarios::kDefaultIdleScenarios),
@@ -246,10 +334,8 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
       unique_id_(unique_id),
       dimensions_without_compression_(shared_image_provider_->Size()),
       supports_etc_non_power_of_two_(supports_etc_non_power_of_two),
-      context_provider_(std::move(context_provider)),
       screenshot_callback_(std::move(screenshot_callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  context_provider_->AddObserver(this);
 
   auto observer_list =
       performance_scenarios::PerformanceScenarioObserverList::GetForScope(
@@ -275,7 +361,6 @@ NavigationEntryScreenshot::~NavigationEntryScreenshot() {
       observer_list->RemoveMatchingObserver(this);
     }
   }
-  ResetContextProvider();
 }
 
 cc::UIResourceBitmap NavigationEntryScreenshot::GetBitmap(cc::UIResourceId uid,
@@ -295,6 +380,10 @@ size_t NavigationEntryScreenshot::SetCache(
   }
 
   if (IsBitmapReady()) {
+    // SetCache is called when an back-forward transition animation ends. If the
+    // readback has finished by now, we no longer need the shared image
+    // provider.
+    shared_image_provider_.reset();
     return GetBitmap().SizeInBytes();
   }
 
@@ -326,46 +415,19 @@ void NavigationEntryScreenshot::OnScenarioMatchChanged(
   }
 }
 
-void NavigationEntryScreenshot::OnContextLost() {
-  ResetContextProvider();
-}
-
-std::pair<scoped_refptr<cc::slim::TextureLayer>, base::ScopedClosureRunner>
+scoped_refptr<cc::slim::TextureLayer>
 NavigationEntryScreenshot::CreateTextureLayer() {
   CHECK(shared_image_provider_);
-  CHECK(texture_transferable_resource_.is_empty());
-  // By the time the screenshot is created, the shared_image is already
-  // finalized, so no sync token is necessary.
-  gpu::SyncToken sync_token;
-  texture_transferable_resource_ = viz::TransferableResource::Make(
-      shared_image_provider_->Get(),
-      viz::TransferableResource::ResourceSource::kUI, sync_token);
-  texture_release_callback_ = shared_image_provider_->CreateCallback();
-  auto layer = cc::slim::TextureLayer::Create(this);
-  layer->SetContentsOpaque(true);
-  layer->NotifyUpdatedResource();
-  return std::make_pair(
-      std::move(layer),
-      base::ScopedClosureRunner(
-          base::BindOnce(&NavigationEntryScreenshot::OnTextureLayerToBeDeleted,
-                         weak_factory_.GetMutableWeakPtr())));
+  DCHECK(!cache_);
+  return shared_image_provider_->CreateTextureLayer();
 }
 
 bool NavigationEntryScreenshot::PrepareTransferableResource(
     viz::TransferableResource* transferable_resource,
     viz::ReleaseCallback* release_callback) {
-  CHECK(!texture_transferable_resource_.is_empty());
-  if (!texture_release_callback_) {
-    return false;
-  }
-  *transferable_resource = texture_transferable_resource_;
-  *release_callback = std::move(texture_release_callback_);
-  return true;
-}
-
-void NavigationEntryScreenshot::OnTextureLayerToBeDeleted() {
-  DCHECK(!texture_transferable_resource_.is_empty());
-  texture_transferable_resource_ = viz::TransferableResource();
+  CHECK(shared_image_provider_);
+  return shared_image_provider_->PrepareTransferableResource(
+      transferable_resource, release_callback);
 }
 
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
@@ -415,10 +477,13 @@ void NavigationEntryScreenshot::StartCompression() {
                              std::move(compression_task_));
 }
 
-void NavigationEntryScreenshot::ResetContextProvider() {
-  if (context_provider_) {
-    context_provider_->RemoveObserver(this);
-    context_provider_.reset();
+void NavigationEntryScreenshot::MaybeResetSharedImageProvider() {
+  // The shared image provider won't be needed anymore, unless it is currently
+  // used by an animation. In that case, cache_ is null.
+  // Once the animation finishes, it calls SetCache(), which resets the provider
+  // if it's no longer needed.
+  if (cache_) {
+    shared_image_provider_.reset();
   }
 }
 
@@ -428,6 +493,7 @@ void NavigationEntryScreenshot::StartReadBack() {
   auto shared_image = shared_image_provider_->Get();
   if (!shared_image) {
     OnReadBack(SkBitmap(), false);
+    return;
   }
 
   SkImageInfo info = SkImageInfo::MakeN32(shared_image->size().width(),
@@ -445,16 +511,17 @@ void NavigationEntryScreenshot::StartReadBack() {
 void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(shared_image_provider_);
+  auto context_provider = shared_image_provider_->GetContextProvider();
   auto shared_image = shared_image_provider_->Get();
 
-  if (bitmap.empty() || !context_provider_ || !shared_image) {
+  if (bitmap.empty() || !context_provider || !shared_image) {
     OnReadBack(SkBitmap(), false);
     return;
   }
 
   gfx::Point src_point;
   SkImageInfo info = bitmap.info();
-  auto* raster_interface = context_provider_->RasterInterface();
+  auto* raster_interface = context_provider->RasterInterface();
   DCHECK(raster_interface);
   auto scoped_access = shared_image->BeginRasterAccess(
       raster_interface, shared_image->creation_sync_token(),
@@ -470,29 +537,25 @@ void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
 
 void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The context provider will no longer be used.
-  // This has to run after the readback is completed, otherwise, the destruction
-  // of the context provider will crash trying to clean up this request that is
-  // currently being processed.
+  // This has to run after the readback is completed, otherwise, this operation
+  // might destroy the context provider, attempting a re-entry to this same
+  // callback (crbug.com/456887685).
   GetUIThreadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&NavigationEntryScreenshot::ResetContextProvider,
+      base::BindOnce(&NavigationEntryScreenshot::MaybeResetSharedImageProvider,
                      weak_factory_.GetWeakPtr()));
-  shared_image_provider_.reset();
   if (!success) {
     if (screenshot_callback_) {
       SkBitmap override_unused;
       screenshot_callback_.Run({}, false, override_unused);
     }
-    if (cache_) {
-      // This has to run after the readback is completed, otherwise, if this
-      // operation destroys the context provider, it will crash trying to clean
-      // up this ReadBack callback that is currently being processed.
-      GetUIThreadTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&NavigationEntryScreenshot::DestroyOnFailure,
-                         weak_factory_.GetWeakPtr()));
-    }
+    // This has to run after the readback is completed, otherwise, if this
+    // operation destroys the context provider, it will crash trying to clean
+    // up this ReadBack callback that is currently being processed.
+    GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NavigationEntryScreenshot::MaybeDestroyOnFailure,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
   if (screenshot_callback_) {
@@ -510,7 +573,12 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
   SetupCompressionTask(bitmap, supports_etc_non_power_of_two_);
 }
 
-void NavigationEntryScreenshot::DestroyOnFailure() {
+void NavigationEntryScreenshot::MaybeDestroyOnFailure() {
+  // We can only destroy the screenshot now if its not in use by an animation.
+  // When the animation ends, it attempts to insert the screenshot back into the
+  // cache. The screenshot with a pending destruction is discarded at that
+  // point.
+  pending_destruction_ = true;
   if (cache_) {
     // Destroys this.
     cache_->RemoveFailedScreenshot(this);
@@ -539,7 +607,9 @@ void NavigationEntryScreenshot::OnCompressionFinished(
 }
 
 bool NavigationEntryScreenshot::IsValid() const {
-  return shared_image_provider_ || IsBitmapReady();
+  return !pending_destruction_ &&
+         (IsBitmapReady() ||
+          (shared_image_provider_ && shared_image_provider_->IsValid()));
 }
 
 bool NavigationEntryScreenshot::IsBitmapReady() const {

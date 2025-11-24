@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -19,6 +20,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 class SkBitmap;
 
@@ -36,6 +38,7 @@ class RasterContextProvider;
 
 namespace content {
 
+class NavigationControllerDelegate;
 class NavigationEntryScreenshotCache;
 
 // Wraps around a `cc::UIResourceBitmap`, which is used to show the user a
@@ -68,54 +71,78 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     : public cc::UIResourceClient,
       public base::SupportsUserData::Data,
       public performance_scenarios::MatchingScenarioObserver,
-      public viz::ContextLostObserver,
       private cc::TextureLayerClient {
  public:
-  class SharedImageProvider : public base::RefCounted<SharedImageProvider> {
+  class SharedImageProvider : public base::RefCounted<SharedImageProvider>,
+                              public cc::TextureLayerClient {
    public:
+    // Creates a TextureLayer using the shared images provided by this provider.
+    // The TextureLayer should be destroyed before calling CreateTextureLayer
+    // again.
+    scoped_refptr<cc::slim::TextureLayer> CreateTextureLayer();
+    // Returns a transferable resource for the shared image provided by this
+    // provider and a callback to perform cleanup operations.
+    // This function can return a new transferable resource after the returned
+    // callback is called or when a new shared image is available.
+    // The callback keeps an instance of this provider so that it's not
+    // destroyed prematurely.
+    bool PrepareTransferableResource(
+        viz::TransferableResource* transferable_resource,
+        viz::ReleaseCallback* release_callback) final;
+
+    virtual bool IsValid() const = 0;
     virtual scoped_refptr<gpu::ClientSharedImage> Get() = 0;
-    // Returns a callback that performs cleanup operations upon release of the
-    // obtained shared image. Implementors of this interface can keep a
-    // reference of themselves in this callback to prevent the destructor from
-    // running until the callback is used.
-    virtual viz::ReleaseCallback CreateCallback() = 0;
     virtual gfx::Size Size() const = 0;
+    virtual scoped_refptr<viz::RasterContextProvider> GetContextProvider() = 0;
 
    protected:
+    SharedImageProvider();
     // Implementors of this interface should perform clean up operations upon
     // destruction.
-    virtual ~SharedImageProvider() = default;
+    ~SharedImageProvider() override;
+
+    // Performs cleanup operations upon release of a created TextureLayer.
+    // It is to be used as the callback returned by PrepareTransferableResource.
+    virtual void DoRelease(const gpu::SyncToken& sync_token, bool is_lost);
+
+    bool pending_transferable_resource_ = false;
 
    private:
     friend class base::RefCounted<SharedImageProvider>;
   };
 
-  class SharedImageHolder : public SharedImageProvider {
+  // Holds a shared image from a CopyOutputResponse. On context loss, the shared
+  // image is no longer available.
+  class SharedImageHolder : public SharedImageProvider,
+                            public viz::ContextLostObserver {
    public:
     static scoped_refptr<SharedImageProvider> Create(
+        scoped_refptr<viz::RasterContextProvider> context_provider,
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         viz::ReleaseCallback release_callback);
     SharedImageHolder(const SharedImageHolder&) = delete;
     SharedImageHolder& operator=(const SharedImageHolder&) = delete;
 
-    // Returns a callback that stores the parameters in order to run the actual
-    // callback on destruction.
-    // The callback keeps an instance of this holder so that it's not destroyed
-    // prematurely. The release callback is called only once all users have
-    // released the references.
-    viz::ReleaseCallback CreateCallback() override;
+    bool IsValid() const override;
 
     scoped_refptr<gpu::ClientSharedImage> Get() override;
     gfx::Size Size() const override;
+    scoped_refptr<viz::RasterContextProvider> GetContextProvider() override;
 
    protected:
     ~SharedImageHolder() override;
 
    private:
-    SharedImageHolder(scoped_refptr<gpu::ClientSharedImage> shared_image,
-                      viz::ReleaseCallback release_callback);
-    void DoReleaseCallback(const gpu::SyncToken& sync_token, bool is_lost);
+    SharedImageHolder(
+        scoped_refptr<viz::RasterContextProvider> context_provider,
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
+        viz::ReleaseCallback release_callback);
+    void DoRelease(const gpu::SyncToken& sync_token, bool is_lost) override;
 
+    // viz::ContextLostObserver ------------------------------------------------
+    void OnContextLost() override;
+
+    scoped_refptr<viz::RasterContextProvider> context_provider_;
     scoped_refptr<gpu::ClientSharedImage> shared_image_;
     viz::ReleaseCallback release_callback_;
 
@@ -123,38 +150,43 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     bool is_lost_ = false;
   };
 
-  class HardwareBufferHolder : public SharedImageProvider {
+  // Provides shared images backed by an AHardwareBuffer. This can provide a new
+  // shared image upon context loss.
+  class HardwareBufferHolder : public SharedImageProvider,
+                               public viz::ContextLostObserver {
    public:
     static scoped_refptr<SharedImageProvider> Create(
-        scoped_refptr<viz::RasterContextProvider> context_provider,
-        gfx::ColorSpace color_space,
+        NavigationControllerDelegate* nav_controller_delegate,
         base::android::ScopedHardwareBufferHandle hardware_buffer,
         base::ScopedClosureRunner release_callback);
 
     HardwareBufferHolder(const HardwareBufferHolder&) = delete;
     HardwareBufferHolder& operator=(const HardwareBufferHolder&) = delete;
 
-    // Returns a callback that just holds a reference to this object in order to
-    // prevent the destructor from running until after this callback is called.
-    viz::ReleaseCallback CreateCallback() override;
+    // SharedImageHolder ------------------------------------------------------
+
+    bool IsValid() const override;
 
     scoped_refptr<gpu::ClientSharedImage> Get() override;
     gfx::Size Size() const override;
+    scoped_refptr<viz::RasterContextProvider> GetContextProvider() override;
+    void DoRelease(const gpu::SyncToken& sync_token, bool is_lost) override;
+
+    // viz::ContextLostObserver ------------------------------------------------
+    void OnContextLost() override;
 
    protected:
     ~HardwareBufferHolder() override;
 
    private:
     HardwareBufferHolder(
-        scoped_refptr<viz::RasterContextProvider> context_provider,
-        gfx::ColorSpace color_space,
+        NavigationControllerDelegate* nav_controller_delegate,
         base::android::ScopedHardwareBufferHandle hardware_buffer,
         base::ScopedClosureRunner release_callback);
 
-    // A raw ptr is enough as the owner of the holder manages them together.
-    scoped_refptr<viz::RasterContextProvider> context_provider_;
+    raw_ptr<NavigationControllerDelegate> nav_controller_delegate_;
+    scoped_refptr<viz::RasterContextProvider> cached_context_provider_;
     scoped_refptr<gpu::ClientSharedImage> cached_shared_image_;
-    gfx::ColorSpace color_space_;
     base::android::ScopedHardwareBufferHandle hardware_buffer_;
     const gfx::Size size_;
     base::ScopedClosureRunner release_callback_;
@@ -170,12 +202,10 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   NavigationEntryScreenshot(const SkBitmap& bitmap,
                             NavigationTransitionData::UniqueId unique_id,
                             bool supports_etc_non_power_of_two);
-  NavigationEntryScreenshot(
-      scoped_refptr<SharedImageProvider> shared_image,
-      NavigationTransitionData::UniqueId unique_id,
-      bool supports_etc_non_power_of_two,
-      scoped_refptr<viz::RasterContextProvider> context_provider,
-      ScreenshotCallback callback);
+  NavigationEntryScreenshot(scoped_refptr<SharedImageProvider> shared_image,
+                            NavigationTransitionData::UniqueId unique_id,
+                            bool supports_etc_non_power_of_two,
+                            ScreenshotCallback callback);
 
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
@@ -203,12 +233,10 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
                               bool matches_pattern) override;
 
-  void OnContextLost() override;
-
-  // Creates a texture layer that uses the shared image in this screenshot.
-  // This can't be called again until the returned closure runs.
-  std::pair<scoped_refptr<cc::slim::TextureLayer>, base::ScopedClosureRunner>
-  CreateTextureLayer();
+  // Creates a TextureLayer that uses the shared image in this screenshot.
+  // This can't be called again until the last TextureLayer created is
+  // destroyed.
+  scoped_refptr<cc::slim::TextureLayer> CreateTextureLayer();
 
   // Returns true if the screenshot is being managed by a cache. This is not the
   // case when it's being displayed in the UI.
@@ -225,7 +253,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   size_t CompressedSizeForTesting() const;
 
  private:
-  void DestroyOnFailure();
+  void MaybeDestroyOnFailure();
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
   void SetupCompressionTask(const SkBitmap& bitmap,
@@ -235,7 +263,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   void DoReadBack(SkBitmap bitmap);
   void OnReadBack(SkBitmap bitmap, bool success);
 
-  void ResetContextProvider();
+  void MaybeResetSharedImageProvider();
 
   const cc::UIResourceBitmap& GetBitmap() const;
 
@@ -246,8 +274,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   bool PrepareTransferableResource(
       viz::TransferableResource* transferable_resource,
       viz::ReleaseCallback* release_callback) override;
-
-  void OnTextureLayerToBeDeleted();
 
   // The uncompressed bitmap cached when navigating away from this navigation
   // entry.
@@ -279,14 +305,11 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
   const bool supports_etc_non_power_of_two_;
 
-  scoped_refptr<viz::RasterContextProvider> context_provider_;
-
   base::OnceClosure compression_task_;
 
   ScreenshotCallback screenshot_callback_;
 
-  viz::TransferableResource texture_transferable_resource_;
-  viz::ReleaseCallback texture_release_callback_;
+  bool pending_destruction_ = false;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };
