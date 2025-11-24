@@ -118,9 +118,10 @@ void ServiceWorkerGlobalScopeProxy::CountFeature(WebFeature feature) {
   Client().CountFeature(feature);
 }
 
-void ServiceWorkerGlobalScopeProxy::ReportException(const String& error_message,
-                                                    SourceLocation* location,
-                                                    int exception_id) {
+void ServiceWorkerGlobalScopeProxy::ReportException(
+    const String& error_message,
+    const SourceLocation* location,
+    int exception_id) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   Client().ReportException(error_message, location->LineNumber(),
                            location->ColumnNumber(), location->Url());
@@ -130,7 +131,7 @@ void ServiceWorkerGlobalScopeProxy::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
-    SourceLocation* location) {
+    const SourceLocation* location) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   Client().ReportConsoleMessage(source, level, message, location->LineNumber(),
                                 location->Url());

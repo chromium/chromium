@@ -51,13 +51,15 @@ class CORE_EXPORT WorkerReportingProxy {
 
   virtual void CountFeature(WebFeature) {}
   virtual void CountWebDXFeature(mojom::blink::WebDXFeature) {}
+  // TODO(crbug.com/462588571): Try converting these to pass SourceLocation
+  // by const reference.
   virtual void ReportException(const String& error_message,
-                               SourceLocation*,
+                               const SourceLocation*,
                                int exception_id) {}
   virtual void ReportConsoleMessage(mojom::ConsoleMessageSource,
                                     mojom::ConsoleMessageLevel,
                                     const String& message,
-                                    SourceLocation*) {}
+                                    const SourceLocation*) {}
 
   // Invoked at the beginning of WorkerThread::InitializeOnWorkerThread.
   virtual void WillInitializeWorkerContext() {}

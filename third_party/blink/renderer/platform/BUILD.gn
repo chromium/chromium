@@ -468,6 +468,7 @@ component("platform") {
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
     "bindings/cross_thread_copier.h",
+    "bindings/cross_thread_source_location.cc",
     "bindings/cross_thread_source_location.h",
     "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",

@@ -34,7 +34,7 @@ void SharedWorkerReportingProxy::CountFeature(WebFeature feature) {
 }
 
 void SharedWorkerReportingProxy::ReportException(const String& error_message,
-                                                 SourceLocation* location,
+                                                 const SourceLocation* location,
                                                  int exception_id) {
   DCHECK(!IsMainThread());
   // Exceptions during the script evaluation phase are reported to the clients,
@@ -66,7 +66,7 @@ void SharedWorkerReportingProxy::ReportConsoleMessage(
     mojom::ConsoleMessageSource,
     mojom::ConsoleMessageLevel,
     const String& message,
-    SourceLocation*) {
+    const SourceLocation*) {
   DCHECK(!IsMainThread());
   // Not supported in SharedWorker.
 }

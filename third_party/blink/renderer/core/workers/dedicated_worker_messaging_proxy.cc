@@ -308,7 +308,7 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   if (!worker_object_)
     return;
 
-  SourceLocation* location = cross_location.CreateSourceLocation();
+  SourceLocation* location = cross_location.ToSourceLocation();
 
   // We don't bother checking the AskedToTerminate() flag for dispatching the
   // event on the owner context, because exceptions should *always* be reported

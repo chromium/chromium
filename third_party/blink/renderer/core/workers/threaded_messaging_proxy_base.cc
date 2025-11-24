@@ -137,7 +137,7 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
   if (asked_to_terminate_)
     return;
 
-  SourceLocation* location = cross_thread_location.CreateSourceLocation();
+  SourceLocation* location = cross_thread_location.ToSourceLocation();
   execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       level, message, location, worker_thread_.get()));
 }

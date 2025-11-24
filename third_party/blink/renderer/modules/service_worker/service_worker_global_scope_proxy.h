@@ -119,12 +119,12 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   // WorkerReportingProxy overrides:
   void CountFeature(WebFeature) override;
   void ReportException(const String& error_message,
-                       SourceLocation*,
+                       const SourceLocation*,
                        int exception_id) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
-                            SourceLocation*) override;
+                            const SourceLocation*) override;
   void WillInitializeWorkerContext() override;
   void DidCreateWorkerGlobalScope(WorkerOrWorkletGlobalScope*) override;
   void DidLoadClassicScript() override;

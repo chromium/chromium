@@ -29,12 +29,12 @@ class SharedWorkerReportingProxy final
   // WorkerReportingProxy methods:
   void CountFeature(WebFeature) override;
   void ReportException(const String&,
-                       SourceLocation*,
+                       const SourceLocation*,
                        int exception_id) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
-                            SourceLocation*) override;
+                            const SourceLocation*) override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
   void DidEvaluateTopLevelScript(bool success) override;

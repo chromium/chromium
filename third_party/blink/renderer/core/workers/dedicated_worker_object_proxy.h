@@ -75,7 +75,7 @@ class CORE_EXPORT DedicatedWorkerObjectProxy : public ThreadedObjectProxyBase {
 
   // ThreadedObjectProxyBase overrides.
   void ReportException(const String& error_message,
-                       SourceLocation*,
+                       const SourceLocation*,
                        int exception_id) override;
   void DidFailToFetchClassicScript() final;
   void DidFailToFetchModuleScript() final;
