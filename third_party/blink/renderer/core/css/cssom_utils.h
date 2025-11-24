@@ -69,12 +69,12 @@ class CSSOMUtils {
       const CSSValue* template_area_values);
   // Returns a `CSSValueList` containing the computed value for
   // the `grid-lanes` shorthand, based on provided `masonry-template-tracks`,
-  // `grid-template-areas`, `masonry-direction`, and `masonry-fill`.
+  // `grid-template-areas`, `masonry-direction`, and `grid-lanes-fill`.
   static CSSValueList* ComputedValueForGridLanesShorthand(
       const CSSValue* masonry_template_tracks_values,
       const CSSValue* template_area_values,
       const CSSValue* masonry_direction_values,
-      const CSSValue* masonry_fill_values);
+      const CSSValue* grid_lanes_fill_values);
 };
 
 }  // namespace blink

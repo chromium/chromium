@@ -1243,6 +1243,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kGapRuleOverlap:
       return value_id == CSSValueID::kRowOverColumn ||
              value_id == CSSValueID::kColumnOverRow;
+    case CSSPropertyID::kGridLanesFill:
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kReverse;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -1263,9 +1266,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kRowReverse ||
              value_id == CSSValueID::kColumn ||
              value_id == CSSValueID::kColumnReverse;
-    case CSSPropertyID::kMasonryFill:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kReverse;
     case CSSPropertyID::kMathShift:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kCompact;
@@ -1752,13 +1752,13 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFieldSizing,
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kGapRuleOverlap,
+    CSSPropertyID::kGridLanesFill,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
     CSSPropertyID::kInterpolateSize,
     CSSPropertyID::kListStylePosition,
     CSSPropertyID::kMaskType,
     CSSPropertyID::kMasonryDirection,
-    CSSPropertyID::kMasonryFill,
     CSSPropertyID::kMathShift,
     CSSPropertyID::kMathStyle,
     CSSPropertyID::kObjectFit,

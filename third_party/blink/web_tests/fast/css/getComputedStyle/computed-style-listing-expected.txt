@@ -214,6 +214,7 @@ grid-auto-flow: row
 grid-auto-rows: auto
 grid-column-end: auto
 grid-column-start: auto
+grid-lanes-fill: normal
 grid-row-end: auto
 grid-row-start: auto
 grid-template-areas: none
@@ -269,7 +270,6 @@ mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
 masonry-direction: column
-masonry-fill: normal
 math-depth: 0
 math-shift: normal
 math-style: normal

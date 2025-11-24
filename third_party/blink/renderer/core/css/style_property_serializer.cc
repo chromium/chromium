@@ -2598,14 +2598,14 @@ String StylePropertySerializer::GetShorthandValueForGridLanes(
                 GetCSSPropertyGridTemplateColumns())
           : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());
   DCHECK(masonry_template_tracks_values);
-  const auto* masonry_fill_values =
+  const auto* grid_lanes_fill_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
-  DCHECK(masonry_fill_values);
+  DCHECK(grid_lanes_fill_values);
 
   const CSSValueList* grid_lanes_list =
       CSSOMUtils::ComputedValueForGridLanesShorthand(
           masonry_template_tracks_values, template_area_values,
-          masonry_direction_values, masonry_fill_values);
+          masonry_direction_values, grid_lanes_fill_values);
   return grid_lanes_list->CssText();
 }
 

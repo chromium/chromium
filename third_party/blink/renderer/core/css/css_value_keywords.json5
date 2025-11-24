@@ -1228,6 +1228,10 @@
     // grid-{column|row}-{start|end}
     "span",
 
+    // grid-lanes-fill
+    // normal
+    // reverse
+
     // grid-template-{columns|rows}
     "minmax",
     "subgrid",
@@ -1258,10 +1262,6 @@
     // row-reverse
     // column
     // column-reverse
-
-    // masonry-fill
-    // normal
-    // reverse
 
     // color-interpolation / color-interpolation-filters
     // auto

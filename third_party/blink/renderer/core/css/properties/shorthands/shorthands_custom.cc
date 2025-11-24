@@ -2758,7 +2758,7 @@ bool GridLanes::ParseShorthand(
       GetCSSPropertyGridTemplateAreas().InitialValue();
   const CSSValue* masonry_direction =
       CSSIdentifierValue::Create(CSSValueID::kColumn);
-  const CSSValue* masonry_fill =
+  const CSSValue* grid_lanes_fill =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
 
   // Retrieve the string of `masonry_template_areas`. We'll parse it into
@@ -2794,7 +2794,7 @@ bool GridLanes::ParseShorthand(
   if (css_parsing_utils::IdentMatches<CSSValueID::kNormal,
                                       CSSValueID::kReverse>(
           stream.Peek().Id())) {
-    masonry_fill = css_parsing_utils::ConsumeIdent(stream);
+    grid_lanes_fill = css_parsing_utils::ConsumeIdent(stream);
   }
 
   // At this point, we should be at the end of the stream or at an !important
@@ -2842,9 +2842,9 @@ bool GridLanes::ParseShorthand(
       *masonry_direction, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kMasonryFill, CSSPropertyID::kGridLanes, *masonry_fill,
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
+      CSSPropertyID::kGridLanesFill, CSSPropertyID::kGridLanes,
+      *grid_lanes_fill, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
   return true;
 }
@@ -2875,7 +2875,7 @@ bool GridLanesFlow::ParseShorthand(
   DCHECK_EQ(longhands.size(), 2u);
 
   if (longhands[0]->PropertyID() != CSSPropertyID::kMasonryDirection ||
-      longhands[1]->PropertyID() != CSSPropertyID::kMasonryFill) {
+      longhands[1]->PropertyID() != CSSPropertyID::kGridLanesFill) {
     return false;
   }
 
@@ -2887,11 +2887,11 @@ bool GridLanesFlow::ParseShorthand(
     return false;
   }
 
-  const CSSValue* masonry_fill = css_parsing_utils::ParseLonghand(
+  const CSSValue* grid_lanes_fill = css_parsing_utils::ParseLonghand(
       longhands[1]->PropertyID(), gridLanesFlowShorthand().id(), context,
       stream);
 
-  if (!masonry_fill) {
+  if (!grid_lanes_fill) {
     return false;
   }
 
@@ -2899,7 +2899,7 @@ bool GridLanesFlow::ParseShorthand(
               *masonry_direction, important,
               css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   AddProperty(longhands[1]->PropertyID(), gridLanesFlowShorthand().id(),
-              *masonry_fill, important,
+              *grid_lanes_fill, important,
               css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
   return true;

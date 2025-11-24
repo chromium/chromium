@@ -216,7 +216,7 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* masonry_template_tracks_values,
     const CSSValue* template_area_values,
     const CSSValue* masonry_direction_values,
-    const CSSValue* masonry_fill_values) {
+    const CSSValue* grid_lanes_fill_values) {
   const bool has_initial_masonry_template_tracks =
       IsNoneValue(masonry_template_tracks_values);
   const bool has_initial_template_areas = IsNoneValue(template_area_values);
@@ -246,7 +246,7 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
   }
 
   list->Append(*masonry_direction_values);
-  list->Append(*masonry_fill_values);
+  list->Append(*grid_lanes_fill_values);
 
   return list;
 }

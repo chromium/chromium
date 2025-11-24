@@ -5141,14 +5141,14 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
           : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase);
   DCHECK(masonry_template_tracks_values);
-  const CSSValue* masonry_fill_values =
+  const CSSValue* grid_lanes_fill_values =
       shorthand.properties()[3]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  DCHECK(masonry_fill_values);
+  DCHECK(grid_lanes_fill_values);
 
   return CSSOMUtils::ComputedValueForGridLanesShorthand(
       masonry_template_tracks_values, template_area_values,
-      masonry_direction_values, masonry_fill_values);
+      masonry_direction_values, grid_lanes_fill_values);
 }
 
 }  // namespace blink
