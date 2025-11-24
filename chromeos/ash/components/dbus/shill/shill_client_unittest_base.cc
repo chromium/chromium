@@ -57,7 +57,7 @@ std::unique_ptr<base::Value> PopStringToStringDictionary(
 }  // namespace
 
 ValueMatcher::ValueMatcher(const base::Value& value)
-    : expected_value_(base::Value::ToUniquePtrValue(value.Clone())) {}
+    : expected_value_(std::make_unique<base::Value>(value.Clone())) {}
 ValueMatcher::~ValueMatcher() = default;
 
 bool ValueMatcher::MatchAndExplain(const base::Value& value,
@@ -295,7 +295,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
       case dbus::Message::BOOL:
       case dbus::Message::INT32:
       case dbus::Message::STRING:
-        value = base::Value::ToUniquePtrValue(
+        value = std::make_unique<base::Value>(
             dbus::PopDataAsValue(&variant_reader));
         ASSERT_FALSE(value->is_none());
         break;

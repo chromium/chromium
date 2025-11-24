@@ -679,10 +679,10 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     SetUserConfigInShill(nullptr);
     pref_service_.SetManagedPref(
         ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(managed_config.Clone()));
+        std::make_unique<base::Value>(managed_config.Clone()));
     pref_service_.SetRecommendedPref(
         ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(recommended_config.Clone()));
+        std::make_unique<base::Value>(recommended_config.Clone()));
     net::ProxyConfigWithAnnotation actual_config;
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
@@ -714,7 +714,7 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     // Managed proxy pref should take effect over network proxy.
     pref_service_.SetManagedPref(
         ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(managed_config.Clone()));
+        std::make_unique<base::Value>(managed_config.Clone()));
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
     EXPECT_EQ(GURL(managed_params.pac_url), actual_config.value().pac_url());
