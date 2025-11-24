@@ -790,13 +790,55 @@ TEST(IPAddressSpaceTest, ParsePrivateIpFromURL) {
             ParsePrivateIpFromUrl(GURL("http://10.168.1.10")));
 }
 
-TEST(IPAddressSpaceTest, IsRFC6762LocalDomain) {
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://foo.test")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://8.8.8.8")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://192.168.1.10")));
-  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://localhost")));
-  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local")));
-  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local:8000")));
+TEST(IPAddressSpaceTest, GetAddressSpaceFromUrl) {
+  EXPECT_EQ(std::nullopt, GetAddressSpaceFromUrl(GURL("http://foo.test")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("https://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://192.168.1.10")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://10.168.1.10")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("https://localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("https://localhost.")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://foo.localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("http://foo.localhost.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://local.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://menu.local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://menu.local")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://menu.local.")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://menu.local:8000")));
+
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://10.2.3.4:80")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://10.2.3.4")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("https://10.2.3.4")));
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8:8888")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("https://8.8.8.8")));
 }
 
 }  // namespace

@@ -435,8 +435,21 @@ std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
   return address;
 }
 
-bool IsRFC6762LocalDomain(const GURL& url) {
-  return url.DomainIs("local");
+std::optional<mojom::IPAddressSpace> GetAddressSpaceFromUrl(const GURL& url) {
+  if (url.DomainIs("local")) {
+    return mojom::IPAddressSpace::kLocal;
+  }
+
+  if (url.DomainIs("localhost")) {
+    return mojom::IPAddressSpace::kLoopback;
+  }
+
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return std::nullopt;
+  }
+  net::IPEndPoint endpoint(address, url.EffectiveIntPort());
+  return IPEndPointToIPAddressSpace(endpoint);
 }
 
 }  // namespace network

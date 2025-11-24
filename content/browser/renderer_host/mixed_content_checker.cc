@@ -323,10 +323,10 @@ bool MixedContentChecker::ShouldBlockInternal(
       NOTREACHED();
   };
 
-  // Skip mixed content check for .local domains and private IP literals if the
-  // request is a Local Network Access (LNA) request. LNA checks later on will
-  // ensure that (a) the request is actually an LNA request, and (b) the user
-  // has given permission for the LNA request to go through.
+  // Skip mixed content check for URLs where we can determine that the request
+  // is a Local Network Access (LNA) request. LNA checks later on will ensure
+  // that (a) the request is actually an LNA request, and (b) the user has given
+  // permission for the LNA request to go through.
   //
   // Reference:
   // https://wicg.github.io/local-network-access/
@@ -336,18 +336,20 @@ bool MixedContentChecker::ShouldBlockInternal(
   // third_party/blink/renderer/core/loader/mixed_content_checker.cc.
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
-    // This request is a possible LNA request if one of the following is true:
+    // This request is a possible LNA request if we can determine from the URL
+    // that the ip address space is definitively in the local or loopback
+    // address spaces.
     //
-    // (1) The host is a private IP address literal
-    // (2) The hostname is a .local domain (per RFC 6762).
-    //
-    // There is no check for loopback addresses because loopback addresses are
-    // considered secure and not mixed content.
+    // Loopback addresses shouldn't need to be checked as they are considered
+    // secure and not mixed content, but it can't hurt.
     //
     // TODO(crbug.com/395895368): check the IP address space for initiator, only
     // skip when the initiator is more public.
-    if (network::ParsePrivateIpFromUrl(url) ||
-        network::IsRFC6762LocalDomain(url)) {
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(url);
+    if (ip_address_space &&
+        (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+         ip_address_space == network::mojom::IPAddressSpace::kLoopback)) {
       allowed = true;
     }
   }
