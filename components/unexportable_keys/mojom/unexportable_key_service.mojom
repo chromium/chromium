@@ -24,7 +24,8 @@ enum SignatureAlgorithm {
 // LINT.ThenChange(/crypto/signature_verifier.h)
 
 // All the possible errors the unexportable key service can return.
-// LINT.IfChange
+// See components/unexportable_keys/service_error.h for more details.
+// LINT.IfChange(ServiceError)
 enum ServiceError {
   // kNone = 0
   kCryptoApiFailed = 1,
@@ -34,9 +35,13 @@ enum ServiceError {
   kAlgorithmNotSupported = 5,
   kKeyNotReady = 6,
   kVerifySignatureFailed = 7,
+  kOperationNotSupported = 8,
 };
 
-// LINT.ThenChange(/components/unexportable_keys/service_error.h)
+// LINT.ThenChange(
+//     /components/unexportable_keys/service_error.h:ServiceError,
+//     /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
+// )
 
 // The priority at which the task will run.
 // LINT.IfChange

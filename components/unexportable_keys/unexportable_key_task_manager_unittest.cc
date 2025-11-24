@@ -554,6 +554,31 @@ TEST_F(UnexportableKeyTaskManagerTest, DeleteKeyAsyncFailureNoKeyProvider) {
       ElementsAre(base::Bucket(0, 1)));
 }
 
+TEST_F(UnexportableKeyTaskManagerTest,
+       DeleteKeyAsyncFailureOperationNotSupported) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  std::vector<uint8_t> wrapped_key = {1, 2, 3};
+
+  task_manager().DeleteSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(), std::move(wrapped_key),
+      BackgroundTaskPriority::kBestEffort, delete_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(delete_future.Get(),
+              ErrorIs(ServiceError::kOperationNotSupported));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteKeyTaskResultHistogramName),
+      ElementsAre(base::Bucket(ServiceError::kOperationNotSupported, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteKeyTaskRetriesFailureHistogramName),
+      ElementsAre(base::Bucket(0, 1)));
+}
+
 TEST_F(UnexportableKeyTaskManagerTest, DeleteAllKeysAsync) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
@@ -615,6 +640,30 @@ TEST_F(UnexportableKeyTaskManagerTest, DeleteAllKeysAsyncFailureNoKeyProvider) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kDeleteAllKeysTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kDeleteAllKeysTaskRetriesFailureHistogramName),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest,
+       DeleteAllKeysAsyncFailureOperationNotSupported) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+
+  task_manager().DeleteAllSigningKeysSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
+      BackgroundTaskPriority::kBestEffort, delete_all_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(delete_all_future.Get(),
+              ErrorIs(ServiceError::kOperationNotSupported));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteAllKeysTaskResultHistogramName),
+      ElementsAre(base::Bucket(ServiceError::kOperationNotSupported, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   kDeleteAllKeysTaskRetriesFailureHistogramName),
               ElementsAre(base::Bucket(0, 1)));
@@ -711,6 +760,31 @@ TEST_F(UnexportableKeyTaskManagerTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGetAllKeysTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGetAllKeysTaskRetriesFailureHistogramName),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest,
+       GetAllSigningKeysForGarbageCollectionAsyncOperationNotSupported) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+      future;
+
+  task_manager().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationNotSupported));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kGetAllKeysTaskResultHistogramName),
+      ElementsAre(base::Bucket(ServiceError::kOperationNotSupported, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   kGetAllKeysTaskRetriesFailureHistogramName),
               ElementsAre(base::Bucket(0, 1)));

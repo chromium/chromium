@@ -295,12 +295,17 @@ TEST_F(UnexportableKeyServiceImplTest,
 
 TEST_F(UnexportableKeyServiceImplTest,
        GetAllSigningKeysForGarbageCollectionSlowlyAsyncStatelessProvider) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
   service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_THAT(get_all_keys_future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(get_all_keys_future.Get(),
+              ErrorIs(ServiceError::kOperationNotSupported));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
@@ -659,6 +664,26 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeyCallsProvider) {
   EXPECT_OK(delete_future.Get());
 }
 
+TEST_F(UnexportableKeyServiceImplTest, DeleteKeyStatelessProvider) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(delete_future.Get(),
+              ErrorIs(ServiceError::kOperationNotSupported));
+}
+
 TEST_F(UnexportableKeyServiceImplTest, SignWithDeletedKey) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
@@ -804,12 +829,17 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
   EXPECT_OK(service().GetWrappedKey(key_id));
 }
 
-TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysNoKeys) {
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysStatelessProvider) {
+  ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
+                ->AsStatefulUnexportableKeyProvider(),
+            nullptr);
+
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
   service().DeleteAllKeysSlowlyAsync(kTaskPriority,
                                      delete_all_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(delete_all_future.Get(),
+              ErrorIs(ServiceError::kOperationNotSupported));
 
   // Service should be usable after deleting all keys.
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;

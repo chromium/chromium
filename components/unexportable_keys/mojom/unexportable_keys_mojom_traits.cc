@@ -104,6 +104,8 @@ unexportable_keys::mojom::ServiceError EnumTraits<
       return unexportable_keys::mojom::ServiceError::kKeyNotReady;
     case unexportable_keys::ServiceError::kNoKeyProvider:
       return unexportable_keys::mojom::ServiceError::kNoKeyProvider;
+    case unexportable_keys::ServiceError::kOperationNotSupported:
+      return unexportable_keys::mojom::ServiceError::kOperationNotSupported;
   }
 }
 
@@ -132,6 +134,9 @@ bool EnumTraits<unexportable_keys::mojom::ServiceError,
       return true;
     case unexportable_keys::mojom::ServiceError::kNoKeyProvider:
       *output = unexportable_keys::ServiceError::kNoKeyProvider;
+      return true;
+    case unexportable_keys::mojom::ServiceError::kOperationNotSupported:
+      *output = unexportable_keys::ServiceError::kOperationNotSupported;
       return true;
   }
   return false;
