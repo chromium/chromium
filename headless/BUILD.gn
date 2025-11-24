@@ -305,8 +305,6 @@ component("headless_non_renderer") {
     "public/headless_export.h",
     "public/headless_web_contents.h",
     "public/headless_window_state.h",
-    "public/internal/message_dispatcher.h",
-    "public/internal/value_conversions.h",
     "public/switches.h",
   ]
 
