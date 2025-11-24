@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
-#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
