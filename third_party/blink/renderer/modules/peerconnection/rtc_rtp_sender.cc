@@ -468,6 +468,10 @@ ToRtpParameters(ExecutionContext* context,
         degradation_preference =
             webrtc::DegradationPreference::MAINTAIN_RESOLUTION;
         break;
+      case V8RTCDegradationPreference::Enum::kMaintainFramerateAndResolution:
+        degradation_preference =
+            webrtc::DegradationPreference::MAINTAIN_FRAMERATE_AND_RESOLUTION;
+        break;
     }
   }
 
@@ -732,8 +736,10 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         degradation_preference_enum =
             V8RTCDegradationPreference::Enum::kBalanced;
         break;
-      case webrtc::DegradationPreference::DISABLED:
-        NOTREACHED();
+      case webrtc::DegradationPreference::MAINTAIN_FRAMERATE_AND_RESOLUTION:
+        degradation_preference_enum =
+            V8RTCDegradationPreference::Enum::kMaintainFramerateAndResolution;
+        break;
     }
     parameters->setDegradationPreference(degradation_preference_enum);
   }
