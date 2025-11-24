@@ -45,6 +45,13 @@ namespace net {
 std::string ComputeSecWebSocketAccept(std::string_view key);
 }  // namespace net
 
+namespace policy {
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForDmTokenFilePath(
+    std::string_view input);
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForMachineId(
+    std::string_view input);
+}  // namespace policy
+
 namespace wallpaper {
 std::string GetHexForWallpaperFilesId(
     const base::span<const uint8_t> files_id_unhashed);
@@ -101,6 +108,13 @@ class CRYPTO_EXPORT Sha1 {
   // TODO(crbug.com/459863801): get rid of this.
   friend std::vector<uint8_t> kcer::internal::Sha1ForPkcs11Id(
       base::span<const uint8_t> data);
+
+  // TODO(b/460489502): remove once SHA-1 is no longer used for hashing client
+  // IDs.
+  friend std::array<uint8_t, crypto::obsolete::kSha1Size>
+  policy::Sha1ForDmTokenFilePath(std::string_view input);
+  friend std::array<uint8_t, crypto::obsolete::kSha1Size>
+  policy::Sha1ForMachineId(std::string_view input);
 
   // TODO(crbug.com/458084930): get rid of this.
   friend std::string wallpaper::GetHexForWallpaperFilesId(

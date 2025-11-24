@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,8 +28,17 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace policy {
+
+// Returns the SHA-1 hash of the input string. This is used to hash the
+// client ID to generate a filename for the DM token. This is required for
+// backwards compatibility with existing enrolled machines.
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForDmTokenFilePath(
+    std::string_view input) {
+  return crypto::obsolete::Sha1::Hash(input);
+}
 
 namespace {
 
@@ -80,7 +88,7 @@ bool GetDmTokenFilePath(base::FilePath* token_file_path,
   }
 
   std::string filename;
-  base::Base64UrlEncode(base::SHA1HashString(client_id),
+  base::Base64UrlEncode(Sha1ForDmTokenFilePath(client_id),
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
   *token_file_path = token_file_path->Append(filename.c_str());
 
@@ -122,8 +130,9 @@ bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
     return false;
   }
   CFStringRef value_string = base::apple::CFCast<CFStringRef>(value.get());
-  if (!value_string)
+  if (!value_string) {
     return false;
+  }
 
   *enrollment_token = base::SysCFStringRefToUTF8(value_string);
   return true;
@@ -153,8 +162,9 @@ std::optional<bool> IsEnrollmentMandatoryByPolicy() {
   }
 
   CFBooleanRef value_bool = base::apple::CFCast<CFBooleanRef>(value.get());
-  if (!value_bool)
+  if (!value_bool) {
     return std::optional<bool>();
+  }
   return value_bool == kCFBooleanTrue;
 }
 
@@ -203,20 +213,23 @@ std::string BrowserDMTokenStorageMac::InitEnrollmentToken() {
 std::string BrowserDMTokenStorageMac::InitDMToken() {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, InitClientId(),
-                          /*create_dir=*/false))
+                          /*create_dir=*/false)) {
     return std::string();
+  }
 
   std::string token;
-  if (!base::ReadFileToString(token_file_path, &token))
+  if (!base::ReadFileToString(token_file_path, &token)) {
     return std::string();
+  }
 
   return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageMac::InitEnrollmentErrorOption() {
   std::optional<bool> is_mandatory = IsEnrollmentMandatoryByPolicy();
-  if (is_mandatory)
+  if (is_mandatory) {
     return is_mandatory.value();
+  }
 
   return IsEnrollmentMandatoryByFile().value_or(false);
 }
