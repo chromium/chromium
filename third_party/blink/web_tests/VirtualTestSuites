@@ -184,39 +184,6 @@
     ],
     "expires": "Jan 15, 2026"
   },
-  {
-    "prefix": "content-extraction",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "compositing/geometry/layer-due-to-layer-children-deep.html",
-      "compositing/iframes/content-visibility-hidden-frame.html",
-      "compositing/overflow/nested-render-surfaces-with-rotation.html",
-      "compositing/squashing/squash-transform-repainting-transformed-child.html",
-      "css3/filters/nested-filter.html",
-      "fast/dom/HTMLObjectElement/update-data.html",
-      "fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html",
-      "fast/events/touch/touch-rect-assert-first-layer-special.html",
-      "fast/forms/datalist/input-appearance-range-with-transform.html",
-      "fast/sub-pixel/sub-pixel-accumulates-to-layers.html",
-      "fast/sub-pixel/transformed-iframe-copy-on-scroll.html",
-      "paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html",
-      "paint/invalidation/transform/subpixel-offset-scaled-transform.html",
-      "transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html",
-      "transforms/3d/point-mapping/3d-point-mapping-deep.html",
-      "transforms/rotate.html"
-    ],
-    "args": [
-      "--enable-blink-features=AIPageContentBuildOnLoadForTesting"
-    ],
-    "owners": [
-      "aleventhal@chromium.org"
-    ],
-    "expires": "never"
-  },
   "---------------------------- Close watchers -------------------------------",
   "TODO(https://crbug.com/1495208): These cannot be run in the normal web ",
   "platform tests environment because of",
