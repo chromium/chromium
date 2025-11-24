@@ -49,7 +49,6 @@ chrome/browser/ash/system_web_apps
 chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/editors
 chrome/browser/chromeos/extensions/telemetry
 chrome/browser/download
-chrome/browser/extensions
 chrome/browser/extensions/commands
 chrome/browser/feed/android
 chrome/browser/first_run
@@ -68,6 +67,7 @@ chrome/browser/support_tool/ash
 chrome/browser/sync/test/integration
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox
 chrome/browser/ui/views/search_engines
+chrome/browser/ui/views/side_panel
 chrome/browser/ui/webui/settings
 chrome/browser/win
 chromecast
@@ -512,13 +512,16 @@ third_party/hyphenation-patterns/src/am
 third_party/inspector_protocol
 third_party/jsoncpp
 third_party/libdisplay-info
+third_party/libdmg-hfsplus/src/dmg
+third_party/libdmg-hfsplus/src/docs
+third_party/libdmg-hfsplus/src/test/attribution_reference
+third_party/libdmg-hfsplus/src/test/hfs_xattrs_reference
+third_party/libdmg-hfsplus/src/test/run_spanning_reference
 third_party/libpfm4
 third_party/libpng/contrib/oss-fuzz
 third_party/liburlpattern
 third_party/libusb/src/libusb
 third_party/libusb/src/libusb/os
-third_party/libdmg-hfsplus/src/dmg
-third_party/libdmg-hfsplus/src/docs
 third_party/libxml/chromium
 third_party/libxml/fuzz/seed_corpus
 third_party/libxml/src
@@ -831,4 +834,5 @@ ui/ozone/platform/drm/common
 ui/ozone/platform/drm/gpu
 ui/ozone/platform/drm/host
 ui/views/controls/tabbed_pane
+ui/webui/resources/cr_components/search
 url/third_party/mozilla

@@ -84,7 +84,10 @@ impl Position for TextPosition {
 /// XML version enumeration.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum XmlVersion {
-    /// XML version 1.0.
+    /// XML version 1.0, or any 1.x version other than 1.1
+    ///
+    /// All future versions are disallowed since XML 1.1, so any version beyond 1.1 is an error tolerated only in XML 1.0.
+    /// <https://www.w3.org/TR/REC-xml/#sec-prolog-dtd>
     Version10,
 
     /// XML version 1.1.

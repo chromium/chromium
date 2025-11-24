@@ -1,6 +1,6 @@
 [package]
 name = "xml"
-version = "1.1.0"
+version = "1.2.0"
 authors = ["Vladimir Matveev <vmatveev@citrine.cc>", "Kornel (https://github.com/kornelski)"]
 license = "MIT"
 description = "An XML library in pure Rust"
