@@ -6989,6 +6989,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
     *url = url->ReplaceComponents(replacements);
   }
 
+  // Rewrite chrome://settings/addresses to chrome://settings/contactInfo.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->GetHost() == chrome::kChromeUISettingsHost &&
+      (url->GetPath() == chrome::kChromeUIAddressesPath) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)) {
+    GURL::Replacements replacements;
+    replacements.SetPathStr(chrome::kChromeUIContactInfoPath);
+    *url = url->ReplaceComponents(replacements);
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

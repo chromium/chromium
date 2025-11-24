@@ -113,6 +113,7 @@ export interface SettingsRoutes {
   SYSTEM: Route;
   TRIGGERED_RESET_DIALOG: Route;
   YOUR_SAVED_INFO: Route;
+  YOUR_SAVED_INFO_CONTACT_INFO: Route;
   YOUR_SAVED_INFO_IDENTITY_DOCS: Route;
   YOUR_SAVED_INFO_TRAVEL: Route;
 

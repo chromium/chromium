@@ -148,7 +148,7 @@ suite('YourSavedInfoPage', function() {
   },
    {
      cardTitle: 'contactInfoTitle',
-     expectedRoute: '/addresses',
+     expectedRoute: '/contactInfo',
      expectedCategory: YourSavedInfoDataCategory.CONTACT_INFO,
    },
    {
@@ -224,7 +224,7 @@ suite('YourSavedInfoPage', function() {
     })!;
 
     chip.click();
-    assertEquals('/addresses', Router.getInstance().currentRoute.path);
+    assertEquals('/contactInfo', Router.getInstance().currentRoute.path);
     const [metricChip] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoDataChipClick');
     assertEquals(YourSavedInfoDataChip.ADDRESSES, metricChip);

@@ -449,6 +449,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2108276563" label="/adPrivacy/sites"/>
   <int value="-2088016711" label="/startupPages"/>
   <int value="-2082028555" label="/androidApps/details"/>
+  <int value="-2026378196" label="/contactInfo"/>
   <int value="-2019732586" label="/printing"/>
   <int value="-1950073287" label="/crostini/details"/>
   <int value="-1930329480" label="/signOut"/>

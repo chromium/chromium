@@ -226,7 +226,8 @@ function createRoutes(): SettingsRoutes {
           loadTimeData.getString('yourSavedInfoPageTitle'));
 
       r.PAYMENTS = r.YOUR_SAVED_INFO.createChild('/payments');
-      r.ADDRESSES = r.YOUR_SAVED_INFO.createChild('/addresses');
+      r.YOUR_SAVED_INFO_CONTACT_INFO =
+          r.YOUR_SAVED_INFO.createChild('/contactInfo');
       r.YOUR_SAVED_INFO_IDENTITY_DOCS =
           r.YOUR_SAVED_INFO.createChild('/identityDocs');
       r.YOUR_SAVED_INFO_TRAVEL = r.YOUR_SAVED_INFO.createChild('/travel');

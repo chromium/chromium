@@ -45,6 +45,7 @@ inline constexpr char kChromeUIActivateSafetyCheckSettingsURL[] =
 inline constexpr char kChromeUIActorInternalsHost[] = "actor-internals";
 inline constexpr char kChromeUIActorOverlayHost[] = "actor-overlay";
 inline constexpr char kChromeUIActorOverlayURL[] = "chrome://actor-overlay";
+inline constexpr char kChromeUIAddressesPath[] = "/addresses";
 inline constexpr char kChromeUIAllSitesPath[] = "/content/all";
 inline constexpr char kChromeUIAppIconHost[] = "app-icon";
 inline constexpr char kChromeUIAppIconURL[] = "chrome://app-icon/";
@@ -84,6 +85,7 @@ inline constexpr char kChromeUIConnectorsInternalsHost[] =
     "connectors-internals";
 inline constexpr char kChromeUIConstrainedHTMLTestURL[] =
     "chrome://constrained-test/";
+inline constexpr char kChromeUIContactInfoPath[] = "/contactInfo";
 inline constexpr char kChromeUIContextualTasksHost[] = "contextual-tasks";
 inline constexpr char kChromeUIContextualTasksURL[] =
     "chrome://contextual-tasks/";

@@ -67,9 +67,9 @@ suite('YourSavedInfoPageIndex', function() {
     await microtasksFinished();
     assertActiveView('payments');
 
-    Router.getInstance().navigateTo(routes.ADDRESSES);
+    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_CONTACT_INFO);
     await microtasksFinished();
-    assertActiveView('addresses');
+    assertActiveView('contactInfo');
 
     // <if expr="is_win or is_macosx">
     Router.getInstance().navigateTo(routes.PASSKEYS);

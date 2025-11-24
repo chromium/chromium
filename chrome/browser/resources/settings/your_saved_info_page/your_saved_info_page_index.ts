@@ -68,9 +68,9 @@ export class SettingsYourSavedInfoPageIndexElement extends
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
           break;
-        case routes.ADDRESSES:
+        case routes.YOUR_SAVED_INFO_CONTACT_INFO:
           this.$.viewManager.switchView(
-              'addresses', 'no-animation', 'no-animation');
+              'contactInfo', 'no-animation', 'no-animation');
           break;
         case routes.YOUR_SAVED_INFO_IDENTITY_DOCS:
           this.$.viewManager.switchView(

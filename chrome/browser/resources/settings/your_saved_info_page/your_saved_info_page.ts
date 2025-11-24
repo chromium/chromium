@@ -388,8 +388,9 @@ export class SettingsYourSavedInfoPageElement extends
     if (routes.PAYMENTS) {
       map.set(routes.PAYMENTS.path, '#paymentManagerButton');
     }
-    if (routes.ADDRESSES) {
-      map.set(routes.ADDRESSES.path, '#addressesManagerButton');
+    if (routes.YOUR_SAVED_INFO_CONTACT_INFO) {
+      map.set(
+          routes.YOUR_SAVED_INFO_CONTACT_INFO.path, '#addressesManagerButton');
     }
 
     return map;
@@ -398,7 +399,7 @@ export class SettingsYourSavedInfoPageElement extends
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     const ids = [
-      'addresses',
+      'contactInfo',
       // <if expr="is_win or is_macosx">
       'passkeys',
       // </if>
@@ -408,7 +409,7 @@ export class SettingsYourSavedInfoPageElement extends
 
     let triggerId: string|null = null;
     switch (childViewId) {
-      case 'addresses':
+      case 'contactInfo':
         triggerId = 'addressesManagerButton';
         break;
       // <if expr="is_win or is_macosx">
@@ -474,7 +475,7 @@ export class SettingsYourSavedInfoPageElement extends
         Router.getInstance().navigateTo(routes.PAYMENTS);
         break;
       case YourSavedInfoDataCategory.CONTACT_INFO:
-        Router.getInstance().navigateTo(routes.ADDRESSES);
+        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_CONTACT_INFO);
         break;
       case YourSavedInfoDataCategory.IDENTITY_DOCS:
         Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_IDENTITY_DOCS);
