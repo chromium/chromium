@@ -75,7 +75,8 @@ public class PageInfoController
         OpenedFromSource.MENU,
         OpenedFromSource.TOOLBAR,
         OpenedFromSource.VR,
-        OpenedFromSource.WEBAPK_SNACKBAR
+        OpenedFromSource.WEBAPK_SNACKBAR,
+        OpenedFromSource.PERMISSION_PROMPT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface OpenedFromSource {
@@ -83,6 +84,7 @@ public class PageInfoController
         int TOOLBAR = 2;
         int VR = 3;
         int WEBAPK_SNACKBAR = 4;
+        int PERMISSION_PROMPT = 5;
     }
 
     @ContentSettingsType.EnumType
@@ -555,6 +557,8 @@ public class PageInfoController
             RecordUserAction.record("MobileWebsiteSettingsOpenedFromVR");
         } else if (source == OpenedFromSource.WEBAPK_SNACKBAR) {
             RecordUserAction.record("MobileWebsiteSettingsOpenedFromWebApkSnackbar");
+        } else if (source == OpenedFromSource.PERMISSION_PROMPT) {
+            RecordUserAction.record("MobileWebsiteSettingsOpenedFromPermissionPrompt");
         } else {
             assert false : "Invalid source passed";
         }

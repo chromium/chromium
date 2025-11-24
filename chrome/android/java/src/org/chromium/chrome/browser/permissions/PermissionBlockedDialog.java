@@ -191,8 +191,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                 activity,
                 webContents,
                 /* contentPublisher= */ null,
-                PageInfoController.OpenedFromSource
-                        .TOOLBAR, // TODO(crbug.com/458351800): Add a new source.
+                PageInfoController.OpenedFromSource.PERMISSION_PROMPT,
                 new ChromePageInfoControllerDelegate(
                         activity,
                         webContents,

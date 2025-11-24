@@ -31193,6 +31193,14 @@ should be able to be added at any place in this file.
   <description>Page Info opened via the menu.</description>
 </action>
 
+<action name="MobileWebsiteSettingsOpenedFromPermissionPrompt">
+  <owner>elklm@chromium.org</owner>
+  <description>
+    The user opened the page info dialog by clicking the manage button in a
+    permission prompt.
+  </description>
+</action>
+
 <action name="MobileWebsiteSettingsOpenedFromToolbar">
   <owner>tedchoc@chromium.org</owner>
   <description>
