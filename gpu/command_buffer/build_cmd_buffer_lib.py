@@ -7187,7 +7187,7 @@ extern const NameToFunc g_gles2_function_table[] = {
           continue
         if named_type.GetValidValues():
           code = """%(pre)s%(name)s(
-            valid_%(name)s_table, std::size(valid_%(name)s_table))"""
+            valid_%(name)s_table)"""
         else:
           code = "%(pre)s%(name)s()"
         f.write(code % {
@@ -7210,14 +7210,14 @@ extern const NameToFunc g_gles2_function_table[] = {
             continue
           if named_type.GetDeprecatedValuesES3():
             code = """  %(name)s.RemoveValues(
-      deprecated_%(name)s_table_es3, std::size(deprecated_%(name)s_table_es3));
+      deprecated_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),
             })
           if named_type.GetValidValuesES3():
             code = """  %(name)s.AddValues(
-      valid_%(name)s_table_es3, std::size(valid_%(name)s_table_es3));
+      valid_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),
