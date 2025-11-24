@@ -2657,11 +2657,31 @@ chromium-metrics-reviews@google.com.
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
+    Obsolete: rebucketed and renamed to LastResortAttemptsUntilStaticMatch2 in
+    M144.
+
     Records how many attempts it took to find a last resort fallback font. This
     is attempted when no other specified font could be instantiated to render a
     character. The last resort font from the FontDescription is tried first, and
     then hardcoded system fonts if needed. This histogram counts those hardcoded
     fonts attempts. If no fallback is found, the overflow bucket is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fonts.LastResortAttemptsUntilStaticMatch2"
+    units="attempts" expires_after="2026-05-10">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records how many attempts it took to find a last resort fallback font. This
+    is attempted when no other specified font could be instantiated to render a
+    character. The last resort font from the FontDescription is tried first, and
+    then hardcoded system fonts if needed. This histogram counts those hardcoded
+    fonts attempts. If no fallback is found, the overflow bucket is recorded.
+
+    Replaced Blink.Fonts.LastResortAttemptsUntilStaticMatch in M144 and is a
+    re-bucketed version of that histogram.
   </summary>
 </histogram>
 

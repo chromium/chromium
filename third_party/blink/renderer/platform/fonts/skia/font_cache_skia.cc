@@ -232,6 +232,7 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
     font_platform_data = FontCache::CreateFontPlatformDataForCharacter(
         skia::DefaultFontMgr().get(), ' ', description, nullptr,
         FontFallbackPriority::kText);
+    ++last_resort_fallback_attempt;
   }
 #endif
 
@@ -241,16 +242,17 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
         skia::DefaultFontMgr()->legacyMakeTypeface(nullptr,
                                                    description.SkiaFontStyle()),
         description);
+    ++last_resort_fallback_attempt;
   }
 
-  // 0 <= last_resort_fallback_attempt <= 8, so set the max to 9 and put failed
-  // attempts in that bucket.
-  static const int kMaxAttempts = 9;
+  // 0 <= last_resort_fallback_attempt <= 10 (9 on linux), so set the max to 11
+  // and put failed attempts in that bucket.
+  static const int kMaxAttempts = 11;
   if (!font_platform_data) {
     last_resort_fallback_attempt = kMaxAttempts;
   }
   base::UmaHistogramExactLinear(
-      "Blink.Fonts.LastResortAttemptsUntilStaticMatch",
+      "Blink.Fonts.LastResortAttemptsUntilStaticMatch2",
       last_resort_fallback_attempt, kMaxAttempts);
   base::UmaHistogramBoolean("Blink.Fonts.LastResortFallbackFound",
                             font_platform_data != nullptr);
