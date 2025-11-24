@@ -161,7 +161,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:weak_ptr",
   "//third_party/webrtc/rtc_base/network:received_packet",
   "//third_party/webrtc/rtc_base/system:rtc_export",
-  "//third_party/webrtc/rtc_base/third_party/sigslot",
   "//third_party/webrtc/stats",
   "//third_party/webrtc/stats:rtc_stats",
   "//third_party/webrtc/stats:rtc_stats_test_utils",
