@@ -14203,6 +14203,7 @@ from previous Chrome versions.
   <int value="6332888" label="PrivateNetworkAccessSendPreflights:enabled"/>
   <int value="6429231" label="SysUiShouldHoldbackDriveIntegration:disabled"/>
   <int value="6523501" label="lacros-availability-ignore"/>
+  <int value="6735757" label="EnableExtensionInstallPolicyFetching:disabled"/>
   <int value="7310536" label="WebFeedSort:enabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
@@ -15992,6 +15993,7 @@ from previous Chrome versions.
   <int value="643725031" label="disable-touch-feedback"/>
   <int value="643930230"
       label="SegmentationPlatformAndroidHomeModuleRankerV2:enabled"/>
+  <int value="644057109" label="EnableExtensionInstallPolicyFetching:enabled"/>
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="644367202" label="SafetyHubHaTSOneOffSurvey:disabled"/>

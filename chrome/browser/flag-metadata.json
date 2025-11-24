@@ -3621,6 +3621,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-extension-install-policy-fetching",
+    "owners": ["nicolaso@google.com", "cec-growth@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "enable-extensions-explicit-browser-signin",
     "owners": ["kelvinjiang@chromium.org"],
     "expiry_milestone": 145

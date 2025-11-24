@@ -9196,6 +9196,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExperimentalCookieFeaturesDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableExperimentalCookieFeaturesChoices)},
 
+    {"enable-extension-install-policy-fetching",
+     flag_descriptions::kEnableExtensionInstallPolicyFetchingName,
+     flag_descriptions::kEnableExtensionInstallPolicyFetchingDescription,
+     kOsWin | kOsMac | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         policy::features::kEnableExtensionInstallPolicyFetching)},
+
     {"canvas-2d-layers", flag_descriptions::kCanvas2DLayersName,
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableCanvas2DLayers)},

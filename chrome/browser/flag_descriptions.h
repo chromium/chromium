@@ -617,6 +617,12 @@ inline constexpr char kEnableCrossDevicePrefTrackerDescription[] =
     "Enables the tracking and sharing of select non-syncing preference values "
     "across a user's signed-in devices.";
 
+inline constexpr char kEnableExtensionInstallPolicyFetchingName[] =
+    "Enable Extension Install Policy Fetching";
+inline constexpr char kEnableExtensionInstallPolicyFetchingDescription[] =
+    "Enables fetching of extension install policies from the cloud for the "
+    "ExtensionInstallCloudPolicyChecksEnabled policy.";
+
 inline constexpr char kD3D12VideoEncoderName[] = "Use D3D12 video encoder";
 inline constexpr char kD3D12VideoEncoderDescription[] =
     "Enables D3D12 video encoding. The system might still fall back to "
