@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.CharacterCount" units="int"
-    expires_after="2026-03-24">
+    expires_after="2026-05-24">
   <owner>gjc@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.Download.LanguagePair"
-    units="int" expires_after="2026-03-22">
+    units="int" expires_after="2026-05-24">
   <owner>gjc@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialState" enum="TranslateState"
-    expires_after="2026-03-24">
+    expires_after="2026-05-24">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

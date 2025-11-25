@@ -1164,7 +1164,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CountryCode.MissingVariationData"
-    enum="ChromeOSFallbackCountry" expires_after="2026-03-20">
+    enum="ChromeOSFallbackCountry" expires_after="2026-05-24">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -1180,7 +1180,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CountryCode.VPDRegionSplittingOutcome"
-    enum="BooleanSuccess" expires_after="2026-03-20">
+    enum="BooleanSuccess" expires_after="2026-05-24">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -2031,7 +2031,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AttachmentType.{Form}" enum="AttachmentType"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -2726,7 +2726,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Liveness.PingResult" enum="BooleanSuccess"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>iby@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -3700,7 +3700,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.{Modifier}RemappedTo.Changed"
-    enum="KeyboardModifierRemappingKeys" expires_after="2026-03-22">
+    enum="KeyboardModifierRemappingKeys" expires_after="2026-05-24">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -3752,7 +3752,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Changed"
-    enum="SixPackKeyModifier" expires_after="2026-03-22">
+    enum="SixPackKeyModifier" expires_after="2026-05-24">
   <owner>michaelcheco@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -3777,7 +3777,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Initial"
-    enum="SixPackKeyModifier" expires_after="2026-03-22">
+    enum="SixPackKeyModifier" expires_after="2026-05-24">
   <owner>michaelcheco@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>

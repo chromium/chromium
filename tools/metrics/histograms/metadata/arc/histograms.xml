@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.App.LowMemoryKills.{ArcAppKillType}Count10Minutes"
-    units="Apps" expires_after="2026-03-22">
+    units="Apps" expires_after="2026-05-24">
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
   <summary>
@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.App.LowMemoryKills{ArcAppKillDailyBackgroundVms}{ArcAppKillDailyType}"
-    units="Apps" expires_after="2026-03-22">
+    units="Apps" expires_after="2026-05-24">
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
   <summary>
@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppCount" units="units" expires_after="2026-03-22">
+<histogram name="Arc.AppCount" units="units" expires_after="2026-05-24">
   <owner>khmel@google.com</owner>
   <owner>fahdi@google.com</owner>
   <summary>
@@ -672,7 +672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemand.ActivationIsDelayed" enum="Boolean"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -964,7 +964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>jhorwich@google.com</owner>
   <owner>shobnah@google.com</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DlcInstaller.Install" enum="BooleanSuccess"
-    expires_after="2026-03-24">
+    expires_after="2026-05-24">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DlcInstaller.InstallTime" units="ms"
-    expires_after="2026-03-24">
+    expires_after="2026-05-24">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1127,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Background" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
@@ -1139,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>

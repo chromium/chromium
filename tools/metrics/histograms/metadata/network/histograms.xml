@@ -4257,7 +4257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.Domains" units="count"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4279,7 +4279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.InterworkingDurationMillis"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-05-24">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4323,7 +4323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.Origin" enum="PasspointOrigin"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4333,7 +4333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.ProvisioningResult"
-    enum="PasspointProvisioningResult" expires_after="2026-03-22">
+    enum="PasspointProvisioningResult" expires_after="2026-05-24">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>

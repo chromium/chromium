@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1262,7 +1262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.BlockedByFilterURL"
-    enum="RenderProcessHostBlockedURLReason" expires_after="2026-02-05">
+    enum="RenderProcessHostBlockedURLReason" expires_after="2026-05-24">
   <owner>creis@chromium.org</owner>
   <owner>site-isolation-dev@chromium.org</owner>
   <summary>
@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessEvictedOtherSpare"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
@@ -1741,7 +1741,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames"
-    units="frames" expires_after="2026-03-22">
+    units="frames" expires_after="2026-05-24">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -2158,7 +2158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.OpenDuration" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2183,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.OpenTrigger" enum="SidePanelOpenTrigger"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2266,7 +2266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ShowTriggered"
-    enum="SidePanelOpenTrigger" expires_after="2026-03-22">
+    enum="SidePanelOpenTrigger" expires_after="2026-05-24">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

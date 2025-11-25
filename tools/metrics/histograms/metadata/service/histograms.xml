@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.CloneResponseForFetchHandlerCancelled"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransferResult"
-    enum="RaceNetworkRequestDataTransferResult" expires_after="2026-03-22">
+    enum="RaceNetworkRequestDataTransferResult" expires_after="2026-05-24">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.IsCloningDataFinishedBeforeResponseComplete"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -655,7 +655,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.GetClient.SharedWorkerScript.IsBlob"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1369,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Registration.Delete.Initiator"
-    enum="ServiceWorkerRegistrationDeleteInitiator" expires_after="2026-01-25">
+    enum="ServiceWorkerRegistrationDeleteInitiator" expires_after="2026-05-24">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1564,7 +1564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.StartTiming.ClockConsistency{ServiceWorker_StartSituation2}"
-    enum="CrossProcessTimeDelta" expires_after="2026-02-22">
+    enum="CrossProcessTimeDelta" expires_after="2026-05-24">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1804,7 +1804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StaticRouter.{Resource}.CacheLookupDuration"
-    units="microseconds" expires_after="2026-03-22">
+    units="microseconds" expires_after="2026-05-24">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

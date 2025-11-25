@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-05-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.HeadersSize.Register{Type}" units="bytes"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

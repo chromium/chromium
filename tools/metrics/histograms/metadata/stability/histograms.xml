@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.SystemExitReason{AndroidProcessExitReasons}"
-    enum="AndroidProcessExitReason" expires_after="2026-03-22">
+    enum="AndroidProcessExitReason" expires_after="2026-05-24">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Crash.ExitCode"
-    enum="WindowsExitCode" expires_after="2026-03-22">
+    enum="WindowsExitCode" expires_after="2026-05-24">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
-    enum="LaunchErrorCodes" expires_after="2026-03-22">
+    enum="LaunchErrorCodes" expires_after="2026-05-24">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.WinLastError"
-    enum="WinGetLastError" expires_after="2026-03-22">
+    enum="WinGetLastError" expires_after="2026-05-24">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.HostedContentType"
-    enum="RendererHostedContentType" expires_after="2026-03-22">
+    enum="RendererHostedContentType" expires_after="2026-05-24">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -723,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.{HostedContentType}"
-    enum="TerminationStatus" expires_after="2026-03-22">
+    enum="TerminationStatus" expires_after="2026-05-24">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

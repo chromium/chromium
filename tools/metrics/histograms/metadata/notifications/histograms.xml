@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorPrimaryStatus"
     enum="NotificationHelperNotificationActivatorPrimaryStatus"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

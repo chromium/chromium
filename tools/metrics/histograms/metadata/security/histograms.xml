@@ -946,7 +946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2026-03-22">
+    units="processes" expires_after="2026-05-24">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -959,7 +959,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsPasswordFormSubmittedInDedicatedProcess"
-    enum="SiteIsolationIsDedicatedProcess" expires_after="2026-03-22">
+    enum="SiteIsolationIsDedicatedProcess" expires_after="2026-05-24">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>

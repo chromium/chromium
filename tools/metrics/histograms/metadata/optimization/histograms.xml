@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount.{RequestContext}"
-    units="total url count" expires_after="2026-03-22">
+    units="total url count" expires_after="2026-05-24">
   <owner>rajendrant@chromium.org</owner>
   <owner>catliu@chromium.org</owner>
   <summary>
@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>rajendrant@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -1069,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceDestroyedWhileWaitingForResponseTime.{ModelExecutionFeature}"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-05-24">
   <owner>holte@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>

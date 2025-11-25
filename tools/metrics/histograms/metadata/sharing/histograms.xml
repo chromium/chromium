@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.Android.Origin" enum="ShareOrigin"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>jinsukkim@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

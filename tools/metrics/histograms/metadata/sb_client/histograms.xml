@@ -420,7 +420,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}MalwareDeepScanResult2.{trigger}"
-    enum="SBClientDownloadCheckResult" expires_after="2026-03-22">
+    enum="SBClientDownloadCheckResult" expires_after="2026-05-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -535,7 +535,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.ClientSideDetection.AsyncCheckTriggerForceRequestResult"
-    enum="AsyncCheckTriggerForceRequestResult" expires_after="2026-03-22">
+    enum="AsyncCheckTriggerForceRequestResult" expires_after="2026-05-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -888,7 +888,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure"
     enum="OptimizationGuideOnDeviceModelEligibilityReason"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1203,7 +1203,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo"
-    enum="BooleanForceRequest" expires_after="2026-03-22">
+    enum="BooleanForceRequest" expires_after="2026-05-24">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

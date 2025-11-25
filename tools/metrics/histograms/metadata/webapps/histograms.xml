@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1037,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1195,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.ByUserNotLocallyInstalled" units="count"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

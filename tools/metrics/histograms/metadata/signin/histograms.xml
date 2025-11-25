@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.FetchLatency" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.ImmediatelyAvailable"
-    enum="BooleanAvailable" expires_after="2026-03-22">
+    enum="BooleanAvailable" expires_after="2026-05-24">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.UserVisibleLatency" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.{Priority}.FetchResult"
-    enum="AccountCapabilitiesFetchResult" expires_after="2026-03-22">
+    enum="AccountCapabilitiesFetchResult" expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction"
-    enum="AccountConsistencyPromoAction" expires_after="2026-03-22">
+    enum="AccountConsistencyPromoAction" expires_after="2026-05-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -547,7 +547,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountTracker.GaiaIdMigrationState"
-    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2026-03-22">
+    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2026-05-24">
   <owner>msarda@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -594,7 +594,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountType.SigninConsent" enum="SigninAccountType"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <summary>
@@ -650,7 +650,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AddAccountToDevice.Result"
-    enum="SigninAddAccountToDeviceResult" expires_after="2026-03-22">
+    enum="SigninAddAccountToDeviceResult" expires_after="2026-05-24">
   <owner>jlebel@google.com</owner>
   <owner>msarda@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -671,7 +671,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AddAccountToDevice.{Result}.Duration" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>jlebel@google.com</owner>
   <owner>msarda@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -699,7 +699,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1128,7 +1128,7 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.BoundSessionCredentials.SessionRegistrationTotalDuration"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1577,7 +1577,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Extensions.GetAuthTokenResult{GetAuthTokenType}"
-    enum="GetAuthTokenResult" expires_after="2026-03-22">
+    enum="GetAuthTokenResult" expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1665,7 +1665,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccessTokenFinished" enum="GoogleServiceAuthError"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -1924,7 +1924,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.Heuristic.SupervisionState.{InterceptType}"
-    enum="SinginInterceptSupervisionState" expires_after="2026-03-22">
+    enum="SinginInterceptSupervisionState" expires_after="2026-05-24">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1947,7 +1947,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.HeuristicOutcome"
-    enum="SigninInterceptHeuristicOutcome" expires_after="2026-03-22">
+    enum="SigninInterceptHeuristicOutcome" expires_after="2026-05-24">
   <owner>droger@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -1957,7 +1957,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.InterceptResult.ChromeSignin{State}"
-    enum="SigninInterceptResult" expires_after="2026-03-22">
+    enum="SigninInterceptResult" expires_after="2026-05-24">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1977,7 +1977,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.InterceptResult.Enterprise{Mode}.{Status}"
-    enum="SigninInterceptResult" expires_after="2026-03-22">
+    enum="SigninInterceptResult" expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -2000,7 +2000,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.InterceptResult.{InterceptType}{SigninState}"
-    enum="SigninInterceptResult" expires_after="2026-03-22">
+    enum="SigninInterceptResult" expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -2760,7 +2760,7 @@ should be kept to monitor/debug signin Multilogin issues-->
 </histogram>
 
 <histogram name="Signin.Reconciler.Operation" enum="SigninReconcilerOperation"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -2871,7 +2871,7 @@ accounts .-->
 </histogram>
 
 <histogram name="Signin.ScopeLimitedErrorSuppressed" enum="Boolean"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>triploblastic@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2949,7 +2949,7 @@ OAuth Multilogin call. -->
 
 <histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.DurationBetweenTwoSigninCoordinatorCreation"
-    units="ms" expires_after="2026-03-08">
+    units="ms" expires_after="2026-05-24">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -2962,7 +2962,7 @@ OAuth Multilogin call. -->
 
 <histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.{View}AccessPoint"
-    enum="SigninAccessPoint" expires_after="2026-03-08">
+    enum="SigninAccessPoint" expires_after="2026-05-24">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -3513,7 +3513,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncOptIn.Completed" enum="SigninAccessPoint"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -3586,7 +3586,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncOptIn.Started" enum="SigninAccessPoint"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -3628,7 +3628,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncTurnOff.Completed" enum="SigninSignoutProfile"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -3734,7 +3734,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 </histogram>
 
 <histogram name="Signin.TokenTable.RemoveOtherTokensCount" units="tokens"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -3746,7 +3746,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 </histogram>
 
 <histogram name="Signin.TokenTable.SetTokenResult"
-    enum="SigninTokenTableWriteTokenToDBResult" expires_after="2026-03-22">
+    enum="SigninTokenTableWriteTokenToDBResult" expires_after="2026-05-24">
   <owner>wfh@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

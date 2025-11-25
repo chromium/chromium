@@ -19,7 +19,7 @@ histograms along with a detailed description for each histogram.
 </variants>
 
 <histogram name="OnDeviceModel.Android.GenerateResult{ModelExecutionFeature}"
-    enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-01-28">
+    enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-05-24">
   <owner>ssid@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadDlcStatus"
-    enum="EmbeddingModelLoadDlcStatus" expires_after="2026-02-22">
+    enum="EmbeddingModelLoadDlcStatus" expires_after="2026-05-24">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>

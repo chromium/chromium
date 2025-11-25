@@ -1845,7 +1845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Files.Count" units="files"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>joelhockey@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1925,7 +1925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.Size" units="KB"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -2134,7 +2134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.Eligible" enum="Boolean"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>lazzzis@google.com</owner>
   <owner>edge-to-edge@chromium.org</owner>
   <summary>
@@ -2453,7 +2453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.AuthResult"
-    enum="DeviceAuthFinalResult" expires_after="2026-03-22">
+    enum="DeviceAuthFinalResult" expires_after="2026-05-24">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2463,7 +2463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.PrefToggledFromSettingPage"
-    enum="IncognitoReauthToggleValueType" expires_after="2026-03-22">
+    enum="IncognitoReauthToggleValueType" expires_after="2026-05-24">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2570,7 +2570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.EventsAfterTransfer"
-    enum="MotionEventAction" expires_after="2026-03-22">
+    enum="MotionEventAction" expires_after="2026-05-24">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2648,7 +2648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer"
-    units="counts" expires_after="2026-03-22">
+    units="counts" expires_after="2026-05-24">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2677,7 +2677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.InputReceiverCreationResult"
-    enum="CreateAndroidInputReceiverResult" expires_after="2026-03-22">
+    enum="CreateAndroidInputReceiverResult" expires_after="2026-05-24">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2845,7 +2845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.MainFrameIntentLaunch"
-    enum="MainFrameIntentLaunch" expires_after="2026-03-22">
+    enum="MainFrameIntentLaunch" expires_after="2026-05-24">
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2867,7 +2867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.ShareIntentUrlCount" units="URLs"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@google.com</owner>
   <summary>
@@ -3073,7 +3073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Dismissed{MessageIdentifier}"
-    enum="MessageDismissReason" expires_after="2026-03-22">
+    enum="MessageDismissReason" expires_after="2026-05-24">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -3247,7 +3247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -3547,7 +3547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiWindowMode.DraggedTabOpenedNewWindow"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -4408,7 +4408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PageContentProtoViewStructureBuilder.Result"
-    enum="BooleanSuccess" expires_after="2026-03-15">
+    enum="BooleanSuccess" expires_after="2026-05-24">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
   <summary>
@@ -4654,7 +4654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoadTime.FirstPaired" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5485,7 +5485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.StorageSystem.Type" enum="AndroidStorageSystemType"
-    expires_after="2026-03-22">
+    expires_after="2026-05-24">
   <owner>yfriedman@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>

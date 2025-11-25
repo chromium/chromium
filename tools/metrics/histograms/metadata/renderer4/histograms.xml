@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2026-03-22">
+    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2026-03-22">
+    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
