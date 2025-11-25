@@ -12,6 +12,7 @@ import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -27,6 +28,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpThemeColorUtilsUnitTest {
+    private static final int COLOR_LIST_SIZE = NtpThemeColorId.NUM_ENTRIES - 1;
     private Context mContext;
 
     @Before
@@ -53,21 +56,23 @@ public class NtpThemeColorUtilsUnitTest {
         List<NtpThemeColorInfo> colorList =
                 NtpThemeColorUtils.createThemeColorListForTesting(mContext);
         assertEquals(2, colorList.size());
-        assertEquals(NtpThemeColorId.LIGHT_BLUE, colorList.get(0).id);
-        assertEquals(NtpThemeColorId.BLUE, colorList.get(1).id);
+        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, colorList.get(0).id);
+        assertEquals(NtpThemeColorId.NTP_COLORS_BLUE, colorList.get(1).id);
     }
 
     @Test
     public void testCreateNtpThemeColorInfo() {
         NtpThemeColorInfo lightBlueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA);
         assertNotNull(lightBlueInfo);
-        assertEquals(NtpThemeColorId.LIGHT_BLUE, lightBlueInfo.id);
+        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, lightBlueInfo.id);
 
         NtpThemeColorInfo blueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_BLUE);
         assertNotNull(blueInfo);
-        assertEquals(NtpThemeColorId.BLUE, blueInfo.id);
+        assertEquals(NtpThemeColorId.NTP_COLORS_BLUE, blueInfo.id);
 
         NtpThemeColorInfo invalidInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, -1);
         assertNull(invalidInfo);
@@ -76,15 +81,18 @@ public class NtpThemeColorUtilsUnitTest {
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorNull() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                /* primaryColorInfo= */ null, RecyclerView.NO_POSITION, /* expectedSize= */ 2);
+                /* primaryColorInfo= */ null,
+                RecyclerView.NO_POSITION,
+                /* expectedSize= */ COLOR_LIST_SIZE);
     }
 
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorExist() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE),
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA),
                 /* expectedIndex= */ 1,
-                /* expectedSize= */ 2);
+                /* expectedSize= */ COLOR_LIST_SIZE);
     }
 
     @Test
@@ -95,8 +103,8 @@ public class NtpThemeColorUtilsUnitTest {
 
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor),
-                /* expectedIndex= */ 2,
-                /* expectedSize= */ 3);
+                /* expectedIndex= */ COLOR_LIST_SIZE,
+                /* expectedSize= */ COLOR_LIST_SIZE + 1);
     }
 
     @Test
@@ -106,7 +114,7 @@ public class NtpThemeColorUtilsUnitTest {
                 new NtpThemeColorFromHexInfo(
                         mContext, NtpThemeColorInfo.COLOR_NOT_SET, primaryColor),
                 RecyclerView.NO_POSITION,
-                /* expectedSize= */ 2);
+                /* expectedSize= */ COLOR_LIST_SIZE);
     }
 
     @Test
@@ -117,7 +125,8 @@ public class NtpThemeColorUtilsUnitTest {
         int originalSize = 1;
         assertEquals(originalSize, colorList.size());
         NtpThemeColorInfo primaryColor =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
@@ -141,30 +150,23 @@ public class NtpThemeColorUtilsUnitTest {
 
     @Test
     public void testGetNtpThemePrimaryColorFromPreBuiltColors() {
-        @ColorInt
-        int lightBluePrimaryColor =
-                NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, NtpThemeColorId.LIGHT_BLUE);
-        assertEquals(
-                mContext.getColor(R.color.ntp_color_light_blue_primary), lightBluePrimaryColor);
-
-        @ColorInt
-        int bluePrimaryColor =
-                NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, NtpThemeColorId.BLUE);
-        assertEquals(mContext.getColor(R.color.ntp_color_blue_primary), bluePrimaryColor);
-
-        assertNull(NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, -1));
+        @ColorRes
+        int aquaPrimaryColorResId =
+                NtpThemeColorUtils.getNtpThemePrimaryColorResId(NtpThemeColorId.NTP_COLORS_AQUA);
+        assertEquals(R.color.ntp_color_aqua_primary, aquaPrimaryColorResId);
     }
 
     @Test
     public void testIsPrimaryColorMatched_primaryColorFromHex() {
         @ColorInt
-        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_aqua_primary);
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
         NtpThemeColorFromHexInfo primaryColorInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
 
         NtpThemeColorInfo lightBlueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
         assertEquals(
                 false, NtpThemeColorUtils.isPrimaryColorMatched(mContext, primaryColorInfo, null));
@@ -201,11 +203,14 @@ public class NtpThemeColorUtilsUnitTest {
     @Test
     public void testIsPrimaryColorMatched_primaryColorFromPreBuildColors() {
         NtpThemeColorInfo primaryColorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA);
         NtpThemeColorInfo lightBlueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_AQUA);
         NtpThemeColorInfo blueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_BLUE);
 
         assertEquals(
                 false, NtpThemeColorUtils.isPrimaryColorMatched(mContext, primaryColorInfo, null));
@@ -218,7 +223,7 @@ public class NtpThemeColorUtilsUnitTest {
                         mContext, primaryColorInfo, lightBlueInfo));
 
         @ColorInt
-        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_aqua_primary);
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
         NtpThemeColorFromHexInfo anotherHexColorInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
@@ -239,9 +244,10 @@ public class NtpThemeColorUtilsUnitTest {
                 NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, null));
 
         NtpThemeColorInfo blueInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.BLUE);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorId.NTP_COLORS_BLUE);
         assertEquals(
-                mContext.getColor(R.color.ntp_color_blue_background),
+                SemanticColorUtils.getColorSurfaceContainerHigh(mContext),
                 NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, blueInfo));
 
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);

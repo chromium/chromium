@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ import java.util.List;
 /** Utility class for Chrome NTP's theme colors. */
 @NullMarked
 public class NtpThemeColorUtils {
+    private static final int INVALID_ID = 0;
+
     /**
      * Creates a {@link NtpThemeColorInfo} instance for the given color Id.
      *
@@ -34,36 +38,36 @@ public class NtpThemeColorUtils {
      */
     public static @Nullable NtpThemeColorInfo createNtpThemeColorInfo(
             Context context, @NtpThemeColorId int colorId) {
-        // TODO(https://crbug.com/423579377): Updates the colors here and adds the entire list of
-        // colors.
-        switch (colorId) {
-            case NtpThemeColorId.LIGHT_BLUE:
-                return new NtpThemeColorInfo(
-                        context,
-                        NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE,
-                        R.color.ntp_color_light_blue_background,
-                        R.color.ntp_color_light_blue_primary);
-            case NtpThemeColorId.BLUE:
-                return new NtpThemeColorInfo(
-                        context,
-                        NtpThemeColorInfo.NtpThemeColorId.BLUE,
-                        R.color.ntp_color_blue_background,
-                        R.color.ntp_color_blue_primary);
-            default:
-                return null;
+        if (colorId < NtpThemeColorId.NTP_COLORS_BLUE || colorId >= NtpThemeColorId.NUM_ENTRIES) {
+            return null;
         }
+
+        return new NtpThemeColorInfo(context, colorId);
     }
 
-    /** Gets the primary color for the theme color id if exists, null otherwise. */
-    public static @Nullable @ColorInt Integer getNtpThemePrimaryColor(
-            Context context, @NtpThemeColorId int colorId) {
+    /** Gets the primary color for the theme color id if exists, INVALID_ID otherwise. */
+    public static @ColorRes int getNtpThemePrimaryColorResId(@NtpThemeColorId int colorId) {
         switch (colorId) {
-            case NtpThemeColorId.LIGHT_BLUE:
-                return context.getColor(R.color.ntp_color_light_blue_primary);
-            case NtpThemeColorId.BLUE:
-                return context.getColor(R.color.ntp_color_blue_primary);
+            case NtpThemeColorId.NTP_COLORS_BLUE:
+                return R.color.ntp_color_blue_primary;
+            case NtpThemeColorId.NTP_COLORS_AQUA:
+                return R.color.ntp_color_aqua_primary;
+            case NtpThemeColorId.NTP_COLORS_GREEN:
+                return R.color.ntp_color_green_primary;
+            case NtpThemeColorId.NTP_COLORS_VIRIDIAN:
+                return R.color.ntp_color_viridian_primary;
+            case NtpThemeColorId.NTP_COLORS_CITRON:
+                return R.color.ntp_color_citron_primary;
+            case NtpThemeColorId.NTP_COLORS_ORANGE:
+                return R.color.ntp_color_orange_primary;
+            case NtpThemeColorId.NTP_COLORS_ROSE:
+                return R.color.ntp_color_rose_primary;
+            case NtpThemeColorId.NTP_COLORS_FUCHSIA:
+                return R.color.ntp_color_fuchsia_primary;
+            case NtpThemeColorId.NTP_COLORS_VIOLET:
+                return R.color.ntp_color_violet_primary;
             default:
-                return null;
+                return INVALID_ID;
         }
     }
 
@@ -156,7 +160,9 @@ public class NtpThemeColorUtils {
         if (colorInfo instanceof NtpThemeColorFromHexInfo) {
             return ((NtpThemeColorFromHexInfo) colorInfo).backgroundColor;
         }
-        return context.getColor(colorInfo.backgroundColorResId);
+
+        // Use ?attr/colorSurfaceContainerHigh for NTP's background color for color theme.
+        return SemanticColorUtils.getColorSurfaceContainerHigh(context);
     }
 
     /**
@@ -205,8 +211,11 @@ public class NtpThemeColorUtils {
     public static List<NtpThemeColorInfo> createThemeColorListForTesting(Context context) {
         List<NtpThemeColorInfo> colorList = new ArrayList<>();
         colorList.add(
-                createNtpThemeColorInfo(context, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE));
-        colorList.add(createNtpThemeColorInfo(context, NtpThemeColorInfo.NtpThemeColorId.BLUE));
+                createNtpThemeColorInfo(
+                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA));
+        colorList.add(
+                createNtpThemeColorInfo(
+                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE));
         return colorList;
     }
 }

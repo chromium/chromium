@@ -230,9 +230,11 @@ public class NtpCustomizationUtils {
 
         if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
             @NtpThemeColorId int colorId = getNtpThemeColorIdFromSharedPreference();
-            if (colorId == NtpThemeColorId.DEFAULT) return null;
+            if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
+                return null;
+            }
 
-            return NtpThemeColorUtils.getNtpThemePrimaryColor(context, colorId);
+            return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
         }
 
         @ColorInt int color = getCustomizedPrimaryColorFromSharedPreference();
@@ -244,7 +246,8 @@ public class NtpCustomizationUtils {
         if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
 
         @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
-        if (imageType == NtpBackgroundImageType.DEFAULT) {
+        if (imageType != NtpBackgroundImageType.CHROME_COLOR
+                && imageType != NtpBackgroundImageType.COLOR_FROM_HEX) {
             return null;
         }
 

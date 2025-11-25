@@ -298,7 +298,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet() {
-        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
                 NtpBackgroundImageType.CHROME_COLOR);
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
@@ -346,7 +346,7 @@ public class NtpCustomizationUtilsUnitTest {
         // Verifies that null is returned when color id isn't set.
         assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
 
-        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
 
@@ -378,6 +378,7 @@ public class NtpCustomizationUtilsUnitTest {
 
         @ColorInt int primaryColor = Color.RED;
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(COLOR_FROM_HEX);
 
         // Verifies that the primary color from the loaded results matches.
         NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
@@ -518,7 +519,7 @@ public class NtpCustomizationUtilsUnitTest {
         // Test cases in light mode:
 
         // Verifies that when the primary color is missing, no tint color is set in light mode.
-        @NtpThemeColorId int colorId = NtpThemeColorId.LIGHT_BLUE;
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_AQUA;
         NtpThemeColorInfo ntpThemeColorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
         @ColorInt int primaryColor = mContext.getColor(ntpThemeColorInfo.primaryColorResId);
@@ -562,7 +563,7 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpThemeColorId.DEFAULT,
                 NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
 
-        @NtpThemeColorId int id = NtpThemeColorId.LIGHT_BLUE;
+        @NtpThemeColorId int id = NtpThemeColorId.NTP_COLORS_AQUA;
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(id);
         assertEquals(id, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
     }

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -37,27 +38,21 @@ public class NtpThemeColorInfoUnitTest {
 
     @Test
     public void testNtpThemeColorInfo() {
-        NtpThemeColorInfo info =
-                new NtpThemeColorInfo(
-                        mContext,
-                        NtpThemeColorId.LIGHT_BLUE,
-                        R.color.ntp_color_light_blue_background,
-                        R.color.ntp_color_light_blue_primary);
+        NtpThemeColorInfo info = new NtpThemeColorInfo(mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
-        assertEquals(NtpThemeColorId.LIGHT_BLUE, info.id);
-        assertEquals(R.color.ntp_color_light_blue_background, info.backgroundColorResId);
-        assertEquals(R.color.ntp_color_light_blue_primary, info.primaryColorResId);
+        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, info.id);
+        assertEquals(R.color.ntp_color_aqua_primary, info.primaryColorResId);
         assertNotNull(info.iconDrawable);
 
-        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_aqua_primary);
         assertEquals(
-                ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.15f), info.highlightColor);
+                ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.3f), info.highlightColor);
     }
 
     @Test
     public void testNtpThemeColorFromHexInfo() {
-        int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
-        int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);
+        @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
+        @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);
         NtpThemeColorFromHexInfo info =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
 
@@ -65,40 +60,50 @@ public class NtpThemeColorInfoUnitTest {
         assertEquals(primaryColor, info.primaryColor);
         assertNotNull(info.iconDrawable);
         assertEquals(
-                ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.15f), info.highlightColor);
+                ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.3f), info.highlightColor);
     }
 
     @Test
     public void testEquals() {
-        NtpThemeColorInfo lightBlueInfo =
-                new NtpThemeColorInfo(
-                        mContext,
-                        NtpThemeColorId.LIGHT_BLUE,
-                        R.color.ntp_color_light_blue_background,
-                        R.color.ntp_color_light_blue_primary);
+        NtpThemeColorInfo aquaInfo =
+                new NtpThemeColorInfo(mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
-        NtpThemeColorInfo lightBlueInfo2 =
-                new NtpThemeColorInfo(
-                        mContext,
-                        NtpThemeColorId.LIGHT_BLUE,
-                        R.color.ntp_color_light_blue_background,
-                        R.color.ntp_color_light_blue_primary);
+        NtpThemeColorInfo aquaInfo2 =
+                new NtpThemeColorInfo(mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
         NtpThemeColorInfo blueInfo =
-                new NtpThemeColorInfo(
-                        mContext,
-                        NtpThemeColorId.BLUE,
-                        R.color.ntp_color_blue_background,
-                        R.color.ntp_color_blue_primary);
+                new NtpThemeColorInfo(mContext, NtpThemeColorId.NTP_COLORS_BLUE);
 
-        assertEquals(lightBlueInfo, lightBlueInfo2);
-        assertNotEquals(lightBlueInfo, blueInfo);
-        assertNotEquals(lightBlueInfo, null);
+        assertEquals(aquaInfo, aquaInfo2);
+        assertNotEquals(aquaInfo, blueInfo);
+        assertNotEquals(aquaInfo, null);
 
         int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
         int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);
         NtpThemeColorFromHexInfo hexInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
-        assertNotEquals(lightBlueInfo, hexInfo);
+        assertNotEquals(aquaInfo, hexInfo);
+    }
+
+    @Test
+    public void testCalculateHighlightColor() {
+        @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);
+        @ColorInt
+        int expectedHighlightColor = ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.3f);
+
+        assertEquals(
+                expectedHighlightColor,
+                NtpThemeColorInfo.calculateHighlightColorForColorPalette(primaryColor));
+    }
+
+    @Test
+    public void testCalculateBackgroundColor() {
+        @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);
+        @ColorInt
+        int expectedBackgroundColor = ColorUtils.setAlphaComponentWithFloat(primaryColor, 0.15f);
+
+        assertEquals(
+                expectedBackgroundColor,
+                NtpThemeColorInfo.calculateBackgroundColorForColorPalette(primaryColor));
     }
 }

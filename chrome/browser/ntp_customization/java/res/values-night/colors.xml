@@ -9,8 +9,13 @@ found in the LICENSE file.
     <color name="ntp_customization_edit_icon_background_color">@color/color_primary_with_alpha_20</color>
 
     <!-- Ntp customization theme colors. -->
-    <color name="ntp_color_light_blue_background">@color/gm3_baseline_surface_container_high_dark</color>
-    <color name="ntp_color_light_blue_primary">@color/baseline_primary_80</color>
-    <color name="ntp_color_blue_background">@color/ntp_color_blue_background_dark</color>
     <color name="ntp_color_blue_primary">@color/ntp_color_blue_primary_dark</color>
+    <color name="ntp_color_aqua_primary">@color/ntp_color_aqua_primary_dark</color>
+    <color name="ntp_color_green_primary">@color/ntp_color_green_primary_dark</color>
+    <color name="ntp_color_viridian_primary">@color/ntp_color_viridian_primary_dark</color>
+    <color name="ntp_color_citron_primary">@color/ntp_color_citron_primary_dark</color>
+    <color name="ntp_color_orange_primary">@color/ntp_color_orange_primary_dark</color>
+    <color name="ntp_color_rose_primary">@color/ntp_color_rose_primary_dark</color>
+    <color name="ntp_color_fuchsia_primary">@color/ntp_color_fuchsia_primary_dark</color>
+    <color name="ntp_color_violet_primary">@color/ntp_color_violet_primary_dark</color>
 </resources>

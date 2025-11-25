@@ -212,8 +212,11 @@ public class StatusBarColorControllerUnitTest {
         @ColorInt
         int defaultNtpBackground = mActivity.getColor(R.color.home_surface_background_color);
         NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mActivity, NtpThemeColorId.LIGHT_BLUE);
-        @ColorInt int currentNtpBackground = mActivity.getColor(colorInfo.backgroundColorResId);
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mActivity, NtpThemeColorId.NTP_COLORS_AQUA);
+        @ColorInt
+        int currentNtpBackground =
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mActivity, colorInfo);
 
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
                 new NtpCustomizationConfigManager();

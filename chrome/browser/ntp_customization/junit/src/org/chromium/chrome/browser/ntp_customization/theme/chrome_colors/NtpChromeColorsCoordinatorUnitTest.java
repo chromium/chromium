@@ -175,7 +175,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         assertNull(primaryColorInfo);
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
-                        mContext, NtpThemeColorInfo.NtpThemeColorId.BLUE);
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
         mCoordinator.onItemClicked(colorInfo);
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
@@ -184,11 +184,11 @@ public class NtpChromeColorsCoordinatorUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnItemClicked_withPrimaryColorSelected() {
-        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
         NtpThemeColorInfo colorInfo1 =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
-                        mContext, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE);
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA);
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
                 NtpBackgroundImageType.CHROME_COLOR);

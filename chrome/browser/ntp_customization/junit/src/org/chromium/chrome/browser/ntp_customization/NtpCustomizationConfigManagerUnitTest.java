@@ -304,11 +304,12 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.addListener(mListener, mContext);
         clearInvocations(mListener);
 
-        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.BLUE;
+        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         @ColorInt
-        int backgroundColor = ContextCompat.getColor(mContext, colorInfo.backgroundColorResId);
+        int backgroundColor =
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
         @ColorInt
         int defaultColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
 
