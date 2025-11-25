@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
@@ -30,6 +31,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/fenced_frame/fenced_frame_viewport_observer.h"
@@ -1320,6 +1322,31 @@ void RenderFrameHostManager::UnloadOldFrame(
       old_page_back_forward_cache_metrics->SetNotRestoredReasons(
           eligibility_including_non_sticky);
     }
+  }
+
+  // If a ViewTransition is in progress, we need to delay the shutdown of
+  // the old process to ensure that the ViewTransition resources are not
+  // cleaned up before they can be used by the new process.
+  //
+  // We use a timeout of 4 seconds to align with the limit defined in
+  // ViewTransitionCommitDeferringCondition. This ensures we give the renderer
+  // time to complete the capture without keeping the process alive indefinitely
+  // if the transition hangs.
+  //
+  // This is well under the required shutdown time of the renderer process
+  // which has security implications if exceeded (https://crbug.com/1177674).
+  //
+  // TODO(crbug.com/460743376): We shouldn't be storing navigation-specific
+  // state on RFH, because RFH exists for a long time after navigation, and
+  // because it can own multiple pending-commit NavigationRequests at the same
+  // time, which might clobber each other.
+  if (features::ShouldAckCOREarlyForViewTransition() &&
+      !old_render_frame_host->GetParentOrOuterDocument() &&
+      render_frame_host_ &&
+      render_frame_host_->did_last_navigation_have_view_transition()) {
+    old_render_frame_host->GetProcess()->DelayProcessShutdown(
+        base::Seconds(4), base::TimeDelta(),
+        old_render_frame_host->GetSiteInstance()->GetSiteInfo());
   }
 
   // Create a replacement proxy for the old RenderFrameHost when we're switching
