@@ -186,7 +186,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
 
     if (!skia_canvas_) {
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          surface_->getCanvas(), GetOrCreateCanvasImageProvider());
+          surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
@@ -1558,7 +1558,7 @@ void CanvasResourceProvider::EnsureSkiaCanvas() {
     return;
 
   skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-      GetSkSurface()->getCanvas(), GetOrCreateCanvasImageProvider());
+      GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
 }
 
 CanvasResourceProvider::CanvasImageProvider*
@@ -1585,7 +1585,7 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
 }
 
 CanvasResourceProvider::CanvasImageProvider*
-CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
+CanvasResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
   if (!IsAccelerated()) {
     return GetOrCreateSWCanvasImageProvider();
   }
@@ -1596,18 +1596,18 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 
   // Callsites are responsible for checking this before invoking this
   // method.
-  CHECK(context_provider_wrapper_);
+  CHECK(ContextProviderWrapper());
 
   // Create an ImageDecodeCache for half float images only if the canvas is
   // using half float back storage.
   cc::ImageDecodeCache* cache_f16 = nullptr;
   if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+    cache_f16 = ContextProviderWrapper()->ContextProvider().ImageDecodeCache(
         kRGBA_F16_SkColorType);
   }
 
   cc::ImageDecodeCache* cache_rgba8 =
-      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+      ContextProviderWrapper()->ContextProvider().ImageDecodeCache(
           kN32_SkColorType);
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(

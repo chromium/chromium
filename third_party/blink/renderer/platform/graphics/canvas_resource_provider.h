@@ -313,7 +313,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void UnacceleratedRasterRecord(cc::PaintRecord);
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
-  CanvasImageProvider* GetOrCreateCanvasImageProvider();
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
@@ -551,6 +550,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnContextDestroyed() override;
 
  private:
+  CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
   // The maximum number of in-flight resources waiting to be used for
