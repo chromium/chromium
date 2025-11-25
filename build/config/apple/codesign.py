@@ -542,6 +542,51 @@ def InstallSystemFramework(framework_path, bundle_path, args):
       ['--deep', '--preserve-metadata=identifier,entitlements,flags'])
 
 
+def VerifyLoadOrder(binary_path, expected_first_framework):
+  """Verifies that the first LC_LOAD_DYLIB in binary_path matches
+  expected_first_framework.
+  """
+  try:
+    output = subprocess.check_output(['otool', '-l', binary_path],
+                                     stderr=subprocess.STDOUT,
+                                     universal_newlines=True)
+  except subprocess.CalledProcessError as e:
+    sys.stderr.write('otool failed: %s\n' % e.output)
+    sys.exit(1)
+
+  first_dylib = None
+  lines = output.splitlines()
+  for i, line in enumerate(lines):
+    if line.strip() == 'cmd LC_LOAD_DYLIB':
+      # The name is usually a few lines down.
+      for j in range(i + 1, min(i + 10, len(lines))):
+        if lines[j].strip().startswith('name '):
+          # Extract path. Format: name /path/to/lib (offset 24)
+          parts = lines[j].strip().split(' ', 1)
+          if len(parts) > 1:
+            name_line = parts[1]
+            # Remove " (offset \d+)"
+            first_dylib = name_line.rsplit(' (offset', 1)[0]
+          break
+      if first_dylib:
+        break
+
+  if not first_dylib:
+    sys.stderr.write(
+        'Error: No LC_LOAD_DYLIB found in %s, but expected %s to be first.\n' %
+        (binary_path, expected_first_framework))
+    sys.exit(1)
+
+  # The framework path ends with .../FrameworkName.framework/FrameworkName
+  expected_suffix = '/%s.framework/%s' % (expected_first_framework,
+                                          expected_first_framework)
+  if not first_dylib.endswith(expected_suffix):
+    sys.stderr.write(
+        'Error: First LC_LOAD_DYLIB in %s is "%s", expected to end with "%s".\n'
+        % (binary_path, first_dylib, expected_suffix))
+    sys.exit(1)
+
+
 def GenerateEntitlements(path, provisioning_profile, bundle_identifier):
   """Generates an entitlements file.
 
@@ -668,6 +713,10 @@ class CodeSignBundleAction(Action):
         'are part of the bundle to codesign. The script will delete any ' +
         'files found that are not listed, and will fail if any files is ' +
         'missing.')
+    parser.add_argument(
+        '--verify-load-order-first',
+        dest='verify_load_order_first',
+        help='verify that the named framework is the first loaded dylib')
     parser.set_defaults(no_signature=False)
 
   @staticmethod
@@ -764,6 +813,9 @@ class CodeSignBundleAction(Action):
     # conditionally, it is difficult to explicit list them all).
     if args.manifest:
       VerifyBundleManifest(bundle, set(args.manifest) | set(created_symlinks))
+
+    if args.verify_load_order_first:
+      VerifyLoadOrder(bundle.binary_path, args.verify_load_order_first)
 
     if args.no_signature:
       return

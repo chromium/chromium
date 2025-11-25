@@ -715,6 +715,8 @@ chrome_app("chrome") {
     orderfile_path = ios_chrome_orderfile
   }
 
+  link_framework_first = "EarlyMallocZoneRegistration"
+
   bundle_deps = [
     "//ios/chrome/app/resources",
     "//ios/chrome/app/resources:settings_resources",

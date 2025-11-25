@@ -335,6 +335,17 @@ template("ios_app_bundle") {
       inputs += [ orderfile_path ]
     }
 
+    if (defined(invoker.link_framework_first)) {
+      link_framework_first = invoker.link_framework_first
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+      ldflags += [
+        "-framework",
+        link_framework_first,
+      ]
+    }
+
     if (target_environment == "simulator") {
       deps += [ ":$_generate_entitlements_target" ]
 
@@ -526,6 +537,10 @@ template("ios_app_bundle") {
                                "xcasset_compiler_flags",
                                "xcode_extra_attributes",
                              ])
+
+      if (defined(invoker.link_framework_first)) {
+        verify_as_first_framework = invoker.link_framework_first
+      }
 
       output_name = _output_name
       bundle_gen_dir = _variant.bundle_gen_dir

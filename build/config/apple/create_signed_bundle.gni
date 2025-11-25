@@ -112,6 +112,10 @@ apple_mobile_xcode_xcuitest_bundle_id =
 #       the depend on it (unless the "bundle_data" target sets "product_type"
 #       to the same value as the "create_signed_bundle" target).
 #
+#   verify_as_first_framework
+#       (optional) string, if defined, verify that the named framework is the
+#       first loaded dylib in the bundle binary.
+#
 template("apple_mobile_create_signed_bundle") {
   assert(defined(invoker.product_type),
          "product_type must be defined for $target_name")
@@ -340,6 +344,14 @@ template("apple_mobile_create_signed_bundle") {
         post_processing_args += [ "-F=$_framework_path" ]
       }
     }
+
+    if (defined(invoker.verify_as_first_framework)) {
+      post_processing_args += [
+        "--verify-load-order-first",
+        invoker.verify_as_first_framework,
+      ]
+    }
+
     if (defined(invoker.partial_info_plist)) {
       _partial_info_plists = [
         invoker.primary_info_plist,

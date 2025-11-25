@@ -94,6 +94,8 @@ template("chrome_ios_eg2_test_app_host") {
 
     bundle_identifier = shared_bundle_id_for_test_apps
 
+    link_framework_first = "EarlyMallocZoneRegistration"
+
     if (defined(_tweak_entitlements)) {
       entitlements_target = ":$_tweak_entitlements"
     }
