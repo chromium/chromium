@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kContextualTasksContext);
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 
+// Enables context menu settings for contextual tasks.
+BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -68,6 +71,9 @@ extern std::string GetContextualTasksAiPageUrl();
 // Returns the domains for the sign in page.
 extern std::vector<std::string> GetContextualTasksSignInDomains();
 
+// Whether the suggestions are enabled for Nextbox.
+extern bool GetIsContextualTasksSuggestionsEnabled();
+
 // Returns whether Lens is enabled in contextual tasks. When this is enabled,
 // Lens entry points will open results in the contextual tasks panels.
 extern bool GetEnableLensInContextualTasks();
@@ -82,6 +88,8 @@ extern const char kContextualTasksDescription[];
 
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
+extern const char kContextualTasksSuggestionsEnabledName[];
+extern const char kContextualTasksSuggestionsEnabledDescription[];
 
 }  // namespace flag_descriptions
 

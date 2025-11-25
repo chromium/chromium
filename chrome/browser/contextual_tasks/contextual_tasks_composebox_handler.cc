@@ -8,19 +8,21 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/searchbox/composebox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "components/contextual_tasks/public/features.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace {
 
-class ContextualTasksOmniboxClient : public SearchboxOmniboxClient {
+class ContextualTasksOmniboxClient : public ContextualOmniboxClient {
  public:
   ContextualTasksOmniboxClient(
       Profile* profile,
       content::WebContents* web_contents,
       ContextualTasksComposeboxHandler* composebox_handler)
-      : SearchboxOmniboxClient(profile, web_contents),
+      : ContextualOmniboxClient(profile, web_contents),
         composebox_handler_(composebox_handler) {}
   ~ContextualTasksOmniboxClient() override = default;
 
@@ -32,9 +34,22 @@ class ContextualTasksOmniboxClient : public SearchboxOmniboxClient {
     return metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX;
   }
 
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
+
  private:
   raw_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
+  raw_ptr<ContextualSearchboxHandler> contextual_searchbox_handler_;
 };
+
+std::optional<lens::proto::LensOverlaySuggestInputs>
+ContextualTasksOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (!contextual_tasks::GetIsContextualTasksSuggestionsEnabled()) {
+    return lens::proto::LensOverlaySuggestInputs();
+  }
+
+  return SearchboxOmniboxClient::GetLensOverlaySuggestInputs();
+}
 
 }  // namespace
 

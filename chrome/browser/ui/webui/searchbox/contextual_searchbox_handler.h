@@ -52,11 +52,14 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
   ContextualOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~ContextualOmniboxClient() override;
 
+protected:
+   std::optional<lens::proto::LensOverlaySuggestInputs>
+    GetLensOverlaySuggestInputs() const override;
+
  private:
   contextual_search::ContextualSearchContextController* GetQueryController()
       const;
-  std::optional<lens::proto::LensOverlaySuggestInputs>
-  GetLensOverlaySuggestInputs() const override;
+
 };
 
 // Abstract class that extends the SearchboxHandler and implements all methods

@@ -112,9 +112,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowTypedSuggest", false);
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   // Disable ZPS.
-  source->AddBoolean("composeboxShowZps", false);
+  source->AddBoolean("composeboxShowZps", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable image context suggestions.
-  source->AddBoolean("composeboxShowImageSuggest", false);
+  source->AddBoolean("composeboxShowImageSuggest", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable context menu and related features.
     source->AddBoolean("composeboxShowContextMenu", contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", true);

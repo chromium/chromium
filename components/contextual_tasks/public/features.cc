@@ -23,6 +23,11 @@ BASE_FEATURE(kContextualTasksContextMenu,
              "ContextualTasksContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables suggestions for contextual tasks.
+BASE_FEATURE(kContextualTasksSuggestionsEnabled,
+             "ContextualTasksSuggestionsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasksContext, "ai-page-url",
@@ -101,6 +106,9 @@ const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize{
 const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
     &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileCount", 4};
 
+bool GetIsContextualTasksSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
+}
 
 bool GetEnableLensInContextualTasks() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
@@ -120,6 +128,11 @@ const char kContextualTasksDescription[] =
 const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =
     "Enables relevant context determination for contextual tasks.";
+
+const char kContextualTasksSuggestionsEnabledName[] =
+    "Contextual Tasks Suggestions Enabled";
+const char kContextualTasksSuggestionsEnabledDescription[] =
+    "Enables suggestions for contextual tasks.";
 
 }  // namespace flag_descriptions
 

@@ -72,6 +72,7 @@ source_set("searchbox") {
     "//components/bookmarks/browser",
     "//components/contextual_search:public",
     "//components/lens",
+    "//components/lens/proto/server:proto",
     "//components/navigation_metrics",
     "//components/omnibox/browser",
     "//components/omnibox/browser:location_bar",

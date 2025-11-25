@@ -2075,6 +2075,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "contextual-tasks-suggestions-enabled",
+    "owners": ["dianaou@google.com", "chrome-contextual-tasks-eng@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "controlled-frame-web-request-security-info",
     "owners": ["vkrot@google.com", "bhaskarsharma@google.com"],
     "expiry_milestone": 160
