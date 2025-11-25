@@ -1150,6 +1150,9 @@ class RandomValueSharing {
  public:
   static std::optional<RandomValueSharing> Parse(CSSParserTokenStream& stream);
   static RandomValueSharing Auto() { return RandomValueSharing(); }
+  static RandomValueSharing Fixed(double fixed_value) {
+    return RandomValueSharing(fixed_value);
+  }
   bool IsFixed() const;
   double GetFixed() const;
   bool IsAuto() const;
@@ -1177,8 +1180,8 @@ class RandomValueSharing {
       : value_(IdentElementShared(is_element_shared)) {}
   RandomValueSharing(AtomicString ident, bool is_element_shared)
       : value_(IdentElementShared(ident, is_element_shared)) {}
+  explicit RandomValueSharing(double fixed_value) : value_(fixed_value) {}
 
-  explicit RandomValueSharing(double fixed) : value_(fixed) {}
   std::variant<IdentElementShared, double> value_ = IdentElementShared();
 };
 
@@ -1193,6 +1196,11 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
       const CSSMathExpressionNode* min,
       const CSSMathExpressionNode* max,
       const CSSMathExpressionNode* step);
+
+  static CSSMathExpressionRandomFunction* Create(
+      RandomValueSharing random_value_sharing,
+      HeapVector<Member<const CSSMathExpressionNode>>&& nodes);
+
   CSSMathExpressionNode* Copy() const override;
   bool IsRandomFunction() const final { return true; }
   double DoubleValue() const final { NOTREACHED(); }
@@ -1205,11 +1213,9 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
     return false;
   }
   void AccumulateLengthUnitTypes(
-      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+      CSSPrimitiveValue::LengthTypeFlags& types) const final;
   const CalculationExpressionNode* ToCalculationExpression(
-      const CSSLengthResolver&) const final {
-    NOTREACHED();
-  }
+      const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {
     return std::nullopt;

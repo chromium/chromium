@@ -4591,15 +4591,8 @@ class CSSMathExpressionNodeParser {
         DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
         DCHECK_GE(nodes.size(), 2u);
         DCHECK_LE(nodes.size(), 3u);
-        CalculationResultCategory category = DetermineComparisonCategory(nodes);
-        if (category == CalculationResultCategory::kCalcOther) {
-          return nullptr;
-        }
-        const CSSMathExpressionNode* step =
-            (nodes.size() == 3) ? nodes[2] : nullptr;
-        return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
-            category, *random_value_sharing,
-            /* min= */ nodes[0], /* max= */ nodes[1], /* step= */ step);
+        return CSSMathExpressionRandomFunction::Create(*random_value_sharing,
+                                                       std::move(nodes));
       }
       // TODO(crbug.com/1284199): Support other math functions.
       default:
@@ -5143,6 +5136,18 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return CSSMathExpressionOperation::CreateSignRelatedFunction(
           std::move(operands), CSSValueID::kAtan2);
     }
+    case CalculationOperator::kRandom: {
+      DCHECK_GE(children.size(), 3u);
+      DCHECK_LE(children.size(), 4u);
+      RandomValueSharing random_value_sharing = RandomValueSharing::Fixed(
+          DynamicTo<CalculationExpressionNumberNode>(*children[0])->Value());
+      CSSMathExpressionOperation::Operands operands;
+      for (wtf_size_t i = 1; i < children.size(); ++i) {
+        operands.push_back(Create(*children[i]));
+      }
+      return CSSMathExpressionRandomFunction::Create(random_value_sharing,
+                                                     std::move(operands));
+    }
   }
 }
 
@@ -5356,6 +5361,30 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
       max_(max),
       step_(step) {}
 
+CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(
+    RandomValueSharing random_value_sharing,
+    HeapVector<Member<const CSSMathExpressionNode>>&& nodes) {
+  CalculationResultCategory category = DetermineComparisonCategory(nodes);
+  // Currently the computed value for calc() expressions with category
+  // `kCalcPercent`, i.e. calc() with only percentages: min(10%, 30%)
+  // would be simplified to 10%. This is not correct, since percentages
+  // here can represent negative values. Same issue will happen with
+  // random() if `min`, `max` (and optionally `step`) parameters have only
+  // percentages values. To avoid that we will use `category
+  // `kCalcLengthPercent` for these expressions for now.
+  // TODO(crbug.com/463635948): Remove the following if check.
+  if (category == kCalcPercent) {
+    category = kCalcLengthFunction;
+  }
+  if (category == CalculationResultCategory::kCalcOther) {
+    return nullptr;
+  }
+  const CSSMathExpressionNode* step = (nodes.size() == 3) ? nodes[2] : nullptr;
+  return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+      category, random_value_sharing,
+      /* min= */ nodes[0], /* max= */ nodes[1], /* step= */ step);
+}
+
 CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
   return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
       category_, random_value_sharing_, min_, max_, step_);
@@ -5383,6 +5412,35 @@ bool CSSMathExpressionRandomFunction::MayHaveRelativeUnit() const {
          (step_ && step_->MayHaveRelativeUnit());
 }
 
+void CSSMathExpressionRandomFunction::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
+  min_->AccumulateLengthUnitTypes(types);
+  max_->AccumulateLengthUnitTypes(types);
+  if (step_) {
+    step_->AccumulateLengthUnitTypes(types);
+  }
+}
+
+const CalculationExpressionNode*
+CSSMathExpressionRandomFunction::ToCalculationExpression(
+    const CSSLengthResolver& length_resolver) const {
+  const Element* element = length_resolver.GetElement();
+  double random_base_value =
+      element->GetDocument().GetStyleEngine().GetCachedRandomBaseValue(
+          random_value_sharing_, element, AtomicString(""), 0);
+
+  HeapVector<Member<const CalculationExpressionNode>> operands;
+  operands.push_back(
+      MakeGarbageCollected<CalculationExpressionNumberNode>(random_base_value));
+  operands.push_back(min_->ToCalculationExpression(length_resolver));
+  operands.push_back(max_->ToCalculationExpression(length_resolver));
+  if (step_) {
+    operands.push_back(step_->ToCalculationExpression(length_resolver));
+  }
+  return CalculationExpressionOperationNode::CreateSimplified(
+      std::move(operands), CalculationOperator::kRandom);
+}
+
 #if DCHECK_IS_ON()
 bool CSSMathExpressionRandomFunction::InvolvesPercentageComparisons() const {
   return min_->InvolvesPercentageComparisons() ||
@@ -5394,48 +5452,19 @@ bool CSSMathExpressionRandomFunction::InvolvesPercentageComparisons() const {
 double CSSMathExpressionRandomFunction::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
   const Element* element = length_resolver.GetElement();
+  CHECK(element);
   // TODO(crbug.com/413385732): Pass correct property name and property value
   // index.
   double random_base_value =
       element->GetDocument().GetStyleEngine().GetCachedRandomBaseValue(
-          random_value_sharing_, element, AtomicString(""), 0);
+          random_value_sharing_, element, g_empty_atom, 0);
   double min = min_->ComputeNumber(length_resolver);
   double max = max_->ComputeNumber(length_resolver);
-  if (max < min) {
-    max = min;
+  std::optional<double> step = std::nullopt;
+  if (step_) {
+    step = step_->ComputeNumber(length_resolver);
   }
-
-  if (std::isinf(min)) {
-    return min;
-  }
-
-  if (std::isinf(max - min) || std::isnan(min) || std::isnan(max)) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
-
-  if (!step_) {
-    return min + random_base_value * (max - min);
-  }
-
-  double step = step_->ComputeNumber(length_resolver);
-
-  if (std::isinf(step)) {
-    return min;
-  }
-
-  if (std::isnan(step)) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
-
-  if (step <= 0) {
-    return min + random_base_value * (max - min);
-  }
-
-  int n = (max - min) / step;
-  // step_index = round(down, random_base_value * (n + 1), 1);
-  int step_index = ClampTo<int>(EvaluateSteppedValueFunction(
-      CSSMathOperator::kRoundDown, random_base_value * (n + 1), 1.0));
-  return min + step_index * step;
+  return ComputeCSSRandomValue(random_base_value, min, max, step);
 }
 
 double CSSMathExpressionRandomFunction::ComputeLengthPx(

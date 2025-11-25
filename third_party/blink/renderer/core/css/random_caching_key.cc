@@ -18,6 +18,7 @@ RandomCachingKey* RandomCachingKey::Create(
     const Element* element,
     AtomicString property_name,
     size_t property_value_index) {
+  DCHECK(!random_value_sharing.IsFixed());
   const Element* element_for_caching =
       random_value_sharing.IsElementShared() ? nullptr : element;
   AtomicString ident = random_value_sharing.GetIdent();
