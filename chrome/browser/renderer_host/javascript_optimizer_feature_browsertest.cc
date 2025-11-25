@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #include "chrome/common/chrome_features.h"
@@ -1117,15 +1119,42 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
 
 #if !BUILDFLAG(IS_ANDROID)
 class JavascriptOptimizerOmnibarIconBrowserTest
-    : public JavascriptOptimizerBrowserTest {
+    : public PageActionInteractiveTestMixin<InteractiveBrowserTest> {
  public:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(&embedded_https_test_server());
+
+    embedded_https_test_server().SetCertHostnames(
+        {"a.com", "*.a.com", "b.com", "*.b.com", "unrelated.com"});
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
+  bool AreV8OptimizationsDisabledForRenderFrame(content::RenderFrameHost* rfh) {
+    return rfh->GetProcess()->AreV8OptimizationsDisabled();
+  }
+
+  bool AreV8OptimizationsDisabledOnActiveWebContents() {
+    return AreV8OptimizationsDisabledForRenderFrame(
+        web_contents()->GetPrimaryMainFrame());
+  }
+
   // Returns true iff the JS Optimizations omnibar icon is visible.
-  bool GetOmnibarIconVisible() {
+  bool IsOmnibarIconVisible() {
     const auto* view = BrowserView::GetBrowserViewForBrowser(browser())
                            ->toolbar_button_provider()
                            ->GetPageActionView(kActionShowJsOptimizationsIcon);
     return view && view->GetVisible();
   }
+
+  using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
 };
 
 class JavascriptOptimizerOmnibarIconBrowserTest_WithFlag
@@ -1141,12 +1170,8 @@ class JavascriptOptimizerOmnibarIconBrowserTest_WithFlag
   base::test::ScopedFeatureList feature_list_;
 };
 
-class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
-    : public JavascriptOptimizerOmnibarIconBrowserTest {};
-
-// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
-                       DISABLED_IconShowsWhenOptimizationsDisabled) {
+                       IconShowsWhenOptimizationsDisabled) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -1154,7 +1179,9 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_https_test_server().GetURL("/simple.html")));
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_TRUE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionButtonVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_TRUE(IsOmnibarIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
@@ -1166,13 +1193,14 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_https_test_server().GetURL("/simple.html")));
   ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_FALSE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionChipNotVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_FALSE(IsOmnibarIconVisible());
 }
 
-// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
-    DISABLED_IconShowsWhenNavigatingToPageWhereOptimizationsDisabled) {
+    IconShowsWhenNavigatingToPageWhereOptimizationsDisabled) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   // Optimizations enabled for all except a.com
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1188,19 +1216,22 @@ IN_PROC_BROWSER_TEST_F(
       web_contents(),
       embedded_https_test_server().GetURL("b.com", "/simple.html")));
   ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_FALSE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionChipNotVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_FALSE(IsOmnibarIconVisible());
   // After navigating to a.com, icon is visible.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("a.com", "/simple.html")));
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_TRUE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionButtonVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_TRUE(IsOmnibarIconVisible());
 }
 
-// TODO(crbug.com/462704642): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerOmnibarIconBrowserTest_WithFlag,
-    DISABLED_IconDisappearsWhenNavigatingToPageWhereOptimizationsNotDisabled) {
+    IconDisappearsWhenNavigatingToPageWhereOptimizationsNotDisabled) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   // Optimizations enabled for all except a.com
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -1216,14 +1247,21 @@ IN_PROC_BROWSER_TEST_F(
       web_contents(),
       embedded_https_test_server().GetURL("a.com", "/simple.html")));
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_TRUE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionButtonVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_TRUE(IsOmnibarIconVisible());
   // After navigating to b.com, icon is not visible.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("b.com", "/simple.html")));
   ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_FALSE(GetOmnibarIconVisible());
+  RunTestSequence(
+      WaitForPageActionChipNotVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_FALSE(IsOmnibarIconVisible());
 }
+
+class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
+    : public JavascriptOptimizerOmnibarIconBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
                        IconDoesNotShowWhenFlagNotEnabled) {
@@ -1235,6 +1273,11 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
       web_contents(), embedded_https_test_server().GetURL("/simple.html")));
   // V8 optimizations are disabled, but omnibar icon is not visible.
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
-  EXPECT_FALSE(GetOmnibarIconVisible());
+  const auto* icon_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar_button_provider()
+          ->GetPageActionView(kActionShowJsOptimizationsIcon);
+  // There is no view initialized because the flag is disabled.
+  ASSERT_EQ(icon_view, nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
