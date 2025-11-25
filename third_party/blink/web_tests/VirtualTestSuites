@@ -4145,8 +4145,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes",
-      "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
+      "--enable-features=Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes",
+      "--disable-features=Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": [
       "nhiroki@chromium.org",
