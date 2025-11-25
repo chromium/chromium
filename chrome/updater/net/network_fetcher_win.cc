@@ -43,33 +43,30 @@
 namespace updater {
 namespace {
 
+decltype(&GetNetworkConnectivityHint) GetGetNetworkConnectivityHint() {
+  HMODULE hmod = LoadLibraryW(L"IPHLPAPI.DLL");
+  if (!hmod) {
+    return nullptr;
+  }
+  // GetNetworkConnectivityHint is not present on Windows < 19041 so this can
+  // return nullptr on failure on older Windows versions.
+  return reinterpret_cast<decltype(&GetNetworkConnectivityHint)>(
+      GetProcAddress(hmod, "GetNetworkConnectivityHint"));
+}
+
 std::optional<int> GetNetworkConnectivityCostHint() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  using GetNetworkConnectivityHint =
-      NTSTATUS(WINAPI*)(NL_NETWORK_CONNECTIVITY_HINT*);
-  static const HMODULE iphlpapi_handle = ::LoadLibrary(L"Iphlpapi.dll");
-  if (!iphlpapi_handle) {
-    VLOG(1) << "Failed to LoadLibrary Iphlpapi.dll";
-    return std::nullopt;
-  }
-  static const HMODULE iphlpapi_module_handle =
-      ::GetModuleHandle(L"Iphlpapi.dll");
-  if (!iphlpapi_module_handle) {
-    VLOG(1) << "Failed to GetModuleHandle Iphlpapi.dll";
-    return std::nullopt;
-  }
-  static const GetNetworkConnectivityHint get_network_connectivity_hint =
-      reinterpret_cast<GetNetworkConnectivityHint>(::GetProcAddress(
-          iphlpapi_module_handle, "GetNetworkConnectivityHint"));
-  if (!get_network_connectivity_hint) {
-    VLOG(1) << "Failed to GetProcAddress for GetNetworkConnectivityHint";
+  static auto get_network_connectivity_hint_fn =
+      GetGetNetworkConnectivityHint();
+  if (!get_network_connectivity_hint_fn) {
+    VLOG(1) << "Failed to lookup GetNetworkConnectivityHint";
     return std::nullopt;
   }
 
   NL_NETWORK_CONNECTIVITY_HINT connectivity_hint{
       .ConnectivityCost = ::NetworkConnectivityCostHintUnknown};
-  NTSTATUS status = get_network_connectivity_hint(&connectivity_hint);
+  NTSTATUS status = get_network_connectivity_hint_fn(&connectivity_hint);
   if (status != NO_ERROR) {
     VLOG(1) << "GetNetworkConnectivityHint failed with status " << status;
     return std::nullopt;
