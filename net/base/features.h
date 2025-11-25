@@ -647,6 +647,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsFederatedRegistration);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDeviceBoundSessionsFederatedRegistrationCheckWellKnown);
+// Controls whether federated sessions require the key thumbprint to match.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDeviceBoundSessionFederatedRegistrationRequireThumbprintMatch);
 
 // This feature controls whether to proactively trigger Device
 // Bound Session refreshes when a cookie is soon to expire.

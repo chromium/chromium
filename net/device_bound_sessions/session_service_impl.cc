@@ -361,7 +361,9 @@ void SessionServiceImpl::CheckFederatedProviderKey(
   }
 
   std::string thumbprint = CreateJwkThumbprint(*algorithm, *pub_key);
-  if (thumbprint != provider_key_thumbprint) {
+  if (features::kDeviceBoundSessionFederatedRegistrationRequireThumbprintMatch
+          .Get() &&
+      thumbprint != provider_key_thumbprint) {
     std::move(callback).Run(base::unexpected(
         SessionError(SessionError::kFederatedKeyThumbprintMismatch)));
     return;

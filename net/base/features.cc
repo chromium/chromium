@@ -537,6 +537,12 @@ BASE_FEATURE_PARAM(bool,
                    &kDeviceBoundSessionsFederatedRegistration,
                    "CheckWellKnown",
                    true);
+BASE_FEATURE_PARAM(
+    bool,
+    kDeviceBoundSessionFederatedRegistrationRequireThumbprintMatch,
+    &kDeviceBoundSessionsFederatedRegistration,
+    "RequireThumbprintMatch",
+    true);
 
 BASE_FEATURE(kDeviceBoundSessionProactiveRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
