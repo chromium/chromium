@@ -15,6 +15,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -32,6 +33,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -339,7 +341,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     static class PendingIntentSender {
         public void send(PendingIntent pendingIntent, Context context, int code, Intent intent)
                 throws PendingIntent.CanceledException {
-            pendingIntent.send(context, code, intent);
+            ActivityOptions options = ActivityOptions.makeBasic();
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
+            pendingIntent.send(
+                    context,
+                    code,
+                    intent,
+                    /** onFinished= */
+                    null,
+                    /** handler= */
+                    null,
+                    /** requiredPermissions= */
+                    null,
+                    /** options= */
+                    options.toBundle());
         }
     }
 
