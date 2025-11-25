@@ -471,6 +471,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.Theme.ChromeColor.ColorId"
+    enum="NtpThemeColorId" expires_after="2026-05-24">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the last color ID of the Chrome theme colors that was selected by
+    the user from the Chrome Colors bottom sheet. This metric is logged when the
+    bottom sheet is closed. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.CollectionSelected"
     enum="NTPCollectionId" expires_after="2026-05-17">

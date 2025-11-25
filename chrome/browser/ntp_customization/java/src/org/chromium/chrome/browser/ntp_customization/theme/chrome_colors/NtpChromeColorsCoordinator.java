@@ -32,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -58,6 +59,7 @@ public class NtpChromeColorsCoordinator {
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
     private final @Nullable NtpThemeColorInfo mPrimaryColorInfo;
+    private @Nullable NtpThemeColorInfo mLastClickedColorInfo;
     private @Nullable EditText mBackgroundColorInput;
     private @Nullable EditText mPrimaryColorInput;
     private @Nullable ImageView mBackgroundColorCircleImageView;
@@ -166,10 +168,15 @@ public class NtpChromeColorsCoordinator {
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundColorChanged(mContext, ntpThemeColorInfo, newType);
         mOnChromeColorSelectedCallback.run();
+        mLastClickedColorInfo = ntpThemeColorInfo;
     }
 
     /** Cleans up the resources used by this coordinator. */
     public void destroy() {
+        if (mLastClickedColorInfo != null) {
+            NtpCustomizationMetricsUtils.recordChromeColorId(mLastClickedColorInfo.id);
+        }
+
         mBackButton.setOnClickListener(null);
         mLearnMoreButton.setOnClickListener(null);
         mChromeColorsList.clear();

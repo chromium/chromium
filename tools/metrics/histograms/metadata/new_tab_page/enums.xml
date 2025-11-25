@@ -524,6 +524,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success"/>
 </enum>
 
+<enum name="NtpThemeColorId">
+  <int value="0" label="Default"/>
+  <int value="1" label="NTP Colors Blue"/>
+  <int value="2" label="NTP Colors Aqua"/>
+  <int value="3" label="NTP Colors Green"/>
+  <int value="4" label="NTP Colors Viridian"/>
+  <int value="5" label="NTP Colors Citron"/>
+  <int value="6" label="NTP Colors Orange"/>
+  <int value="7" label="NTP Colors Rose"/>
+  <int value="8" label="NTP Colors Fuchsia"/>
+  <int value="9" label="NTP Colors Violet"/>
+</enum>
+
 <enum name="NTPTileTitleSource">
   <summary>
     The source where the displayed title of an NTP tile originates from.

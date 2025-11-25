@@ -23,6 +23,7 @@ import java.util.Objects;
 /** The data class for NTP's theme color. */
 @NullMarked
 public class NtpThemeColorInfo {
+    // LINT.IfChange(NtpThemeColorId)
     @IntDef({
         NtpThemeColorId.DEFAULT,
         NtpThemeColorId.NTP_COLORS_BLUE,
@@ -50,6 +51,8 @@ public class NtpThemeColorInfo {
         int NTP_COLORS_VIOLET = 9;
         int NUM_ENTRIES = 10;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpThemeColorId)
 
     public static final int COLOR_NOT_SET = -1;
 

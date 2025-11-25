@@ -10,6 +10,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 
 /** The utility class for logging the NTP customization bottom sheet's metrics. */
@@ -61,6 +62,12 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_THEME_COLLECTION_SELECTED =
             HISTOGRAM_THEME_COLLECTION + ".CollectionSelected";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_CHROME_COLOR = "NewTabPage.Customization.Theme.ChromeColor";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_CHROME_COLOR_ID = HISTOGRAM_THEME_CHROME_COLOR + ".Click";
 
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
@@ -171,5 +178,15 @@ public class NtpCustomizationMetricsUtils {
     public static void recordThemeCollectionSelected(int themeCollectionHash) {
         RecordHistogram.recordSparseHistogram(
                 HISTOGRAM_THEME_COLLECTION_SELECTED, themeCollectionHash);
+    }
+
+    /**
+     * Records when a Chrome color is selected from the Chrome Colors bottom sheet.
+     *
+     * @param themeColorId The ID of the color.
+     */
+    public static void recordChromeColorId(@NtpThemeColorId int themeColorId) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_THEME_CHROME_COLOR_ID, themeColorId, NtpThemeColorId.NUM_ENTRIES);
     }
 }

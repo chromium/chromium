@@ -14,6 +14,15 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_CITRON;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_FUCHSIA;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_GREEN;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_ORANGE;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_ROSE;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_VIOLET;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_VIRIDIAN;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.SAVE;
 
@@ -31,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
 
 /** Unit tests for {@link NtpCustomizationMetricsUtils} */
@@ -177,5 +187,30 @@ public class NtpCustomizationMetricsUtilsUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(histogramName, themeCollectionHash);
         NtpCustomizationMetricsUtils.recordThemeCollectionSelected(themeCollectionHash);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordChromeColorSelected() {
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.Click";
+        @NtpThemeColorId
+        int[] chromeColorIds =
+                new int[] {
+                    NTP_COLORS_BLUE,
+                    NTP_COLORS_AQUA,
+                    NTP_COLORS_GREEN,
+                    NTP_COLORS_VIRIDIAN,
+                    NTP_COLORS_CITRON,
+                    NTP_COLORS_ORANGE,
+                    NTP_COLORS_ROSE,
+                    NTP_COLORS_FUCHSIA,
+                    NTP_COLORS_VIOLET
+                };
+
+        for (@NtpThemeColorId int colorId : chromeColorIds) {
+            HistogramWatcher histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(histogramName, colorId);
+            NtpCustomizationMetricsUtils.recordChromeColorId(colorId);
+            histogramWatcher.assertExpected();
+        }
     }
 }

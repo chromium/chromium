@@ -44,6 +44,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -115,6 +116,52 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         mCoordinator.destroy();
         assertFalse(saveColorButton.hasOnClickListeners());
+    }
+
+    @Test
+    public void testDestroy_logMetricsWithSingleClick() {
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.Click";
+        createCoordinator();
+
+        NtpThemeColorInfo blueColor =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
+        mCoordinator.onItemClicked(blueColor);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, blueColor.id);
+        mCoordinator.destroy();
+        watcher.assertExpected();
+
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    public void testDestroy_logMetricsWithMultipleClicks() {
+        String histogramName = "NewTabPage.Customization.Theme.ChromeColor.Click";
+        createCoordinator();
+
+        NtpThemeColorInfo blueColor =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
+        mCoordinator.onItemClicked(blueColor);
+
+        NtpThemeColorInfo aquaColor =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA);
+        mCoordinator.onItemClicked(aquaColor);
+
+        NtpThemeColorInfo greenColor =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_GREEN);
+        mCoordinator.onItemClicked(greenColor);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, greenColor.id);
+        mCoordinator.destroy();
+        watcher.assertExpected();
+
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
     @Test
