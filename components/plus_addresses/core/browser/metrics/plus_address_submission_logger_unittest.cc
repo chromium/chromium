@@ -241,7 +241,9 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
   AccountInfo account_info = identity_env().MakeAccountAvailable(
       kGaiaAccount, {signin::ConsentLevel::kSignin});
   if (input.is_managed_profile) {
-    account_info.hosted_domain = kManagedDomain;
+    account_info = AccountInfo::Builder(account_info)
+                       .SetHostedDomain(kManagedDomain)
+                       .Build();
     AccountCapabilitiesTestMutator(&account_info.capabilities)
         .set_is_subject_to_enterprise_features(true);
     identity_env().UpdateAccountInfoForAccount(account_info);
