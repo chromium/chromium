@@ -463,6 +463,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     });
   }
 
+  private isFileAllowed_(file: File, acceptedFileTypes: string): boolean {
+    const fileType = file.type.toLowerCase();
+    const allowedTypes = acceptedFileTypes.split(',');
+    return allowedTypes.some(type => {
+      return fileType === type;
+    });
+  }
+
   protected processFiles_(files: FileList|null) {
     if (!files || files.length === 0) {
       return;
@@ -482,12 +490,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         errorToDisplay = Math.max(errorToDisplay, sizeError);
         continue;
       }
-      // TODO(crbug.com/460228091): The current frontend check is broader than
-      // the backend's validation (e.g. allows SVGs). This can lead to a file
-      // reserving a slot here, only to be rejected by the backend later
-      // resulting in fewer files uploaded as expected.
-      // In the future, only reserve slots when the file upload is successful.
-      if (!file.type.includes('pdf') && !file.type.includes('image')) {
+
+      if (!this.isFileAllowed_(file, this.imageFileTypes_) &&
+          !this.isFileAllowed_(file, this.attachmentFileTypes_)) {
         errorToDisplay =
             Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
         continue;

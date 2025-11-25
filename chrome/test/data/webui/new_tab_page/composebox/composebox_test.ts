@@ -42,6 +42,10 @@ suite('NewTabPageComposeboxTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
+     loadTimeData.overrideValues({
+    'composeboxImageFileTypes': 'image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/heic',
+    'composeboxAttachmentFileTypes': '.pdf,application/pdf',
+  });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         PageHandlerRemote,
@@ -2142,56 +2146,103 @@ suite('NewTabPageComposeboxTest', () => {
             'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
   });
 
-test('upload mixed files over limit prioritizes max files error and uploads valid ones', async () => {
-  // Arrange.
-  loadTimeData.overrideValues({'composeboxFileMaxCount': 3});
-    createComposeboxElement();
+  test('upload mixed files over limit prioritizes max files error and uploads valid ones', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({'composeboxFileMaxCount': 3});
+      createComposeboxElement();
 
-  let i = 0;
-    searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
-      i++;
-      return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+    let i = 0;
+      searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+        i++;
+        return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+      });
+
+      const files = [
+        new File(['foo'], 'good1.png', {type: 'image/png'}),
+        new File(['foo'], 'good2.png', {type: 'image/png'}),
+        new File(['foo'], 'good3.png', {type: 'image/png'}),
+        new File(['foo'], 'bad.txt', {type: 'text/plain'}),
+      ];
+
+      const dataTransfer = new DataTransfer();
+      files.forEach(file => dataTransfer.items.add(file));
+
+      const pasteEvent = new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      });
+
+      const errorEventPromise =
+          eventToPromise('on-file-validation-error', composeboxElement.$.context);
+
+      // Act.
+      composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+      await waitForAddFileCallCount(3);
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(3, composeboxElement.$.context.$.carousel.files.length);
+
+      const errorEvent = await errorEventPromise;
+      assertEquals(
+          loadTimeData.getString('maxFilesReachedError'),
+          errorEvent.detail.errorMessage);
+
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
     });
 
-    const files = [
-      new File(['foo'], 'good1.png', {type: 'image/png'}),
-      new File(['foo'], 'good2.png', {type: 'image/png'}),
-      new File(['foo'], 'good3.png', {type: 'image/png'}),
-      new File(['foo'], 'bad.txt', {type: 'text/plain'}),
-    ];
+  test(
+      'uploading valid heif and invalid svg adds valid file and shows error',
+      async () => {
+        createComposeboxElement();
 
-    const dataTransfer = new DataTransfer();
-    files.forEach(file => dataTransfer.items.add(file));
 
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: dataTransfer,
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
+        let i = 0;
+        searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+          i++;
+          return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+        });
 
-    const errorEventPromise =
-        eventToPromise('on-file-validation-error', composeboxElement.$.context);
+        const validFile = new File(['foo'], 'image.png', {type: 'image/png'});
+        const invalidFile =
+            new File(['bar'], 'icon.svg', {type: 'image/svg+xml'});
 
-    // Act.
-    composeboxElement.$.input.dispatchEvent(pasteEvent);
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(validFile);
+        dataTransfer.items.add(invalidFile);
 
-    await waitForAddFileCallCount(3);
-    await microtasksFinished();
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData: dataTransfer,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
 
-    // Assert.
-    assertEquals(3, composeboxElement.$.context.$.carousel.files.length);
+        const errorEventPromise = eventToPromise(
+            'on-file-validation-error', composeboxElement.$.context);
 
-    const errorEvent = await errorEventPromise;
-    assertEquals(
-        loadTimeData.getString('maxFilesReachedError'),
-        errorEvent.detail.errorMessage);
+        composeboxElement.$.input.dispatchEvent(pasteEvent);
 
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
-  });
+        await waitForAddFileCallCount(1);
+        await microtasksFinished();
+
+        assertEquals(1, composeboxElement.$.context.$.carousel.files.length);
+        assertEquals(
+
+            'image.png', composeboxElement.$.context.$.carousel.files[0]!.name);
+
+        const errorEvent = await errorEventPromise;
+
+        assertEquals(
+            loadTimeData.getString('composeFileTypesAllowedError'),
+            errorEvent.detail.errorMessage);
+      });
 
   test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement();
