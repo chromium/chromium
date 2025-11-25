@@ -1454,33 +1454,28 @@ using CanonFunc16Bit = bool (*)(std::optional<std::u16string_view>,
                                 CanonOutput*,
                                 Component*);
 void DoPathTest(base::span<const DualComponentCase> path_cases,
-                size_t spanification_suspected_redundant_num_cases,
                 CanonFunc8Bit canon_func_8,
                 CanonFunc16Bit canon_func_16) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_cases == path_cases.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_num_cases; i++) {
+  for (const auto& path_case : path_cases) {
     testing::Message scope_message;
-    scope_message << path_cases[i].input8 << "," << path_cases[i].input16;
+    scope_message << path_case.input8 << "," << path_case.input16;
     SCOPED_TRACE(scope_message);
-    if (path_cases[i].input8) {
+    if (path_case.input8) {
       Component out_comp;
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      bool success = canon_func_8(path_cases[i].input8, &output, &out_comp);
+      bool success = canon_func_8(path_case.input8, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(path_cases[i].expected_success, success);
-      EXPECT_EQ(path_cases[i].expected_component.begin, out_comp.begin);
-      EXPECT_EQ(path_cases[i].expected_component.len, out_comp.len);
-      EXPECT_EQ(path_cases[i].expected, out_str);
+      EXPECT_EQ(path_case.expected_success, success);
+      EXPECT_EQ(path_case.expected_component.begin, out_comp.begin);
+      EXPECT_EQ(path_case.expected_component.len, out_comp.len);
+      EXPECT_EQ(path_case.expected, out_str);
     }
 
-    if (path_cases[i].input16) {
+    if (path_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(path_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(path_case.input16));
       Component out_comp;
       std::string out_str;
       StdStringCanonOutput output(&out_str);
@@ -1488,18 +1483,18 @@ void DoPathTest(base::span<const DualComponentCase> path_cases,
       bool success = canon_func_16(input16, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(path_cases[i].expected_success, success);
-      EXPECT_EQ(path_cases[i].expected_component.begin, out_comp.begin);
-      EXPECT_EQ(path_cases[i].expected_component.len, out_comp.len);
-      EXPECT_EQ(path_cases[i].expected, out_str);
+      EXPECT_EQ(path_case.expected_success, success);
+      EXPECT_EQ(path_case.expected_component.begin, out_comp.begin);
+      EXPECT_EQ(path_case.expected_component.len, out_comp.len);
+      EXPECT_EQ(path_case.expected, out_str);
     }
   }
 }
 
 TEST_F(URLCanonTest, SpecialPath) {
   // Common test cases
-  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
-             CanonicalizeSpecialPath, CanonicalizeSpecialPath);
+  DoPathTest(kCommonPathCases, CanonicalizeSpecialPath,
+             CanonicalizeSpecialPath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
   // as valid.
@@ -1524,14 +1519,14 @@ TEST_F(URLCanonTest, SpecialPath) {
       {"/a\\.\\b", L"/a\\.\\b", "/a/b", Component(0, 4), true},
   };
 
-  DoPathTest(special_path_cases, std::size(special_path_cases),
-             CanonicalizeSpecialPath, CanonicalizeSpecialPath);
+  DoPathTest(special_path_cases, CanonicalizeSpecialPath,
+             CanonicalizeSpecialPath);
 }
 
 TEST_F(URLCanonTest, NonSpecialPath) {
   // Common test cases
-  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
-             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
+  DoPathTest(kCommonPathCases, CanonicalizeNonSpecialPath,
+             CanonicalizeNonSpecialPath);
 
   // Test cases specific on non-special URLs.
   DualComponentCase non_special_path_cases[] = {
@@ -1542,8 +1537,8 @@ TEST_F(URLCanonTest, NonSpecialPath) {
       {"/a\\./b", L"/a\\./b", "/a\\./b", Component(0, 6), true},
   };
 
-  DoPathTest(non_special_path_cases, std::size(non_special_path_cases),
-             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
+  DoPathTest(non_special_path_cases, CanonicalizeNonSpecialPath,
+             CanonicalizeNonSpecialPath);
 }
 
 TEST_F(URLCanonTest, PartialPath) {
@@ -1551,10 +1546,10 @@ TEST_F(URLCanonTest, PartialPath) {
       {".html", L".html", ".html", Component(0, 5), true},
       {"", L"", "", Component(0, 0), true},
   };
-  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
-             CanonicalizePartialPath, CanonicalizePartialPath);
-  DoPathTest(partial_path_cases, std::size(partial_path_cases),
-             CanonicalizePartialPath, CanonicalizePartialPath);
+  DoPathTest(kCommonPathCases, CanonicalizePartialPath,
+             CanonicalizePartialPath);
+  DoPathTest(partial_path_cases, CanonicalizePartialPath,
+             CanonicalizePartialPath);
 }
 
 TEST_F(URLCanonTest, Query) {
