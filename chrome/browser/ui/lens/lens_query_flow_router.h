@@ -101,6 +101,31 @@ class LensQueryFlowRouter {
   // Opens the contextual tasks panel to a default page URL.
   void OpenContextualTasksPanel();
 
+  // Uploads the viewport and page context using the provided session handle.
+  void UploadContextualInputData(
+      contextual_search::ContextualSearchSessionHandle* session_handle,
+      std::unique_ptr<lens::ContextualInputData> contextual_input_data);
+
+  // Called when the tab context has been added to the session handle, allowing
+  // the upload flow to start.
+  void OnFinishedAddingTabContext(
+      contextual_search::ContextualSearchSessionHandle* session_handle,
+      std::unique_ptr<lens::ContextualInputData> contextual_input_data,
+      const base::UnguessableToken& token);
+
+  // Creates the contextual input data from data collected from overlay
+  // initialization to be used for the contextual search session.
+  std::unique_ptr<lens::ContextualInputData> CreateContextualInputData(
+      const SkBitmap& screenshot,
+      GURL page_url,
+      std::optional<std::string> page_title,
+      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      base::span<const PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_current_page,
+      float ui_scale_factor,
+      base::TimeTicks invocation_time);
+
   // The contextual search session handle that is used to make requests to the
   // contextual search service. This is only stored by this query router in
   // cases where the overlay has been opened but a results panel is not present.
@@ -110,6 +135,8 @@ class LensQueryFlowRouter {
       pending_session_handle_;
 
   raw_ptr<LensSearchController> lens_search_controller_;
+
+  base::WeakPtrFactory<LensQueryFlowRouter> weak_factory_{this};
 };
 
 }  // namespace lens
