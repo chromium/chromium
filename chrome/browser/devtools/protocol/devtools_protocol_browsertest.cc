@@ -2296,7 +2296,7 @@ class IsolatedWebMulticastSocketsTest
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
-                       DISABLED_DirectSocketsUDPJoinLeaveMulticastEvents) {
+                       DirectSocketsUDPJoinLeaveMulticastEvents) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
   ASSERT_TRUE(iwa_frame);
 
@@ -2313,8 +2313,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
     if (!multicastController) {
       throw new Error("No multicastController");
     }
-    await multicastController.joinGroup("224.0.0.1");
-    await multicastController.leaveGroup("224.0.0.1");
+    await multicastController.joinGroup("237.132.100.17");
+    await multicastController.leaveGroup("237.132.100.17");
     await socket.close();
   })()
   )JS";
@@ -2327,13 +2327,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
   base::Value::Dict joined_params =
       WaitForNotification("Network.directUDPSocketJoinedMulticastGroup", true);
   EXPECT_EQ(*joined_params.FindStringByDottedPath("params.IPAddress"),
-            "224.0.0.1");
+            "237.132.100.17");
 
   // Check for Leave event
   base::Value::Dict left_params =
       WaitForNotification("Network.directUDPSocketLeftMulticastGroup", true);
   EXPECT_EQ(*left_params.FindStringByDottedPath("params.IPAddress"),
-            "224.0.0.1");
+            "237.132.100.17");
 
   Detach();
   agent_host_ = nullptr;
