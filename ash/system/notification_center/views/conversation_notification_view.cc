@@ -110,7 +110,6 @@ void ConversationNotificationView::UpdateWithNotification(
   actions_view_->UpdateWithNotification(notification);
   actions_view_->SetExpanded(expanded_);
 
-  // TODO(b/333740702): Clean up string truncation.
   title_->SetText(gfx::TruncateString(notification.title(),
                                       kTitleCharacterLimit, gfx::WORD_BREAK));
 
@@ -286,7 +285,6 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   auto title = std::make_unique<views::Label>();
   title->SetID(ViewId::kTitleLabel);
   title_ = title_row->AddChildView(std::move(title));
-  // TODO(b/333740702): Clean up string truncation.
   title_->SetText(gfx::TruncateString(notification.title(),
                                       kTitleCharacterLimit, gfx::WORD_BREAK));
   ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
