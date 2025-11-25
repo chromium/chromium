@@ -20,7 +20,6 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       id="composebox"
       ?autofocus="${false}"
       carousel-on-top_
-      .isCollapsible="${true}"
       lens-button-disabled_$="${false}"
     >
         <!-- Currently an empty div that has height to force the input textarea to

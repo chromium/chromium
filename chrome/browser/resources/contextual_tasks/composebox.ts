@@ -54,6 +54,11 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         this.isComposeboxFocused = false;
         composebox.animationState = GlowAnimationState.NONE;
       });
+      this.eventTracker_.add(composebox, 'composebox-submit', () => {
+        // Clear the composebox text after submitting.
+        composebox.clearInput();
+        composebox.clearAutocompleteMatches();
+      });
 
       this.composeboxResizeObserver_ = new ResizeObserver(() => {
         this.composeboxHeight_ = composebox.offsetHeight;

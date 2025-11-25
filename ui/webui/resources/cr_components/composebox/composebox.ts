@@ -342,7 +342,7 @@ export class ComposeboxElement extends I18nMixinLit
       } else if (!this.lastQueriedInput_) {
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
-        this.input_ = '';
+        this.clearInput();
         this.submitEnabled_ = this.contextFilesSize_ > 0;
       } else {
         // For typed queries reset the input back to typed value when
@@ -1164,12 +1164,16 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   clearAllInputs() {
-    this.input_ = '';
+    this.clearInput();
     this.$.context.resetContextFiles();
     this.contextFilesSize_ = 0;
     this.smartComposeInlineHint_ = '';
     this.searchboxHandler_.clearFiles();
     this.submitEnabled_ = false;
+  }
+
+  clearInput() {
+    this.input_ = '';
   }
 
   getInputText(): string {
