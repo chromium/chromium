@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ANIMATION_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ANIMATION_COORDINATOR_H_
 
+#include <set>
 #include <vector>
 
 #include "base/observer_list_types.h"
@@ -16,6 +17,10 @@
 #include "ui/views/animation/animation_delegate_views.h"
 
 class SidePanel;
+
+namespace gfx {
+class Animation;
+}
 
 // Coordinates multiple animations that need to be synchronized on a single
 // timeline for the side panel. This class is useful for creating complex,
@@ -72,16 +77,27 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
     std::vector<AnimationSequence> sequences;
   };
 
-  class Observer : public base::CheckedObserver {
+  // Used to observe changes to a particular animation id.
+  class AnimationIdObserver : public base::CheckedObserver {
    public:
-    // Called when the animation coordinator is progressed.
+    // Called when the animation sequence for `animation_id` has progressed.
     virtual void OnAnimationSequenceProgressed(
         const SidePanelAnimationId& animation_id,
         double animation_value) {}
 
-    // Called when the animation coordinator is ended.
+    // Called when the animation sequence for `animation_id` has ended.
     virtual void OnAnimationSequenceEnded(
         const SidePanelAnimationId& animation_id) {}
+  };
+
+  // Used to observe changes to a particular animation type.
+  class AnimationTypeObserver : public base::CheckedObserver {
+   public:
+    // Called when the coordinator's animation has started for `type`.
+    virtual void OnAnimationTypeStarted(AnimationType type) {}
+
+    // Called when the animation coordinator has ended for `type`.
+    virtual void OnAnimationTypeEnded(AnimationType type) {}
   };
 
   explicit SidePanelAnimationCoordinator(SidePanel* side_panel);
@@ -95,10 +111,15 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
   // Snap to the end state for the animations associated with `type`.
   void Reset(AnimationType type);
 
+  // Add / Remove observers for a specific animation id.
   void AddObserver(const SidePanelAnimationId& animation_id,
-                   Observer* observer);
+                   AnimationIdObserver* observer);
   void RemoveObserver(const SidePanelAnimationId& animation_id,
-                      Observer* observer);
+                      AnimationIdObserver* observer);
+
+  // Add / Remove observers for a specific animation type.
+  void AddObserver(AnimationType type, AnimationTypeObserver* observer);
+  void RemoveObserver(AnimationType type, AnimationTypeObserver* observer);
 
   // Returns the animation value for `animation_id` based on it's
   // AnimationSpecification's tween / animation curve. Will always return 0 for
@@ -114,10 +135,13 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
     return animation_spec_map_;
   }
 
+  gfx::Animation* animation_for_testing() { return &animation_; }
+
  private:
   // views::AnimationDelegateViews
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   double AdjustProgressForAnimationType(double progress) const;
   base::TimeDelta GetElapsedAnimationTime() const;
@@ -137,6 +161,27 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
   GetAnimationSpecificationForAnimationId(
       const SidePanelAnimationId& animation_id);
 
+  // Returns the set of observers listening to the current animation type. These
+  // observers will be notified of changes to the main animation state before
+  // AnimationProgressed is called.
+  const std::set<raw_ptr<AnimationTypeObserver>>& GetAnimationTypeObservers();
+
+  // Notifies observers that an animation sequence has ended for `animation_id`.
+  // If the observer has already been notified, do nothing.
+  void NotifyOnSequenceEndedObservers(
+      const SidePanelAnimationId& animation_id,
+      const std::set<raw_ptr<AnimationIdObserver>> observers);
+
+  // Notifies observers that the animation for `animation_type_` will start.
+  // This gives observers a chance to set prerequisite states before
+  // AnimationProgressed is called.
+  void NotifyAnimationTypeStartedObservers();
+
+  // Notifies observers that the animation for `animation_type_` has ended. This
+  // gives observers a chance to set final states after AnimationEnded /
+  // AnimationCanceled is called.
+  void NotifyAnimationTypeEndedObservers();
+
   // The current AnimationType of the coordinator.
   AnimationType animation_type_ = AnimationType::kClose;
 
@@ -144,9 +189,18 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
   // for that type.
   std::map<AnimationType, AnimationSpecification> animation_spec_map_;
 
-  // Maps the property id to the list of its observers.
-  std::map<SidePanelAnimationId, std::vector<raw_ptr<Observer>>>
+  // Maps the animation id to the set of its observers.
+  std::map<SidePanelAnimationId, std::set<raw_ptr<AnimationIdObserver>>>
       animation_id_to_observer_map_;
+
+  // Maps the animation type to the set of observers
+  std::map<AnimationType, std::set<raw_ptr<AnimationTypeObserver>>>
+      animation_type_to_observer_map_;
+
+  // Set of animation ids that have already notified their observers that they
+  // have ended for the current animation cycle. AnimationIdObservers are only
+  // notified if a sequence has ended once.
+  std::set<SidePanelAnimationId> notified_ended_animations_;
 
   // Linear animation used to coordinate all of the other animations
   // added to this class. This serves as the source of truth timeline

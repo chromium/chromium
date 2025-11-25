@@ -18,10 +18,11 @@ class SidePanel;
 
 // This view is responsible for framing the primary elements of the UI when
 // toolbar height side panel is showing, providing a nice drop shadow.
-class ShadowOverlayView : public views::View,
-                          public views::LayoutDelegate,
-                          public SidePanelAnimationCoordinator::Observer,
-                          public views::ViewObserver {
+class ShadowOverlayView
+    : public views::View,
+      public views::LayoutDelegate,
+      public SidePanelAnimationCoordinator::AnimationIdObserver,
+      public views::ViewObserver {
   METADATA_HEADER(ShadowOverlayView, views::View)
 
  public:
@@ -41,7 +42,7 @@ class ShadowOverlayView : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
-  // SidePanelAnimationCoordinator::Observer
+  // SidePanelAnimationCoordinator::AnimationIdObserver
   void OnAnimationSequenceProgressed(
       const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
       double animation_value) override;
