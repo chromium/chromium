@@ -99,8 +99,7 @@ void InteractiveBrowserTestPrivate::AddInstrumentedWebContents(
     CHECK_NE(instrumented_web_contents->page_identifier(),
              existing->page_identifier());
   }
-  instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents))
-      .get();
+  instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents));
 }
 
 bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
