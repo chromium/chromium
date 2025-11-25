@@ -138,18 +138,18 @@ message TrustAnchorIdRange {
   optional bytes base_id = 1;
 
   // The minimum supported landmark number.
-  optional int64 min_active_landmark_inclusive = 2;
+  optional uint64 min_active_landmark_inclusive = 2;
 
   // The maximum supported landmark number, inclusive.
-  optional int64 last_landmark_inclusive = 3;
+  optional uint64 last_landmark_inclusive = 3;
 }
 
 message MtcSubTree {
   // The start index of the range covered by this subtree.
-  optional int64 start_inclusive = 1;
+  optional uint64 start_inclusive = 1;
 
   // The end index, exclusive, of the range covered by this subtree.
-  optional int64 end_exclusive = 2;
+  optional uint64 end_exclusive = 2;
 
   // The merkle tree hash for this subtree.
   optional bytes hash = 3;
@@ -157,10 +157,10 @@ message MtcSubTree {
 
 message MtcIndexRange {
   // The start index of the range.
-  optional int64 start_inclusive = 1;
+  optional uint64 start_inclusive = 1;
 
   // The end index, exclusive, of the range.
-  optional int64 end_exclusive = 2;
+  optional uint64 end_exclusive = 2;
 }
 
 message MtcAnchorData {
