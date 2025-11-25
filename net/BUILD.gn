@@ -2936,6 +2936,7 @@ target(_test_target_type, "net_unittests") {
     "proxy_resolution/network_delegate_error_observer_unittest.cc",
     "proxy_resolution/pac_file_decider_unittest.cc",
     "proxy_resolution/pac_file_fetcher_impl_unittest.cc",
+    "proxy_resolution/parse_proxy_list_fuzzer.cc",
     "proxy_resolution/proxy_config_unittest.cc",
     "proxy_resolution/proxy_host_matching_rules_unittest.cc",
     "proxy_resolution/proxy_info_unittest.cc",
@@ -3152,6 +3153,7 @@ target(_test_target_type, "net_unittests") {
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
     "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
     "PickleTest.FuzzRoundTrip",
+    "ParseProxyListFuzzer.TestOneInput",
     "QuicheHostnameUtilsFuzzTest.FuzzPropertyNormalizationIsIdempotentForValidSni",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
     "SocketPoolAdditionalCapacityTest.ValidateRandomizedInputs",
@@ -3741,14 +3743,6 @@ fuzzer_test("net_pickle_fuzzer") {
 
 fuzzer_test("net_parse_proxy_list_pac_fuzzer") {
   sources = [ "proxy_resolution/parse_proxy_list_pac_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//net",
-  ]
-}
-
-fuzzer_test("net_parse_proxy_list_fuzzer") {
-  sources = [ "proxy_resolution/parse_proxy_list_fuzzer.cc" ]
   deps = [
     ":net_fuzzer_test_support",
     "//net",
