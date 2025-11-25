@@ -17,25 +17,15 @@ class UI_CHROMEOS_EXPORT IndexedSuggestionCandidateButton
 
  public:
   // Build a suggestion candidate button.
-  // There are two variants to this button.
-  // Option 1) Regular (non-legacy) candidate (set create_legacy_candidate =
-  // false):
   // - Contains the candidate and the index stacked above each other:
   //   +---+
   //   | A |
   //   |   |
   //   | 1 |
   //   +---+
-  // Option 2) Legacy candidate (set create_legacy_candidate = true):
-  // - Simple box containing the candidate: eg.  [ A ]
-  // - Does not contain any index. This legacy candidate only exists for
-  //   compatibility with previous candidate styles.
-  // TODO(b/240357416): Remove legacy option when emoji suggestions uses
-  // horizontal layout.
   IndexedSuggestionCandidateButton(PressedCallback callback,
                                    const std::u16string& candidate_text,
-                                   const std::u16string& index_text,
-                                   bool create_legacy_candidate);
+                                   const std::u16string& index_text);
   IndexedSuggestionCandidateButton(const IndexedSuggestionCandidateButton&) =
       delete;
   IndexedSuggestionCandidateButton& operator=(
@@ -45,11 +35,8 @@ class UI_CHROMEOS_EXPORT IndexedSuggestionCandidateButton
   void SetHighlight(bool highlight);
 
  private:
-  // TODO(b/240357416): Remove when emoji suggestions uses horizontal layout.
-  void BuildLegacyCandidate(const std::u16string& candidate_text);
   void BuildCandidate(const std::u16string& candidate_text,
                       const std::u16string& index_text);
-  bool is_legacy_candidate_;
 };
 }  // namespace ui::ime
 

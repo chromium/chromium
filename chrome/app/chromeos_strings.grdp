@@ -6512,9 +6512,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_ENTER_KEY" desc="This string is the enter key annotation to educate users how to accept a personal information suggestion.">
     Enter
   </message>
-   <message name="IDS_SUGGESTION_EMOJI_SUGGESTED" desc="String announced by screenreader when emoji suggestion pops up.">
-    Emoji suggested. Press up or down to navigate and enter to insert.
-  </message>
   <message name="IDS_SUGGESTION_EMOJI_CHOSEN" desc="String announced by screenreader when users selected an emoji in the pop-up.">
     <ph name="EMOJI_NAME">$1<ex>Party popper</ex></ph>. <ph name="EMOJI_INDEX">$2<ex>5</ex></ph> of <ph name="EMOJI_COUNT">$3<ex>5</ex></ph>.
   </message>

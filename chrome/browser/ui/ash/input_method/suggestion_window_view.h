@@ -98,8 +98,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
 
   // Sets the number of candidates (i.e. the number of children of
   // |candidate_area_|) to |size|.
-  void ResizeCandidateArea(const std::vector<std::u16string>& new_candidates,
-                           bool use_legacy_candidate = false);
+  void ResizeCandidateArea(const std::vector<std::u16string>& new_candidates);
 
   void Reorient(Orientation orientation, bool extra_padding_on_right = true);
 

@@ -1179,18 +1179,6 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
       break;
     case ui::ime::ButtonId::kLearnMore:
       if (button.window_type ==
-          ash::ime::AssistiveWindowType::kEmojiSuggestion) {
-        base::RecordAction(base::UserMetricsAction(
-            "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-        // TODO(crbug.com/40138453): Add subpath for emoji suggestions
-        // settings.
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(),
-            SettingToQueryString(
-                chromeos::settings::mojom::kInputSubpagePath,
-                chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
-      }
-      if (button.window_type ==
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion) {
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),

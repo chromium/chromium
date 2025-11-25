@@ -215,42 +215,6 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       DismissEmojiSuggestionWhenUsersContinueTyping) {
-  base::HistogramTester histogram_tester;
-  engine_->Enable(kEngineIdUs);
-  TextInputTestHelper helper(GetBrowserInputMethod());
-  SetUpTextInput(helper);
-  const std::u16string prefix_text = u"happy ";
-  const std::u16string expected_result_text = u"happy a";
-
-  helper.GetTextInputClient()->InsertText(
-      prefix_text,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(prefix_text);
-  // Types something random to dismiss emoji
-  helper.GetTextInputClient()->InsertText(
-      u"a",
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(expected_result_text);
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    NativeInputMethodEngineWithoutImeServiceTest,
-    OnLearnMoreButtonClickedOpensEmojiSuggestionSettingsPage) {
-  base::UserActionTester user_action_tester;
-  ui::ime::AssistiveWindowButton button;
-  button.id = ui::ime::ButtonId::kLearnMore;
-  button.window_type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
-
-  engine_->AssistiveWindowButtonClicked(button);
-
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        FiresOnInputMethodOptionsChangedEvent) {
   {
     base::Value::Dict settings;

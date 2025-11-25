@@ -625,7 +625,7 @@ struct SuggestionCandidate {
 enum AssistiveWindowType {
   [Default] kHidden = 0,
   kUndo = 1,
-  kEmojiSuggestion = 2,
+  kEmojiSuggestionDeprecated = 2,  // Deprecated
   kPersonalInfoSuggestion = 3,
   kGrammarSuggestion = 4,
   kMultiWordSuggestion = 5,

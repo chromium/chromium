@@ -139,7 +139,6 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     const ash::ime::AssistiveWindowType& type) {
   switch (type) {
     case ash::ime::AssistiveWindowType::kNone:
-    case ash::ime::AssistiveWindowType::kEmojiSuggestion:
     case ash::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ash::ime::AssistiveWindowType::kGrammarSuggestion:
     case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
