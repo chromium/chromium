@@ -32,14 +32,20 @@ import java.util.List;
 public class LaunchMetrics {
     private static class HomeScreenLaunch {
         public final String mUrl;
+        public final @DisplayMode.EnumType int mDisplayMode;
         public final boolean mIsShortcut;
         // Corresponds to C++ ShortcutInfo::Source
         public final int mSource;
         public final @Nullable WebappInfo mWebappInfo;
 
         public HomeScreenLaunch(
-                String url, boolean isShortcut, int source, @Nullable WebappInfo webappInfo) {
+                String url,
+                @DisplayMode.EnumType int displayMode,
+                boolean isShortcut,
+                int source,
+                @Nullable WebappInfo webappInfo) {
             mUrl = url;
+            mDisplayMode = displayMode;
             mIsShortcut = isShortcut;
             mSource = source;
             mWebappInfo = webappInfo;
@@ -65,36 +71,49 @@ public class LaunchMetrics {
             source = getSourceForWebApkFromWebappDataStorage(webappInfo);
         }
 
-        sHomeScreenLaunches.add(new HomeScreenLaunch(webappInfo.url(), false, source, webappInfo));
+        sHomeScreenLaunches.add(
+                new HomeScreenLaunch(
+                        webappInfo.url(), webappInfo.displayMode(), false, source, webappInfo));
+    }
+
+    /**
+     * Records the launch of a TWA
+     *
+     * @param url The TWA's url to load
+     * @param displayMode The TWA's resolved DisplayMode
+     */
+    public static void recordTWALaunch(String url, @DisplayMode.EnumType int displayMode) {
+        sHomeScreenLaunches.add(
+                new HomeScreenLaunch(url, displayMode, false, ShortcutSource.UNKNOWN, null));
     }
 
     /**
      * Records the launch of a Tab for a URL (i.e. a Home screen shortcut).
+     *
      * @param url URL that kicked off the Tab's creation.
      * @param source integer id of the source from where the URL was added.
      */
     public static void recordHomeScreenLaunchIntoTab(String url, int source) {
-        sHomeScreenLaunches.add(new HomeScreenLaunch(url, true, source, null));
+        sHomeScreenLaunches.add(
+                new HomeScreenLaunch(url, DisplayMode.UNDEFINED, true, source, null));
     }
 
     /**
-     * Calls out to native code to record URLs that have been launched via the Home screen.
-     * This intermediate step is necessary because Activity.onCreate() may be called when
-     * the native library has not yet been loaded.
+     * Calls out to native code to record URLs that have been launched via the Home screen. This
+     * intermediate step is necessary because Activity.onCreate() may be called when the native
+     * library has not yet been loaded.
+     *
      * @param webContents WebContents for the current Tab.
      */
     public static void commitLaunchMetrics(WebContents webContents) {
         for (HomeScreenLaunch launch : sHomeScreenLaunches) {
             WebappInfo webappInfo = launch.mWebappInfo;
-            @DisplayMode.EnumType
-            int displayMode =
-                    (webappInfo == null) ? DisplayMode.UNDEFINED : webappInfo.displayMode();
             LaunchMetricsJni.get()
                     .recordLaunch(
                             launch.mIsShortcut,
                             launch.mUrl,
                             launch.mSource,
-                            displayMode,
+                            launch.mDisplayMode,
                             webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
                 WebApkUkmRecorder.recordWebApkLaunch(

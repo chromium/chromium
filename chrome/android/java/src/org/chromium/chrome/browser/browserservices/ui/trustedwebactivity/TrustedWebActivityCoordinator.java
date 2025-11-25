@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
+import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.function.Supplier;
@@ -50,6 +53,10 @@ public class TrustedWebActivityCoordinator {
         }
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
+
+        LaunchMetrics.recordTWALaunch(
+                assumeNonNull(intentDataProvider.getUrlToLoad()),
+                intentDataProvider.getResolvedDisplayMode());
     }
 
     private void onVerificationUpdate() {
