@@ -18,7 +18,6 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
@@ -38,6 +37,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
@@ -251,7 +251,45 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   observer.Wait();
 
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
-      chrome::FindBrowserWithTab(observer.web_contents()),
+      tabs::TabInterface::GetFromContents(observer.web_contents())
+          ->GetBrowserWindowInterface(),
+      url_info1_->app_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocolSelf) {
+  ASSERT_NO_FATAL_FAILURE(InstallBundles());
+
+  {
+    // Eliminate all prompts/guards along the way.
+    ExternalProtocolHandler::PermitLaunchUrl();
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->SetProtocolLinkPreference(url_info1_->app_id(), "meow");
+    base::test::TestFuture<void> future;
+    web_app::WebAppProvider::GetForWebApps(profile())
+        ->scheduler()
+        .UpdateProtocolHandlerUserApproval(url_info1_->app_id(), "meow",
+                                           web_app::ApiApprovalState::kAllowed,
+                                           future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Open a protocol url from an app frame.
+  auto* rfh = web_app::OpenIsolatedWebApp(profile(), url_info1_->app_id());
+
+  GURL remapped_url =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          "meow",
+          url_info1_->origin().GetURL().Resolve("/index.html?params=%s"))
+          .TranslateUrl(GURL("meow://hru"));
+
+  ui_test_utils::UrlLoadObserver observer(remapped_url);
+  ASSERT_THAT(content::EvalJs(rfh, "window.open('meow://hru', '_self')"),
+              content::EvalJsResult::IsOk());
+  observer.Wait();
+
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
+      tabs::TabInterface::GetFromContents(observer.web_contents())
+          ->GetBrowserWindowInterface(),
       url_info1_->app_id()));
 }
 #endif

@@ -212,16 +212,17 @@ IsolatedWebAppThrottle::MaybeThrottleNavigationTransition(
   if (navigation_handle()->IsInMainFrame()) {
     // If the main frame tries to leave the app's origin, cancel the
     // navigation and open the URL in the systems' default application.
-    if (dest_tuple != web_contents_isolation_tuple) {
+    // Navigations to URLs with custom schemes (say, meow://) initiated by the
+    // IWA will have `dest_origin_` set to null, yet the derived `dest_tuple`
+    // will point back at the IWA origin; for this reason it's necessary to
+    // check `dest_needs_apps_isolation` too.
+    if (dest_tuple != web_contents_isolation_tuple ||
+        !dest_needs_apps_isolation) {
       RunNavigationInDefaultBrowser(navigation_handle());
       return ThrottleAction::CANCEL;
     }
 
-    // It's very unlikely that `dest_needs_apps_isolation` is false at this
-    // stage. However, to gracefully handle this, the navigation will be aborted
-    // if that's the case.
-    // TODO(crbug.com/417403902): Investigate this.
-    return dest_needs_apps_isolation ? ThrottleAction::PROCEED : block_action;
+    return ThrottleAction::PROCEED;
   } else {
     // Handle iframe navigations.
     CHECK(!navigation_handle()->IsInMainFrame());
