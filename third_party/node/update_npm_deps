@@ -56,7 +56,7 @@ fi
 rm -rf node_modules
 
 echo 'Step 1: Downloading dependencies listed in packages.json, using npm...'
-npm install --no-bin-links --only=prod
+npm install --no-bin-links --no-fund --ignore-scripts --omit=dev --omit=optional
 
 echo 'Step 2: Downloading dependencies not listed in packages.json, manually...'
 ./download_npm_deps_manually.sh
