@@ -39,7 +39,6 @@ inline constexpr base::TimeDelta kDiskSpaceCheckIntervalLong =
 
 // A pre-stop warning notification should not be shown more than once within
 // this interval.
-// TODO(b/237040345): Finalize the value.
 inline constexpr base::TimeDelta kPreStopNotificationReshowInterval =
     base::Minutes(2);
 
