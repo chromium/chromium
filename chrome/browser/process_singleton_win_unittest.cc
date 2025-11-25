@@ -154,10 +154,10 @@ class ProcessSingletonTest : public base::MultiProcessTest {
   ProcessSingletonTest& operator=(const ProcessSingletonTest&) = delete;
 
  protected:
-  enum WindowOption { WITH_WINDOW, NO_WINDOW };
+  enum WindowOption { kWithWindow, kNoWindow };
 
   ProcessSingletonTest()
-      : window_option_(NO_WINDOW), should_kill_called_(false) {}
+      : window_option_(kNoWindow), should_kill_called_(false) {}
 
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(base::MultiProcessTest::SetUp());
@@ -218,8 +218,9 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     cmd_line.AppendSwitchPath(switches::kUserDataDir, user_data_dir_.GetPath());
     cmd_line.AppendSwitchNative(kReadyEventNameFlag, ready_event_name_);
     cmd_line.AppendSwitchNative(kContinueEventNameFlag, continue_event_name_);
-    if (window_option_ == WITH_WINDOW)
+    if (window_option_ == kWithWindow) {
       cmd_line.AppendSwitch(kCreateWindowFlag);
+    }
 
     return cmd_line;
   }
@@ -272,7 +273,7 @@ class ProcessSingletonTest : public base::MultiProcessTest {
 }  // namespace
 
 TEST_F(ProcessSingletonTest, KillsHungBrowserWithNoWindows) {
-  ASSERT_NO_FATAL_FAILURE(PrepareTest(NO_WINDOW, false));
+  ASSERT_NO_FATAL_FAILURE(PrepareTest(kNoWindow, false));
 
   // As the hung browser has no visible window, it'll be killed without
   // user interaction.
@@ -309,7 +310,7 @@ TEST_F(ProcessSingletonTest, KillsHungBrowserWithNoWindows) {
 }
 
 TEST_F(ProcessSingletonTest, DoesntKillWithoutUserPermission) {
-  ASSERT_NO_FATAL_FAILURE(PrepareTest(WITH_WINDOW, false));
+  ASSERT_NO_FATAL_FAILURE(PrepareTest(kWithWindow, false));
 
   // As the hung browser has a visible window, this should query the user
   // before killing the hung process.
@@ -332,7 +333,7 @@ TEST_F(ProcessSingletonTest, DoesntKillWithoutUserPermission) {
 }
 
 TEST_F(ProcessSingletonTest, KillWithUserPermission) {
-  ASSERT_NO_FATAL_FAILURE(PrepareTest(WITH_WINDOW, true));
+  ASSERT_NO_FATAL_FAILURE(PrepareTest(kWithWindow, true));
 
   // As the hung browser has a visible window, this should query the user
   // before killing the hung process.

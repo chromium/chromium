@@ -804,7 +804,7 @@ class DownloadProtectionServiceTestBase
   }
 
  public:
-  enum ArchiveType { ZIP, DMG };
+  enum ArchiveType { kZip, kDmg };
 
   void CheckDoneCallback(base::OnceClosure quit_closure,
                          DownloadCheckResult result) {
@@ -921,13 +921,13 @@ void DownloadProtectionServiceTestBase<ShouldSetDbManager>::
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   NiceMockDownloadItem item;
-  if (type == ZIP) {
+  if (type == kZip) {
     PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.zip"},  // url_chain
                              "http://www.google.com/",              // referrer
                              FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                              FILE_PATH_LITERAL("a.zip"));  // final_path
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-  } else if (type == DMG) {
+  } else if (type == kDmg) {
     PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.dmg"},  // url_chain
                              "http://www.google.com/",              // referrer
                              FILE_PATH_LITERAL("a.tmp"),            // tmp_path
@@ -950,7 +950,7 @@ void DownloadProtectionServiceTestBase<ShouldSetDbManager>::
   EXPECT_EQ(0, GetClientDownloadRequest()->archived_binary_size());
   EXPECT_TRUE(GetClientDownloadRequest()->has_download_type());
   ClientDownloadRequest::DownloadType expected_type =
-      type == ZIP
+      type == kZip
           ? ClientDownloadRequest_DownloadType_INVALID_ZIP
           : ClientDownloadRequest_DownloadType_MAC_ARCHIVE_FAILED_PARSING;
   EXPECT_EQ(expected_type, GetClientDownloadRequest()->download_type());
@@ -1874,13 +1874,13 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptZip) {
-  CheckClientDownloadReportCorruptArchive(ZIP);
+  CheckClientDownloadReportCorruptArchive(kZip);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptDmg) {
-  CheckClientDownloadReportCorruptArchive(DMG);
+  CheckClientDownloadReportCorruptArchive(kDmg);
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportValidDmg) {

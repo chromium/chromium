@@ -690,14 +690,14 @@ void RecordLinuxGlibcVersion() {
 // Record the UMA histogram when a response is received.
 void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   // Used for histograms; do not reorder.
-  enum Result { NOT_PINNED = 0, PINNED = 1, FAILURE = 2, NUM_RESULTS };
+  enum Result { kNotPinned = 0, kPinned = 1, kFailure = 2, kNumResults };
 
-  Result result = FAILURE;
+  Result result = kFailure;
   if (succeeded)
-    result = is_pinned_to_taskbar ? PINNED : NOT_PINNED;
+    result = is_pinned_to_taskbar ? kPinned : kNotPinned;
 
   base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
-                                NUM_RESULTS);
+                                kNumResults);
 
   // If Chrome is not pinned to taskbar, clear the recording that the installer
   // pinned Chrome to the taskbar, so that if the user pins Chrome back to the
@@ -711,11 +711,12 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   // true if the installer pinned Chrome, and it's not pinned on this startup,
   // false if the installer pinned Chrome, and it's still pinned.
   if (GetInstallerPinnedChromeToTaskbar().value_or(false)) {
-    if (result == NOT_PINNED)
+    if (result == kNotPinned) {
       SetInstallerPinnedChromeToTaskbar(false);
-    if (result != FAILURE) {
+    }
+    if (result != kFailure) {
       base::UmaHistogramBoolean("Windows.InstallerPinUnpinned",
-                                result == NOT_PINNED);
+                                result == kNotPinned);
     }
   }
 }

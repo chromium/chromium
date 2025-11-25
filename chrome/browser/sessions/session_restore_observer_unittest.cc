@@ -39,7 +39,7 @@ namespace {
 
 const char kDefaultUrl[] = "https://www.google.com";
 
-enum class SessionRestoreEvent { STARTED_LOADING_TABS, FINISHED_LOADING_TABS };
+enum class SessionRestoreEvent { kStartedLoadingTabs, kFinishedLoadingTabs };
 
 class MockSessionRestoreObserver : public SessionRestoreObserver {
  public:
@@ -58,11 +58,11 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
   // SessionRestoreObserver implementation:
   void OnSessionRestoreStartedLoadingTabs() override {
     session_restore_events_.emplace_back(
-        SessionRestoreEvent::STARTED_LOADING_TABS);
+        SessionRestoreEvent::kStartedLoadingTabs);
   }
   void OnSessionRestoreFinishedLoadingTabs() override {
     session_restore_events_.emplace_back(
-        SessionRestoreEvent::FINISHED_LOADING_TABS);
+        SessionRestoreEvent::kFinishedLoadingTabs);
   }
 
  private:
@@ -186,13 +186,13 @@ TEST_P(SessionRestoreObserverTest, SingleSessionRestore) {
   RestoreTabs({web_contents()});
 
   ASSERT_EQ(1u, number_of_session_restore_events());
-  EXPECT_EQ(SessionRestoreEvent::STARTED_LOADING_TABS,
+  EXPECT_EQ(SessionRestoreEvent::kStartedLoadingTabs,
             session_restore_events()[0]);
 
   LoadWebContents(web_contents());
 
   ASSERT_EQ(2u, number_of_session_restore_events());
-  EXPECT_EQ(SessionRestoreEvent::FINISHED_LOADING_TABS,
+  EXPECT_EQ(SessionRestoreEvent::kFinishedLoadingTabs,
             session_restore_events()[1]);
 }
 
@@ -209,12 +209,12 @@ TEST_P(SessionRestoreObserverTest, SequentialSessionRestores) {
     RestoreTabs({test_contents});
 
     ASSERT_EQ(event_index + 1, number_of_session_restore_events());
-    EXPECT_EQ(SessionRestoreEvent::STARTED_LOADING_TABS,
+    EXPECT_EQ(SessionRestoreEvent::kStartedLoadingTabs,
               session_restore_events()[event_index++]);
 
     LoadWebContents(test_contents);
     ASSERT_EQ(event_index + 1, number_of_session_restore_events());
-    EXPECT_EQ(SessionRestoreEvent::FINISHED_LOADING_TABS,
+    EXPECT_EQ(SessionRestoreEvent::kFinishedLoadingTabs,
               session_restore_events()[event_index++]);
   }
 }
@@ -227,12 +227,12 @@ TEST_P(SessionRestoreObserverTest, ConcurrentSessionRestores) {
   RestoreTabs({test_contents.get()});
 
   ASSERT_EQ(1u, number_of_session_restore_events());
-  EXPECT_EQ(SessionRestoreEvent::STARTED_LOADING_TABS,
+  EXPECT_EQ(SessionRestoreEvent::kStartedLoadingTabs,
             session_restore_events()[0]);
 
   LoadWebContents(web_contents());
   LoadWebContents(test_contents.get());
   ASSERT_EQ(2u, number_of_session_restore_events());
-  EXPECT_EQ(SessionRestoreEvent::FINISHED_LOADING_TABS,
+  EXPECT_EQ(SessionRestoreEvent::kFinishedLoadingTabs,
             session_restore_events()[1]);
 }

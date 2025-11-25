@@ -153,18 +153,18 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
-  enum MetricsOption { DISABLE_METRICS, ENABLE_METRICS, REMOVE_METRICS_POLICY };
+  enum MetricsOption { kDisableMetrics, kEnableMetrics, kRemoveMetricsPolicy };
 
   // Helper routine to enable/disable metrics report upload settings in policy.
   void SetMetricsReportingSettings(MetricsOption option) {
-    if (option == REMOVE_METRICS_POLICY) {
+    if (option == kRemoveMetricsPolicy) {
       // Remove policy altogether
       device_policy_->payload().clear_metrics_enabled();
     } else {
       // Enable or disable policy
       em::MetricsEnabledProto* proto =
           device_policy_->payload().mutable_metrics_enabled();
-      proto->set_metrics_enabled(option == ENABLE_METRICS);
+      proto->set_metrics_enabled(option == kEnableMetrics);
     }
     BuildAndInstallDevicePolicy();
   }
@@ -517,7 +517,7 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
 TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {
   // Missing policy should default to reporting enabled for enterprise-enrolled
   // devices, see crbug/456186.
-  SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
+  SetMetricsReportingSettings(kRemoveMetricsPolicy);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
   ASSERT_TRUE(saved_value->is_bool());
@@ -527,7 +527,7 @@ TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {
 TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
   // Missing policy should default to reporting enabled for non-enterprise-
   // enrolled devices, see crbug/456186.
-  SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
+  SetMetricsReportingSettings(kRemoveMetricsPolicy);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
   ASSERT_TRUE(saved_value->is_bool());
@@ -535,7 +535,7 @@ TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
-  SetMetricsReportingSettings(DISABLE_METRICS);
+  SetMetricsReportingSettings(kDisableMetrics);
 
   // If we are not the owner no sets should work.
   base::Value value(true);
