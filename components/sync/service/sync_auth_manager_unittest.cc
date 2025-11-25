@@ -13,7 +13,6 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
@@ -993,7 +992,8 @@ TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
   // Even when the hosted domain gets determined later, there should be no
   // notification (since nothing relevant changed).
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
-  account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain(std::string()).Build();
   identity_env()->UpdateAccountInfoForAccount(account_info);
 
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
@@ -1034,7 +1034,8 @@ TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
   // Once the account's hosted domain is determined, the managed status should
   // become known too, and this should trigger a notification.
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
-  account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain(std::string()).Build();
   identity_env()->UpdateAccountInfoForAccount(account_info);
 
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
@@ -1092,7 +1093,9 @@ TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
   // Once the second account's hosted domain is determined, the managed status
   // should become known too, and this should trigger a notification.
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
-  account_info2.hosted_domain = signin::constants::kNoHostedDomainFound;
+  account_info2 = AccountInfo::Builder(account_info2)
+                      .SetHostedDomain(std::string())
+                      .Build();
   identity_env()->UpdateAccountInfoForAccount(account_info2);
 
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,

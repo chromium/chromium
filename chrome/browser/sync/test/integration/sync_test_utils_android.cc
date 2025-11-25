@@ -42,19 +42,21 @@ namespace {
 AccountInfo GetFakeAccountInfo(
     const std::string& username,
     const std::optional<std::string>& hosted_domain) {
-  AccountInfo account_info;
-  account_info.email = username;
-  account_info.gaia = signin::GetTestGaiaIdForEmail(username);
-  account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-  account_info =
-      signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
-  account_info.hosted_domain =
-      hosted_domain.value_or(signin::constants::kNoHostedDomainFound);
-  bool managed = false;
-  if (hosted_domain.has_value() && !hosted_domain.value().empty()) {
-    managed = hosted_domain.value() !=
-                  signin::constants::kNoHostedDomainFound;
+  AccountInfo::Builder builder(signin::GetTestGaiaIdForEmail(username),
+                               username);
+  builder.SetAccountId(
+      CoreAccountId::FromGaiaId(signin::GetTestGaiaIdForEmail(username)));
+  AccountInfo account_info =
+      signin::WithGeneratedUserInfo(builder.Build(), /*given_name=*/"Fake");
+  // `signin::WithGeneratedUserInfo()` resets hosted domain, so it needs to be
+  // set below.
+  if (hosted_domain.has_value()) {
+    account_info = AccountInfo::Builder(account_info)
+                       .SetHostedDomain(*hosted_domain)
+                       .Build();
   }
+  bool managed = hosted_domain.has_value() && !hosted_domain->empty() &&
+                 hosted_domain != signin::constants::kNoHostedDomainFound;
   AccountCapabilitiesTestMutator(&account_info.capabilities)
       .set_is_subject_to_enterprise_features(managed);
   return account_info;

@@ -963,7 +963,8 @@ TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
             sync_service()->GetTransportState());
 
   // Now provide the information that this is a managed account.
-  account_info.hosted_domain = "managed.com";
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain("managed.com").Build();
   sync_service_impl_bundle_.identity_test_env()->UpdateAccountInfoForAccount(
       account_info);
   ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
