@@ -8759,6 +8759,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
         You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> on this page again
       </message>
+      <message name="IDS_NTP_MODULES_INACTIVITY_REMOVAL" desc="Text shown in a toast informing not recently used cards have been removed." >
+        Cards removed because you haven't used them recently
+      </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming the NTP History Clusters module has been disabled.">
         You won't see <ph name="MODULE_NAME">$1<ex>this type of card</ex></ph> again
       </message>
@@ -9098,6 +9101,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MOBILE_PROMO_QR_CODE_LABEL" desc="Accessibility label for a QR code that shows on the Desktop NTP that prompts the user to scan it.">
         Scan QR Code
+      </message>
+
+      <!-- NTP Shortcuts -->
+      <message name="IDS_NTP_MOST_VISITED_SHORTCUTS_INACTIVITY_REMOVAL" desc="Text shown in a toast informing not recently used most visited shortcuts have been removed." >
+        Shortcuts for your most visited sites were removed because you haven't used them recently
       </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
