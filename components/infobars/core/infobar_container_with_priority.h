@@ -104,7 +104,8 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
 
   // Removes an infobar from whatever visible priority it belongs to (critical,
   // default, or low). Safe to call even if the infobar was not tracked.
-  void ClearVisible(InfoBar* infobar);
+  // Returns the number of elements removed.
+  size_t ClearVisible(InfoBar* infobar);
 
   // Return the number of infobar currently visible for the given priority.
   size_t CountVisible(InfoBarDelegate::InfobarPriority priority) const;

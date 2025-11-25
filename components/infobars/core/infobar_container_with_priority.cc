@@ -52,6 +52,11 @@ InfoBarContainerWithPriority::~InfoBarContainerWithPriority() = default;
 
 void InfoBarContainerWithPriority::ChangeInfoBarManager(
     InfoBarManager* infobar_manager) {
+  if (!IsInfobarPrioritizationEnabled()) {
+    InfoBarContainer::ChangeInfoBarManager(infobar_manager);
+    return;
+  }
+
   scoped_observation_.Reset();
 
   bool state_changed = !infobars().empty();
@@ -96,6 +101,11 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
 }
 
 void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
+  if (!IsInfobarPrioritizationEnabled()) {
+    InfoBarContainer::OnInfoBarAdded(infobar);
+    return;
+  }
+
   const auto priority = infobar->delegate()
                             ? infobar->delegate()->GetPriority()
                             : InfoBarDelegate::InfobarPriority::kDefault;
@@ -104,19 +114,37 @@ void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
 
 void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
                                                     bool animate) {
-  // Stop tracking the removed infobar in whichever bucket it was
-  // stored (critical/default/low).
-  ClearVisible(infobar);
+  if (!IsInfobarPrioritizationEnabled()) {
+    InfoBarContainer::OnInfoBarRemoved(infobar, animate);
+    return;
+  }
 
-  // Try to surface the next best candidate in the queue, honoring caps
-  // and priority precedence.
-  Promote();
+  // An infobar is being removed from the manager. It could be in our visible
+  // list or our pending list. We must remove it from whichever list it's in
+  // to prevent holding a dangling pointer.
+  std::erase_if(pending_infobars_, [infobar](const PendingInfoBarEntry& entry) {
+    return entry.infobar == infobar;
+  });
 
+  const size_t removed_from_visible = ClearVisible(infobar);
+
+  // Only try to promote a new infobar if a visible slot was actually freed.
+  if (removed_from_visible > 0) {
+    Promote();
+  }
+
+  // The base class needs to be called to handle the actual view removal and
+  // animation.
   InfoBarContainer::OnInfoBarRemoved(infobar, animate);
 }
 
 void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
                                                      InfoBar* new_infobar) {
+  if (!IsInfobarPrioritizationEnabled()) {
+    InfoBarContainer::OnInfoBarReplaced(old_infobar, new_infobar);
+    return;
+  }
+
   // Track whether the old infobar was actually visible in this container.
   const bool was_visible =
       std::ranges::any_of(visible_, [old_infobar](const VisibleEntry& entry) {
@@ -297,8 +325,8 @@ void InfoBarContainerWithPriority::MarkVisible(
   visible_.push_back({.infobar = infobar, .priority = priority});
 }
 
-void InfoBarContainerWithPriority::ClearVisible(InfoBar* infobar) {
-  std::erase_if(visible_, [infobar](const VisibleEntry& entry) {
+size_t InfoBarContainerWithPriority::ClearVisible(InfoBar* infobar) {
+  return std::erase_if(visible_, [infobar](const VisibleEntry& entry) {
     return entry.infobar == infobar;
   });
 }

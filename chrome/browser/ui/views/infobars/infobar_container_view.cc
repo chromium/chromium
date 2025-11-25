@@ -79,7 +79,7 @@ END_METADATA
 constexpr int kSeparatorHeightDip = 1;
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
-    : infobars::InfoBarContainer(delegate),
+    : infobars::InfoBarContainerWithPriority(delegate),
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildViewRaw(content_shadow_.get());
