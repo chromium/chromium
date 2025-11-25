@@ -172,12 +172,6 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     }
   }
 
-  // Getting the high entropy canvas operations should be done before
-  // flushing the canvas as flushing discards the recording (including the
-  // associated HighEntropyCanvasOpTypes).
-  HighEntropyCanvasOpType high_entropy_canvas_op_types =
-      GetRecorderHighEntropyCanvasOpTypes();
-
   if (recorder_->HasReleasableDrawOps()) {
     // If a previous flush rasterized some paint ops, we lost part of the
     // recording and must fallback to raster printing instead of vectorial
@@ -240,10 +234,6 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
       UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                              orientation);
-  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                              IsAccelerated())) {
-    snapshot->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
-  }
   return snapshot;
 }
 
