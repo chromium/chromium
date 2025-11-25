@@ -42,7 +42,7 @@ message IosSmartTabGroupingRequest {
   repeated Tab tabs = 1;
 
   // All pre-existing tab groups.
-  repeated TabGroup pre_existing_tab_groups = 2;
+  repeated TabGroupMinimal pre_existing_tab_groups = 2;
 
   // Whether or not the tab organization response can include reorganizing
   // existing tab groups.
@@ -50,13 +50,6 @@ message IosSmartTabGroupingRequest {
 
   // The direct user instruction about how the tabs should be organized.
   string user_command = 4 [features = { field_presence: EXPLICIT }];
-}
-
-// The response for the iOS Smart Tab Grouping feature.
-// Next ID: 2
-message IosSmartTabGroupingResponse {
-  // Resulting tab groups.
-  repeated TabGroupMinimal tab_groups = 1;
 }
 
 // The minimal representation of a tab group for iOS Smart Tab Grouping.
@@ -73,4 +66,11 @@ message TabGroupMinimal {
 
   // The emoji that represents this tab group, encoded in UTF-8.
   string emoji = 4 [features = { field_presence: EXPLICIT }];
+}
+
+// The response for the iOS Smart Tab Grouping feature.
+// Next ID: 2
+message IosSmartTabGroupingResponse {
+  // Resulting tab groups.
+  repeated TabGroupMinimal tab_groups = 1;
 }
