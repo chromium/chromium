@@ -373,8 +373,6 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         .build());
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null) {
-            // TODO(crbug.com/417272356): Update text; Currently shows "Move to new window" instead
-            //  of "Move _group_ to new window."
             itemList.add(
                     createMoveToWindowItem(
                             id,
