@@ -47,13 +47,13 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         void onUpdateFinished();
     }
 
-    private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
+    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     private final ActionsUpdateDelegate mActionsUpdateDelegate;
     private final ModelList mModels;
 
-    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
-    private final Callback<Tab> mTabChangedCallback = this::onTabChanged;
+    private final Callback<@Nullable Profile> mProfileUpdatedCallback = this::onProfileUpdated;
+    private final Callback<@Nullable Tab> mTabChangedCallback = this::onTabChanged;
     private final ActionsObserver mActionsObserver = new ActionsObserver();
 
     @Nullable private ExtensionActionsBridge mExtensionActionsBridge;
@@ -62,8 +62,8 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
 
     public ExtensionActionsUpdateHelper(
             ModelList models,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
             ActionsUpdateDelegate delegate) {
         mModels = models;
         mProfileSupplier = profileSupplier;

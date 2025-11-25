@@ -26,6 +26,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,8 +71,8 @@ public class ExtensionActionsUpdateHelperTest {
     private ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
-    private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
+    private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
+    private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
     private ModelList mModels;
     private ExtensionActionsUpdateHelper mHelper;
 

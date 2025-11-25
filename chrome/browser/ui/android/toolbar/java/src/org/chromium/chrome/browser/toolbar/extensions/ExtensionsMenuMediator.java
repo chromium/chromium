@@ -38,18 +38,18 @@ class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
     private final OneshotSupplier<ChromeAndroidTask> mTaskSupplier;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private final Runnable mOnUpdateFinishedRunnable;
     private final Callback<Boolean> mOnExtensionsAvailableCallback;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
-    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
+    private final Callback<@Nullable Profile> mProfileUpdatedCallback = this::onProfileUpdated;
     private final View mRootView;
 
     public ExtensionsMenuMediator(
             Context context,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
             Callback<Boolean> onExtensionsAvailableCallback,

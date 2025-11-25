@@ -54,8 +54,8 @@ class ExtensionActionListMediator implements Destroyable {
             WindowAndroid windowAndroid,
             ModelList models,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier) {
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;

@@ -1124,17 +1124,14 @@ public class ToolbarManager
         ViewStub extensionToolbarStub =
                 controlContainer.findViewById(R.id.extension_toolbar_container_stub);
         if (extensionToolbarStub != null) {
-            // TODO(crbug.com/448691376): Change ExtensionToolbarCoordinator profileSupplier and
-            // tabProvider arguments to Supplier<@Nullable Profile> and Supplier<@Nullable Tab> and
-            // updated the rest of the code.
             mExtensionToolbarCoordinator =
                     ExtensionToolbarCoordinator.maybeCreate(
                             mActivity,
                             extensionToolbarStub,
                             windowAndroid,
                             chromeAndroidTaskSupplier,
-                            (ObservableSupplier<Profile>) profileSupplier,
-                            (ObservableSupplier<Tab>) tabProvider,
+                            profileSupplier,
+                            tabProvider,
                             mTabCreatorManager.getTabCreator(false),
                             browsingModeThemeColorProvider);
         }

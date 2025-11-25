@@ -30,10 +30,10 @@ import org.chromium.ui.base.WindowAndroid;
 @ServiceImpl(ExtensionToolbarCoordinator.class)
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private final Callback<Profile> mProfileUpdatedCallback =
+    private final Callback<@Nullable Profile> mProfileUpdatedCallback =
             (profile) -> mCurrentProfile = profile;
 
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
@@ -45,8 +45,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         mProfileSupplier = profileSupplier;

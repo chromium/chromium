@@ -53,7 +53,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final ListMenuButton mExtensionsMenuButton;
     private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
-    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     private final TabCreator mTabCreator;
     private final View mContentView;
     private final PropertyModelChangeProcessor mChangeProcessor;
@@ -84,8 +84,8 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
             TabCreator tabCreator) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;

@@ -31,6 +31,7 @@ import org.robolectric.Shadows;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -55,8 +56,10 @@ public class ExtensionsMenuCoordinatorTest {
 
     private final OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<@Nullable Profile> mProfileSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
+            new ObservableSupplierImpl<>();
     private ListMenuButton mExtensionsMenuButton;
     private MaterialDivider mExtensionsMenuTabSwitcherDivider;
     @Mock private TabCreator mTabCreator;

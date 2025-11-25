@@ -40,8 +40,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ExtensionActionListContainer container,
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier) {
+            ObservableSupplier<@Nullable Profile> profileSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier) {
         mContainer = container;
 
         mModels = new ModelList();
