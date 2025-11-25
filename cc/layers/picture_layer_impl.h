@@ -39,7 +39,7 @@ class MicroBenchmarkImpl;
 class Tile;
 
 class CC_EXPORT PictureLayerImpl
-    : public TileBasedLayerImpl,
+    : public TileBasedLayerImpl<PictureLayerTiling>,
       public PictureLayerTilingClient,
       public ImageAnimationController::AnimationDriver {
  public:
@@ -421,10 +421,10 @@ class CC_EXPORT PictureLayerImpl
   TilingSetCoverageIterator<PictureLayerTiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale);
+      float ideal_contents_scale) override;
 
   TilingResolution GetTilingResolutionForDebugBorders(
-      const PictureLayerTiling* tiling) const;
+      const PictureLayerTiling* tiling) const override;
 };
 
 }  // namespace cc

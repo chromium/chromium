@@ -449,7 +449,7 @@ TilingSetCoverageIterator<TileDisplayLayerTiling> TileDisplayLayerImpl::Cover(
       tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
 }
 
-TileBasedLayerImpl::TilingResolution
+TileBasedLayerImpl<TileDisplayLayerTiling>::TilingResolution
 TileDisplayLayerImpl::GetTilingResolutionForDebugBorders(
     const TileDisplayLayerTiling* tiling) const {
   const auto ideal_scale = GetIdealContentsScale();

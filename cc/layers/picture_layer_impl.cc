@@ -2258,7 +2258,7 @@ float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
   return tilings_->num_tilings() ? MaximumTilingContentsScale() : 1.f;
 }
 
-TileBasedLayerImpl::TilingResolution
+TileBasedLayerImpl<PictureLayerTiling>::TilingResolution
 PictureLayerImpl::GetTilingResolutionForDebugBorders(
     const PictureLayerTiling* tiling) const {
   if (tiling->resolution() == HIGH_RESOLUTION) {

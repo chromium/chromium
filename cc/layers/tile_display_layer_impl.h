@@ -151,7 +151,8 @@ class CC_EXPORT DisplayTilingCoverageIterator
 // Viz-side counterpart to a client-side PictureLayerImpl when TreesInViz is
 // enabled. Clients push tiling information and tile contents from a picture
 // layer down to Viz, and this layer uses that information to draw tile quads.
-class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
+class CC_EXPORT TileDisplayLayerImpl
+    : public TileBasedLayerImpl<TileDisplayLayerTiling> {
  public:
   using NoContents = TileDisplayLayerNoContents;
   using TileResource = TileDisplayLayerTileResource;
@@ -228,9 +229,9 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
   TilingSetCoverageIterator<TileDisplayLayerTiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale);
+      float ideal_contents_scale) override;
   TilingResolution GetTilingResolutionForDebugBorders(
-      const TileDisplayLayerTiling* tiling) const;
+      const TileDisplayLayerTiling* tiling) const override;
 
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;

@@ -170,7 +170,6 @@ cc_component("cc") {
     "layers/texture_layer_client.h",
     "layers/texture_layer_impl.cc",
     "layers/texture_layer_impl.h",
-    "layers/tile_based_layer_impl.cc",
     "layers/tile_based_layer_impl.h",
     "layers/tile_display_layer_impl.cc",
     "layers/tile_display_layer_impl.h",
