@@ -54,6 +54,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -1162,6 +1163,30 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
             tab1_instance->GetPanelState().kind);
   ASSERT_EQ(mojom::PanelStateKind::kHidden,
             tab0_instance->GetPanelState().kind);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToSpecific) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Multi-instance only";
+  }
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  histogram_tester->ExpectBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToNew) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Multi-instance only";
+  }
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  histogram_tester->ExpectBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kStartNewConversation, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {

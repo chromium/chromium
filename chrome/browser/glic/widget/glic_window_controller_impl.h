@@ -182,6 +182,8 @@ class GlicWindowControllerImpl
   // GlicInstance implementation
   Host& host() override;
   const InstanceId& id() const override;
+  std::optional<std::string> conversation_id() const override;
+  base::TimeTicks GetLastActiveTime() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
   base::CallbackListSubscription

@@ -1654,6 +1654,17 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
+  async testSwitchConversationToSpecific() {
+    assertDefined(this.host.switchConversation);
+    await this.host.switchConversation(
+        {conversationId: 'A', conversationTitle: 'Title A'});
+  }
+
+  async testSwitchConversationToNew() {
+    assertDefined(this.host.switchConversation);
+    await this.host.switchConversation();
+  }
+
   async testReloadWebUi() {}
 
   private async assertCreateTabFails(url: string) {

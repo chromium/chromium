@@ -108,7 +108,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   void NotifyInstanceActivationChanged(bool is_active);
 
-  base::TimeTicks GetLastActiveTime() const;
+  base::TimeTicks GetLastActiveTime() const override;
 
   bool IsHibernated() const;
 
@@ -145,7 +145,7 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicInstance:
   Host& host() override;
   const InstanceId& id() const override;
-  std::optional<std::string> conversation_id() const;
+  std::optional<std::string> conversation_id() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
 

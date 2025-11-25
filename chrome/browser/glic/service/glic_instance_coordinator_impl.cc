@@ -504,6 +504,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       }
     }
   }
+
   if (!target_instance) {
     // No instance exists for this conversation. If the current instance
     // already has a conversation, create a new instance. Otherwise, reuse
@@ -511,10 +512,17 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
     target_instance = source_instance.conversation_id() ? CreateGlicInstance()
                                                         : &source_instance;
   }
+
+  CHECK(target_instance);
+
+  metrics_.RecordSwitchConversationTarget(
+      info ? std::optional<std::string>(info->conversation_id) : std::nullopt,
+      target_instance->conversation_id(), active_instance_);
+
   if (info) {
     target_instance->RegisterConversation(std::move(info), base::DoNothing());
   }
-  CHECK(target_instance);
+
   target_instance->Show(mutable_options);
   target_instance->metrics()->OnSwitchToConversation(mutable_options);
   std::move(callback).Run(std::nullopt);

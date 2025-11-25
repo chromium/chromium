@@ -1356,6 +1356,14 @@ void GlicWindowControllerImpl::MaybeAdjustSizeForDisplay(bool animate) {
   }
 }
 
+std::optional<std::string> GlicWindowControllerImpl::conversation_id() const {
+  return std::nullopt;
+}
+
+base::TimeTicks GlicWindowControllerImpl::GetLastActiveTime() const {
+  return base::TimeTicks();
+}
+
 base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
     StateChangeCallback callback) {
   return state_change_callback_list_.Add(std::move(callback));

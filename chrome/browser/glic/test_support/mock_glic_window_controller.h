@@ -102,6 +102,11 @@ class MockGlicWindowController
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));
+  MOCK_METHOD(std::optional<std::string>,
+              conversation_id,
+              (),
+              (const, override));
+  MOCK_METHOD(base::TimeTicks, GetLastActiveTime, (), (const, override));
   MOCK_METHOD(void, AddGlobalStateObserver, (PanelStateObserver*), (override));
   MOCK_METHOD(void,
               RemoveGlobalStateObserver,

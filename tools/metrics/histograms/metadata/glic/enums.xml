@@ -618,6 +618,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ScrollToErrorReason) -->
 
+<!-- LINT.IfChange(GlicSwitchConversationTarget) -->
+
+<enum name="GlicSwitchConversationTarget">
+  <int value="0" label="Unknown Conversation Target"/>
+  <int value="1" label="Switched to the Previously Active Conversation"/>
+  <int value="2" label="Switched to Conversation with an Existing Instance"/>
+  <int value="3" label="Switched to Conversation and Created New Instance"/>
+  <int value="4" label="Start New Conversation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_coordinator_metrics.h:GlicSwitchConversationTarget) -->
+
 <!-- LINT.IfChange(GlicTabPinnedForSharingResult) -->
 
 <enum name="GlicTabPinnedForSharingResult">
