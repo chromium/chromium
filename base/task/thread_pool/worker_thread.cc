@@ -150,12 +150,12 @@ WorkerThread::WorkerThread(ThreadType thread_type_hint,
                            ? reinterpret_cast<intptr_t>(this)
                            : reinterpret_cast<intptr_t>(flow_terminator)),
       delegate_(std::move(delegate)) {
-  DCHECK(task_tracker_);
-  DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
-         thread_type_hint_ != ThreadType::kBackground);
-  DCHECK(CanUseUtilityThreadTypeForWorkerThread() ||
-         thread_type_hint != ThreadType::kUtility);
-  DCHECK(delegate_);
+  CHECK(task_tracker_);
+  CHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
+        thread_type_hint_ != ThreadType::kBackground);
+  CHECK(CanUseUtilityThreadTypeForWorkerThread() ||
+        thread_type_hint != ThreadType::kUtility);
+  CHECK(delegate_);
   delegate_->wake_up_event_.declare_only_used_while_idle();
 }
 
