@@ -198,9 +198,8 @@ class CC_EXPORT PictureLayerImpl
   }
 
   // For testing.
-  void SetContentsScaleForTesting(float scale) {
-    ideal_contents_scale_ = raster_contents_scale_ =
-        gfx::Vector2dF(scale, scale);
+  void SetRasterContentsScaleForTesting(float scale) {
+    raster_contents_scale_ = gfx::Vector2dF(scale, scale);
   }
 
   std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&

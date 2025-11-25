@@ -4188,7 +4188,7 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
   layer1->SetOffsetToTransformParent(occluding_layer_position);
 
   ASSERT_TRUE(active_layer()->CanHaveTilings());
-  active_layer()->SetContentsScaleForTesting(scale);
+  active_layer()->SetRasterContentsScaleForTesting(scale);
   active_layer()->tilings()->RemoveAllTilings();
   active_layer()
       ->AddTiling(gfx::AxisTransform2d(scale, gfx::Vector2dF()))
