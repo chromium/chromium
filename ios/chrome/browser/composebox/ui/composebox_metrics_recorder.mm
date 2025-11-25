@@ -82,6 +82,11 @@ std::string GetStringForAttachmentType(
       "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation", requestType);
 }
 
+- (void)recordTabPickerTabsAttached:(NSUInteger)count {
+  base::UmaHistogramCounts100("Omnibox.MobileFusebox.TabPickerTabsAttached",
+                              count);
+}
+
 #pragma mark - private
 
 - (void)recordAttachmentButtonUsedInSession:

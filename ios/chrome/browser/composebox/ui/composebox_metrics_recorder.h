@@ -56,6 +56,9 @@ enum class AutocompleteRequestType {
 // Records that the attachments popup was toggled.
 - (void)recordAttachmentsMenuShown:(BOOL)shown;
 
+// Records the number of tabs attached from the tab picker.
+- (void)recordTabPickerTabsAttached:(NSUInteger)count;
+
 // Records the autocomplete request type when the composebox is abandoned.
 - (void)recordAutocompleteRequestTypeAtAbandon:
     (AutocompleteRequestType)requestType;

@@ -396,6 +396,8 @@ CreateInputDataFromAnnotatedPageContent(
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs {
+  [self.metricsRecorder recordTabPickerTabsAttached:selectedWebStateIDs.size()];
+
   _pageContextWrappers.clear();
 
   std::set<web::WebStateID> alreadyProcessedIDs =

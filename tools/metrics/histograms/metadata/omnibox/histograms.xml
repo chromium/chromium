@@ -2423,6 +2423,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"
+    expires_after="2026-11-11">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the number of tabs attached via the Fusebox tab picker. Recorded
+    when the user explicitly selects tabs and taps the attach button to include
+    them in the Fusebox attachments.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"
     units="ms" expires_after="2026-11-12">
   <owner>niharm@google.com</owner>
