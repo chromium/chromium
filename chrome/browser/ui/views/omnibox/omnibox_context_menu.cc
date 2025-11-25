@@ -19,12 +19,11 @@
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
                                        OmniboxPopupFileSelector* file_selector,
-                                       content::WebContents* web_contents,
-                                       base::RepeatingClosure on_menu_closed)
+                                       content::WebContents* web_contents)
     : parent_widget_(parent_widget),
-      controller_(std::make_unique<OmniboxContextMenuController>(file_selector,
-                                                                 web_contents)),
-      on_menu_closed_(std::move(on_menu_closed)) {
+      controller_(
+          std::make_unique<OmniboxContextMenuController>(file_selector,
+                                                         web_contents)) {
   std::unique_ptr<views::MenuItemView> menu =
       std::make_unique<views::MenuItemView>(this);
   menu_ = menu.get();
@@ -86,12 +85,6 @@ bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
 
 bool OmniboxContextMenu::IsCommandVisible(int command_id) const {
   return controller_->IsCommandIdVisible(command_id);
-}
-
-void OmniboxContextMenu::OnMenuClosed(views::MenuItemView* menu) {
-  if (menu->GetRootMenuItem() == menu && on_menu_closed_) {
-    on_menu_closed_.Run();
-  }
 }
 
 void OmniboxContextMenu::OnIconChanged(int command_id) {
