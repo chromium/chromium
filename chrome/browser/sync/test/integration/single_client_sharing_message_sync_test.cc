@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/sharing_message_bridge.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -155,9 +157,17 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
   base::WeakPtrFactory<SharingMessageCallbackChecker> weak_ptr_factory_{this};
 };
 
-class SingleClientSharingMessageSyncTest : public SyncTest {
+class SingleClientSharingMessageSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+  ~SingleClientSharingMessageSyncTest() override = default;
 
   bool WaitForSharingMessage(
       std::vector<SharingMessageSpecifics> expected_specifics) {
@@ -165,9 +175,21 @@ class SingleClientSharingMessageSyncTest : public SyncTest {
                                          std::move(expected_specifics))
         .Wait();
   }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SingleClientSharingMessageSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSharingMessageSyncTest, ShouldSubmit) {
   ASSERT_TRUE(SetupSync());
   SharingMessageCallbackChecker callback_checker(
       GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
@@ -188,40 +210,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
   EXPECT_TRUE(callback_checker.Wait());
 }
 
-// ChromeOS does not support late signin after profile creation, so the test
-// below does not apply, at least in the current form.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
-                       ShouldSubmitInTransportMode) {
-  // We avoid calling SetupSync(), because we don't want to turn on full sync,
-  // only sign in such that the standalone transport starts.
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive())
-      << "Full sync should be disabled";
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
-
-  SharingMessageCallbackChecker callback_checker(
-      GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
-
-  SharingMessageBridge* sharing_message_bridge =
-      SharingMessageBridgeFactory::GetForBrowserContext(GetProfile(0));
-  SharingMessageSpecifics specifics;
-  specifics.set_payload("payload");
-  sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics),
-      callback_checker.GetCommitFinishedCallback());
-
-  EXPECT_TRUE(WaitForSharingMessage({specifics}));
-  EXPECT_TRUE(callback_checker.Wait());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharingMessageSyncTest,
                        ShouldPropagateCommitFailure) {
   ASSERT_TRUE(SetupSync());
   SharingMessageCallbackChecker callback_checker(
@@ -242,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
 
 // ChromeOS does not support signing out of a primary account.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSharingMessageSyncTest,
                        ShouldCleanPendingMessagesUponSignout) {
   ASSERT_TRUE(SetupSync());
   SharingMessageCallbackChecker callback_checker(
@@ -266,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientSharingMessageSyncTest,
     ShouldTurnOffSharingMessageDataTypeOnPersistentAuthError) {
   ASSERT_TRUE(SetupSync());
@@ -289,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(callback_checker.Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientSharingMessageSyncTest,
     ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   const std::string payload = "payload";
