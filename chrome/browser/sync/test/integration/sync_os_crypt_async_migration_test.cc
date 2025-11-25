@@ -17,65 +17,114 @@
 namespace {
 
 using passwords_helper::CreateTestPasswordForm;
+using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetAllPasswordsForProfile;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetProfilePasswordStoreInterface;
 
-class SyncOSCryptAsyncMigrationTest : public SyncTest {
+// This test simulates a migration scenario for the kSyncUseOsCryptAsync feature.
+// It is structured as a PRE_PRE_ / PRE_ / regular test to check that passwords
+// synced with different states of the feature flag can be correctly decrypted
+// and read by the client.
+// The sequence is:
+// 1. PRE_PRE_Migrate: kSyncUseOsCryptAsync disabled. A password is added.
+// 2. PRE_Migrate: kSyncUseOsCryptAsync enabled. Another password is added.
+// 3. Migrate: kSyncUseOsCryptAsync disabled again. Verifies that both
+//    passwords are present and readable.
+// Note that OSCrypt itself is stateless, but this tests that the encryption
+// keys are managed correctly and that data remains readable across migrations.
+class SyncOSCryptAsyncMigrationTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SyncOSCryptAsyncMigrationTest() : SyncTest(SINGLE_CLIENT) {}
   ~SyncOSCryptAsyncMigrationTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+
     switch (GetTestPreCount()) {
       case 2:  // PRE_PRE_Migrate
-        scoped_feature_list_.InitAndDisableFeature(
-            syncer::kSyncUseOsCryptAsync);
+        disabled_features.push_back(syncer::kSyncUseOsCryptAsync);
         break;
       case 1:  // PRE_Migrate
-        scoped_feature_list_.InitAndEnableFeature(syncer::kSyncUseOsCryptAsync);
+        enabled_features.push_back(syncer::kSyncUseOsCryptAsync);
         break;
       case 0:  // Migrate
-        scoped_feature_list_.InitAndDisableFeature(
-            syncer::kSyncUseOsCryptAsync);
+        disabled_features.push_back(syncer::kSyncUseOsCryptAsync);
         break;
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
- private:
+  password_manager::PasswordStoreInterface* GetPasswordStore() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      return GetAccountPasswordStoreInterface(0);
+    }
+    return GetProfilePasswordStoreInterface(0);
+  }
+
+  int GetPasswordStoreCount() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      return GetPasswordCount(
+          0, password_manager::PasswordForm::Store::kAccountStore);
+    }
+    return GetPasswordCount(
+        0, password_manager::PasswordForm::Store::kProfileStore);
+  }
+
+  std::vector<password_manager::PasswordForm> GetAllPasswords() {
+    // GetAllPasswordsForProfile() doesn't support specifying the store, so we
+    // have to get the store and then get all logins from it.
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
+        passwords_helper::GetLogins(GetPasswordStore());
+    std::vector<password_manager::PasswordForm> passwords;
+    for (const auto& login : logins) {
+      passwords.push_back(*login);
+    }
+    return passwords;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, PRE_PRE_Migrate) {
+IN_PROC_BROWSER_TEST_P(SyncOSCryptAsyncMigrationTest, PRE_PRE_Migrate) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_EQ(GetPasswordCount(0), 0);
+  ASSERT_EQ(GetPasswordStoreCount(), 0);
 
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
+  GetPasswordStore()->AddLogin(CreateTestPasswordForm(0));
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, PRE_Migrate) {
+IN_PROC_BROWSER_TEST_P(SyncOSCryptAsyncMigrationTest, PRE_Migrate) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(GetPasswordCount(0), 1);
+  ASSERT_EQ(GetPasswordStoreCount(), 1);
 
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(1));
+  GetPasswordStore()->AddLogin(CreateTestPasswordForm(1));
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, Migrate) {
+IN_PROC_BROWSER_TEST_P(SyncOSCryptAsyncMigrationTest, Migrate) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::PASSWORDS});
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_EQ(GetPasswordCount(0), 2);
+  ASSERT_EQ(GetPasswordStoreCount(), 2);
 
-  std::vector<password_manager::PasswordForm> passwords =
-      GetAllPasswordsForProfile(0);
+  std::vector<password_manager::PasswordForm> passwords = GetAllPasswords();
   ASSERT_EQ(passwords.size(), 2u);
 
   // Sort by username to have a deterministic order.
@@ -85,10 +134,18 @@ IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, Migrate) {
               return a.username_value < b.username_value;
             });
 
+  // If kSyncUseOsCryptAsync were to use an incorrect key, the decryption of the
+  // second password (added while the feature was enabled) would fail, causing
+  // its `password_value` to be empty and the expectation below to fail.
   EXPECT_EQ(passwords[0].username_value, u"username0");
   EXPECT_EQ(passwords[0].password_value, u"password0");
   EXPECT_EQ(passwords[1].username_value, u"username1");
   EXPECT_EQ(passwords[1].password_value, u"password1");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SyncOSCryptAsyncMigrationTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 }  // namespace
