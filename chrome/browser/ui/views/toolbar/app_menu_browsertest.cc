@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_guest) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_incognito) {
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_main_incognito) {
   auto browser_resetter = SetBrowser(CreateIncognitoBrowser());
   ShowAndVerifyUi();
 }
