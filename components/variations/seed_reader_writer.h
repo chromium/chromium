@@ -254,6 +254,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   static std::size_t MaxUncompressedSeedSizeForTesting();
 
+  // Converts a time from StoredSeedInfo proto format (int64_t) to a base::Time.
+  static base::Time ProtoTimeToTime(int64_t proto_time);
+
  private:
   // The storage format of the seed data.
   // - kCompressed: the seed is compressed. This is used for backward

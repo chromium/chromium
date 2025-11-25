@@ -53,6 +53,7 @@ static_library("debug") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics_services_manager",

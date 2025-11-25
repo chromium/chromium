@@ -231,10 +231,6 @@ int64_t TimeToProtoTime(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-base::Time ProtoTimeToTime(int64_t proto_time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
-}
-
 bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
   return seed_data.empty() || seed_data == kIdenticalToSafeSeedSentinel;
 }
@@ -601,6 +597,11 @@ bool SeedReaderWriter::UncompressFromSeedFileForTesting(
 // static
 std::size_t SeedReaderWriter::MaxUncompressedSeedSizeForTesting() {
   return kMaxUncompressedSeedSize;
+}
+
+// static
+base::Time SeedReaderWriter::ProtoTimeToTime(int64_t proto_time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

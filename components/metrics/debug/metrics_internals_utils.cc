@@ -8,12 +8,14 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/service/variations_service.h"
 
 namespace metrics {
@@ -118,6 +120,13 @@ std::string BoolToString(bool val) {
   return val ? "Yes" : "No";
 }
 
+// Converts a timestamp in microseconds since the Windows epoch to a date
+// string.
+std::string FormatDate(int64_t timestamp) {
+  return base::TimeFormatAsIso8601(
+      variations::SeedReaderWriter::ProtoTimeToTime(timestamp));
+}
+
 base::Value::Dict CreateKeyValueDict(std::string_view key,
                                      std::string_view value) {
   base::Value::Dict dict;
@@ -139,9 +148,14 @@ void StoredSeedInfoToKeyValueList(
       "Seed Milestone", base::NumberToString(stored_seed_info.milestone())));
   list.Append(CreateKeyValueDict(
       "Seed Date", base::NumberToString(stored_seed_info.seed_date())));
+  list.Append(CreateKeyValueDict("Seed Date (Formatted)",
+                                 FormatDate(stored_seed_info.seed_date())));
   list.Append(CreateKeyValueDict(
       "Client Fetch Time",
       base::NumberToString(stored_seed_info.client_fetch_time())));
+  list.Append(
+      CreateKeyValueDict("Client Fetch Time (Formatted)",
+                         FormatDate(stored_seed_info.client_fetch_time())));
   list.Append(CreateKeyValueDict("Session Country Code",
                                  stored_seed_info.session_country_code()));
   list.Append(CreateKeyValueDict("Permanent Country Code",
