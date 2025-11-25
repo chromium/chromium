@@ -474,12 +474,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   EXPECT_FALSE(observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, observer.last_net_error_code());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // DNR, WAR, and use_dynamic_url with the extension feature. DNR does not
 // currently succeed when redirecting to a resource using use_dynamic_url with
 // query parameters.
-// TODO(crbug.com/383366125): Port to desktop Android once chrome.runtime is
-// fully ported. Right now the ExtensionTestMessageListener times out.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                        DeclarativeNetRequest) {
   ExtensionTestMessageListener listener("ready");
@@ -494,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     content::WebContents* web_contents = GetActiveWebContents();
     GURL gurl = embedded_test_server()->GetURL("example.com", "/simple.html");
     content::TestNavigationObserver navigation_observer(web_contents);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    ASSERT_TRUE(NavigateToURL(web_contents, gurl));
     ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
     EXPECT_EQ(gurl, web_contents->GetLastCommittedURL());
   }
@@ -527,7 +526,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Verify setting script.src from a content script that relies on web request to
 // redirect to a web accessible resource. It's important to set `script.src`
