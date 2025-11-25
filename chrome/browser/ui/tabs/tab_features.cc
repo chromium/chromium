@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_on_close_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
@@ -313,6 +314,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       saved_tab_group_web_contents_listener_ =
           std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
               tab_group_sync_service, &tab);
+
+      if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+        saved_tab_group_on_close_helper_ =
+            std::make_unique<tab_groups::SavedTabGroupOnCloseHelper>(
+                tab_group_sync_service, &tab);
+      }
     }
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {

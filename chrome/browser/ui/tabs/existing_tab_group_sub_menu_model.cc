@@ -16,7 +16,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_on_close_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
@@ -55,6 +58,76 @@ std::u16string GetContentString(const TabGroup& group) {
       group.GetFirstTab()->GetTabFeatures()->tab_ui_helper()->GetTitle(),
       kContextMenuTabTitleMaxLength, &short_title);
   return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
+}
+
+// Ungroups all of the tabs specified by |tab_indices_to_close| and then tries
+// to close them and adds their URL to the end of the closed saved group
+// denoted by |closed_saved_group_id|. Note that if there are any saved groups
+// whose tabs are completely contained in |tab_indices_to_close|, we delete
+// these groups from the tab group sync service before proceeding.
+void MaybeDeleteTabsAndAddToSavedTabGroup(
+    std::vector<int> tab_indices_to_close,
+    base::Uuid closed_saved_group_id,
+    tab_groups::TabGroupSyncService* tab_group_sync_service,
+    TabStripModel* tab_strip_model) {
+  if (tab_indices_to_close.empty()) {
+    return;
+  }
+
+  if (!tab_group_sync_service->GetGroup(closed_saved_group_id)) {
+    return;
+  }
+
+  // Get any open groups that are covered by |tab_indices_to_close| and delete
+  // the saved groups they are in. Note that since we are in this function
+  // the user already agreed to having them deleted.
+  std::vector<tab_groups::TabGroupId> groups =
+      tab_strip_model->GetGroupsDestroyedFromRemovingIndices(
+          tab_indices_to_close);
+
+  for (const tab_groups::TabGroupId& local_group_id : groups) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        tab_group_sync_service->GetGroup(local_group_id);
+
+    if (saved_group) {
+      tab_group_sync_service->RemoveGroup(saved_group->saved_guid());
+    }
+  }
+
+  // Ungroup any tabs that are in open but not saved groups.
+  // Keep a vector of tab pointers in case the indices change after the
+  // ungrouping operation.
+  std::vector<tabs::TabInterface*> tab_ptrs_to_close;
+
+  for (int index : tab_indices_to_close) {
+    tab_ptrs_to_close.push_back(tab_strip_model->GetTabAtIndex(index));
+  }
+
+  tab_strip_model->RemoveFromGroup(tab_indices_to_close);
+
+  // Now that they are all ungrouped, close the tabs. But before doing that,
+  // have the tabs listen for when they close, so that they will add
+  // themselves to the saved group on closure.
+  for (tabs::TabInterface* tab_to_close : tab_ptrs_to_close) {
+    CHECK(tab_to_close);
+    tab_to_close->GetTabFeatures()->saved_tab_group_on_close_helper()->SetGroup(
+        closed_saved_group_id);
+    tab_to_close->Close();
+  }
+}
+
+// Callback function for when we use the tab group deletion dialog, if we see
+// it is possible for saved tab groups to be deleted from executing commands in
+// using the commands in ExistingTabGroupSubMenuModel.
+void OnTabGroupDeletionDialogOK(
+    std::vector<int> tab_indices_to_close,
+    base::Uuid closed_saved_group_id,
+    tab_groups::TabGroupSyncService* tab_group_sync_service,
+    TabStripModel* tab_strip_model,
+    tab_groups::DeletionDialogController::DeletionDialogTiming timing) {
+  MaybeDeleteTabsAndAddToSavedTabGroup(tab_indices_to_close,
+                                       closed_saved_group_id,
+                                       tab_group_sync_service, tab_strip_model);
 }
 
 }  // anonymous namespace
@@ -327,15 +400,16 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
     return;
   }
 
-  base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
-
   tab_groups::EitherGroupID group_v =
       target_index_to_group_mapping_.at(target_index);
 
   if (std::holds_alternative<base::Uuid>(group_v)) {
     const base::Uuid& group_id = get<base::Uuid>(group_v);
     AddSelectedTabsToSavedGroup(group_id);
+    base::RecordAction(
+        base::UserMetricsAction("TabContextMenu_AddToClosedSavedGroup"));
   } else if (std::holds_alternative<tab_groups::LocalTabGroupID>(group_v)) {
+    base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
     tab_groups::TabGroupId group = get<tab_groups::TabGroupId>(group_v);
     AddSelectedTabsToOpenGroup(group);
   } else {
@@ -392,11 +466,39 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToSavedGroup(
   CHECK(group_opt.has_value());
 
   std::vector<int> selected_indices = GetSelectedIndices();
-  for (tabs::TabInterface* tab : model()->GetTabsAtIndices(selected_indices)) {
-    CHECK(tab);
-    tgss->AddUrl(group_opt->saved_guid(),
-                 tab->GetTabFeatures()->tab_ui_helper()->GetTitle(),
-                 tab->GetContents()->GetLastCommittedURL());
+
+  if (selected_indices.empty()) {
+    return;
+  }
+
+  std::vector<tab_groups::TabGroupId> groups_destroyed =
+      model()->GetGroupsDestroyedFromRemovingIndices(selected_indices);
+
+  if (groups_destroyed.empty()) {
+    MaybeDeleteTabsAndAddToSavedTabGroup(
+        selected_indices, group_opt->saved_guid(), tgss, model());
+  } else {
+    // We have saved tab groups that may be deleted.
+    // Show the tab group deletion dialog and delete the groups using
+    // a callback function.
+    tabs::TabInterface* tab_0 = model()->GetTabAtIndex(selected_indices[0]);
+    tab_groups::DeletionDialogController* deletion_dialog_controller =
+        tab_0->GetBrowserWindowInterface()
+            ->GetFeatures()
+            .tab_group_deletion_dialog_controller();
+
+    base::OnceCallback<void(
+        tab_groups::DeletionDialogController::DeletionDialogTiming)>
+        callback = base::BindOnce(&OnTabGroupDeletionDialogOK, selected_indices,
+                                  group_opt->saved_guid(), tgss, model());
+
+    tab_groups::DeletionDialogController::DialogMetadata saved_dialog_metadata(
+        tab_groups::DeletionDialogController::DialogType::DeleteSingle,
+        /*closing_group_count=*/groups_destroyed.size(),
+        /*closing_multiple_tabs=*/selected_indices.size() > 1);
+
+    deletion_dialog_controller->MaybeShowDialog(
+        saved_dialog_metadata, std::move(callback), std::nullopt);
   }
 }
 

@@ -47228,6 +47228,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu_AddToClosedSavedGroup">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User selected the menu item to add to a closed saved tab group from the tab
+    context menu.
+  </description>
+</action>
+
 <action name="TabContextMenu_AddToExistingGroup">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

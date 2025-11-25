@@ -109,6 +109,7 @@ class SyncSessionsRouterTabHelper;
 
 namespace tab_groups {
 class SavedTabGroupWebContentsListener;
+class SavedTabGroupOnCloseHelper;
 }  // namespace tab_groups
 
 namespace page_actions {
@@ -203,6 +204,11 @@ class TabFeatures {
   tab_groups::SavedTabGroupWebContentsListener*
   saved_tab_group_web_contents_listener() const {
     return saved_tab_group_web_contents_listener_.get();
+  }
+
+  tab_groups::SavedTabGroupOnCloseHelper* saved_tab_group_on_close_helper()
+      const {
+    return saved_tab_group_on_close_helper_.get();
   }
 
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
@@ -357,6 +363,9 @@ class TabFeatures {
   // tab counterpart from sync.
   std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
       saved_tab_group_web_contents_listener_;
+
+  std::unique_ptr<tab_groups::SavedTabGroupOnCloseHelper>
+      saved_tab_group_on_close_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Manages the protocol handler picker dialog on ChromeOS. Must be destroyed
