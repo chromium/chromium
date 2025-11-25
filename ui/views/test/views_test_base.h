@@ -109,10 +109,6 @@ class ViewsTestBase : public PlatformTest {
   void SimulateDesktopNativeDestroy(Widget* widget);
 #endif
 
-  // Get the system reserved height at the top of the screen. On Mac, this
-  // includes the menu bar and title bar.
-  static int GetSystemReservedHeightAtTopOfScreen();
-
  protected:
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();

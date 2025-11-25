@@ -887,17 +887,14 @@ const int kScreenHeight = 768;
 struct ArrowTestParameters {
   views::BubbleBorder::Arrow arrow;
   bool adjust_if_offscreen;
-  gfx::Rect anchor_rect;
+  gfx::Rect anchor_rect_in_window;
   views::BubbleBorder::Arrow expected_arrow;
 
-  gfx::Size ExpectedSpace() const {
-    gfx::Rect adjusted_anchor_rect = anchor_rect;
-    adjusted_anchor_rect.Offset(
-        0, ViewsTestBase::GetSystemReservedHeightAtTopOfScreen());
+  gfx::Size ExpectedSpace(gfx::Rect anchor_rect_in_screen) const {
     gfx::Rect screen_rect = gfx::Rect(0, 0, kScreenWidth, kScreenHeight);
 
     return BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
-        expected_arrow, adjusted_anchor_rect, screen_rect);
+        expected_arrow, anchor_rect_in_screen, screen_rect);
   }
 };
 
@@ -955,14 +952,18 @@ TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
   bubble_delegate->SetArrow(kParam.arrow);
   bubble_delegate->set_adjust_if_offscreen(kParam.adjust_if_offscreen);
   anchor_widget->GetContentsView()->SetBounds(
-      kParam.anchor_rect.x(), kParam.anchor_rect.y(),
-      kParam.anchor_rect.width(), kParam.anchor_rect.height());
+      kParam.anchor_rect_in_window.x(),
+      kParam.anchor_rect_in_window.y(),
+      kParam.anchor_rect_in_window.width(),
+      kParam.anchor_rect_in_window.height());
+  gfx::Rect anchor_rect_in_screen =
+      bubble_delegate->GetAnchorView()->GetBoundsInScreen();
   gfx::Size available_space =
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
           bubble_delegate->GetAnchorView(), bubble_delegate->arrow(),
           bubble_delegate->adjust_if_offscreen(),
           BubbleFrameView::PreferredArrowAdjustment::kMirror);
-  EXPECT_EQ(available_space, kParam.ExpectedSpace());
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
 
   // Repeat via TrackedElement.
   ui::TrackedElement* as_tracked_element =
@@ -974,7 +975,7 @@ TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
           as_tracked_element, bubble_delegate->arrow(),
           bubble_delegate->adjust_if_offscreen(),
           BubbleFrameView::PreferredArrowAdjustment::kMirror);
-  EXPECT_EQ(available_space, kParam.ExpectedSpace());
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
 }
 
 const int kAnchorFarRightX = 840;

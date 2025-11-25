@@ -133,12 +133,6 @@ void ViewsTestBase::SimulateDesktopNativeDestroy(Widget* widget) {
 }
 #endif
 
-#if !BUILDFLAG(IS_MAC)
-int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
-  return 0;
-}
-#endif
-
 gfx::NativeWindow ViewsTestBase::GetContext() {
   return test_helper_->GetContext();
 }
