@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
-#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -49,8 +48,7 @@ class LocalDOMWindow;
 // remote frames.
 //
 // HTML standard: https://whatwg.org/C/browsers.html#the-location-interface
-class CORE_EXPORT Location final : public ScriptWrappable,
-                                   public DOMOriginUtils {
+class CORE_EXPORT Location final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -93,9 +91,6 @@ class CORE_EXPORT Location final : public ScriptWrappable,
 
   // ScriptWrappable override:
   v8::Local<v8::Value> Wrap(ScriptState*) final;
-
-  // DOMOriginUtils overrides:
-  DOMOrigin* GetDOMOrigin(LocalDOMWindow* accessing_window) const final;
 
   void Trace(Visitor*) const override;
 

@@ -29,7 +29,6 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/url/dom_origin.h"
-#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -39,17 +38,11 @@
 namespace blink {
 
 class WorkerLocation final : public ScriptWrappable,
-                             public DOMURLUtilsReadOnly,
-                             public DOMOriginUtils {
+                             public DOMURLUtilsReadOnly {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit WorkerLocation(const KURL& url) : url_(url) {}
-
-  // DOMOriginUtils overrides:
-  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override {
-    return DOMOrigin::Create(SecurityOrigin::Create(Url()));
-  }
 
   KURL Url() const override { return url_; }
   String Input() const override { NOTREACHED(); }

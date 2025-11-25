@@ -49,9 +49,6 @@ DOMOriginUtils* GetDOMOriginUtilsFromV8Object(v8::Isolate* i,
   if (auto* p = V8HTMLAreaElement::ToWrappable(i, o)) {
     return p;
   }
-  if (auto* p = V8Location::ToWrappable(i, o)) {
-    return p;
-  }
   if (auto* p = V8MessageEvent::ToWrappable(i, o)) {
     return p;
   }
@@ -62,9 +59,6 @@ DOMOriginUtils* GetDOMOriginUtilsFromV8Object(v8::Isolate* i,
     return p;
   }
   if (auto* p = V8WorkerGlobalScope::ToWrappable(i, o)) {
-    return p;
-  }
-  if (auto* p = V8WorkerLocation::ToWrappable(i, o)) {
     return p;
   }
 

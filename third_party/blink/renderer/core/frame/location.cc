@@ -323,12 +323,6 @@ void Location::SetLocation(const String& url,
   dom_window_->GetFrame()->Navigate(request, frame_load_type);
 }
 
-DOMOrigin* Location::GetDOMOrigin(LocalDOMWindow* accessing_window) const {
-  return BindingSecurity::ShouldAllowAccessTo(accessing_window, this)
-             ? DOMOrigin::Create(SecurityOrigin::Create(Url()))
-             : nullptr;
-}
-
 Document* Location::GetDocument() const {
   return To<LocalDOMWindow>(dom_window_.Get())->document();
 }
