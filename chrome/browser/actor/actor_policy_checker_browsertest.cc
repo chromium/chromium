@@ -53,8 +53,10 @@ struct TestAccount {
 };
 
 constexpr TestAccount kNonEnterpriseAccount = {"foo@testbar.com", ""};
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr TestAccount kEnterpriseAccount = {"foo@testenterprise.com",
                                             "testenterprise.com"};
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
@@ -445,14 +447,10 @@ class ActorPolicyCheckerBrowserTestWithManagedAccount
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/460824365): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CapabilityUpdatedForAccount DISABLED_CapabilityUpdatedForAccount
-#else
-#define MAYBE_CapabilityUpdatedForAccount CapabilityUpdatedForAccount
-#endif
+// Note: sign-out from enterprise account is not allowed in ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
-                       MAYBE_CapabilityUpdatedForAccount) {
+                       CapabilityUpdatedForAccount) {
   // No account is signed in, thus no capability.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
@@ -476,6 +474,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
                   ->GetPolicyChecker()
                   .can_act_on_web());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
                        GlicUserStatusChanged) {
@@ -502,15 +501,11 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
 using ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy =
     ActorPolicyCheckerBrowserTestManagedBrowser;
 
-// TODO(crbug.com/460824365): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CapabilityUpdatedForAccount DISABLED_CapabilityUpdatedForAccount
-#else
-#define MAYBE_CapabilityUpdatedForAccount CapabilityUpdatedForAccount
-#endif
+// Note: sign-out from enterprise account is not allowed in ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy,
-    MAYBE_CapabilityUpdatedForAccount) {
+    CapabilityUpdatedForAccount) {
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
@@ -530,5 +525,6 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetPolicyChecker()
                   .can_act_on_web());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace actor
