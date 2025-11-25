@@ -10,53 +10,18 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/cache_eviction_options.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/network/network_util.h"
 
 namespace ash {
-
-// Evict the cache if the set of surrounding unique Wi-Fi Access Points or
-// Cellular towers has changed. A change in signal strength is ignored.
-class ScanEqualityEviction : public CachedLocationProvider::CacheEviction {
- public:
-  bool IsSignificantDisplacementIndicated(
-      const CachedLocationProvider::GeopositionCache::Context& context_a,
-      const CachedLocationProvider::GeopositionCache::Context& context_b)
-      const override {
-    bool is_wifi_scan_same =
-        std::equal(context_a.wifi_context.begin(), context_a.wifi_context.end(),
-                   context_b.wifi_context.begin(), context_b.wifi_context.end(),
-                   [](const WifiAccessPoint& a, const WifiAccessPoint& b) {
-                     return a.mac_address == b.mac_address;
-                   });
-    bool is_cellular_scan_same = std::equal(
-        context_a.cell_tower_context.begin(),
-        context_a.cell_tower_context.end(),
-        context_b.cell_tower_context.begin(),
-        context_b.cell_tower_context.end(),
-        [](const CellTower& a, const CellTower& b) { return a.ci == b.ci; });
-
-    return !is_wifi_scan_same || !is_cellular_scan_same;
-  }
-};
-
-CachedLocationProvider::GeopositionCache::Context::Context() = default;
-
-CachedLocationProvider::GeopositionCache::Context::Context(Context&& other) =
-    default;
-
-CachedLocationProvider::GeopositionCache::Context&
-CachedLocationProvider::GeopositionCache::Context::operator=(Context&& other) =
-    default;
-
-CachedLocationProvider::GeopositionCache::Context::~Context() = default;
 
 CachedLocationProvider::GeopositionCache::GeopositionCache() = default;
 
 CachedLocationProvider::GeopositionCache::GeopositionCache(
     Geoposition position,
     base::TimeTicks fetch_time,
-    std::optional<Context> context)
+    std::optional<geolocation::GeopositionContext> context)
     : position(position), fetch_time(fetch_time), context(std::move(context)) {}
 
 CachedLocationProvider::GeopositionCache::GeopositionCache(
@@ -71,7 +36,9 @@ CachedLocationProvider::GeopositionCache::~GeopositionCache() = default;
 CachedLocationProvider::CachedLocationProvider(
     std::unique_ptr<LocationFetcher> location_fetcher)
     : LocationProvider(std::move(location_fetcher)),
-      cache_eviction_method_(std::make_unique<ScanEqualityEviction>()) {}
+      cache_eviction_method_(
+          std::make_unique<geolocation::HasCommonWifiApAndCellTower>()) {}
+
 CachedLocationProvider::~CachedLocationProvider() = default;
 
 void CachedLocationProvider::RequestLocation(base::TimeDelta timeout,
@@ -79,8 +46,8 @@ void CachedLocationProvider::RequestLocation(base::TimeDelta timeout,
                                              bool send_cell_towers,
                                              ResponseCallback callback) {
   std::optional<GeopositionCache>* cache_to_use;
-  std::optional<GeopositionCache::Context> context_to_use;
-  std::optional<CacheEviction*> eviction_to_use;
+  std::optional<geolocation::GeopositionContext> context_to_use;
+  std::optional<geolocation::CacheEviction*> eviction_to_use;
 
   // Determine if this is a Precise or Coarse request.
   if (send_wifi_access_points || send_cell_towers) {
@@ -111,8 +78,8 @@ void CachedLocationProvider::RequestLocation(base::TimeDelta timeout,
 
 bool CachedLocationProvider::IsCacheUsable(
     const std::optional<GeopositionCache>& location_cache,
-    const std::optional<GeopositionCache::Context>& new_context,
-    const std::optional<CacheEviction*> eviction_strategy) {
+    const std::optional<geolocation::GeopositionContext>& new_context,
+    const std::optional<geolocation::CacheEviction*> eviction_strategy) {
   if (!location_cache) {
     return false;
   }
@@ -137,7 +104,7 @@ bool CachedLocationProvider::IsCacheUsable(
 
 void CachedLocationProvider::OnLocationResolved(
     std::optional<GeopositionCache>* cache_to_use,
-    std::optional<GeopositionCache::Context> request_context,
+    std::optional<geolocation::GeopositionContext> request_context,
     ResponseCallback callback,
     const Geoposition& position,
     bool server_error,
@@ -151,9 +118,9 @@ void CachedLocationProvider::OnLocationResolved(
   std::move(callback).Run(position, server_error, elapsed);
 }
 
-CachedLocationProvider::GeopositionCache::Context
+geolocation::GeopositionContext
 CachedLocationProvider::GetPreciseLocationContext() {
-  GeopositionCache::Context current_context;
+  geolocation::GeopositionContext current_context;
   location_fetcher_->GetNetworkInformation(&current_context.wifi_context,
                                            &current_context.cell_tower_context);
 

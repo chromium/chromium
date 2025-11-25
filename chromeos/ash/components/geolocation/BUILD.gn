@@ -16,10 +16,14 @@ component("geolocation") {
     "//services/network/public/cpp",
   ]
   sources = [
+    "cache_eviction_options.cc",
+    "cache_eviction_options.h",
     "cached_location_provider.cc",
     "cached_location_provider.h",
     "geoposition.cc",
     "geoposition.h",
+    "geoposition_context.cc",
+    "geoposition_context.h",
     "live_location_provider.cc",
     "live_location_provider.h",
     "location_fetcher.cc",
@@ -51,6 +55,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "cache_eviction_options_unittest.cc",
     "cached_location_provider_unittest.cc",
     "location_fetcher_unittest.cc",
     "system_location_provider_unittest.cc",

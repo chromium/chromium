@@ -10,10 +10,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/geoposition_context.h"
 #include "chromeos/ash/components/geolocation/location_provider.h"
 #include "chromeos/ash/components/network/network_util.h"
 
 namespace ash {
+namespace geolocation {
+class CacheEviction;
+}  // namespace geolocation
 
 // Manages caching for resolved geolocation data to optimize performance and
 // control remote API usage.
@@ -46,29 +50,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   base::TimeDelta GetRateLimitForTesting() { return rate_limit_; }
 
  private:
-  friend class ScanEqualityEviction;
-
   // Represents a single location cache entry. It combines the computed position
   // with the context used to generate it.
   struct GeopositionCache {
-    struct Context {
-      // The list of observed Wi-Fi access points used for the geocoding
-      // request.
-      WifiAccessPointVector wifi_context;
-      // The list of observed cell towers used for the geocoding request.
-      CellTowerVector cell_tower_context;
-
-      Context();
-
-      // Move-only.
-      Context(const Context&) = delete;
-      Context& operator=(const Context&) = delete;
-      Context(Context&&);
-      Context& operator=(Context&&);
-
-      ~Context();
-    };
-
     // The actual latitude, longitude, and accuracy of the position.
     Geoposition position;
 
@@ -80,10 +64,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     // The Wi-Fi and cell tower information used as input to generate the
     // `position`. This is optional because coarse location requests don't use
     // this field.
-    std::optional<Context> context;
+    std::optional<geolocation::GeopositionContext> context;
 
     GeopositionCache();
-    GeopositionCache(Geoposition, base::TimeTicks, std::optional<Context>);
+    GeopositionCache(Geoposition,
+                     base::TimeTicks,
+                     std::optional<geolocation::GeopositionContext>);
 
     // Move-only.
     GeopositionCache(const GeopositionCache&) = delete;
@@ -92,22 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     GeopositionCache& operator=(GeopositionCache&&);
 
     ~GeopositionCache();
-  };
-
-  class CacheEviction {
-   public:
-    virtual ~CacheEviction() = default;
-
-    // Determines if the significant physical displacement is implied by the
-    // difference of the two context points. This would trigger a cache eviction
-    // action.
-    //
-    // The definition of "significant" is implementation-dependent, but all
-    // concrete implementations must provide a policy relevant for the ChromeOS
-    // system services (all `SystemLocationProvider` clients).
-    virtual bool IsSignificantDisplacementIndicated(
-        const GeopositionCache::Context& context_a,
-        const GeopositionCache::Context& context_b) const = 0;
   };
 
   // Checks if the specified `location_cache` is valid and fresh enough to serve
@@ -121,8 +91,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // checks.
   bool IsCacheUsable(
       const std::optional<GeopositionCache>& location_cache,
-      const std::optional<GeopositionCache::Context>& new_context,
-      const std::optional<CacheEviction*> eviction_strategy);
+      const std::optional<geolocation::GeopositionContext>& new_context,
+      const std::optional<geolocation::CacheEviction*> eviction_strategy);
 
   // Callback for the remote Geolocation API request.
   //
@@ -131,14 +101,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // result to the original `callback`.
   void OnLocationResolved(
       std::optional<GeopositionCache>* cache_to_use,
-      std::optional<GeopositionCache::Context> request_context,
+      std::optional<geolocation::GeopositionContext> request_context,
       ResponseCallback callback,
       const Geoposition& position,
       bool server_error,
       base::TimeDelta elapsed);
 
   // Retrieves the current Wi-Fi and cell tower data for precise location.
-  GeopositionCache::Context GetPreciseLocationContext();
+  geolocation::GeopositionContext GetPreciseLocationContext();
 
   // The minimum time that must elapse between successful outbound requests.
   // Applies to both Precise and Coarse requests.
@@ -154,7 +124,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   // The strategy object used to determine if two contexts represent a
   // significant displacement to clear the cache.
-  std::unique_ptr<CacheEviction> cache_eviction_method_;
+  std::unique_ptr<geolocation::CacheEviction> cache_eviction_method_;
 
   base::WeakPtrFactory<CachedLocationProvider> weak_ptr_factory_{this};
 };
