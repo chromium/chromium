@@ -33,8 +33,8 @@ class ContextualTasksContextController;
 class ContextualTasksUiService;
 class ContextualTasksWebView;
 
-class ContextualTasksSidePanelCoordinator
-    : public content::WebContentsObserver {
+class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
+                                            content::WebContentsObserver {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
   struct WebContentsCacheItem {
@@ -104,6 +104,9 @@ class ContextualTasksSidePanelCoordinator
   // Hide or show side panel base on open state of the current task.
   void UpdateSidePanelVisibility();
 
+  // Clean up unused WebContents.
+  void CleanUpUnusedWebContents();
+
   // Update the open state of the current task.
   // Do nothing if no task is found.
   void UpdateOpenStateForCurrentTask(bool is_open);
@@ -115,6 +118,12 @@ class ContextualTasksSidePanelCoordinator
 
   // Handle swapping WebContents if thread changes.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   // Create the side panel view.
   std::unique_ptr<views::View> CreateSidePanelView(SidePanelEntryScope& scope);
@@ -137,6 +146,9 @@ class ContextualTasksSidePanelCoordinator
   // Update the statucs of active tab context on the side panel.
   void UpdateActiveTabContextStatus();
 
+  // Disassociate the tab from the task if it's associated with it.
+  void DisassociateTabFromTask(content::WebContents* web_contents);
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -158,9 +170,6 @@ class ContextualTasksSidePanelCoordinator
   // Different windows do not share the WebContents with the same task.
   std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
-
-  // Finds a WebContentsCacheItem by task_id. Returns nullptr if not found.
-  WebContentsCacheItem* FindWebContentsCacheItem(const base::Uuid& task_id);
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;

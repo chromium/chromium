@@ -236,16 +236,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   EXPECT_EQ(4, detach_index);
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
   content::WebContents* tab_web_contents;
+  ContextualTask task3 = contextual_tasks_controller->CreateTask();
+
+  // Associate tab_web_contents to task3.
+  contextual_tasks_controller->AssociateTabWithTask(
+      task3.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetActiveWebContents()));
+
   RunTestSequence(
       Do([&]() {
         // Add tab5. Create a new task and associate with it.
         chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1,
                          true);
-        ContextualTasksContextController* contextual_tasks_controller =
-            ContextualTasksContextControllerFactory::GetForProfile(
-                browser()->profile());
-        ContextualTask task3 = contextual_tasks_controller->CreateTask();
         int current_index = tab_strip_model->GetIndexOfWebContents(
             tab_strip_model->GetActiveWebContents());
         EXPECT_EQ(5, current_index);
@@ -272,6 +279,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         // Verify the tab web contents is transferred into the side panel.
         EXPECT_EQ(tab_web_contents,
                   coordinator->GetActiveWebContentsForTesting());
+
+        // Verify the tab web contents is still associated with task3.
+        EXPECT_TRUE(contextual_tasks_controller->GetContextualTaskForTab(
+            sessions::SessionTabHelper::IdForTab(tab_web_contents)));
       }));
 }
 
@@ -413,6 +424,58 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       Do([&]() {
         browser()->tab_strip_model()->ActivateTabAt(2);
         ui->SetComposeboxHandlerForTesting(nullptr);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       CloseTabsCleanUpSidePanel) {
+  SetUpTasks();
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        content::WebContents* web_contents1 =
+            coordinator->GetActiveWebContentsForTesting();
+        ContextualTasksContextController* contextual_tasks_controller =
+            ContextualTasksContextControllerFactory::GetForProfile(
+                browser()->profile());
+
+        SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetWebContentsAt(0));
+
+        // Close tab0, verify tab0 is removed from task1.
+        EXPECT_EQ(task_id1_,
+                  contextual_tasks_controller->GetContextualTaskForTab(tab_id0)
+                      ->GetTaskId());
+        browser()->tab_strip_model()->CloseWebContentsAt(
+            0, TabCloseTypes::CLOSE_NONE);
+        EXPECT_EQ(
+            std::nullopt,
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id0));
+
+        // Activate tab1, verify the side panel cache is still present.
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        EXPECT_EQ(web_contents1, coordinator->GetActiveWebContentsForTesting());
+
+        SessionID tab_id1 = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetWebContentsAt(1));
+
+        // Close tab1, verify tab1 is removed from task1 and side panel
+        // WebContents is removed.
+        EXPECT_EQ(task_id1_,
+                  contextual_tasks_controller->GetContextualTaskForTab(tab_id1)
+                      ->GetTaskId());
+        browser()->tab_strip_model()->CloseWebContentsAt(
+            1, TabCloseTypes::CLOSE_NONE);
+        EXPECT_EQ(
+            std::nullopt,
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id1));
+
+        EXPECT_EQ(nullptr, coordinator->GetActiveWebContentsForTesting());
       }));
 }
 

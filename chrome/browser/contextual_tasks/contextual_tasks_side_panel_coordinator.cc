@@ -61,6 +61,14 @@ void SetBrowserWindowInterface(content::WebContents* web_contents,
   webui::SetBrowserWindowInterface(web_contents, browser_window);
 }
 
+std::set<SessionID> GetAllTabIdsInTabStrip(TabStripModel* tab_strip_model) {
+  std::set<SessionID> tab_ids;
+  for (tabs::TabInterface* tab : *tab_strip_model) {
+    tab_ids.insert(sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+  }
+  return tab_ids;
+}
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -106,10 +114,12 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
       browser_window->RegisterActiveTabDidChange(base::BindRepeating(
           &ContextualTasksSidePanelCoordinator::OnActiveTabChanged,
           base::Unretained(this)));
+  browser_window_->GetTabStripModel()->AddObserver(this);
 }
 
-ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() =
-    default;
+ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
+  browser_window_->GetTabStripModel()->RemoveObserver(this);
+}
 
 // static
 ContextualTasksSidePanelCoordinator* ContextualTasksSidePanelCoordinator::From(
@@ -298,6 +308,32 @@ void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
   }
 }
 
+void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
+  std::set<SessionID> tab_ids =
+      GetAllTabIdsInTabStrip(browser_window_->GetTabStripModel());
+  for (auto it = task_id_to_web_contents_cache_.begin();
+       it != task_id_to_web_contents_cache_.end();) {
+    base::Uuid task_id = it->first;
+    // If the WebContents has no open tabs associated with it in the current
+    // window, then remove it.
+    bool found = false;
+    for (auto tab_id :
+         context_controller_->GetTabsAssociatedWithTask(task_id)) {
+      if (base::Contains(tab_ids, tab_id)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      MaybeDetachWebContentsFromWebView(it->second->web_contents.get());
+      it = task_id_to_web_contents_cache_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 void ContextualTasksSidePanelCoordinator::UpdateOpenStateForCurrentTask(
     bool is_open) {
   std::optional<ContextualTask> task = GetCurrentTask();
@@ -332,6 +368,25 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
   UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
   UpdateForActiveTab();
+}
+
+void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& content : change.GetRemove()->contents) {
+      // Do not disassociate the tab from the task if insert into side panel.
+      if (content.remove_reason !=
+          TabStripModelChange::RemoveReason::kInsertedIntoSidePanel) {
+        DisassociateTabFromTask(content.contents);
+      }
+    }
+    CleanUpUnusedWebContents();
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    DisassociateTabFromTask(change.GetReplace()->old_contents);
+    CleanUpUnusedWebContents();
+  }
 }
 
 std::unique_ptr<views::View>
@@ -434,6 +489,16 @@ void ContextualTasksSidePanelCoordinator::MaybeDetachWebContentsFromWebView(
     content::WebContents* web_contents) {
   if (web_view_ && web_view_->web_contents() == web_contents) {
     web_view_->SetWebContents(nullptr);
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
+    content::WebContents* web_contents) {
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  std::optional<ContextualTask> task =
+      context_controller_->GetContextualTaskForTab(tab_id);
+  if (task) {
+    context_controller_->DisassociateTabFromTask(task->GetTaskId(), tab_id);
   }
 }
 
