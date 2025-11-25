@@ -312,7 +312,9 @@ img {
 }
 
 .settings-bar label {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
   width: 35ex;
 
   &.full-width {
