@@ -185,7 +185,7 @@ export class PeerConnectionUpdateTable {
         if (update.type === 'setLocalDescription' && lastOfferAnswer &&
             lastOfferAnswer !== update.value) {
           lastSections = SDPUtils.splitSections(
-              lastOfferAnswer.substring(6).split(', sdp: ')[1]);
+              JSON.parse(lastOfferAnswer).sdp);
         }
         // Fold the SDP sections.
         const sections = SDPUtils.splitSections(sdp);
