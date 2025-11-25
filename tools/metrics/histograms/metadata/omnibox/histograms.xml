@@ -1029,6 +1029,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-09-14">
   <owner>ender@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the amount of time it takes to call UrlBar.calculateVisibleHint().
     Recorded once per call.
@@ -1041,6 +1042,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time taken between a keystroke being typed in the omnibox and
     the text being painted. If there are multiple keystrokes before a paint,
@@ -1081,6 +1083,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A refinement of Omnibox.CharTypedToRepaintLatency metric. It measures the
     time between the first character insertion in a series that happen during a
@@ -1106,6 +1109,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time between when OnPaint() is called to the time the compositor
     reports pixels were successfully drawn to the screen. This a subset of the
@@ -1130,6 +1134,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time taken between a keystroke being typed in the omnibox and
     the time when we're ready to paint the omnibox. This is a breakdown
@@ -1379,6 +1384,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-05-24">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the duration between when the async backend request was sent and
     response received.
@@ -1445,6 +1451,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-05-24">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the duration between when the provider begins (after a debouncing
     delay) and ends.
@@ -1914,6 +1921,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-11-12">
   <owner>orinj@chromium.org</owner>
   <owner>jdonnelly-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time taken by HistoryFuzzyProvider to search for fuzzy input
     corrections. This is measured if and only if a search is performed, so many
@@ -1935,6 +1943,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time taken between the OS captured input event timestamp to an
     URL is about to be selected. Recorded once per call to
@@ -1951,6 +1960,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time taken between the OS captured input event timestamp to
     OmniboxAction is about to be executed. Recorded once per call to
@@ -1967,6 +1977,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-11-12">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time taken between the OS captured input event timestamp to
     OmniboxEditModel::OpenSelection. Recorded once per call to
@@ -2416,6 +2427,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     units="ms" expires_after="2026-11-12">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The amount of time for QueryMostVisitedURLs() to invoke its callback in the
     Most Visited Sites Provider. Only recorded when the history service callback
@@ -2777,6 +2789,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     units="ms" expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time between the WebUI page load which happens when the omnibox
     popup presenter is constructed and the first time the popup widget is shown.
@@ -2802,6 +2815,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     units="ms" expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time between AutocompleteController::Observer's OnResultChanged
     is called and the time when the &lt;cr-searchbox-dropdown&gt; is ready to
@@ -2943,6 +2957,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-03-09">
   <owner>ender@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the amount of time it takes to call UrlBar.scrollToTLD(). Logged
     once per call.
@@ -4242,6 +4257,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time between a keystroke being typed in the &lt;cr-searchbox&gt;
     and the time when the &lt;cr-searchbox-dropdown&gt; is ready to render the
