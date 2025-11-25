@@ -265,7 +265,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             int mediaIndicatorTint =
                     layoutHelper.getMediaIndicatorTintColor(mediaState, closeButtonTint);
 
-            // TODO(crbug.com/326301060): Update tab outline placeholder color with color picker.
             TabStripSceneLayerJni.get()
                     .putStripTabLayer(
                             mNativePtr,
