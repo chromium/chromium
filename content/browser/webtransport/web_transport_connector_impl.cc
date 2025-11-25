@@ -70,14 +70,42 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
       : frame_(std::move(frame)),
         url_(url),
         remote_(std::move(remote)),
-        tracker_(std::move(tracker)) {}
+        tracker_(std::move(tracker)) {
+    if (!tracker_) {
+      return;
+    }
+
+    std::string_view ip_string;
+    if (url.HostIsIPAddress()) {
+      ip_string = url.HostNoBracketsPiece();
+    } else if (net::IsLocalhost(url)) {
+      ip_string = "127.0.0.1";
+    } else {
+      return;
+    }
+
+    // Some decentralized apps may need to cancel requests to unresponsive
+    // hosts, so this penalty could cause too much impact on those use cases.
+    // Usually well-behaving apps might refer to hosts by plain IPs thather than
+    // DNS names, that's why the
+    // WebTransportConnectorImpl::InterceptingHandshakeClient tries to figure
+    // out the host's IP by checking GURL::HostIsIPAddress() and assign a valid
+    // server address before invoking the network process. If the connection is
+    // closed before the DNS request is completed, we may want to avoid
+    // penalties if the host address is already an plain IP.
+    auto ip_address = net::IPAddress();
+    if (ip_address.AssignFromIPLiteral(ip_string)) {
+      CHECK(ip_address.IsValid());
+      tracker_->SetServerAddress(ip_address);
+    }
+  }
 
   ~InterceptingHandshakeClient() override = default;
 
   // WebTransportHandshakeClient implementation:
   void OnBeforeConnect(const net::IPEndPoint& server_address) override {
     if (tracker_) {
-      tracker_->OnBeforeConnect(server_address);
+      tracker_->SetServerAddress(server_address.address());
     }
 
     // Here we pass an invalid IPEndPoint instance because it is dangerous to
@@ -192,6 +220,11 @@ void WebTransportConnectorImpl::OnThrottleDone(
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     std::unique_ptr<WebTransportThrottleContext::Tracker> tracker) {
+  DVLOG(1) << "WebTransportConnectorImpl::OnThrottleDone -- "
+           << "tracker: " << tracker << " URL: " << url;
+  if (tracker) {
+    tracker->set_throttle_done();
+  }
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
     return;

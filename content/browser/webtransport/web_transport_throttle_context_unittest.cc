@@ -41,8 +41,7 @@ class WebTransportThrottleContextTest : public testing::Test {
           [&run_loop, this](std::unique_ptr<Tracker> tracker) {
             std::optional<net::IPAddress> address =
                 net::IPAddress::FromIPLiteral("192.168.1.18");
-            net::IPEndPoint end_point(*address, 80);
-            tracker->OnBeforeConnect(end_point);
+            tracker->SetServerAddress(*address);
             trackers_.push(std::move(tracker));
             run_loop.Quit();
           }));
@@ -72,8 +71,7 @@ class WebTransportThrottleContextTest : public testing::Test {
             std::optional<net::IPAddress> address =
                 net::IPAddress::FromIPLiteral("192.168.1." +
                                               base::NumberToString(i + 1));
-            net::IPEndPoint end_point(*address, 80);
-            tracker->OnBeforeConnect(end_point);
+            tracker->SetServerAddress(*address);
             trackers_.push(std::move(tracker));
             run_loop.Quit();
           }));
@@ -87,8 +85,8 @@ class WebTransportThrottleContextTest : public testing::Test {
       base::RunLoop run_loop;
       auto result = context().PerformThrottle(base::BindLambdaForTesting(
           [&run_loop, this](std::unique_ptr<Tracker> tracker) {
-            net::IPEndPoint end_point;
-            tracker->OnBeforeConnect(end_point);
+            net::IPAddress address;
+            tracker->SetServerAddress(address);
             trackers_.push(std::move(tracker));
             run_loop.Quit();
           }));
@@ -115,9 +113,12 @@ class WebTransportThrottleContextTest : public testing::Test {
     }
   }
 
-  void CloseAbruptly(int count) {
+  void CloseAbruptly(int count, bool throttle_done) {
     DCHECK_LE(count, static_cast<int>(trackers_.size()));
     for (int i = 0; i < count; ++i) {
+      if (throttle_done) {
+        trackers_.front()->set_throttle_done();
+      }
       trackers_.pop();
     }
   }
@@ -145,7 +146,10 @@ class CallTrackingCallback {
   bool called() const { return called_; }
 
  private:
-  void OnCall(std::unique_ptr<Tracker> tracker) { called_ = true; }
+  void OnCall(std::unique_ptr<Tracker> tracker) {
+    called_ = true;
+    tracker->set_throttle_done();
+  }
 
   bool called_ = false;
 };
@@ -245,10 +249,40 @@ TEST_F(WebTransportThrottleContextTest, EstablishedRemainsPendingFor10ms) {
   EXPECT_TRUE(callback.called());
 }
 
+TEST_F(WebTransportThrottleContextTest,
+       CancelledBeforeThrottlingAvoidsPenalty) {
+  CreatePendingWithoutConnect(2);
+  CloseAbruptly(2, /*throttle_done=*/false);
+
+  // The queue should be empty, so the callback is fired immediately.
+  CallTrackingCallback callback;
+  const auto result = context().PerformThrottle(callback.Callback());
+  EXPECT_EQ(result, ThrottleResult::kOk);
+  EXPECT_TRUE(callback.called());
+}
+
+TEST_F(WebTransportThrottleContextTest,
+       CancelledBeforeHandshakeRemainsPendingFor100ms) {
+  CreatePending(1);
+
+  CloseAbruptly(1, /*throttle_done=*/true);
+
+  // The delay should be less than 100ms.
+  FastForwardBy(base::Milliseconds(99));
+  CallTrackingCallback callback;
+  const auto result = context().PerformThrottle(callback.Callback());
+  EXPECT_EQ(result, ThrottleResult::kOk);
+  EXPECT_FALSE(callback.called());
+
+  // The delay should be more than 100ms.
+  FastForwardBy(base::Milliseconds(2));
+  EXPECT_TRUE(callback.called());
+}
+
 TEST_F(WebTransportThrottleContextTest, CancelledOnceRemainsPendingFor50ms) {
   CreatePendingWithoutConnect(1);
 
-  CloseAbruptly(1);
+  CloseAbruptly(1, /*throttle_done=*/true);
 
   // The delay should be more than 99ms.
   FastForwardBy(base::Milliseconds(49));
@@ -265,7 +299,7 @@ TEST_F(WebTransportThrottleContextTest, CancelledOnceRemainsPendingFor50ms) {
 TEST_F(WebTransportThrottleContextTest, CancelledRemainsPendingFor5m) {
   CreatePendingWithoutConnect(2);
 
-  CloseAbruptly(2);
+  CloseAbruptly(2, /*throttle_done=*/true);
 
   // The delay should be more than 299 seconds.
   FastForwardBy(base::Seconds(299));

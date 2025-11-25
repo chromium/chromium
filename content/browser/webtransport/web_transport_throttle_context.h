@@ -46,7 +46,7 @@ class CONTENT_EXPORT WebTransportThrottleContext final
 
     // Collects information about a WebTransport handshake that is about to
     // start.
-    void OnBeforeConnect(const net::IPEndPoint& server_address);
+    void SetServerAddress(const net::IPAddress& server_address);
 
     // Records the successful end of a WebTransport handshake.
     void OnHandshakeEstablished();
@@ -54,9 +54,12 @@ class CONTENT_EXPORT WebTransportThrottleContext final
     // Records a WebTransport handshake failure.
     void OnHandshakeFailed();
 
+    void set_throttle_done() { throttle_done_ = true; }
+
    private:
     base::WeakPtr<WebTransportThrottleContext> throttle_context_;
-    net::IPEndPoint server_address_;
+    net::IPAddress server_address_;
+    bool throttle_done_ = false;
   };
 
   using ThrottleDoneCallback =
@@ -85,9 +88,11 @@ class CONTENT_EXPORT WebTransportThrottleContext final
   // Called when a handshake fails. Adds handshake delays unless it is
   // explicitly suppressed.
   void MaybeQueueHandshakeFailurePenalty(
-      const std::optional<net::IPEndPoint>& server_address);
+      const std::optional<net::IPAddress>& server_address);
 
   void OnPendingQueueReady();
+
+  void RemovePendingHandshakes();
 
   base::WeakPtr<WebTransportThrottleContext> GetWeakPtr();
 
@@ -102,7 +107,7 @@ class CONTENT_EXPORT WebTransportThrottleContext final
     ~PenaltyManager();
 
     base::TimeDelta ComputeHandshakePenalty(
-        const std::optional<net::IPEndPoint>& server_address);
+        const std::optional<net::IPAddress>& server_address);
 
     // Queues a pending handshake to be considered complete after `after`.
     void QueuePending(base::TimeDelta after);

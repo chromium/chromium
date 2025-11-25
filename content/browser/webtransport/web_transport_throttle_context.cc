@@ -29,11 +29,9 @@ bool ShouldQueueHandshakeFailurePenalty() {
          !command_line->HasSwitch(switches::kWebTransportDeveloperMode);
 }
 
-std::optional<net::IPAddress> GetSubnetAddress(
-    const net::IPEndPoint& endpoint) {
+std::optional<net::IPAddress> GetSubnetAddress(const net::IPAddress& address) {
   // We don't have a way to get the actual subnet mask, so assuming /24 and /64
   // for IPv4 and IPv6 respectively.
-  const auto& address = endpoint.address();
   if (!address.IsValid()) {
     return std::nullopt;
   }
@@ -88,7 +86,7 @@ bool WebTransportThrottleContext::PenaltyManager::FailedHandshakeNeedsPenalty(
 
 base::TimeDelta
 WebTransportThrottleContext::PenaltyManager::ComputeHandshakePenalty(
-    const std::optional<net::IPEndPoint>& server_address) {
+    const std::optional<net::IPAddress>& server_address) {
   DVLOG(1) << "WebTransportThrottleContext::ComputeHandshakePenalty() this="
            << this;
 
@@ -100,14 +98,11 @@ WebTransportThrottleContext::PenaltyManager::ComputeHandshakePenalty(
   }
 
   if (!server_address) {
-    // TODO(https://crbug.com/40069954): Some decentralized apps may need to
-    // cancel requests to unresponsive hosts, so this penalty could cause too
-    // much impact on those use cases. Usually well-behaving apps might refer to
-    // hosts by plain IPs thather than DNS names, hence we can reduce the impact
-    // by checking GURL::HostIsIPAddress().
+    // This only happens if the Web Transport Server use a domain name and the
+    // connection is cancelled before the DNS request is completed.
     if (FailedHandshakeNeedsPenalty(net::IPAddress())) {
-      DVLOG(1)
-          << "Return max penalty when several requests are cancelled abruptly.";
+      DVLOG(1) << "Return max penalty when several requests to unknown server "
+                  "address are cancelled abruptly.";
       return base::Minutes(5);
     }
     DVLOG(1) << "Return min penalty for a requested cancelled before the "
@@ -115,27 +110,24 @@ WebTransportThrottleContext::PenaltyManager::ComputeHandshakePenalty(
     return base::Milliseconds(50);
   }
 
-  DVLOG(1) << " server_address=" << server_address->address().ToString();
-
-  if (FailedHandshakeNeedsPenalty(server_address->address())) {
-    DVLOG(1) << "Return max penalty for a request targetting the same address "
-                "and failed several times.";
+  if (FailedHandshakeNeedsPenalty(*server_address)) {
+    DVLOG(1) << "Return max penalty for a request targeting the "
+             << server_address->ToString() << " host and failed several times.";
     return base::Minutes(5);
   }
 
   auto net_address = GetSubnetAddress(*server_address);
   if (net_address) {
-    DVLOG(1) << " subnet_address=" << net_address->ToString();
-
     if (FailedHandshakeNeedsPenalty(*net_address)) {
-      DVLOG(1) << "Return mid penalty for a request targetting the same subnet "
-                  "and failed several times.";
+      DVLOG(1) << "Return mid penalty for a request targeting the "
+               << net_address->ToString()
+               << " subnet and failed several times.";
       return base::Minutes(2);
     }
   }
 
-  DVLOG(1)
-      << "Return default penalty for a request that failed for the first time.";
+  DVLOG(1) << "Return default penalty for a request that target "
+           << server_address->ToString() << " and failed for the first time.";
   return base::Milliseconds(100);
 }
 
@@ -207,17 +199,41 @@ WebTransportThrottleContext::Tracker::Tracker(
 }
 
 WebTransportThrottleContext::Tracker::~Tracker() {
-  if (throttle_context_) {
-    throttle_context_->MaybeQueueHandshakeFailurePenalty(std::nullopt);
+  if (!throttle_context_) {
+    // The penalty has been already computed based on the handshake result.
+    return;
   }
+
+  if (!throttle_done_) {
+    // The request was cancelled during the throttling stage, before any network
+    // activity was performed. This can provide no benefit to an attacker, so
+    // there is no need to penalize it.
+    throttle_context_->RemovePendingHandshakes();
+    return;
+  }
+
+  // Handle early-cancellation scenarios, where the connection is cancelled
+  // before getting the handshake result.
+
+  if (server_address_.IsValid()) {
+    // Connection cancelled by the network process after throttling targeting a
+    // valid ip address, either because the DNS request has been resolved or
+    // because the URL's host was alreadu a valid IP address.
+    throttle_context_->MaybeQueueHandshakeFailurePenalty(server_address_);
+    return;
+  }
+
+  // Connection cancelled after throttling but before the DNS request has been
+  // resolved.
+  throttle_context_->MaybeQueueHandshakeFailurePenalty(std::nullopt);
 }
 
-void WebTransportThrottleContext::Tracker::OnBeforeConnect(
-    const net::IPEndPoint& server_address) {
+void WebTransportThrottleContext::Tracker::SetServerAddress(
+    const net::IPAddress& server_address) {
   DVLOG(1) << "WebTransportThrottleContext::Tracker::OnBeforeConnect()"
-           << " this=" << this;
+           << " server_address= " << server_address.ToString();
 
-  if (server_address.address().IsValid()) {
+  if (server_address.IsValid()) {
     server_address_ = server_address;
   }
 }
@@ -259,7 +275,8 @@ WebTransportThrottleContext::ThrottleResult
 WebTransportThrottleContext::PerformThrottle(
     ThrottleDoneCallback on_throttle_done) {
   DVLOG(1) << "WebTransportThrottleContext::PerformThrottle() this=" << this
-           << " pending_handshakes_=" << penalty_mgr_.PendingHandshakes();
+           << " pending_handshakes_=" << penalty_mgr_.PendingHandshakes()
+           << " throttled_connections_=" << throttled_connections_.size();
 
   if (!penalty_mgr_.PendingQueueTimerIsRunning()) {
     // If the timer was not running there may be some pending connections that
@@ -271,6 +288,8 @@ WebTransportThrottleContext::PerformThrottle(
   if (penalty_mgr_.PendingHandshakes() +
           static_cast<int>(throttled_connections_.size()) >=
       kMaxPendingSessions) {
+    DVLOG(1) << "WebTransportThrottleContext::PerformThrottle() -- Too many "
+                "connections !!!";
     return ThrottleResult::kTooManyPendingSessions;
   }
 
@@ -289,7 +308,7 @@ WebTransportThrottleContext::PerformThrottle(
 }
 
 void WebTransportThrottleContext::MaybeQueueHandshakeFailurePenalty(
-    const std::optional<net::IPEndPoint>& server_address) {
+    const std::optional<net::IPAddress>& server_address) {
   if (should_queue_handshake_failure_penalty_) {
     auto penalty = base::Minutes(5);
     if (IsFineGrainedThrottlingEnabled()) {
@@ -311,6 +330,11 @@ void WebTransportThrottleContext::OnPendingQueueReady() {
   if (!throttled_connections_.empty()) {
     ScheduleThrottledConnection();
   }
+}
+
+void WebTransportThrottleContext::RemovePendingHandshakes() {
+  CHECK_GT(penalty_mgr_.PendingHandshakes(), 0);
+  penalty_mgr_.RemovePendingHandshakes();
 }
 
 void WebTransportThrottleContext::ScheduleThrottledConnection() {
