@@ -54,7 +54,7 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
     return sanitizer;
   }
 
-  bool success = sanitizer->setFrom(sanitizer_config, safe);
+  bool success = sanitizer->setFrom(sanitizer_config, !safe);
   if (!success) {
     exception_state.ThrowTypeError("Invalid Sanitizer configuration.");
     return nullptr;
@@ -70,20 +70,31 @@ Sanitizer* Sanitizer::Create(const V8SanitizerPresets::Enum preset,
   return sanitizer;
 }
 
-Sanitizer::Sanitizer(HashSet<QualifiedName> allow_elements,
-                     HashSet<QualifiedName> remove_elements,
-                     HashSet<QualifiedName> replace_elements,
-                     HashSet<QualifiedName> allow_attrs,
-                     HashSet<QualifiedName> remove_attrs,
+Sanitizer* Sanitizer::CreateEmpty() {
+  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
+  sanitizer->remove_elements_ = std::make_unique<SanitizerNameSet>();
+  sanitizer->remove_attrs_ = std::make_unique<SanitizerNameSet>();
+  sanitizer->data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
+  sanitizer->comments_ = SanitizerBoolWithAbsence::kAbsent;
+  return sanitizer;
+}
+
+Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
+                     std::unique_ptr<SanitizerNameSet> remove_elements,
+                     std::unique_ptr<SanitizerNameSet> replace_elements,
+                     std::unique_ptr<SanitizerNameSet> allow_attrs,
+                     std::unique_ptr<SanitizerNameSet> remove_attrs,
                      bool allow_data_attrs,
                      bool allow_comments)
-    : allow_elements_(allow_elements.begin(), allow_elements.end()),
-      remove_elements_(remove_elements.begin(), remove_elements.end()),
-      replace_elements_(replace_elements.begin(), replace_elements.end()),
-      allow_attrs_(allow_attrs.begin(), allow_attrs.end()),
-      remove_attrs_(remove_attrs.begin(), remove_attrs.end()),
-      allow_data_attrs_(allow_data_attrs),
-      allow_comments_(allow_comments) {}
+    : allow_elements_(allow_elements.release()),
+      remove_elements_(remove_elements.release()),
+      replace_elements_(replace_elements.release()),
+      allow_attrs_(allow_attrs.release()),
+      remove_attrs_(remove_attrs.release()),
+      data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
+                                   : SanitizerBoolWithAbsence::kFalse),
+      comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
+                               : SanitizerBoolWithAbsence::kFalse) {}
 
 void Sanitizer::allowElement(
     const V8UnionSanitizerElementNamespaceWithAttributesOrString* element) {
@@ -138,11 +149,13 @@ void Sanitizer::removeAttribute(
 }
 
 void Sanitizer::setComments(bool comments) {
-  allow_comments_ = comments;
+  comments_ = comments ? SanitizerBoolWithAbsence::kTrue
+                       : SanitizerBoolWithAbsence::kFalse;
 }
 
 void Sanitizer::setDataAttributes(bool data_attributes) {
-  allow_data_attrs_ = data_attributes;
+  data_attrs_ = data_attributes ? SanitizerBoolWithAbsence::kTrue
+                                : SanitizerBoolWithAbsence::kFalse;
 }
 
 void Sanitizer::removeUnsafe() {
@@ -150,159 +163,251 @@ void Sanitizer::removeUnsafe() {
 
   // Below, we rely on the baseline being expressed as allow-lists. Ensure that
   // this is so, given how important `removeUnsafe` is for the Sanitizer.
-  CHECK(!baseline->remove_elements_.empty());
-  CHECK(!baseline->remove_attrs_.empty());
-  CHECK(baseline->allow_elements_.empty());
-  CHECK(baseline->replace_elements_.empty());
-  CHECK(baseline->allow_attrs_.empty());
-  CHECK(baseline->replace_elements_.empty());
+  CHECK(baseline->remove_elements_);
+  CHECK(baseline->remove_attrs_);
+  CHECK(!baseline->allow_elements_);
+  CHECK(!baseline->replace_elements_);
+  CHECK(!baseline->allow_attrs_);
+  CHECK(!baseline->replace_elements_);
   CHECK(baseline->allow_attrs_per_element_.empty());
   CHECK(baseline->remove_attrs_per_element_.empty());
 
-  for (const QualifiedName& name : baseline->remove_elements_) {
+  for (const QualifiedName& name : *(baseline->remove_elements_)) {
     RemoveElement(name);
   }
-  for (const QualifiedName& name : baseline->remove_attrs_) {
+  for (const QualifiedName& name : *(baseline->remove_attrs_)) {
     RemoveAttribute(name);
   }
 }
 
+bool SanitizerAtomicStringLessThan(const AtomicString& a,
+                                   const AtomicString& b) {
+  // https://wicg.github.io/sanitizer-api/#sanitizerconfig-less-than-item
+  // The spec wants a comparison operator where null is the bottom element.
+  if (b.IsNull()) {
+    return false;
+  } else if (a.IsNull()) {
+    return true;
+  } else {
+    return CodeUnitCompare(a.Impl(), b.Impl()) < 0;
+  }
+}
+
+bool SanitizerQNameLessThan(const QualifiedName& a, const QualifiedName& b) {
+  // https://wicg.github.io/sanitizer-api/#sanitizerconfig-less-than-item
+  return (a.NamespaceURI() != b.NamespaceURI())
+             ? SanitizerAtomicStringLessThan(a.NamespaceURI(), b.NamespaceURI())
+             : SanitizerAtomicStringLessThan(a.LocalName(), b.LocalName());
+}
+
+Vector<QualifiedName> Sorted(const SanitizerNameSet& unsorted) {
+  Vector<QualifiedName> result;
+  std::ranges::copy(unsorted, std::back_inserter(result));
+  std::ranges::sort(result, &SanitizerQNameLessThan);
+  return result;
+}
+
 SanitizerConfig* Sanitizer::get() const {
-  HeapVector<Member<V8UnionSanitizerElementNamespaceWithAttributesOrString>>
-      allow_elements;
-  for (const QualifiedName& name : allow_elements_) {
-    Member<SanitizerElementNamespaceWithAttributes> element =
-        SanitizerElementNamespaceWithAttributes::Create();
-    element->setName(name.LocalName());
-    element->setNamespaceURI(name.NamespaceURI());
-
-    const auto& allow_attrs_per_element_iter =
-        allow_attrs_per_element_.find(name);
-    if (allow_attrs_per_element_iter != allow_attrs_per_element_.end()) {
-      HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>>
-          allow_attrs_per_element;
-      for (const QualifiedName& attr_name :
-           allow_attrs_per_element_iter->value) {
-        Member<SanitizerAttributeNamespace> attr =
-            SanitizerAttributeNamespace::Create();
-        attr->setName(attr_name.LocalName());
-        attr->setNamespaceURI(attr_name.NamespaceURI());
-        allow_attrs_per_element.push_back(
-            MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
-                attr));
-      }
-      element->setAttributes(allow_attrs_per_element);
-    }
-
-    const auto& remove_attrs_per_element_iter =
-        remove_attrs_per_element_.find(name);
-    if (remove_attrs_per_element_iter != remove_attrs_per_element_.end()) {
-      HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>>
-          remove_attrs_per_element;
-      for (const QualifiedName& attr_name :
-           remove_attrs_per_element_iter->value) {
-        Member<SanitizerAttributeNamespace> attr =
-            SanitizerAttributeNamespace::Create();
-        attr->setName(attr_name.LocalName());
-        attr->setNamespaceURI(attr_name.NamespaceURI());
-        remove_attrs_per_element.push_back(
-            MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
-                attr));
-      }
-      element->setRemoveAttributes(remove_attrs_per_element);
-    }
-
-    allow_elements.push_back(
-        MakeGarbageCollected<
-            V8UnionSanitizerElementNamespaceWithAttributesOrString>(element));
-  }
-
-  HeapVector<Member<V8UnionSanitizerElementNamespaceOrString>> remove_elements;
-  for (const QualifiedName& name : remove_elements_) {
-    Member<SanitizerElementNamespace> element =
-        SanitizerElementNamespace::Create();
-    element->setName(name.LocalName());
-    element->setNamespaceURI(name.NamespaceURI());
-    remove_elements.push_back(
-        MakeGarbageCollected<V8UnionSanitizerElementNamespaceOrString>(
-            element));
-  }
-
-  HeapVector<Member<V8UnionSanitizerElementNamespaceOrString>> replace_elements;
-  for (const QualifiedName& name : replace_elements_) {
-    Member<SanitizerElementNamespace> element =
-        SanitizerElementNamespace::Create();
-    element->setName(name.LocalName());
-    element->setNamespaceURI(name.NamespaceURI());
-    replace_elements.push_back(
-        MakeGarbageCollected<V8UnionSanitizerElementNamespaceOrString>(
-            element));
-  }
-
-  HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>> allow_attrs;
-  for (const QualifiedName& name : allow_attrs_) {
-    Member<SanitizerAttributeNamespace> attr =
-        SanitizerAttributeNamespace::Create();
-    attr->setName(name.LocalName());
-    attr->setNamespaceURI(name.NamespaceURI());
-    allow_attrs.push_back(
-        MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(attr));
-  }
-
-  HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>> remove_attrs;
-  for (const QualifiedName& name : remove_attrs_) {
-    Member<SanitizerAttributeNamespace> attr =
-        SanitizerAttributeNamespace::Create();
-    attr->setName(name.LocalName());
-    attr->setNamespaceURI(name.NamespaceURI());
-    remove_attrs.push_back(
-        MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(attr));
-  }
-
+  // https://wicg.github.io/sanitizer-api/#dom-sanitizer-get
+  //
+  // This methods converts from the internal representation (QName sets) to
+  // JS objects. This method looks extremely repetitive, but because IDL maps
+  // the JS members to different C++ types
+  // (V8UnionSanitizerElementNamespaceWithAttributesOrString,
+  // V8UnionSanitizerElementNamespaceOrString, or
+  // V8UnionSanitizerAttributeNamespaceOrString) these can't easily be
+  // refactored into common code.
   SanitizerConfig* config = SanitizerConfig::Create();
-  config->setElements(allow_elements);
-  config->setRemoveElements(remove_elements);
-  config->setReplaceWithChildrenElements(replace_elements);
-  config->setAttributes(allow_attrs);
-  config->setRemoveAttributes(remove_attrs);
-  config->setDataAttributes(allow_data_attrs_);
-  config->setComments(allow_comments_);
+
+  if (allow_elements_) {
+    HeapVector<Member<V8UnionSanitizerElementNamespaceWithAttributesOrString>>
+        allow_elements;
+    for (const QualifiedName& name : Sorted(*allow_elements_)) {
+      Member<SanitizerElementNamespaceWithAttributes> element =
+          SanitizerElementNamespaceWithAttributes::Create();
+      element->setName(name.LocalName());
+      element->setNamespaceURI(name.NamespaceURI());
+
+      const auto& allow_attrs_per_element_iter =
+          allow_attrs_per_element_.find(name);
+      if (allow_attrs_per_element_iter != allow_attrs_per_element_.end()) {
+        HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>>
+            allow_attrs_per_element;
+        for (const QualifiedName& attr_name :
+             Sorted(allow_attrs_per_element_iter->value)) {
+          Member<SanitizerAttributeNamespace> attr =
+              SanitizerAttributeNamespace::Create();
+          attr->setName(attr_name.LocalName());
+          attr->setNamespaceURI(attr_name.NamespaceURI());
+          allow_attrs_per_element.push_back(
+              MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
+                  attr));
+        }
+        element->setAttributes(allow_attrs_per_element);
+      }
+
+      const auto& remove_attrs_per_element_iter =
+          remove_attrs_per_element_.find(name);
+      if (remove_attrs_per_element_iter != remove_attrs_per_element_.end()) {
+        HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>>
+            remove_attrs_per_element;
+        for (const QualifiedName& attr_name :
+             Sorted(remove_attrs_per_element_iter->value)) {
+          Member<SanitizerAttributeNamespace> attr =
+              SanitizerAttributeNamespace::Create();
+          attr->setName(attr_name.LocalName());
+          attr->setNamespaceURI(attr_name.NamespaceURI());
+          remove_attrs_per_element.push_back(
+              MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
+                  attr));
+        }
+        element->setRemoveAttributes(remove_attrs_per_element);
+      }
+
+      if (!element->hasAttributes() && !element->hasRemoveAttributes()) {
+        HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>>
+            remove_attrs_per_element;
+        element->setRemoveAttributes(remove_attrs_per_element);
+      }
+
+      allow_elements.push_back(
+          MakeGarbageCollected<
+              V8UnionSanitizerElementNamespaceWithAttributesOrString>(element));
+    }
+    config->setElements(allow_elements);
+  }
+
+  if (remove_elements_) {
+    HeapVector<Member<V8UnionSanitizerElementNamespaceOrString>>
+        remove_elements;
+    for (const QualifiedName& name : Sorted(*remove_elements_)) {
+      Member<SanitizerElementNamespace> element =
+          SanitizerElementNamespace::Create();
+      element->setName(name.LocalName());
+      element->setNamespaceURI(name.NamespaceURI());
+      remove_elements.push_back(
+          MakeGarbageCollected<V8UnionSanitizerElementNamespaceOrString>(
+              element));
+    }
+    config->setRemoveElements(remove_elements);
+  }
+
+  if (replace_elements_) {
+    HeapVector<Member<V8UnionSanitizerElementNamespaceOrString>>
+        replace_elements;
+    for (const QualifiedName& name : Sorted(*replace_elements_)) {
+      Member<SanitizerElementNamespace> element =
+          SanitizerElementNamespace::Create();
+      element->setName(name.LocalName());
+      element->setNamespaceURI(name.NamespaceURI());
+      replace_elements.push_back(
+          MakeGarbageCollected<V8UnionSanitizerElementNamespaceOrString>(
+              element));
+    }
+    config->setReplaceWithChildrenElements(replace_elements);
+  }
+
+  if (allow_attrs_) {
+    HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>> allow_attrs;
+    for (const QualifiedName& name : Sorted(*allow_attrs_)) {
+      Member<SanitizerAttributeNamespace> attr =
+          SanitizerAttributeNamespace::Create();
+      attr->setName(name.LocalName());
+      attr->setNamespaceURI(name.NamespaceURI());
+      allow_attrs.push_back(
+          MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
+              attr));
+    }
+    config->setAttributes(allow_attrs);
+  }
+
+  if (remove_attrs_) {
+    HeapVector<Member<V8UnionSanitizerAttributeNamespaceOrString>> remove_attrs;
+    for (const QualifiedName& name : Sorted(*remove_attrs_)) {
+      Member<SanitizerAttributeNamespace> attr =
+          SanitizerAttributeNamespace::Create();
+      attr->setName(name.LocalName());
+      attr->setNamespaceURI(name.NamespaceURI());
+      remove_attrs.push_back(
+          MakeGarbageCollected<V8UnionSanitizerAttributeNamespaceOrString>(
+              attr));
+    }
+    config->setRemoveAttributes(remove_attrs);
+  }
+
+  if (data_attrs_ != SanitizerBoolWithAbsence::kAbsent) {
+    config->setDataAttributes(data_attrs_ == SanitizerBoolWithAbsence::kTrue);
+  }
+  if (comments_ != SanitizerBoolWithAbsence::kAbsent) {
+    config->setComments(comments_ == SanitizerBoolWithAbsence::kTrue);
+  }
 
   return config;
 }
 
 void Sanitizer::AllowElement(const QualifiedName& name) {
-  allow_elements_.insert(name);
-  remove_elements_.erase(name);
-  replace_elements_.erase(name);
+  if (!allow_elements_) {
+    allow_elements_ = std::make_unique<SanitizerNameSet>();
+  }
+  allow_elements_->insert(name);
+  if (remove_elements_) {
+    remove_elements_->erase(name);
+  }
+  if (replace_elements_) {
+    replace_elements_->erase(name);
+  }
   allow_attrs_per_element_.erase(name);
   remove_attrs_per_element_.erase(name);
 }
 
 void Sanitizer::RemoveElement(const QualifiedName& name) {
-  allow_elements_.erase(name);
-  remove_elements_.insert(name);
-  replace_elements_.erase(name);
+  if (allow_elements_) {
+    allow_elements_->erase(name);
+  }
+  if (!remove_elements_) {
+    remove_elements_ = std::make_unique<SanitizerNameSet>();
+  }
+  remove_elements_->insert(name);
+  if (replace_elements_) {
+    replace_elements_->erase(name);
+  }
   allow_attrs_per_element_.erase(name);
   remove_attrs_per_element_.erase(name);
 }
 
 void Sanitizer::ReplaceElement(const QualifiedName& name) {
-  allow_elements_.erase(name);
-  remove_elements_.erase(name);
-  replace_elements_.insert(name);
+  if (allow_elements_) {
+    allow_elements_->erase(name);
+  }
+  if (remove_elements_) {
+    remove_elements_->erase(name);
+  }
+  if (!replace_elements_) {
+    replace_elements_ = std::make_unique<SanitizerNameSet>();
+  }
+  replace_elements_->insert(name);
   allow_attrs_per_element_.erase(name);
   remove_attrs_per_element_.erase(name);
 }
 
 void Sanitizer::AllowAttribute(const QualifiedName& name) {
-  allow_attrs_.insert(name);
-  remove_attrs_.erase(name);
+  if (!allow_attrs_) {
+    allow_attrs_ = std::make_unique<SanitizerNameSet>();
+  }
+  allow_attrs_->insert(name);
+  if (remove_attrs_) {
+    remove_attrs_->erase(name);
+  }
 }
 
 void Sanitizer::RemoveAttribute(const QualifiedName& name) {
-  allow_attrs_.erase(name);
-  remove_attrs_.insert(name);
+  if (allow_attrs_) {
+    allow_attrs_->erase(name);
+  }
+  if (!remove_attrs_) {
+    remove_attrs_ = std::make_unique<SanitizerNameSet>();
+  }
+  remove_attrs_->insert(name);
 }
 
 void Sanitizer::SanitizeElement(Element* element) const {
@@ -320,20 +425,20 @@ void Sanitizer::SanitizeElement(Element* element) const {
           : &remove_per_element_iter->value;
   for (const QualifiedName& name : element->getAttributeQualifiedNames()) {
     bool keep = false;
-    if (allow_attrs_.Contains(name)) {
+    if (allow_attrs_ && allow_attrs_->Contains(name)) {
       keep = true;
-    } else if (remove_attrs_.Contains(name)) {
+    } else if (remove_attrs_ && remove_attrs_->Contains(name)) {
       keep = false;
     } else if (allow_per_element && allow_per_element->Contains(name)) {
       keep = true;
     } else if (remove_per_element && remove_per_element->Contains(name)) {
       keep = false;
-    } else if (name.NamespaceURI().IsNull() &&
+    } else if (allow_attrs_ && name.NamespaceURI().IsNull() &&
                name.LocalName().StartsWith("data-")) {
-      keep = allow_data_attrs_;
+      keep = data_attrs_ == SanitizerBoolWithAbsence::kTrue;
     } else {
-      keep = allow_attrs_.empty() &&
-             (!allow_per_element || allow_per_element->empty());
+      keep =
+          !allow_attrs_ && (!allow_per_element || allow_per_element->empty());
     }
     if (!keep) {
       element->removeAttribute(name);
@@ -427,12 +532,13 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
     switch (node->getNodeType()) {
       case Node::NodeType::kElementNode: {
         Element* element = To<Element>(node);
-        if (allow_elements_.Contains(element->TagQName())) {
+        if (allow_elements_ && allow_elements_->Contains(element->TagQName())) {
           action = kKeepElement;
-        } else if (replace_elements_.Contains(element->TagQName())) {
+        } else if (replace_elements_ &&
+                   replace_elements_->Contains(element->TagQName())) {
           action = kReplaceWithChildren;
-        } else if (allow_elements_.empty() &&
-                   !remove_elements_.Contains(element->TagQName())) {
+        } else if (!allow_elements_ && remove_elements_ &&
+                   !remove_elements_->Contains(element->TagQName())) {
           action = kKeepElement;
         } else {
           action = kDrop;
@@ -443,7 +549,7 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
         action = kKeep;
         break;
       case Node::NodeType::kCommentNode:
-        action = allow_comments_ ? kKeep : kDrop;
+        action = (comments_ == SanitizerBoolWithAbsence::kTrue) ? kKeep : kDrop;
         break;
       case Node::NodeType::kDocumentTypeNode:
         // Should only happen when parsing full documents w/ parseHTML.
@@ -493,61 +599,127 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
   }
 }
 
-bool Sanitizer::setFrom(const SanitizerConfig* config, bool safe) {
+bool Sanitizer::setFrom(const SanitizerConfig* config,
+                        bool allowCommentsAndDataAttributes) {
+  // https://wicg.github.io/sanitizer-api/#configuration-set
+  //
+  // Since out internal representation is quite different from the external one,
+  // the structure here is quite different from the spec text.
+
   // This method assumes a newly constructed instance.
-  CHECK(allow_elements_.empty());
-  CHECK(remove_elements_.empty());
-  CHECK(replace_elements_.empty());
-  CHECK(allow_attrs_.empty());
-  CHECK(remove_attrs_.empty());
+  CHECK(!allow_elements_);
+  CHECK(!remove_elements_);
+  CHECK(!replace_elements_);
+  CHECK(!allow_attrs_);
+  CHECK(!remove_attrs_);
   CHECK(allow_attrs_per_element_.empty());
   CHECK(remove_attrs_per_element_.empty());
 
+  // The spec checks that no duplicate entries exist. We solve that here by
+  // keeping track of whether all set insertion were new entries.
+  bool all_new_entries = true;
+
   if (config->hasElements()) {
+    allow_elements_ = std::make_unique<SanitizerNameSet>();
     for (const auto& element : config->elements()) {
-      allowElement(element);
+      QualifiedName element_name = getFrom(element);
+      all_new_entries &= allow_elements_->insert(element_name).is_new_entry;
+
+      if (element->IsSanitizerElementNamespaceWithAttributes()) {
+        if (element->GetAsSanitizerElementNamespaceWithAttributes()
+                ->hasAttributes()) {
+          SanitizerNameSet attrs_per_element;
+          for (const auto& attribute :
+               element->GetAsSanitizerElementNamespaceWithAttributes()
+                   ->attributes()) {
+            all_new_entries &=
+                attrs_per_element.insert(getFrom(attribute)).is_new_entry;
+          }
+          allow_attrs_per_element_.insert(element_name, attrs_per_element);
+        }
+        if (element->GetAsSanitizerElementNamespaceWithAttributes()
+                ->hasRemoveAttributes()) {
+          SanitizerNameSet attrs_per_element;
+          for (const auto& attribute :
+               element->GetAsSanitizerElementNamespaceWithAttributes()
+                   ->removeAttributes()) {
+            all_new_entries &=
+                attrs_per_element.insert(getFrom(attribute)).is_new_entry;
+          }
+          remove_attrs_per_element_.insert(element_name, attrs_per_element);
+        }
+      }
     }
   }
   if (config->hasRemoveElements()) {
+    remove_elements_ = std::make_unique<SanitizerNameSet>();
     for (const auto& element : config->removeElements()) {
-      removeElement(element);
+      all_new_entries &=
+          remove_elements_->insert(getFrom(element)).is_new_entry;
     }
   }
   if (config->hasReplaceWithChildrenElements()) {
+    replace_elements_ = std::make_unique<SanitizerNameSet>();
     for (const auto& element : config->replaceWithChildrenElements()) {
-      replaceElementWithChildren(element);
+      all_new_entries &=
+          replace_elements_->insert(getFrom(element)).is_new_entry;
     }
   }
   if (config->hasAttributes()) {
+    allow_attrs_ = std::make_unique<SanitizerNameSet>();
     for (const auto& attribute : config->attributes()) {
-      allowAttribute(attribute);
+      all_new_entries &= allow_attrs_->insert(getFrom(attribute)).is_new_entry;
     }
   }
   if (config->hasRemoveAttributes()) {
+    remove_attrs_ = std::make_unique<SanitizerNameSet>();
     for (const auto& attribute : config->removeAttributes()) {
-      removeAttribute(attribute);
+      all_new_entries &= remove_attrs_->insert(getFrom(attribute)).is_new_entry;
     }
   }
-  setComments(config->getCommentsOr(!safe));
-  setDataAttributes(config->getDataAttributesOr(!safe));
+  setComments(config->getCommentsOr(allowCommentsAndDataAttributes));
+  if (allow_attrs_ || config->hasDataAttributes()) {
+    setDataAttributes(
+        config->getDataAttributesOr(allowCommentsAndDataAttributes));
+  }
 
-  // Error checking: The setter methods may drop invalid items (per API
-  // contract), but they will not "invent" any. Thus, we can count whether the
-  // number of items in the incoming dictionary matches the number of items in
-  // our config, and if they mismatch then there was an error.
-  return countItemsInSanitizerConfig(config) == countItemsInConfig();
+  // https://wicg.github.io/sanitizer-api/#sanitizer-canonicalize-the-configuration,
+  // steps 1 + 2.
+  if (!config->hasElements() && !config->hasRemoveElements()) {
+    remove_elements_ = std::make_unique<SanitizerNameSet>();
+  }
+  if (!config->hasAttributes() && !config->hasRemoveAttributes()) {
+    remove_attrs_ = std::make_unique<SanitizerNameSet>();
+  }
+
+  return all_new_entries && isValid();
 }
 
 void Sanitizer::setFrom(const Sanitizer& other) {
-  allow_elements_ = other.allow_elements_;
-  remove_elements_ = other.remove_elements_;
-  replace_elements_ = other.replace_elements_;
-  allow_attrs_ = other.allow_attrs_;
-  remove_attrs_ = other.remove_attrs_;
+  allow_elements_ =
+      other.allow_elements_
+          ? std::make_unique<SanitizerNameSet>(*other.allow_elements_.get())
+          : nullptr;
+  remove_elements_ =
+      other.remove_elements_
+          ? std::make_unique<SanitizerNameSet>(*other.remove_elements_.get())
+          : nullptr;
+  replace_elements_ =
+      other.replace_elements_
+          ? std::make_unique<SanitizerNameSet>(*other.replace_elements_.get())
+          : nullptr;
+  allow_attrs_ =
+      other.allow_attrs_
+          ? std::make_unique<SanitizerNameSet>(*other.allow_attrs_.get())
+          : nullptr;
+  remove_attrs_ =
+      other.remove_attrs_
+          ? std::make_unique<SanitizerNameSet>(*other.remove_attrs_.get())
+          : nullptr;
   allow_attrs_per_element_ = other.allow_attrs_per_element_;
   remove_attrs_per_element_ = other.remove_attrs_per_element_;
-  allow_data_attrs_ = other.allow_data_attrs_;
-  allow_comments_ = other.allow_comments_;
+  data_attrs_ = other.data_attrs_;
+  comments_ = other.comments_;
 }
 
 QualifiedName Sanitizer::getFrom(const String& name,
@@ -595,55 +767,145 @@ QualifiedName Sanitizer::getFrom(
   return getFrom(attr_namespace->name(), attr_namespace->namespaceURI());
 }
 
-int Sanitizer::countItemsInSanitizerConfig(
-    const SanitizerConfig* config) const {
-  int size =
-      (config->hasElements() ? config->elements().size() : 0) +
-      (config->hasRemoveElements() ? config->removeElements().size() : 0) +
-      (config->hasReplaceWithChildrenElements()
-           ? config->replaceWithChildrenElements().size()
-           : 0) +
-      (config->hasAttributes() ? config->attributes().size() : 0) +
-      (config->hasRemoveAttributes() ? config->removeAttributes().size() : 0);
-  if (config->hasElements()) {
-    for (const auto& element : config->elements()) {
-      size += countItemsInSanitizerElement(element);
+bool Intersect(const SanitizerNameSet& a, const SanitizerNameSet& b) {
+  for (const QualifiedName& name : a) {
+    if (b.Contains(name)) {
+      return true;
     }
   }
-  return size;
+  return false;
 }
 
-int Sanitizer::countItemsInSanitizerElement(
-    const V8UnionSanitizerElementNamespaceWithAttributesOrString* element)
-    const {
-  CHECK(element);
-  if (!element->IsSanitizerElementNamespaceWithAttributes()) {
-    return 0;
+bool Intersect(const std::unique_ptr<SanitizerNameSet>& a,
+               const SanitizerNameSet& b) {
+  if (!a) {
+    return false;
+  }
+  return Intersect(*a.get(), b);
+}
+
+bool Intersect(const std::unique_ptr<SanitizerNameSet>& a,
+               const std::unique_ptr<SanitizerNameSet>& b) {
+  if (!a || !b) {
+    return false;
+  }
+  return Intersect(*a.get(), *b.get());
+}
+
+bool Subset(const SanitizerNameSet& a, const SanitizerNameSet& b) {
+  for (const QualifiedName& name : a) {
+    if (!b.Contains(name)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool Sanitizer::isValid() const {
+  // https://wicg.github.io/sanitizer-api/#sanitizerconfig-valid
+  // Step 1: [..] either an elements or a removeElements key, but not both.
+  if (allow_elements_ && remove_elements_) {
+    return false;
+  }
+  // Step 2: [..] either an attributes or a removeAttributes key, but not both.
+  if (allow_attrs_ && remove_attrs_) {
+    return false;
+  }
+  // Step 3: Assert. (Not meaningful here, since we use QNames.)
+  // Step 4: None of [...], if they exist, has duplicates.
+  //   (Not meaningful here, since we use sets.)
+  // Step 5: If both config[elements] and config[replaceWithChildrenElements]
+  //   exist, then the intersection of config[elements] and
+  //   config[replaceWithChildrenElements] is empty.
+  if (Intersect(allow_elements_, replace_elements_)) {
+    return false;
+  }
+  // Step 6: If both config[removeElements] and
+  //   config[replaceWithChildrenElements] exist, then the intersection of
+  //   config[removeElements] and config[replaceWithChildrenElements] is empty.
+  if (Intersect(remove_elements_, replace_elements_)) {
+    return false;
+  }
+  // Step 7: If config[attributes] exists:
+  if (allow_attrs_) {
+    // Step 7.1: If config[elements] exists:
+    if (allow_elements_) {
+      // Step 7.1.1: For each element of config[elements]:
+      for (const auto& element : *allow_elements_) {
+        // Step 7.1.1.1: [No dupes:] element[attributes] +
+        //   element[removeAttributes] (Not meaningful here, since we use sets.)
+        // Step 7.1.1.2: The intersection of config[attributes] and
+        //   element[attributes] [..] is empty.
+        if (allow_attrs_per_element_.Contains(element) &&
+            Intersect(allow_attrs_, allow_attrs_per_element_.at(element))) {
+          return false;
+        }
+        // Step 7.1.1.3: element[removeAttributes] [..] is a subset of
+        // config[attributes]
+        if (remove_attrs_per_element_.Contains(element) && allow_attrs_ &&
+            !Subset(remove_attrs_per_element_.at(element),
+                    *allow_attrs_.get())) {
+          return false;
+        }
+        // Step 7.1.1.4: If dataAttributes exists and dataAttributes is true:
+        if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
+          // Step 7.1.1.5: element[attributes] does not contain a custom data
+          // attribute.
+          if (allow_attrs_per_element_.Contains(element)) {
+            for (const auto& attr : allow_attrs_per_element_.at(element)) {
+              if (attr.LocalName().StartsWith("data-")) {
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+    // Step 7.2: If dataAttributes is true:
+    if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
+      // Step 7.2.1: config[attributes] does not contain a custom data
+      // attribute.
+      for (const auto& attr : *allow_attrs_) {
+        if (attr.LocalName().StartsWith("data-")) {
+          return false;
+        }
+      }
+    }
+  }
+  // Step 8: If config[removeAttributes] exists:
+  if (remove_attrs_) {
+    // Step 8.1: If config[elements] exists, then for each element of
+    // config[elements]:
+    if (allow_elements_) {
+      for (const auto& element : *allow_elements_) {
+        // Step 8.1.1: Not both element[attributes] and
+        // element[removeAttributes] exist.
+        if (allow_attrs_per_element_.Contains(element) &&
+            remove_attrs_per_element_.Contains(element)) {
+          return false;
+        }
+        // Step 8.1.2: [No dupes.] (Not meaningful, since we're using sets.)
+        // Step 8.1.3: The intersection of config[removeAttributes] and
+        //   element[attributes] [..] is empty.
+        if (allow_attrs_per_element_.Contains(element) &&
+            Intersect(remove_attrs_, allow_attrs_per_element_.at(element))) {
+          return false;
+        }
+        // Step 8.1.4: The intersection of config[removeAttributes] and
+        //   element[removeAttributes] [..] is empty.
+        if (remove_attrs_per_element_.Contains(element) &&
+            Intersect(remove_attrs_, remove_attrs_per_element_.at(element))) {
+          return false;
+        }
+      }
+    }
+    // Step 8.2: config[dataAttributes] does not exist.
+    if (data_attrs_ != SanitizerBoolWithAbsence::kAbsent) {
+      return false;
+    }
   }
 
-  const SanitizerElementNamespaceWithAttributes* element_dictionary =
-      element->GetAsSanitizerElementNamespaceWithAttributes();
-  return (element_dictionary->hasAttributes()
-              ? element_dictionary->attributes().size()
-              : 0) +
-         (element_dictionary->hasRemoveAttributes()
-              ? element_dictionary->removeAttributes().size()
-              : 0);
-}
-
-int sanitizerNameMapSize(const SanitizerNameMap& name_map) {
-  int size = 0;
-  for (const auto& item : name_map) {
-    size += item.value.size();
-  }
-  return size;
-}
-
-int Sanitizer::countItemsInConfig() const {
-  return allow_elements_.size() + remove_elements_.size() +
-         replace_elements_.size() + allow_attrs_.size() + remove_attrs_.size() +
-         sanitizerNameMapSize(allow_attrs_per_element_) +
-         sanitizerNameMapSize(remove_attrs_per_element_);
+  return true;
 }
 
 }  // namespace blink
