@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_TITLE" desc="BlingEnterpriseProfiles Title displayed in What's New. [iOS only]">
+        Switch between work and personal
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SUBTITLE" desc="BlingEnterpriseProfiles Subtitle displayed in What's New. [iOS only]">
+        Keep your work and personal browsing separate by easily switching between your accounts
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of BlingEnterpriseProfiles in What's New. [iOS only]">
+        On your iPhone or iPad, open Chrome.
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of BlingEnterpriseProfiles in What's New. [iOS only]">
+        At the top right, tap your account.
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of BlingEnterpriseProfiles in What's New. [iOS only]">
+        Choose the account you want to switch to. (To add a new one, tap Add account…)
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SCREENSHOT_TEXT_1" desc="Text in image displaying: Add account... for the feature: BlingEnterpriseProfiles in What's New. [iOS only]">
+        Add account...
+</message>
+<message name="IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SCREENSHOT_TEXT_2" desc="Text in image displaying: Sign out for the feature: BlingEnterpriseProfiles in What's New. [iOS only]">
+        Sign out
+</message>
+</grit-part>

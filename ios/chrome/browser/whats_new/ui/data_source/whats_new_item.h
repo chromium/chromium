@@ -44,7 +44,8 @@ enum class WhatsNewType {
   kPasskeys = 28,
   kChooseFromDrive = 29,
   kSaveToDrive = 30,
-  kMaxValue = kSaveToDrive
+  kBlingEnterpriseProfiles = 31,
+  kMaxValue = kBlingEnterpriseProfiles
 };
 
 // An enum representing the different primary button actions for features in
