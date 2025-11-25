@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -29,18 +30,6 @@ PasswordFormDigest GetSynthesizedFormForUrl(GURL url) {
   return digest;
 }
 
-password_manager::PasswordManagerClient* GetPasswordManagerClient(
-    RenderFrameHost& render_frame_host) {
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host);
-
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  return ChromePasswordManagerClient::FromWebContents(web_contents);
-}
-
 }  // namespace
 
 std::unique_ptr<PasswordCredentialFetcher> PasswordCredentialFetcher::Create(
@@ -54,9 +43,11 @@ std::unique_ptr<PasswordCredentialFetcher> PasswordCredentialFetcher::Create(
 std::unique_ptr<PasswordCredentialFetcher>
 PasswordCredentialFetcher::CreateForTesting(
     RenderFrameHost* rfh,
-    std::unique_ptr<password_manager::FormFetcher> form_fetcher) {
+    std::unique_ptr<password_manager::FormFetcher> form_fetcher,
+    password_manager::PasswordManagerClient* client) {
   auto fetcher = base::WrapUnique(new PasswordCredentialFetcher(rfh));
   fetcher->form_fetcher_ = std::move(form_fetcher);
+  fetcher->pwm_client_for_testing_ = client;
   return fetcher;
 }
 
@@ -71,6 +62,38 @@ void PasswordCredentialFetcher::FetchPasswords(
   CreateFormFetcher(url);
   form_fetcher_->Fetch();
   form_fetcher_->AddConsumer(this);
+}
+
+void PasswordCredentialFetcher::UpdateDateLastUsed(
+    const std::u16string& username,
+    const std::u16string& password) {
+  CHECK(form_fetcher_);
+
+  password_manager::PasswordManagerClient* client = GetPasswordManagerClient();
+  if (!client) {
+    return;
+  }
+
+  for (const auto& match : form_fetcher_->GetBestMatches()) {
+    if (match.username_value == username && match.password_value == password) {
+      PasswordForm updated_form = match;
+      updated_form.date_last_used = base::Time::Now();
+      if ((updated_form.in_store &
+           password_manager::PasswordForm::Store::kProfileStore) !=
+          password_manager::PasswordForm::Store::kNotSet) {
+        if (auto* store = client->GetProfilePasswordStore()) {
+          store->UpdateLogin(updated_form);
+        }
+      }
+      if ((updated_form.in_store &
+           password_manager::PasswordForm::Store::kAccountStore) !=
+          password_manager::PasswordForm::Store::kNotSet) {
+        if (auto* store = client->GetAccountPasswordStore()) {
+          store->UpdateLogin(updated_form);
+        }
+      }
+    }
+  }
 }
 
 void PasswordCredentialFetcher::SetInstanceForTesting(
@@ -100,8 +123,22 @@ void PasswordCredentialFetcher::CreateFormFetcher(const GURL& url) {
     return;
   }
   form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
-      GetSynthesizedFormForUrl(url), GetPasswordManagerClient(*rfh_),
+      GetSynthesizedFormForUrl(url), GetPasswordManagerClient(),
       /*should_migrate_http_passwords=*/false);
+}
+
+password_manager::PasswordManagerClient*
+PasswordCredentialFetcher::GetPasswordManagerClient() const {
+  if (pwm_client_for_testing_) {
+    return pwm_client_for_testing_;
+  }
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh_);
+
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
 PasswordCredentialFetcher* PasswordCredentialFetcher::instance_for_testing_ =

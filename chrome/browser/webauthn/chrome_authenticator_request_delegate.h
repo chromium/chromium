@@ -310,6 +310,8 @@ class ChromeAuthenticatorRequestDelegate
                                const std::string& rp_id);
 #endif
 
+  void OnPasswordSelected(password_manager::CredentialInfo info);
+
   void OnPasswordCredentialsReceived(
       PasswordCredentialFetcher::PasswordCredentials credentials);
 

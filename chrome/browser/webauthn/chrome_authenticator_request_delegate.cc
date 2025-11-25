@@ -462,8 +462,9 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
   if (password_ui_controller_) {
-    password_ui_controller_->SetPasswordSelectedCallback(
-        password_selected_callback_);
+    password_ui_controller_->SetPasswordSelectedCallback(base::BindRepeating(
+        &ChromeAuthenticatorRequestDelegate::OnPasswordSelected,
+        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1254,9 +1255,21 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
 
 #endif
 
+void ChromeAuthenticatorRequestDelegate::OnPasswordSelected(
+    password_manager::CredentialInfo info) {
+  if (password_fetcher_) {
+    password_fetcher_->UpdateDateLastUsed(
+        info.id.value_or(std::u16string()),
+        info.password.value_or(std::u16string()));
+    password_fetcher_.reset();
+  }
+  if (password_selected_callback_) {
+    password_selected_callback_.Run(info);
+  }
+}
+
 void ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived(
     PasswordCredentials credentials) {
-  password_fetcher_.reset();
   pending_password_credentials_ =
       std::make_unique<PasswordCredentials>(std::move(credentials));
   TryToShowUI();

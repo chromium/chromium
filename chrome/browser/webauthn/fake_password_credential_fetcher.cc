@@ -32,6 +32,14 @@ void FakePasswordCredentialFetcher::SetCallCallbackImmediately(
   call_callback_immediately_ = call_immediately;
 }
 
+void FakePasswordCredentialFetcher::UpdateDateLastUsed(
+    const std::u16string& username,
+    const std::u16string& password) {
+  if (update_date_last_used_called_ptr_) {
+    *update_date_last_used_called_ptr_ = true;
+  }
+}
+
 void FakePasswordCredentialFetcher::InvokeCallback() {
   if (callback_) {
     std::move(callback_).Run(std::move(passwords_));

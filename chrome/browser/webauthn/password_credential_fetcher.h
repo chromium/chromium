@@ -17,6 +17,10 @@ namespace content {
 class RenderFrameHost;
 }
 
+namespace password_manager {
+class PasswordManagerClient;
+}
+
 // Fetches password credentials for a given RenderFrameHost and URL.
 class PasswordCredentialFetcher
     : public password_manager::FormFetcher::Consumer {
@@ -30,7 +34,8 @@ class PasswordCredentialFetcher
       content::RenderFrameHost* rfh);
   static std::unique_ptr<PasswordCredentialFetcher> CreateForTesting(
       content::RenderFrameHost* rfh,
-      std::unique_ptr<password_manager::FormFetcher> form_fetcher);
+      std::unique_ptr<password_manager::FormFetcher> form_fetcher,
+      password_manager::PasswordManagerClient* client);
 
   ~PasswordCredentialFetcher() override;
 
@@ -43,6 +48,12 @@ class PasswordCredentialFetcher
   virtual void FetchPasswords(const GURL& url,
                               PasswordCredentialsReceivedCallback callback);
 
+  // Updates the `date_last_used` field of the password form matching `username`
+  // and `password` to the current time. The update is persisted to the
+  // password store.
+  virtual void UpdateDateLastUsed(const std::u16string& username,
+                                  const std::u16string& password);
+
   static void SetInstanceForTesting(PasswordCredentialFetcher* instance);
 
  private:
@@ -54,10 +65,14 @@ class PasswordCredentialFetcher
   void OnFetchCompleted() override;
 
   void CreateFormFetcher(const GURL& url);
+  password_manager::PasswordManagerClient* GetPasswordManagerClient() const;
 
   raw_ptr<content::RenderFrameHost> rfh_;
   std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
   PasswordCredentialsReceivedCallback callback_;
+
+  raw_ptr<password_manager::PasswordManagerClient> pwm_client_for_testing_ =
+      nullptr;
 
   // Owned by the test fixture.
   static PasswordCredentialFetcher* instance_for_testing_;

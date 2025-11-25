@@ -838,6 +838,58 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
 }
 
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OnPasswordSelectedUpdatesDateLastUsed) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kOrigin));
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
+  PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
+  bool update_date_last_used_called = false;
+  password_fetcher->set_update_date_last_used_called_ptr(
+      &update_date_last_used_called);
+  auto password_ui_controller =
+      std::make_unique<testing::NiceMock<MockPasswordCredentialUIController>>(
+          main_rfh()->GetGlobalId(), delegate.dialog_model());
+
+  content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+      password_selected_and_date_last_used_callback;
+  EXPECT_CALL(*password_ui_controller, SetPasswordSelectedCallback)
+      .WillOnce(
+          testing::SaveArg<0>(&password_selected_and_date_last_used_callback));
+  delegate.SetPasswordUIControllerForTesting(std::move(password_ui_controller));
+  delegate.SetUIPresentation(UIPresentation::kModalImmediate);
+  delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
+  delegate.SetRelyingPartyId(kRpId);
+  MockCableDiscoveryFactory discovery_factory;
+
+  delegate.RegisterActionCallbacks(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
+
+  delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
+                                content::AuthenticatorRequestClientDelegate::
+                                    RequestSource::kWebAuthentication,
+                                device::FidoRequestType::kGetAssertion,
+                                device::ResidentKeyRequirement::kPreferred,
+                                device::UserVerificationRequirement::kRequired,
+                                /*user_name=*/std::nullopt, {},
+                                /*is_enclave_authenticator_available=*/false,
+                                &discovery_factory);
+
+  // Invoke the callback set on the UI controller, which in turn calls
+  // ChromeAuthenticatorRequestDelegate::OnPasswordSelected.
+  password_manager::CredentialInfo credential_info;
+  credential_info.id = u"test_user";
+  credential_info.password = u"test_password";
+  password_selected_and_date_last_used_callback.Run(credential_info);
+
+  EXPECT_TRUE(update_date_last_used_called);
+
+  PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
+}
+
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {
   constexpr base::TimeDelta kWindowSize = base::Minutes(1);
   constexpr int kMaxRequestsPerWindow = 2;

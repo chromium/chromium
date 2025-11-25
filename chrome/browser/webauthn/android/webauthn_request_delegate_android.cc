@@ -216,6 +216,10 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
 
 void WebAuthnRequestDelegateAndroid::OnPasswordCredentialSelected(
     const PasswordCredentialPair& password_credential) {
+  if (password_fetcher_) {
+    password_fetcher_->UpdateDateLastUsed(password_credential.first,
+                                          password_credential.second);
+  }
   if (password_callback_) {
     password_callback_.Run(password_credential.first,
                            password_credential.second);
