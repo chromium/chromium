@@ -1291,6 +1291,18 @@ chromium-metrics-reviews@google.com.
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
 </histogram>
 
+<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.LoadResult"
+    enum="GpuPersistentCacheLoadResult" expires_after="2026-03-22">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records the results of gpu::GpuPersistentCache::Load for determining cache
+    hit rates.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
 <histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Store"
     units="microseconds" expires_after="2026-05-24">
   <owner>kylechar@chromium.org</owner>

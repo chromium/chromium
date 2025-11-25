@@ -1033,6 +1033,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="GPU process crash limit reached"/>
 </enum>
 
+<enum name="GpuPersistentCacheLoadResult">
+  <summary>The cache hit/miss results of GpuPersistentCache.</summary>
+  <int value="0" label="Miss"/>
+  <int value="1" label="Miss (disk cache not available)"/>
+  <int value="10" label="Hit (memory)"/>
+  <int value="11" label="Hit (disk)"/>
+</enum>
+
 <enum name="GPUProcessExitCode">
   <summary>
     The exit code returned by the GPU process when it terminated. These match

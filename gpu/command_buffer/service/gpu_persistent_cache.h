@@ -103,9 +103,24 @@ class GPU_GLES2_EXPORT GpuPersistentCache
  private:
   struct DiskCache;
 
-  bool LoadImpl(std::string_view key,
-                persistent_cache::BufferProvider buffer_provider);
+  // Values are mirrored in tools/metrics/histograms/metadata/gpu/enums.xml
+  enum class CacheLoadResult {
+    kMiss = 0,
+    kMissNoDiskCache = 1,
+    kMaxMissValue = kMissNoDiskCache,
+    // Extra enum space for future miss results
+    kHitMemory = 10,
+    kHitDisk = 11,
+    kMaxValue = kHitDisk,
+  };
+
+  static bool IsCacheHitResult(CacheLoadResult result);
+
+  CacheLoadResult LoadImpl(std::string_view key,
+                           persistent_cache::BufferProvider buffer_provider);
   void StoreImpl(std::string_view key, base::span<const uint8_t> value);
+
+  void RecordCacheLoadResultHistogram(CacheLoadResult result);
 
   // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU
   const std::string cache_prefix_;

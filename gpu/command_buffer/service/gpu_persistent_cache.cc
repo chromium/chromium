@@ -432,11 +432,16 @@ size_t GpuPersistentCache::LoadData(const void* key,
     return base::span<uint8_t>();
   };
 
-  if (!LoadImpl(key_str, std::move(buffer_provider))) {
-    return 0;  // Cache miss or error.
+  CacheLoadResult result = LoadImpl(key_str, std::move(buffer_provider));
+  if (!IsCacheHitResult(result) || value_size == 0) {
+    // This function is called twice in the cache hit case, once to query the
+    // size of the buffer and again with a buffer to write into. To avoid
+    // skewing the metrics by generating two cache hit data points, only record
+    // a cache hit when there is no buffer provided.
+    RecordCacheLoadResultHistogram(result);
   }
 
-  return discovered_size;
+  return static_cast<GLsizeiptr>(discovered_size);
 }
 
 sk_sp<SkData> GpuPersistentCache::load(const SkData& key) {
@@ -454,11 +459,9 @@ sk_sp<SkData> GpuPersistentCache::load(const SkData& key) {
                    output_data->size()));
   };
 
-  if (!LoadImpl(key_str, std::move(buffer_provider))) {
-    return nullptr;  // Cache miss or error.
-  }
+  CacheLoadResult result = LoadImpl(key_str, std::move(buffer_provider));
+  RecordCacheLoadResultHistogram(result);
 
-  // Cache hit. The content is in `output_data`.
   return output_data;
 }
 
@@ -488,11 +491,16 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
         return base::span<uint8_t>();
       };
 
-  if (!LoadImpl(key_str, std::move(buffer_provider))) {
-    return 0;  // Cache miss or error.
+  CacheLoadResult result = LoadImpl(key_str, std::move(buffer_provider));
+  if (!IsCacheHitResult(result) || value_size == 0) {
+    // This function is called twice in the cache hit case, once to query the
+    // size of the buffer and again with a buffer to write into. To avoid
+    // skewing the metrics by generating two cache hit data points, only record
+    // a cache hit when there is no buffer provided.
+    RecordCacheLoadResultHistogram(result);
   }
 
-  return static_cast<GLsizeiptr>(discovered_size);
+  return discovered_size;
 }
 
 void GpuPersistentCache::PurgeMemory(
@@ -515,7 +523,11 @@ GpuPersistentCache::GetPersistentCacheForTesting() const {
   return disk_cache_->persistent_cache();
 }
 
-bool GpuPersistentCache::LoadImpl(
+bool GpuPersistentCache::IsCacheHitResult(CacheLoadResult result) {
+  return result > CacheLoadResult::kMaxMissValue;
+}
+
+GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
     std::string_view key,
     persistent_cache::BufferProvider buffer_provider) {
   const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
@@ -535,12 +547,13 @@ bool GpuPersistentCache::LoadImpl(
     if (auto memory_entry = memory_cache_->Find(key)) {
       base::span<uint8_t> output_buffer =
           buffer_provider(memory_entry->DataSize());
-      return memory_entry->ReadData(output_buffer.data(), output_buffer.size());
+      memory_entry->ReadData(output_buffer.data(), output_buffer.size());
+      return CacheLoadResult::kHitMemory;
     }
   }
 
   if (!disk_cache_initialized) {
-    return false;
+    return CacheLoadResult::kMissNoDiskCache;
   }
 
   base::span<uint8_t> provided_buffer;
@@ -575,7 +588,7 @@ bool GpuPersistentCache::LoadImpl(
       };
 
   if (!disk_cache_->Load(key, wrapped_buffer_provider)) {
-    return false;
+    return CacheLoadResult::kMiss;
   }
 
   if (memory_cache_) {
@@ -595,7 +608,7 @@ bool GpuPersistentCache::LoadImpl(
     }
   }
 
-  return true;
+  return CacheLoadResult::kHitDisk;
 }
 
 void GpuPersistentCache::StoreData(const void* key,
@@ -659,6 +672,12 @@ void GpuPersistentCache::StoreImpl(std::string_view key,
   }
 
   disk_cache_->Store(memory_cache_entry);
+}
+
+void GpuPersistentCache::RecordCacheLoadResultHistogram(
+    CacheLoadResult result) {
+  base::UmaHistogramEnumeration(GetHistogramName(cache_prefix_, "LoadResult"),
+                                result);
 }
 
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache) {
