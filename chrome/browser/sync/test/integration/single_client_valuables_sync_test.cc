@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
@@ -167,6 +169,22 @@ class SingleClientValuableSyncTestBase : public SyncTest {
   }
 
  protected:
+  void EnterSyncPausedStateForPrimaryAccount() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+    } else {
+      GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+    }
+  }
+
+  void ExitSyncPausedStateForPrimaryAccount() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+    } else {
+      GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+    }
+  }
+
   void WaitForNumberOfLoyaltyCards(size_t expected_count,
                                    ValuablesDataManager* vdm) {
     while (vdm->GetLoyaltyCards().size() != expected_count ||
@@ -177,15 +195,20 @@ class SingleClientValuableSyncTestBase : public SyncTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class SingleClientValuablesSyncTest : public SingleClientValuableSyncTestBase,
-                                      public testing::WithParamInterface<bool> {
+class SingleClientValuablesSyncTest
+    : public SingleClientValuableSyncTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, SyncTest::SetupSyncMode>> {
  public:
   SingleClientValuablesSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         autofill::features::kAutofillEnableLoyaltyCardsFilling,
         syncer::kSyncAutofillLoyaltyCard};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
     std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
+    if (IsValuablesInProfileDBEnabled()) {
       enabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
     } else {
       disabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
@@ -194,6 +217,12 @@ class SingleClientValuablesSyncTest : public SingleClientValuableSyncTestBase,
   }
 
   ~SingleClientValuablesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsValuablesInProfileDBEnabled() const { return std::get<0>(GetParam()); }
 };
 
 // Valuables data should get loaded on initial sync.
@@ -240,12 +269,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
   EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Enter sync paused state, the data & metadata should be gone.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  EnterSyncPausedStateForPrimaryAccount();
   WaitForNumberOfLoyaltyCards(0, vdm);
   EXPECT_EQ(0uL, vdm->GetLoyaltyCards().size());
 
   // When exiting the sync paused state, the data should be redownloaded.
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ExitSyncPausedStateForPrimaryAccount();
   WaitForNumberOfLoyaltyCards(1, vdm);
   EXPECT_EQ(1uL, vdm->GetLoyaltyCards().size());
 }
@@ -307,20 +336,27 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SingleClientValuablesSyncTest,
-    testing::Bool(),
+    testing::Combine(testing::Bool(), GetSyncTestModes()),
     [](const testing::TestParamInfo<SingleClientValuablesSyncTest::ParamType>&
            info) {
-      return info.param ? "ValuablesInProfileDB" : "ValuablesInAccountDB";
+      return base::StrCat({std::get<0>(info.param) ? "ValuablesInProfileDB"
+                                                   : "ValuablesInAccountDB",
+                           testing::PrintToString(std::get<1>(info.param))});
     });
 
 // DB migration tests for valuables.
 class MigrateValuableDatabasesSyncTest
-    : public SingleClientValuableSyncTestBase {
+    : public SingleClientValuableSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   MigrateValuableDatabasesSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         autofill::features::kAutofillEnableLoyaltyCardsFilling,
         syncer::kSyncAutofillLoyaltyCard};
+
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
 
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetTestPreCount() == 0 || GetTestPreCount() == 2) {
@@ -339,6 +375,10 @@ class MigrateValuableDatabasesSyncTest
   }
   ~MigrateValuableDatabasesSyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
  protected:
   const LoyaltyCard loyalty_card1_ = CreateLoyaltyCard();
   const LoyaltyCard loyalty_card2_ = CreateLoyaltyCard2();
@@ -346,7 +386,7 @@ class MigrateValuableDatabasesSyncTest
 
 // With `kSyncMoveValuablesToProfileDb` disabled, valuables are loaded normally
 // from the account DB.
-IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
+IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest,
                        PRE_PRE_MigrateValuablesDB) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(SetupSync());
@@ -361,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
 // With `kSyncMoveValuablesToProfileDb` enabled, valuables storage is migrated
 // to the profile DB. The DB starts fresh and sync downloads the latest set of
 // valuables.
-IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
+IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest,
                        PRE_MigrateValuablesDB) {
   ASSERT_TRUE(SetupClients());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
@@ -374,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
 
 // With `kSyncMoveValuablesToProfileDb` disabled again, valuables are loaded
 // from the account DB again.
-IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest, MigrateValuablesDB) {
+IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest, MigrateValuablesDB) {
   ASSERT_TRUE(SetupClients());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -384,18 +424,31 @@ IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest, MigrateValuablesDB) {
               UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         MigrateValuableDatabasesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 class SingleClientEntityValuablesSyncTest
-    : public SingleClientValuableSyncTestBase {
+    : public SingleClientValuableSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientEntityValuablesSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         syncer::kSyncAutofillLoyaltyCard, syncer::kSyncMoveValuablesToProfileDb,
         syncer::kSyncWalletFlightReservations,
         syncer::kSyncWalletVehicleRegistrations};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   ~SingleClientEntityValuablesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
   EntityDataManager* GetEntityDataManager(int index) {
     return AutofillEntityDataManagerFactory::GetForProfile(
         test()->GetProfile(index));
@@ -412,7 +465,7 @@ class SingleClientEntityValuablesSyncTest
 };
 
 // Entities data should get loaded on initial sync.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, InitialSync) {
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, InitialSync) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
@@ -430,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, InitialSync) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Wallet entities should get cleared from the entity database when the user
 // signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
@@ -451,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
 
 // Wallet should get cleared from the database when the user enters the
 // sync paused state (e.g. persistent auth error).
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
@@ -464,19 +517,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
   EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Enter sync paused state, the data & metadata should be gone.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  EnterSyncPausedStateForPrimaryAccount();
   WaitForNumberOfEntityInstancesCards(0, edm);
   EXPECT_EQ(0uL, edm->GetEntityInstances().size());
 
   // When exiting the sync paused state, the data should be redownloaded.
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ExitSyncPausedStateForPrimaryAccount();
   WaitForNumberOfEntityInstancesCards(2, edm);
   EXPECT_EQ(2uL, edm->GetEntityInstances().size());
 }
 
 // Valuables are not using incremental updates. Make sure existing entities gets
 // replaced when synced down.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
@@ -502,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 
 // Wallet entities should get cleared from the entity database when the user
 // disables payments sync.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        ClearOnDisablePaymentsSync) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
@@ -524,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 }
 
 // Verifies that local entities are never uploaded to the sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        NotUploadLocalEntity) {
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
@@ -538,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 
 // Verifies that a new wallet entity created locally is successfully uploaded to
 // the sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        UploadWalletEntity) {
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
@@ -564,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 
 // Verifies that updating an existing wallet entity locally correctly propagates
 // that update to the sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        UploadAndUpdateWalletEntity) {
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
@@ -584,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 
 // Verifies that simultaneous local and remote changes are applied consistently.
 // In this case, both updates are complementary. No common entity is affected.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        SimultaneousLocalAndRemoteChangeNoCommonEntity) {
   const EntityInstance initial_vehicle =
       GetServerVehicleEntityInstanceWithRandomGuid();
@@ -626,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 // Verifies that simultaneous local and remote changes are applied consistently.
 // In this case, a local update is applied even if the same entity is received
 // via a server update.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        SimultaneousLocalAndRemoteChangeCommonEntityNoConflict) {
   const EntityInstance server_vehicle = GetServerVehicleEntityInstance();
   GetFakeServer()->SetValuableData(
@@ -662,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
 // Verifies that simultaneous local and remote changes are applied consistently.
 // In this case, conflicting updated versions of the same entity are received
 // from the server and updated locally. The server entity must prevail.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientEntityValuablesSyncTest,
     SimultaneousLocalAndRemoteChangeCommonEntityWithConflict) {
   const EntityInstance server_vehicle = GetServerVehicleEntityInstance();
@@ -697,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies that server updates override client entities.
-IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        ServerOverridesClientChanges) {
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
@@ -726,5 +779,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
   EXPECT_THAT(edm->GetEntityInstances(),
               UnorderedElementsAre(server_vehicle, server_flight));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientEntityValuablesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 }  // namespace
