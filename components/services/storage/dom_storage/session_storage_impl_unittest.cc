@@ -920,7 +920,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
       base::BindOnce([](DomStorageDatabaseLevelDB& db) {
         std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
             db.CreateBatchOperation();
-        batch->DeletePrefixed(StringViewToUint8Vector("map"));
+        EXPECT_TRUE(batch->DeletePrefixed(StringViewToUint8Vector("map")).ok());
         EXPECT_TRUE(batch->Commit().ok());
         return 0;
       }),

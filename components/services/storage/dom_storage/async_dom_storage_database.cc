@@ -180,7 +180,10 @@ void AsyncDomStorageDatabase::InitiateCommit() {
               }
 
               if (commit.clear_all_first) {
-                batch->DeletePrefixed(commit.prefix);
+                DbStatus status = batch->DeletePrefixed(commit.prefix);
+                if (!status.ok()) {
+                  return status;
+                }
               }
               for (const auto& entry : commit.entries_to_add) {
                 batch->Put(entry.key, entry.value);
@@ -189,8 +192,11 @@ void AsyncDomStorageDatabase::InitiateCommit() {
                 batch->Delete(key);
               }
               if (commit.copy_to_prefix) {
-                batch->CopyPrefixed(commit.prefix,
-                                    commit.copy_to_prefix.value());
+                DbStatus status = batch->CopyPrefixed(
+                    commit.prefix, commit.copy_to_prefix.value());
+                if (!status.ok()) {
+                  return status;
+                }
               }
             }
             return batch->Commit();

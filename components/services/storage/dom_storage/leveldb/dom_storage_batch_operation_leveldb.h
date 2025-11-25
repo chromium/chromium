@@ -32,9 +32,9 @@ class DomStorageBatchOperationLevelDB {
 
   void Put(KeyView key, ValueView value);
   void Delete(KeyView key);
-  DbStatus DeletePrefixed(KeyView prefix);
-  DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix);
-  DbStatus Commit();
+  [[nodiscard]] DbStatus DeletePrefixed(KeyView prefix);
+  [[nodiscard]] DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix);
+  [[nodiscard]] DbStatus Commit();
   size_t ApproximateSizeForMetrics() const;
 
  private:

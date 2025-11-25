@@ -189,7 +189,7 @@ void SessionStorageMetadata::DeleteNamespace(
          DomStorageBatchOperationLevelDB& batch,
          const DomStorageDatabaseLevelDB& db) {
         for (const auto& prefix : prefixes_to_delete)
-          batch.DeletePrefixed(prefix);
+          std::ignore = batch.DeletePrefixed(prefix);
       },
       std::move(prefixes_to_delete)));
 }
@@ -225,7 +225,7 @@ void SessionStorageMetadata::DeleteArea(
          const DomStorageDatabaseLevelDB& db) {
         batch.Delete(area_key);
         for (const auto& prefix : prefixes_to_delete)
-          batch.DeletePrefixed(prefix);
+          std::ignore = batch.DeletePrefixed(prefix);
       },
       area_key, std::move(prefixes_to_delete)));
 }

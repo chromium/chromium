@@ -290,7 +290,10 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
 
   for (const blink::StorageKey& storage_key : storage_keys) {
     // Erase all map key/value pairs.
-    batch->DeletePrefixed(GetMapPrefix(storage_key));
+    DbStatus status = batch->DeletePrefixed(GetMapPrefix(storage_key));
+    if (!status.ok()) {
+      return status;
+    }
 
     // Erase the "METAACCESS:" entry.
     batch->Delete(CreateAccessMetaDataKey(storage_key));
