@@ -830,17 +830,12 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
 
   void BeforeTargetProcessCreateOnCreationThread(
       const void* trace_id) override {
-    int active_threads = ++creation_threads_in_use_;
-    base::UmaHistogramCounts100("MPArch.ChildProcessLaunchActivelyInParallel",
-                                active_threads);
-
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "TargetProcess::Create",
                                       trace_id);
   }
 
   void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                 DWORD process_id) override {
-    creation_threads_in_use_--;
     TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
                                     trace_id, "pid", process_id);
   }
@@ -854,12 +849,6 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
     UMA_HISTOGRAM_SPARSE("Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode",
                          last_error);
   }
-
- private:
-  // When parallel launching is enabled, target creation will happen on the
-  // thread pool. This is atomic to keep track of the number of threads that are
-  // currently creating processes.
-  std::atomic<int> creation_threads_in_use_ = 0;
 };
 
 // static
