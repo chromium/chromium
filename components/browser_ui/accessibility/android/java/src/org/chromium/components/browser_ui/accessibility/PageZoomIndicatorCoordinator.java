@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.function.Supplier;
 
@@ -161,7 +162,6 @@ public class PageZoomIndicatorCoordinator {
      */
     @SuppressWarnings("WrongConstant")
     private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
-        assert mView != null : "View is null.";
         AccessibilityEvent event =
                 AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         if (isShowing) {
@@ -170,8 +170,6 @@ public class PageZoomIndicatorCoordinator {
             event.setContentChangeTypes(
                     AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
         }
-        if (mView.getParent() != null) {
-            mView.getParent().requestSendAccessibilityEvent(mView, event);
-        }
+        AccessibilityState.sendAccessibilityEvent(event);
     }
 }
