@@ -174,6 +174,23 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testOnProfileAvailable_tracksProfileChanges() {
+        // Start with a default state.
+        mCoordinator.setMediatorForTesting(null);
+
+        doReturn(/* nativeInstance= */ 1L).when(mComposeboxController).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        assertNotNull(mCoordinator.getMediatorForTesting());
+        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
+
+        mCoordinator.setMediatorForTesting(null);
+        mProfileSupplier.set(mock(Profile.class));
+        assertNotNull(mCoordinator.getMediatorForTesting());
+        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_mediatorNotInitialized() {
         // Case where the Profile is not initialized, or the Bridge was not instantiated.
         mCoordinator.setMediatorForTesting(null);

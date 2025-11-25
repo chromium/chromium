@@ -13,9 +13,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -61,6 +61,8 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     private TemplateUrlService mTemplateUrlService;
     private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
             new ObservableSupplierImpl<>(false);
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
 
     public FuseboxCoordinator(
             Context context,
@@ -74,6 +76,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                     autocompleteRequestTypeSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
+        mProfileSupplier = profileObservableSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
 
@@ -120,13 +123,16 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
-        new OneShotCallback<>(profileObservableSupplier, this::onProfileAvailable);
+        mProfileSupplier.addObserver(mProfileObserver);
     }
 
     @VisibleForTesting
     void onProfileAvailable(Profile profile) {
         // Reset previous Mediator instance in case we migrate to continuous Profile observing.
-        mMediator = null;
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
+        }
 
         mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
         AutocompleteController.getForProfile(profile)
@@ -150,6 +156,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     }
 
     public void destroy() {
+        mProfileSupplier.removeObserver(mProfileObserver);
         if (mMediator != null) {
             mMediator.destroy();
             mMediator = null;
