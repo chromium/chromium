@@ -292,12 +292,16 @@ void DirectoryImpl::ReadEntireFile(const std::string& raw_path,
   }
 
   std::vector<uint8_t> contents;
-  const int kBufferSize = 1 << 16;
-  auto buf = base::HeapArray<char>::Uninit(kBufferSize);
-  int len;
-  while ((len = UNSAFE_TODO(
-              base_file.ReadAtCurrentPos(buf.data(), kBufferSize))) > 0) {
-    contents.insert(contents.end(), buf.data(), UNSAFE_TODO(buf.data() + len));
+  constexpr int kBufferSize = 1 << 16;
+  auto buf = base::HeapArray<uint8_t>::Uninit(kBufferSize);
+  while (true) {
+    std::optional<size_t> bytes_read =
+        base_file.ReadAtCurrentPos(buf.as_span());
+    if (bytes_read.value_or(0) == 0) {
+      break;
+    }
+    base::span<const uint8_t> bytes = buf.first(bytes_read.value());
+    contents.insert(contents.end(), bytes.begin(), bytes.end());
   }
 
   std::move(callback).Run(base::File::Error::FILE_OK, contents);
