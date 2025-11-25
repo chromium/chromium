@@ -59,6 +59,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) Geoposition {
 
   // See enum above.
   Status status;
+
+  bool operator==(const Geoposition&) const = default;
 };
 
 }  // namespace ash

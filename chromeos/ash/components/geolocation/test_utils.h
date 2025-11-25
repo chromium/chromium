@@ -216,10 +216,13 @@ class FakeNetworkDelegate : public GeolocationHandler {
   bool GetWifiAccessPoints(WifiAccessPointVector* access_points,
                            int64_t* age_ms) override;
 
-  // Add single Wifi scan.
-  void AddWifiAP();
-  // Add single Cell Tower scan.
-  void AddCellTower();
+  // Add/remove a `WifiAccessPoint` to the scan data.
+  void AddWifiAP(const WifiAccessPoint wifi_ap);
+  bool RemoveWifiAP(const WifiAccessPoint wifi_ap);
+
+  // Add/remove a `CellTower` to the scan data.
+  void AddCellTower(const CellTower cell_tower);
+  bool RemoveCellTower(const CellTower cell_tower);
 
  private:
   WifiAccessPointVector wifi_aps_;

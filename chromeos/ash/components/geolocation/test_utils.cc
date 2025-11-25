@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
+#include "chromeos/ash/components/network/network_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -131,24 +132,18 @@ bool FakeNetworkDelegate::GetWifiAccessPoints(
   return true;
 }
 
-void FakeNetworkDelegate::AddWifiAP() {
-  WifiAccessPoint wifi_ap;
-  wifi_ap.channel = 1;
-  wifi_ap.mac_address = "01:00:00:00:00:00";
-  wifi_ap.signal_strength = 10;
-  wifi_ap.signal_to_noise = 0;
-
+void FakeNetworkDelegate::AddWifiAP(const WifiAccessPoint wifi_ap) {
   wifi_aps_.emplace_back(std::move(wifi_ap));
 }
+bool FakeNetworkDelegate::RemoveWifiAP(const WifiAccessPoint wifi_ap) {
+  return std::erase(wifi_aps_, wifi_ap);
+}
 
-void FakeNetworkDelegate::AddCellTower() {
-  CellTower cell_tower;
-  cell_tower.ci = base::NumberToString(1);
-  cell_tower.lac = base::NumberToString(3);
-  cell_tower.mcc = base::NumberToString(100);
-  cell_tower.mnc = base::NumberToString(101);
-
+void FakeNetworkDelegate::AddCellTower(const CellTower cell_tower) {
   cell_towers_.emplace_back(std::move(cell_tower));
+}
+bool FakeNetworkDelegate::RemoveCellTower(const CellTower cell_tower) {
+  return std::erase(cell_towers_, cell_tower);
 }
 
 }  // namespace ash::geolocation::test_utils

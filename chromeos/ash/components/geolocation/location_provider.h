@@ -25,6 +25,8 @@ class LocationFetcher;
 // Concrete strategy implementations include:
 // * LiveLocationProvider: Delivers real-time (live) location data for every
 // request.
+// * CachedLocationProvider: Serves cached location data when validity criteria
+// are met, to prevent excessive Geolocation API usage.
 class LocationProvider {
  public:
   // Called when a new geolocation information is available.

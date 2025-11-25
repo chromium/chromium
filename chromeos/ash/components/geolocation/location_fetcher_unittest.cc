@@ -30,6 +30,29 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(1);
 constexpr base::TimeDelta kRetryDelay = base::Milliseconds(10);
 
+WifiAccessPoint GetTestWifiAp() {
+  WifiAccessPoint wifi_ap;
+  wifi_ap.ssid = "ssid_0";
+  wifi_ap.mac_address = "01:00:00:00:00:00";
+  wifi_ap.timestamp = base::Time();
+  wifi_ap.signal_strength = 10;
+  wifi_ap.signal_to_noise = 0;
+  wifi_ap.channel = 1;
+
+  return wifi_ap;
+}
+
+CellTower GetTestCellTower() {
+  CellTower cell_tower;
+  cell_tower.mcc = base::NumberToString(100);
+  cell_tower.mnc = base::NumberToString(101);
+  cell_tower.lac = base::NumberToString(3);
+  cell_tower.ci = base::NumberToString(1);
+  cell_tower.timestamp = base::Time();
+
+  return cell_tower;
+}
+
 }  // namespace
 
 class LocationFetcherTest : public testing::Test {
@@ -67,8 +90,8 @@ class LocationFetcherTest : public testing::Test {
         retry_interval);
   }
 
-  void AddWifiAP() { network_delegate.AddWifiAP(); }
-  void AddCellTower() { network_delegate.AddCellTower(); }
+  void AddWifiAP() { network_delegate.AddWifiAP(GetTestWifiAp()); }
+  void AddCellTower() { network_delegate.AddCellTower(GetTestCellTower()); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
