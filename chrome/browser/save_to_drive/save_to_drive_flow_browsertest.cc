@@ -47,14 +47,12 @@ namespace save_to_drive {
 namespace {
 
 AccountInfo CreateAccountInfo(bool is_managed) {
-  AccountInfo account_info;
-  account_info.email = "test@mail.com";
-  account_info.gaia = GaiaId("1234567890");
-  account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
+  AccountInfo::Builder builder(GaiaId("123456789"), "test@mail.com");
+  builder.SetAccountId(CoreAccountId::FromGaiaId(GaiaId("123456789")));
   if (is_managed) {
-    account_info.hosted_domain = "mail.com";
+    builder.SetHostedDomain("mail.com");
   }
-  return account_info;
+  return builder.Build();
 }
 
 }  // namespace
@@ -242,7 +240,8 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
   AccountInfo account_info = CreateAccountInfo(/*is_managed=*/false);
-  account_info.hosted_domain = "example.com";
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
   SimulateAccountChooserAction(std::move(account_info));
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
