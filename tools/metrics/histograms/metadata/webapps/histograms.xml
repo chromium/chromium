@@ -2925,7 +2925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallApi.InstallType" enum="WebInstallApiType"
-    expires_after="2026-01-01">
+    expires_after="2026-06-02">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -2936,7 +2936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallApi.Result" enum="WebInstallApiResult"
-    expires_after="2026-01-01">
+    expires_after="2026-06-02">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
