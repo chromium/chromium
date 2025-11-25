@@ -4,9 +4,13 @@
 
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
+#include <ranges>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -25,7 +29,6 @@ namespace media {
 
 namespace {
 
-constexpr char kMjpegFrameFile[] = "one_frame_1280x720.mjpeg";
 class MockV4l2GpuClient : public VideoCaptureDevice::Client {
  public:
   void OnIncomingCapturedData(const uint8_t* data,
@@ -147,30 +150,16 @@ class V4l2CaptureDelegateGpuHelperTest
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(nullptr);
   }
 
-  std::unique_ptr<std::vector<uint8_t>> ReadSampleData(
-      VideoCaptureFormat format) {
-    std::unique_ptr<std::vector<uint8_t>> sample =
-        std::make_unique<std::vector<uint8_t>>();
+  std::vector<uint8_t> ReadSampleData(VideoCaptureFormat format) {
     if (format.pixel_format == VideoPixelFormat::PIXEL_FORMAT_MJPEG) {
-      auto file_path = media::GetTestDataFilePath(kMjpegFrameFile);
-      if (!file_path.empty()) {
-        FILE* fp = fopen(file_path.value().c_str(), "rb");
-        if (fp) {
-          fseek(fp, 0, SEEK_END);
-          size_t size = ftell(fp);
-          sample->resize(size);
-          fseek(fp, 0, SEEK_SET);
-          size_t read_size = UNSAFE_TODO(fread(sample->data(), 1, size, fp));
-          EXPECT_EQ(size, read_size);
-          fclose(fp);
-        }
-      }
-    } else {
-      auto size =
-          VideoFrame::AllocationSize(format.pixel_format, format.frame_size);
-      sample->resize(size);
+      auto file_path = media::GetTestDataFilePath("one_frame_1280x720.mjpeg");
+      CHECK(!file_path.empty());
+      return base::ReadFileToBytes(file_path).value();
     }
-    return sample;
+
+    auto size =
+        VideoFrame::AllocationSize(format.pixel_format, format.frame_size);
+    return std::vector<uint8_t>(size);
   }
 
  protected:
@@ -185,11 +174,11 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidClient) {
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat capture_format = VideoCaptureFormat(
       gfx::Size(1280, 720), 30.0f, VideoPixelFormat::PIXEL_FORMAT_YUY2);
-  std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
+  std::vector<uint8_t> sample = ReadSampleData(capture_format);
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      nullptr, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      nullptr, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
   EXPECT_NE(status, 0);
 }
 
@@ -200,13 +189,11 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat capture_format = VideoCaptureFormat(
       gfx::Size(1280, 720), 30.0f, VideoPixelFormat::PIXEL_FORMAT_MJPEG);
-  std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
+  std::vector<uint8_t> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
-  if (sample) {
-    // corrupt the sample data
-    std::fill(sample->begin(), sample->end(), 0xff);
-  }
+  // corrupt the sample data
+  std::ranges::fill(sample, 0xff);
 
   EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
@@ -226,8 +213,8 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
       });
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      &client, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      &client, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
   EXPECT_NE(status, 0);
 }
 
@@ -237,7 +224,7 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsReserveOutputBufferErr) {
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat capture_format = VideoCaptureFormat(
       gfx::Size(1280, 720), 30.0f, VideoPixelFormat::PIXEL_FORMAT_YUY2);
-  std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
+  std::vector<uint8_t> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
   EXPECT_CALL(client, ReserveOutputBuffer)
@@ -256,8 +243,8 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsReserveOutputBufferErr) {
       });
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      &client, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      &client, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
   EXPECT_NE(status, 0);
 }
 
@@ -268,7 +255,7 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidSharedImageInterface) {
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat capture_format = VideoCaptureFormat(
       gfx::Size(1280, 720), 30.0f, VideoPixelFormat::PIXEL_FORMAT_YUY2);
-  std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
+  std::vector<uint8_t> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
   EXPECT_CALL(client, ReserveOutputBuffer)
@@ -291,8 +278,8 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidSharedImageInterface) {
       });
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      &client, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      &client, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
   EXPECT_NE(status, 0);
 }
 
@@ -302,7 +289,7 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat capture_format = VideoCaptureFormat(
       gfx::Size(1280, 720), 30.0f, VideoPixelFormat::PIXEL_FORMAT_YUY2);
-  std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
+  std::vector<uint8_t> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
   EXPECT_CALL(client, ReserveOutputBuffer)
@@ -321,8 +308,8 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
       .WillRepeatedly(InvokeWithoutArgs([]() {}));
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      &client, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      &client, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
 
   EXPECT_EQ(status, 0);
 }
@@ -332,8 +319,7 @@ TEST_P(V4l2CaptureDelegateGpuHelperTest, SuccessConvertWithCaptureParam) {
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;
   const VideoCaptureFormat& capture_format = GetParam();
-  const std::unique_ptr<std::vector<uint8_t>> sample =
-      ReadSampleData(capture_format);
+  const std::vector<uint8_t> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
   EXPECT_CALL(client, ReserveOutputBuffer)
@@ -352,8 +338,8 @@ TEST_P(V4l2CaptureDelegateGpuHelperTest, SuccessConvertWithCaptureParam) {
       .WillRepeatedly(InvokeWithoutArgs([]() {}));
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
-      &client, sample->data(), sample->size(), capture_format,
-      gfx::ColorSpace(), kRotation, reference_time, timestamp);
+      &client, sample.data(), sample.size(), capture_format, gfx::ColorSpace(),
+      kRotation, reference_time, timestamp);
   EXPECT_EQ(status, 0);
 }
 
