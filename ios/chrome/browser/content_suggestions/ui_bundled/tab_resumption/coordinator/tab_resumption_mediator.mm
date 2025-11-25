@@ -922,7 +922,10 @@ class TabResumptionMediatorProxy {
                 decisions) {
             ConfigureTabResumptionItemForShopCard(decisions, item, url);
             // Fetch the favicon.
-            [weakSelf fetchImageForItem:item];
+            web::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE, base::BindOnce(^{
+                  [weakSelf fetchImageForItem:item];
+                }));
           }));
 }
 
@@ -987,15 +990,19 @@ class TabResumptionMediatorProxy {
           return;
         }
 
-        if (item.shopCardData.productImageURL.has_value()) {
-          [strongSelf salientImageURLReceived:GURL(item.shopCardData
-                                                       .productImageURL.value())
-                                      forItem:item
-                                  updateImage:YES];
-        } else {
-          [strongSelf.itemConfig reconfigureWithItem:item];
-          [strongSelf->_consumer shopCardDataCompleted:item];
-        }
+        web::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(^{
+              if (item.shopCardData.productImageURL.has_value()) {
+                [strongSelf
+                    salientImageURLReceived:GURL(item.shopCardData
+                                                     .productImageURL.value())
+                                    forItem:item
+                                updateImage:YES];
+              } else {
+                [strongSelf.itemConfig reconfigureWithItem:item];
+                [strongSelf->_consumer shopCardDataCompleted:item];
+              }
+            }));
       }));
 }
 
@@ -1094,7 +1101,9 @@ class TabResumptionMediatorProxy {
 // Fetches the favicon for `item`.
 - (void)fetchFaviconForItem:(TabResumptionItem*)item {
   __weak TabResumptionMediator* weakSelf = self;
-
+  if (!_faviconLoader) {
+    return;
+  }
   _faviconLoader->FaviconForPageUrl(
       item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true,
