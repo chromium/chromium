@@ -12,6 +12,8 @@
 // NOLINT(build/header_guard)
 // no-include-guard-because-multiply-included
 
+#include "build/branding_buildflags.h"
+
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
 #error "LINK_RESOURCE_ID should be defined before including this file"
@@ -56,8 +58,21 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA_OLD, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
-// TODO(crbug.com/438784697): update the resource id once the internal assets
-// access is added.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM, R.drawable.googlepay_affirm)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK,
+                 R.drawable.googlepay_affirm_dark)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY,
+                 R.drawable.googlepay_afterpay)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY_DARK,
+                 R.drawable.googlepay_afterpay_dark)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA, R.drawable.googlepay_klarna)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK,
+                 R.drawable.googlepay_klarna_dark)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP, R.drawable.googlepay_zip)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK,
+                 R.drawable.googlepay_zip_dark)
+#else
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM, R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK,
                  R.drawable.bnpl_icon_generic)
@@ -69,6 +84,7 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK,
                  R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP, R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, R.drawable.bnpl_icon_generic)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_LINKED, R.drawable.klarna_linked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_UNLINKED, R.drawable.klarna_unlinked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_BNPL_GENERIC,

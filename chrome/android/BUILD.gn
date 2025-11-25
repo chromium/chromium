@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/cronet/config.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
@@ -260,6 +261,10 @@ if (_is_default_toolchain) {
       deps += [ "//clank/components/plus_addresses:java_resources" ]
     } else {
       deps += [ "//components/plus_addresses/android:java_resources" ]
+    }
+
+    if (is_chrome_branded && defined(autofill_payments_resource_target)) {
+      deps += [ autofill_payments_resource_target ]
     }
 
     if (enable_screen_capture) {
