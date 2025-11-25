@@ -163,7 +163,9 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
 
   if (!surface_) {
     const auto info = info_.makeAlphaType(kPremul_SkAlphaType);
-    const auto props = GetSkSurfaceProps();
+    const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
+    const auto props =
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
     surface_ = SkSurfaces::Raster(info, &props);
     if (!surface_) {
       return nullptr;
