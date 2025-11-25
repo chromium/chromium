@@ -405,8 +405,10 @@ void ToolbarView::Init() {
   }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      (contextual_tasks::kShowEntryPoint.Get() ==
-       contextual_tasks::EntryPointOption::kToolbarPermanent)) {
+      ((contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kToolbarPermanent) ||
+       (contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kToolbarRevisit))) {
     container_view_->AddChildView(
         std::make_unique<ContextualTasksButton>(browser_));
   }

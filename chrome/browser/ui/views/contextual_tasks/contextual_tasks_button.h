@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_BUTTON_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/prefs/pref_member.h"
@@ -25,8 +26,10 @@ class ContextualTasksButton : public ToolbarButton {
  private:
   void OnButtonPress();
   void OnPinStateChanged();
+  void OnShouldUpdateVisibility(bool should_show);
 
   BooleanPrefMember pin_state_;
+  base::CallbackListSubscription should_update_visibility_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 };
 

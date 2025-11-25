@@ -74,6 +74,7 @@ source_set("internal") {
       "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/interaction:impl",
       "//chrome/browser/ui/views/location_bar/cookie_controls",

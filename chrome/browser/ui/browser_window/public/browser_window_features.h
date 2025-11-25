@@ -48,6 +48,7 @@ class ColorProviderBrowserHelper;
 class LocationBar;
 class CommentsSidePanelCoordinator;
 class ContentsBorderController;
+class ContextualTasksEphemeralButtonController;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
@@ -628,6 +629,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<session_restore_infobar::SessionRestoreInfobarController>
       session_restore_infobar_controller_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  std::unique_ptr<ContextualTasksEphemeralButtonController>
+      contextual_tasks_ephemeral_button_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 

@@ -7,6 +7,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("contextual_tasks") {
   sources = [
     "contextual_tasks_button.h",
+    "contextual_tasks_ephemeral_button_controller.h",
     "contextual_tasks_page_action_controller.h",
   ]
 
@@ -20,6 +21,7 @@ source_set("contextual_tasks") {
 source_set("impl") {
   sources = [
     "contextual_tasks_button.cc",
+    "contextual_tasks_ephemeral_button_controller.cc",
     "contextual_tasks_page_action_controller.cc",
   ]
 
