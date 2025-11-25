@@ -433,5 +433,8 @@ TEST_P(ActionChipsHandlerStaticChipsTest,
   EXPECT_THAT(actual_chips, ElementsAreArray(matchers));
   EXPECT_THAT(histogram_tester_.GetAllSamples("NewTabPage.ActionChips.Shown"),
               BucketsAreArray(expected_buckets));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency",
+      total_calls);
 }
 }  // namespace

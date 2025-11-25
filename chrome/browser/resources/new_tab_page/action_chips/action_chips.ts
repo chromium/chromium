@@ -4,10 +4,12 @@
 import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter, TabInfo} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
+import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
@@ -21,6 +23,11 @@ namespace ActionChipsConstants {
 function recordClick(chipType: ChipType) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.ActionChips.Click', chipType, ChipType.MAX_VALUE + 1);
+}
+
+// Records a latency metric.
+function recordLatency(metricName: string, latency: number) {
+  chrome.metricsPrivate.recordTime(metricName, Math.round(latency));
 }
 
 /**
@@ -64,6 +71,7 @@ export class ActionChipsElement extends CrLitElement {
   private callbackRouter: PageCallbackRouter;
   protected accessor actionChips_: ActionChip[] = [];
   private onActionChipChangedListenerId_: number|null = null;
+  private initialLoadStartTime_: number|null = null;
 
   private delayTabUploads_: boolean =
       loadTimeData.getBoolean('addTabUploadDelayOnActionChipClick');
@@ -102,6 +110,7 @@ export class ActionChipsElement extends CrLitElement {
     const proxy = ActionChipsApiProxyImpl.getInstance();
     this.handler = proxy.getHandler();
     this.callbackRouter = proxy.getCallbackRouter();
+    this.initialLoadStartTime_ = WindowProxy.getInstance().now();
   }
 
   override connectedCallback() {
@@ -123,6 +132,18 @@ export class ActionChipsElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter.removeListener(this.onActionChipChangedListenerId_!);
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    // Records only the first load latency after rendering chips.
+    if (this.initialLoadStartTime_ !== null && this.actionChips_.length > 0) {
+      recordLatency(
+          'NewTabPage.ActionChips.WebUI.InitialLoadLatency',
+          WindowProxy.getInstance().now() - this.initialLoadStartTime_);
+      this.initialLoadStartTime_ = null;
+    }
   }
 
   protected onCreateImageClick_() {

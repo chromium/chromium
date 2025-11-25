@@ -114,11 +114,36 @@ chromium-metrics-reviews@google.com.
   <summary>Logged when any Action Chips was clicked by the user.</summary>
 </histogram>
 
+<histogram name="NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency"
+    units="ms" expires_after="2026-05-01">
+  <owner>giannich@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The time it took for the handler to generate the Action Chips in
+    milliseconds. This measurement is taken whenever there is a call to build
+    and return the Action Chips, whether due to loading the NTP for the first
+    time or due to subsequent user browsing and navigation.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ActionChips.Shown" enum="ChipType"
     expires_after="2026-05-01">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when any Action Chips was shown to the user.</summary>
+</histogram>
+
+<histogram name="NewTabPage.ActionChips.WebUI.InitialLoadLatency" units="ms"
+    expires_after="2026-05-01">
+  <owner>giannich@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The time it took for the Action Chips to initially load on the WebUI in
+    milliseconds, from the start of the NTP load until they are fully rendered.
+    This measurement is only taken during the first time the Action Chips are
+    rendered on the NTP; any subsequent updates to the Action Chips on the same
+    NTP due to user navigation are not measured.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
