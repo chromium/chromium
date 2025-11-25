@@ -178,8 +178,13 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 }
 
 - (BadgeButton*)overflowBadgeButton {
-  UIImage* image = DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
-                                              [self infoBarSymbolPointSize]);
+  NSString* symbolName = IsProactiveSuggestionsFrameworkEnabled()
+                             ? kEllipsisSymbol
+                             : kEllipsisCircleFillSymbol;
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(symbolName, [self infoBarSymbolPointSize]);
+
   if (IsProactiveSuggestionsFrameworkEnabled()) {
     image = [image imageWithTintColor:[UIColor whiteColor]
                         renderingMode:UIImageRenderingModeAlwaysOriginal];

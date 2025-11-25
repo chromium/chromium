@@ -186,6 +186,7 @@ extern NSString* const kMagnifyingglassSymbol;
 extern NSString* const kMagnifyingglassCircleSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kEllipsisRectangleSymbol;
+extern NSString* const kEllipsisSymbol;
 extern NSString* const kPinSymbol;
 extern NSString* const kPinSlashSymbol;
 extern NSString* const kSettingsSymbol;

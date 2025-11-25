@@ -188,6 +188,7 @@ NSString* const kMagnifyingglassSymbol = @"magnifyingglass";
 NSString* const kMagnifyingglassCircleSymbol = @"magnifyingglass.circle";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kEllipsisRectangleSymbol = @"ellipsis.rectangle";
+NSString* const kEllipsisSymbol = @"ellipsis";
 NSString* const kPinSymbol = @"pin";
 NSString* const kPinSlashSymbol = @"pin.slash";
 NSString* const kSettingsSymbol = @"gearshape";
