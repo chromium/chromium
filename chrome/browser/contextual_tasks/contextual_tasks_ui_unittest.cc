@@ -167,8 +167,44 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
               UpdateThreadForTask(task_id.value(), _, thread_id.value(),
                                   Optional(turn_id), Optional(title)))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, task_id.value()))
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(updated_url);
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest,
+       ContextControllerUpdatedOnUrlChange_ThreadChange) {
+  MockTaskInfoDelegate delegate;
+  std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid task_id2 =
+      base::Uuid::ParseCaseInsensitive("20000000-0000-0000-0000-000000000000");
+  std::optional<std::string> thread_id = "5678";
+  std::string thread_id2 = "9876";
+  std::optional<std::string> turn_id = "1234";
+  std::optional<std::string> title = "title";
+
+  SetupMockDelegate(&delegate, task_id, thread_id, title);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      context_controller_.get(), &delegate);
+
+  GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "mstk", "abcd");
+  updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id2);
+
+  EXPECT_CALL(*context_controller_,
+              UpdateThreadForTask(task_id2, _, thread_id2, _, _))
       .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(1);
+
+  ContextualTask task(task_id2);
+  ON_CALL(*context_controller_, CreateTaskFromUrl(_))
+      .WillByDefault(Return(task));
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -197,8 +233,8 @@ TEST_F(ContextualTasksUiTest,
   // UpdateThreadForTask() is not called due to missing thread id.
   EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
       .Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, base::Uuid()))
-      .Times(1);
+  // No task change events should occur.
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -229,8 +265,7 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoTurnId) {
               UpdateThreadForTask(task_id.value(), _, thread_id.value(), _,
                                   Optional(title)))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, task_id.value()))
-      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -314,7 +349,7 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   EXPECT_CALL(*context_controller_,
               UpdateThreadForTask(task_id, _, thread_id, _, Optional(title)))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, task_id)).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -324,12 +359,14 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   observer.reset();
 }
 
-// It's possible to get to the "zero state" of the AI page. Make sure the
-// service is getting informed.
-TEST_F(ContextualTasksUiTest, EmptyTaskCreated_NoThreadId) {
+// The task ID should not change until there's a new thread ID available in the
+// URL.
+TEST_F(ContextualTasksUiTest, TaskUnchangedWithNoThreadId) {
   MockTaskInfoDelegate delegate;
 
-  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  std::string thread_id = "5678";
+  SetupMockDelegate(&delegate, task_id, thread_id, std::nullopt);
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
@@ -337,12 +374,10 @@ TEST_F(ContextualTasksUiTest, EmptyTaskCreated_NoThreadId) {
 
   GURL url(kAiPageUrl);
 
-  // There is no query value and no other information, service is informed
-  // with an invalid task ID.
+  // There is no query value and no other information, the task and thread being
+  // tracked should remain unchanged.
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, base::Uuid()))
-      .Times(1);
-  EXPECT_FALSE(delegate.GetTaskId().has_value());
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -352,32 +387,33 @@ TEST_F(ContextualTasksUiTest, EmptyTaskCreated_NoThreadId) {
   observer.reset();
 }
 
-TEST_F(ContextualTasksUiTest, TaskInfoCleared_NoThreadIdInUrl) {
+// Ensure that a pending task (a task without a thread) is not removed and a
+// new task created when a thread is finally available.
+TEST_F(ContextualTasksUiTest, PendingTaskNoNewTaskCreatedOnNav) {
   MockTaskInfoDelegate delegate;
 
-  // Setup assuming there was some existing thread shown in the UI.
-  SetupMockDelegate(&delegate, base::Uuid::ParseCaseInsensitive(kUuid), "1234",
-                    "5678");
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  SetupMockDelegate(&delegate, task_id, std::nullopt, std::nullopt);
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
       context_controller_.get(), &delegate);
 
   GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "mtid", "5678");
+  url = net::AppendQueryParameter(url, "mstk", "1234");
 
-  // Service will get informed with an invalid Task ID.
+  // There is no query value and no other information, the task and thread being
+  // tracked should remain unchanged.
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, base::Uuid()))
-      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
 
   observer->DidFinishNavigation(nav_handle.get());
 
-  EXPECT_FALSE(delegate.GetTaskId().has_value());
-  EXPECT_FALSE(delegate.GetThreadId().has_value());
-  EXPECT_FALSE(delegate.GetThreadTitle().has_value());
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
 
   observer.reset();
 }

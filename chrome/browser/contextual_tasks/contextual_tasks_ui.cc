@@ -345,38 +345,36 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
-  // Almost everything is keyed off of the thread ID - if one isn't in the URL,
-  // wait until it is. This state also implies the task and thread we're
-  // tracking changed.
   std::string url_thread_id;
   if (!net::GetValueForKeyInQuery(url, "mtid", &url_thread_id)) {
-    task_info_delegate_->SetTaskId(std::nullopt);
-    task_info_delegate_->SetThreadId(std::nullopt);
-    task_info_delegate_->SetThreadTitle(std::nullopt);
-    if (!task_info_delegate_->IsShownInTab() &&
-        task_info_delegate_->GetBrowser()) {
-      ui_service_->OnTaskChangedInPanel(
-          task_info_delegate_->GetBrowser(),
-          task_info_delegate_->GetWebUIWebContents(), base::Uuid());
-    }
     return;
   }
 
   auto webui_thread_id = task_info_delegate_->GetThreadId();
+  bool task_changed = false;
+
+  // Avoid creating a new task if there's a task ID without a thread ID.
+  bool is_pending_task =
+      task_info_delegate_->GetTaskId().has_value() && !webui_thread_id;
 
   // In cases where the webui doesn't know about an existing threaad ID or
   // there's a mismatch, either create a new task or update to use an existing
   // one (if it exists).
-  if (!webui_thread_id || (webui_thread_id.value() != url_thread_id)) {
+  if (!is_pending_task &&
+      (!webui_thread_id || (webui_thread_id.value() != url_thread_id))) {
     // Check if there's an existing task for the thread.
     std::optional<contextual_tasks::ContextualTask> existing_task =
         context_controller_->GetTaskFromServerId(
             contextual_tasks::ThreadType::kAiMode, url_thread_id);
 
     if (existing_task) {
+      task_changed =
+          task_info_delegate_->GetTaskId() &&
+          existing_task.value().GetTaskId() == task_info_delegate_->GetTaskId();
       task_info_delegate_->SetTaskId(existing_task.value().GetTaskId());
       task_info_delegate_->SetThreadTitle(existing_task.value().GetTitle());
     } else {
+      task_changed = true;
       auto task = context_controller_->CreateTaskFromUrl(url);
       task_info_delegate_->SetTaskId(task.GetTaskId());
     }
@@ -402,7 +400,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
 
-  if (!task_info_delegate_->IsShownInTab() &&
+  if (task_changed && !task_info_delegate_->IsShownInTab() &&
       task_info_delegate_->GetBrowser()) {
     ui_service_->OnTaskChangedInPanel(
         task_info_delegate_->GetBrowser(),
