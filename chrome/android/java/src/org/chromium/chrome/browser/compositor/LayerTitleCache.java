@@ -232,8 +232,6 @@ public class LayerTitleCache {
 
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
-        // TODO(crbug.com/331642736): Investigate if this can be called with a different width than
-        //  what is stored for the corresponding group title.
         TabGroupModelFilter filter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
