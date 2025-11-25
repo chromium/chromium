@@ -83,12 +83,10 @@ GlicActorUiTest::GlicActorUiTest() {
        {features::kGlicActorToctouValidation, {}},
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,
-        {}}},
-      /*disabled_features=*/{
-          // TODO(b/454665367): Most GlicActorUiTest tests are broken for
-          // multi-instance. Temporarily disable glic multi-instance.
-          features::kGlicMultiInstance,
-      });
+        {}},
+       {features::kGlicMultiInstance, {}}},
+      /*disabled_features=*/{});
+  SetUseElementIdentifiers(false);
 }
 GlicActorUiTest::~GlicActorUiTest() = default;
 
@@ -113,25 +111,8 @@ content::WebContents* GlicActorUiTest::GetGlicContents() {
 }
 
 content::WebContents* GlicActorUiTest::GetGlicHost(actor::TaskId& task_id) {
-  content::WebContents* host_contents = nullptr;
-
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    actor::ActorKeyedService* service =
-        actor::ActorKeyedService::Get(browser()->profile());
-
-    actor::ActorTask* task = service->GetTask(task_id);
-    glic::GlicInstanceImpl* instance =
-        static_cast<glic::GlicInstanceImpl*>(task->delegate().get());
-    host_contents = instance->host().webui_contents();
-  } else {
-    GlicKeyedService* glic_service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
-    glic::GlicWindowControllerImpl& window_controller =
-        static_cast<glic::GlicWindowControllerImpl&>(
-            glic_service->window_controller());
-    host_contents = window_controller.host().webui_contents();
-  }
-
+  content::WebContents* host_contents = FindGlicWebUIContents();
+  CHECK(host_contents);
   return host_contents;
 }
 
@@ -215,13 +196,10 @@ MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
 
 MultiStep GlicActorUiTest::ExecuteInGlic(
     base::OnceCallback<void(content::WebContents*)> callback) {
-  return InAnyContext(WithElement(
-      kGlicContentsElementId,
-      [callback = std::move(callback)](ui::TrackedElement* el) mutable {
-        content::WebContents* glic_contents =
-            AsInstrumentedWebContents(el)->web_contents();
-        std::move(callback).Run(glic_contents);
-      }));
+  return Steps(Do([this, callback = std::move(callback)]() mutable {
+    content::WebContents* glic_contents = GetGlicContents();
+    std::move(callback).Run(glic_contents);
+  }));
 }
 
 MultiStep GlicActorUiTest::CreateTask(actor::TaskId& out_task,

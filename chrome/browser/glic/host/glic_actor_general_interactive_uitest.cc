@@ -37,7 +37,7 @@ using apc::AnnotatedPageContent;
 class GlicActorGeneralUiTest : public GlicActorUiTest {
  public:
   MultiStep CheckActorTabDataHasAnnotatedPageContentCache();
-  MultiStep OpenDevToolsWindow(ui::ElementIdentifier contents_to_inspect);
+  MultiStep OpenDevToolsWindow();
   MultiStep WaitAction(actor::TaskId& task_id,
                        std::optional<base::TimeDelta> duration,
                        tabs::TabHandle& observe_tab_handle,
@@ -91,15 +91,12 @@ GlicActorGeneralUiTest::CheckActorTabDataHasAnnotatedPageContentCache() {
   }));
 }
 
-MultiStep GlicActorGeneralUiTest::OpenDevToolsWindow(
-    ui::ElementIdentifier contents_to_inspect) {
-  return InAnyContext(
-      WithElement(contents_to_inspect, [](ui::TrackedElement* el) {
-        content::WebContents* contents =
-            AsInstrumentedWebContents(el)->web_contents();
-        DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
-                                                      /*is_docked=*/false);
-      }));
+MultiStep GlicActorGeneralUiTest::OpenDevToolsWindow() {
+  return Steps(Do([this]() {
+    content::WebContents* contents = GetGlicContents();
+    DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
+                                                  /*is_docked=*/false);
+  }));
 }
 
 MultiStep GlicActorGeneralUiTest::WaitAction(
@@ -212,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, StartTaskWithDevtoolsOpen) {
   // Ensure a new tab can be created without crashing when the most recently
   // focused browser window is not a normal tabbed browser (e.g. a DevTools
   // window).
-  RunTestSequence(InitializeWithOpenGlicWindow(),
-                  OpenDevToolsWindow(kGlicContentsElementId),
+  TrackFloatingGlicInstance();
+  RunTestSequence(OpenGlicFloatingWindow(), OpenDevToolsWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId));
 }
 
@@ -292,10 +289,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 
   // clang-format off
   RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+
       // Add an extra tab to ensure that the window's tab list is filled in
       // correctly.
       AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
-      InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
       GetPageContextForActorTab(),
@@ -355,6 +353,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
 
   // clang-format off
   RunTestSequence(
+      // Create a task without taking any actions so as not to add a tab to the
+      // task's acting set.
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      CreateTask(task_id_, ""),
+
       // Add two tabs to ensure the correct tab is being added to the
       // observation result.
       AddInstrumentedTab(kTab1Id, url1),
@@ -373,11 +376,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
                 AsInstrumentedWebContents(el)->web_contents();
             tab2 = tabs::TabInterface::GetFromContents(contents)->GetHandle();
           })),
-
-      // Create a task without taking any actions so as not to add a tab to the
-      // task's acting set.
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      CreateTask(task_id_, ""),
 
       // Wait observing tab1. Ensure tab1 has a TabObservation in the result.
       WaitAction(task_id_, kWaitTime, tab1),

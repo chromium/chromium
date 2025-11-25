@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/i18n/number_formatting.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -54,10 +56,16 @@ class GlicActorDragDSFTest : public GlicActorUiTest,
  public:
   GlicActorDragDSFTest() {
     display::Display::SetForceDeviceScaleFactor(DeviceScaleFactor());
+    // TODO (crbug.com/454665367): This test only fails on Windows when the
+    // Multi-Instance flag is enabled. Needs further investigation as to why.
+    scoped_feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
   }
   ~GlicActorDragDSFTest() override = default;
 
   int DeviceScaleFactor() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure the drag tool sends the expected mouse down, move and up events.

@@ -97,10 +97,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
 
   BrowserWindowInterface* created_window = nullptr;
   SessionID created_window_session_id = SessionID::InvalidValue();
+  TrackFloatingGlicInstance();
 
   // clang-format off
   RunTestSequence(
-      InitializeWithOpenGlicWindow(),
+      OpenGlicFloatingWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       WaitForWebContentsReady(kNewActorTabId, task_url),
       GetPageContextForActorTab(),
