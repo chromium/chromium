@@ -1188,17 +1188,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.GestureTransition.AnimationAbortReason"
-    enum="AnimationAbortReason" expires_after="2025-12-07">
-  <owner>liuwilliam@google.com</owner>
-  <owner>baranerf@google.com</owner>
-  <owner>chrome-seamless-core@google.com</owner>
-  <summary>
-    Counts various reasons causing the gesture transition animation to be
-    aborted. This metric is recorded once per gesture.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
     enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-04-12">
   <owner>liuwilliam@google.com</owner>

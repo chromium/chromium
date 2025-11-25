@@ -58,8 +58,6 @@ using IgnoringInputReason = BackForwardTransitionAnimator::IgnoringInputReason;
 using AnimationAbortReason =
     BackForwardTransitionAnimator::AnimationAbortReason;
 
-static constexpr char kAnimationAbortedReason[] =
-    "Navigation.GestureTransition.AnimationAbortReason";
 static constexpr char kNewCommitInPrimaryMainFrame[] =
     "Navigation.GestureTransition.NewCommitInPrimaryMainFrame";
 static constexpr char kNewCommitWhileDisplayingCanceledAnimation[] =
@@ -417,11 +415,6 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
               "BackForwardTransitionAnimator::~BackForwardTransitionAnimator");
 
   CHECK(IsTerminalState()) << StateToString(state_);
-
-  if (state_ == State::kAnimationFinished) {
-    base::UmaHistogramEnumeration(kAnimationAbortedReason,
-                                  AnimationAbortReason::kAnimationFinished);
-  }
 
   switch (ignoring_input_reason_) {
     case IgnoringInputReason::kAnimationInvokedOccurred: {
@@ -1258,10 +1251,6 @@ void BackForwardTransitionAnimator::OnBeforeUnloadDialogShown(
 
 void BackForwardTransitionAnimator::AbortAnimation(
     AnimationAbortReason abort_reason) {
-  TRACE_EVENT("browser,navigation",
-              "BackForwardTransitionAnimator::AbortAnimation", "abort_reason",
-              AnimationAbortReasonToString(abort_reason));
-  base::UmaHistogramEnumeration(kAnimationAbortedReason, abort_reason);
   abort_reason_ = abort_reason;
   AdvanceAndProcessState(State::kAnimationAborted);
 }

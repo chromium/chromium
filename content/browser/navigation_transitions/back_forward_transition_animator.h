@@ -131,8 +131,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // Indicates the animation abort reason for UMA metrics.
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. Upon adding a new value, add it
-  // to `tools/metrics/histograms/metadata/navigation/enums.xml` as well.
+  // numeric values should never be reused.
   enum class AnimationAbortReason {
     // The subscribed `RenderWidgetHost` was destroyed.
     kRenderWidgetHostDestroyed = 0,
