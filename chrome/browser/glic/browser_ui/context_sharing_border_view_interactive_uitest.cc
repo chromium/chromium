@@ -55,13 +55,6 @@
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/460522797): Re-enable failing tests on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE(test_name) DISABLED_##test_name
-#else
-#define MAYBE(test_name) test_name
-#endif
-
 namespace glic {
 
 namespace {
@@ -243,6 +236,12 @@ class ContextSharingBorderViewUiTest : public test::InteractiveGlicTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+
+    // This ensures that gpu rasterization (i.e hardware acceleration )is
+    // available regardless of device. (This is required for`
+    // ContextSharingBorderView` to animate - See
+    // `AnimatedEffectView::ForceSimplifiedShader()`)
+    command_line->AppendSwitch(switches::kIgnoreGpuBlocklist);
     test::InteractiveGlicTest::SetUpCommandLine(command_line);
   }
 
@@ -368,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, Visibility) {
 
 // Exercise the default user journey: toggles the border animation and wait for
 // it to finish.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MAYBE(SmokeTest)) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, SmokeTest) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -500,8 +499,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       MAYBE(FocusedTabChange)) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -563,8 +561,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       MAYBE(FocusedTabDestroyed)) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -632,8 +629,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 
 // TODO(crbug.com/430097333): Wayland doesn't support programmatic window
 // activation. Re-enable when activation is supported.
-// TODO(crbug.com/460522797): Enable on ChromeOS.
-#if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_FocusedWindowChange DISABLED_FocusedWindowChange
 #else
 #define MAYBE_FocusedWindowChange FocusedWindowChange
@@ -715,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 // Ensures that the border fades out before disappearing entirely during
 // emphasis ramp up.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       MAYBE(RampingDownDuringEmphasisRampUp)) {
+                       RampingDownDuringEmphasisRampUp) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -770,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 // Ensures that the border fades out before disappearing entirely during opacity
 // ramp up.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       MAYBE(RampingDownDuringOpacityRampUp)) {
+                       RampingDownDuringOpacityRampUp) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -876,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
   EXPECT_FALSE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MAYBE(EnsureTimeWraps)) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, EnsureTimeWraps) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
