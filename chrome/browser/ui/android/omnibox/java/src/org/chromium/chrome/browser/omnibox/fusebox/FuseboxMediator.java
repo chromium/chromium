@@ -171,6 +171,12 @@ public class FuseboxMediator {
         mModelList.clear();
     }
 
+    /** Activate AI Mode if no other custom mode is already active. */
+    void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
+        if (mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.SEARCH) return;
+        activateAiMode(activationReason);
+    }
+
     /** Activate AI Mode as the Next Request fulfillment type. */
     void activateAiMode(@AiModeActivationSource int activationReason) {
         mPopup.dismiss();
@@ -270,7 +276,7 @@ public class FuseboxMediator {
 
     private void onAddCurrentTab(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
-        activateAiMode(AiModeActivationSource.IMPLICIT);
+        maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
@@ -541,7 +547,7 @@ public class FuseboxMediator {
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
-        activateAiMode(AiModeActivationSource.IMPLICIT);
+        maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         // Use FuseboxModelList's unified add method
         mModelList.add(attachment);

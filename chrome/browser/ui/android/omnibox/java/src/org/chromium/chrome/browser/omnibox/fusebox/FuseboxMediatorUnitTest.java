@@ -405,6 +405,24 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void maybeActivateAiMode_takesEffectInSearchMode() {
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
+    public void maybeActivateAiMode_doesNotAlterCurrentCustomMode() {
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+        assertEquals(
+                AutocompleteRequestType.IMAGE_GENERATION,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
     public void setToolbarVisible_noBridge_doesNothing() {
         // Create a mediator, but don't initialize the bridge.
         FuseboxMediator mediator =
