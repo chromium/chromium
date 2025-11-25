@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "chrome/browser/ui/startup/test_third_party_cookie_phaseout_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -29,7 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
-#include "services/network/public/cpp/network_switches.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
@@ -97,9 +95,6 @@ bool IsGpuTest() {
 }
 #endif
 
-BASE_FEATURE(kShowTestThirdPartyCookiePhaseoutInfoBar,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
@@ -135,13 +130,6 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kProtectedAudiencesConsentedDebugToken)) {
       BiddingAndAuctionConsentedDebuggingDelegate::Create(web_contents);
-    }
-
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            network::switches::kTestThirdPartyCookiePhaseout) &&
-        base::FeatureList::IsEnabled(
-            kShowTestThirdPartyCookiePhaseoutInfoBar)) {
-      TestThirdPartyCookiePhaseoutInfoBarDelegate::Create(web_contents);
     }
   }
 

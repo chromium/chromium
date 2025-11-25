@@ -32,7 +32,6 @@ source_set("startup") {
   sources = [
     "bad_flags_prompt.h",
     "bidding_and_auction_consented_debugging_infobar_delegate.h",
-    "test_third_party_cookie_phaseout_infobar_delegate.h",
   ]
   public_deps = [
     "//components/infobars/core",
@@ -102,7 +101,6 @@ source_set("impl") {
   sources = [
     "bad_flags_prompt.cc",
     "bidding_and_auction_consented_debugging_infobar_delegate.cc",
-    "test_third_party_cookie_phaseout_infobar_delegate.cc",
   ]
   deps = [
     ":startup",
@@ -357,9 +355,9 @@ source_set("unit_tests") {
       ":startup",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser:shell_integration",
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
-      "//chrome/browser:shell_integration",
       "//chrome/browser/ui/startup/focus:unit_tests",
       "//chrome/common",
       "//chrome/common:non_code_constants",
