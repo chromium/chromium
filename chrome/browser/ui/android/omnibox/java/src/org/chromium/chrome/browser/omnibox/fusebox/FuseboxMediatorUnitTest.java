@@ -71,6 +71,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -675,8 +676,11 @@ public class FuseboxMediatorUnitTest {
         assertTrue(getCurrentlyAttachedIdsFromModel().contains(103));
         clearInvocations(mMediator);
 
-        // Mock getPreselectionTabIds to return the current attached IDs (as Integer[]).
-        doReturn(new Integer[] {101, 103}).when(mMediator).getPreselectionTabIds();
+        // Mock getPreselectionTabIds to return the current attached IDs (as ArrayList<Integer>).
+        ArrayList<Integer> initialPreselectedIds = new ArrayList<>();
+        initialPreselectedIds.add(101);
+        initialPreselectedIds.add(103);
+        doReturn(initialPreselectedIds).when(mMediator).getPreselectionTabIds();
 
         // Create set of newly selected Ids.
         Set<Integer> newlySelectedIds = new HashSet<>();

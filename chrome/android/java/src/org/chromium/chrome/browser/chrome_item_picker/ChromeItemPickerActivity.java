@@ -22,7 +22,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /** An activity that serves as an entry point for selecting Chrome items, like tabs. */
 @NullMarked
@@ -52,13 +53,12 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
             return;
         }
 
-        Long[] preselectedIds =
-                IntentUtils.safeGetSerializableExtra(
-                        getIntent(), FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
+        ArrayList<Integer> preselectedIds =
+                getIntent().getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
         if (preselectedIds == null) {
             // TODO(bbetini): Use a helper method to create an empty list when preselectedIds is
             // null.
-            preselectedIds = new Long[0];
+            preselectedIds = new ArrayList<Integer>();
         }
 
         mItemPickerCoordinator =
@@ -85,17 +85,15 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
 
     // TODO(bbetini): Make method private when it is set to be the callback of
     // TabItemPickerCoordinator.showTabItemPicker().
-    public void finishWithSelectedItems(Set<TabListEditorItemSelectionId> selectedItems) {
-        long[] tabIds = new long[selectedItems.size()];
-        int i = 0;
-
+    public void finishWithSelectedItems(List<TabListEditorItemSelectionId> selectedItems) {
+        ArrayList<Integer> tabIds = new ArrayList<>();
         for (TabListEditorItemSelectionId selectionId : selectedItems) {
-            tabIds[i++] = selectionId.getTabId();
+            tabIds.add(selectionId.getTabId());
         }
 
         final Intent resultIntent = new Intent();
 
-        resultIntent.putExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
+        resultIntent.putIntegerArrayListExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

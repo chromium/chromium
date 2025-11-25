@@ -58,6 +58,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class TabItemPickerCoordinatorUnitTest {
                         mSnackbarManager,
                         mRootView,
                         mContainerView,
-                        new Long[0]);
+                        new ArrayList<Integer>());
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
@@ -166,7 +167,7 @@ public class TabItemPickerCoordinatorUnitTest {
                         mSnackbarManager,
                         mRootView,
                         mContainerView,
-                        new Long[0]);
+                        new ArrayList<Integer>());
 
         coordinatorWithInvalidId.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);

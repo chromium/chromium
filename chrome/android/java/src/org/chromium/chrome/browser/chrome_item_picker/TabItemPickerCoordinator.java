@@ -63,7 +63,7 @@ public class TabItemPickerCoordinator {
     private final SnackbarManager mSnackbarManager;
     private final OnBackPressedCallback mBackPressCallback;
     private final Callback<Boolean> mBackPressEnabledObserver;
-    private final Long[] mPreselectedTabIds;
+    private final ArrayList<Integer> mPreselectedTabIds;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -75,7 +75,7 @@ public class TabItemPickerCoordinator {
             SnackbarManager snackbarManager,
             ViewGroup rootView,
             ViewGroup containerView,
-            Long[] preselectedTabIds) {
+            ArrayList<Integer> preselectedTabIds) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -224,12 +224,12 @@ public class TabItemPickerCoordinator {
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
 
-        if (mPreselectedTabIds.length == 0) return;
+        if (mPreselectedTabIds.size() == 0) return;
         Set<TabListEditorItemSelectionId> selectionSet = new HashSet<>();
 
-        for (Long id : mPreselectedTabIds) {
+        for (Integer id : mPreselectedTabIds) {
             if (id == null) continue;
-            @Nullable Tab tab = mTabModelSelector.getTabById(id.intValue());
+            @Nullable Tab tab = mTabModelSelector.getTabById(id);
             if (tab != null) {
                 selectionSet.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
             }
@@ -281,7 +281,7 @@ public class TabItemPickerCoordinator {
 
             // Route the result to the Activity's success handler.
             if (mActivity instanceof ChromeItemPickerActivity cipa) {
-                cipa.finishWithSelectedItems(new HashSet<>(selectedItems));
+                cipa.finishWithSelectedItems(selectedItems);
             } else {
                 mActivity.finish();
             }

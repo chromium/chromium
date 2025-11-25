@@ -315,15 +315,9 @@ public class FuseboxMediator {
             return;
         }
 
-        Integer[] preselectedIntegerIds = getPreselectionTabIds();
-        Long[] preselectedIds = new Long[preselectedIntegerIds.length];
-        for (int i = 0; i < preselectedIntegerIds.length; i++) {
-            preselectedIds[i] = (long) preselectedIntegerIds[i];
-        }
-
-        if (preselectedIds != null && preselectedIds.length > 0) {
-            intent.putExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
-        }
+        ArrayList<Integer> preselectedIds = getPreselectionTabIds();
+        // Send the IDs to the activity using the defined extra.
+        intent.putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
@@ -331,18 +325,10 @@ public class FuseboxMediator {
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
-        // Retrieve list of tab ids.
-        long[] selectedTabIds = data.getLongArrayExtra(EXTRA_ATTACHMENT_TAB_IDS);
-        if (selectedTabIds == null) {
-            selectedTabIds = new long[0];
-        }
-
-        Set<Integer> newSelectedIds = new HashSet<>();
-        for (long id : selectedTabIds) {
-            newSelectedIds.add((int) id);
-        }
-
-        updateCurrentlyAttachedTabs(newSelectedIds);
+        ArrayList<Integer> tabIds = data.getIntegerArrayListExtra(EXTRA_ATTACHMENT_TAB_IDS);
+        // tabIds will be null when the activity finishes with cancel using the back button.
+        if (tabIds == null) return;
+        updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
     }
 
     /**
@@ -355,8 +341,7 @@ public class FuseboxMediator {
     public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        Set<Integer> currentAttachedIds = new HashSet<Integer>();
-        Collections.addAll(currentAttachedIds, getPreselectionTabIds());
+        Set<Integer> currentAttachedIds = new HashSet<>(getPreselectionTabIds());
         currentAttachedIds.remove(null);
         mModelList.removeIf(
                 item -> {
@@ -593,8 +578,8 @@ public class FuseboxMediator {
     /**
      * @return Array of Tab IDs (as Integer[]), empty if no attachments.
      */
-    public Integer[] getPreselectionTabIds() {
-        List<Integer> attachedTabIds = new ArrayList<>();
+    public ArrayList<Integer> getPreselectionTabIds() {
+        ArrayList<Integer> attachedTabIds = new ArrayList<>();
 
         for (int i = 0; i < mModelList.size(); i++) {
             FuseboxAttachment attachment = mModelList.get(i);
@@ -603,6 +588,6 @@ public class FuseboxMediator {
             }
             attachedTabIds.add(attachment.tabId);
         }
-        return attachedTabIds.toArray(new Integer[0]);
+        return attachedTabIds;
     }
 }
