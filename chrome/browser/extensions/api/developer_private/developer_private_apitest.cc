@@ -293,8 +293,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
-// TODO(crbug.com/439447971): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40882269): The test is flaky on MSAN and Linux. Re-enable it.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InspectSplitModeServiceWorkerBackgrounds \
@@ -345,8 +343,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Now open up an incognito browser window page and check the inspectable
   // views again. Waiting for the result catcher will wait for the incognito
   // service worker to have become active.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  ASSERT_TRUE(incognito_browser);
+  content::WebContents* const incognito_window =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_window);
   ASSERT_TRUE(result_catcher.GetNextResult());
   info = GetExtensionInfo(*extension);
   // The views should now have 2 entries, one for the main worker which will be
@@ -408,7 +407,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   ASSERT_TRUE(incognito_devtools_window);
   ASSERT_NE(main_devtools_window, incognito_devtools_window);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that offscreen documents show up in the list of inspectable views and
 // can be inspected.
