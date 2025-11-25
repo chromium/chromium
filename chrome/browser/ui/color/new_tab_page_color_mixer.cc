@@ -390,7 +390,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =
       ui::SetAlpha(kColorNewTabPageHeader, 0x50);
-  mixer[kColorNewTabPageCommonInputPlaceholder] = {ui::kColorRefNeutralVariant50};
+  mixer[kColorNewTabPageCommonInputPlaceholder] = {SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageRealboxNextIconHover] = {kColorSysStateHoverOnSubtle_Light};
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};
   mixer[kColorNewTabPageTextLight] =

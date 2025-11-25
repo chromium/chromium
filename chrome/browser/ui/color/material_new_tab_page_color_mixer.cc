@@ -207,7 +207,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
-  mixer[kColorNewTabPageCommonInputPlaceholder] = {ui::kColorRefNeutralVariant50};
+  mixer[kColorNewTabPageCommonInputPlaceholder] = {SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageRealboxNextIconHover] = {kColorSysStateHoverOnSubtle_Light};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
 
