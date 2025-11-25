@@ -264,7 +264,7 @@ AccountInfo::Builder::Builder(const GaiaId& gaia_id, std::string_view email) {
 }
 
 AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
-  CHECK(!core_account_info.account_id.empty());
+  CHECK(!core_account_info.gaia.empty());
   CHECK(!core_account_info.email.empty());
   account_info_.account_id = core_account_info.account_id;
   account_info_.gaia = core_account_info.gaia;
@@ -275,7 +275,7 @@ AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
 
 AccountInfo::Builder::Builder(const AccountInfo& account_info)
     : account_info_(account_info) {
-  CHECK(!account_info.account_id.empty());
+  CHECK(!account_info.gaia.empty());
   CHECK(!account_info.email.empty());
 }
 
