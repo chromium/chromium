@@ -714,13 +714,17 @@ void ImportMap::MergeExistingAndNewImportMaps(
   // the algorithm's mutations directly on them. That's fine because the move
   // guarantees that no one will use this map for anything else.
   ImportMap::ScopesMap& new_import_map_scopes = new_import_map->scopes_map_;
+  ImportMap::ScopesVector& new_import_map_scopes_vector =
+      new_import_map->scopes_vector_;
   ImportMap::SpecifierMap& new_import_map_imports = new_import_map->imports_;
   ImportMap::IntegrityMap& new_import_map_integrity =
       new_import_map->integrity_;
 
   // 3. For each scopePrefix → scopeImports of newImportMapScopes:
-  for (auto& scope : new_import_map_scopes) {
-    ImportMap::SpecifierMap& scope_imports = scope.value;
+  for (auto& scope : new_import_map_scopes_vector) {
+    ImportMap::ScopesMap::iterator it = new_import_map_scopes.find(scope);
+    CHECK(it != new_import_map_scopes.end());
+    ImportMap::SpecifierMap& scope_imports = it->value;
     // 3.1. For each pair of global's resolved module set:
     //
     // 3.1.1. If pair's referring script does not start with scopePrefix,
@@ -737,7 +741,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // already exist in that scope. We grab the set of specifier prefixes using
     // the current scope and then iterate over the scope's imports, removing any
     // specifiers whose prefix is in the set.
-    const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
+    const auto& current_set_it = scoped_resolved_module_map.find(scope);
     if (current_set_it != scoped_resolved_module_map.end()) {
       const auto& current_resolved_set = current_set_it->value;
       Vector<AtomicString> specifiers_to_remove;
@@ -766,7 +770,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // oldImportMap's scopes[scopePrefix] to the result of merging module
     // specifier maps, given scopeImports and oldImportMap's
     // scopes[scopePrefix].
-    const auto old_scope_specifier_map_it = scopes_map_.find(scope.key);
+    const auto old_scope_specifier_map_it = scopes_map_.find(scope);
     if (old_scope_specifier_map_it != scopes_map_.end()) {
       ImportMap::SpecifierMap& old_scope_specifier_map =
           old_scope_specifier_map_it->value;
@@ -774,8 +778,8 @@ void ImportMap::MergeExistingAndNewImportMaps(
     } else {
       // 3.3 Otherwise, set oldImportMap's scopes[scopePrefix] to
       // scopeImports.
-      scopes_map_.insert(scope.key, std::move(scope_imports));
-      scopes_vector_.push_back(scope.key);
+      scopes_map_.insert(scope, std::move(scope_imports));
+      scopes_vector_.push_back(scope);
     }
   }
 
