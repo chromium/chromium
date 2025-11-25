@@ -54,24 +54,26 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
             bool);
 
   // API methods:
-  void allowElement(
+  bool allowElement(
       const V8UnionSanitizerElementNamespaceWithAttributesOrString*);
-  void removeElement(const V8UnionSanitizerElementNamespaceOrString*);
-  void replaceElementWithChildren(
+  bool removeElement(const V8UnionSanitizerElementNamespaceOrString*);
+  bool replaceElementWithChildren(
       const V8UnionSanitizerElementNamespaceOrString*);
-  void allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
-  void removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
+  bool allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
+  bool removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   void setComments(bool);
   void setDataAttributes(bool);
   void removeUnsafe();
   SanitizerConfig* get() const;
 
   // Internal versions of API methods that use Blink types (rather than IDL):
-  void AllowElement(const QualifiedName&);
-  void RemoveElement(const QualifiedName&);
-  void ReplaceElement(const QualifiedName&);
-  void AllowAttribute(const QualifiedName&);
-  void RemoveAttribute(const QualifiedName&);
+  bool AllowElement(const QualifiedName&,
+                    SanitizerNameSet* allow_attrs = nullptr,
+                    SanitizerNameSet* remove_attrs = nullptr);
+  bool RemoveElement(const QualifiedName&);
+  bool ReplaceElement(const QualifiedName&);
+  bool AllowAttribute(const QualifiedName&);
+  bool RemoveAttribute(const QualifiedName&);
 
   // The core methods (not directly exposed to the API): Recursively sanitize
   // the node according to the current config.

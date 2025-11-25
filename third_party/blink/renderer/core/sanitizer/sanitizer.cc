@@ -53,6 +53,7 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
     // Default case: Set from builtin Sanitizer.
     sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
                               : SanitizerBuiltins::GetDefaultUnsafe()));
+    DCHECK(sanitizer->isValid());
     return sanitizer;
   }
 
@@ -61,6 +62,7 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
     exception_state.ThrowTypeError("Invalid Sanitizer configuration.");
     return nullptr;
   }
+  DCHECK(sanitizer->isValid());
   return sanitizer;
 }
 
@@ -69,6 +71,7 @@ Sanitizer* Sanitizer::Create(const V8SanitizerPresets::Enum preset,
   CHECK_EQ(preset, V8SanitizerPresets::Enum::kDefault);
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   sanitizer->setFrom(*SanitizerBuiltins::GetDefaultSafe());
+  DCHECK(sanitizer->isValid());
   return sanitizer;
 }
 
@@ -78,6 +81,7 @@ Sanitizer* Sanitizer::CreateEmpty() {
   sanitizer->remove_attrs_ = std::make_unique<SanitizerNameSet>();
   sanitizer->data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
   sanitizer->comments_ = SanitizerBoolWithAbsence::kAbsent;
+  DCHECK(sanitizer->isValid());
   return sanitizer;
 }
 
@@ -100,58 +104,64 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
       data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
                                    : SanitizerBoolWithAbsence::kFalse),
       comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
-                               : SanitizerBoolWithAbsence::kFalse) {}
+                               : SanitizerBoolWithAbsence::kFalse) {
+  if (remove_attrs_) {
+    data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
+  }
+  DCHECK(isValid());
+}
 
-void Sanitizer::allowElement(
+bool Sanitizer::allowElement(
     const V8UnionSanitizerElementNamespaceWithAttributesOrString* element) {
   const QualifiedName name = getFrom(element);
-  AllowElement(name);
-
-  // The internal AllowElement doesn't handle per-element attrs (yet).
-  if (element->IsSanitizerElementNamespaceWithAttributes()) {
+  if (!element->IsSanitizerElementNamespaceWithAttributes()) {
+    // Simple case: Only a string was given.
+    return AllowElement(name);
+  } else {
+    // General case: A dictionary with (maybe) per-element attribute lists.
     const SanitizerElementNamespaceWithAttributes* element_with_attrs =
         element->GetAsSanitizerElementNamespaceWithAttributes();
+
+    SanitizerNameSet element_allow_attrs;
     if (element_with_attrs->hasAttributes()) {
-      const auto add_result =
-          allow_attrs_per_element_.insert(name, SanitizerNameSet());
       for (const auto& attr : element_with_attrs->attributes()) {
-        add_result.stored_value->value.insert(getFrom(attr));
+        element_allow_attrs.insert(getFrom(attr));
       }
     }
+
+    SanitizerNameSet element_remove_attrs;
     if (element_with_attrs->hasRemoveAttributes()) {
-      const auto add_result =
-          remove_attrs_per_element_.insert(name, SanitizerNameSet());
       for (const auto& attr : element_with_attrs->removeAttributes()) {
-        add_result.stored_value->value.insert(getFrom(attr));
+        element_remove_attrs.insert(getFrom(attr));
       }
     }
+
+    return AllowElement(
+        name,
+        element_with_attrs->hasAttributes() ? &element_allow_attrs : nullptr,
+        element_with_attrs->hasRemoveAttributes() ? &element_remove_attrs
+                                                  : nullptr);
   }
-  // Remove dupes, if both allow and remove attribute lists were given.
-  if (allow_attrs_per_element_.Contains(name) &&
-      remove_attrs_per_element_.Contains(name)) {
-    allow_attrs_per_element_.find(name)->value.RemoveAll(
-        remove_attrs_per_element_.at(name));
-  }
 }
 
-void Sanitizer::removeElement(
+bool Sanitizer::removeElement(
     const V8UnionSanitizerElementNamespaceOrString* element) {
-  RemoveElement(getFrom(element));
+  return RemoveElement(getFrom(element));
 }
 
-void Sanitizer::replaceElementWithChildren(
+bool Sanitizer::replaceElementWithChildren(
     const V8UnionSanitizerElementNamespaceOrString* element) {
-  ReplaceElement(getFrom(element));
+  return ReplaceElement(getFrom(element));
 }
 
-void Sanitizer::allowAttribute(
+bool Sanitizer::allowAttribute(
     const V8UnionSanitizerAttributeNamespaceOrString* attribute) {
-  AllowAttribute(getFrom(attribute));
+  return AllowAttribute(getFrom(attribute));
 }
 
-void Sanitizer::removeAttribute(
+bool Sanitizer::removeAttribute(
     const V8UnionSanitizerAttributeNamespaceOrString* attribute) {
-  RemoveAttribute(getFrom(attribute));
+  return RemoveAttribute(getFrom(attribute));
 }
 
 void Sanitizer::setComments(bool comments) {
@@ -165,6 +175,7 @@ void Sanitizer::setDataAttributes(bool data_attributes) {
 }
 
 void Sanitizer::removeUnsafe() {
+  DCHECK(isValid());
   const Sanitizer* baseline = SanitizerBuiltins::GetBaseline();
 
   // Below, we rely on the baseline being expressed as allow-lists. Ensure that
@@ -184,6 +195,7 @@ void Sanitizer::removeUnsafe() {
   for (const QualifiedName& name : *(baseline->remove_attrs_)) {
     RemoveAttribute(name);
   }
+  DCHECK(isValid());
 }
 
 bool SanitizerAtomicStringLessThan(const AtomicString& a,
@@ -351,69 +363,324 @@ SanitizerConfig* Sanitizer::get() const {
   return config;
 }
 
-void Sanitizer::AllowElement(const QualifiedName& name) {
-  if (!allow_elements_) {
-    allow_elements_ = std::make_unique<SanitizerNameSet>();
+bool Sanitizer::AllowElement(const QualifiedName& name,
+                             SanitizerNameSet* allow_attrs,
+                             SanitizerNameSet* remove_attrs) {
+  // https://wicg.github.io/sanitizer-api/#sanitizerconfig-allow-an-element
+  DCHECK(isValid());
+
+  // Step 1: Happens in caller. We reeceive a QualifiedName.
+  // Step 2: If configuration["elements"] exists:
+  if (allow_elements_) {
+    // Step 2.1: Set modified to ... remove from replaceWithChildrenElements.
+    bool modified = replace_elements_ &&
+                    replace_elements_->Take(name) != QualifiedName::Null();
+    // Step 2.2: Comment.
+    // Step 2.3: If configuration[attributes] exists
+    if (allow_attrs_) {
+      // Step 2.3.1: If element[attributes] exists:
+      if (allow_attrs) {
+        // Step 2.3.1.1: Done by caller, since here we receive a set.
+        // Step 2.3.1.2: Set attribute to the difference of ...
+        allow_attrs->RemoveAll(*allow_attrs_);
+        // Step 2.3.1.3: If dataAttributes is true:
+        if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
+          allow_attrs->erase_if([](const QualifiedName& name) {
+            return name.LocalName().StartsWith("data-");
+          });
+        }
+      }
+      // Step 2.3.2: If element[removeAttributes] exists:
+      if (remove_attrs) {
+        // Step 2.3.2.1: Remove dupes. Done by caller, since we receive a set.
+        // Step 2.3.2.2: Set element to intersection.
+        if (allow_attrs_) {
+          remove_attrs->erase_if([this](const QualifiedName& name) {
+            return !allow_attrs_->Contains(name);
+          });
+        }
+      }
+    } else {
+      // Step 2.4: Otherwise
+      // Step 2.4.1: If element["attributes"] exists:
+      if (allow_attrs) {
+        // Step 2.4.1.1: Remove dupes. Done by caller, since we receive a set.
+        // Step 2.4.1.2: Set attributes to the difference of...
+        if (remove_attrs) {
+          allow_attrs->RemoveAll(*remove_attrs);
+          // Step 2.4.1.3: Remove removeAttributes.
+          remove_attrs = nullptr;
+        }
+        // Step 2.4.1.4: Set attribute to the difference of ...
+        if (remove_attrs_) {
+          allow_attrs->RemoveAll(*remove_attrs_);
+        }
+      }
+      // Step 2.4.2: If removeAttributes exists:
+      if (remove_attrs) {
+        // Step 2.4.2.1: Remove dupes. Done by caller, since we receive a set.
+        // Step 2.4.2.2: Set removeAttributes to difference of...
+        if (remove_attrs_) {
+          remove_attrs->RemoveAll(*remove_attrs_);
+        }
+      }
+    }
+    // Step 2.5: If configuration[elements] does not contain element:
+    if (!allow_elements_->Contains(name)) {
+      allow_elements_->insert(name);
+      if (allow_attrs) {
+        allow_attrs_per_element_.Set(name, *allow_attrs);
+      }
+      if (remove_attrs) {
+        remove_attrs_per_element_.Set(name, *remove_attrs);
+      }
+      DCHECK(isValid());
+      return true;
+    }
+    // Step 2.6: Comment.
+    // Step 2.7: Let current element be the item in configuration["elements"]
+    // where item[name] equals element[name] and item[namespace] equals
+    // element[namespace]. Step 2.8: If element equals current element then
+    // return modified.
+    bool allow_attrs_current_equal_new =
+        (allow_attrs == nullptr && !allow_attrs_per_element_.Contains(name)) ||
+        (allow_attrs && allow_attrs_per_element_.Contains(name) &&
+         *allow_attrs == allow_attrs_per_element_.at(name));
+    bool remove_attrs_current_equal_new =
+        (remove_attrs == nullptr &&
+         !remove_attrs_per_element_.Contains(name)) ||
+        (remove_attrs && remove_attrs_per_element_.Contains(name) &&
+         *remove_attrs == remove_attrs_per_element_.at(name));
+    if (allow_attrs_current_equal_new && remove_attrs_current_equal_new) {
+      return modified;
+    }
+    // Step 2.9 + 2.10: Remove + append element from configuration[elements]
+    // The remove + append combo serves to update the attributes. Since here we
+    // store them separately, we update those arrays instead.
+    allow_elements_->insert(name);
+    allow_attrs_per_element_.erase(name);
+    if (allow_attrs) {
+      allow_attrs_per_element_.Set(name, *allow_attrs);
+    }
+    remove_attrs_per_element_.erase(name);
+    if (remove_attrs) {
+      remove_attrs_per_element_.Set(name, *remove_attrs);
+    }
+    // Step 2.11: Return true
+    DCHECK(isValid());
+    return true;
+  } else {
+    DCHECK(remove_elements_);
+    // Step 3: Otherwise.
+    // Step 3.1 If element["attributes"] exists or element["removeAttributes"]
+    // with default « » is not empty:
+    if (allow_attrs || (remove_attrs && !remove_attrs->empty())) {
+      // Step 3.1.1: The user agent may report a warning to the console that
+      // this operation is not supported. Step 3.1.2: Return false.
+      return false;
+    }
+    // Step 3.2: Set modified to ... remove from replaceWithChildrenElements.
+    bool modified = replace_elements_ &&
+                    replace_elements_->Take(name) != QualifiedName::Null();
+    // Step 3.3: If removeElements does not contain element:
+    if (!remove_elements_->Contains(name)) {
+      DCHECK(isValid());
+      return modified;
+    }
+    // Step 3.4: Comment.
+    // Step 3.5: Remove element from removeElements.
+    remove_elements_->erase(name);
+    // Step 3.6: Return true:
+    DCHECK(isValid());
+    return true;
   }
-  allow_elements_->insert(name);
+}
+
+bool Sanitizer::RemoveElement(const QualifiedName& name) {
+  // https://wicg.github.io/sanitizer-api/#sanitizer-remove-an-element
+  // Step 1: Assert: configuration is valid.
+  DCHECK(isValid());
+  // Step 2: Set element to the result of canonicalize a sanitizer element
+  // with element. (Done in caller.)
+  // Step 3: Set modified to the result of remove element from
+  // configuration["replaceWithChildrenElements"].
+  bool modified = replace_elements_ &&
+                  replace_elements_->Take(name) != QualifiedName::Null();
+  // Step 4: If configuration["elements"] exists:
+  if (allow_elements_) {
+    // Step 4.1 - 4.3: [... remove element; return true if it was there ...]
+    bool name_removed = allow_elements_->Take(name) != QualifiedName::Null();
+    allow_attrs_per_element_.erase(name);
+    remove_attrs_per_element_.erase(name);
+    modified = modified || name_removed;
+  } else {
+    // Step 5: Otherwise.
+    DCHECK(remove_elements_);
+    // Step 5.1 - 5.3: [... add to removeElements; return if it was there ...]
+    bool name_added = remove_elements_->insert(name).is_new_entry;
+    modified = modified || name_added;
+  }
+  DCHECK(isValid());
+  return modified;
+}
+
+bool Sanitizer::ReplaceElement(const QualifiedName& name) {
+  // https://wicg.github.io/sanitizer-api/#sanitizer-replace-an-element-with-its-children
+  // Step 1: Let configuration be this’s configuration.
+  // Step 2: Assert: configuration is valid.
+  DCHECK(isValid());
+  // Step 3: Set element to the result of canonicalize a sanitizer element
+  // with element. (Done by caller.)
+  // Step 4: If configuration["replaceWithChildrenElements"] contains element:
+  // Step 4.1: Return false.
+  bool contains_name = replace_elements_ && replace_elements_->Contains(name);
+  if (contains_name) {
+    return false;
+  }
+  // Step 5: Remove element from configuration["removeElements"].
   if (remove_elements_) {
     remove_elements_->erase(name);
   }
-  if (replace_elements_) {
-    replace_elements_->erase(name);
-  }
-  allow_attrs_per_element_.erase(name);
-  remove_attrs_per_element_.erase(name);
-}
-
-void Sanitizer::RemoveElement(const QualifiedName& name) {
+  // Step 6: Remove element from configuration["elements"] list.
   if (allow_elements_) {
     allow_elements_->erase(name);
+    allow_attrs_per_element_.erase(name);
+    remove_attrs_per_element_.erase(name);
   }
-  if (!remove_elements_) {
-    remove_elements_ = std::make_unique<SanitizerNameSet>();
-  }
-  remove_elements_->insert(name);
-  if (replace_elements_) {
-    replace_elements_->erase(name);
-  }
-  allow_attrs_per_element_.erase(name);
-  remove_attrs_per_element_.erase(name);
-}
-
-void Sanitizer::ReplaceElement(const QualifiedName& name) {
-  if (allow_elements_) {
-    allow_elements_->erase(name);
-  }
-  if (remove_elements_) {
-    remove_elements_->erase(name);
-  }
+  // Add element to configuration["replaceWithChildrenElements"].
   if (!replace_elements_) {
     replace_elements_ = std::make_unique<SanitizerNameSet>();
   }
   replace_elements_->insert(name);
-  allow_attrs_per_element_.erase(name);
-  remove_attrs_per_element_.erase(name);
+  // Step 8: Return true.
+  DCHECK(isValid());
+  return true;
 }
 
-void Sanitizer::AllowAttribute(const QualifiedName& name) {
-  if (!allow_attrs_) {
-    allow_attrs_ = std::make_unique<SanitizerNameSet>();
-  }
-  allow_attrs_->insert(name);
-  if (remove_attrs_) {
-    remove_attrs_->erase(name);
-  }
-}
-
-void Sanitizer::RemoveAttribute(const QualifiedName& name) {
+bool Sanitizer::AllowAttribute(const QualifiedName& name) {
+  DCHECK(isValid());
+  // https://wicg.github.io/sanitizer-api/#sanitizer-allow-an-attribute
+  // Step 1: Canonicalize name. (Done by caller. We receive a QName.)
+  // Step 2: If configuration["attributes"] exists:
   if (allow_attrs_) {
+    // Step 2.1: Comment: If we have a global allow-list, [...]
+    // Step 2.2: If configuration["dataAttributes"] is true and [...]
+    if (data_attrs_ == SanitizerBoolWithAbsence::kTrue &&
+        name.NamespaceURI().IsNull() && name.LocalName().StartsWith("data-")) {
+      return false;
+    }
+    // Step 2.3: If configuration["attributes"] contains attribute return false.
+    if (allow_attrs_ && allow_attrs_->Contains(name)) {
+      return false;
+    }
+    // Step 2.4: Comment: Fix-up per-element allow and remove lists.
+    // Step 2.5: If configuration["elements"] exists:
+    if (allow_elements_) {
+      // Step 2.5.1: For each element in configuration["elements"]:
+
+      // Step 2.5.1.1: If element["attributes"] with default « » contains
+      // attribute:
+
+      // Step 2.5.1.1.1: Remove attribute from element["attributes"].
+      for (const auto& item : allow_attrs_per_element_) {
+        if (item.value.Contains(name)) {
+          SanitizerNameSet attrs(item.value);
+          attrs.erase(name);
+          allow_attrs_per_element_.Set(item.key, attrs);
+        }
+        // Step 2.5.1.2: Assert: element["removeAttributes"] with default « »
+        // does not contain attribute.
+      }
+    }
+    // Step 2.6: Append attribute to configuration["attributes"]
+    allow_attrs_->insert(name);
+    // Step 2.7: Return true.
+    return true;
+  } else {
+    DCHECK(remove_attrs_);
+    // Step 3: Otherwise
+    // Step 3.1: Comment: If we have a global remove-list, we need to remove
+    // attribute. Step 3.2: If configuration["removeAttributes"] does not
+    // contain attribute: Step 3.2.1: Return false.
+    if (!remove_attrs_->Contains(name)) {
+      return false;
+    }
+    // Step 3.3: Remove attribute from configuration["removeAttributes"].
+    remove_attrs_->erase(name);
+    // Step 3.4: Return true.
+    return true;
+  }
+}
+
+bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
+  // https://wicg.github.io/sanitizer-api/#sanitizer-remove-an-attribute
+  // Step 1: Set attribute to the result of canonicalize a sanitizer attribute
+  // with attribute. Step 2: If configuration["attributes"] exists:
+  if (allow_attrs_) {
+    // Step 2.1: Comment: If we have a global allow-list, we need to add
+    // attribute. Step 2.2: If configuration["attributes"] does not contain
+    // attribute:
+    if (!allow_attrs_->Contains(name)) {
+      // Step 2.2.1: Return false.
+      return false;
+    }
+    // Step 2.3: Comment: Fix-up per-element allow and remove lists.
+    // Step 2.4: If configuration["elements"] exists:
+    if (allow_elements_) {
+      // Step 2.4.1: For each element in configuration["elements"]:
+      // Step 2.4.1.1: If element["removeAttributes"] with default « » contains
+      // attribute: Step 2.4.1.1.1: Remove attribute from
+      // element["removeAttributes"].
+      for (const auto& item : remove_attrs_per_element_) {
+        if (item.value.Contains(name)) {
+          SanitizerNameSet attrs(item.value);
+          attrs.erase(name);
+          remove_attrs_per_element_.Set(item.key, attrs);
+        }
+      }
+    }
+    // Step 2.5: Remove attribute from configuration["attributes"].
     allow_attrs_->erase(name);
+    // Step 2.6: Return true.
+    return true;
+  } else {
+    // Step 3: Otherwise:
+    DCHECK(remove_attrs_);
+    // Step 3.1: Comment: If we have a global remove-list, we need to add
+    // attribute. Step 3.2: If configuration["removeAttributes"] contains
+    // attribute return false.
+    if (remove_attrs_->Contains(name)) {
+      return false;
+    }
+    // Step 3.3: Comment: Fix-up per-element allow and remove lists.
+    // Step 3.4: If configuration["elements"] exists:
+    if (allow_elements_) {
+      // Step 3.4.1: For each element in configuration["elements"]:
+      // Step 3.4.1.1: If element["attributes"] with default « » contains
+      // attribute: Step 3.4.1.1.1: Remove attribute from element["attributes"].
+      for (const auto& item : allow_attrs_per_element_) {
+        if (item.value.Contains(name)) {
+          SanitizerNameSet attrs(item.value);
+          attrs.erase(name);
+          allow_attrs_per_element_.Set(item.key, attrs);
+        }
+      }
+      // Step 3.4.1.2:  If element["removeAttributes"] with default « » contains
+      // attribute: Step 3.4.1.2.1: Remove attribute from
+      // element["removeAttributes"].
+      for (const auto& item : remove_attrs_per_element_) {
+        if (item.value.Contains(name)) {
+          SanitizerNameSet attrs(item.value);
+          attrs.erase(name);
+          remove_attrs_per_element_.Set(item.key, attrs);
+        }
+      }
+    }
+    // Step 3.5: Append attribute to configuration["removeAttributes"]
+    remove_attrs_->insert(name);
+    // Step 3.6: Return true.
+    return true;
   }
-  if (!remove_attrs_) {
-    remove_attrs_ = std::make_unique<SanitizerNameSet>();
-  }
-  remove_attrs_->insert(name);
 }
 
 void Sanitizer::SanitizeElement(Element* element) const {
