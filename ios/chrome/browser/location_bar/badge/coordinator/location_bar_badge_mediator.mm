@@ -29,9 +29,10 @@
 
 namespace {
 
-// Time to transition in seconds.
-const int kTransitionTimeInSeconds = 2;
-
+// Time to start transition in seconds.
+const int kStartExpandTransitionTimeInSeconds = 2;
+// Time to start the collapse transition in seconds.
+const int kStartCollapseTransitionTimeInSeconds = 5;
 }  // anonymous namespace
 
 @interface LocationBarBadgeMediator () <CRWWebStateObserver,
@@ -204,7 +205,8 @@ const int kTransitionTimeInSeconds = 2;
 - (void)startPromoTimer {
   __weak LocationBarBadgeMediator* weakSelf = self;
   _promoStartTimer = std::make_unique<base::OneShotTimer>();
-  _promoStartTimer->Start(FROM_HERE, base::Seconds(kTransitionTimeInSeconds),
+  _promoStartTimer->Start(FROM_HERE,
+                          base::Seconds(kStartExpandTransitionTimeInSeconds),
                           base::BindOnce(^{
                             [weakSelf setupAndExpandChip];
                           }));
@@ -227,7 +229,8 @@ const int kTransitionTimeInSeconds = 2;
   __weak LocationBarBadgeMediator* weakSelf = self;
 
   _promoEndTimer = std::make_unique<base::OneShotTimer>();
-  _promoEndTimer->Start(FROM_HERE, base::Seconds(kTransitionTimeInSeconds),
+  _promoEndTimer->Start(FROM_HERE,
+                        base::Seconds(kStartCollapseTransitionTimeInSeconds),
                         base::BindOnce(^{
                           [weakSelf cleanupAndTransitionToDefaultBadgeState];
                         }));
