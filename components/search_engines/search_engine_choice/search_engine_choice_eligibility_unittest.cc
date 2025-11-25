@@ -505,7 +505,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 }
 
 TEST_F(SearchEngineChoiceEligibilityTest,
-       ChoiceScreenConditions_DontPromptForCustom_OutsideTaiyakiGeoLocation) {
+       ChoiceScreenConditions_DontPrompt_OutsideTaiyakiGeoLocation) {
   if (!kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
     GTEST_SKIP();
   }
@@ -520,6 +520,29 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
       regional_capabilities_service().GetClientForTesting())
       .SetCountryId(CountryId("PL"));
+
+  EXPECT_EQ(
+      GetStaticConditions(),
+      IfSupported(
+          SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation));
+  // Do not check the dynamic conditions, as the choice screen would be
+  // suppressed before evaluating the dynamic conditions.
+}
+
+TEST_F(SearchEngineChoiceEligibilityTest,
+       ChoiceScreenConditions_DontPrompt_NoGeoLocation) {
+  if (!kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry, "JP");
+  // Variations country is not available
+  static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
+      regional_capabilities_service().GetClientForTesting())
+      .SetCountryId(CountryId());
 
   EXPECT_EQ(
       GetStaticConditions(),
