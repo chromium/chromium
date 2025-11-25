@@ -16,19 +16,19 @@ mojom("mojom") {
       types = [
         {
           mojom = "unexportable_keys.mojom.SignatureAlgorithm"
-          cpp = "crypto::SignatureVerifier::SignatureAlgorithm"
+          cpp = "::crypto::SignatureVerifier::SignatureAlgorithm"
         },
         {
           mojom = "unexportable_keys.mojom.BackgroundTaskPriority"
-          cpp = "unexportable_keys::BackgroundTaskPriority"
+          cpp = "::unexportable_keys::BackgroundTaskPriority"
         },
         {
           mojom = "unexportable_keys.mojom.ServiceError"
-          cpp = "unexportable_keys::ServiceError"
+          cpp = "::unexportable_keys::ServiceError"
         },
         {
           mojom = "unexportable_keys.mojom.UnexportableKeyId"
-          cpp = "unexportable_keys::UnexportableKeyId"
+          cpp = "::unexportable_keys::UnexportableKeyId"
         },
       ]
       traits_headers = [
