@@ -30,10 +30,15 @@ class PrivateMetricsReportingService : public metrics::ReportingService {
   // `local_state`, and `storage_limits`. Does not take ownership of the
   // parameters; instead stores a weak pointer to each. Caller should ensure
   // that the parameters are valid for the lifetime of this class.
+  //
+  // `dwa_compatibility` specifies whether the service should work in
+  // compatibility mode with the old DWA implementation. If `nullopt`, the value
+  // will be based on currently enabled flags.
   PrivateMetricsReportingService(
       metrics::MetricsServiceClient* client,
       PrefService* local_state,
-      const UnsentLogStore::UnsentLogStoreLimits& storage_limits);
+      const UnsentLogStore::UnsentLogStoreLimits& storage_limits,
+      std::optional<bool> dwa_compatibility = std::nullopt);
 
   PrivateMetricsReportingService(const PrivateMetricsReportingService&) =
       delete;
@@ -62,6 +67,10 @@ class PrivateMetricsReportingService : public metrics::ReportingService {
   void LogSuccessLogSize(size_t log_size) override;
   void LogSuccessMetadata(const std::string& staged_log) override;
   void LogLargeRejection(size_t log_size) override;
+
+  // If true, this service works in a compatibility mode with old DWA
+  // implementation.
+  const bool dwa_compatibility_;
 
   metrics::UnsentLogStore unsent_log_store_;
 };
