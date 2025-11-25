@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/secure_embed_connector.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  content::GlobalRenderFrameHostId render_frame_host_id_;
   base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
   bool know_have_focus_ = false;
 

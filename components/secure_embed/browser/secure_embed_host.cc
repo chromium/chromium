@@ -23,7 +23,7 @@ namespace secure_embed {
 size_t SecureEmbedHost::instance_count_for_testing_ = 0;
 
 SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host), secure_embed_() {
+    : render_frame_host_id_(render_frame_host->GetGlobalId()), secure_embed_() {
   ++instance_count_for_testing_;
 }
 
@@ -88,7 +88,7 @@ void SecureEmbedHost::Attach(int64_t content_id) {
 
   if (!web_contents_to_attach->GetSecureEmbedConnector()
            ->IsConfiguredToBeEmbeddedIn(
-               content::WebContents::FromRenderFrameHost(render_frame_host_))) {
+               content::WebContents::FromRenderFrameHost(ParentFrame()))) {
     LOG(ERROR) << "WebContents not configured to embed here";
     return;
   }
@@ -180,7 +180,7 @@ void SecureEmbedHost::FocusInEmbedder(
 }
 
 content::RenderFrameHost* SecureEmbedHost::ParentFrame() {
-  return render_frame_host_;
+  return content::RenderFrameHost::FromID(render_frame_host_id_);
 }
 
 content::SecureEmbedConnector* SecureEmbedHost::GetConnector() {
