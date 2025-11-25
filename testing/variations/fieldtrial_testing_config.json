@@ -27856,22 +27856,15 @@
             ]
         }
     ],
-    "WebUITabStrip": [
+    "WebUITabStripDeprecation": [
         {
             "platforms": [
-                "linux",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:webui_tab_strip_iph_triggered;comparator:<3;window:1;storage:365",
-                        "event_used": "name:webui_tab_strip_opened;comparator:==0;window:90;storage:365",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
+                    "name": "Treatment",
+                    "disable_features": [
                         "WebUITabStrip"
                     ]
                 }
