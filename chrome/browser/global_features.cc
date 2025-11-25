@@ -43,6 +43,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -77,13 +78,11 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 }
 
 void GlobalFeatures::Init() {
-  system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  whats_new_registry_ = CreateWhatsNewRegistry();
-
-  default_browser_manager_ =
-      std::make_unique<default_browser::DefaultBrowserManager>();
-#endif
+#if !BUILDFLAG(IS_ANDROID)
+  startup_launch_manager_ =
+      GetUserDataFactory().CreateInstance<StartupLaunchManager>(
+          *g_browser_process, g_browser_process);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
@@ -94,6 +93,20 @@ void GlobalFeatures::Init() {
     synthetic_trial_manager_ =
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
+#endif
+
+  InitCoreFeatures();
+}
+
+void GlobalFeatures::InitCoreFeatures() {
+  system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/463742800): Migrate WhatsNewRegistry (and other non-core
+  // features) to Init().
+  whats_new_registry_ = CreateWhatsNewRegistry();
+
+  default_browser_manager_ =
+      std::make_unique<default_browser::DefaultBrowserManager>();
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();

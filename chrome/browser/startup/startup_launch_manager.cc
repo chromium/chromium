@@ -6,29 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_switches.h"
 
-namespace {
-StartupLaunchManager* g_instance_for_testing = nullptr;
-}
-
 using auto_launch_util::StartupLaunchMode;
-
-// static
-StartupLaunchManager* StartupLaunchManager::GetInstance() {
-  static base::NoDestructor<StartupLaunchManager> instance;
-  return g_instance_for_testing ? g_instance_for_testing : instance.get();
-}
-
-// static
-void StartupLaunchManager::SetInstanceForTesting(
-    StartupLaunchManager* manager) {
-  g_instance_for_testing = manager;
-}
 
 std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
     const {
@@ -60,15 +44,22 @@ void StartupLaunchManager::UnregisterLaunchOnStartup(
   }
 }
 
-StartupLaunchManager::StartupLaunchManager()
+DEFINE_USER_DATA(StartupLaunchManager);
+
+StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
+                                *this) {}
 
-StartupLaunchManager::~StartupLaunchManager() {
-  if (this == g_instance_for_testing) {
-    g_instance_for_testing = nullptr;
-  }
+StartupLaunchManager::~StartupLaunchManager() = default;
+
+// static
+StartupLaunchManager* StartupLaunchManager::From(
+    BrowserProcess* browser_process) {
+  return browser_process ? Get(browser_process->GetUnownedUserDataHost())
+                         : nullptr;
 }
 
 void StartupLaunchManager::UpdateLaunchOnStartup(

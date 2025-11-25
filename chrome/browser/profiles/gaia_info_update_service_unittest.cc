@@ -56,7 +56,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
 using signin::constants::kNoHostedDomainFound;
@@ -88,14 +87,6 @@ AccountInfo GetValidAccountInfo(std::string email,
 const char kChromiumOrgDomain[] = "chromium.org";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_GLIC)
-class TestStartupLaunchManager : public StartupLaunchManager {
- public:
-  TestStartupLaunchManager() = default;
-  ~TestStartupLaunchManager() override = default;
-};
-#endif
-
 }  // namespace
 
 class GAIAInfoUpdateServiceTest : public testing::Test {
@@ -113,9 +104,6 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-#if BUILDFLAG(ENABLE_GLIC)
-    StartupLaunchManager::SetInstanceForTesting(&startup_launch_manager_);
-#endif
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     RecreateGAIAInfoUpdateService();
@@ -143,9 +131,6 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
       ClearGAIAInfoUpdateService();
     }
     TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-#if BUILDFLAG(ENABLE_GLIC)
-    StartupLaunchManager::SetInstanceForTesting(nullptr);
-#endif
   }
 
   TestingProfile* profile() {
@@ -200,9 +185,6 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-#if BUILDFLAG(ENABLE_GLIC)
-  TestStartupLaunchManager startup_launch_manager_;
-#endif
 };
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {

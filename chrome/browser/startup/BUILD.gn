@@ -11,8 +11,10 @@ source_set("startup") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/common:non_code_constants",
     "//chrome/installer/util:with_no_strings",
+    "//ui/base/unowned_user_data",
   ]
 }
 
@@ -23,7 +25,9 @@ source_set("unit_tests") {
   deps = [
     ":startup",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/test:test_support",
     "//testing/gmock",
+    "//ui/base/unowned_user_data",
   ]
 }

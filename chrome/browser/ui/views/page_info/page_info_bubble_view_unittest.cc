@@ -449,8 +449,6 @@ class PageInfoBubbleViewTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
-
     // Create after the global features to ensure that there are no
     // dangling pointers during teardown.
     CHECK(!web_contents_helper_);

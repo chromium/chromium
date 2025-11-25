@@ -9,9 +9,11 @@
 #include <set>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/installer/util/auto_launch_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class BrowserProcess;
 
 // Reason why a Chrome should be launched on startup.
 enum class StartupLaunchReason { kExtensions, kGlic };
@@ -21,22 +23,19 @@ enum class StartupLaunchReason { kExtensions, kGlic };
 // launch on startup.
 class StartupLaunchManager {
  public:
-  static StartupLaunchManager* GetInstance();
+  explicit StartupLaunchManager(BrowserProcess* browser_process);
+  virtual ~StartupLaunchManager();
 
-  static void SetInstanceForTesting(StartupLaunchManager* manager);
+  DECLARE_USER_DATA(StartupLaunchManager);
+
+  static StartupLaunchManager* From(BrowserProcess* browser_process);
 
   void RegisterLaunchOnStartup(StartupLaunchReason reason);
   void UnregisterLaunchOnStartup(StartupLaunchReason reason);
 
- protected:
-  StartupLaunchManager();
-  virtual ~StartupLaunchManager();
-
+ private:
   virtual void UpdateLaunchOnStartup(
       std::optional<auto_launch_util::StartupLaunchMode> startup_launch_mode);
-
- private:
-  friend class base::NoDestructor<StartupLaunchManager>;
 
   // Returns `std::nullopt` if startup launch should be disabled.
   std::optional<auto_launch_util::StartupLaunchMode> GetStartupLaunchMode()
@@ -47,6 +46,8 @@ class StartupLaunchManager {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::set<StartupLaunchReason> registered_launch_reasons_;
+
+  ui::ScopedUnownedUserData<StartupLaunchManager> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_STARTUP_STARTUP_LAUNCH_MANAGER_H_

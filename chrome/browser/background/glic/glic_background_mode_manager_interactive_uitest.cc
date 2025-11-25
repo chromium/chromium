@@ -36,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -48,7 +49,9 @@ using auto_launch_util::StartupLaunchMode;
 namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
-  TestStartupLaunchManager() = default;
+  explicit TestStartupLaunchManager(BrowserProcess* browser_process)
+      : StartupLaunchManager(browser_process) {}
+
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
 };
@@ -58,6 +61,15 @@ namespace glic {
 
 class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
  public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<TestStartupLaunchManager>(
+                  &browser_process);
+            }));
+  }
+
   void TearDownOnMainThread() override {
     // Disable glic so that the glic_background_mode_manager won't prevent the
     // browser process from closing which causes the test to hang.
@@ -90,6 +102,7 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ui::UserDataFactory::ScopedOverride scoped_override_;
 };
 
 // Checks that modifying the pref propagates to KeepAliveRegistry.
@@ -217,20 +230,20 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
-  auto launch_manager = std::make_unique<TestStartupLaunchManager>();
-  StartupLaunchManager::SetInstanceForTesting(launch_manager.get());
+  auto* launch_manager = static_cast<TestStartupLaunchManager*>(
+      StartupLaunchManager::From(g_browser_process));
 
   EXPECT_CALL(*launch_manager,
               UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
-  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 #endif
 

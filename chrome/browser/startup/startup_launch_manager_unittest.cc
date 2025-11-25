@@ -7,17 +7,23 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/task_environment.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/installer/util/auto_launch_util.h"
-#include "content/public/test/browser_task_environment.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 using auto_launch_util::StartupLaunchMode;
 
 namespace {
+
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
-  TestStartupLaunchManager() = default;
+  explicit TestStartupLaunchManager(BrowserProcess* browser_process)
+      : StartupLaunchManager(browser_process) {}
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
 };
@@ -26,16 +32,25 @@ class TestStartupLaunchManager : public StartupLaunchManager {
 class StartupLaunchManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    launch_on_startup_manager_ = std::make_unique<TestStartupLaunchManager>();
+    scoped_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<TestStartupLaunchManager>(
+                  &browser_process);
+            }));
+
+    // Initialize StartupLaunchManager as it is not created yet.
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
   }
 
   TestStartupLaunchManager* launch_on_startup_manager() {
-    return launch_on_startup_manager_.get();
+    return static_cast<TestStartupLaunchManager*>(
+        StartupLaunchManager::From(g_browser_process));
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestStartupLaunchManager> launch_on_startup_manager_;
+  base::test::TaskEnvironment task_environment_;
+  ui::UserDataFactory::ScopedOverride scoped_override_;
 };
 
 TEST_F(StartupLaunchManagerTest, RegisterLaunchOnStartup) {

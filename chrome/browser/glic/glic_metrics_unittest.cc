@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -131,20 +130,12 @@ class MockStatusTray : public StatusTray {
   const StatusIcons& GetStatusIconsForTest() const { return status_icons(); }
 };
 
-class TestStartupLaunchManager : public StartupLaunchManager {
- public:
-  TestStartupLaunchManager() = default;
-  ~TestStartupLaunchManager() override = default;
-};
-
 class GlicMetricsTestBase : public testing::Test {
  public:
   GlicMetricsTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    StartupLaunchManager::SetInstanceForTesting(&startup_launch_manager_);
-
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
@@ -170,7 +161,6 @@ class GlicMetricsTestBase : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    StartupLaunchManager::SetInstanceForTesting(nullptr);
   }
 
   void ExpectEntryPointImpressionLogged(
@@ -207,7 +197,6 @@ class GlicMetricsTestBase : public testing::Test {
       features::kGlicClosedCaptioning};
 
   content::BrowserTaskEnvironment task_environment_;
-  TestStartupLaunchManager startup_launch_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)

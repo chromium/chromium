@@ -843,7 +843,7 @@ void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
   launch_on_startup_enabled_.emplace(new_launch_on_startup);
 
   StartupLaunchManager* const launch_manager =
-      StartupLaunchManager::GetInstance();
+      StartupLaunchManager::From(g_browser_process);
   if (launch_on_startup_enabled_.value()) {
     launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
   } else {

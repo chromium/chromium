@@ -2638,6 +2638,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/startup",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
     ]

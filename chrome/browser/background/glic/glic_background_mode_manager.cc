@@ -253,11 +253,12 @@ void GlicBackgroundModeManager::ExitBackgroundMode() {
 
 void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 #if BUILDFLAG(IS_WIN)
+  StartupLaunchManager* startup_launch_manager =
+      StartupLaunchManager::From(g_browser_process);
   if (should_launch) {
-    StartupLaunchManager::GetInstance()->RegisterLaunchOnStartup(
-        StartupLaunchReason::kGlic);
+    startup_launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kGlic);
   } else {
-    StartupLaunchManager::GetInstance()->UnregisterLaunchOnStartup(
+    startup_launch_manager->UnregisterLaunchOnStartup(
         StartupLaunchReason::kGlic);
   }
 #endif

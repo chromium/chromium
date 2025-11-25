@@ -19,8 +19,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -124,7 +126,9 @@ class TestStatusIcon : public StatusIcon {
 
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
-  TestStartupLaunchManager() = default;
+  explicit TestStartupLaunchManager(BrowserProcess* browser_process)
+      : StartupLaunchManager(browser_process) {}
+
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
 };
@@ -227,18 +231,27 @@ class BackgroundModeManagerTest : public testing::Test {
         "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
         /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service));
-    startup_launch_manager_ = std::make_unique<TestStartupLaunchManager>();
-    StartupLaunchManager::SetInstanceForTesting(startup_launch_manager_.get());
+
+    startup_launch_manager_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<TestStartupLaunchManager>(
+                  &browser_process);
+            }));
+
+    // Initialize StartupLaunchManager in GlobalFeatures.
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
   }
 
   TestStartupLaunchManager* startup_launch_manager() {
-    return startup_launch_manager_.get();
+    return static_cast<TestStartupLaunchManager*>(
+        StartupLaunchManager::From(g_browser_process));
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::CommandLine> command_line_;
-  std::unique_ptr<TestStartupLaunchManager> startup_launch_manager_;
+  ui::UserDataFactory::ScopedOverride startup_launch_manager_override_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -265,8 +278,14 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
         KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
         KeepAliveRestartOption::DISABLED);
 
-    startup_launch_manager_ = std::make_unique<TestStartupLaunchManager>();
-    StartupLaunchManager::SetInstanceForTesting(startup_launch_manager_.get());
+    startup_launch_manager_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<TestStartupLaunchManager>(
+                  &browser_process);
+            }));
+
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
 
     // Create our test BackgroundModeManager.
     manager_ = std::make_unique<TestBackgroundModeManager>(
@@ -304,7 +323,8 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   }
 
   TestStartupLaunchManager* startup_launch_manager() {
-    return startup_launch_manager_.get();
+    return static_cast<TestStartupLaunchManager*>(
+        StartupLaunchManager::From(g_browser_process));
   }
 
  protected:
@@ -333,7 +353,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   // We aren't interested in if the keep alive works correctly in this test.
   std::unique_ptr<ScopedKeepAlive> test_keep_alive_;
 
-  std::unique_ptr<TestStartupLaunchManager> startup_launch_manager_;
+  ui::UserDataFactory::ScopedOverride startup_launch_manager_override_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS needs extra services to run in the following order.
