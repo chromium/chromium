@@ -204,7 +204,6 @@ public class StripLayoutHelper
             DateUtils.MINUTE_IN_MILLIS;
 
     // Reorder Drag Threshold Constants
-    // TODO(crbug.com/382122020): Revisit and update if needed.
     private static final float INITIATE_REORDER_DRAG_THRESHOLD = 30.f;
 
     // Scrolling constants.
