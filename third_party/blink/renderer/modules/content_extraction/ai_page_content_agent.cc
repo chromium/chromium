@@ -1639,10 +1639,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   //
   // Fragment boxes help understand the visual layout of split content.
   ComputeFragmentBoundingBoxes(object, geometry);
-
-  geometry.is_fixed_or_sticky_position =
-      object.Style()->GetPosition() == EPosition::kFixed ||
-      object.Style()->GetPosition() == EPosition::kSticky;
 }
 
 void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(

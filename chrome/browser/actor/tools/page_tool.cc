@@ -141,8 +141,6 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
         visible_box_origin_point,
         {content_attributes.geometry().visible_bounding_box().width(),
          content_attributes.geometry().visible_bounding_box().height()});
-    observed_target->node_attribute->geometry->is_fixed_or_sticky_position =
-        content_attributes.geometry().is_fixed_or_sticky_position();
   }
   return observed_target;
 }

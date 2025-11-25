@@ -88,10 +88,6 @@ struct AIPageContentGeometry {
   // An empty array indicates that the node is not fragmented or is entirely
   // offscreen. Relative to viewport origin.
   array<gfx.mojom.Rect> fragment_visible_bounding_boxes;
-
-  // Whether the content node is fixed or sticky position. This may suggest
-  // that the node is a header, footer, or sidebar.
-  bool is_fixed_or_sticky_position;
 };
 
 // Represents a selection in the page. This is a frame-level concept.

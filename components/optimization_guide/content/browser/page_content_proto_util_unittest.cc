@@ -744,7 +744,6 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry) {
       gfx::Rect(10, 20, 30, 40);
   text_node->content_attributes->geometry->visible_bounding_box =
       gfx::Rect(11, 21, 31, 41);
-  text_node->content_attributes->geometry->is_fixed_or_sticky_position = true;
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   AIPageContentResult page_content;
@@ -771,7 +770,6 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_EQ(geometry.visible_bounding_box().y(), 21);
   EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
   EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
-  EXPECT_TRUE(geometry.is_fixed_or_sticky_position());
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertPageInteractionInfo) {

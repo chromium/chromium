@@ -1436,67 +1436,6 @@ TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
   CheckTextNode(*footer.children_nodes[0], "Footer");
 }
 
-TEST_F(AIPageContentAgentTest, FixedPosition) {
-  frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(),
-      "     <body>"
-      "       <style>"
-      "       .fixed {"
-      "         position: fixed;"
-      "         top: 50px;"
-      "         left: 50px;"
-      "         width: 200px;"
-      "       }"
-      "       .sticky {"
-      "         position: sticky;"
-      "         top: 50px;"
-      "         left: 3000px;"
-      "         width: 200px;"
-      "       }"
-      "       .normal {"
-      "         width: 250px;"
-      "         height: 80px;"
-      "         margin-top: 20px;"
-      "       }"
-      "       </style>"
-      "       <div class='fixed'>This element stays in place when the page is "
-      "scrolled.</div>"
-      "       <div class='sticky'>This element stays in place when the page is "
-      "scrolled.</div>"
-      "       <div class='normal'>This element flows naturally with the "
-      "document.</div>"
-      "     </body>",
-      url_test_helpers::ToKURL("http://foobar.com"));
-
-  GetAIPageContentWithActionableElements();
-
-  const auto& root = ContentRootNode();
-  ASSERT_EQ(root.children_nodes.size(), 3u);
-
-  EXPECT_FALSE(root.content_attributes->geometry->is_fixed_or_sticky_position);
-
-  const auto& fixed_element = *root.children_nodes[0];
-  CheckContainerNode(fixed_element);
-  EXPECT_TRUE(
-      fixed_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  CheckTextNode(*fixed_element.children_nodes[0],
-                "This element stays in place when the page is scrolled.");
-
-  const auto& sticky_element = *root.children_nodes[1];
-  CheckContainerNode(sticky_element);
-  EXPECT_TRUE(
-      sticky_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  CheckTextNode(*sticky_element.children_nodes[0],
-                "This element stays in place when the page is scrolled.");
-
-  const auto& normal_element = *root.children_nodes[2];
-  CheckContainerNode(normal_element);
-  EXPECT_FALSE(
-      normal_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  CheckTextNode(*normal_element.children_nodes[0],
-                "This element flows naturally with the document.");
-}
-
 TEST_F(AIPageContentAgentTest, RootScroller) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
