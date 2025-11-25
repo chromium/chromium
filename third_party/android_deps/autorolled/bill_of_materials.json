@@ -1330,6 +1330,11 @@
         "version": "18.4.0"
     },
     {
+        "name": "play-services-time",
+        "group": "com.google.android.gms",
+        "version": "16.0.1"
+    },
+    {
         "name": "play-services-vision",
         "group": "com.google.android.gms",
         "version": "20.1.3"

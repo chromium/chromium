@@ -25,6 +25,7 @@
     "committed/libs/com_google_android_gms_play_services_phenotype",
     "committed/libs/com_google_android_gms_play_services_stats",
     "committed/libs/com_google_android_gms_play_services_tasks",
+    "committed/libs/com_google_android_gms_play_services_time",
     "committed/libs/com_google_android_gms_play_services_vision",
     "committed/libs/com_google_android_gms_play_services_vision_common",
     "committed/libs/com_google_android_libraries_identity_googleid_googleid",
