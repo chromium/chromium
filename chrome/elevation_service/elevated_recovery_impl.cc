@@ -6,6 +6,7 @@
 
 #include <objbase.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -131,23 +132,28 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
   std::vector<char> buffer(kBufferSize);
 
   for (uint64_t total_bytes_read = 0;;) {
-    const int bytes_read =
-        UNSAFE_TODO(from_file.ReadAtCurrentPos(buffer.data(), buffer.size()));
-    if (bytes_read < 0)
+    const std::optional<size_t> bytes_read =
+        from_file.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read) {
       return HRESULTFromLastError();
-    if (bytes_read == 0)
+    }
+    if (bytes_read == 0) {
       return S_OK;
+    }
 
-    total_bytes_read += bytes_read;
-    if (total_bytes_read > kMaxFileSize)
+    total_bytes_read += *bytes_read;
+    if (total_bytes_read > kMaxFileSize) {
       return E_INVALIDARG;
+    }
 
-    const int bytes_written =
-        UNSAFE_TODO(to_file.WriteAtCurrentPos(&buffer[0], bytes_read));
-    if (bytes_written < 0)
+    const std::optional<size_t> bytes_written = to_file.WriteAtCurrentPos(
+        base::as_byte_span(buffer).first(*bytes_read));
+    if (!bytes_written) {
       return HRESULTFromLastError();
-    if (bytes_written != bytes_read)
+    }
+    if (bytes_written != bytes_read) {
       return E_UNEXPECTED;
+    }
   }
 
   NOTREACHED();
