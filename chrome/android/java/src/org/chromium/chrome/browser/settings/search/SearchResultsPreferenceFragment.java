@@ -66,48 +66,17 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
         setPreferenceScreen(screen);
 
         String prevGroup = null;
-        String mainSettings = MainSettings.class.getName();
-        int entrySize = mPreferenceData.size();
-        for (int i = 0; i < entrySize; ++i) {
-            SettingsIndexData.Entry info = mPreferenceData.get(i);
+        for (SettingsIndexData.Entry info : mPreferenceData) {
             String group = info.header;
-            System.out.println(
-                    "crdebug i: "
-                            + i
-                            + " prev: "
-                            + prevGroup
-                            + " group: "
-                            + group
-                            + " i+1: "
-                            + (i + 1 < entrySize ? mPreferenceData.get(i + 1).header : "x"));
+
             // The results are grouped by the top level setting categories. Build the category
             // header above the group.
             if (!TextUtils.equals(group, prevGroup)) {
-                // Skip a single-entry group
-                // header: Appearance                    removed (header)
-                //  entry: Appearance             =>      entry: Appearance
-                // header: About Chrome                  header: About Chrome
-                //  entry: Application version            entry: Application version
-                if ((i + 1 >= entrySize
-                                || !TextUtils.equals(group, mPreferenceData.get(i + 1).header))
-                        && TextUtils.equals(mainSettings, info.parentFragment)) {
-                    System.out.println("crdebug show as a entry: " + group);
-                    var headerPref = new PreferenceCategory(requireContext());
-                    headerPref.setIconSpaceReserved(false);
-                    screen.addPreference(headerPref);
-                } else {
-                    var headerPref = new PreferenceCategory(requireContext());
-                    headerPref.setTitle(group);
-                    headerPref.setIconSpaceReserved(false);
-                    screen.addPreference(headerPref);
-                }
+                PreferenceCategory prefGroup = new PreferenceCategory(requireContext());
+                prefGroup.setTitle(group);
+                prefGroup.setIconSpaceReserved(false);
+                screen.addPreference(prefGroup);
             }
-
-            // Do not show the top-level entry since it looks duplicated with the header.
-            // Example:
-            // header: Toolbar shortcut             header: Toolbar shortcut
-            //  entry: Toolbar shortcut      =>     removed (top-level entry)
-            //  entry: Choose button..               entry: Choose button...
             Preference preference = new Preference(requireContext());
             preference.setKey(info.key);
             preference.setTitle(info.title);
@@ -116,7 +85,7 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                     pref -> {
                         // For top-level entries, open the fragment itself, not MainSettings.
                         String fragmentToOpen = info.parentFragment;
-                        if (TextUtils.equals(mainSettings, info.parentFragment)) {
+                        if (TextUtils.equals(info.parentFragment, MainSettings.class.getName())) {
                             fragmentToOpen = info.fragment;
                         }
                         if (fragmentToOpen != null) {
