@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -21,8 +22,16 @@ using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 
 namespace {
 
+NSString* const kCopyConditionName = @"Link copied condition";
+
+NSString* const kLoadReaderModeFailedMessage =
+    @"Reader mode content could not be loaded";
+NSString* const kCopyLinkFailedMessage = @"Copying link failed";
+NSString* const kBlockCopyingLinkFailedMessage =
+    @"Link should not have been copied";
+
 // Path to a page compatible with reader mode.
-const char kReaderModeArticlePath[] = "/article.html";
+const char kArticlePath[] = "/article.html";
 
 // URL to a page with a static message.
 const char kDestinationPageUrl[] = "/destination";
@@ -69,7 +78,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 - (void)setUp {
   [super setUp];
-
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
@@ -90,14 +98,14 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [DataControlsAppInterface setBlockCopyRule];
 
   [ChromeEarlGrey clearPasteboard];
-  const GURL initialURL = self.testServer->GetURL(kReaderModeArticlePath);
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
   GREYAssertTrue(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
-      @"Reader mode content could not be loaded");
+      kLoadReaderModeFailedMessage);
 
   // Wait for Reader Mode UI to appear on-screen.
   [ChromeEarlGrey
@@ -117,7 +125,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
   // Check that the link was not copied.
   GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
-                 @"Link should not have been copied");
+                 kBlockCopyingLinkFailedMessage);
   [DataControlsAppInterface clearDataControlRules];
 }
 
@@ -127,14 +135,14 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [DataControlsAppInterface setWarnCopyRule];
 
   [ChromeEarlGrey clearPasteboard];
-  const GURL initialURL = self.testServer->GetURL(kReaderModeArticlePath);
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
   GREYAssertTrue(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
-      @"Reader mode content could not be loaded");
+      kLoadReaderModeFailedMessage);
 
   // Wait for Reader Mode UI to appear on-screen.
   [ChromeEarlGrey
@@ -156,11 +164,11 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   // Check that the link was copied.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
   GREYCondition* copyCondition = [GREYCondition
-      conditionWithName:@"Link copied condition"
+      conditionWithName:kCopyConditionName
                   block:^BOOL {
                     return [ChromeEarlGrey pasteboardURL] == destinationURL;
                   }];
-  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+  GREYAssertTrue([copyCondition waitWithTimeout:5], kCopyLinkFailedMessage);
   [ChromeEarlGrey clearPasteboard];
   [DataControlsAppInterface clearDataControlRules];
 }
@@ -171,14 +179,14 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [DataControlsAppInterface setWarnCopyRule];
 
   [ChromeEarlGrey clearPasteboard];
-  const GURL initialURL = self.testServer->GetURL(kReaderModeArticlePath);
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
   GREYAssertTrue(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
-      @"Reader mode content could not be loaded");
+      kLoadReaderModeFailedMessage);
 
   // Wait for Reader Mode UI to appear on-screen.
   [ChromeEarlGrey
@@ -198,7 +206,106 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       performAction:grey_tap()];
   // Check that the link was not copied.
   GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
-                 @"Link should not have been copied");
+                 kBlockCopyingLinkFailedMessage);
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that by DataControlsRules policy, copying a link is blocked when using
+// the JavaScript Clipboard API to directly write text to clipboard.
+- (void)testCopyBlockedOnJSClipboardAPI {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"navigator.clipboard.writeText('%@').then(() => { return "
+                    @"'SUCCESS'; }).catch(() => { return 'FAILURE'; });",
+                    base::SysUTF8ToNSString(destinationURL.spec())];
+
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 kBlockCopyingLinkFailedMessage);
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that by DataControlsRules policy, copying a link is warned and ignored
+// by the user when using the JavaScript Clipboard API to directly write text to
+// clipboard, and link is indeed copied to clipboard.
+- (void)testCopyWarndOnJSClipboardAPIProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"navigator.clipboard.writeText('%@').then(() => { return "
+                    @"'SUCCESS'; }).catch(() => { return 'FAILURE'; });",
+                    base::SysUTF8ToNSString(destinationURL.spec())];
+
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the link was copied.
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:kCopyConditionName
+                  block:^BOOL {
+                    return [ChromeEarlGrey pasteboardURL] == destinationURL;
+                  }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], kCopyLinkFailedMessage);
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that by DataControlsRules policy, copying a link is warned and
+// cancelled by the user when using the JavaScript Clipboard API to directly
+// write text to clipboard, and clipboard remains empty.
+- (void)testCopyWarndOnJSClipboardAPICancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kArticlePath);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"navigator.clipboard.writeText('%@').then(() => { return "
+                    @"'SUCCESS'; }).catch(() => { return 'FAILURE'; });",
+                    base::SysUTF8ToNSString(destinationURL.spec())];
+
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 kBlockCopyingLinkFailedMessage);
+  [ChromeEarlGrey clearPasteboard];
   [DataControlsAppInterface clearDataControlRules];
 }
 
