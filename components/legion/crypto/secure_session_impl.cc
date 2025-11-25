@@ -9,62 +9,28 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/logging.h"
-#include "base/task/sequenced_task_runner.h"
+#include "components/legion/crypto/constants.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
-#include "third_party/oak/chromium/proto/session/session.pb.h"
 
 namespace legion {
 
-namespace {
-// Length of a P-256 public key in uncompressed X9.62 format.
-constexpr size_t kP256X962Length = 65;
-}  // namespace
+HandshakeMessage::HandshakeMessage(std::vector<uint8_t> ephemeral_public_key,
+                                   std::vector<uint8_t> ciphertext)
+    : ephemeral_public_key(ephemeral_public_key), ciphertext(ciphertext) {}
+
+HandshakeMessage::~HandshakeMessage() = default;
+
+HandshakeMessage::HandshakeMessage(HandshakeMessage&&) = default;
+
+HandshakeMessage& HandshakeMessage::operator=(HandshakeMessage&&) = default;
 
 SecureSessionImpl::SecureSessionImpl() = default;
 
 SecureSessionImpl::~SecureSessionImpl() = default;
 
-void SecureSessionImpl::GetHandshakeMessage(
-    SecureSession::GetHandshakeMessageOnceCallback callback) {
-  auto result = GetHandshakeMessageSync();
-
-  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), std::move(result)));
-}
-
-void SecureSessionImpl::ProcessHandshakeResponse(
-    const oak::session::v1::HandshakeResponse& response,
-    SecureSession::ProcessHandshakeResponseOnceCallback callback) {
-  bool result = ProcessHandshakeResponseSync(response);
-
-  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
-void SecureSessionImpl::Encrypt(const Request& data,
-                                EncryptOnceCallback callback) {
-  auto result = EncryptSync(data);
-
-  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), std::move(result)));
-}
-
-void SecureSessionImpl::Decrypt(const oak::session::v1::EncryptedMessage& data,
-                                DecryptOnceCallback callback) {
-  auto result = DecryptSync(data);
-
-  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), std::move(result)));
-}
-
-oak::session::v1::HandshakeRequest
-SecureSessionImpl::GetHandshakeMessageSync() {
+HandshakeMessage SecureSessionImpl::GetHandshakeMessage() {
   noise_.emplace();
   noise_->Init(Noise::HandshakeType::kNN);
   uint8_t prologue[1];
@@ -83,33 +49,29 @@ SecureSessionImpl::GetHandshakeMessageSync() {
   noise_->MixHash(ephemeral_public_key_bytes);
   noise_->MixKey(ephemeral_public_key_bytes);
 
+  std::vector<uint8_t> ephemeral_public_key(
+      std::begin(ephemeral_public_key_bytes),
+      std::end(ephemeral_public_key_bytes));
   std::vector<uint8_t> ciphertext_request = noise_->EncryptAndHash({});
 
-  oak::session::v1::HandshakeRequest handshake_request;
-  auto* noise_message = handshake_request.mutable_noise_handshake_message();
-  noise_message->set_ephemeral_public_key(ephemeral_public_key_bytes,
-                                          sizeof(ephemeral_public_key_bytes));
-  noise_message->set_ciphertext(ciphertext_request.data(),
-                                ciphertext_request.size());
-  return handshake_request;
+  return HandshakeMessage(std::move(ephemeral_public_key),
+                          std::move(ciphertext_request));
 }
 
-bool SecureSessionImpl::ProcessHandshakeResponseSync(
-    const oak::session::v1::HandshakeResponse& response) {
+bool SecureSessionImpl::ProcessHandshakeResponse(
+    const HandshakeMessage& response) {
   if (!noise_) {
     DLOG(ERROR) << "Handshake not initiated.";
     return false;
   }
 
-  const auto& noise_response = response.noise_handshake_message();
-  std::vector<uint8_t> e(noise_response.ephemeral_public_key().begin(),
-                         noise_response.ephemeral_public_key().end());
-
   bssl::UniquePtr<EC_POINT> peer_point(
       EC_POINT_new(EC_KEY_get0_group(ephemeral_key_.get())));
   uint8_t shared_key_ee[32];
   const EC_GROUP* group = EC_KEY_get0_group(ephemeral_key_.get());
-  if (!EC_POINT_oct2point(group, peer_point.get(), e.data(), e.size(),
+  if (!EC_POINT_oct2point(group, peer_point.get(),
+                          response.ephemeral_public_key.data(),
+                          response.ephemeral_public_key.size(),
                           /*ctx=*/nullptr) ||
       ECDH_compute_key(shared_key_ee, sizeof(shared_key_ee), peer_point.get(),
                        ephemeral_key_.get(),
@@ -118,14 +80,11 @@ bool SecureSessionImpl::ProcessHandshakeResponseSync(
     return false;
   }
 
-  noise_->MixHash(e);
-  noise_->MixKey(e);
+  noise_->MixHash(response.ephemeral_public_key);
+  noise_->MixKey(response.ephemeral_public_key);
   noise_->MixKey(shared_key_ee);
 
-  std::vector<uint8_t> ciphertext_response(noise_response.ciphertext().begin(),
-                                           noise_response.ciphertext().end());
-
-  auto plaintext = noise_->DecryptAndHash(ciphertext_response);
+  auto plaintext = noise_->DecryptAndHash(response.ciphertext);
   if (!plaintext || !plaintext->empty()) {
     DLOG(ERROR) << "Invalid handshake message: " << plaintext.has_value();
     return false;
@@ -138,35 +97,34 @@ bool SecureSessionImpl::ProcessHandshakeResponseSync(
   return true;
 }
 
-std::optional<oak::session::v1::EncryptedMessage>
-SecureSessionImpl::EncryptSync(const Request& data) {
+std::optional<std::vector<uint8_t>> SecureSessionImpl::Encrypt(
+    const std::vector<uint8_t>& input) {
   if (!crypter_) {
     DLOG(ERROR) << "Crypter not initialized. Handshake must be completed.";
     return std::nullopt;
   }
 
-  auto encrypted_data = crypter_->Encrypt(data);
-  if (!encrypted_data) {
+  auto output = crypter_->Encrypt(input);
+  if (!output) {
     DLOG(ERROR) << "Encryption failed.";
     return std::nullopt;
   }
 
-  oak::session::v1::EncryptedMessage encrypted_message;
-  encrypted_message.set_ciphertext(encrypted_data->data(),
-                                   encrypted_data->size());
-  return encrypted_message;
+  return output;
 }
 
-std::optional<Response> SecureSessionImpl::DecryptSync(
-    const oak::session::v1::EncryptedMessage& data) {
+std::optional<std::vector<uint8_t>> SecureSessionImpl::Decrypt(
+    const std::vector<uint8_t>& input) {
   if (!crypter_) {
     DLOG(ERROR) << "Crypter not initialized. Handshake must be completed.";
     return std::nullopt;
   }
-  std::vector<uint8_t> encrypted_response(data.ciphertext().begin(),
-                                          data.ciphertext().end());
+  return crypter_->Decrypt(input);
+}
 
-  return crypter_->Decrypt(encrypted_response);
+void SecureSessionImpl::set_crypter_for_testing(
+    std::unique_ptr<Crypter> crypter) {
+  crypter_ = std::move(crypter);
 }
 
 }  // namespace legion

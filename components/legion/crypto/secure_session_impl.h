@@ -7,45 +7,47 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "components/legion/crypto/crypter.h"
 #include "components/legion/crypto/noise.h"
-#include "components/legion/secure_session.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 
 namespace legion {
 
-class SecureSessionImpl : public SecureSession {
+struct HandshakeMessage {
+  HandshakeMessage(std::vector<uint8_t> ephemeral_public_key,
+                   std::vector<uint8_t> ciphertext);
+  ~HandshakeMessage();
+
+  HandshakeMessage(HandshakeMessage&&);
+  HandshakeMessage& operator=(HandshakeMessage&&);
+
+  HandshakeMessage(const HandshakeMessage&) = delete;
+  HandshakeMessage& operator=(const HandshakeMessage&) = delete;
+
+  std::vector<uint8_t> ephemeral_public_key;
+  std::vector<uint8_t> ciphertext;
+};
+
+class SecureSessionImpl {
  public:
   SecureSessionImpl();
-  ~SecureSessionImpl() override;
+  ~SecureSessionImpl();
 
-  // SecureSession:
-  void GetHandshakeMessage(
-      SecureSession::GetHandshakeMessageOnceCallback callback) override;
-  void ProcessHandshakeResponse(
-      const oak::session::v1::HandshakeResponse& response,
-      ProcessHandshakeResponseOnceCallback callback) override;
-  void Encrypt(const Request& data, EncryptOnceCallback callback) override;
-  void Decrypt(const oak::session::v1::EncryptedMessage& data,
-               DecryptOnceCallback callback) override;
+  HandshakeMessage GetHandshakeMessage();
 
-  void set_crypter_for_testing(std::unique_ptr<Crypter> crypter) {
-    crypter_ = std::move(crypter);
-  }
+  bool ProcessHandshakeResponse(const HandshakeMessage& response);
+
+  std::optional<std::vector<uint8_t>> Encrypt(
+      const std::vector<uint8_t>& input);
+
+  std::optional<std::vector<uint8_t>> Decrypt(
+      const std::vector<uint8_t>& input);
+
+  void set_crypter_for_testing(std::unique_ptr<Crypter> crypter);
 
  private:
-  oak::session::v1::HandshakeRequest GetHandshakeMessageSync();
-
-  bool ProcessHandshakeResponseSync(
-      const oak::session::v1::HandshakeResponse& response);
-
-  std::optional<oak::session::v1::EncryptedMessage> EncryptSync(
-      const Request& data);
-
-  std::optional<Response> DecryptSync(
-      const oak::session::v1::EncryptedMessage& data);
-
   std::optional<Noise> noise_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
   std::unique_ptr<Crypter> crypter_;

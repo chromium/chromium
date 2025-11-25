@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/numerics/byte_conversions.h"
+#include "components/legion/crypto/constants.h"
 #include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
@@ -15,9 +16,6 @@
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
 namespace {
-
-// Length of a P-256 public key in uncompressed X9.62 format.
-constexpr size_t kP256X962Length = 65;
 
 // HKDF2 implements the functions with the same name from Noise[1],
 // specialized to the case where |num_outputs| is two.

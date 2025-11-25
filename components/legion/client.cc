@@ -17,10 +17,10 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "components/legion/attestation_handler_impl.h"
-#include "components/legion/crypto/secure_session_impl.h"
 #include "components/legion/features.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/secure_channel_impl.h"
+#include "components/legion/secure_session_async_impl.h"
 #include "components/legion/websocket_client.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -98,7 +98,7 @@ std::unique_ptr<Client> Client::CreateWithUrl(
             base::BindRepeating(
                 [](network::mojom::NetworkContext* context) { return context; },
                 base::Unretained(context)));
-        auto secure_session = std::make_unique<SecureSessionImpl>();
+        auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
         auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
 
         return std::make_unique<SecureChannelImpl>(

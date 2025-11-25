@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/proto_extras/proto_extras.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("crypto") {
+  sources = [
+    "constants.h",
+    "crypter.cc",
+    "crypter.h",
+    "noise.cc",
+    "noise.h",
+    "secure_session_impl.cc",
+    "secure_session_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//crypto",
+    "//third_party/boringssl",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "test_server_secure_session.cc",
+    "test_server_secure_session.h",
+  ]
+  deps = [
+    ":crypto",
+    "//crypto",
+    "//third_party/boringssl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "crypter_unittest.cc",
+    "secure_session_impl_unittest.cc",
+  ]
+  deps = [
+    ":crypto",
+    ":test_support",
+    "//base",
+    "//testing/gtest",
+  ]
+}
