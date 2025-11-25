@@ -34,6 +34,16 @@ public class SettingsIndexDataTest {
         mIndexData = new SettingsIndexData();
     }
 
+    private void addEntry(String header, String key, String title, String summary, String frag) {
+        mIndexData.addEntry(
+                key,
+                new SettingsIndexData.Entry.Builder(key, key, title, frag)
+                        .setHeader(header)
+                        .setSummary(summary)
+                        .setFragment(frag)
+                        .build());
+    }
+
     /** Tests the basic functionality of adding and retrieving an entry. */
     @Test
     public void testAddAndGetEntry() {
@@ -186,6 +196,23 @@ public class SettingsIndexDataTest {
         assertEquals("key_title_partial", items.get(1).id);
         // 3. The summary match should have the lowest score and be last.
         assertEquals("key_summary", items.get(2).id);
+    }
+
+    @Test
+    public void testGroupByHeader() {
+        addEntry("header1", "item12", "TitleItem12", "SummaryItem12", "P12");
+        addEntry("header2", "item21", "TitleItem21", "SummaryItem21", "P21");
+        addEntry("header3", "item31", "TitleItem31", "SummaryItem31", "P31");
+        addEntry("header2", "item22", "TitleItem22", "SummaryItem22", "P22");
+        addEntry("header1", "item11", "TitleItem11", "SummaryItem11", "P11");
+
+        SettingsIndexData.SearchResults results = mIndexData.search("Item");
+        List<SettingsIndexData.Entry> items = results.groupByHeader();
+        assertEquals("header1", items.get(0).header);
+        assertEquals("header1", items.get(1).header);
+        assertEquals("header2", items.get(2).header);
+        assertEquals("header2", items.get(3).header);
+        assertEquals("header3", items.get(4).header);
     }
 
     /** Tests that the text normalization (diacritic stripping) works correctly. */

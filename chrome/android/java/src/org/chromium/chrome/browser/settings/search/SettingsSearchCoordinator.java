@@ -574,12 +574,11 @@ public class SettingsSearchCoordinator {
     private void displayResultsFragment(SearchResults results) {
         mSearchRunnable = null;
 
-        // TODO(jinsukkim): Group the results by their header.
-
         // Create a new instance of the fragment and pass the results
         mResultsFragment =
                 results.getItems().size() > 0
-                        ? new SearchResultsPreferenceFragment(results, this::onResultSelected)
+                        ? new SearchResultsPreferenceFragment(
+                                results.groupByHeader(), this::onResultSelected)
                         : new EmptyFragment(R.drawable.settings_no_match, this::openHelpCenter);
 
         // Get the FragmentManager and replace the current fragment in the container

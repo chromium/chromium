@@ -420,6 +420,44 @@ public class SettingsIndexData {
             }
             return entryList;
         }
+
+        /** Returns a list of search results after grouping them by the header. */
+        public List<Entry> groupByHeader() {
+            Map<String, Integer> groups = new HashMap<>();
+            List<Entry> results = new ArrayList<>();
+            int pos = 0;
+
+            // The input is already sorted by the score. Move up items till
+            // they all get grouped together.
+            for (Map.Entry<Integer, Entry> pair : mScoredItems) {
+                Entry entry = pair.getValue();
+                String header = entry.header;
+                int groupPos = groups.getOrDefault(header, -1);
+                if (groupPos < 0) {
+                    // |groups| keep the position of the lowest entries of each group.
+                    // The new item with the same group is inserted in that position.
+                    groups.put(header, pos);
+                    results.add(entry);
+                } else {
+                    // Push down all the items not in |header| and add the new one there.
+                    if (groupPos == results.size() - 1) {
+                        results.add(entry);
+                    } else {
+                        results.add(groupPos + 1, entry);
+                    }
+                    Map<String, Integer> newGroups = new HashMap<>();
+                    for (String key : groups.keySet()) {
+                        // Adjust |groups| after a new item is inserted. Any group
+                        // below the current pos should be pushed down by one.
+                        int p = groups.get(key);
+                        newGroups.put(key, groupPos <= p ? p + 1 : p);
+                    }
+                    groups = newGroups;
+                }
+                ++pos;
+            }
+            return results;
+        }
     }
 
     /**

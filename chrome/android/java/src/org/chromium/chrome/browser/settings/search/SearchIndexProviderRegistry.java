@@ -22,9 +22,12 @@ public final class SearchIndexProviderRegistry {
      */
     public static final List<SearchIndexProvider> ALL_PROVIDERS =
             List.of(
+                    // MainSettings always comes at the top. This fixes the order of the header
+                    // groups in which they will be shown in the search results since the index
+                    // uses LinkedHashMap internally.
+                    org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.about_settings.AboutChromeSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
-                    org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.toolbar.adaptive.settings
                             .AdaptiveToolbarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment
