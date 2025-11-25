@@ -112,6 +112,15 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
         MediaCapturePickerManagerBridgeJni.get().onCancel(mNativeMediaCapturePickerManagerBridge);
     }
 
+    @Override
+    public boolean shouldFilterWebContents(WebContents webContents) {
+        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
+        // `destroy` will only be called after the dialog is dismissed.
+        assert mNativeMediaCapturePickerManagerBridge != 0;
+        return MediaCapturePickerManagerBridgeJni.get()
+                .shouldFilterWebContents(mNativeMediaCapturePickerManagerBridge, webContents);
+    }
+
     @NativeMethods
     interface Natives {
         void onPickTab(
@@ -124,5 +133,9 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
         void onPickScreen(long nativeMediaCapturePickerManagerBridge);
 
         void onCancel(long nativeMediaCapturePickerManagerBridge);
+
+        boolean shouldFilterWebContents(
+                long nativeMediaCapturePickerManagerBridge,
+                @JniType("content::WebContents*") WebContents webContents);
     }
 }

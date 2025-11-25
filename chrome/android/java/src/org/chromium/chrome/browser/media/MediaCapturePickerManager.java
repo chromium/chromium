@@ -21,7 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class MediaCapturePickerManager {
     /** A delegate for handling returning the picker result. */
-    public interface Delegate {
+    public interface Delegate extends MediaCapturePickerTabObserver.FilterDelegate {
         /**
          * Called when the user has selected a tab to share.
          *

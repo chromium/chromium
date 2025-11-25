@@ -15,6 +15,8 @@
 #include "base/types/expected.h"
 #include "build/android_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -123,8 +125,9 @@ class DesktopMediaPicker {
     bool exclude_self_browser_surface = false;
     // On Android, this indicates that screen sharing should be excluded.
     bool exclude_monitor_type_surfaces = false;
+    // On Android, this filter is used to filter the tabs that can be captured.
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter;
 #endif
-    // Indicates the source of the request. This is useful for UMA that
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.
     RequestSource request_source = RequestSource::kUnknown;

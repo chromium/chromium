@@ -193,7 +193,9 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     }
 
     void show() {
-        var allTabObserver = new AllTabObserver(new MediaCapturePickerTabObserver(this, mParams));
+        var allTabObserver =
+                new AllTabObserver(
+                        new MediaCapturePickerTabObserver(this, mParams, assumeNonNull(mDelegate)));
 
         var controller =
                 new ModalDialogProperties.Controller() {

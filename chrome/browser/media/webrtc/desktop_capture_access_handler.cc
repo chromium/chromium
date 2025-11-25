@@ -603,6 +603,7 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
       pending_request.request.exclude_self_browser_surface;
   picker_params.exclude_monitor_type_surfaces =
       pending_request.request.exclude_monitor_type_surfaces;
+  picker_params.includable_web_contents_filter = includable_web_contents_filter;
 #endif
 
   pending_request.picker->Show(picker_params, std::move(source_lists),

@@ -7,10 +7,12 @@
 #include <string>
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/MediaCapturePickerManagerBridge_jni.h"
@@ -36,6 +38,8 @@ void MediaCapturePickerManagerBridge::Show(
   CHECK(params.web_contents);
   CHECK(callback_.is_null());
   callback_ = std::move(callback);
+  web_contents_filter_ = params.includable_web_contents_filter;
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MediaCapturePickerManagerBridge_showDialog(
       env, java_object_, params.web_contents->GetJavaWebContents(),
@@ -79,4 +83,13 @@ void MediaCapturePickerManagerBridge::OnPickScreen(JNIEnv* env) {
 void MediaCapturePickerManagerBridge::OnCancel(JNIEnv* env) {
   std::move(callback_).Run(base::unexpected(
       blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
+}
+
+bool MediaCapturePickerManagerBridge::ShouldFilterWebContents(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return true;
+  }
+  return !web_contents_filter_.Run(web_contents);
 }

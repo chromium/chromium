@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 
@@ -44,8 +45,12 @@ class MediaCapturePickerManagerBridge {
   // Called from Java via JNI when the dialog resolves.
   void OnCancel(JNIEnv* env);
 
+  // Called from Java via JNI to check if a tab should be filtered.
+  bool ShouldFilterWebContents(JNIEnv* env, content::WebContents* web_contents);
+
  private:
   DesktopMediaPicker::DoneCallback callback_;
+  DesktopMediaList::WebContentsFilter web_contents_filter_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

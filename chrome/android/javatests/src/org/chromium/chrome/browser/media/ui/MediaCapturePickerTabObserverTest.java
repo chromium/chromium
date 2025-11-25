@@ -38,7 +38,8 @@ import org.chromium.content_public.browser.WebContents;
 public class MediaCapturePickerTabObserverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AllTabObserver.Observer mDelegate;
+    @Mock private AllTabObserver.Observer mObserverDelegate;
+    @Mock private MediaCapturePickerManager.Delegate mFilterDelegate;
 
     private static class ParamsBuilder {
         private WebContents mWebContents = mock(WebContents.class);
@@ -80,27 +81,29 @@ public class MediaCapturePickerTabObserverTest {
     @SmallTest
     public void testRegularTab() {
         final var params = new ParamsBuilder().build();
-        final var observer = new MediaCapturePickerTabObserver(mDelegate, params);
+        final var observer =
+                new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
 
         final Tab tab = createMockTab(params.webContents, /* isNative= */ false);
         observer.onTabAdded(tab);
-        verify(mDelegate).onTabAdded(tab);
+        verify(mObserverDelegate).onTabAdded(tab);
 
         observer.onTabRemoved(tab);
-        verify(mDelegate).onTabRemoved(tab);
+        verify(mObserverDelegate).onTabRemoved(tab);
     }
 
     @Test
     @SmallTest
     public void testNativeTab() {
         final var params = new ParamsBuilder().build();
-        final var observer = new MediaCapturePickerTabObserver(mDelegate, params);
+        final var observer =
+                new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
 
         final Tab tab = createMockTab(/* webContents= */ null, /* isNative= */ true);
         observer.onTabAdded(tab);
-        verify(mDelegate, never()).onTabAdded(tab);
+        verify(mObserverDelegate, never()).onTabAdded(tab);
         observer.onTabRemoved(tab);
-        verify(mDelegate, never()).onTabRemoved(tab);
+        verify(mObserverDelegate, never()).onTabRemoved(tab);
     }
 
     @Test
@@ -109,21 +112,47 @@ public class MediaCapturePickerTabObserverTest {
         final WebContents webContents = mock(WebContents.class);
         final var params =
                 new ParamsBuilder().setWebContents(webContents).setCaptureThisTab(true).build();
-        final var observer = new MediaCapturePickerTabObserver(mDelegate, params);
+        final var observer =
+                new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
 
         final Tab thisTab = createMockTab(webContents, /* isNative= */ false);
         final Tab anotherTab = createMockTab(mock(WebContents.class), /* isNative= */ false);
 
         observer.onTabAdded(thisTab);
-        verify(mDelegate).onTabAdded(thisTab);
+        verify(mObserverDelegate).onTabAdded(thisTab);
 
         observer.onTabAdded(anotherTab);
-        verify(mDelegate, never()).onTabAdded(anotherTab);
+        verify(mObserverDelegate, never()).onTabAdded(anotherTab);
 
         observer.onTabRemoved(thisTab);
-        verify(mDelegate).onTabRemoved(thisTab);
+        verify(mObserverDelegate).onTabRemoved(thisTab);
 
         observer.onTabRemoved(anotherTab);
-        verify(mDelegate, never()).onTabRemoved(anotherTab);
+        verify(mObserverDelegate, never()).onTabRemoved(anotherTab);
+    }
+
+    @Test
+    @SmallTest
+    public void testPolicyFiltering() {
+        final WebContents webContents = mock(WebContents.class);
+        final var params = new ParamsBuilder().setWebContents(webContents).build();
+        final var observer =
+                new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
+
+        // Tab that should be filtered.
+        final WebContents filteredWebContents = mock(WebContents.class);
+        final Tab filteredTab = createMockTab(filteredWebContents, /* isNative= */ false);
+        when(mFilterDelegate.shouldFilterWebContents(filteredWebContents)).thenReturn(true);
+
+        observer.onTabAdded(filteredTab);
+        verify(mObserverDelegate, never()).onTabAdded(filteredTab);
+
+        // Tab that should not be filtered.
+        final WebContents allowedWebContents = mock(WebContents.class);
+        final Tab allowedTab = createMockTab(allowedWebContents, /* isNative= */ false);
+        when(mFilterDelegate.shouldFilterWebContents(allowedWebContents)).thenReturn(false);
+
+        observer.onTabAdded(allowedTab);
+        verify(mObserverDelegate).onTabAdded(allowedTab);
     }
 }
