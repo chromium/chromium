@@ -104,10 +104,6 @@ void DeRegisterEventLogProvider();
 void DoLegacyCleanups(const InstallerState& installer_state,
                       InstallStatus install_status);
 
-// Returns the time of the start of the console user's Windows logon session, or
-// a null time in case of error.
-base::Time GetConsoleSessionStartTime();
-
 // Returns a DM token decoded from the base-64 `encoded_token`, or null in case
 // of a decoding error.  The returned DM token is an opaque binary blob and
 // should not be treated as an ASCII or UTF-8 string.

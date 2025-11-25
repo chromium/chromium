@@ -382,11 +382,6 @@ TEST(SetupUtilTest, ContainsUnsupportedSwitch) {
       base::CommandLine::FromString(L"foo.exe --chrome-frame")));
 }
 
-TEST(SetupUtilTest, GetConsoleSessionStartTime) {
-  base::Time start_time = installer::GetConsoleSessionStartTime();
-  EXPECT_FALSE(start_time.is_null());
-}
-
 TEST(SetupUtilTest, DecodeDMTokenSwitchValue) {
   // Expect false with empty or badly formed base64-encoded string.
   EXPECT_FALSE(installer::DecodeDMTokenSwitchValue(L""));

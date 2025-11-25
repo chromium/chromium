@@ -11,7 +11,6 @@
 #include <windows.h>
 
 #include <stddef.h>
-#include <wtsapi32.h>
 
 #include <algorithm>
 #include <initializer_list>
@@ -60,7 +59,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace installer {
 
@@ -531,30 +529,6 @@ void DoLegacyCleanups(const InstallerState& installer_state,
   RemoveBinariesVersionKey(installer_state);
   RemoveAppLauncherVersionKey(installer_state);
   RemoveLegacyChromeAppCommands(installer_state);
-}
-
-base::Time GetConsoleSessionStartTime() {
-  constexpr DWORD kInvalidSessionId = 0xFFFFFFFF;
-  DWORD console_session_id = ::WTSGetActiveConsoleSessionId();
-  if (console_session_id == kInvalidSessionId)
-    return base::Time();
-  wchar_t* buffer = nullptr;
-  DWORD buffer_size = 0;
-  if (!::WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE,
-                                    console_session_id, WTSSessionInfo, &buffer,
-                                    &buffer_size)) {
-    return base::Time();
-  }
-  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
-
-  WTSINFO* wts_info = nullptr;
-  if (buffer_size < sizeof(*wts_info))
-    return base::Time();
-
-  wts_info = reinterpret_cast<WTSINFO*>(buffer);
-  FILETIME filetime = {wts_info->LogonTime.u.LowPart,
-                       static_cast<DWORD>(wts_info->LogonTime.u.HighPart)};
-  return base::Time::FromFileTime(filetime);
 }
 
 std::optional<std::string> DecodeDMTokenSwitchValue(
