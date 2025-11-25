@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DISK_CACHE_SQL_SQL_BACKEND_IDS_H_
-#define NET_DISK_CACHE_SQL_SQL_BACKEND_IDS_H_
+#ifndef NET_DISK_CACHE_SQL_SQL_BACKEND_ALIASES_H_
+#define NET_DISK_CACHE_SQL_SQL_BACKEND_ALIASES_H_
 
 #include "base/types/strong_alias.h"
 
-// Defines various IDs used for SQL disk cache backend. The IDs use
-// base::StrongAlias to avoid type confusion.
+// Defines various strong aliases used for SQL disk cache backend.
+// They use base::StrongAlias to avoid type confusion.
 
 namespace disk_cache {
 
@@ -27,4 +27,4 @@ using CacheEntryKeyHash =
 
 }  // namespace disk_cache
 
-#endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_IDS_H_
+#endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_ALIASES_H_

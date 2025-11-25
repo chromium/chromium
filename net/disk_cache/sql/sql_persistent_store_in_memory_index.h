@@ -9,7 +9,7 @@
 #include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
-#include "net/disk_cache/sql/sql_backend_ids.h"
+#include "net/disk_cache/sql/sql_backend_aliases.h"
 
 namespace disk_cache {
 

@@ -19,7 +19,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
-#include "net/disk_cache/sql/sql_backend_ids.h"
+#include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
 // This backend is experimental and only available when the build flag is set.
