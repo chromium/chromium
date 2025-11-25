@@ -23,9 +23,10 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Input.Digitizer.MaxTouchPoints.{PointerDigitizerType}"
-    units="maximum allowed touch points" expires_after="2025-03-01">
+    units="maximum allowed touch points" expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record the maximum number of active touch points allowed for each pointer
@@ -35,6 +36,8 @@ chromium-metrics-reviews@google.com.
     initializing the singleton `TouchUiController` during startup, and once for
     each pointer digitizer that's connected afterwards in response to OS
     specific events.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
   <token key="PointerDigitizerType">
     <variant name="DirectPen" summary="pen digitizer integrated into display"/>
@@ -46,9 +49,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.Digitizer.MaxTouchPointsSupportedBySystemAtStartup"
-    units="maximum supported contacts" expires_after="2025-03-01">
+    units="maximum supported contacts" expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record the maximum number of simultaneous contacts supported by the pointer
@@ -60,13 +64,16 @@ chromium-metrics-reviews@google.com.
     Currently this metric is only available on Windows. This is logged only once
     per browser session, when initializing the singleton `TouchUiController` at
     startup.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
 </histogram>
 
 <histogram name="Input.Digitizer.{Interaction}" enum="PointerDigitizerType"
-    expires_after="2025-03-01">
+    expires_after="2027-01-01">
   <owner>kouhei@chromium.org</owner>
-  <owner>Adam.Ettenberger@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Record each pointer digitizer found at startup, and each pointer digitizer
@@ -81,6 +88,8 @@ chromium-metrics-reviews@google.com.
 
     OnStartup : Logged only once per browser session for each pointer digitizer
     discovered when initializing the singleton `TouchUiController` at startup.
+
+    NOTE: this metric was expired from 2025-03-01 to 2025-11-24.
   </summary>
   <token key="Interaction">
     <variant name="OnConnected" summary="connected following startup"/>

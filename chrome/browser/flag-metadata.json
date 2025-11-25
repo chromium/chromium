@@ -5305,8 +5305,7 @@
     "name": "fluent-overlay-scrollbars",
     "owners": [
       "gastonr@microsoft.com",
-      "gerchiko@microsoft.com",
-      "yshalivskyy@microsoft.com"
+      "gerchiko@microsoft.com"
     ],
     "expiry_milestone": 150
   },
@@ -5314,8 +5313,7 @@
     "name": "fluent-scrollbars",
     "owners": [
       "gastonr@microsoft.com",
-      "gerchiko@microsoft.com",
-      "yshalivskyy@microsoft.com"
+      "gerchiko@microsoft.com"
     ],
     "expiry_milestone": 150
   },

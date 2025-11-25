@@ -2168,8 +2168,7 @@
     "expires": "never",
     "owners": [
       "gastonr@microsoft.com",
-      "gerchiko@microsoft.com",
-      "yshalivskyy@microsoft.com"
+      "gerchiko@microsoft.com"
     ]
   },
   "This suite is incompatible with the default WPT Origin Isolation mode of",
