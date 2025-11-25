@@ -1900,10 +1900,6 @@
     'pdf_ocr': {
       'filepath': 'pdf_ocr'
     },
-    'pepper_api': {
-      'filepath': 'ppapi/api'\
-                  '|ppapi/c',
-    },
     'permissions': {
       'filepath': 'content/(child,browser)/permissions/'\
                   '|content/common/permission_'\
@@ -2850,8 +2846,7 @@
     'chrome_intelligence_feature_protos': ['moqati-team+chromium-watchlist@google.com'],
     'chrome_obsolete_system': ['chromium-watchlist+obsolete@island.io'],
     'chrome_performance_manager': ['performance-manager-reviews@chromium.org'],
-    'chromecast': ['halliwell+watch@chromium.org',
-                   'lcwu+watch@chromium.org'],
+    'chromecast': ['halliwell+watch@chromium.org'],
     'chromecast_public': ['gfhuang+watch@chromium.org'],
     'chromedriver': ['mathias@chromium.org'],
     'chromeos': ['oshima+watch@chromium.org'],
@@ -3005,12 +3000,10 @@
     'exo': ['crostini-ui+exo@chromium.org',
             'yhanada+watchexo@chromium.org'],
     'explore_sites': ['chili+watch@chromium.org',
-                      'dimich+watch@chromium.org',
                       'freedjm+watch@chromium.org'],
     'extension': ['chromium-apps-reviews@chromium.org',
                   'extensions-reviews@chromium.org'],
-    'feed': ['dimich+watch@chromium.org',
-             'harringtond+watch@chromium.org',
+    'feed': ['harringtond+watch@chromium.org',
              'petewil+watch@chromium.org',
              'iwells+watch@chromium.org'],
     'fileapi': ['kinuko+fileapi@chromium.org'],
@@ -3201,7 +3194,6 @@
     'ntp_snippets': ['ntp-dev+reviews@chromium.org'],
     'ntp_tiles': ['ntp-dev+reviews@chromium.org'],
     'offline_pages': ['chili+watch@chromium.org',
-                      'dimich+watch@chromium.org',
                       'fgorski+watch@chromium.org'],
     'omnibox_ios': ['christianxu+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
@@ -3227,8 +3219,7 @@
                            'speed-metrics-dev+watchlist@chromium.org'],
     'page_load_metrics_abandoned_navigations': ['suzukikeita+watch@chromium.org'],
     'page_zoom': ['mschillaci+watchzoom@google.com'],
-    'panels': ['dimich@chromium.org',
-               'jennb@chromium.org',
+    'panels': ['jennb@chromium.org',
                'jianli@chromium.org'],
     'partition_alloc': ['haraken@chromium.org',
                         'lizeb+pa@chromium.org',
@@ -3239,10 +3230,6 @@
     'pdf': ['pdf-reviews@chromium.org'],
     'pdf_ocr': ['kyungjunlee+watch@google.com',
                 'rhalavati+watch@chromium.org'],
-    'pepper_api': ['binji+watch@chromium.org',
-                   'bradnelson+warch@chromium.org',
-                   'ihf+watch@chromium.org',
-                   'teravest+watch@chromium.org'],
     'permissions': ['permissions-reviews@chromium.org'],
     'permissions_policy': ['loonybear@chromium.org',
                            'iclelland+watch@chromium.org',
