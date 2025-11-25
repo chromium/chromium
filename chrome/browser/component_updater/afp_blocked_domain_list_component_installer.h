@@ -31,6 +31,9 @@ enum class InstallationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FingerprintingProtectionComponentInstallationResult)
 
+inline constexpr base::FilePath::StringViewType kComponentBaseInstallDir =
+    FILE_PATH_LITERAL("Fingerprinting Protection Filter");
+
 // Unregisters the component and deletes all component files from user data.
 //
 // TODO(crbug.com/456488732): Delete this function in M156.

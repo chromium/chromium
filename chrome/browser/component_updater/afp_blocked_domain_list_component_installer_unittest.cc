@@ -13,7 +13,6 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,9 +49,8 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
   // Create a test file in the component directory.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath base_install_dir = user_data_dir.Append(
-      fingerprinting_protection_filter::kFingerprintingProtectionRulesetConfig
-          .top_level_directory);
+  base::FilePath base_install_dir =
+      user_data_dir.Append(kComponentBaseInstallDir);
   ASSERT_TRUE(base::CreateDirectory(base_install_dir));
   ASSERT_TRUE(base::WriteFile(
       base_install_dir.Append(FILE_PATH_LITERAL("test.txt")), "test"));
@@ -85,9 +83,8 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
   // doesn't have it installed.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath base_install_dir = user_data_dir.Append(
-      fingerprinting_protection_filter::kFingerprintingProtectionRulesetConfig
-          .top_level_directory);
+  base::FilePath base_install_dir =
+      user_data_dir.Append(kComponentBaseInstallDir);
   ASSERT_FALSE(base::PathExists(base_install_dir));
 
   EXPECT_CALL(*service, UnregisterComponent(_));

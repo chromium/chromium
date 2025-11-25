@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 
 namespace component_updater {
 
@@ -40,9 +39,8 @@ void UnregisterAntiFingerprintingBlockedDomainListComponent(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           [](const base::FilePath& user_data_dir) {
-            base::FilePath base_install_dir = user_data_dir.Append(
-                fingerprinting_protection_filter::
-                    kFingerprintingProtectionRulesetConfig.top_level_directory);
+            base::FilePath base_install_dir =
+                user_data_dir.Append(kComponentBaseInstallDir);
             InstallationResult result;
             if (!base::PathExists(base_install_dir)) {
               result = InstallationResult::kDeletionDirDoesNotExist;

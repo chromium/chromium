@@ -564,7 +564,6 @@ if (!is_android) {
       "//components/contextual_tasks/public",
       "//components/favicon/content",
       "//components/favicon/core",
-      "//components/fingerprinting_protection_filter/common:features",
       "//components/image_fetcher/core",
       "//components/ip_protection/common:ip_protection_status",
       "//components/lens",
