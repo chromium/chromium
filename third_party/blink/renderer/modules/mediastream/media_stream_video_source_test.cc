@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -9,13 +11,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
@@ -436,7 +438,10 @@ TEST_F(MediaStreamVideoSourceTest, RotatedSourceDetectionEnabled) {
 
 // Test that a source producing no frames change the source ReadyState to muted.
 // that in a reasonable time frame the muted state turns to false.
+// TODO(https://crbug.com/449931560): Remove this test.
 TEST_F(MediaStreamVideoSourceTest, MutedSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMediaStreamTrackEmptyVideoFrameMonitor);
   // Setup the source for support a frame rate of 999 fps in order to test
   // the muted event faster. This is since the frame monitoring uses
   // PostDelayedTask that is dependent on the source frame rate.

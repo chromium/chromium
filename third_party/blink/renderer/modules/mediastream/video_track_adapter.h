@@ -26,16 +26,13 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 
-// Enabled-by-default, but exists as a kill-switch.
-// TODO(crbug.com/430230403): Remove this flag once it has been in stable for a
-// few milestones.
-BASE_FEATURE(kScaleFrameForGetDisplayMedia,
-             "ScaleFrameForGetDisplayMedia",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace blink {
 
 class VideoTrackAdapterSettings;
+
+MODULES_EXPORT BASE_DECLARE_FEATURE(kScaleFrameForGetDisplayMedia);
+MODULES_EXPORT BASE_DECLARE_FEATURE(kMediaStreamTrackEmptyVideoFrameMonitor);
 
 // VideoTrackAdapter is a helper class used by MediaStreamVideoSource used for
 // adapting the video resolution from a source implementation to the resolution

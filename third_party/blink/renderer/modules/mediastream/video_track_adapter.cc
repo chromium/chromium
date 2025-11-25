@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -37,6 +38,17 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
+
+// Enabled-by-default, but exists as a kill-switch.
+// TODO(crbug.com/430230403): Remove this flag once it has been in stable for a
+// few milestones.
+BASE_FEATURE(kScaleFrameForGetDisplayMedia, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, prevents a source from being automatically muted if it is not
+// producing frames.
+// TODO(https://crbug.com/449931560): Remove this flag.
+BASE_FEATURE(kMediaStreamTrackEmptyVideoFrameMonitor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -736,10 +748,11 @@ void VideoTrackAdapter::StartFrameMonitoring(
     double source_frame_rate,
     const OnMutedCallback& on_muted_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  if (base::FeatureList::IsEnabled(kMediaStreamTrackEmptyVideoFrameMonitor)) {
+    return;
+  }
   VideoTrackAdapter::OnMutedCallback bound_on_muted_callback =
       base::BindPostTaskToCurrentDefault(on_muted_callback);
-
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
