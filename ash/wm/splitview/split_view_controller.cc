@@ -2141,8 +2141,6 @@ int SplitViewController::GetClosestFixedDividerPosition(int divider_position) {
   // center of the divider, so extract the origin, unless the result is on of
   // the endpoints.
   int divider_upper_limit = GetDividerPositionUpperLimit(root_window_);
-  // TODO(b/319334795): Move this function and `divider_closest_ratio_` to
-  // SplitViewDivider.
   divider_closest_ratio_ = FindClosestPositionRatio(
       float(divider_position + kSplitviewDividerShortSideLength / 2) /
       divider_upper_limit);
