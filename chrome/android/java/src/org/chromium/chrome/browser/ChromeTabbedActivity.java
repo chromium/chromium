@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabbedSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
+import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -364,7 +365,7 @@ import java.util.function.Supplier;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity {
+public class ChromeTabbedActivity extends ChromeActivity implements PreAttachIntentObserver {
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
@@ -673,7 +674,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && !mHasIncognitoExtra) {
             // Ensure that Incognito extras have been checked.
-            setHasIncognitoExtra();
+            setHasIncognitoExtra(getIntent());
         }
     }
 
@@ -682,7 +683,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && getIntent() != null) {
             // Check for incognito extras here if intent is available to allow for override
             // day/night theme.
-            setHasIncognitoExtra();
+            setHasIncognitoExtra(getIntent());
         }
         super.attachBaseContext(newBase);
     }
@@ -4938,14 +4939,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mWindowId, this, mTabModelSelector, getLifecycleDispatcher());
     }
 
-    private void setHasIncognitoExtra() {
-        Intent intent = getIntent();
+    private void setHasIncognitoExtra(@Nullable Intent intent) {
+        if (mHasIncognitoExtra || intent == null) return;
+
         mHasIncognitoExtra =
-                intent != null
-                        && (intent.getBooleanExtra(
-                                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                                || intent.getBooleanExtra(
-                                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                        || intent.getBooleanExtra(
+                                IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false);
     }
 
     @Override
@@ -4964,5 +4964,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             return mIncognitoWindowNightModeStateProvider;
         }
         return super.createNightModeStateProvider();
+    }
+
+    @Override
+    public void onPreAttachIntentAvailable(Intent intent) {
+        setHasIncognitoExtra(intent);
     }
 }
