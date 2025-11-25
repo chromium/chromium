@@ -637,7 +637,7 @@
 <translation id="3174897399179348329">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Page Up; Χρήση</translation>
 <translation id="3176221688814061633">Το Chromebook ή η συσκευή Bluetooth χρησιμοποιεί μια παλαιότερη έκδοση του Bluetooth. Ενεργοποιήστε το Bluetooth Super Resolution ή χρησιμοποιήστε εσωτερικό μικρόφωνο για καλύτερη ποιότητα ήχου.</translation>
 <translation id="3181441307743005334">Η επανεκκίνηση μπορεί να διαρκέσει λίγη ώρα</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Συνδέθηκε σε κάποια συσκευή}other{Συνδέθηκε σε # συσκευές}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Συνδέθηκε σε συσκευή}other{Συνδέθηκε σε # συσκευές}}</translation>
 <translation id="3203405173652969239">Η πρόσβαση με διακόπτη ενεργοποιήθηκε</translation>
 <translation id="3206735939915734551">Ενεργοποίηση/απενεργοποίηση του πλήκτρου Caps Lock</translation>
 <translation id="3207953481422525583">Ρυθμίσεις χρήστη</translation>

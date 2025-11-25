@@ -643,7 +643,7 @@
 <translation id="3519792890877853853">這張資訊卡會針對已開啟分頁中的產品顯示評論</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="3523513363815970085">隱藏「常用網站」</translation>
-<translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="3523789730715594198">你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530024057633834563">目前未儲存任何密碼或密碼金鑰。不過，你可以刪除你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
@@ -887,7 +887,7 @@
 <translation id="4474494258097106883">專為 iPhone 量身打造</translation>
 <translation id="4488754974567924717">如果密碼外洩，我們會通知你</translation>
 <translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
-<translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4502423230170890588">從這個裝置中移除</translation>
 <translation id="4508750114462689118">關閉登入提示</translation>
 <translation id="4509345063551561634">位置：</translation>
@@ -1272,7 +1272,7 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889333064153755823">刪除瀏覽資料</translation>
 <translation id="5896576662943111387">專為 iOS 打造</translation>
-<translation id="5897749768294722429">如要快速回訪瀏覽過的網站，可以同步分頁和歷史記錄。</translation>
+<translation id="5897749768294722429">如要快速造訪先前瀏覽的網站，請同步處理分頁和歷史記錄。</translation>
 <translation id="5898848375214731122">質量</translation>
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方使用相機或 QR 掃描器應用程式掃描這個 QR code</translation>
 <translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
@@ -1421,7 +1421,7 @@
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6404422529625928907">在 Google 雲端硬碟中開啟</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
-<translation id="6406506848690869874">同步</translation>
+<translation id="6406506848690869874">同步處理</translation>
 <translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
@@ -1501,7 +1501,7 @@
 <translation id="6663529247339810546">無法儲存圖片</translation>
 <translation id="6668619169535738264">編輯書籤</translation>
 <translation id="6671294218820966278">標示為已閱讀</translation>
-<translation id="6672697278890207089">請輸入你的複雜密碼</translation>
+<translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6674917187596384849">你可以輕鬆切換帳戶</translation>
 <translation id="6676349090816247042">登入選項。</translation>
 <translation id="667999046851023355">文件</translation>

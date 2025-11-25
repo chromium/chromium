@@ -80,7 +80,7 @@
 <translation id="1047431265488717055">Afrita tenglate&amp;xta</translation>
 <translation id="1048986595386481879">Kvik úthlutun</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}one{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}other{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}}</translation>
-<translation id="1049743911850919806">Fara huldu höfðu</translation>
+<translation id="1049743911850919806">Fara huldu höfði</translation>
 <translation id="1049795001945932310">Tungumá&amp;lastillingar</translation>
 <translation id="1050693411695664090">Léleg</translation>
 <translation id="1053226848101751430">Færslu eytt</translation>
@@ -9473,7 +9473,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7563576896417108627">Sérsníddu og stjórnaðu <ph name="APP_NAME" />. Uppfærsla í boði.</translation>
 <translation id="756445078718366910">Opna vafraglugga</translation>
 <translation id="7564847347806291057">Stöðva ferli</translation>
-<translation id="756503097602602175">Hægt er að hafa umsjón með innskráðum Google reikningum í <ph name="LINK_BEGIN" />stillingunum<ph name="LINK_END" />. Heimildir sem þú hefur veitt vefsvæðum og forritum gætu átt við alla reikningana. Ef þú vilt ekki að vefsvæði eða forrit fái aðgang að reikningsupplýsingunum þínum geturðu skráð þig inn í <ph name="DEVICE_TYPE" /> sem gestur eða vafrað um vefinn í <ph name="LINK_2_BEGIN" />huliðsglugga<ph name="LINK_2_END" />.</translation>
+<translation id="756503097602602175">Hægt er að hafa umsjón með innskráðum Google-reikningum í <ph name="LINK_BEGIN" />stillingunum<ph name="LINK_END" />. Heimildir sem þú hefur veitt vefsvæðum og forritum gætu átt við alla reikningana. Ef þú vilt ekki að vefsvæði eða forrit fái aðgang að reikningsupplýsingunum þínum geturðu skráð þig inn í <ph name="DEVICE_TYPE" /> sem gestur eða vafrað um vefinn í <ph name="LINK_2_BEGIN" />huliðsglugga<ph name="LINK_2_END" />.</translation>
 <translation id="7566118625369982896">Umsjón með forritatenglum í Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Búa til lyklasamsetningu</translation>
@@ -10912,7 +10912,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8533670235862049797">Kveikt er á öruggri vefnotkun</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fliparnir verða opnir í þessu tæki en hópnum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}one{Fliparnir verða opnir í þessu tæki en hópunum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}other{Fliparnir verða opnir í þessu tæki en hópunum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Endurnýjunarvefslóð Netscape-vottorðs</translation>
-<translation id="8536810348276651776">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo Family Link-stillingarnar þínar fyrir Chrome séu notaðar.</translation>
+<translation id="8536810348276651776">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo að Family Link-stillingarnar þínar fyrir Chrome séu notaðar.</translation>
 <translation id="8536956381488731905">Takkahljóð</translation>
 <translation id="8539727552378197395">Nei (HttpOnly)</translation>
 <translation id="8539766201049804895">Uppfæra</translation>

@@ -95,7 +95,7 @@
 <translation id="11635448457105324">Botón Administrar direcciones: actívalo para agregar y administrar direcciones en la configuración de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Se visitó una página</translation>
-<translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu Cuenta de Google)}other{De # sitios (no saldrás de tu Cuenta de Google)}}</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu Cuenta de Google)}other{De # sitio (no saldrás de tu Cuenta de Google)}}</translation>
 <translation id="1167877250265821930">No se pudo descargar <ph name="LANGUAGE" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174644974616730562">Sobre chino n.º 1</translation>
@@ -2314,7 +2314,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4771249073710170730">Radiocontrol y modelismo</translation>
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
 <translation id="4774055414220872623">Suministros para actividades artísticas y manualidades</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{Se bloquearon # vent. emergentes}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{# pop-ups blocked}}</translation>
 <translation id="4780320432697076749">Software de fotografía</translation>
 <translation id="4780366598804516005">Buzón 1</translation>
 <translation id="4785376858512657294">Administrar la Cuenta de Google</translation>

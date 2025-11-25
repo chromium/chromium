@@ -71,7 +71,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="185970820835152459">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chromium vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Leitaðu með myndaleit</translation>
 <translation id="1880677175115548835">Velja texta</translation>
-<translation id="1881322772814446296">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium prófílnum þínum. Chromium gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google-reikninga en getur ekki tengt þau öðrum reikningi. Þér er frjálst að búa til nýjan prófíl til að halda fyrirliggjandi Chromium gögnum aðskildum. <ph name="LEARN_MORE" /></translation>
+<translation id="1881322772814446296">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium-prófílnum þínum. Chromium-gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google-reikninga en getur ekki tengt þau öðrum reikningi. Þér er frjálst að búa til nýjan prófíl til að halda fyrirliggjandi Chromium-gögnum aðskildum. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium sparar rafhlöðuna með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Spyrja um þessa síðu</translation>
 <translation id="1900969832270057921">Uppfærsluþjónusta Chromium</translation>
@@ -243,7 +243,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3790262771324122253">Kynntu þér hvers vegna Chromium lokar á sumt niðurhal</translation>
 <translation id="379589255253486813">Chromium lætur þig vita ef þú þarft að yfirfara eitthvað</translation>
 <translation id="3798048725356732506">Chromium-prófílar hjálpa þér að aðskilja mismunandi hluta lífsins. Bættu nýjum prófíl við núna.</translation>
-<translation id="3802055581630249637">Chromium forhleður síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær</translation>
+<translation id="3802055581630249637">Chromium forhleður síðum sem er líklegt að þú munir skoða svo að þær hlaðist fyrr þegar þú opnar þær</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="3846683726093018685">**Taka saman:** Lýsa aðalviðfangsefninu og tilgangi efnisins á skjámyndinni með einni setningu sem er innan við 30 orð.
 
@@ -326,7 +326,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4654936675281451226">Chromium áttar sig betur á eyðublöðum og getur fyllt þau út fyrir þig með fljótlegri hætti. Kveikt er á þessari stillingu.</translation>
 <translation id="4665829708273112819">Viðvörun: Chromium getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="4673151026126227699">Ef þú deilir einnig Chromium notkunarskýrslum innihalda þær skýrslur vefslóðirnar sem þú opnar</translation>
-<translation id="4677944499843243528">Annað Chromium ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chromium hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chromium.</translation>
+<translation id="4677944499843243528">Annað Chromium-ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chromium hefur læst prófílnum svo að hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chromium.</translation>
 <translation id="4680828127924988555">Hætta við uppsetningu</translation>
 <translation id="469259825538636168">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="4708193446201257833">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chromium. <ph name="SHORTCUT" /> getur breytt stillingum þínum fyrir Google-þjónustur.</translation>

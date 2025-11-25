@@ -714,7 +714,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
 ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> ได้ที่ https://chromeenterprise.google/policies/?policy=DownloadRestrictions</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1479427764273213107">การตั้งค่านโยบายนี้จะกำหนดรายการอุปกรณ์ USB ที่ผู้ใช้จะปลดออกจากไดรเวอร์ Kernel เพื่อใช้งานผ่าน chrome.usb API ในเว็บแอปโดยตรงได้ รายการต่างๆ เป็นการจับคู่ระหว่างตัวระบุผู้ให้บริการ USB และตัวระบุผลิตภัณฑ์เพื่อที่จะระบุฮาร์ดแวร์ที่เจาะจง
+<translation id="1479427764273213107">การตั้งค่านโยบายนี้จะกำหนดรายการอุปกรณ์ USB ที่ผู้ใช้จะปลดออกจากไดรเวอร์ Kernel เพื่อใช้งานผ่าน chrome.usb API ในเว็บแอปโดยตรงได้ รายการต่างๆ เป็นการจับคู่ระหว่างตัวระบุผู้ให้บริการ USB และตัวระบุสินค้าเพื่อที่จะระบุฮาร์ดแวร์ที่เจาะจง
 
       หากไม่ได้ตั้งค่านโยบาย รายการอุปกรณ์ USB ที่ปลดออกได้จะว่างเปล่า</translation>
 <translation id="1481508277421549404">การตั้งค่านโยบายเป็น "จริง" จะให้ส่วนขยายที่ติดตั้งโดยนโยบายระดับองค์กรใช้ Enterprise Hardware Platform API ได้
@@ -2591,7 +2591,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="2806804577787377637">เราเลิกใช้งานและไม่รองรับนโยบายนี้แล้ว โปรดใช้ <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> แทน</translation>
 <translation id="2812417768214606683">นโยบายนี้ระบุรายการอุปกรณ์จัดเก็บข้อมูล USB ที่ได้รับการยกเว้นจากนโยบาย <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> และ <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />
 
-รายการต่างๆ เป็นการจับคู่ระหว่างตัวระบุผู้ให้บริการ USB และตัวระบุผลิตภัณฑ์ซึ่งระบุรุ่นอุปกรณ์ USB ที่เจาะจง</translation>
+รายการต่างๆ เป็นการจับคู่ระหว่างตัวระบุผู้ให้บริการ USB และตัวระบุสินค้าซึ่งระบุรุ่นอุปกรณ์ USB ที่เจาะจง</translation>
 <translation id="2816964824289752181">เปิดใช้ <ph name="DESK_API_NAME" /> สำหรับการควบคุม <ph name="PRODUCT_OS_NAME" /> ของบุคคลที่สาม</translation>
 <translation id="2818074121667686266">เมื่อตั้งค่านโยบายเป็น "เปิดใช้" หรือไม่ได้ตั้งค่า ผู้ใช้จะได้รับข้อความแจ้งหากมีการเข้าถึงการจับเสียง ยกเว้นใน URL ที่ตั้งค่าไว้ในรายการ AudioCaptureAllowedUrls
 

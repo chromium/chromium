@@ -1242,7 +1242,7 @@
 <translation id="1830550083491357902">未登入</translation>
 <translation id="1831848493690504725">系統無法透過已連線的網路連上 Google，建議你選擇其他網路，或是檢查網路設定或 Proxy 設定 (如果使用 Proxy 的話)。</translation>
 <translation id="1832414451155700364">選擇是否要同步處理歷史記錄和分頁</translation>
-<translation id="1832459821645506983">好，我同意</translation>
+<translation id="1832459821645506983">啟用同步功能</translation>
 <translation id="1832511806131704864">手機變更已更新</translation>
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1833059747301212935">輕鬆存取最近使用的文件和近期日曆活動</translation>
@@ -2903,7 +2903,7 @@
 <translation id="2976547701881428815">工具與動作</translation>
 <translation id="2976639738101799892">每次瀏覽都能盡情使用 Google 搜尋和 Google 智慧功能</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
-<translation id="2978697251742938065">與人協作</translation>
+<translation id="2978697251742938065">多人協作</translation>
 <translation id="2979493931538961252">Chromebook 離線而且有可用的無線基地台時</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2979893796619951531">排除網站</translation>
@@ -3202,7 +3202,7 @@
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
-<translation id="319044078641740013">如要輕鬆重新造訪瀏覽過的網站，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="319044078641740013">如要輕鬆造訪先前瀏覽的網站，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192586965067888278">請詳細說明問題。你的意見將送交 Google 專人審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音訊檔</translation>
@@ -3434,7 +3434,7 @@
 <translation id="3364159059299045452">Alt 鍵 + 游標懸停</translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
-<translation id="3365651640097487828">如要分享分頁及與人協作，請驗證身分並同步歷史記錄和分頁</translation>
+<translation id="3365651640097487828">如要分享分頁及多人協作，請驗證身分並同步歷史記錄和分頁</translation>
 <translation id="3368662179834713970">房屋</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示這個連接埠的更多動作</translation>
@@ -3673,7 +3673,7 @@
 <translation id="3522088408596898827">磁碟空間嚴重不足，請釋出磁碟空間，然後再試一次。</translation>
 <translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
 <translation id="3523447078673133727">禁止網站追蹤手勢</translation>
-<translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="3523789730715594198">你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3524518036046613664">探索區域網路中的裝置，例如印表機</translation>
 <translation id="3524965460886318643">匯出活動</translation>
 <translation id="3525606571546393707">請嘗試從其他資料夾開啟檔案，也可選擇「在基本編輯器中開啟」，使用有限的檢視和編輯選項。</translation>
@@ -6398,7 +6398,7 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將立即無法存取「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="5420935737933866496">複製連結(&amp;L)</translation>
 <translation id="5421048291985386320">重新登入(&amp;S)</translation>
-<translation id="542237158771780634">開啟時，資料會儲存到 Google 帳戶，並可在所有裝置上使用。關閉後，資料只會儲存到這部裝置。</translation>
+<translation id="542237158771780634">選項開啟時，資料會儲存到 Google 帳戶，且所有裝置皆可使用。如果關閉，資料只會儲存到這部裝置。</translation>
 <translation id="5422781158178868512">很抱歉，系統無法識別你的外部儲存裝置。</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">下次造訪時，「<ph name="SITE" />」將使用預設權限</translation>
@@ -7599,7 +7599,7 @@
 <translation id="6264520534872750757">繼續使用這部裝置</translation>
 <translation id="6264636978858465832">密碼管理工具需要更多存取權</translation>
 <translation id="626495329434552273">允許覆寫鍵盤輸入內容</translation>
-<translation id="62650662268452475">登入 Google 帳戶即可在所有裝置使用帳戶儲存的書籤、擴充功能和其他資訊</translation>
+<translation id="62650662268452475">登入 Google 帳戶，即可在所有裝置使用帳戶儲存的書籤、擴充功能和其他資訊</translation>
 <translation id="6265159465845424232">先詢問我，再將 Microsoft 檔案複製或移動到 Microsoft OneDrive</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
@@ -7671,7 +7671,7 @@
 <translation id="6309443618838462258">系統管理員不允許這個輸入法</translation>
 <translation id="6309510305002439352">麥克風已關閉</translation>
 <translation id="6310141306111263820">無法安裝 eSIM 設定檔。如需協助，請與你的電信業者聯絡。</translation>
-<translation id="6310767550430673871">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{移除 1 項擴充功能及其儲存在這部裝置的資料}other{移除 {ACCOUNT_EXTENSIONS_COUNT} 項擴充功能及其儲存在這部裝置的資料}}</translation>
+<translation id="6310767550430673871">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{從這部裝置移除先前儲存的 1 項擴充功能及相關資料}other{從這部裝置移除先前儲存的 {ACCOUNT_EXTENSIONS_COUNT} 項擴充功能及相關資料}}</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
 <translation id="6313950457058510656">關閉即時網路共用</translation>
 <translation id="6314819609899340042">你已成功在 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能。</translation>
@@ -7790,7 +7790,7 @@
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="640457954117263537">允許 ChromeOS 和 Android 應用程式及服務使用位置資訊。</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
-<translation id="6406506848690869874">同步</translation>
+<translation id="6406506848690869874">同步處理</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">已允許在裝置上儲存資料</translation>
 <translation id="6408118934673775994">讀取及變更你在<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />和<ph name="WEBSITE_3" />的資料</translation>
@@ -7882,7 +7882,7 @@
 <translation id="6469557521904094793">開啟行動數據網路</translation>
 <translation id="6469702164109431067">密碼和密碼金鑰</translation>
 <translation id="6470120577693311302">閃光燈通知</translation>
-<translation id="6470499912143282503">如要分享分頁及與人協作，請登入 Chrome 並同步歷史記錄和分頁。你也可以在所有裝置上使用儲存的密碼和其他資料。</translation>
+<translation id="6470499912143282503">如要分享分頁及多人協作，請登入 Chrome 並同步歷史記錄和分頁。你也可以在登入的裝置上使用儲存的密碼等資料。</translation>
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [首頁] 按鈕</translation>
 <translation id="6473315466413288899">請選擇</translation>
@@ -8163,7 +8163,7 @@
 <translation id="6670983860904543332">你可透過自動更新取得最新功能。歡迎瀏覽近期更新的重點內容。</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="6671497123040790595">正在配置由 <ph name="MANAGER" /> 管理的設定</translation>
-<translation id="6672697278890207089">請輸入你的複雜密碼</translation>
+<translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止其他人使用這部裝置時查看你的瀏覽資料</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -8304,7 +8304,7 @@
 <translation id="6775163072363532304">可用的裝置會顯示在這裡。</translation>
 <translation id="6775992990195573904">將分頁整理排序</translation>
 <translation id="677646486571529447">新增附註</translation>
-<translation id="6776589734354015877">取得額外的實用功能</translation>
+<translation id="6776589734354015877">享有更多實用功能</translation>
 <translation id="6776729248872343918">啟用快速配對</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6777845730143344223">進一步瞭解 Passpoint 訂閱</translation>
@@ -8542,7 +8542,7 @@
 <translation id="6922763095098248079">這部裝置是由貴機構管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="6923633482430812883">掛接共用裝置時發生錯誤。請檢查你要連接的檔案伺服器是否支援 SMBv2 以上版本。</translation>
 <translation id="6924109527536857168">需要同步處理</translation>
-<translation id="6927200998271693557">如要快速重新造訪瀏覽過的網站，請將歷史記錄和分頁同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6927200998271693557">如要快速造訪先前瀏覽的網站，請將歷史記錄和分頁同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監護功能。如要新增學校帳戶，以便從家裡存取 Google Classroom 和其他學校作業用的網站，請先使用孩子的個人帳戶登入。你稍後可在設定過程中新增學校帳戶。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕擴充功能}other{已拒絕 # 個擴充功能}}</translation>
@@ -9194,7 +9194,7 @@
 <translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾會顯示在這裡</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後仍會在背景繼續執行。</translation>
-<translation id="7399045143794278225">自訂同步功能</translation>
+<translation id="7399045143794278225">自訂同步項目</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400059772197434086">已遭封鎖，無法使用你在以下網站的資訊</translation>
@@ -10136,7 +10136,7 @@
 <translation id="8024161440284949905">繼續使用這些分頁</translation>
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
 <translation id="8025291188699172126">關於更新</translation>
-<translation id="8026471514777758216">你的所有裝置</translation>
+<translation id="8026471514777758216">流暢切換裝置</translation>
 <translation id="8026700655446696031">「<ph name="ADDRESS_SUMMARY" />」住家地址的其他選項</translation>
 <translation id="8026784703228858744">透過同步處理功能儲存書籤和其他資訊</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前造訪過}=1{1 天前造訪過}other{# 天前造訪過}}</translation>
@@ -10582,7 +10582,7 @@
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
 <translation id="8323518750352551353">要分開保存瀏覽資料嗎？</translation>
-<translation id="8323744572398547859">如要取得其他裝置上的分頁，請登入並同步處理歷史記錄。你也可以在所有裝置上存取密碼和其他資料。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="8323744572398547859">如要取得其他裝置上的分頁，請登入並同步處理歷史記錄。你也可以在登入的裝置上使用儲存的密碼等資料。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
@@ -10773,7 +10773,7 @@
 <translation id="8457451314607652708">匯入書籤</translation>
 <translation id="8458259704995116343">無法啟動 VM。</translation>
 <translation id="8458341576712814616">搜尋捷徑</translation>
-<translation id="8458413889418591446">如要快速重新造訪瀏覽過的網站，可以同步歷史記錄和分頁</translation>
+<translation id="8458413889418591446">如要快速造訪先前瀏覽的網站，請同步處理歷史記錄和分頁</translation>
 <translation id="8458627787104127436">在新視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
 <translation id="8459023460357294721">仍要開啟「<ph name="FILE_NAME" />」</translation>
 <translation id="8459333762072051247">登入狀態</translation>
@@ -11450,7 +11450,7 @@
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">是，我同意</translation>
+<translation id="8917490105272468696">啟用同步功能</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式...</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>
@@ -11472,7 +11472,7 @@
 <translation id="8930622219860340959">無線</translation>
 <translation id="8930925309304109522">如要安裝這個語言，請釋出裝置空間</translation>
 <translation id="8931076093143205651">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
-<translation id="8931475688782629595">管理同步處理的項目</translation>
+<translation id="8931475688782629595">管理要同步的項目</translation>
 <translation id="8931693637927865341">小行星</translation>
 <translation id="8931713990831679796">這些印表機已連線並可使用，你可以儲存到設定檔中，方便日後快速存取。</translation>
 <translation id="8932654652795262306">即時網路共用詳細資料</translation>
@@ -11506,7 +11506,7 @@
 <translation id="8954796993367253220">如要刪除訪客模式的歷史記錄，請關閉所有訪客模式視窗。</translation>
 <translation id="8955174612586215829">尋找主題</translation>
 <translation id="8957656266859671822">請選擇帳戶</translation>
-<translation id="8957757410289731985">自訂檔案</translation>
+<translation id="8957757410289731985">自訂設定檔</translation>
 <translation id="8959144235813727886">網站和應用程式</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">快速解答功能的單位轉換結果</translation>

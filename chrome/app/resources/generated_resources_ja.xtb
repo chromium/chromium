@@ -2541,7 +2541,7 @@
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Gemini アプリ アクティビティの表示と管理</translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
-<translation id="2730550884708194161">仕事用プロフィールについて</translation>
+<translation id="2730550884708194161">仕事用プロファイルについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
 <translation id="2730901670247399077">絵文字候補</translation>

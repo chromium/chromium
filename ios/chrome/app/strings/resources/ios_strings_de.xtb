@@ -774,7 +774,7 @@
 <translation id="4021447724486050609">Browser aktualisieren</translation>
 <translation id="4021931095789478915">${url} zur Leseliste hinzufügen</translation>
 <translation id="4026496154402824012">Wenn du die Funktion deaktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />Passwortoptionen<ph name="END_LINK" /></translation>
-<translation id="4028871427853484857">In Konto speichern…</translation>
+<translation id="4028871427853484857">Im Konto speichern…</translation>
 <translation id="4038354071007134711">Keine App zum Öffnen der Datei auf diesem Gerät</translation>
 <translation id="4042870976416480368">Auf Seite suchen</translation>
 <translation id="4045441967987592849">Noch einmal öffnen</translation>
@@ -1183,7 +1183,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="559567008082979829">Du kannst festlegen, dass deine Downloads nach einem Monat gelöscht werden.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
-<translation id="5611398002774823980">In Konto speichern</translation>
+<translation id="5611398002774823980">Im Konto speichern</translation>
 <translation id="561269594905823128">Tippe auf <ph name="BEGIN_BOLD" />Datei auswählen<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Neueste zuerst</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
@@ -1454,7 +1454,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6518133107902771759">Bestätigen</translation>
 <translation id="6518861084553706202">Tabs werden geschlossen und gelöschte Daten können z. B. Passwörter, Browserverlauf und Cookies umfassen.</translation>
 <translation id="6523575793810663688">Anleitung</translation>
-<translation id="6524082013156754186">In Konto speichern</translation>
+<translation id="6524082013156754186">Im Konto speichern</translation>
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
 <translation id="6527208859483186860">Hintergrund {position} von {total}</translation>
 <translation id="6527303717912515753">Teilen</translation>

@@ -830,7 +830,7 @@
 <translation id="4685741273709472646">Выберите из списка</translation>
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="468924408576231679">Скопировать ссылку на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
-<translation id="469286762610133730">Более интересный контент</translation>
+<translation id="469286762610133730">Сделайте рекомендации интереснее</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
@@ -1327,7 +1327,7 @@
 <translation id="6754359471209693699">Начать новый поиск</translation>
 <translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">Войдите в аккаунт, чтобы получать контент на основе своих интересов.</translation>
+<translation id="676305334223455055">Войдите в аккаунт, чтобы мы знали, что вам предлагать.</translation>
 <translation id="6764137532716892442">Общая группа вкладок "<ph name="GROUP_TITLE" />" с новыми действиями</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>

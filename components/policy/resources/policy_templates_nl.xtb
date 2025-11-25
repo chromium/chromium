@@ -4247,7 +4247,7 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
 
       Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch invullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
-<translation id="3989635538409502728">Afmelden</translation>
+<translation id="3989635538409502728">Uitloggen</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
 <translation id="3990834929384096140">Opheffing van systeemaudio-echo niet afdwingen</translation>

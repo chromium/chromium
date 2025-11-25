@@ -7501,7 +7501,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6195693561221576702">Impossibile configurare il dispositivo in modalità demo offline.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
-<translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
+<translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può3 cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
 <translation id="6197128521826316819">Crea codice QR per questa pagina</translation>
 <translation id="6198223452299275399">Scorri tra le pagine</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
@@ -7568,7 +7568,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6238923052227198598">Tieni le note più recenti sulla schermata di blocco</translation>
 <translation id="6238982280403036866">Possono utilizzare JavaScript</translation>
 <translation id="6239558157302047471">Ricarica &amp;frame</translation>
-<translation id="6240637845286751292">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso alla posizione del sistema<ph name="LINK_END" />.</translation>
+<translation id="6240637845286751292">Autorizzazione consentita. Attiva l‘<ph name="LINK_BEGIN" />accesso alla posizione del sistema<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Chiedi ogni volta</translation>
 <translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241530762627360640">Accedere a informazioni sui dispositivi Bluetooth accoppiati con il sistema e rilevare dispositivi Bluetooth nelle vicinanze.</translation>

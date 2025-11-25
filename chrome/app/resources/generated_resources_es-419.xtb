@@ -3293,7 +3293,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3261268979727295785">En el caso de niños más grandes, puedes agregar los controles parentales una vez que finalices con la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3261832505033014216">Llave de acceso para <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">No permitir que los sitios capturen y usen la entrada del mouse</translation>
-<translation id="3262336253311870293">Como <ph name="DOMAIN" /> administra esta cuenta, no saldrás de tu Cuenta de Google. Ya no se sincronizarán tus favoritos, historial, contraseñas ni otro parámetros de configuración. Sin embargo, los datos sincronizados previamente permanecerán almacenados en tu Cuenta de Google y se pueden administrar en el <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
+<translation id="3262336253311870293">Como <ph name="DOMAIN" /> administra esta cuenta, no saldrás de tu Cuenta de Google. Ya no se sincronizarán tus favoritos, historial, contraseñas ni otros parámetros de configuración. Sin embargo, los datos sincronizados previamente permanecerán almacenados en tu Cuenta de Google y se pueden administrar en el <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Es demasiado grande.</translation>
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
@@ -9940,7 +9940,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predeterminado)</translation>
 <translation id="7896292361319775586">¿Quieres guardar <ph name="FILE" />?</translation>
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
-<translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contario, es posible que pierdas datos.</translation>
+<translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contrario, es posible que pierdas datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
 <translation id="7899720074434636454">Descarta la solicitud de <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Para garantizar que este dispositivo se pueda usar de forma segura, tu organización puede consultar información sobre el sistema operativo, el navegador, la configuración y el software instalado en el dispositivo.</translation>
@@ -10328,7 +10328,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8143442547342702591">La app no es válida</translation>
 <translation id="8144429778087524791">Marcar como completada y ocultar</translation>
 <translation id="8145170459658034418">Ahorro de memoria</translation>
-<translation id="8146177459103116374">Si ya estás registrado en este dispositivo, puedes <ph name="LINK2_START" />acceder como un usuario existente<ph name="LINK2_END" /> .</translation>
+<translation id="8146177459103116374">Si ya estás registrado en este dispositivo, puedes <ph name="LINK2_START" />acceder como un usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Agrega tus idiomas preferidos y ordénalos. Los sitios web, cuando sea posible, se mostrarán en estos idiomas. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Se produjo un error en el acceso. Comunícate con el administrador o vuelve a intentarlo.</translation>
 <translation id="8147346945017130012">Para ayudar a mejorar las funciones y el rendimiento de Chrome y ChromeOS, envía automáticamente informes de fallas y datos de uso y de diagnóstico a Google.</translation>

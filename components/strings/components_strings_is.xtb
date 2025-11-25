@@ -4376,7 +4376,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8164078261547504572">Viltu fá tölvupóst þegar verð lækka?</translation>
 <translation id="8169175551046720804">Ekki er hægt að setja upp lyklana „<ph name="DATA_CONTROLS_KEYS" />“ í sama reglusafni</translation>
 <translation id="8175053171643471349">Stjórna tryggðarkortum</translation>
-<translation id="8175796834047840627">Chrome býður þér að vista kortin þín á Google reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum.</translation>
+<translation id="8175796834047840627">Chrome býður þér að vista kortin þín á Google-reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum.</translation>
 <translation id="8176440868214972690">Stjórnandi tækisins hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="817820454357658398">Hreinlætisvörur fyrir konur</translation>
 <translation id="818254048113802060">{0,plural, =1{Lokað var á <ph name="FILE_NAME" /> vegna efnis}one{Lokað var á <ph name="FILE_COUNT" /> skrá vegna efnis}other{Lokað var á <ph name="FILE_COUNT" /> skrár vegna efnis}}</translation>

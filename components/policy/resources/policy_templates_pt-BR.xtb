@@ -8923,7 +8923,7 @@ Essa política se aplica apenas a novas tentativas de conexão e não invalida a
       Se ela estiver desativada, as Respostas rápidas ficarão desativadas.
       Se a política for deixada sem definição, os usuários poderão ativar ou desativar as Respostas rápidas.</translation>
 <translation id="670675748066383347">Configurações do Organizador de guias</translation>
-<translation id="6710714905661200515">Documentos Google (compatível desde a versão 135)</translation>
+<translation id="6710714905661200515">Google Docs (compatível desde a versão 135)</translation>
 <translation id="6712624291905573620">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Quando a política é deixada sem definição ou é desativada, os dados não são coletados nem enviados por upload.
