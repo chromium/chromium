@@ -80,3 +80,45 @@ def check_files_exist(_: str, context):
             'score': 0
         }
     return {'pass': True, 'reason': 'All expected files exist.', 'score': 1}
+
+
+def check_file_content(_: str, context):
+    """Checks if files contain or do not contain specific strings."""
+    file_configs = context.get('config', {}).get('files', [])
+    errors = []
+
+    for config in file_configs:
+        file_path = config.get('path')
+        if not file_path:
+            continue
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except FileNotFoundError:
+            errors.append(f'File not found: {file_path}')
+            continue
+        except Exception as e:
+            errors.append(f'Error reading file {file_path}: {e}')
+            continue
+
+        for s in config.get('present', []):
+            if s not in content:
+                errors.append(
+                    f'Expected to find "{s}" in {file_path}, but it was not '
+                    'found.')
+
+        for s in config.get('absent', []):
+            if s in content:
+                errors.append(
+                    f'Expected to not find "{s}" in {file_path}, but it was '
+                    'found.')
+
+    if errors:
+        return {'pass': False, 'reason': '\n'.join(errors), 'score': 0}
+
+    return {
+        'pass': True,
+        'reason': 'All file content checks passed.',
+        'score': 1
+    }

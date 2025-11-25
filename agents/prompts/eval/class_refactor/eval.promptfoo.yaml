@@ -1,0 +1,64 @@
+description: |
+  Owner: dmurph@
+  Description: Refactor a class in prompt.md
+prompts:
+  - 'file://prompt.md'
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 3000
+      changes:
+        - apply: agents/prompts/eval/class_refactor/fake_class.patch
+tests:
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_added
+      config:
+        files:
+        - base/strings/nested_struct.h
+        - base/strings/nested_struct.cc
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_changed
+      config:
+        files:
+        - base/BUILD.gn
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_file_content
+      config:
+        files:
+          - path: 'base/strings/fake_simple_class.h'
+            absent:
+              - 'struct NestedStruct'
+          - path: 'base/strings/fake_simple_class.cc'
+            absent:
+              - 'CreateNestedStruct'
+            present:
+              - 'NestedClass'
+          - path: 'base/strings/nested_struct.h'
+            present:
+              - 'NestedClass'
+          - path: 'base/BUILD.gn'
+            present:
+              - '"strings/nested_struct.cc",'
+              - '"strings/nested_struct.h",'
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_exist
+      config:
+        files:
+        - out/Default/obj/base/base/nested_struct.o
+    - type: model-graded-closedqa
+      value: |
+        The user was asked to refactor the struct `NestedStruct` from the class `FakeSimpleClass` into its own class `NestedClass`.
+
+        Verify that the following changes were made:
+        1. New files `base/strings/nested_struct.h` and `base/strings/nested_struct.cc` were created.
+        2. The new class `NestedClass` is defined and implemented in the new files.
+        3. `FakeSimpleClass` in `base/strings/fake_simple_class.h` and `base/strings/fake_simple_class.cc` is updated to use `NestedClass`.
+        4. The struct `NestedStruct` is removed from `base/strings/fake_simple_class.h`.
+        5. `base/BUILD.gn` is updated to include `strings/nested_struct.cc` and `strings/nested_struct.h` and build successfully.
+
+        Were all these changes correctly applied in the response?
+      provider: python:agents/testing/gemini_provider.py
+    metadata:
+      precompile_targets:
+      - base_unittests
