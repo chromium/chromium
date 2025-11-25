@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/lens/lens_results_panel_router.h"
 
-#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "components/contextual_tasks/public/features.h"
 
 namespace lens {
 
@@ -17,32 +21,37 @@ LensResultsPanelRouter::LensResultsPanelRouter(
 LensResultsPanelRouter::~LensResultsPanelRouter() = default;
 
 bool LensResultsPanelRouter::IsEntryShowing() {
-  return is_off() ? false : lens_side_panel_coordinator()->IsEntryShowing();
+  // If Lens in contextual tasks is enabled, the side panel to check is the
+  // contextual tasks panel.
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    return tab_interface()
+        ->GetBrowserWindowInterface()
+        ->GetFeatures()
+        .side_panel_ui()
+        ->IsSidePanelEntryShowing(
+            SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  }
+
+  return lens_side_panel_coordinator()->IsEntryShowing();
 }
 
 SidePanelEntry::PanelType LensResultsPanelRouter::GetPanelType() const {
-  return is_off() ? SidePanelEntry::PanelType::kContent
-                  : lens_side_panel_coordinator()->GetPanelType();
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    return SidePanelEntry::PanelType::kToolbar;
+  }
+
+  return lens_side_panel_coordinator()->GetPanelType();
 }
 
 void LensResultsPanelRouter::FocusSearchbox() {
-  if (is_off()) {
-    return;
-  }
   lens_side_panel_coordinator()->FocusSearchbox();
 }
 
 void LensResultsPanelRouter::OnOverlayShown() {
-  if (is_off()) {
-    return;
-  }
   lens_side_panel_coordinator()->SetIsOverlayShowing(true);
 }
 
 void LensResultsPanelRouter::OnOverlayHidden() {
-  if (is_off()) {
-    return;
-  }
   lens_side_panel_coordinator()->SetIsOverlayShowing(false);
 }
 

@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_UI_LENS_LENS_QUERY_FLOW_ROUTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "content/public/browser/web_contents.h"
 
 namespace lens {
 
@@ -78,9 +81,33 @@ class LensQueryFlowRouter {
       std::optional<SkBitmap> region_bytes);
 
  private:
-  raw_ptr<LensOverlayQueryController> lens_overlay_query_controller() const {
+  LensOverlayQueryController* lens_overlay_query_controller() const {
     return lens_search_controller_->lens_overlay_query_controller();
   }
+
+  content::WebContents* web_contents() const {
+    return lens_search_controller_->GetTabInterface()->GetContents();
+  }
+
+  BrowserWindowInterface* browser_window_interface() const {
+    return lens_search_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface();
+  }
+
+  Profile* profile() const {
+    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  }
+
+  // Opens the contextual tasks panel to a default page URL.
+  void OpenContextualTasksPanel();
+
+  // The contextual search session handle that is used to make requests to the
+  // contextual search service. This is only stored by this query router in
+  // cases where the overlay has been opened but a results panel is not present.
+  // This handle is pending because it will eventually be moved to the
+  // contextual tasks UI for ownership.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      pending_session_handle_;
 
   raw_ptr<LensSearchController> lens_search_controller_;
 };

@@ -74,6 +74,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
@@ -1644,6 +1645,12 @@ void LensOverlayController::MaybeHideSharedOverlayView() {
 }
 
 void LensOverlayController::MaybeOpenSidePanel() {
+  // If Lens in contextual tasks is enabled, the side panel is opened by the
+  // contextual tasks side panel UI service rather than the overlay controller.
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    return;
+  }
+
   GetLensOverlaySidePanelCoordinator()
       ->RegisterEntryAndShow();
 }
