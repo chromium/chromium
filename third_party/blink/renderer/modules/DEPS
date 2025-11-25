@@ -1,6 +1,7 @@
 include_rules = [
     "+base/atomic_sequence_num.h",
     "+base/memory/scoped_refptr.h",
+    "+base/memory/values_equivalent.h",
     "+base/containers/heap_array.h",
     "+base/containers/span.h",
     "+mojo/public/cpp/base",

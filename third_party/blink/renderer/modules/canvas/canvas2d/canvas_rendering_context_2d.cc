@@ -45,6 +45,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/values_equivalent.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -646,7 +647,8 @@ void CanvasRenderingContext2D::PruneLocalFontCache(size_t target_size) {
 
 void CanvasRenderingContext2D::StyleDidChange(const ComputedStyle* old_style,
                                               const ComputedStyle& new_style) {
-  if (old_style && old_style->GetFont() == new_style.GetFont()) {
+  if (old_style &&
+      base::ValuesEquivalent(old_style->GetFont(), new_style.GetFont())) {
     return;
   }
   PruneLocalFontCache(0);

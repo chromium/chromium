@@ -974,7 +974,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   // the container values and invalidate style for any changed queries.
   bool invalidate_for_font =
       (unit_flags_ & MediaQueryExpValue::kFontRelative) &&
-      old_style.GetFont() != new_style.GetFont();
+      !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont());
 
   // Writing direction changes may affect how logical queries match for size and
   // scroll-state() queries even when the physical size or scroll-state do not

@@ -262,14 +262,16 @@ bool LayoutSVGRoot::StyleChangeAffectsIntrinsicSize(
   // If the writing mode changed from a horizontal mode to a vertical
   // mode, or vice versa, then our intrinsic dimensions will have
   // changed.
-  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode())
+  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode()) {
     return true;
+  }
   // If our intrinsic dimensions depend on font metrics (by using 'em', 'ex' or
   // any other font-relative unit), any changes to the font may change said
   // dimensions.
   if (IntrinsicSizeIsFontMetricsDependent() &&
-      old_style.GetFont() != style.GetFont())
+      !base::ValuesEquivalent(old_style.GetFont(), style.GetFont())) {
     return true;
+  }
   return false;
 }
 
