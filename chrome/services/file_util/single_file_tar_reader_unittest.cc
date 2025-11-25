@@ -40,14 +40,14 @@ TEST_F(SingleFileTarReaderTest, ExtractTarFile) {
   std::vector<uint8_t> tar_buffer(kTarBufferSize);
   std::vector<uint8_t> contents;
   while (!tar_reader.IsComplete()) {
-    const int bytes_read = UNSAFE_TODO(src_file.ReadAtCurrentPos(
-        reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size()));
-    ASSERT_GE(bytes_read, 0);
+    const std::optional<size_t> bytes_read =
+        src_file.ReadAtCurrentPos(tar_buffer);
+    ASSERT_TRUE(bytes_read.has_value());
+    ASSERT_GE(*bytes_read, 0u);
 
     base::span<const uint8_t> bin_buffer;
-    tar_reader.ExtractChunk(
-        base::span(tar_buffer).first(base::checked_cast<size_t>(bytes_read)),
-        bin_buffer);
+    tar_reader.ExtractChunk(base::span(tar_buffer).first(*bytes_read),
+                            bin_buffer);
     contents.insert(contents.begin(), bin_buffer.begin(), bin_buffer.end());
   }
 
@@ -83,14 +83,14 @@ TEST_F(SingleFileTarReaderTest, EmptyFile) {
 
   SingleFileTarReader tar_reader;
   std::vector<uint8_t> tar_buffer(kTarBufferSize);
-  const int bytes_read = UNSAFE_TODO(src_file.ReadAtCurrentPos(
-      reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size()));
-  ASSERT_GE(bytes_read, 0);
+  const std::optional<size_t> bytes_read =
+      src_file.ReadAtCurrentPos(tar_buffer);
+  ASSERT_TRUE(bytes_read.has_value());
+  ASSERT_GE(*bytes_read, 0u);
 
   base::span<const uint8_t> bin_buffer;
-  tar_reader.ExtractChunk(
-      base::span(tar_buffer).first(base::checked_cast<size_t>(bytes_read)),
-      bin_buffer);
+  tar_reader.ExtractChunk(base::span(tar_buffer).first(*bytes_read),
+                          bin_buffer);
 
   EXPECT_TRUE(tar_reader.IsComplete());
 }
