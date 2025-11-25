@@ -3778,6 +3778,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.ActiveGpuInfo"
+    enum="ActiveGpuInfo" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active and non-active GPU vendor information when a HardwareContextReset
+    event happened in the MediaFoundationService process. Reported whenever such
+    an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.DisplayCount"
+    enum="GpuOrDisplayCount" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of displays when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.GpuCount"
+    enum="GpuOrDisplayCount" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of GPUs when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaFoundationService.IsKeySystemSupported"
     units="ms" expires_after="2026-05-24">
   <owner>xhwang@chromium.org</owner>
@@ -5104,6 +5138,37 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when the MediaFoundationRenderer hits a playback error. Some errors
     are part of the normal user flow (e.g. sleep/resume) and are not a bug.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaFoundationRenderer.PlaybackError.ActiveGpuInfo"
+    enum="ActiveGpuInfo" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active and non-active GPU vendor information when the
+    MediaFoundationRenderer hits a playback error. Reported whenever such an
+    event happens.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaFoundationRenderer.PlaybackError.DisplayCount"
+    enum="GpuOrDisplayCount" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of displays when the MediaFoundationRenderer hits a playback
+    error. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaFoundationRenderer.PlaybackError.GpuCount"
+    enum="GpuOrDisplayCount" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of GPUs when the MediaFoundationRenderer hits a playback error.
+    Reported whenever such an event happens.
   </summary>
 </histogram>
 

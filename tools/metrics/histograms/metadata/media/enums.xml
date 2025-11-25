@@ -26,6 +26,29 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActiveGpuInfo">
+  <int value="1" label="Intel"/>
+  <int value="2" label="NVIDIA"/>
+  <int value="4" label="AMD"/>
+  <int value="8" label="Other"/>
+  <int value="17" label="Intel | Intel (Non-active)"/>
+  <int value="18" label="NVIDIA | Intel (Non-active)"/>
+  <int value="20" label="AMD | Intel (Non-active)"/>
+  <int value="24" label="Other | Intel (Non-active)"/>
+  <int value="33" label="Intel | NVIDIA (Non-active)"/>
+  <int value="34" label="NVIDIA | NVIDIA (Non-active)"/>
+  <int value="36" label="AMD | NVIDIA (Non-active)"/>
+  <int value="40" label="Other | NVIDIA (Non-active)"/>
+  <int value="65" label="Intel | AMD (Non-active)"/>
+  <int value="66" label="NVIDIA | AMD (Non-active)"/>
+  <int value="68" label="AMD | AMD (Non-active)"/>
+  <int value="72" label="Other | AMD (Non-active)"/>
+  <int value="129" label="Intel | Other (Non-active)"/>
+  <int value="130" label="NVIDIA | Other (Non-active)"/>
+  <int value="132" label="AMD | Other (Non-active)"/>
+  <int value="136" label="Other | Other (Non-active)"/>
+</enum>
+
 <enum name="AdaptationReason">
   <int value="0" label="kUserSelection"/>
   <int value="1" label="kResolutionChange"/>
@@ -1232,6 +1255,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ChromeOS system tray"/>
   <int value="3" label="ChromeOS quick settings mini player"/>
   <int value="4" label="ChromeOS quick settings mini player (Cast button)"/>
+</enum>
+
+<enum name="GpuOrDisplayCount">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="One"/>
+  <int value="2" label="Two or more"/>
 </enum>
 
 <enum name="HighlightedTabDiscardStatus">
