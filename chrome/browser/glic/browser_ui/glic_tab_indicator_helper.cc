@@ -115,9 +115,8 @@ void GlicTabIndicatorHelper::OnFocusedTabChanged(
 }
 
 void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
-  auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_->GetBrowserWindowInterface()->GetProfile());
-  bool is_pinned = service->sharing_manager().IsTabPinned(tab_->GetHandle());
+  bool is_pinned =
+      glic_keyed_service_->sharing_manager().IsTabPinned(tab_->GetHandle());
   if (tab_is_focused_ || is_pinned) {
     UpdateTab();
   }
