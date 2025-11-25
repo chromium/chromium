@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
-#define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
+#ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_METRICS_H_
+#define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_METRICS_H_
 
 #include <memory>
 #include <vector>
@@ -12,9 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 
 namespace content {
 class WebContents;
@@ -337,4 +337,4 @@ class GlicInstanceMetrics {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
+#endif  // CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_METRICS_H_

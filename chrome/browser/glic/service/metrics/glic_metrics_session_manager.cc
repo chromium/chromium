@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 
 #include <locale>
 
@@ -11,9 +11,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/common/chrome_features.h"
 
 namespace glic {

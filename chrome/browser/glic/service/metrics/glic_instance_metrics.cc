@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/service/glic_instance_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 
 #include <cmath>
 #include <memory>
@@ -20,8 +20,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
+#include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {

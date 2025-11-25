@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
-#include "chrome/browser/glic/service/glic_instance_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"

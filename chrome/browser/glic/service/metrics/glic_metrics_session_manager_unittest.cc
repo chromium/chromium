@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/service/glic_instance_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
