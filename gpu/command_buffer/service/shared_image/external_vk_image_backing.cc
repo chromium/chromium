@@ -833,7 +833,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
                                memory_fd.release());
 #elif BUILDFLAG(IS_WIN)
     auto memory_handle = vulkan_image->GetMemoryHandle();
-    if (!memory_handle.IsValid()) {
+    if (!memory_handle.is_valid()) {
       return false;
     }
     memory_object.emplace(api);

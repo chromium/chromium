@@ -105,7 +105,7 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
         continue;
       base::win::ScopedHandle scoped_handle = image->GetMemoryHandle(
           static_cast<VkExternalMemoryHandleTypeFlagBits>(handle_type));
-      EXPECT_TRUE(scoped_handle.IsValid())
+      EXPECT_TRUE(scoped_handle.is_valid())
           << std::hex << " handle_types = 0x" << image->handle_types()
           << " handle_type = 0x" << handle_type;
     }
