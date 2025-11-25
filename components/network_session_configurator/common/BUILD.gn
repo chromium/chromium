@@ -5,8 +5,6 @@
 component("common") {
   output_name = "network_session_configurator"
   sources = [
-    "network_features.cc",
-    "network_features.h",
     "network_session_configurator_export.h",
     "network_switch_list.h",
     "network_switches.cc",
