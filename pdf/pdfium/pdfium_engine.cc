@@ -1647,10 +1647,13 @@ void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
     if (caret_) {
       caret_->SetCharAndDraw(
           PageCharacterIndex(point_data.page_index, char_index));
-      caret_->SetVisible(true);
     }
   } else if (click_count >= 2) {
     OnMultipleClick(click_count, point_data.page_index, point_data.char_index);
+  }
+
+  if (caret_) {
+    caret_->SetVisible(click_count == 1);
   }
 }
 
