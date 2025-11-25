@@ -5,6 +5,7 @@
 #include "base/android/callback_android.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/optimization_guide/content/browser/android/jni_headers/PageContentProtoProviderBridge_jni.h"

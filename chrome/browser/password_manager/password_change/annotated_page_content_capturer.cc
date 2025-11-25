@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 AnnotatedPageContentCapturer::AnnotatedPageContentCapturer(
     content::WebContents* web_contents,

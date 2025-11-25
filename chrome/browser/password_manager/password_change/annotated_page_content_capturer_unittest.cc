@@ -14,6 +14,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
