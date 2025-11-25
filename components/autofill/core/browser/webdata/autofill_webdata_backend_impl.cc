@@ -157,12 +157,16 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>(
           std::move(db_task_runner)),
-      ui_task_runner_(ui_task_runner),
-      web_database_backend_(web_database_backend) {}
+      ui_task_runner_(std::move(ui_task_runner)),
+      web_database_backend_(std::move(web_database_backend)) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  this_during_ui_lifecycle_ = weak_ptr_factory_for_ui_lifecycle_.GetWeakPtr();
+}
 
 void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_ui_lifecycle_.InvalidateWeakPtrsAndDoom();
+  DCHECK(!this_during_ui_lifecycle_);
   owning_task_runner()->PostTask(
       FROM_HERE, BindOnce(&AutofillWebDataBackendImpl::ResetUserData,
                           scoped_refptr(this)));
@@ -273,7 +277,7 @@ void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
                          ui_observer.OnAutofillChangedBySync(data_type);
                        }
                      },
-                     weak_ptr_factory_.GetWeakPtr(), data_type));
+                     this_during_ui_lifecycle_, data_type));
 }
 
 void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(

@@ -324,9 +324,18 @@ class AutofillWebDataBackendImpl
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
-  // This factory is used on the UI sequence. All vended weak pointers are
-  // invalidated in ShutdownOnUISequence().
-  base::WeakPtrFactory<AutofillWebDataBackendImpl> weak_ptr_factory_{this};
+  // This WeakPtr is non-null from construction until ShutdownOnUISequence().
+  //
+  // Do *not* call `weak_ptr_factory_for_ui_lifecycle_.GetWeakPtr()`.
+  // Copy `this_during_ui_lifecycle_` instead.
+  // That avoids issuing new WeakPtrs after ShutdownOnUISequence().
+  //
+  // The WeakPtrFactory and WeakPtr are bound to the UI sequence. That is, the
+  // WeakPtr must be dereferenced and null-checked and invalidated only on UI
+  // sequence. See the documentation on thread-safety in weak_ptr.h.
+  base::WeakPtr<AutofillWebDataBackendImpl> this_during_ui_lifecycle_;
+  base::WeakPtrFactory<AutofillWebDataBackendImpl>
+      weak_ptr_factory_for_ui_lifecycle_{this};
 };
 
 }  // namespace autofill
