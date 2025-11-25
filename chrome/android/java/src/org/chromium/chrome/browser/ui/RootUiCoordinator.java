@@ -41,7 +41,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -342,8 +341,7 @@ public class RootUiCoordinator
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
     protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     protected final ObservableSupplier<LayoutManagerImpl> mLayoutManagerImplSupplier;
-    protected final TransitiveObservableSupplier<LayoutManagerImpl, @StripVisibilityState Integer>
-            mTabStripVisibilitySupplier;
+    protected final ObservableSupplier<@StripVisibilityState Integer> mTabStripVisibilitySupplier;
     protected final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     protected final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
@@ -539,9 +537,8 @@ public class RootUiCoordinator
         mLayoutManagerImplSupplier = layoutManagerSupplier;
         mLayoutManagerImplSupplier.addObserver(mLayoutManagerSupplierCallback);
         mTabStripVisibilitySupplier =
-                new TransitiveObservableSupplier<>(
-                        mLayoutManagerImplSupplier,
-                        (layoutManagerImpl) -> {
+                mLayoutManagerImplSupplier.createTransitive(
+                        layoutManagerImpl -> {
                             StripLayoutHelperManager stripLayoutHelperManager =
                                     layoutManagerImpl.getStripLayoutHelperManager();
                             return stripLayoutHelperManager != null

@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -138,4 +139,18 @@ public interface ObservableSupplier<E extends @Nullable Object> extends Supplier
     @Override
     @NullUnmarked
     E get();
+
+    /**
+     * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
+     */
+    default <T extends @Nullable Object> ObservableSupplier<T> createTransitive(
+            Function<E, ObservableSupplier<T>> unwrapFunction) {
+        return new TransitiveObservableSupplier<>(this, unwrapFunction);
+    }
+
+    /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
+    default <T extends @Nullable Object> ObservableSupplier<T> createDerived(
+            Function<@Nullable E, T> unwrapFunction) {
+        return new UnwrapObservableSupplier<>(this, unwrapFunction);
+    }
 }

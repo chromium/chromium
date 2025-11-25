@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
@@ -141,11 +140,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             mTabSwitcherPaneCoordinatorSupplier = new ObservableSupplierImpl<>();
 
     @SuppressWarnings("NullAway") // Generics are not null propagated nicely.
-    private final TransitiveObservableSupplier<@Nullable TabSwitcherPaneCoordinator, Boolean>
-            mHandleBackPressChangedSupplier =
-                    new TransitiveObservableSupplier<>(
-                            mTabSwitcherPaneCoordinatorSupplier,
-                            pc -> pc.getHandleBackPressChangedSupplier());
+    private final ObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            mTabSwitcherPaneCoordinatorSupplier.createTransitive(
+                    TabSwitcherPaneCoordinator::getHandleBackPressChangedSupplier);
 
     private final FrameLayout mRootView;
     private final TabSwitcherPaneCoordinatorFactory mFactory;

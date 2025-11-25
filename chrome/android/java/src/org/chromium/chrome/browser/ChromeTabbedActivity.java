@@ -64,7 +64,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
-import org.chromium.base.supplier.UnwrapObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Nullable;
@@ -966,9 +965,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         });
 
         ObservableSupplier<Boolean> incognitoSupplier =
-                new UnwrapObservableSupplier<>(
-                        mTabModelSelector.getCurrentTabModelSupplier(),
-                        (tabModel) -> tabModel == null ? false : tabModel.isIncognito());
+                mTabModelSelector
+                        .getCurrentTabModelSupplier()
+                        .createDerived(tabModel -> tabModel != null && tabModel.isIncognito());
         HubLayoutDependencyHolder hubLayoutDependencyHolder =
                 new HubLayoutDependencyHolder(
                         mHubProvider.getHubManagerSupplier(),

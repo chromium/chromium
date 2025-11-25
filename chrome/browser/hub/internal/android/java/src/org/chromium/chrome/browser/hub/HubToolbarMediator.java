@@ -31,7 +31,6 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -128,7 +127,7 @@ public class HubToolbarMediator {
             this::onHubSearchEnabledStateChange;
     private final Callback<Boolean> mOnSearchBoxVisibilityChange =
             this::onSearchBoxVisibilityChange;
-    private final TransitiveObservableSupplier<Pane, Boolean> mHairlineVisibilitySupplier;
+    private final ObservableSupplier<Boolean> mHairlineVisibilitySupplier;
 
     private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
     private final Callback<@Nullable Tab> mOnCurrentTabChange = this::onCurrentTabChange;
@@ -173,9 +172,9 @@ public class HubToolbarMediator {
             pane.getHubSearchBoxVisibilitySupplier().addObserver(mOnSearchBoxVisibilityChange);
         }
         mHairlineVisibilitySupplier =
-                new TransitiveObservableSupplier<>(
-                        paneManager.getFocusedPaneSupplier(),
-                        p -> p.getHairlineVisibilitySupplier());
+                paneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitive(Pane::getHairlineVisibilitySupplier);
         mHairlineVisibilitySupplier.addObserver(mOnHairlineVisibilityChange);
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);

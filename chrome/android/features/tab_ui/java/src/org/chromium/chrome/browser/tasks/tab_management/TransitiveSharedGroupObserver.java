@@ -10,7 +10,6 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.collaboration.CollaborationService;
@@ -28,20 +27,15 @@ import java.util.Objects;
  *
  * <p>This class abstracts away the record keeping that would otherwise be required to register and
  * unregister observers and create a new {@link SharedGroupObserver} whenever a different tab group
- * id needs to be observed. See {@link TransitiveObservableSupplier} for details on how the
- * underlying observer chaining works.
+ * id needs to be observed.
  */
 @NullMarked
 public class TransitiveSharedGroupObserver implements Destroyable {
     private final ObservableSupplierImpl<@Nullable SharedGroupObserver>
             mCurrentSharedGroupObserverSupplier = new ObservableSupplierImpl<>();
-    private final TransitiveObservableSupplier<@Nullable SharedGroupObserver, @Nullable Integer>
-            mGroupSharedStateSupplier;
-    private final TransitiveObservableSupplier<
-                    @Nullable SharedGroupObserver, @Nullable List<GroupMember>>
-            mGroupMembersSupplier;
-    private final TransitiveObservableSupplier<@Nullable SharedGroupObserver, @Nullable String>
-            mCollaborationIdSupplier;
+    private final ObservableSupplier<@Nullable Integer> mGroupSharedStateSupplier;
+    private final ObservableSupplier<@Nullable List<GroupMember>> mGroupMembersSupplier;
+    private final ObservableSupplier<@Nullable String> mCollaborationIdSupplier;
     private final TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
     private final CollaborationService mCollaborationService;
@@ -63,16 +57,13 @@ public class TransitiveSharedGroupObserver implements Destroyable {
         mCollaborationService = collaborationService;
 
         mGroupSharedStateSupplier =
-                new TransitiveObservableSupplier<>(
-                        mCurrentSharedGroupObserverSupplier,
+                mCurrentSharedGroupObserverSupplier.createTransitive(
                         SharedGroupObserver::getGroupSharedStateSupplier);
         mGroupMembersSupplier =
-                new TransitiveObservableSupplier<>(
-                        mCurrentSharedGroupObserverSupplier,
+                mCurrentSharedGroupObserverSupplier.createTransitive(
                         SharedGroupObserver::getGroupMembersSupplier);
         mCollaborationIdSupplier =
-                new TransitiveObservableSupplier<>(
-                        mCurrentSharedGroupObserverSupplier,
+                mCurrentSharedGroupObserverSupplier.createTransitive(
                         SharedGroupObserver::getCollaborationIdSupplier);
     }
 

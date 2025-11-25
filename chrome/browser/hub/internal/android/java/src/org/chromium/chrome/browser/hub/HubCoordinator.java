@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -61,7 +60,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * Warning: {@link #getFocusedPane()} may return null if no pane is focused or {@link
      * Pane#getHandleBackPressChangedSupplier()} contains null.
      */
-    private final TransitiveObservableSupplier<Pane, Boolean> mFocusedPaneHandleBackPressSupplier;
+    private final ObservableSupplier<Boolean> mFocusedPaneHandleBackPressSupplier;
 
     private final PaneBackStackHandler mPaneBackStackHandler;
     private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
@@ -101,9 +100,9 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
         mFocusedPaneHandleBackPressSupplier =
-                new TransitiveObservableSupplier<>(
-                        paneManager.getFocusedPaneSupplier(),
-                        p -> p.getHandleBackPressChangedSupplier());
+                paneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitive(BackPressHandler::getHandleBackPressChangedSupplier);
         mFocusedPaneHandleBackPressSupplier.addObserver(
                 castCallback(mBackPressStateChangeCallback));
 
@@ -174,10 +173,11 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                         defaultPaneId);
 
         ObservableSupplier<@Nullable View> overlayViewSupplier =
-                new TransitiveObservableSupplier<Pane, @Nullable View>(
-                        mPaneManager.getFocusedPaneSupplier(),
-                        (Function<Pane, ObservableSupplier<@Nullable View>>)
-                                pane -> pane.getHubOverlayViewSupplier());
+                mPaneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitive(
+                                (Function<Pane, ObservableSupplier<@Nullable View>>)
+                                        Pane::getHubOverlayViewSupplier);
         mOverlayViewManager =
                 new SingleChildViewManager(
                         mContainerView.findViewById(R.id.hub_overlay_container),

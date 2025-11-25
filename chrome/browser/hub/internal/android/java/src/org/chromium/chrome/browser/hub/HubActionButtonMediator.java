@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_B
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,7 +21,7 @@ public class HubActionButtonMediator {
 
     private final Callback<FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
-    private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
+    private @Nullable ObservableSupplier<FullButtonData> mActionButtonDataSupplier;
 
     /** Creates the mediator. */
     public HubActionButtonMediator(PropertyModel propertyModel, PaneManager paneManager) {
@@ -31,8 +30,7 @@ public class HubActionButtonMediator {
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
 
         mActionButtonDataSupplier =
-                new TransitiveObservableSupplier<>(
-                        focusedPaneSupplier, p -> p.getActionButtonDataSupplier());
+                focusedPaneSupplier.createTransitive(Pane::getActionButtonDataSupplier);
         mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
     }
 

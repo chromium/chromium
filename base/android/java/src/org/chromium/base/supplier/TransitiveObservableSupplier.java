@@ -25,7 +25,7 @@ import java.util.function.Function;
  * @param <T> The target type that the client wants to observe.
  */
 @NullMarked
-public class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
+class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
         implements ObservableSupplier<T> {
     // Used to hold observers and current state. However the current value is only valid when there
     // are observers, otherwise is may be stale.
@@ -40,7 +40,8 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
     // removed.
     private @Nullable ObservableSupplier<T> mCurrentTargetSupplier;
 
-    public TransitiveObservableSupplier(
+    // Create using ObservableSuppliers.createTransitive().
+    TransitiveObservableSupplier(
             ObservableSupplier<P> parentSupplier,
             Function<P, ObservableSupplier<T>> unwrapFunction) {
         mParentSupplier = parentSupplier;

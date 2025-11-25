@@ -48,7 +48,7 @@ public class UnwrapObservableSupplierTest {
             };
 
     private static ObservableSupplier<Integer> make(ObservableSupplier<Object> parentSupplier) {
-        return new UnwrapObservableSupplier(parentSupplier, UnwrapObservableSupplierTest::unwrap);
+        return parentSupplier.createDerived(UnwrapObservableSupplierTest::unwrap);
     }
 
     private static Integer unwrap(Object obj) {

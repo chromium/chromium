@@ -29,7 +29,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubUtils;
@@ -169,8 +168,7 @@ public class TabSwitcherPaneMediator
     private final AnimationHandler mSupplementaryContainerAnimationHandler = new AnimationHandler();
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier;
-    private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
-            mCurrentTabListEditorControllerBackSupplier;
+    private @Nullable ObservableSupplier<Boolean> mCurrentTabListEditorControllerBackSupplier;
     private @Nullable View mCustomView;
     private @Nullable Runnable mCustomViewBackPressRunnable;
     private final @Px int mSearchBoxGapPx;
@@ -407,11 +405,8 @@ public class TabSwitcherPaneMediator
                 : "setTabListEditorControllerSupplier should be called only once.";
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mCurrentTabListEditorControllerBackSupplier =
-                new TransitiveObservableSupplier<>(
-                        tabListEditorControllerSupplier,
-                        tabListEditorController -> {
-                            return tabListEditorController.getHandleBackPressChangedSupplier();
-                        });
+                tabListEditorControllerSupplier.createTransitive(
+                        BackPressHandler::getHandleBackPressChangedSupplier);
         mCurrentTabListEditorControllerBackSupplier.addObserver(mNotifyBackPressedCallback);
     }
 

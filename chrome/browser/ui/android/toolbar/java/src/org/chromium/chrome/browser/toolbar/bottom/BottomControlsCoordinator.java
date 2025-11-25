@@ -13,7 +13,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -64,10 +63,9 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
     private final ObservableSupplierImpl<BottomControlsContentDelegate> mContentDelegateWrapper =
             new ObservableSupplierImpl<>();
-    private final TransitiveObservableSupplier<BottomControlsContentDelegate, Boolean>
-            mHandleBackPressChangedSupplier =
-                    new TransitiveObservableSupplier<>(
-                            mContentDelegateWrapper, cd -> cd.getHandleBackPressChangedSupplier());
+    private final ObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            mContentDelegateWrapper.createTransitive(
+                    BackPressHandler::getHandleBackPressChangedSupplier);
 
     private final ScrollingBottomViewResourceFrameLayout mRootFrameLayout;
     private final ScrollingBottomViewSceneLayer mSceneLayer;

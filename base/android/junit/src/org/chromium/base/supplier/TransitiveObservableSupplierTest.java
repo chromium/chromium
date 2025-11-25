@@ -46,9 +46,9 @@ public class TransitiveObservableSupplierTest {
      * Convenience helper when the parent value needs no unwrapping. These methods should be moved
      * to the implementation file if any client needs it.
      */
-    private static <Z> TransitiveObservableSupplier<ObservableSupplier<Z>, Z> make(
+    private static <Z> ObservableSupplier<Z> make(
             ObservableSupplier<ObservableSupplier<Z>> parentSupplier) {
-        return new TransitiveObservableSupplier(parentSupplier, trampoline());
+        return parentSupplier.createTransitive(trampoline());
     }
 
     private static <T> Function<T, T> trampoline() {

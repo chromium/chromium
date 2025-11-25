@@ -14,7 +14,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,6 +28,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 /** Implement methods shared across the different model implementations. */
 @NullMarked
@@ -53,8 +53,8 @@ public abstract class TabModelSelectorBase
             new TabGroupModelFilterProvider();
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
-    private final TransitiveObservableSupplier<TabModel, @Nullable Tab> mCurrentTabSupplier;
-    private final TransitiveObservableSupplier<TabModel, Integer> mCurrentModelTabCountSupplier;
+    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+    private final ObservableSupplier<Integer> mCurrentModelTabCountSupplier;
 
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
@@ -81,11 +81,11 @@ public abstract class TabModelSelectorBase
                 };
         mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
         mCurrentTabSupplier =
-                new TransitiveObservableSupplier<>(
-                        mTabModelSupplier, tabModel -> tabModel.getCurrentTabSupplier());
+                mTabModelSupplier.createTransitive(
+                        (Function<TabModel, ObservableSupplier<@Nullable Tab>>)
+                                TabModel::getCurrentTabSupplier);
         mCurrentModelTabCountSupplier =
-                new TransitiveObservableSupplier<>(
-                        mTabModelSupplier, tabModel -> tabModel.getTabCountSupplier());
+                mTabModelSupplier.createTransitive(TabModel::getTabCountSupplier);
     }
 
     @Initializer

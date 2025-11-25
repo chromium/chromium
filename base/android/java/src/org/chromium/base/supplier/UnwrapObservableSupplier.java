@@ -43,7 +43,7 @@ import java.util.function.Function;
  * @param <T> The target type that the client wants to observe.
  */
 @NullMarked
-public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
+class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
         implements ObservableSupplier<T> {
     private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
     private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
@@ -54,7 +54,7 @@ public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nul
      * @param parentSupplier The parent observable supplier.
      * @param unwrapFunction Converts the parent value to target value. Should handle null values.
      */
-    public UnwrapObservableSupplier(
+    UnwrapObservableSupplier(
             ObservableSupplier<P> parentSupplier, Function<@Nullable P, T> unwrapFunction) {
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
