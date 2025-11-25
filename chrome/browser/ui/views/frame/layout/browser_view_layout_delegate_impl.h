@@ -22,6 +22,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   ~BrowserViewLayoutDelegateImpl() override;
 
   bool ShouldDrawTabStrip() const override;
+  bool ShouldUseTouchableTabstrip() const override;
   bool ShouldDrawVerticalTabStrip() const override;
   bool ShouldDrawWebAppFrameToolbar() const override;
   bool GetBorderlessModeEnabled() const override;

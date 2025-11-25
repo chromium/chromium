@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -99,8 +100,11 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
       return std::make_pair(result, gfx::Size());
     }
     case TabStripType::kWebUi:
+      // WebUI tabstrip is lazily-created.
       return std::make_pair(gfx::Size(),
-                            views().webui_tab_strip->GetMinimumSize());
+                            views().webui_tab_strip
+                                ? views().webui_tab_strip->GetMinimumSize()
+                                : gfx::Size());
     case TabStripType::kNone:
       return std::make_pair(gfx::Size(), gfx::Size());
   }
@@ -134,7 +138,7 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize() const {
 
 BrowserViewTabbedLayoutImpl::TabStripType
 BrowserViewTabbedLayoutImpl::GetTabStripType() const {
-  if (views().webui_tab_strip && views().webui_tab_strip->GetVisible()) {
+  if (delegate().ShouldUseTouchableTabstrip()) {
     return TabStripType::kWebUi;
   }
   if (delegate().ShouldDrawVerticalTabStrip()) {
@@ -201,10 +205,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   bool needs_exclusion = true;
   const TabStripType tab_strip_type = GetTabStripType();
 
+  if (tab_strip_type == TabStripType::kWebUi) {
+    // When the WebUI tab strip is present, it does not paint over the caption
+    // buttons or other exclusion areas.
+    params.SetTop(base::ClampCeil(
+        std::max(params.leading_exclusion.ContentWithPadding().height(),
+                 params.trailing_exclusion.ContentWithPadding().height())));
+    needs_exclusion = false;
+  }
+
   // Lay out WebUI tabstrip if visible.
   if (IsParentedTo(views().webui_tab_strip, views().browser_view)) {
     const int width = params.visual_client_area.width();
-    const int height = tab_strip_type == TabStripType::kWebUi
+    const int height = tab_strip_type == TabStripType::kWebUi &&
+                               views().webui_tab_strip->GetVisible()
                            ? views().webui_tab_strip->GetHeightForWidth(width)
                            : 0;
     layout.AddChild(views().webui_tab_strip,
@@ -545,7 +559,8 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
   // immersive mode), ensure it is laid out here.
   if (IsParentedTo(views().webui_tab_strip, views().top_container)) {
     const int width = params.visual_client_area.width();
-    const int height = tab_strip_type == TabStripType::kWebUi
+    const int height = tab_strip_type == TabStripType::kWebUi &&
+                               views().webui_tab_strip->GetVisible()
                            ? views().webui_tab_strip->GetHeightForWidth(width)
                            : 0;
     layout.AddChild(views().webui_tab_strip,

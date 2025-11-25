@@ -63,6 +63,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
 
   // BrowserViewLayout::Delegate overrides:
   bool ShouldDrawTabStrip() const override { return should_draw_tab_strip_; }
+  bool ShouldUseTouchableTabstrip() const override { return false; }
   bool ShouldDrawVerticalTabStrip() const override { return false; }
   bool GetBorderlessModeEnabled() const override { return false; }
   bool ShouldDrawWebAppFrameToolbar() const override { return false; }

@@ -17,8 +17,13 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/common/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
+#endif
 
 BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
     BrowserView& browser_view)
@@ -27,6 +32,16 @@ BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawTabStrip() const {
   return browser_view_->ShouldDrawTabStrip();
+}
+
+bool BrowserViewLayoutDelegateImpl::ShouldUseTouchableTabstrip() const {
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  return WebUITabStripContainerView::UseTouchableTabStrip(
+             browser_view_->browser()) &&
+         browser_view_->GetSupportsTabStrip();
+#else
+  return false;
+#endif
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {
