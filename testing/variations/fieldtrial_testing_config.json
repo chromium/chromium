@@ -4092,6 +4092,25 @@
             ]
         }
     ],
+    "BocaReceiverCustomPolling": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BocaReceiverCustomPollingInterval": "10s",
+                        "BocaReceiverCustomPollingMaxFailuresCountx": "3"
+                    },
+                    "enable_features": [
+                        "BocaReceiverCustomPolling"
+                    ]
+                }
+            ]
+        }
+    ],
     "BocaRedirectStudentAudioToKiosk": [
         {
             "platforms": [
