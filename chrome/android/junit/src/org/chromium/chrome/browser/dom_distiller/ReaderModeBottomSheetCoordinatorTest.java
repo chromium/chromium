@@ -112,4 +112,15 @@ public class ReaderModeBottomSheetCoordinatorTest {
         verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
         verify(mThemeColorProvider).removeTintObserver(mThemeTintObserverCaptor.getValue());
     }
+
+    @Test
+    public void testTapToExpand() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.PEEK);
+        mCoordinator.show(mTab);
+
+        mCoordinator.getViewForTesting().performClick();
+        verify(mBottomSheetController).expandSheet();
+    }
 }
