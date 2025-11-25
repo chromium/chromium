@@ -932,11 +932,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
 //   5. the blob reference is dropped and GC'd again
 //   6. don't crash
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
-  if (using_sqlite_) {
-    // TODO(crbug.com/419208485): Enable this test after handling active blob
-    // references during force close.
-    GTEST_SKIP();
-  }
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_and_read_blob.html");
   SimpleTest(kTestUrl);
   DeleteBucketData(
