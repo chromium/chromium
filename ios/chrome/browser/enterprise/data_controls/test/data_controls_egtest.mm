@@ -23,7 +23,6 @@ using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 namespace {
 
 NSString* const kCopyConditionName = @"Link copied condition";
-
 NSString* const kLoadReaderModeFailedMessage =
     @"Reader mode content could not be loaded";
 NSString* const kCopyLinkFailedMessage = @"Copying link failed";
@@ -32,19 +31,35 @@ NSString* const kBlockCopyingLinkFailedMessage =
 
 // Path to a page compatible with reader mode.
 const char kArticlePath[] = "/article.html";
-
 // URL to a page with a static message.
 const char kDestinationPageUrl[] = "/destination";
+// Path to a page containing the chromium logo and the text `kLogoPageText`.
+const char kLogoPagePath[] = "/chromium_logo_page.html";
+// The DOM element ID of the chromium image on the logo page.
+const char kLogoPageChromiumImageId[] = "chromium_image";
+// The text of the message on the logo page.
+const char kLogoPageText[] = "Page with some text and the chromium logo image.";
 
 // Returns an ElementSelector for long pressing the first link in the page.
 ElementSelector* ElementSelectorToLongPressLink() {
   return [ElementSelector selectorWithCSSSelector:"a"];
 }
 
+// Returns an ElementSelector for the chromium image on the logo page.
+ElementSelector* LogoPageChromiumImageIdSelector() {
+  return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
+}
+
 // Matcher for the copy link button in the context menu.
 id<GREYMatcher> CopyLinkButton() {
   return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_COPY_LINK_ACTION_TITLE);
+}
+
+// Matcher for the open link in group button in the context menu.
+id<GREYMatcher> CopyImageButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
 }
 
 // Taps on `context_menu_item_button` context menu item.
@@ -87,9 +102,82 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 #pragma mark - Tests
 
-// Tests that copy is blocked when a "BLOCK" rule matches the page URL.
-- (void)DISABLED_testCopyBlocked {
-  // TODO(crbug.com/457472925): This is a placeholder, update the tests.
+// Tests that copying an image via context menu is blocked when a "BLOCK" is set
+// in DataControls policy.
+- (void)testCopyBlocked {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image via context menu is allowed after the user
+// proceeds through the warning triggered by DataControlRules policy.
+- (void)testCopyWarnProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the image was copied.
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image via context menu is cancelled when the user
+// cancels on the warning triggered by DataControlRules policy.
+- (void)testCopyWarnCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
 }
 
 // Tests that copying a link is blocked in reader mode when the DataControlsRule
