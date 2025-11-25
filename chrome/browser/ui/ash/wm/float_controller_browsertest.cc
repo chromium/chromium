@@ -113,3 +113,40 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   ASSERT_TRUE(
       float_controller->IsFloatedWindowTuckedForTablet(browser_window2));
 }
+
+// Tests that flinging down from the client area to move a floated window does
+// not open the web ui tab strip.
+IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
+                       FlingDownDoesNotOpenTabStrip) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  // A floated window is magnetized to the bottom right by default.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
+  ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
+            ash::FloatTestApi::GetMagnetismCornerForBounds(
+                window->GetBoundsInScreen()));
+
+  // Drag the window up to the top right.
+  auto get_draggable_point = [](aura::Window* window) {
+    return gfx::Point(window->GetBoundsInScreen().CenterPoint().x(),
+                      window->GetBoundsInScreen().y() + 10);
+  };
+  event_generator.set_current_screen_location(get_draggable_point(window));
+  event_generator.PressMoveAndReleaseTouchBy(0, -200);
+  ASSERT_EQ(ash::FloatController::MagnetismCorner::kTopRight,
+            ash::FloatTestApi::GetMagnetismCornerForBounds(
+                window->GetBoundsInScreen()));
+
+  // Drag the window back down. Test that it doesn't open the tab strip.
+  event_generator.set_current_screen_location(get_draggable_point(window));
+  event_generator.PressMoveAndReleaseTouchBy(0, 200);
+  ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
+            ash::FloatTestApi::GetMagnetismCornerForBounds(
+                window->GetBoundsInScreen()));
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_FALSE(browser_view->webui_tab_strip()->GetVisible());
+}
