@@ -53,10 +53,8 @@ void MediaCapturePickerManagerBridge::Show(
 
 void MediaCapturePickerManagerBridge::OnPickTab(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents,
+    content::WebContents* web_contents,
     bool audio_share) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(java_web_contents);
   CHECK(web_contents);
   auto desktop_media_id = content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,

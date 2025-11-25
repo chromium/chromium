@@ -125,7 +125,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     interface Natives {
         void onPickTab(
                 long nativeMediaCapturePickerManagerBridge,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 boolean audioShare);
 
         void onPickWindow(long nativeMediaCapturePickerManagerBridge);

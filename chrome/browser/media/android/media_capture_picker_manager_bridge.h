@@ -33,7 +33,7 @@ class MediaCapturePickerManagerBridge {
 
   // Called from Java via JNI when the dialog resolves.
   void OnPickTab(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& java_web_contents,
+                 content::WebContents* web_contents,
                  bool audio_share);
 
   // Called from Java via JNI when the dialog resolves.
