@@ -657,15 +657,21 @@ public class InstanceSwitcherCoordinator {
         if (mNewWindowEnabled) {
             mMaxInfoView.setVisibility(View.GONE);
         } else {
-            @StringRes
-            int textRes =
-                    mIsInactiveListShowing
-                            ? R.string.max_number_of_windows_instance_switcher_v2_inactive_tab
-                            : R.string.max_number_of_windows_instance_switcher_v2_active_tab;
-            String text = mContext.getString(textRes, mMaxInstanceCount - 1);
+            String text = mContext.getString(getMaxInfoTextRes(), mMaxInstanceCount - 1);
             mMaxInfoView.setText(text);
             mMaxInfoView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private @StringRes int getMaxInfoTextRes() {
+        if (UiUtils.isRobustWindowManagementEnabled()) {
+            return mIsInactiveListShowing
+                    ? R.string.max_number_of_windows_instance_switcher_inactive_tab
+                    : R.string.max_number_of_windows_instance_switcher_active_tab;
+        }
+        return mIsInactiveListShowing
+                ? R.string.max_number_of_windows_instance_switcher_v2_inactive_tab
+                : R.string.max_number_of_windows_instance_switcher_v2_active_tab;
     }
 
     private int getTotalInstanceCount() {

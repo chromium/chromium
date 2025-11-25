@@ -764,6 +764,76 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void testMaxInfoTextRes_RobustWindowManagement() throws Exception {
+        // Simulate persistence of MAX_INSTANCE_COUNT active instances and 1 inactive instance.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ MAX_INSTANCE_COUNT,
+                        /* numInactiveInstances= */ 1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            null,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Verify that we show max info message that users can have up to 5 windows when there are
+        // more than maximum number of windows.
+        String activeMaxInfoText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.max_number_of_windows_instance_switcher_active_tab,
+                                MAX_INSTANCE_COUNT - 1);
+
+        // Verify that we show the max info message for the active tab.
+        onView(withId(R.id.max_instance_info))
+                .inRoot(isDialog())
+                .check(matches(withText(activeMaxInfoText)))
+                .check(matches(isDisplayed()));
+
+        // Verify the "+ New window" command is not displayed.
+        onView(withId(R.id.new_window))
+                .inRoot(isDialog())
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        // Generate the expected max info text for the inactive tab.
+        String inactiveMaxInfoText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.max_number_of_windows_instance_switcher_inactive_tab,
+                                MAX_INSTANCE_COUNT - 1);
+
+        // Switch to the inactive instance tab.
+        onView(
+                        allOf(
+                                withText(String.format("Inactive (%d)", 1)),
+                                isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify we show the max instance info message in the inactive list.
+        onView(withId(R.id.max_instance_info))
+                .inRoot(isDialog())
+                .check(matches(withText(inactiveMaxInfoText)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
     public void testDeselectWindow() throws Exception {
         InstanceInfo[] instances =
