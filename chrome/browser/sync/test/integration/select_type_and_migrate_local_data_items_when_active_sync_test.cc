@@ -85,6 +85,11 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
         std::make_unique<AutofillProfile>(autofill::test::GetFullProfile());
   }
 
+  // This feature is specific to sync transport mode.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
   autofill::PersonalDataManager* GetPersonalDataManager() const {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
