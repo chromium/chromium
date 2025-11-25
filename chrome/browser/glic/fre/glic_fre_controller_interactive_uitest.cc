@@ -300,8 +300,11 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
       }));
 }
 
+// Note: ChromeOS maintains auth tokens as a part of OS User sessions,
+// and so reauth flow is not expected.
+// TODO(crbug.com/450629835): Revisit if we figure out actual flow we need
+// reauth.
 #if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/460829871): Evaluate whether this is relevant on ChromeOS.
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                        InvalidatedAccountSignInOnGlicFreOpenFlow) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
