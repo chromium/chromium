@@ -391,13 +391,16 @@ class TabListEditorMediator
         mTabListCoordinator.cleanupTabGridView();
         mVisibleTabs.clear();
         mVisibleTabGroups.clear();
-        mResetHandler.resetWithListOfTabs(
-                /* tabs= */ null,
-                /* tabGroupSyncIds= */ null,
-                /* recyclerViewPosition= */ null,
-                /* quickMode= */ false);
-        mModel.set(TabListEditorProperties.IS_VISIBLE, false);
-        mResetHandler.postHiding();
+
+        if (mCreationMode != CreationMode.ITEM_PICKER) {
+            mResetHandler.resetWithListOfTabs(
+                    /* tabs= */ null,
+                    /* tabGroupSyncIds= */ null,
+                    /* recyclerViewPosition= */ null,
+                    /* quickMode= */ false);
+            mModel.set(TabListEditorProperties.IS_VISIBLE, false);
+            mResetHandler.postHiding();
+        }
         if (mLifecycleObserver != null) mLifecycleObserver.didHide();
     }
 
