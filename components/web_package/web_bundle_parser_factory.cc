@@ -29,10 +29,9 @@ class FileDataSource final : public mojom::BundleDataSource {
   // Implements mojom::BundleDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     std::vector<uint8_t> buf(length);
-    int bytes = UNSAFE_TODO(
-        file_.Read(offset, reinterpret_cast<char*>(buf.data()), length));
-    if (bytes > 0) {
-      buf.resize(bytes);
+    const std::optional<size_t> bytes = file_.Read(offset, buf);
+    if (bytes.value_or(0)) {
+      buf.resize(*bytes);
       std::move(callback).Run(std::move(buf));
     } else {
       std::move(callback).Run(std::nullopt);
