@@ -226,7 +226,6 @@
 #include "chromeos/ash/components/network/fast_transition_observer.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/network/traffic_counters_handler.h"
 #include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
@@ -317,16 +316,6 @@ namespace {
 
 void ChromeOSVersionCallback(const std::optional<std::string>& version) {
   base::SetLinuxDistro("CrOS " + version.value_or("0.0.0.0"));
-}
-
-// Creates an instance of the NetworkPortalDetector implementation or a stub.
-void InitializeNetworkPortalDetector() {
-  if (network_portal_detector::SetForTesting()) {
-    return;
-  }
-  network_portal_detector::SetNetworkPortalDetector(
-      new NetworkPortalDetectorStub());
-  network_portal_detector::GetInstance()->Enable();
 }
 
 void ApplySigninProfileModifications(Profile* profile) {
@@ -1261,13 +1250,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     BootTimesRecorder::Get()->OnChromeProcessStart(
         CHECK_DEREF(g_browser_process->local_state()));
 
-    // Initialize the network portal detector for Chrome OS. The network
-    // portal detector starts to listen for notifications from
-    // NetworkStateHandler and initiates captive portal detection for
-    // active networks. Should be called before call to initialize
-    // ChromeSessionManager because it depends on NetworkPortalDetector.
-    InitializeNetworkPortalDetector();
-
     // Initialize an observer to update NetworkHandler's pref based services.
     network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>(
         *g_browser_process->local_state());
@@ -1839,13 +1821,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Disconnect quirks from policy just before destroying the quirks manager.
   quirks_policy_controller_.reset();
   quirks::QuirksManager::Shutdown();
-
-  // Called after ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() (which
-  // calls chrome::CloseAsh()) because some parts of WebUI depend on
-  // NetworkPortalDetector.
-  if (pre_profile_init_called_) {
-    network_portal_detector::Shutdown();
-  }
 
   bluetooth_log_controller_.reset();
 

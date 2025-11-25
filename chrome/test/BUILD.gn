@@ -4823,10 +4823,7 @@ if (!is_android) {
       }
 
       if (is_chromeos) {
-        deps += [
-          "//chrome/browser/ui/webui/ash/parent_access:test_support",
-          "//chromeos/ash/components/network/portal_detector:test_support",
-        ]
+        deps += [ "//chrome/browser/ui/webui/ash/parent_access:test_support" ]
         sources += [
           "../browser/extensions/api/identity/launch_web_auth_flow_delegate_ash_browsertest.cc",
           "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
@@ -5671,7 +5668,6 @@ if (!is_android) {
         "//chromeos/ash/components/login/login_state:test_support",
         "//chromeos/ash/components/login/session",
         "//chromeos/ash/components/mojo_service_manager:test_support",
-        "//chromeos/ash/components/network/portal_detector",
         "//chromeos/ash/components/osauth/public",
         "//chromeos/ash/components/osauth/test_support",
         "//chromeos/ash/components/phonehub:debug",
