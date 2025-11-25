@@ -27064,8 +27064,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledIgnoreWorkers",
+                    "params": {
+                        "urgent_discard_ignore_workers": "true"
+                    },
                     "enable_features": [
+                        "WebContentsDiscard"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "urgent_discard_ignore_workers": "false"
+                    },
+                    "enable_features": [
+                        "WebContentsDiscard"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "params": {
+                        "urgent_discard_ignore_workers": "false"
+                    },
+                    "disable_features": [
                         "WebContentsDiscard"
                     ]
                 }
