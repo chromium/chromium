@@ -228,7 +228,7 @@ cr-policy-indicator {
   line-height: calc(var(--title-height) / 2);
   margin-top: 6px;
   padding: 2px 8px;
-  width: 88px;
+  max-width: 102px;
 }
 
 .tile-title span {
