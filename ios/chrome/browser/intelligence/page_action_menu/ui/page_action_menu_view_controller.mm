@@ -942,7 +942,7 @@ const CGFloat kDividerWidth = 1.0;
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.numberOfLines = 0;
-  label.textAlignment = NSTextAlignmentCenter;
+  label.textAlignment = NSTextAlignmentLeft;
   return label;
 }
 
