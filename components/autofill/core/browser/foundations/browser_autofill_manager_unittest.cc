@@ -838,6 +838,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowPlusAddressEmailOverrideNotification,
               (const std::string&, AutofillClient::EmailOverrideUndoCallback),
               (override));
+  MOCK_METHOD(bool, IsActorTaskActive, (), (const override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -5009,6 +5010,40 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       }));
+}
+
+// Tests that no data is saved to Autocomplete when there is an active actor
+// task.
+TEST_F(BrowserAutofillManagerTest, NoSaveToAutocompleteWhenActorIsActive) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillActorSuppressImport};
+
+  EXPECT_CALL(autofill_client(), IsActorTaskActive).WillOnce(Return(true));
+  FormData form = CreateTestAddressFormData();
+  EXPECT_CALL(single_field_fill_router(), OnWillSubmitForm).Times(0);
+  FormSubmitted(form);
+}
+
+// Tests that form import (saving to Autofill) is suppressed when there is an
+// active actor task.
+TEST_F(BrowserAutofillManagerTest, FormSubmittedActorActive) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillActorSuppressImport};
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+  ExpectFilledAddressFormElvis(response_data, false);
+
+  EXPECT_CALL(autofill_client(), IsActorTaskActive).WillOnce(Return(true));
+  TestAddressDataManager& adm = personal_data().test_address_data_manager();
+  adm.ClearProfiles();
+  // Auto-accept for import is enabled for this test, so if import were on,
+  // the profile would be imported.
+  FormSubmitted(response_data);
+
+  EXPECT_THAT(adm.GetProfiles(), IsEmpty());
 }
 
 // Test that when Autocomplete is enabled and Autofill is disabled, form

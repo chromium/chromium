@@ -50,6 +50,8 @@ class LogBuffer;
   T(ImportAddressProfileFromFormRemoveInvalidValue,                            \
     "Removing value because validation failed: ")                              \
   T(FormSubmissionDetected, "Form submission detected: ")                      \
+  T(FormSubmissionDetectedButIgnoredDueToActorTask,                            \
+    "Form submission detected but ignored (active actor task):")               \
   T(SendFillingData, "Sending data to fill to renderer: ")                     \
   T(CreditCardUploadEnabled, "Credit card upload is enabled.")                 \
   T(CreditCardUploadDisabled, "Credit card upload is disabled. Reason: ")      \

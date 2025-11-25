@@ -175,6 +175,7 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
@@ -1048,6 +1049,22 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
         HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
         base::DoNothing(), trigger_id);
   }
+#endif
+}
+
+bool ChromeAutofillClient::IsActorTaskActive() const {
+#if !BUILDFLAG(IS_ANDROID)
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  if (!actor_service) {
+    return false;
+  }
+
+  const tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
+#else
+  return false;
 #endif
 }
 

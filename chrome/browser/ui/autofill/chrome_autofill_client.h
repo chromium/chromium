@@ -194,6 +194,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       bool prompt_accepted,
       EntityType entity_type,
       const base::flat_set<EntityTypeName>& saved_entities) final;
+  bool IsActorTaskActive() const final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutocompleteEnabled() const final;

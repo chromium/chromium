@@ -209,6 +209,10 @@ void AutofillClient::TriggerAutofillAiSavePromptSurvey(
   NOTIMPLEMENTED();
 }
 
+bool AutofillClient::IsActorTaskActive() const {
+  return false;
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;

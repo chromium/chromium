@@ -921,14 +921,24 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // which is definitely not a submission.
     return;
   }
+
+  const base::TimeTicks form_submitted_timestamp = base::TimeTicks::Now();
+  auto log_submission =
+      [&](const LogMessage& log_message) {
+        LOG_AF(log_manager())
+            << LoggingScope::kSubmission << log_message << Br{} << "timestamp: "
+            << form_submitted_timestamp.since_origin().InMilliseconds() << Br{}
+            << "source: " << SubmissionSourceToString(source) << Br{} << form;
+      };
+  if (base::FeatureList::IsEnabled(features::kAutofillActorSuppressImport) &&
+      client().IsActorTaskActive()) {
+    log_submission(LogMessage::kFormSubmissionDetectedButIgnoredDueToActorTask);
+    return;
+  }
+
   base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
                                 client().GetProfileType());
-  const base::TimeTicks form_submitted_timestamp = base::TimeTicks::Now();
-  LOG_AF(log_manager())
-      << LoggingScope::kSubmission << LogMessage::kFormSubmissionDetected
-      << Br{} << "timestamp: "
-      << form_submitted_timestamp.since_origin().InMilliseconds() << Br{}
-      << "source: " << SubmissionSourceToString(source) << Br{} << form;
+  log_submission(LogMessage::kFormSubmissionDetected);
 
   // Always let the value patterns metric upload data.
   LogValuePatternsMetric(form);

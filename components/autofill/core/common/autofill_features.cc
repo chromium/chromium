@@ -39,6 +39,11 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether all import tasks are suppressed when an Actor task is
+// active on the tab in question. This also suppresses silent updates and
+// saving to Autocomplete.
+BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag to control displaying of Autofill suggestions on
 // unclassified fields based on prefix matching. These suggestions are displayed
 // after the user typed a certain number of characters that match some data
