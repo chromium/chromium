@@ -34,7 +34,7 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
     wtf_size_t& max_end_line,
     wtf_size_t& start_offset,
     wtf_size_t& unplaced_item_span_count) const {
-  const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
+  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
 
   start_offset = 0;
   MasonryItemGroupMap item_group_map;
@@ -101,7 +101,7 @@ GridItems MasonryNode::ConstructMasonryItems(
     HeapVector<Member<LayoutBox>>* opt_oof_children) const {
   const ComputedStyle& style = Style();
   const GridTrackSizingDirection grid_axis_direction =
-      style.MasonryTrackSizingDirection();
+      style.GridLanesTrackSizingDirection();
 
   GridItems masonry_items;
   {
@@ -140,7 +140,7 @@ void MasonryNode::AdjustMasonryItemSpans(
     GridItems& masonry_items,
     const GridLineResolver& line_resolver) const {
   const GridTrackSizingDirection grid_axis_direction =
-      Style().MasonryTrackSizingDirection();
+      Style().GridLanesTrackSizingDirection();
   for (GridItemData& masonry_item : masonry_items) {
     AdjustMasonryItemSpan(masonry_item, line_resolver, grid_axis_direction);
   }

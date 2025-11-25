@@ -58,7 +58,7 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
     //
     // TODO(almaher): Update alignment logic if needed once we resolve on
     // https://github.com/w3c/csswg-drafts/issues/10275.
-    return parent_grid_style.MasonryTrackSizingDirection() == track_direction;
+    return parent_grid_style.GridLanesTrackSizingDirection() == track_direction;
   })();
 
   // Auto-margins take precedence over any alignment properties.

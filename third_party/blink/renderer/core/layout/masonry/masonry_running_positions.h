@@ -32,12 +32,12 @@ class CORE_EXPORT MasonryRunningPositions {
                           const Vector<wtf_size_t>& collapsed_track_indexes)
       : running_positions_(/*size=*/track_collection.EndLineOfImplicitGrid(),
                            LayoutUnit()),
-        auto_placement_cursor_(style.IsReverseMasonryDirection()
+        auto_placement_cursor_(style.IsReverseGridLanesDirection()
                                    ? track_collection.EndLineOfImplicitGrid()
                                    : 0),
         tie_threshold_(tie_threshold),
         is_dense_packing_(style.IsGridAutoFlowAlgorithmDense()),
-        is_reverse_direction_(style.IsReverseMasonryDirection()) {
+        is_reverse_direction_(style.IsReverseGridLanesDirection()) {
     // To avoid placing items in collapsed tracks, set such tracks to the max
     // size.
     for (wtf_size_t index : collapsed_track_indexes) {

@@ -22,7 +22,7 @@ function testGridLanesDefinitionsSetJSValues(isRowDirection, trackValue, compute
     document.body.appendChild(element);
     element.style.display = "grid-lanes";
     if (isRowDirection) {
-        element.style.masonryDirection = "row";
+        element.style.gridLanesDirection = "row";
     }
     element.style.width = "800px";
     element.style.height = "600px";

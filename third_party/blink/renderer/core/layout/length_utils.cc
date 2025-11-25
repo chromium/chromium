@@ -1394,7 +1394,7 @@ std::optional<LayoutUnit> ResolveItemToleranceLength(
 LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle& style,
                                           const LogicalSize& available_size) {
   return ResolveItemToleranceLength(
-             style, (style.MasonryTrackSizingDirection() == kForColumns)
+             style, (style.GridLanesTrackSizingDirection() == kForColumns)
                         ? available_size.block_size
                         : available_size.inline_size)
       .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));

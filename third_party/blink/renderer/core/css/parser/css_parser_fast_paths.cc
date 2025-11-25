@@ -1261,7 +1261,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kMaskType:
       return value_id == CSSValueID::kLuminance ||
              value_id == CSSValueID::kAlpha;
-    case CSSPropertyID::kMasonryDirection:
+    case CSSPropertyID::kGridLanesDirection:
       return value_id == CSSValueID::kRow ||
              value_id == CSSValueID::kRowReverse ||
              value_id == CSSValueID::kColumn ||
@@ -1758,7 +1758,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kInterpolateSize,
     CSSPropertyID::kListStylePosition,
     CSSPropertyID::kMaskType,
-    CSSPropertyID::kMasonryDirection,
+    CSSPropertyID::kGridLanesDirection,
     CSSPropertyID::kMathShift,
     CSSPropertyID::kMathStyle,
     CSSPropertyID::kObjectFit,

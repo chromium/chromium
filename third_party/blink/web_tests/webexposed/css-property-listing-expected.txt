@@ -229,6 +229,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-auto-rows
     grid-column-end
     grid-column-start
+    grid-lanes-direction
     grid-lanes-fill
     grid-row-end
     grid-row-start
@@ -283,7 +284,6 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
-    masonry-direction
     math-depth
     math-shift
     math-style
@@ -763,13 +763,13 @@ All changes to this list should go through Blink's feature review process: http:
         grid-column-end
         grid-column-start
     grid-lanes
+        grid-lanes-direction
         grid-lanes-fill
         grid-template-areas
         grid-template-columns
-        masonry-direction
     grid-lanes-flow
+        grid-lanes-direction
         grid-lanes-fill
-        masonry-direction
     grid-row
         grid-row-end
         grid-row-start

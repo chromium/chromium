@@ -1161,26 +1161,26 @@ class ComputedStyle final : public ComputedStyleBase {
     return ComputedGridTemplate(SpecifiedGridTemplateRows());
   }
 
-  // Masonry utility functions.
-  GridTrackSizingDirection MasonryTrackSizingDirection() const {
-    switch (MasonryDirection()) {
-      case EMasonryDirection::kColumn:
-      case EMasonryDirection::kColumnReverse:
+  // Grid Lanes utility functions.
+  GridTrackSizingDirection GridLanesTrackSizingDirection() const {
+    switch (GridLanesDirection()) {
+      case EGridLanesDirection::kColumn:
+      case EGridLanesDirection::kColumnReverse:
         return kForColumns;
-      case EMasonryDirection::kRow:
-      case EMasonryDirection::kRowReverse:
+      case EGridLanesDirection::kRow:
+      case EGridLanesDirection::kRowReverse:
         return kForRows;
     }
     NOTREACHED();
   }
 
-  bool IsReverseMasonryDirection() const {
-    const auto masonry_direction = MasonryDirection();
-    return (masonry_direction == EMasonryDirection::kColumnReverse ||
-            masonry_direction == EMasonryDirection::kRowReverse);
+  bool IsReverseGridLanesDirection() const {
+    const auto grid_lanes_direction = GridLanesDirection();
+    return (grid_lanes_direction == EGridLanesDirection::kColumnReverse ||
+            grid_lanes_direction == EGridLanesDirection::kRowReverse);
   }
 
-  // Grid axis utility functions, usable in Grid and Masonry.
+  // Grid axis utility functions, usable in Grid and Grid Lanes.
   const GridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? GridAutoColumns()
@@ -2686,14 +2686,14 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableCaption;
   }
 
-  static GridTrackSizingDirection MasonryTrackSizingDirection(
-      EMasonryDirection direction) {
+  static GridTrackSizingDirection GridLanesTrackSizingDirection(
+      EGridLanesDirection direction) {
     switch (direction) {
-      case EMasonryDirection::kColumn:
-      case EMasonryDirection::kColumnReverse:
+      case EGridLanesDirection::kColumn:
+      case EGridLanesDirection::kColumnReverse:
         return kForColumns;
-      case EMasonryDirection::kRow:
-      case EMasonryDirection::kRowReverse:
+      case EGridLanesDirection::kRow:
+      case EGridLanesDirection::kRowReverse:
         return kForRows;
     }
     NOTREACHED();

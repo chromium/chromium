@@ -142,7 +142,7 @@ bool IsOverflowKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kUnsafe, CSSValueID::kSafe>(id);
 }
 
-bool IsMasonryDirectionOrFillKeyword(CSSValueID id) {
+bool IsGridLanesDirectionOrFillKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kRow, CSSValueID::kRowReverse,
                       CSSValueID::kColumn, CSSValueID::kColumnReverse,
                       CSSValueID::kNormal, CSSValueID::kReverse>(id);
@@ -6907,7 +6907,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
   auto HasMoreGridLanesValues = [](CSSParserTokenStream& stream,
                                    bool is_grid_lanes_shorthand) -> bool {
     return (is_grid_lanes_shorthand &&
-            IsMasonryDirectionOrFillKeyword(stream.Peek().Id()));
+            IsGridLanesDirectionOrFillKeyword(stream.Peek().Id()));
   };
 
   do {
@@ -7144,27 +7144,29 @@ bool ConsumeGridTemplateShorthand(bool important,
   return false;
 }
 
-CSSValue* ParseMasonryTemplateAreasValue(const String& masonry_template_areas,
-                                         bool is_template_columns) {
+CSSValue* ParseGridLanesTemplateAreasValue(
+    const String& grid_lanes_template_areas,
+    bool is_template_columns) {
   NamedGridAreaMap grid_area_map;
   wtf_size_t row_count = 0;
   wtf_size_t column_count = 0;
 
   if (is_template_columns) {
-    // For template-columns, we treat the `masonry_template_areas` string
+    // For template-columns, we treat the `grid_lanes_template_areas` string
     // as a single row of grid areas and use the function below to construct the
     // `grid_area_map`.
-    if (!css_parsing_utils::ParseGridTemplateAreasRow(
-            masonry_template_areas, grid_area_map, row_count, column_count)) {
+    if (!css_parsing_utils::ParseGridTemplateAreasRow(grid_lanes_template_areas,
+                                                      grid_area_map, row_count,
+                                                      column_count)) {
       return nullptr;
     }
     ++row_count;
   } else {
-    // For template-rows, we need to convert the `masonry_template_areas` string
-    // into appropriate row values. For example, we want to transform "a b c"
-    // into separate row strings: "a", "b", "c".
+    // For template-rows, we need to convert the `grid_lanes_template_areas`
+    // string into appropriate row values. For example, we want to transform "a
+    // b c" into separate row strings: "a", "b", "c".
     Vector<String> rows =
-        ParseGridTemplateAreasColumnNames(masonry_template_areas);
+        ParseGridTemplateAreasColumnNames(grid_lanes_template_areas);
     for (const String& row : rows) {
       if (!css_parsing_utils::ParseGridTemplateAreasRow(
               row, grid_area_map, row_count, column_count)) {

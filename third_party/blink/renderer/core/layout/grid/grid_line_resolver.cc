@@ -33,7 +33,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& parent_style,
     : style_(&parent_style) {
   DCHECK(parent_style.IsDisplayGridLanesBox());
 
-  (parent_style.MasonryTrackSizingDirection() == kForColumns)
+  (parent_style.GridLanesTrackSizingDirection() == kForColumns)
       ? column_auto_repetitions_ = auto_repetitions
       : row_auto_repetitions_ = auto_repetitions;
 }

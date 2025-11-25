@@ -5140,28 +5140,28 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
   // Note: `shorthand.properties()[1]` is intentionally not used here because it
   // always refers to `grid-template-columns`.
   // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
-  // `GetCSSPropertyGridTemplateRows()` depending on the `masonry-direction`,
+  // `GetCSSPropertyGridTemplateRows()` depending on the `grid-lanes-direction`,
   // since `grid-template-rows` is not listed in the `grid-lanes` shorthand
   // property.
-  const CSSValue* masonry_direction_values =
+  const CSSValue* grid_lanes_direction_values =
       shorthand.properties()[2]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  DCHECK(masonry_direction_values);
-  const CSSValue* masonry_template_tracks_values =
-      CSSOMUtils::IsMasonryColumnDirectionValue(masonry_direction_values)
+  DCHECK(grid_lanes_direction_values);
+  const CSSValue* grid_lanes_template_tracks_values =
+      CSSOMUtils::IsGridLanesColumnDirectionValue(grid_lanes_direction_values)
           ? GetCSSPropertyGridTemplateColumns().CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase)
           : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase);
-  DCHECK(masonry_template_tracks_values);
+  DCHECK(grid_lanes_template_tracks_values);
   const CSSValue* grid_lanes_fill_values =
       shorthand.properties()[3]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   DCHECK(grid_lanes_fill_values);
 
   return CSSOMUtils::ComputedValueForGridLanesShorthand(
-      masonry_template_tracks_values, template_area_values,
-      masonry_direction_values, grid_lanes_fill_values);
+      grid_lanes_template_tracks_values, template_area_values,
+      grid_lanes_direction_values, grid_lanes_fill_values);
 }
 
 }  // namespace blink

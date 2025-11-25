@@ -1566,7 +1566,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
   grid_info->setInteger("rotationAngle", GetRotationAngle(masonry));
   grid_info->setString("writingMode", GetWritingMode(masonry->StyleRef()));
   const bool is_for_columns =
-      masonry->StyleRef().MasonryTrackSizingDirection() == kForColumns;
+      masonry->StyleRef().GridLanesTrackSizingDirection() == kForColumns;
 
   const Vector<LayoutUnit> masonry_tracks =
       masonry->GridTrackPositions(is_for_columns ? kForColumns : kForRows);

@@ -2752,29 +2752,29 @@ bool GridLanes::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  String masonry_template_areas;
+  String grid_lanes_template_areas;
   bool is_template_columns = true;
   const CSSValue* template_areas =
       GetCSSPropertyGridTemplateAreas().InitialValue();
-  const CSSValue* masonry_direction =
+  const CSSValue* grid_lanes_direction =
       CSSIdentifierValue::Create(CSSValueID::kColumn);
   const CSSValue* grid_lanes_fill =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
 
-  // Retrieve the string of `masonry_template_areas`. We'll parse it into
-  // appropriate `grid-template-areas` based on the `masonry-direction`.
+  // Retrieve the string of `grid_lanes_template_areas`. We'll parse it into
+  // appropriate `grid-template-areas` based on the `grid-lanes-direction`.
   if (stream.Peek().GetType() == kStringToken) {
-    masonry_template_areas =
+    grid_lanes_template_areas =
         stream.ConsumeIncludingWhitespace().Value().ToString();
   }
 
-  // Retrieve the `masonry_template_tracks`, which can be either
+  // Retrieve the `grid_lanes_template_tracks`, which can be either
   // `grid-template-columns` or `grid-template-rows`
-  const CSSValue* masonry_template_tracks =
+  const CSSValue* grid_lanes_template_tracks =
       css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(
           stream, context,
           /*is_grid_lanes_shorthand=*/true);
-  if (!masonry_template_tracks) {
+  if (!grid_lanes_template_tracks) {
     return false;
   }
   stream.ConsumeWhitespace();
@@ -2788,7 +2788,7 @@ bool GridLanes::ParseShorthand(
             stream.Peek().Id())) {
       is_template_columns = false;
     }
-    masonry_direction = css_parsing_utils::ConsumeIdent(stream);
+    grid_lanes_direction = css_parsing_utils::ConsumeIdent(stream);
   }
 
   if (css_parsing_utils::IdentMatches<CSSValueID::kNormal,
@@ -2804,18 +2804,18 @@ bool GridLanes::ParseShorthand(
     return false;
   }
 
-  // Parse `masonry_template_areas` into the appropriate `grid-template-areas`
-  // value.
-  // - `masonry_template_areas` is a single space-separated string.
-  // - If `masonry-direction` is column, use the string as a single row (e.g.,
-  // "a b c d" -> "a b c d").
-  // - If `masonry-direction` is row, split the string into multiple rows, one
-  // per area name (e.g., "a b c d" -> "a" "b" "c" "d"). This ensures the
+  // Parse `grid_lanes_template_areas` into the appropriate
+  // `grid-template-areas` value.
+  // - `grid_lanes_template_areas` is a single space-separated string.
+  // - If `grid-lanes-direction` is column, use the string as a single row
+  // (e.g., "a b c d" -> "a b c d").
+  // - If `grid-lanes-direction` is row, split the string into multiple rows,
+  // one per area name (e.g., "a b c d" -> "a" "b" "c" "d"). This ensures the
   // correct mapping to the CSS `grid-template-areas` syntax based on the
-  // `masonry-direction`.
-  if (!masonry_template_areas.ContainsOnlyWhitespaceOrEmpty()) {
-    template_areas = css_parsing_utils::ParseMasonryTemplateAreasValue(
-        masonry_template_areas, is_template_columns);
+  // `grid-lanes-direction`.
+  if (!grid_lanes_template_areas.ContainsOnlyWhitespaceOrEmpty()) {
+    template_areas = css_parsing_utils::ParseGridLanesTemplateAreasValue(
+        grid_lanes_template_areas, is_template_columns);
     if (!template_areas) {
       return false;
     }
@@ -2827,7 +2827,7 @@ bool GridLanes::ParseShorthand(
   if (is_template_columns) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridTemplateColumns, CSSPropertyID::kGridLanes,
-        *masonry_template_tracks, important,
+        *grid_lanes_template_tracks, important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   } else {
     // For `grid_template_rows`, since it is not included in the grid-lanes
@@ -2835,11 +2835,11 @@ bool GridLanes::ParseShorthand(
     // using the AddProperty helper.
     properties.push_back(
         CSSPropertyValue(CSSPropertyName(CSSPropertyID::kGridTemplateRows),
-                         *masonry_template_tracks, important));
+                         *grid_lanes_template_tracks, important));
   }
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kMasonryDirection, CSSPropertyID::kGridLanes,
-      *masonry_direction, important,
+      CSSPropertyID::kGridLanesDirection, CSSPropertyID::kGridLanes,
+      *grid_lanes_direction, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridLanesFill, CSSPropertyID::kGridLanes,
@@ -2874,16 +2874,16 @@ bool GridLanesFlow::ParseShorthand(
       gridLanesFlowShorthand().properties();
   DCHECK_EQ(longhands.size(), 2u);
 
-  if (longhands[0]->PropertyID() != CSSPropertyID::kMasonryDirection ||
+  if (longhands[0]->PropertyID() != CSSPropertyID::kGridLanesDirection ||
       longhands[1]->PropertyID() != CSSPropertyID::kGridLanesFill) {
     return false;
   }
 
-  const CSSValue* masonry_direction = css_parsing_utils::ParseLonghand(
+  const CSSValue* grid_lanes_direction = css_parsing_utils::ParseLonghand(
       longhands[0]->PropertyID(), gridLanesFlowShorthand().id(), context,
       stream);
 
-  if (!masonry_direction) {
+  if (!grid_lanes_direction) {
     return false;
   }
 
@@ -2896,7 +2896,7 @@ bool GridLanesFlow::ParseShorthand(
   }
 
   AddProperty(longhands[0]->PropertyID(), gridLanesFlowShorthand().id(),
-              *masonry_direction, important,
+              *grid_lanes_direction, important,
               css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   AddProperty(longhands[1]->PropertyID(), gridLanesFlowShorthand().id(),
               *grid_lanes_fill, important,

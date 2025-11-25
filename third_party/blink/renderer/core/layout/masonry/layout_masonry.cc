@@ -17,7 +17,7 @@ const GridLayoutData* LayoutMasonry::LayoutData() const {
 Vector<LayoutUnit> LayoutMasonry::GridTrackPositions(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (track_direction != StyleRef().MasonryTrackSizingDirection()) {
+  if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {
     return {};
   }
   return LayoutGrid::ComputeExpandedPositions(track_direction == kForColumns
@@ -86,7 +86,7 @@ wtf_size_t LayoutMasonry::ExplicitGridEndForDirection(
 Vector<LayoutUnit, 1> LayoutMasonry::TrackSizesForComputedStyle(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (track_direction != StyleRef().MasonryTrackSizingDirection()) {
+  if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {
     return {};
   }
   return LayoutGrid::CollectTrackSizesForComputedStyle(LayoutData(),

@@ -2589,23 +2589,23 @@ String StylePropertySerializer::GetShorthandValueForGridLanes(
   // `GetCSSPropertyGridTemplateRows()` depending on the `grid-lanes` direction,
   // since `grid-template-rows` is not listed in the `grid-lanes` shorthand
   // property.
-  const auto* masonry_direction_values =
+  const auto* grid_lanes_direction_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  DCHECK(masonry_direction_values);
-  const auto* masonry_template_tracks_values =
-      CSSOMUtils::IsMasonryColumnDirectionValue(masonry_direction_values)
+  DCHECK(grid_lanes_direction_values);
+  const auto* grid_lanes_template_tracks_values =
+      CSSOMUtils::IsGridLanesColumnDirectionValue(grid_lanes_direction_values)
           ? property_set_.GetPropertyCSSValue(
                 GetCSSPropertyGridTemplateColumns())
           : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());
-  DCHECK(masonry_template_tracks_values);
+  DCHECK(grid_lanes_template_tracks_values);
   const auto* grid_lanes_fill_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
   DCHECK(grid_lanes_fill_values);
 
   const CSSValueList* grid_lanes_list =
       CSSOMUtils::ComputedValueForGridLanesShorthand(
-          masonry_template_tracks_values, template_area_values,
-          masonry_direction_values, grid_lanes_fill_values);
+          grid_lanes_template_tracks_values, template_area_values,
+          grid_lanes_direction_values, grid_lanes_fill_values);
   return grid_lanes_list->CssText();
 }
 

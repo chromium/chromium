@@ -54,7 +54,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
-    ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
+    ASSERT_EQ(grid_axis_direction, style.GridLanesTrackSizingDirection());
 
     for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
              line_resolver, masonry_items, needs_intrinsic_track_size,
@@ -179,7 +179,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
 
   EXPECT_EQ(masonry_items.Size(), expected_spans.size());
 
-  const auto grid_axis_direction = node.Style().MasonryTrackSizingDirection();
+  const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
   for (wtf_size_t i = 0; auto& masonry_item : masonry_items) {
     masonry_item.MaybeTranslateSpan(/*start_offset=*/0,
                                     GridTrackSizingDirection::kForColumns);
@@ -516,7 +516,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRowSizes) {
     #grid-lanes {
       height: 100px;
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: 20px 1fr 30%;
     }
     </style>
@@ -886,7 +886,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
     <style>
     #grid-lanes {
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: repeat(auto-fit, 100px);
       height: 1000px;
     }
@@ -928,7 +928,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoAndExplicitPlacement) {
     <style>
     #grid-lanes {
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: repeat(auto-fit, 100px);
       height: 1000px;
     }
@@ -970,7 +970,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoPlacement) {
   <style>
   #grid-lanes {
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: repeat(5, 100px) repeat(auto-fit, 100px);
       height: 1000px;
   }
@@ -1014,7 +1014,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
   <style>
   #grid-lanes {
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: repeat(auto-fit, 100px) repeat(5, 100px);
       height: 1000px;
   }
@@ -1059,7 +1059,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
     <style>
     #grid-lanes {
         display: grid-lanes;
-        masonry-direction: row;
+        grid-lanes-direction: row;
         grid-template-rows: repeat(auto-fit, auto);
         height: 1000px;
     }
@@ -1105,7 +1105,7 @@ TEST_F(MasonryLayoutAlgorithmTest,
     <style>
     #grid-lanes {
         display: grid-lanes;
-        masonry-direction: row;
+        grid-lanes-direction: row;
         grid-template-rows: repeat(auto-fit, auto);
         height: 1000px;
     }
@@ -1149,7 +1149,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
     <style>
     #grid-lanes {
         display: grid-lanes;
-        masonry-direction: row;
+        grid-lanes-direction: row;
         grid-template-rows: repeat(5, 100px) repeat(auto-fit, auto);
         height: 1000px;
     }
@@ -1195,7 +1195,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
   <style>
   #grid-lanes {
       display: grid-lanes;
-      masonry-direction: row;
+      grid-lanes-direction: row;
       grid-template-rows: repeat(auto-fit, auto) repeat(5, 100px);
       height: 1000px;
   }

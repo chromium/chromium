@@ -1228,6 +1228,12 @@
     // grid-{column|row}-{start|end}
     "span",
 
+    // grid-lanes-direction
+    // row
+    // row-reverse
+    // column
+    // column-reverse
+
     // grid-lanes-fill
     // normal
     // reverse
@@ -1256,12 +1262,6 @@
     // alpha
     // luminance
     "match-source",
-
-    // masonry-direction
-    // row
-    // row-reverse
-    // column
-    // column-reverse
 
     // color-interpolation / color-interpolation-filters
     // auto

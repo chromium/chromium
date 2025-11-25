@@ -459,6 +459,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridColumnEnd() == b.GridColumnEnd();
     case CSSPropertyID::kGridColumnStart:
       return a.GridColumnStart() == b.GridColumnStart();
+    case CSSPropertyID::kGridLanesDirection:
+      return a.GridLanesDirection() == b.GridLanesDirection();
     case CSSPropertyID::kGridLanesFill:
       return a.GridLanesFill() == b.GridLanesFill();
     case CSSPropertyID::kGridRowEnd:
@@ -538,8 +540,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerStartResource() == b.MarkerStartResource();
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
-    case CSSPropertyID::kMasonryDirection:
-      return a.MasonryDirection() == b.MasonryDirection();
     case CSSPropertyID::kMaxLines:
       return a.MaxLines() == b.MaxLines();
     case CSSPropertyID::kItemTolerance:

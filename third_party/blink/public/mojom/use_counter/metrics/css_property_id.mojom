@@ -871,7 +871,7 @@ enum CSSSampleId {
     // kViewTransitionCaptureMode = 810,
     kInteractivity = 811,
     kGridLanesFill = 812,
-    kMasonryDirection = 813,
+    kGridLanesDirection = 813,
     kGridLanesFlow = 814,
     // kMasonryAutoTracks = 815,
     kResult = 816,

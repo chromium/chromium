@@ -24,7 +24,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       .grid-lanes-rows {
           display: grid-lanes;
           grid-template-rows: 100px repeat(2, 30px 10%);
-          masonry-direction: row;
+          grid-lanes-direction: row;
           height: 500px;
           width: 300px;
           gap: 20px;
