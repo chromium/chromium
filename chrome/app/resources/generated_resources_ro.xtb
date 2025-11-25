@@ -1418,6 +1418,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1949980990364952348">Numele aplicației</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1951823516285577843">Găsește o alternativă</translation>
+<translation id="1953626242273481999">Permiți remedierea erorilor de la distanță?</translation>
 <translation id="1953796913175502363">Configurează profilul de serviciu</translation>
 <translation id="1954597385941141174">Site-urile pot solicita permisiunea de a se conecta la dispozitive USB</translation>
 <translation id="1954813140452229842">Eroare la montarea dispozitivului de stocare în rețea. Verifică acreditările și încearcă din nou.</translation>
@@ -1801,6 +1802,9 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="222115440608612541">Schimbă tema la răsărit și la apus</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">O aplicație externă solicită control deplin asupra acestei sesiuni Chrome pentru a remedia erorile asociate. Aici este inclus accesul la datele salvate, cookie-uri și datele privind site-urile și posibilitatea de a naviga la orice adresă URL.
+
+Numai dezvoltatorii web ar trebui să activeze această funcție și să o folosească numai cu aplicații de încredere.</translation>
 <translation id="222201875806112242">Sursă media nedenumită</translation>
 <translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="2224444042887712269">Setarea aparține utilizatorului <ph name="OWNER_EMAIL" />.</translation>
@@ -1906,6 +1910,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2294081976975808113">Confidențialitatea ecranului</translation>
 <translation id="2294358108254308676">Doriți să instalezi <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Examinează setările</translation>
+<translation id="229524410604268773">Dezactivează din setări</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> rezultate</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> solicită ca dispozitivul să fie online atunci când te conectezi la <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Descoperire dispozitive</translation>
@@ -2454,6 +2459,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2665394472441560184">Adăugați un cuvânt</translation>
 <translation id="2665647207431876759">Expirat</translation>
 <translation id="2665919335226618153">Of, nu mai merge! A apărut o eroare în timpul formatării.</translation>
+<translation id="2666092431469916601">Sus</translation>
 <translation id="2666247341166669829">Nivelul bateriei din stânga: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="2667463864537187133">Gestionează verificarea ortografiei</translation>
@@ -5411,6 +5417,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4699473989647132421">Mal</translation>
 <translation id="4701025263201366865">Conectarea unui părinte</translation>
 <translation id="4701335814944566468">Afișat ieri</translation>
+<translation id="4702504834785592287">Lateral</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
 <translation id="4707337002099455863">Întotdeauna pe toate site-urile</translation>
 <translation id="4708849949179781599">Închide <ph name="PRODUCT_NAME" /></translation>
@@ -9245,7 +9252,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7410344089573941623">Întreabă dacă <ph name="HOST" /> solicită acces la camera și microfonul meu</translation>
 <translation id="7410421966064092098">Site-urile nu te pot ajuta să confirmi că nu ești o aplicație bot</translation>
 <translation id="7410852728357935715">Proiectează pe un dispozitiv</translation>
-<translation id="741148343080227980">Poți să-ți editezi numele <ph name="BEGIN_LINK" />în Contul Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, accept</translation>
 <translation id="7412226954991670867">Memorie GPU</translation>
 <translation id="741370456693729525">Folosește limbajul cotidian pentru a căuta în istoricul de navigare și pentru a găsi site-urile pe care le-ai accesat</translation>

@@ -79,6 +79,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome inapendekeza usitishe kichupo kinachopunguza kasi ya kivinjari chako}other{Chrome inapendekeza usitishe vichupo vinavyopunguza kasi ya kivinjari chako}}</translation>
 <translation id="1832046143430087831">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini hufanya Chrome isistahimili sana mashambulio. Mipangilio hii imezimwa.</translation>
 <translation id="1838374766361614909">Futa utafutaji</translation>
+<translation id="1843347690926158494">Tafuta kichupo hiki ukitumia Lenzi ya Google</translation>
 <translation id="1849248141818021764">Mtu aliye na kauli yako ya siri ndiye tu anayeweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa wala kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ikiwa ungependa kubadilisha mipangilio hii, utahitaji <ph name="BEGIN_LINK" />kufuta data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome inahitaji ruhusa ya kufikia kamera yako katika tovuti hii</translation>
 <translation id="1873233029667955273">Google Chrome si kivinjari chako chaguomsingi</translation>
@@ -167,6 +168,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2841525013647267359">Tafsiri kutoka</translation>
 <translation id="2846251086934905009">Hitilafu ya kusakinisha: Kisakinishaji hakikukamilisha mchakato. Usakinishaji umeghairiwa.</translation>
 <translation id="2853415089995957805">Chrome hupakia mapema kurasa ambazo unaweza kutembelea, ili zipakiwe kwa haraka zaidi unapozitembelea</translation>
+<translation id="2856481144859256719">Onyesha Matumizi ya AI Kila Wakati kwenye Njia ya Mkato ya Huduma ya Tafuta na Google</translation>
 <translation id="2857540653560290388">Inaanzisha Chrome...</translation>
 <translation id="286025080868315611">Fahamu kwa nini Chrome huzuia baadhi ya vipakuliwa</translation>
 <translation id="2861074815332034794">Inasasisha Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -683,6 +685,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8533056045953418157">Weka Google Chrome iwe kitazamaji chako chaguomsingi cha PDF</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tafuta orodha ya lugha</translation>
+<translation id="8575047640889685742">Tumia <ph name="BEGIN_LINK" />kauli yako ya siri<ph name="END_LINK" /> ili usimbe data yote ya Chrome kwa njia fiche katika Akaunti yako ya Google. Njia za kulipa na anwani katika Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.</translation>
 <translation id="8601359445272098721">Mpya! Unaweza kutafsiri matini na picha kwenye skrini kwa kuchagua kitufe cha "tafsiri skrini"</translation>
 <translation id="8614913330719544658">Google Chrome imelemazwa. Izindue upya sasa?</translation>
 <translation id="861702415419836452">Chrome inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>

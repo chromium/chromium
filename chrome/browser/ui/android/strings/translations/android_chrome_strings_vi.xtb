@@ -335,6 +335,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, Thẻ đã tắt tiếng và được chọn cùng với nhiều thẻ khác</translation>
 <translation id="2468444275314013497">Trình duyệt của bạn có vẻ an toàn</translation>
+<translation id="2471632347767899461">Thử tìm trong trung tâm trợ giúp</translation>
 <translation id="2472163211318554013">Đăng nhập để khai thác tối đa Chrome</translation>
 <translation id="247737702124049222">Tính năng mô tả hình ảnh đang bật</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
@@ -362,6 +363,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2547843573592965873">Khoá hồ sơ giúp đảm bảo an toàn cho thông tin của bạn trong ô tô, trong đó có mật khẩu, thông tin thanh toán và những thông tin khác mà bạn đã lưu trong Tài khoản Google.</translation>
 <translation id="254973855621628293">Đã lưu mật khẩu vào thiết bị này</translation>
+<translation id="2553962148913791095">Một số dấu trang không được lưu</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Đã chặn tệp tải xuống nguy hiểm}other{Đã chặn # tệp tải xuống nguy hiểm}}</translation>
 <translation id="2569733278091928697">Bạn có thể dễ dàng quản lý chế độ điều khiển nội dung nghe nhìn, phiên truy cập ẩn danh, tệp đã tải xuống, v.v.</translation>
 <translation id="2571711316400087311">Đề xuất gửi các trang có nội dung bằng các ngôn ngữ khác cho Google Dịch</translation>
@@ -656,6 +658,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3870908470613821006">Mọi người sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị</translation>
 <translation id="3873174561423636563">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ <ph name="FIELDS_STRING" /> của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />điều khoản dịch vụ<ph name="END_LINK1" /> của trang web này.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
+<translation id="3893858854379998374">Để lưu dấu trang vào tài khoản của bạn, hãy xoá những dấu trang không dùng đến</translation>
 <translation id="3898498281932368596">Chặn và rời khỏi</translation>
 <translation id="3899682235662194879">Đóng tất cả các thẻ Ẩn danh</translation>
 <translation id="3900966090527141178">Xuất mật khẩu</translation>
@@ -719,6 +722,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
 <translation id="4177222230309051052">Lấy tất cả dấu trang</translation>
 <translation id="4177501066905053472">Chủ đề quảng cáo</translation>
+<translation id="417865198503699526">Tìm một chế độ cài đặt</translation>
 <translation id="4180726336228139707">Chỉ trên thiết bị này</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4188221736490993796">Sắp xếp từ Z đến A</translation>
@@ -1265,7 +1269,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Thẻ được chọn cùng với nhiều thẻ khác</translation>
 <translation id="641643625718530986">In…</translation>
 <translation id="6433501201775827830">Chọn công cụ tìm kiếm của bạn</translation>
-<translation id="6434309073475700221">Hủy</translation>
+<translation id="6434309073475700221">Huỷ</translation>
 <translation id="6437162790453527153">Đăng nhập để sử dụng dấu trang và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="6437478888915024427">Thông tin trang</translation>
 <translation id="6440291723980579689">Các trang chỉ tải sau khi bạn mở trang</translation>
@@ -1643,7 +1647,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
 <translation id="7887174313503389866">Xem hướng dẫn về các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật. Để có thêm lựa chọn, hãy chuyển đến từng phần cài đặt cụ thể.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tổ chức của bạn đã chặn 1 tệp tải xuống}other{Tổ chức của bạn đã chặn # tệp tải xuống}}</translation>
 <translation id="7914399737746719723">Đã cài đặt ứng dụng</translation>
 <translation id="7917574899775263813">Chuyển đến thẻ đã mở gần đây nhất</translation>

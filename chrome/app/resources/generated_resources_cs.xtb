@@ -1419,6 +1419,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1949980990364952348">Název aplikace</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1951823516285577843">Najít alternativu</translation>
+<translation id="1953626242273481999">Povolit vzdálené ladění?</translation>
 <translation id="1953796913175502363">Nastavení pracovního profilu</translation>
 <translation id="1954597385941141174">Weby mohou žádat o připojení k zařízením USB</translation>
 <translation id="1954813140452229842">Při připojování sdílené složky došlo k chybě. Zkontrolujte identifikační údaje a zkuste to znovu.</translation>
@@ -1802,6 +1803,9 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="222115440608612541">Přepnutí motivů při východu nebo západu slunce</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Externí aplikace chce mít nad touto relací Chromu úplnou kontrolu za účelem ladění. To zahrnuje přístup k uloženým datům, souborům cookie a datům webů a možnost přejít na libovolnou adresu URL.
+
+Tuto funkci by měli zapínat pouze vývojáři webů a používat ji pouze s důvěryhodnými aplikacemi.</translation>
 <translation id="222201875806112242">Nepojmenovaný zdroj médií</translation>
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2224444042887712269">Toto nastavení patří uživateli <ph name="OWNER_EMAIL" />.</translation>
@@ -1907,6 +1911,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2294081976975808113">Ochrana soukromí na obrazovce</translation>
 <translation id="2294358108254308676">Chcete nainstalovat aplikaci <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Kontrola nastavení</translation>
+<translation id="229524410604268773">Vypnout v nastavení</translation>
 <translation id="2295864384543949385">Výsledky: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">Doména <ph name="DOMAIN_NAME" /> vyžaduje, aby zařízení při přihlašování k e-mailu <ph name="EMAIL" /> bylo online</translation>
 <translation id="2296218178174497398">Zjišťování zařízení</translation>
@@ -2455,6 +2460,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2665394472441560184">Přidat nové slovo</translation>
 <translation id="2665647207431876759">Platnost vypršela</translation>
 <translation id="2665919335226618153">To ne! Během formátování došlo k chybě.</translation>
+<translation id="2666092431469916601">Nahoru</translation>
 <translation id="2666247341166669829">Stav levé baterie: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Ostatní aplikace jsou nastaveny, aby otevíraly stejné odkazy jako aplikace <ph name="APP_NAME" />. Aplikace <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> tak nebudou moci otevírat podporované odkazy.</translation>
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
@@ -5410,6 +5416,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4699473989647132421">Pobřeží</translation>
 <translation id="4701025263201366865">Přihlášení rodiče</translation>
 <translation id="4701335814944566468">Zobrazeno včera</translation>
+<translation id="4702504834785592287">Boční</translation>
 <translation id="470644585772471629">Převrácení barev</translation>
 <translation id="4707337002099455863">Vždy na všech webech</translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
@@ -9243,7 +9250,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7410344089573941623">Zobrazit dotaz, pokud bude chtít web <ph name="HOST" /> používat webovou kameru a mikrofon</translation>
 <translation id="7410421966064092098">Weby nemohou pomáhat ověřit, že nejste robot</translation>
 <translation id="7410852728357935715">Odesílání do zařízení</translation>
-<translation id="741148343080227980">Své jméno <ph name="BEGIN_LINK" />můžete upravit ve svém účtu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7412226954991670867">Paměť GPU</translation>
 <translation id="741370456693729525">Vyhledávat běžným jazykem v historii prohlížení a najít tak navštívené weby</translation>

@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">ഇറ്റാലിക്</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ഇവ ക്രമരഹിതമായി കാണിച്ചിരിക്കുന്നു. ഏതുസമയത്തും നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം.</translation>
 <translation id="2137891579555018930">അനുമതിക്കായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="213826338245044447">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">അതുമായി ബന്ധപ്പെട്ട് സഹായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="2453045048779611513">നിങ്ങൾക്ക് സംരക്ഷിക്കാവുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="2456755709261364512">നിങ്ങളുടെ ബാറ്ററിക്ക് <ph name="REQUIRED_BATTERY_PRECENT" />%-ന് മുകളിൽ ചാർജ് ഉണ്ടായിരിക്കണം</translation>
+<translation id="2459882793359532780">ബാധകമാക്കിയ ബ്രൗസർ നയങ്ങൾ (മെഷീൻ, പ്രൊഫൈൽ നയങ്ങൾ)</translation>
 <translation id="2461385121573678775">ക്ലൗഡിൽ നിന്ന് ബ്രൗസർ നയങ്ങൾ കോൺഫിഗർ ചെയ്യാൻ Chrome Enterprise Core നിങ്ങൾക്ക് ഒരു കേന്ദ്രീകൃത ടൂൾ നൽകുന്നു</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
 <translation id="2462932596748424101">സോഷ്യൽ നെറ്റ്‍വർക്കുകൾ</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982"><ph name="CIPHER" /> ഉപയോഗിച്ച് കണക്ഷൻ എൻക്രിപ്‌റ്റുചെയ്‌ത് പ്രാമാണീകരിക്കുന്നു, ഒപ്പം പ്രധാന എക്‌സേഞ്ച് മെക്കാനിസമായി <ph name="KX" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="2833637280516285136">ടോക്ക് റേഡിയോ</translation>
 <translation id="2835170189407361413">ഫോം മായ്‌ക്കുക</translation>
+<translation id="2835907903001172712">ബ്രൗസർ അവലോകനം</translation>
 <translation id="2837891525090413132">ലോക്ക് ചെയ്യാനും കീബോർഡ് ഉപയോഗിക്കാനും ആവശ്യപ്പെടാം</translation>
 <translation id="2839032553903800133">അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="2839501879576190149">വ്യാജ സൈറ്റ് ഉണ്ട്</translation>
@@ -1528,7 +1531,6 @@
 <translation id="3498215018399854026">ഇപ്പോൾ ഞങ്ങൾക്ക് നിങ്ങളുടെ രക്ഷകർത്താവിനെ ബന്ധപ്പെടാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="350069200438440499">ഫയല്‍ നാമം:</translation>
 <translation id="3501300228850242680">മെറ്റൽ (സംഗീതം)</translation>
-<translation id="350274464456291051"><ph name="BEGIN_LINK" />നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് പേര് എഡിറ്റ് ചെയ്യാം.</translation>
 <translation id="350421688684366066">ലേബലുകൾ (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="350763432931695541">അടുത്ത കുറച്ച് പേജുകളിലെ ടെക്‌സ്‌റ്റ് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3507869775212388416">നിയമവുമായി ബന്ധപ്പെട്ട ജോലികൾ</translation>
@@ -1557,6 +1559,7 @@
 <translation id="3543935938072367282">സ്വയമേവ പൂരിപ്പിക്കൽ ഉപയോഗിച്ച് വേഗത്തിൽ ചെക്കൗട്ട് ചെയ്യുക</translation>
 <translation id="3547442767634383572">ഔദ്യോഗിക പ്രൊഫൈൽ അവലോകനം</translation>
 <translation id="3547746132308051926">20 x 24 ഇഞ്ച്</translation>
+<translation id="3549904448933807997">ബ്രൗസറുകളും പ്രൊഫൈലുകളും സംബന്ധിച്ച വിവരങ്ങൾ (വ്യക്തിപരവും ഔദ്യോഗികവുമായ പ്രൊഫൈലുകൾ ഉൾപ്പെടെ)</translation>
 <translation id="3552155506104542239">മുന്നറിയിപ്പ്: ഈ നയവും <ph name="POLICY_NAME" /> എന്നതും തമ്മിൽ വൈരുദ്ധ്യമുണ്ട്, ഇത് Android ആപ്പുകളിൽ ഫലപ്രദമാകുകയും ഇല്ല. ഇക്കാര്യം ഒഴിച്ച് നിർത്തിയാൽ, ഈ നയം ഉദ്ദേശിക്കുന്നത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്.</translation>
 <translation id="3552297013052089404">Sans Serif ഫോണ്ട്</translation>
 <translation id="3558573058928565255">പകൽ</translation>
@@ -2398,6 +2401,7 @@
 <translation id="4887406273302438710">Windows Hello ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും ഇല്ലാതാക്കാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4892518386797173871">പിൻഭാഗം</translation>
+<translation id="4894390983254799375">ഉപകരണ ഐഡി, പേര്, OS പതിപ്പ്, OS ഉപയോക്തൃനാമം എന്നിവ പോലുള്ളവ</translation>
 <translation id="4895019427244614047">വിലാസം ഇല്ലാതാക്കുക</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ഒളിമ്പിക്‌സ്</translation>
@@ -2933,6 +2937,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> എന്ന വിലാസത്തിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="5765072501007116331">ഡെലിവറി രീതികളും ആവശ്യകതകളും കാണാൻ ഒരു വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="57689295674415555">വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിച്ചിട്ടില്ലേ?</translation>
+<translation id="5773286975255318081">പ്രൊഫൈൽ ഉപയോക്തൃനാമങ്ങളും ബ്രൗസർ പതിപ്പുകളും പോലുള്ളവ</translation>
 <translation id="5776313857861697733">മുൻഗണന</translation>
 <translation id="577804500166306874">ഫലം ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="5781136890105823427">പരീക്ഷണം പ്രവർത്തനക്ഷമമാക്കി</translation>
@@ -3409,7 +3414,6 @@
 <translation id="6521745193039995384">സജീവമല്ല</translation>
 <translation id="6522682797352430154">ശാസ്‌ത്രീയ സംഗീതം</translation>
 <translation id="6524830701589638230">'ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ സജീവമാക്കുക</translation>
-<translation id="6525222262307262764">നിലവിലെ ഡിഫോൾട്ട് നിലനിർത്തുക</translation>
 <translation id="6527049834925947126">ഭക്ഷ്യോൽപ്പാദനം</translation>
 <translation id="6529173248185917884">ഏഴാമത്തെ റോൾ</translation>
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
@@ -3548,6 +3552,7 @@
 <translation id="6772959465807028761">YouTube ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് തുടരുക</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">നിങ്ങളുടെ രക്ഷിതാവിന്റെ ചോയ്‌സുകൾ അനുസരിച്ച് YouTube ഉപയോഗിക്കുക</translation>
+<translation id="6779290995699117286">പ്രൊഫൈൽ, ബ്രൗസർ, ഉപകരണ വിവരങ്ങൾ എന്നിവ നിങ്ങളുടെ അഡ്‌മിന് ആക്‌സസ് ചെയ്യാനാകും. അവർക്ക് ഇനിപ്പറയുന്നവ കാണാനാകും:</translation>
 <translation id="6779348349813025131">Google Password Manager-ന് MacOS Keychain-ലേക്ക് ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="6780449997190414928">നിങ്ങൾ സാധാരണ ഈ സൈറ്റിലേക്ക് സുരക്ഷിതമായാണ് കണക്റ്റ് ചെയ്യുന്നതെങ്കിലും Chrome-ന് ഇത്തവണ സുരക്ഷിതമായ കണക്ഷൻ ഉപയോഗിക്കാനായില്ല. ഒരു അറ്റാക്കർ നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിഷ്‌കരിക്കാനോ അതിൽ നിന്നുള്ള വിവരങ്ങൾ ചോർത്താനോ ശ്രമിക്കുന്നുണ്ടാകാം. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chrome-ന്റെ ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും തിരയൽ യന്ത്രം മാറ്റാം.</translation>
@@ -4392,6 +4397,7 @@
 <translation id="8135546115396015134">'Left' കീ</translation>
 <translation id="8137456439814903304">ഊർജ്ജവും യൂട്ടിലിറ്റികളും</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ഒരു മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_MONTHS} മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, നിലവിലെ ഡിഫോൾട്ട്. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF പതിപ്പ്:</translation>
 <translation id="8149426793427495338">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സ്ലീപ് മോഡിലാണ്.</translation>
 <translation id="815036624016370447">Chrome-ൽ വേഗത്തിൽ ഫോമുകൾ പൂരിപ്പിക്കാൻ നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ നിന്നുള്ള വിവരങ്ങൾ സഹായിക്കും</translation>
@@ -4681,6 +4687,7 @@
 <translation id="8606988009912891950">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും ഐഡന്റിറ്റിയും പരിരക്ഷിച്ചുകൊണ്ട് പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ പരസ്യ വിഷയങ്ങൾ സൈറ്റുകളെ സഹായിക്കുന്നു. നിങ്ങളുടെ അടുത്തിടെയുള്ള ബ്രൗസിംഗ് ചരിത്രം അടിസ്ഥാനമാക്കി നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ Chrome-ന് രേഖപ്പെടുത്താനാകും. പിന്നീട്, നിങ്ങൾ കാണുന്ന പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാനായി, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് Chrome-നോട് പ്രസക്തമായ വിഷയങ്ങൾ ആവശ്യപ്പെടാം.</translation>
 <translation id="8612919051706159390">ഓൺലൈൻ കമ്മ്യൂണിറ്റികൾ</translation>
 <translation id="8617269623452051934">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോഗം</translation>
+<translation id="8619130384334725124">നിലവിലെ ഡിഫോൾട്ട്</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">നിങ്ങളുടെ ധനകാര്യ സ്ഥാപനത്തെ ബന്ധപ്പെടുന്നു...</translation>
 <translation id="8624354461147303341">ഡിസ്‌കൗണ്ടുകൾ നേടുക</translation>

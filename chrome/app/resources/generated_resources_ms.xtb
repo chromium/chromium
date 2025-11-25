@@ -1652,6 +1652,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2104166991923847969">Matikan tempat liputan secara automatik</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> disembunyikan</translation>
 <translation id="2106439768713835453">Turut berkongsi audio aplikasi</translation>
+<translation id="2107359546799360577">Pengoptimuman JavaScript dilumpuhkan.</translation>
 <translation id="2108204112555497972">Diperiksa <ph name="NUM_DAYS_HOURS_MINUTES" /> lalu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nombor telefon}other{# nombor telefon}}</translation>
 <translation id="2109384632594340939">gambar profil</translation>
@@ -2071,6 +2072,7 @@ Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini de
 <translation id="2390782873446084770">Penyegerakan Wi-Fi</translation>
 <translation id="2391419135980381625">Fon standard</translation>
 <translation id="2391805183137601570">Buka Steam</translation>
+<translation id="239185270194776190">Perbualan Gemini anda berada dalam tetingkap lain. Klik mana-mana sahaja pada panel sisi ini untuk mengalihkan panel sisi ke sini.</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
 <translation id="2393136602862631930">Sediakan <ph name="APP_NAME" /> pada Chromebook anda</translation>
 <translation id="2393313392064891208">Kandungan Terma Google Chrome OS Flex</translation>
@@ -2471,6 +2473,7 @@ Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini de
 <translation id="2665394472441560184">Tambah perkataan baharu</translation>
 <translation id="2665647207431876759">Tamat tempoh</translation>
 <translation id="2665919335226618153">Oh, Tidak! Terdapat ralat semasa memformat.</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2666247341166669829">Paras bateri kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Apl lain ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> daripada membuka pautan yang disokong.</translation>
 <translation id="2667463864537187133">Urus semakan ejaan</translation>
@@ -4279,6 +4282,7 @@ Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini de
 <translation id="3893536212201235195">Baca dan tukar tetapan kebolehaksesan anda</translation>
 <translation id="3893630138897523026">ChromeVox (maklum balas dituturkan)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">Untuk menyimpan penanda halaman dalam akaun anda, padamkan penanda halaman anda yang tidak digunakan</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3895076768659607631">&amp;Urus Enjin Carian...</translation>
 <translation id="3895090224522145010">Nama pengguna Kerberos</translation>
@@ -5004,6 +5008,7 @@ Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini de
 <translation id="4405781821077215583">Kecilkan atau besarkan item pada skrin anda</translation>
 <translation id="4406308048672435032">Anda boleh menjadikan tab ini tidak aktif atau menyegarkan semula tab untuk melihat senarai penuh semula</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
+<translation id="4406963243402726564">Data tidak disimpan</translation>
 <translation id="4408599188496843485">B&amp;antuan</translation>
 <translation id="4409271659088619928">Enjin carian anda ialah <ph name="DSE" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />. Anda akan dimaklumi apabila rakaman bermula.}=2{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" /> dan <ph name="APP1_NAME" />. Anda akan dimaklumi apabila rakaman bermula.}=3{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dan 1 apl lain. Anda akan dimaklumi apabila rakaman bermula.}other{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dan # apl lain. Anda akan dimaklumi apabila rakaman bermula.}}</translation>
@@ -5429,6 +5434,7 @@ Hanya pembangun web yang perlu menghidupkan ciri ini dan menggunakan ciri ini de
 <translation id="4699473989647132421">Pinggir laut</translation>
 <translation id="4701025263201366865">Log masuk ibu atau bapa</translation>
 <translation id="4701335814944566468">Dilihat semalam</translation>
+<translation id="4702504834785592287">Sisi</translation>
 <translation id="470644585772471629">Penyongsangan warna</translation>
 <translation id="4707337002099455863">Sentiasa pada Semua Laman</translation>
 <translation id="4708849949179781599">Keluar dari <ph name="PRODUCT_NAME" /></translation>
@@ -9263,7 +9269,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7410344089573941623">Tanya jika <ph name="HOST" /> ingin mengakses kamera dan mikrofon anda</translation>
 <translation id="7410421966064092098">Laman tidak dapat mengesahkan anda bukan bot</translation>
 <translation id="7410852728357935715">Hantar ke peranti</translation>
-<translation id="741148343080227980">Anda boleh mengedit nama anda <ph name="BEGIN_LINK" />dalam Google Account anda<ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7412226954991670867">Memori GPU</translation>
 <translation id="741370456693729525">Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati</translation>

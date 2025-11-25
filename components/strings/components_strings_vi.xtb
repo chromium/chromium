@@ -693,6 +693,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2127747486437921899">In nghiêng</translation>
 <translation id="2130448033692577677">Các mẫu bạn đã chỉ định có thể không được áp dụng do chưa đặt chính sách DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Danh sách dưới đây hiển thị theo thứ tự ngẫu nhiên. Bạn có thể thay đổi công cụ tìm kiếm mặc định bất cứ lúc nào.</translation>
 <translation id="2137891579555018930">Đang chờ cấp quyền...</translation>
 <translation id="213826338245044447">Dấu trang trên thiết bị di động</translation>
@@ -912,6 +913,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2452837234288608067">Chúng tôi không thể trợ giúp bạn về yêu cầu này. Hãy thử lại.</translation>
 <translation id="2453045048779611513">Tổ chức của bạn giới hạn những nội dung bạn được lưu</translation>
 <translation id="2456755709261364512">Pin phải được sạc trên <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Chính sách trình duyệt được áp dụng (chính sách về thiết bị và hồ sơ)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core cung cấp cho bạn một công cụ tập trung để định cấu hình các chính sách trình duyệt từ đám mây</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2462932596748424101">Mạng xã hội</translation>
@@ -1123,6 +1125,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2826760142808435982">Kết nối được mã hóa và xác thực bằng <ph name="CIPHER" /> đồng thời sử dụng <ph name="KX" /> làm cơ chế trao đổi chính.</translation>
 <translation id="2833637280516285136">Talk Radio</translation>
 <translation id="2835170189407361413">Xóa biểu mẫu</translation>
+<translation id="2835907903001172712">Thông tin tổng quan về trình duyệt</translation>
 <translation id="2837891525090413132">Có thể yêu cầu khoá và sử dụng bàn phím</translation>
 <translation id="2839032553903800133">Đã chặn thông báo</translation>
 <translation id="2839501879576190149">Bạn sắp truy cập vào trang web giả mạo</translation>
@@ -1529,7 +1532,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3498215018399854026">Chúng tôi không thể liên lạc với cha mẹ của bạn vào thời điểm này. Vui lòng thử lại.</translation>
 <translation id="350069200438440499">Tên tệp:</translation>
 <translation id="3501300228850242680">(Nhạc) Metal</translation>
-<translation id="350274464456291051">Bạn có thể chỉnh sửa tên <ph name="BEGIN_LINK" />trong Tài khoản Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Nhãn (Độ bóng cao)</translation>
 <translation id="350763432931695541">Đang trích xuất văn bản trong vài trang tiếp theo</translation>
 <translation id="3507869775212388416">Công việc pháp lý</translation>
@@ -1558,6 +1560,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3543935938072367282">Thanh toán nhanh hơn nhờ tính năng tự động điền</translation>
 <translation id="3547442767634383572">Tổng quan về hồ sơ công việc</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
+<translation id="3549904448933807997">Thông tin về trình duyệt và hồ sơ (bao gồm cả hồ sơ cá nhân và hồ sơ công việc)</translation>
 <translation id="3552155506104542239">Cảnh báo: Chính sách này xung đột với <ph name="POLICY_NAME" /> và sẽ không có hiệu lực với ứng dụng Android. Trong các trường hợp khác, chính sách này sẽ hoạt động như dự kiến.</translation>
 <translation id="3552297013052089404">Phông chữ Sans-serif</translation>
 <translation id="3558573058928565255">Giờ ban ngày</translation>
@@ -2399,6 +2402,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4887406273302438710">Bảo vệ mật khẩu bằng Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn phím Tab rồi nhấn Enter để xoá nhật ký duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="4892518386797173871">Phía sau</translation>
+<translation id="4894390983254799375">Chẳng hạn như mã thiết bị, tên, phiên bản hệ điều hành và tên người dùng trên hệ điều hành</translation>
 <translation id="4895019427244614047">Xoá địa chỉ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Thế vận hội</translation>
@@ -2934,6 +2938,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5764920692828389743">Gửi tới <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Để xem các yêu cầu và phương thức phân phối, hãy chọn một địa chỉ</translation>
 <translation id="57689295674415555">Bạn chưa điền số thẻ ảo?</translation>
+<translation id="5773286975255318081">Chẳng hạn như tên người dùng trong hồ sơ và phiên bản trình duyệt</translation>
 <translation id="5776313857861697733">Mức độ ưu tiên</translation>
 <translation id="577804500166306874">Đang tải kết quả</translation>
 <translation id="5781136890105823427">Đã bật tính năng thử nghiệm</translation>
@@ -3410,7 +3415,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6521745193039995384">Không hoạt động</translation>
 <translation id="6522682797352430154">Nhạc cổ điển</translation>
 <translation id="6524830701589638230">Nút Quản lý chế độ cài đặt hỗ trợ tiếp cận, hãy nhấn nút này để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần cài đặt của Chrome</translation>
-<translation id="6525222262307262764">Giữ nguyên chế độ mặc định hiện tại</translation>
 <translation id="6527049834925947126">Sản xuất thực phẩm</translation>
 <translation id="6529173248185917884">Cuộn thứ bảy</translation>
 <translation id="6529602333819889595">&amp;Làm lại xóa</translation>
@@ -3549,6 +3553,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6772959465807028761">Để sử dụng YouTube, hãy tiếp tục bằng Tài khoản Google của bạn</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Sử dụng YouTube theo lựa chọn của cha mẹ</translation>
+<translation id="6779290995699117286">Quản trị viên có thể truy cập vào thông tin về hồ sơ, trình duyệt và thiết bị. Họ có thể xem:</translation>
 <translation id="6779348349813025131">Trình quản lý mật khẩu của Google cần quyền truy cập vào MacOS Keychain</translation>
 <translation id="6780449997190414928">Bạn thường kết nối an toàn với trang web này nhưng lần này Chrome không thể sử dụng kết nối bảo mật. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chrome.</translation>
@@ -4395,6 +4400,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8135546115396015134">phím mũi tên trái</translation>
 <translation id="8137456439814903304">Tiện ích và năng lượng</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Tạo 1 tháng trước}other{Tạo {NUM_MONTHS} tháng trước}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, chế độ mặc định hiện tại. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Phiên bản PDF:</translation>
 <translation id="8149426793427495338">Máy tính của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="815036624016370447">Thông tin từ Tài khoản Google <ph name="ACCOUNT" /> có thể giúp bạn điền nhanh hơn vào biểu mẫu trong Chrome</translation>
@@ -4685,6 +4691,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8606988009912891950">Nhờ vào chủ đề quảng cáo, các trang web sẽ hiển thị cho bạn quảng cáo phù hợp, đồng thời bảo vệ nhật ký duyệt web và danh tính của bạn. Chrome có thể lưu ý các chủ đề bạn quan tâm dựa trên nhật ký duyệt web gần đây của bạn. Sau đó, trang web bạn truy cập có thể yêu cầu Chrome cung cấp thông tin về các chủ đề có liên quan để cá nhân hoá quảng cáo bạn thấy.</translation>
 <translation id="8612919051706159390">Cộng đồng trực tuyến</translation>
 <translation id="8617269623452051934">hoạt động dùng thiết bị</translation>
+<translation id="8619130384334725124">Ứng dụng mặc định hiện tại</translation>
 <translation id="8620276786115098679">Phong bì Kaku 7</translation>
 <translation id="8622864575115813231">Đang liên hệ với tổ chức tài chính của bạn...</translation>
 <translation id="8624354461147303341">Nhận chiết khấu</translation>

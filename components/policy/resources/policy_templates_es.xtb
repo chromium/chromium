@@ -1728,12 +1728,6 @@ En la versión 114 y posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional
       Si se asigna el valor "True" a esta política o no se le asigna ningún valor, el usuario podrá usar la interfaz de línea de comandos para gestionar máquinas virtuales.
       De lo contrario, se deshabilitará y ocultará la interfaz de línea de comandos para gestionar máquinas virtuales.
       </translation>
-<translation id="2194051055390000601">Política para controlar si se puede inhabilitar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.
-
-Si se inhabilita esta política, la opción de temas de anuncios se desactivará para los usuarios.
-Si se habilita esta política o no se define, los usuarios podrán activar o desactivar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.
-
-Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2195032660890227692">Esta política se retiró en <ph name="PRODUCT_NAME" /> 68 y se ha sustituido por <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Si se asigna el valor "true" a esta política, se mostrará un teclado numérico por defecto para introducir la contraseña en la pantalla de inicio de sesión. Si quieren, los usuarios pueden cambiar al teclado normal.
 

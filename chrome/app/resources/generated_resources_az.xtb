@@ -1417,6 +1417,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1949980990364952348">Tətbiq adı</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Alternativ tapın</translation>
+<translation id="1953626242273481999">Xətaların uzaqdan aradan qaldırılmasına icazə verilsin?</translation>
 <translation id="1953796913175502363">İş profilinizi ayarlayın</translation>
 <translation id="1954597385941141174">Saytlar USB cihazlara qoşulmaq icazəsi istəyə bilər</translation>
 <translation id="1954813140452229842">Paylaşım xətası. Kredensiallarınızı yoxlayaraq yenidən cəhd edin.</translation>
@@ -1800,6 +1801,9 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="222115440608612541">Gün çıxanda və batanda mövzuları dəyişdirin</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Xarici tətbiq xətaları aradan qaldırmaq üçün bu Chrome sessiyasına tam nəzarət etmək istəyir. Buraya yadda saxlanılmış dataya, kukilərə və sayt datasına giriş və istənilən URL-ə keçmək imkanı daxildir.
+
+Yalnız veb-tərtibatçılar bu funksiyanı aktiv etməli və etibarlı tətbiqlərlə istifadə etməlidirlər.</translation>
 <translation id="222201875806112242">Adsız media mənbəyi</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2224444042887712269">Bu ayarlar <ph name="OWNER_EMAIL" /> hesabına məxsusdur.</translation>
@@ -1908,6 +1912,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2294081976975808113">Ekran məxfiliyi</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> quraşdırmaq istəyirsiniz?</translation>
 <translation id="229477815107578534">Ayarlarınızı nəzərdən keçirin</translation>
+<translation id="229524410604268773">Ayarlarda deaktiv edin</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> nəticə</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> <ph name="EMAIL" /> hesabına daxil olarkən cihazın onlayn olmasını tələb edir</translation>
 <translation id="2296218178174497398">Cihaz Kəşfi</translation>
@@ -2456,6 +2461,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2665394472441560184">Yeni söz əlavə edin</translation>
 <translation id="2665647207431876759">Bitib</translation>
 <translation id="2665919335226618153">Başımıza daş! Formatlama zamanı xəta oldu!</translation>
+<translation id="2666092431469916601">Yuxarı</translation>
 <translation id="2666247341166669829">Sol qulaqlığın batareya səviyyəsi: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Digər tətbiqlər <ph name="APP_NAME" /> ilə eyni keçidləri açmaq üçün ayarlanıb. Bununla <ph name="APP_NAME_2" /> və <ph name="APP_NAME_3" /> tətbiqinin dəstəklənən keçidləri açması deaktiv ediləcək.</translation>
 <translation id="2667463864537187133">Orfoqrafik yoxlanışı idarə edin</translation>
@@ -5412,6 +5418,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4699473989647132421">Sahil xətti</translation>
 <translation id="4701025263201366865">Valideyn girişi</translation>
 <translation id="4701335814944566468">Dünən baxılıb</translation>
+<translation id="4702504834785592287">Tərəf</translation>
 <translation id="470644585772471629">Rəng inversiyası</translation>
 <translation id="4707337002099455863">Həmişə bütün saytlarda</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> məhsulundan çıxın</translation>
@@ -9243,7 +9250,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7410344089573941623"><ph name="HOST" /> kamera və mikrofonunuza daxil olmaq istədiyi haqqında soruşun</translation>
 <translation id="7410421966064092098">Saytlar bot olmadığınızı təsdiqləməyə kömək edə bilməz</translation>
 <translation id="7410852728357935715">Cihazda paylaşın</translation>
-<translation id="741148343080227980">Adınızı <ph name="BEGIN_LINK" />Google hesabınızda<ph name="USERNAME" /><ph name="END_LINK" /> redaktə edə bilərsiniz.</translation>
 <translation id="741204030948306876">Bəli, razıyam</translation>
 <translation id="7412226954991670867">GPU yaddaş</translation>
 <translation id="741370456693729525">Brauzer tarixçəsində axtarmaq və daxil olduğunuz saytları tapmaq üçün gündəlik danışıqdan istifadə edin</translation>

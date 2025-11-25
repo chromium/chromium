@@ -79,6 +79,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome priporoča, da začasno zaustavite zavihek, ki upočasnjuje brskalnik}one{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}two{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}few{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}other{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}}</translation>
 <translation id="1832046143430087831">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom. Ta nastavitev je izklopljena.</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
+<translation id="1843347690926158494">Išči po tem zavihku z Googlom Lens</translation>
 <translation id="1849248141818021764">Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, morate <ph name="BEGIN_LINK" />izbrisati podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
 <translation id="1873233029667955273">Google Chrome ni privzeti brskalnik</translation>
@@ -167,6 +168,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2841525013647267359">Prevedi iz jezika</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
 <translation id="2853415089995957805">Chrome vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
+<translation id="2856481144859256719">Vedno pokaži bližnjico do načina umetne inteligence v Iskanju Google</translation>
 <translation id="2857540653560290388">Zagon Chroma …</translation>
 <translation id="286025080868315611">Preberite, zakaj Chrome blokira nekatere prenose</translation>
 <translation id="2861074815332034794">Posodabljanje Chroma (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -683,6 +685,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8533056045953418157">Nastavite Google Chrome kot privzeti pregledovalnik PDF-jev</translation>
 <translation id="8555465886620020932">Napaka storitve: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Iskanje po seznamu jezikov</translation>
+<translation id="8575047640889685742">Za šifriranje vseh podatkov v Chromu v računu Google uporabite <ph name="BEGIN_LINK" />svoje geslo<ph name="END_LINK" />. Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.</translation>
 <translation id="8601359445272098721">Novo! Besedilo in slike na zaslonu lahko prevedete tako, da izberete gumb za prevod vsebine zaslona.</translation>
 <translation id="8614913330719544658">Google Chrome se ne odziva. Ga želite znova zagnati?</translation>
 <translation id="861702415419836452">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>

@@ -1530,7 +1530,6 @@
 <translation id="3498215018399854026">ہم اس وقت آپ کے والدین تک نہیں پہنچ سکے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="350069200438440499">فائل کا نام:</translation>
 <translation id="3501300228850242680">میٹل (موسیقی)</translation>
-<translation id="350274464456291051">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں<ph name="END_LINK" /> اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="350421688684366066">لیبلز (ہائی گلوس)</translation>
 <translation id="350763432931695541">اگلے چند صفحات میں ٹیکسٹ نکالا جا رہا ہے</translation>
 <translation id="3507869775212388416">قانونی جابز</translation>
@@ -2661,7 +2660,7 @@
 <translation id="5316812925700871227">گھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5319366980180850702">ادبی کلاسکس</translation>
-<translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chromium  کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
+<translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chromium کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="5323043727018853753">سرایت کردہ مواد کی اجازت ہے</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />، <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES" /></translation>
 <translation id="5327248766486351172">نام</translation>
@@ -3412,7 +3411,6 @@
 <translation id="6521745193039995384">فعال نہیں ہے</translation>
 <translation id="6522682797352430154">کلاسیکل موسیقی</translation>
 <translation id="6524830701589638230">‏ایکسیسبیلٹی کی ترتیبات کا نظم کریں بٹن، Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے فعال کریں</translation>
-<translation id="6525222262307262764">موجودہ ڈیفالٹ برقرار رکھیں</translation>
 <translation id="6527049834925947126">غذا کی تیاری</translation>
 <translation id="6529173248185917884">ساتواں رول</translation>
 <translation id="6529602333819889595">&amp;دوبارہ حذف کریں</translation>

@@ -1417,6 +1417,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1949980990364952348">Nome dell'app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Trova alternativa</translation>
+<translation id="1953626242273481999">Vuoi consentire il debug remoto?</translation>
 <translation id="1953796913175502363">Configura il tuo profilo di lavoro</translation>
 <translation id="1954597385941141174">I siti possono chiedere di connettersi ai dispositivi USB</translation>
 <translation id="1954813140452229842">Errore durante il montaggio della condivisione. Verifica le tue credenziali e riprova.</translation>
@@ -1800,6 +1801,9 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="222115440608612541">Cambia tema all'alba e al tramonto</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> e <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Un'app esterna richiede il controllo completo di questa sessione di Chrome per eseguire il debug. Ciò include l'accesso ai dati salvati, ai cookie e ai dati dei siti, nonché la possibilità di navigare in qualsiasi URL.
+
+Solo gli sviluppatori web dovrebbero attivare questa funzionalità e utilizzarla unicamente con app attendibili.</translation>
 <translation id="222201875806112242">Origine di contenuti multimediali senza nome</translation>
 <translation id="2224337661447660594">Nessuna connessione a internet</translation>
 <translation id="2224444042887712269">Questa impostazione appartiene a <ph name="OWNER_EMAIL" />.</translation>
@@ -1905,6 +1909,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2294081976975808113">Privacy schermo</translation>
 <translation id="2294358108254308676">Installare <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Esamina le tue impostazioni</translation>
+<translation id="229524410604268773">Disattiva nelle impostazioni</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> risultati</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> richiede che il dispositivo sia online quando viene eseguito l'accesso all'account <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Rilevamento dispositivi</translation>
@@ -2453,6 +2458,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2665394472441560184">Aggiungi una nuova parola</translation>
 <translation id="2665647207431876759">Scaduta</translation>
 <translation id="2665919335226618153">Uffa! Si è verificato un errore durante la formattazione.</translation>
+<translation id="2666092431469916601">In alto</translation>
 <translation id="2666247341166669829">Livello della batteria dell'auricolare sinistro a <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestisci controllo ortografico</translation>
@@ -5411,6 +5417,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4699473989647132421">Lungomare</translation>
 <translation id="4701025263201366865">Accesso per i genitori</translation>
 <translation id="4701335814944566468">Visualizzato ieri</translation>
+<translation id="4702504834785592287">Lato</translation>
 <translation id="470644585772471629">Inversione dei colori</translation>
 <translation id="4707337002099455863">Sempre su tutti i siti</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
@@ -7509,7 +7516,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6195693561221576702">Impossibile configurare il dispositivo in modalità demo offline.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
-<translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
+<translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può3 cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
 <translation id="6197128521826316819">Crea codice QR per questa pagina</translation>
 <translation id="6198223452299275399">Scorri tra le pagine</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
@@ -7576,7 +7583,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6238923052227198598">Tieni le note più recenti sulla schermata di blocco</translation>
 <translation id="6238982280403036866">Possono utilizzare JavaScript</translation>
 <translation id="6239558157302047471">Ricarica &amp;frame</translation>
-<translation id="6240637845286751292">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso alla posizione del sistema<ph name="LINK_END" />.</translation>
+<translation id="6240637845286751292">Autorizzazione consentita. Attiva l‘<ph name="LINK_BEGIN" />accesso alla posizione del sistema<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Chiedi ogni volta</translation>
 <translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241530762627360640">Accedere a informazioni sui dispositivi Bluetooth accoppiati con il sistema e rilevare dispositivi Bluetooth nelle vicinanze.</translation>
@@ -9241,7 +9248,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7410344089573941623">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam e al microfono</translation>
 <translation id="7410421966064092098">I siti non possono aiutarti a verificare che non sei un bot</translation>
 <translation id="7410852728357935715">Trasmetti a un dispositivo</translation>
-<translation id="741148343080227980">Puoi modificare il tuo nome <ph name="BEGIN_LINK" />nel tuo Account Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione e trovare i siti che hai visitato</translation>

@@ -1428,6 +1428,7 @@
 <translation id="1949980990364952348">ऐप्लिकेशन का नाम</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">अन्य विकल्प खोजें</translation>
+<translation id="1953626242273481999">क्या आपको बाहरी ऐप्लिकेशन के ज़रिए डिबग करने की अनुमति देनी है?</translation>
 <translation id="1953796913175502363">अपनी वर्क प्रोफ़ाइल सेट अप करें</translation>
 <translation id="1954597385941141174">साइटें यूएसबी डिवाइस से कनेक्ट करने के लिए पूछ सकती हैं</translation>
 <translation id="1954813140452229842">शेयर माउंट करने में गड़बड़ी. कृपया अपने क्रेडेंशियल देखें और दोबारा कोशिश करें.</translation>
@@ -1811,6 +1812,9 @@
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="222115440608612541">सुबह और शाम के समय थीम बदलें</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> और <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">किसी बाहरी ऐप्लिकेशन को इस Chrome सेशन का पूरा कंट्रोल चाहिए, ताकि वह इसे डीबग कर सके. इसमें सेव किया गया डेटा, कुकी, और साइट डेटा का ऐक्सेस शामिल है. साथ ही, किसी भी यूआरएल पर जाने की सुविधा शामिल है.
+
+यह सुविधा सिर्फ़ वेब डेवलपर को चालू करनी चाहिए. साथ ही, इसे सिर्फ़ भरोसेमंद ऐप्लिकेशन के साथ इस्तेमाल किया जाना चाहिए.</translation>
 <translation id="222201875806112242">बिना लेबल वाला मीडिया सोर्स</translation>
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="2224444042887712269">यह सेटिंग <ph name="OWNER_EMAIL" /> से संबंधित है.</translation>
@@ -1919,6 +1923,7 @@
 <translation id="2294081976975808113">स्क्रीन की निजता</translation>
 <translation id="2294358108254308676">क्या आप <ph name="PRODUCT_NAME" /> को इंस्‍टॉल करना चाहते हैं?</translation>
 <translation id="229477815107578534">अपनी सेटिंग देखें</translation>
+<translation id="229524410604268773">सेटिंग में जाकर बंद करें</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> नतीजे</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> के <ph name="EMAIL" /> में साइन इन करते समय, डिवाइस का इंटरनेट से कनेक्ट होना ज़रूरी है</translation>
 <translation id="2296218178174497398">डिवाइस खोज</translation>
@@ -2467,6 +2472,7 @@
 <translation id="2665394472441560184">एक नया शब्द जोड़ें</translation>
 <translation id="2665647207431876759">समय खत्म</translation>
 <translation id="2665919335226618153">हे भगवान! फ़ॉर्मेटिंग के दौरान गड़बड़ी आई.</translation>
+<translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2666247341166669829">बाएं वायरलेस बड में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="2667144577800272420">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" /> और <ph name="APP_NAME_3" /> को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="2667463864537187133">स्पेल चेक को मैनेज करें</translation>
@@ -5424,6 +5430,7 @@
 <translation id="4699473989647132421">तटरेखा</translation>
 <translation id="4701025263201366865">माता-पिता साइन इन करें</translation>
 <translation id="4701335814944566468">कल देखा गया</translation>
+<translation id="4702504834785592287">साइड</translation>
 <translation id="470644585772471629">रंग बदलने की सुविधा</translation>
 <translation id="4707337002099455863">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
@@ -9258,7 +9265,6 @@
 <translation id="7410344089573941623">अगर <ph name="HOST" /> आपके कैमरे और माइक्रोफ़ोन को एक्सेस करना चाहे, तो पूछें</translation>
 <translation id="7410421966064092098">साइटें यह पुष्टि नहीं कर सकतीं कि आप बॉट नहीं हैं</translation>
 <translation id="7410852728357935715">किसी डिवाइस पर कास्ट करें</translation>
-<translation id="741148343080227980"><ph name="BEGIN_LINK" />अपने Google खाते <ph name="USERNAME" /><ph name="END_LINK" /> पर जाकर, अपना नाम बदला जा सकता है.</translation>
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7412226954991670867">GPU मेमोरी</translation>
 <translation id="741370456693729525">अपना ब्राउज़िंग इतिहास खोजने और विज़िट की गई साइटों को ढूंढने के लिए, आम बोलचाल वाली भाषा का इस्तेमाल करें</translation>

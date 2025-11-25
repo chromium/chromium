@@ -79,6 +79,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome raadt aan het tabblad dat je browser vertraagt te onderbreken}other{Chrome raadt aan de tabbladen die je browser vertragen te onderbreken}}</translation>
 <translation id="1832046143430087831">Versnelt sites met de V8-engine van Chrome, maar maakt Chrome iets minder goed bestand tegen aanvallen. Deze instelling staat uit.</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
+<translation id="1843347690926158494">Dit tabblad doorzoeken met Google Lens</translation>
 <translation id="1849248141818021764">Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, moet je <ph name="BEGIN_LINK" />de Chrome-gegevens in je account verwijderen<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome heeft toegangsrechten voor je camera nodig voor deze site</translation>
 <translation id="1873233029667955273">Google Chrome is niet je standaardbrowser</translation>
@@ -167,6 +168,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2841525013647267359">Vertalen uit het</translation>
 <translation id="2846251086934905009">Installatiefout: Het installatieprogramma is niet afgerond. De installatie is afgebroken.</translation>
 <translation id="2853415089995957805">Chrome laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt</translation>
+<translation id="2856481144859256719">Snelkoppeling voor AI-modus in Google Zoeken altijd tonen</translation>
 <translation id="2857540653560290388">Chrome starten…</translation>
 <translation id="286025080868315611">Meer informatie over waarom Chrome bepaalde downloads blokkeert</translation>
 <translation id="2861074815332034794">Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -680,6 +682,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8533056045953418157">Google Chrome instellen als standaard pdf-viewer</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>
+<translation id="8575047640889685742">Gebruik je <ph name="BEGIN_LINK" />eigen wachtwoordzin<ph name="END_LINK" /> om alle Chrome-gegevens in je Google-account te versleutelen. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
 <translation id="8601359445272098721">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen door de knop Scherm vertalen te selecteren</translation>
 <translation id="8614913330719544658">Google Chrome reageert niet meer. Nu opnieuw starten?</translation>
 <translation id="861702415419836452">Chrome heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken.</translation>

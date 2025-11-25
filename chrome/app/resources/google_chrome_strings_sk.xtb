@@ -77,6 +77,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome odporúča pozastaviť kartu, ktorá spomaľuje váš prehliadač}few{Chrome odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}many{Chrome recommends pausing the tabs slowing your browser}other{Chrome odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="1832046143430087831">Zrýchľuje weby pomocou nástroja V8 Chromu, ale mierne zníži odolnosť prehliadača voči útokom. Toto nastavenie je vypnuté.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
+<translation id="1843347690926158494">Prehľadať túto kartu pomocou funkcie Google Lens</translation>
 <translation id="1849248141818021764">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak ju zabudnete alebo budete chcieť toto nastavenie zmeniť, budete musieť <ph name="BEGIN_LINK" />vymazať údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome potrebuje povolenie pre tento web na prístup k fotoaparátu</translation>
 <translation id="1873233029667955273">Google Chrome nie je váš predvolený prehliadač</translation>
@@ -165,6 +166,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2841525013647267359">Preložiť z jazyka</translation>
 <translation id="2846251086934905009">Chyba inštalácie: inštalátor nebol dokončený. Inštalácia bola prerušená.</translation>
 <translation id="2853415089995957805">Chrome prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
+<translation id="2856481144859256719">Vždy zobrazovať odkaz na režim AI v odkaze na Vyhľadávanie Google</translation>
 <translation id="2857540653560290388">Spúšťa sa Chrome…</translation>
 <translation id="286025080868315611">Prečo Chrome blokuje niektoré stiahnuté súbory</translation>
 <translation id="2861074815332034794">Aktualizuje sa Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -680,6 +682,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8533056045953418157">Nastavte si Google Chrome ako predvolený zobrazovač súborov PDF</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Vyhľadať v zozname jazykov</translation>
+<translation id="8575047640889685742">Šifrujte všetky údaje Chromu vo svojom účte Google pomocou <ph name="BEGIN_LINK" />vlastnej prístupovej frázy<ph name="END_LINK" />. Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.</translation>
 <translation id="8601359445272098721">Novinka! Môžete prekladať text aj obrázky na obrazovke. Stačí vybrať tlačidlo Preložiť obrazovku.</translation>
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="861702415419836452">Chrome potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>

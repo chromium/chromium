@@ -1476,7 +1476,7 @@
 <translation id="198507684520034826">مساعدة</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">الإعدادات المتقدمة للموقع الجغرافي</translation>
-<translation id="1987317783729300807">حسابات</translation>
+<translation id="1987317783729300807">الحسابات</translation>
 <translation id="1987574314042117472">اختيار التطبيقات الرائجة وتثبيتها</translation>
 <translation id="1988259784461813694">المتطلّبات</translation>
 <translation id="1988733631391393183">‏عرض طلبات لغة برايل في قوائم ChromeVox</translation>
@@ -2463,6 +2463,7 @@
 <translation id="2665394472441560184">إضافة كلمة جديدة</translation>
 <translation id="2665647207431876759">منتهي الصلاحية</translation>
 <translation id="2665919335226618153">عذرًا، حدث خطأ أثناء التنسيق.</translation>
+<translation id="2666092431469916601">أعلى</translation>
 <translation id="2666247341166669829">مستوى شحن بطارية السماعة اليسرى %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
 <translation id="2667463864537187133">إدارة التدقيق الإملائي</translation>
@@ -5419,6 +5420,7 @@
 <translation id="4699473989647132421">شاطئ</translation>
 <translation id="4701025263201366865">تسجيل دخول أحد الوالدَين</translation>
 <translation id="4701335814944566468">تم الاطّلاع عليه أمس.</translation>
+<translation id="4702504834785592287">الجانب</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
 <translation id="4707337002099455863">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
@@ -9262,7 +9264,6 @@
 <translation id="7410344089573941623">السؤال عند رغبة <ph name="HOST" /> في الدخول إلى الكاميرا والميكروفون التابعين لك</translation>
 <translation id="7410421966064092098">لا يمكن للمواقع الإلكترونية المساعدة في إثبات أنّك لست برنامج تتبُّع.</translation>
 <translation id="7410852728357935715">البث على جهاز</translation>
-<translation id="741148343080227980">‏يمكنك تعديل اسمك <ph name="BEGIN_LINK" />في حسابك على Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7412226954991670867">‏ذاكرة GPU</translation>
 <translation id="741370456693729525">يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها</translation>

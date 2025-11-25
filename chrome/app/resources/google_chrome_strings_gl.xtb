@@ -79,6 +79,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chrome recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="1832046143430087831">Acelera os sitios co motor V8 de Chrome, pero fai que Chrome sexa un pouco menos resistente aos ataques. Esta opción de configuración está desactivada.</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
+<translation id="1843347690926158494">Busca nesta pestana con Google Lens</translation>
 <translation id="1849248141818021764">Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se a esqueces ou queres cambiar esta opción de configuración, terás que <ph name="BEGIN_LINK" />eliminar os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome necesita permiso de acceso á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -167,6 +168,7 @@
 <translation id="2841525013647267359">Idioma de orixe</translation>
 <translation id="2846251086934905009">Erro de instalación: O instalador non completou o proceso. Abortouse a instalación.</translation>
 <translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
+<translation id="2856481144859256719">Mostrar sempre atallo do modo IA na Busca de Google</translation>
 <translation id="2857540653560290388">Iniciando Chrome…</translation>
 <translation id="286025080868315611">Descubre por que Chrome bloquea algunhas descargas</translation>
 <translation id="2861074815332034794">Actualizando Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -683,6 +685,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8533056045953418157">Define Google Chrome como o visor de PDF predeterminado</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar na lista de idiomas</translation>
+<translation id="8575047640889685742">Usa a túa <ph name="BEGIN_LINK" />propia frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chrome na túa Conta de Google. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chrome.</translation>
 <translation id="8601359445272098721">Novidade! Podes traducir texto e imaxes na túa pantalla co botón Traducir pantalla</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>

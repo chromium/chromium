@@ -1424,6 +1424,7 @@
 <translation id="1949980990364952348">ຊື່ແອັບ</translation>
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1951823516285577843">ຊອກຫາທາງເລືອກອື່ນ</translation>
+<translation id="1953626242273481999">ອະນຸຍາດໃຫ້ໃຊ້ການດີບັກຈາກໄລຍະໄກບໍ?</translation>
 <translation id="1953796913175502363">ຕັ້ງຄ່າໂປຣໄຟລ໌ບ່ອນເຮັດວຽກຂອງທ່ານ</translation>
 <translation id="1954597385941141174">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ໄດ້</translation>
 <translation id="1954813140452229842">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ກະລຸນາກວດເບິ່ງຂໍ້ມູນປະຈຳຕົວຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ.</translation>
@@ -1808,6 +1809,9 @@
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="222115440608612541">ສະຫຼັບຮູບແບບສີສັນໃນຕອນຕາເວັນຂຶ້ນ ແລະ ຕາເວັນຕົກ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ແອັບພາຍນອກຕ້ອງການຄວບຄຸມເຊດຊັນ Chrome ນີ້ຢ່າງເຕັມຮູບແບບເພື່ອດີບັກ. ເຊິ່ງຮວມທັງການເຂົ້າເຖິງຂໍ້ມູນທີ່ບັນທຶກໄວ້, ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊຂອງທ່ານ, ຮວມທັງຄວາມສາມາດໃນການນຳທາງໄປຫາ URL ໃດກໍໄດ້.
+
+ສະເພາະນັກພັດທະນາເວັບເທົ່ານັ້ນທີ່ຄວນເປີດໃຊ້ຄຸນສົມບັດນີ້ ແລະ ຄວນໃຊ້ກັບແອັບທີ່ເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="222201875806112242">ແຫຼ່ງທີ່ມາມີເດຍທີ່ບໍ່ມີຊື່</translation>
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2224444042887712269">ການຕັ້ງຄ່ານີ້ເປັນຂອງ <ph name="OWNER_EMAIL" />.</translation>
@@ -1916,6 +1920,7 @@
 <translation id="2294081976975808113">ຄວາມເປັນສ່ວນຕົວຂອງໜ້າຈໍ</translation>
 <translation id="2294358108254308676">ທ່ານຕ້ອງການຕິດຕັ້ງ <ph name="PRODUCT_NAME" /> ບໍ?</translation>
 <translation id="229477815107578534">ກວດສອບການຕັ້ງຄ່າຂອງທ່ານ</translation>
+<translation id="229524410604268773">ປິດໃນການຕັ້ງຄ່າ</translation>
 <translation id="2295864384543949385">ຜົນການຊອກຫາ <ph name="NUM_RESULTS" /> ລາຍການ</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> ຕ້ອງການໃຫ້ອຸປະກອນອອນລາຍໃນເວລາເຂົ້າສູ່ລະບົບຫາ <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">ການຄົ້ນພົບອຸປະກອນ</translation>
@@ -2465,6 +2470,7 @@
 <translation id="2665394472441560184">ເພີ່ມຄໍາ​ສັບ​ໃຫມ່</translation>
 <translation id="2665647207431876759">ໝົດອາຍຸແລ້ວ</translation>
 <translation id="2665919335226618153">ອໍ, ຖ່າຍຮູບ! ມີຄວາມຜິດພາດໃນລະຫວ່າງການຟໍແມັດ.</translation>
+<translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2666247341166669829">ລະດັບແບັດເຕີຣີຂ້າງຊ້າຍ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="2667463864537187133">ຈດການການກວດການສະກົດຄຳ</translation>
@@ -5423,6 +5429,7 @@
 <translation id="4699473989647132421">ແຄມຝັ່ງ</translation>
 <translation id="4701025263201366865">ການເຂົ້າສູ່ລະບົບຂອງພໍ່ແມ່</translation>
 <translation id="4701335814944566468">ເບິ່ງແລ້ວມື້ວານນີ້</translation>
+<translation id="4702504834785592287">ດ້ານຂ້າງ</translation>
 <translation id="470644585772471629">ການປີ້ນສີ</translation>
 <translation id="4707337002099455863">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
 <translation id="4708849949179781599">ອອກ <ph name="PRODUCT_NAME" /></translation>
@@ -9255,7 +9262,6 @@
 <translation id="7410344089573941623">ຖາມ​ເບິ່ງວ່າ <ph name="HOST" /> ຕ້ອງ​ການ​​ເຂົ້າຫາ​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານບໍ່</translation>
 <translation id="7410421966064092098">ເວັບໄຊບໍ່ສາມາດຊ່ວຍຢັ້ງຢືນໄດ້ວ່າທ່ານບໍ່ແມ່ນບັອດ</translation>
 <translation id="7410852728357935715">ສົ່ງສັນຍານໄປຫາອຸປະກອນ</translation>
-<translation id="741148343080227980">ທ່ານສາມາດແກ້ໄຂຊື່ຂອງທ່ານໄດ້ <ph name="BEGIN_LINK" />ໃນບັນຊີ Google <ph name="USERNAME" /> ຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">ແມ່ນ, ຂ້ອຍຂໍເຂົ້າຮ່ວມ</translation>
 <translation id="7412226954991670867">ຄວາມ​ຈໍາ GPU</translation>
 <translation id="741370456693729525">ໃຊ້ພາສາທີ່ໃຊ້ໃນຊີວິດປະຈຳວັນເພື່ອຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ ແລະ ຫາເວັບໄຊທີ່ທ່ານເຄີຍເຂົ້າເບິ່ງ</translation>

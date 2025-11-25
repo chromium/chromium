@@ -2458,6 +2458,7 @@
 <translation id="2665394472441560184">เพิ่มคำใหม่</translation>
 <translation id="2665647207431876759">หมดอายุ</translation>
 <translation id="2665919335226618153">แย่จัง! เกิดข้อผิดพลาดในระหว่างการจัดรูปแบบ</translation>
+<translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2666247341166669829">ระดับแบตเตอรี่ข้างซ้าย <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> และ <ph name="APP_NAME_3" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="2667463864537187133">จัดการการตรวจตัวสะกด</translation>
@@ -5414,6 +5415,7 @@
 <translation id="4699473989647132421">แนวชายฝั่ง</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
 <translation id="4701335814944566468">ดูเมื่อวานนี้</translation>
+<translation id="4702504834785592287">ด้านข้าง</translation>
 <translation id="470644585772471629">การกลับสี</translation>
 <translation id="4707337002099455863">ตลอดเวลาในทุกเว็บไซต์</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
@@ -9243,7 +9245,6 @@
 <translation id="7410344089573941623">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงกล้องและไมโครโฟนของคุณหรือไม่</translation>
 <translation id="7410421966064092098">เว็บไซต์ช่วยยืนยันไม่ได้ว่าคุณไม่ใช่บ็อต</translation>
 <translation id="7410852728357935715">แคสต์ไปยังอุปกรณ์</translation>
-<translation id="741148343080227980">คุณแก้ไขชื่อได้<ph name="BEGIN_LINK" />ในบัญชี Google <ph name="USERNAME" /><ph name="END_LINK" /></translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
 <translation id="7412226954991670867">หน่วยความจำ GPU</translation>
 <translation id="741370456693729525">ใช้ภาษาที่ใช้ในชีวิตประจำวันเพื่อค้นหาประวัติการท่องเว็บและหาเว็บไซต์ที่เคยเข้าชม</translation>

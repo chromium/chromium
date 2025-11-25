@@ -1417,6 +1417,7 @@
 <translation id="1949980990364952348">ایپ کا نام</translation>
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1951823516285577843">متبادل تلاش کریں</translation>
+<translation id="1953626242273481999">ریموٹ ڈیبگنگ کی اجازت دیں؟</translation>
 <translation id="1953796913175502363">اپنی دفتری پروفائل سیٹ اپ کریں</translation>
 <translation id="1954597385941141174">‏سائٹس USB آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="1954813140452229842">اشتراک کو ماؤنٹ کرنے میں خرابی آگئی ۔ براہ کرم اپنے اسنادات چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -1801,6 +1802,9 @@
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="222115440608612541">طلوع آفتاب اور غروب آفتاب کی تھیمز پر سوئچ کریں</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">‏ایک بیرونی ایپ اس Chrome سیشن کو ڈیبگ کرنے کے لیے اس پر مکمل کنٹرول چاہتی ہے۔ اس میں آپ کے محفوظ کردہ ڈیٹا، کوکیز اور سائٹ ڈیٹا تک رسائی اور کسی بھی URL پر نیویگیٹ کرنے کی اہلیت شامل ہے۔
+
+صرف ویب ڈویلپرز کو اس خصوصیت کو آن کرنا چاہیے اور اسے صرف بھروسہ مند ایپس کے ساتھ استعمال کرنا چاہیے۔</translation>
 <translation id="222201875806112242">بے نام میڈیا ماخذ</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2224444042887712269">یہ ترتیب <ph name="OWNER_EMAIL" /> سے متعلق ہے۔</translation>
@@ -1906,6 +1910,7 @@
 <translation id="2294081976975808113">اسکرین کی رازداری</translation>
 <translation id="2294358108254308676">کیا آپ <ph name="PRODUCT_NAME" /> کو انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="229477815107578534">اپنی ترتیبات کا جائزہ لیں</translation>
+<translation id="229524410604268773">ترتیبات میں آف کریں</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> نتائج</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> میں سائن ان کرنے کے دوران <ph name="DOMAIN_NAME" /> کیلئے آلے کا آن لائن ہونا درکار ہے</translation>
 <translation id="2296218178174497398">آلہ کی دریافت</translation>
@@ -2455,6 +2460,7 @@
 <translation id="2665394472441560184">ایک نیا لفظ شامل کریں</translation>
 <translation id="2665647207431876759">میعاد ختم ہوگئی</translation>
 <translation id="2665919335226618153">ارے، دیر ہو گئی! فارمیٹنگ کے دوران ایک خرابی تھی۔</translation>
+<translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2666247341166669829">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
 <translation id="2667144577800272420">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" /> <ph name="APP_NAME_3" /> تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="2667463864537187133">املا کی جانچ کا نظم کریں</translation>
@@ -2884,7 +2890,7 @@
 <translation id="2957124229512318478">‏اس ایکسٹینشن کا استعمال کرنے کے لیے ڈویلپر وضع آن کریں جس کا Chrome ویب اسٹور کے ذریعے جائزہ نہیں لیا جا سکتا ہے۔</translation>
 <translation id="2958721676848865875">پیک ایکسٹینشن کی وارننگ</translation>
 <translation id="2959127025785722291">کچھ غلط ہو گیا۔ اسکیننگ مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
-<translation id="2959474507964749987">‏یہ اینکرپٹ کردہ فائل ایک وائرس یا میلویئر ہو سکتا ہے۔<ph name="LINE_BREAK" />یہ چیک کرنے کیلئے کہ آیا یہ غیر محفوظ ہے، آپ Google محفوظ براؤزنگ کو فائل اور پاس ورڈ بھیج سکتے ہیں۔ اسکینز میں عموماً کچھ سیکنڈ کا وقت لگتا ہے۔<ph name="LINE_BREAK" />اسکین کرنے کیلئے، فائل کا پاس ورڈ شامل کریں۔</translation>
+<translation id="2959474507964749987">‏یہ اینکرپٹ کردہ فائل ایک وائرس یا میلوئیر ہو سکتا ہے۔<ph name="LINE_BREAK" />یہ چیک کرنے کیلئے کہ آیا یہ غیر محفوظ ہے، آپ Google محفوظ براؤزنگ کو فائل اور پاس ورڈ بھیج سکتے ہیں۔ اسکینز میں عموماً کچھ سیکنڈ کا وقت لگتا ہے۔<ph name="LINE_BREAK" />اسکین کرنے کیلئے، فائل کا پاس ورڈ شامل کریں۔</translation>
 <translation id="2959842337402130152">اسٹوریج کی جگہ کم ہونے کی وجہ سے بحال نہیں کیا جا سکتا۔ آلہ سے <ph name="SPACE_REQUIRED" /> خالی کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2960208947600937804">‏Linux کنفیگر کرنے میں ایک خرابی تھی۔ اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="2960942820860729477">ریفریش ریٹ</translation>
@@ -5411,6 +5417,7 @@
 <translation id="4699473989647132421">ساحلی پٹی</translation>
 <translation id="4701025263201366865">والدین کا سائن ان</translation>
 <translation id="4701335814944566468">کل دیکھا کیا گیا</translation>
+<translation id="4702504834785592287">سائیڈ</translation>
 <translation id="470644585772471629">رنگوں کی تقلیب</translation>
 <translation id="4707337002099455863">ہمیشہ سبھی سائٹس پر</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> کو چھوڑیں</translation>
@@ -5901,7 +5908,7 @@
 <translation id="5059526285558225588">منتخب کریں کہ کیا اشتراک کرنا ہے</translation>
 <translation id="5060332552815861872">محفوظ کرنے کے لیے 1 پرنٹر دستیاب ہے۔</translation>
 <translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
-<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بُک مارکس شامل ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
+<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بک مارکس ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
 <translation id="5061531353537614467">ٹٔنڈرا</translation>
 <translation id="5062930723426326933">سائن ان ناکام ہوگیا، براہ کرم انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5063480226653192405">استعمال</translation>
@@ -5959,7 +5966,7 @@
 <translation id="5096775069898886423">محفوظ کنکشنز کا تعاون کرنے والی سائٹس کیلئے، سائٹ ملاحظہ کرنے سے پہلے وارننگ حاصل کریں</translation>
 <translation id="5097002363526479830">نیٹ ورک '<ph name="NAME" />' سے منسلک ہونے میں ناکام ہوگیا: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">مقام استعمال کرنے کے بارے میں مزید جانیں</translation>
-<translation id="5097349930204431044">آپ جو سائٹ ملاحظہ جاتے ہیں وہ اس بات کا تعین کر سکتی ہیں کہ آپ کیا پسند کرتے ہیں اور پھر جب آپ براؤز کرنا جاری رکھتے ہیں تو اشتہارات تجویز کر سکتی ہیں۔</translation>
+<translation id="5097349930204431044">آپ جو سائٹ ملاحظہ کرتے ہیں وہ اس بات کا تعین کر سکتی ہیں کہ آپ کیا پسند کرتے ہیں اور پھر جب آپ براؤز کرنا جاری رکھتے ہیں تو اشتہارات تجویز کر سکتی ہیں۔</translation>
 <translation id="5097649414558628673">ٹول: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">جب کرسر رک جاتا ہے تو خودکار طور پر کلک کریں</translation>
 <translation id="5098963855433723436">ایک الگ ایپلیکیشن میں کھلتا ہے</translation>
@@ -9241,7 +9248,6 @@
 <translation id="7410344089573941623">پوچھیں کہ آیا <ph name="HOST" /> آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="7410421966064092098">سائٹس اس بات کی تصدیق کرنے میں مدد نہیں کر سکتی ہیں کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="7410852728357935715">آلہ میں کاسٹ کریں</translation>
-<translation id="741148343080227980">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="USERNAME" /> میں<ph name="END_LINK" /> اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7412226954991670867">‏GPU میموری</translation>
 <translation id="741370456693729525">اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں اور ان سائٹس کو تلاش کریں جن کو آپ نے ملاحظہ کیا</translation>
@@ -10694,7 +10700,7 @@
     <ph name="LIST_ITEM" />یقینی بنائیں کہ آپ ایک تصدیق شدہ ماڈل استعمال کر رہے ہیں اور انسٹال کی نوٹس چیک کریں
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/flex/InstallErrors ۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="8386091599636877289">پالیسی نہیں ملی۔</translation>
 <translation id="8387361103813440603">آپ کا مقام دیکھنے کی اجازت نہیں ہے</translation>
@@ -11798,7 +11804,7 @@
 <translation id="9116799625073598554">نوٹ لینے والی ایپ</translation>
 <translation id="9117030152748022724">اپنی ایپس کا نظم کریں</translation>
 <translation id="9120362425083889527">انسٹالیشن مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں یا اس ونڈو کو بند کریں</translation>
-<translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />بہترین تجربے کیلئے، اپنی اندرونی ڈسک میں <ph name="DEVICE_OS" /> انسٹال کریں۔ آپ بعد میں اسے لاگ ان اسکرین سے بھی انسٹال کر سکتے ہیں۔<ph name="END_PARAGRAPH1" />
+<translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />بہترین تجربے کیلئے، اپنی اندرونی ڈسک میں <ph name="DEVICE_OS" /> انسٹال کریں۔ آپ بعد میں اسے لاگ ان اسکرین سے بھی انسٹال کر سکتی ہیں۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />اگر آپ انسٹال کرنے کیلئے تیار نہیں ہیں تو اسے آزمانے کیلئے، آپ اسے USB سے چلا سکتے ہیں۔ اس سے آپ کا موجودہ OS اور ڈیٹا محفوظ رہے گا، لیکن آپ کی اسٹوریج اور کارکردگی کی حدود کم ہو سکتی ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">ٹول بار کو حسب ضرورت بنائیں</translation>
 <translation id="9120800848981545750">‏اپنے فون پر اپنے ٹیبز، بُک مارکس اور پاس ورڈز تک رسائی کرنے کیلئے Chrome برائے iOS ڈاؤن لوڈ کریں۔</translation>

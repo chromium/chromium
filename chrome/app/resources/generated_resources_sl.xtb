@@ -1430,6 +1430,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1949980990364952348">Ime aplikacije</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
 <translation id="1951823516285577843">Poišči nadomestno možnost</translation>
+<translation id="1953626242273481999">Ali dovolite iskanje in odpravljanje napak pri daljinskih upravljalnikih?</translation>
 <translation id="1953796913175502363">Nastavitev delovnega profila</translation>
 <translation id="1954597385941141174">Spletna mesta lahko zahtevajo vzpostavitev povezave z napravami USB</translation>
 <translation id="1954813140452229842">Napaka pri vpenjanju datotečnega sredstva v skupni rabi. Preverite poverilnice in poskusite znova.</translation>
@@ -1813,6 +1814,9 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="222115440608612541">Zamenjava tem ob sončnem vzhodu in sončnem zahodu.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Zunanja aplikacija želi imeti popoln nadzor nad to sejo Chroma, da bi odpravila njene napake. To vključuje dostop do shranjenih podatkov, piškotkov in podatkov spletnih mest ter možnost odpiranja katerega koli URL-ja.
+
+To funkcijo naj vklopijo samo spletni razvijalci in jo uporabljajo samo z zaupanja vrednimi aplikacijami.</translation>
 <translation id="222201875806112242">Neimenovan vir predstavnosti</translation>
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2224444042887712269">Ta nastavitev se nanaša na uporabnika <ph name="OWNER_EMAIL" />.</translation>
@@ -1921,6 +1925,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2294081976975808113">Zasebnost zaslona</translation>
 <translation id="2294358108254308676">Ali želite namestiti <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Preglejte nastavitve</translation>
+<translation id="229524410604268773">Izklopi v nastavitvah</translation>
 <translation id="2295864384543949385">Št. rezultati: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">Domena <ph name="DOMAIN_NAME" /> zahteva, da ima naprava povezavo s spletom, ko se prijavljate v e-poštni naslov <ph name="EMAIL" />.</translation>
 <translation id="2296218178174497398">Odkrivanje naprav</translation>
@@ -2469,6 +2474,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2665394472441560184">Dodaj novo besedo</translation>
 <translation id="2665647207431876759">Poteklo</translation>
 <translation id="2665919335226618153">Ti, šment! Napaka med formatiranjem.</translation>
+<translation id="2666092431469916601">Na vrh</translation>
 <translation id="2666247341166669829">Raven napolnjenosti leve baterije: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Druge aplikacije so nastavljene tako, da odpirajo iste povezave kot aplikacija <ph name="APP_NAME" />. S tem bo aplikacijama <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> onemogočeno odpiranje podprtih povezav.</translation>
 <translation id="2667463864537187133">Upravljanje preverjanja črkovanja</translation>
@@ -4412,7 +4418,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3979395879372752341">Nova razširitev je dodana (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Omogoči <ph name="NETWORKDEVICE" /></translation>
 <translation id="398095528354975981">Skrij te zavihke</translation>
-<translation id="3981058120448670012">Vidna napravam v bližini kot <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" /> …</translation>
+<translation id="3981058120448670012">Vidna napravam v bližini kot <ph name="DEVICE_NAME" /> še toliko časa:<ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Vrsta shranjevanje, ki ste jo vnesli, ni veljavna.</translation>
 <translation id="3983400541576569538">Morda boste izgubili podatke iz nekaterih aplikacij</translation>
 <translation id="3983586614702900908">naprave neznanega prodajalca</translation>
@@ -5427,6 +5433,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4699473989647132421">Obala</translation>
 <translation id="4701025263201366865">Prijava starša</translation>
 <translation id="4701335814944566468">Ogledano včeraj</translation>
+<translation id="4702504834785592287">Stran</translation>
 <translation id="470644585772471629">Inverzija barv</translation>
 <translation id="4707337002099455863">Vedno na vseh spletnih mestih</translation>
 <translation id="4708849949179781599">Zapri <ph name="PRODUCT_NAME" /></translation>
@@ -9269,7 +9276,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7410344089573941623">Vprašaj, če <ph name="HOST" /> zahteva dostop do kamere in mikrofona</translation>
 <translation id="7410421966064092098">Spletna mesta vam ne morejo pomagati potrditi, da niste bot</translation>
 <translation id="7410852728357935715">Predvajanje v oddaljeni napravi</translation>
-<translation id="741148343080227980">Ime lahko uredite <ph name="BEGIN_LINK" />v računu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, sem za</translation>
 <translation id="7412226954991670867">Pomnilnik grafičnega procesorja</translation>
 <translation id="741370456693729525">Uporabite pogovorni jezik za iskanje po zgodovini brskanja in iskanje obiskanih spletnih mest</translation>

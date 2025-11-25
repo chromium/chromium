@@ -1418,6 +1418,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1949980990364952348">Nom de l'appli</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Trouver un remplacement</translation>
+<translation id="1953626242273481999">Autoriser le débogage à distance ?</translation>
 <translation id="1953796913175502363">Configurer votre profil professionnel</translation>
 <translation id="1954597385941141174">Les sites peuvent demander à se connecter à des appareils USB</translation>
 <translation id="1954813140452229842">Erreur lors de l'installation du partage. Veuillez vérifier vos identifiants, puis réessayer.</translation>
@@ -1801,6 +1802,9 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="222115440608612541">Permet de changer le thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Une application externe souhaite contrôler entièrement cette session Chrome pour la déboguer. Cela inclut l'accès à vos données enregistrées, aux cookies et aux données des sites, ainsi que la possibilité d'accéder à n'importe quelle URL.
+
+Seuls les développeurs Web devraient activer cette fonctionnalité, et ne l'utiliser qu'avec des applications approuvées.</translation>
 <translation id="222201875806112242">Source multimédia sans nom</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
@@ -1906,6 +1910,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2294081976975808113">Confidentialité de l'écran</translation>
 <translation id="2294358108254308676">Souhaitez-vous installer <ph name="PRODUCT_NAME" /> ?</translation>
 <translation id="229477815107578534">Vérifier vos paramètres</translation>
+<translation id="229524410604268773">Désactiver dans les paramètres</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> résultats</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> exige que l'appareil soit en ligne quand vous vous connectez à <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Détection d'appareils</translation>
@@ -2454,6 +2459,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2665394472441560184">Ajouter un nouveau mot</translation>
 <translation id="2665647207431876759">Arrivé à expiration</translation>
 <translation id="2665919335226618153">Petit problème… Une erreur s'est produite lors du formatage.</translation>
+<translation id="2666092431469916601">En haut</translation>
 <translation id="2666247341166669829">Niveau de batterie côté gauche (<ph name="PERCENTAGE" /> %).</translation>
 <translation id="2667144577800272420">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> d'ouvrir les liens compatibles.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
@@ -5410,6 +5416,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4699473989647132421">Rivage</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
 <translation id="4701335814944566468">Consulté hier</translation>
+<translation id="4702504834785592287">Côté</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4707337002099455863">Toujours sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
@@ -9245,7 +9252,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7410344089573941623">Demander si <ph name="HOST" /> souhaite accéder à votre caméra et à votre micro</translation>
 <translation id="7410421966064092098">Les sites ne peuvent pas aider à confirmer que vous n'êtes pas un robot</translation>
 <translation id="7410852728357935715">Caster sur un appareil</translation>
-<translation id="741148343080227980">Vous pouvez modifier votre nom <ph name="BEGIN_LINK" />dans votre compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">J'accepte</translation>
 <translation id="7412226954991670867">Mémoire processeur graphique</translation>
 <translation id="741370456693729525">Utilisez un langage courant pour faire une recherche dans votre historique de navigation et trouver les sites que vous avez consultés</translation>

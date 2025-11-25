@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">Курзив</translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Приказују се насумичним редоследом. Увек можете да промените подразумевани избор.</translation>
 <translation id="2137891579555018930">Чека се дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
 <translation id="2453045048779611513">Ваша организација ограничава садржај који можете да чувате</translation>
 <translation id="2456755709261364512">Батерија мора да се напуни изнад <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Примењене смернице за прегледач (смернице за уређај и профил)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core вам пружа централизовану алатку за конфигурисање смерница прегледача из клауда</translation>
 <translation id="2461822463642141190">Актуелно</translation>
 <translation id="2462932596748424101">Друштвене мреже</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">Веза је шифрована и њена аутентичност је потврђена помоћу <ph name="CIPHER" /> и користи <ph name="KX" /> као механизам за размену шифара.</translation>
 <translation id="2833637280516285136">Радио-емисије са гостима</translation>
 <translation id="2835170189407361413">Обриши образац</translation>
+<translation id="2835907903001172712">преглед прегледача</translation>
 <translation id="2837891525090413132">Може да тражи да закључа и користи тастатуру</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2839501879576190149">Сајт на који желите да одете је лажан</translation>
@@ -1529,7 +1532,6 @@
 <translation id="3498215018399854026">Тренутно не можемо да контактирамо родитеља. Пробај поново.</translation>
 <translation id="350069200438440499">Име датотеке:</translation>
 <translation id="3501300228850242680">Метал (музика)</translation>
-<translation id="350274464456291051">Можете да измените име <ph name="BEGIN_LINK" />на Google налогу <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Налепнице (високи сјај)</translation>
 <translation id="350763432931695541">Издвајање текста на следећих неколико страница</translation>
 <translation id="3507869775212388416">Правни послови</translation>
@@ -1558,6 +1560,7 @@
 <translation id="3543935938072367282">Плаћајте брже помоћу аутоматског попуњавања</translation>
 <translation id="3547442767634383572">Преглед пословног профила</translation>
 <translation id="3547746132308051926">20×24 in</translation>
+<translation id="3549904448933807997">Информације о прегледачима и профилима (укључујући личне и пословне профиле)</translation>
 <translation id="3552155506104542239">Упозорење: Ове смернице су неусаглашене са документом <ph name="POLICY_NAME" /> и неће имати утицаја на Android апликације. У супротном, ове смернице раде као што је предвиђено.</translation>
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Време дана</translation>
@@ -2399,6 +2402,7 @@
 <translation id="4887406273302438710">Заштитите лозинке помоћу Windows Hello-а</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте избрисали историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="4892518386797173871">Задњи део</translation>
+<translation id="4894390983254799375">Као што су ИД уређаја, назив, верзија ОС-а и корисничко име ОС-а</translation>
 <translation id="4895019427244614047">Избриши адресу</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
@@ -2934,6 +2938,7 @@
 <translation id="5764920692828389743">Пошаљи на <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Да бисте видели начине и захтеве за испоруку, изаберите адресу</translation>
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
+<translation id="5773286975255318081">Као што су корисничка имена профила и верзије прегледача</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="577804500166306874">Резултат се учитава</translation>
 <translation id="5781136890105823427">Експеримент је омогућен</translation>
@@ -3409,7 +3414,6 @@
 <translation id="6521745193039995384">Нису активне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
 <translation id="6524830701589638230">Дугме Прилагоди подешавања приступачности, активирајте га да бисте персонализовали алатке за приступачност у подешавањима Chrome-а</translation>
-<translation id="6525222262307262764">Задржи актуелно подразумевано подешавање</translation>
 <translation id="6527049834925947126">Производња хране</translation>
 <translation id="6529173248185917884">Седми котур</translation>
 <translation id="6529602333819889595">&amp;Понови брисање</translation>
@@ -3548,6 +3552,7 @@
 <translation id="6772959465807028761">Да бисте користили YouTube, наставите са Google налогом</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Користи YouTube са подешавањима родитеља</translation>
+<translation id="6779290995699117286">Администратор може да приступи информацијама о профилу, прегледачу и уређају. Може да види:</translation>
 <translation id="6779348349813025131">Google менаџер лозинки тражи приступ MacOS Keychain-у</translation>
 <translation id="6780449997190414928">Обично се безбедно повезујете с овим сајтом, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Можете да промените претраживач у сваком тренутку у подешавањима Chrome-а.</translation>
@@ -4394,6 +4399,7 @@
 <translation id="8135546115396015134">леви тастер</translation>
 <translation id="8137456439814903304">Производња и дистрибуција енергије</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Направљено је пре 1 месец}one{Направљено је пре {NUM_MONTHS} месец}few{Направљено је пре {NUM_MONTHS} месеца}other{Направљено је пре {NUM_MONTHS} месеци}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, тренутно подразумевани. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
 <translation id="8149426793427495338">Рачунар је прешао у режим спавања.</translation>
 <translation id="815036624016370447">Информације са Google налога <ph name="ACCOUNT" /> могу да вам помогну да брже попуњавате обрасце у Chrome-у</translation>
@@ -4684,6 +4690,7 @@
 <translation id="8606988009912891950">Теме огласа помажу сајтовима да вам приказују релевантне огласе док штите вашу историју прегледања и идентитет. Chrome може да бележи теме које вас интересују на основу недавне историје прегледања. Касније, сајт који посетите може да затражи од Chrome-а релевантне теме да би персонализовао огласе који вам се приказују.</translation>
 <translation id="8612919051706159390">Онлајн заједнице</translation>
 <translation id="8617269623452051934">коришћење уређаја</translation>
+<translation id="8619130384334725124">Тренутно подразумевани</translation>
 <translation id="8620276786115098679">Коверта Kaku 7</translation>
 <translation id="8622864575115813231">Обраћамо се финансијској институцији…</translation>
 <translation id="8624354461147303341">Остварите попусте</translation>

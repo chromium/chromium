@@ -693,6 +693,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2127747486437921899">Kursiiv</translation>
 <translation id="2130448033692577677">Teie määratud malle ei pruugita rakendada, kuna reeglit DnsOverHttpsMode pole määratud.</translation>
 <translation id="2130699163006053678">A3 × 7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Need kuvatakse juhuslikus järjestuses. Oma vaikevalikut saate alati muuta.</translation>
 <translation id="2137891579555018930">Heakskiidu ootel …</translation>
 <translation id="213826338245044447">Mobiili järjehoidjad</translation>
@@ -912,6 +913,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2452837234288608067">Me ei saanud sellega aidata. Proovige uuesti.</translation>
 <translation id="2453045048779611513">Teie organisatsioon piirab salvestamist</translation>
 <translation id="2456755709261364512">Teie aku peab olema laetud üle <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Rakendatud brauserireeglistik (masina- ja profiilipõhised reeglistikud)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core annab teile keskse tööriista brauseri reeglite seadistamiseks pilvest</translation>
 <translation id="2461822463642141190">Praegune</translation>
 <translation id="2462932596748424101">Sotsiaalvõrgustikud</translation>
@@ -1123,6 +1125,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2826760142808435982">Ühendus on krüptitud ja autenditud üksusega <ph name="CIPHER" /> ning kasutab peamise vahetusmehhanismina üksust <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Raadiojutusaated</translation>
 <translation id="2835170189407361413">Tühjenda vorm</translation>
+<translation id="2835907903001172712">Brauseri ülevaade</translation>
 <translation id="2837891525090413132">Võib küsida teie klaviatuuri lukustamist ja kasutamist</translation>
 <translation id="2839032553903800133">Märguanded on blokeeritud</translation>
 <translation id="2839501879576190149">Ees on võltssait</translation>
@@ -1529,7 +1532,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3498215018399854026">Teie vanemaga ei õnnestunud praegu ühendust võtta. Proovige hiljem uuesti.</translation>
 <translation id="350069200438440499">Faili nimi:</translation>
 <translation id="3501300228850242680">Metal (muusika)</translation>
-<translation id="350274464456291051">Nime saate muuta <ph name="BEGIN_LINK" />oma Google’i kontol <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Etiketid (kõrgläikega)</translation>
 <translation id="350763432931695541">Paari järgmise lehe teksti ekstraktimine</translation>
 <translation id="3507869775212388416">Õigusvaldkonna töökohad</translation>
@@ -1558,6 +1560,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3543935938072367282">Makske automaattäite abil kiiremini</translation>
 <translation id="3547442767634383572">tööprofiili ülevaade;</translation>
 <translation id="3547746132308051926">20 × 24 tolli</translation>
+<translation id="3549904448933807997">Brauserite ja profiilide teave (sh isiklikud ja tööprofiilid)</translation>
 <translation id="3552155506104542239">Hoiatus! See reegel on vastuolus reegliga <ph name="POLICY_NAME" /> ja ei mõjuta Androidi rakendusi. Muudel juhtudel toimib reegel eelduspäraselt.</translation>
 <translation id="3552297013052089404">Seriifideta font</translation>
 <translation id="3558573058928565255">Päev</translation>
@@ -2399,6 +2402,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4887406273302438710">Kaitske paroole funktsiooniga Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes sirvimisajaloo, küpsiste ja muu kustutamiseks ning vahemälu tühjendamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="4892518386797173871">Tagumine</translation>
+<translation id="4894390983254799375">Näiteks seadme ID, nimi, OS-i versioon ja OS-i kasutajanimi</translation>
 <translation id="4895019427244614047">Kustutage aadress</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olümpiamängud</translation>
@@ -2934,6 +2938,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5764920692828389743">Saada aadressile <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kohaletoimetamisviiside ja nõuete nägemiseks valige aadress</translation>
 <translation id="57689295674415555">Virtuaalkaardi numbrit pole sisestatud?</translation>
+<translation id="5773286975255318081">Näiteks profiilide kasutajanimed ja brauseri versioonid</translation>
 <translation id="5776313857861697733">Prioriteet</translation>
 <translation id="577804500166306874">Tulemuse laadimine</translation>
 <translation id="5781136890105823427">Katse on lubatud</translation>
@@ -3410,7 +3415,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6521745193039995384">Pole aktiivne</translation>
 <translation id="6522682797352430154">Klassikaline muusika</translation>
 <translation id="6524830701589638230">Nupp Juurdepääsetavuse seadete haldamine, aktiveerige nupp Chrome'i seadetes oma juurdepääsetavuse tööriistade isikupärastamiseks</translation>
-<translation id="6525222262307262764">Säilita praegune vaikeväärtus</translation>
 <translation id="6527049834925947126">Toiduainetööstus</translation>
 <translation id="6529173248185917884">Seitsmes rull</translation>
 <translation id="6529602333819889595">&amp;Kustuta uuesti</translation>
@@ -3549,6 +3553,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6772959465807028761">YouTube'i kasutamiseks liigu oma Google'i kontole</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Kasuta YouTube'i oma vanema valikutega</translation>
+<translation id="6779290995699117286">Teie administraator pääseb juurde profiili-, brauseri- ja seadmeteabele. Ta näeb järgmist.</translation>
 <translation id="6779348349813025131">Google'i paroolihaldur vajab juurdepääsu MacOS Keychainile</translation>
 <translation id="6780449997190414928">Tavaliselt loote selle saidiga turvaliselt ühenduse, kuid Chrome ei saanud seekord turvalist ühendust kasutada. Ründaja võib püüda teie võrguühendust pealt kuulata või seda muuta. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Saate oma otsingumootorit Chrome'i seadetes alati muuta.</translation>
@@ -4395,6 +4400,7 @@ Lisateave:
 <translation id="8135546115396015134">vasak klahv</translation>
 <translation id="8137456439814903304">Energia- ja kommunaalteenused</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Loodud 1 kuu tagasi}other{Loodud {NUM_MONTHS} kuud tagasi}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, praegune vaikeseade. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-i versioon:</translation>
 <translation id="8149426793427495338">Teie arvuti lülitus unerežiimile.</translation>
 <translation id="815036624016370447">Teave teie Google'i kontolt <ph name="ACCOUNT" /> aitab teil vorme Chrome'is kiiremini täita</translation>
@@ -4684,6 +4690,7 @@ Lisateave:
 <translation id="8606988009912891950">Reklaamiteemad aitavad saitidel esitada teile asjakohaseid reklaame, kaitstes samas teie sirvimisajalugu ja identiteeti. Chrome võib talletada huvipakkuvad teemad teie hiljutise sirvimisajaloo alusel. Hiljem võib mõni teie külastatav sait kuvatavate reklaamide isikupärastamiseks Chrome'ilt asjakohaseid teemasid küsida.</translation>
 <translation id="8612919051706159390">Internetikogukonnad</translation>
 <translation id="8617269623452051934">teie seadmekasutus</translation>
+<translation id="8619130384334725124">Praegune vaikeseade</translation>
 <translation id="8620276786115098679">Ümbrik Kaku 7</translation>
 <translation id="8622864575115813231">Teie finantsasutusega ühenduse võtmine …</translation>
 <translation id="8624354461147303341">Hangi allahindlusi</translation>

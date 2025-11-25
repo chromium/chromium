@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome anbefaler, at du sætter den fane, der gør din browser langsom, på pause}one{Chrome anbefaler, at du sætter den fane, der gør din browser langsom, på pause}other{Chrome anbefaler, at du sætter de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="1832046143430087831">Gør websites hurtigere ved hjælp af Chromes V8-maskine, men gør Chrome en smule mindre modstandsdygtig over for angreb. Denne indstilling er deaktiveret.</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
+<translation id="1843347690926158494">Søg på denne fane med Google Lens</translation>
 <translation id="1849248141818021764">Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome skal have tilladelse til at bruge dit kamera på dette website</translation>
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Oversæt fra</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
 <translation id="2853415089995957805">Chrome forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem</translation>
+<translation id="2856481144859256719">Vis altid genvejen til AI-tilstand i Google Søgning</translation>
 <translation id="2857540653560290388">Starter Chrome...</translation>
 <translation id="286025080868315611">Få flere oplysninger om, hvorfor Chrome blokerer visse downloads</translation>
 <translation id="2861074815332034794">Opdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -675,6 +677,7 @@
 <translation id="8533056045953418157">Angiv Google Chrome som din standard PDF-fremviser</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søg i sproglisten</translation>
+<translation id="8575047640889685742">Brug din <ph name="BEGIN_LINK" />egen adgangssætning<ph name="END_LINK" /> til at kryptere alle Chrome-data på din Google-konto. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>
 <translation id="8601359445272098721">Nyhed! Du kan oversætte både tekst og billeder på din skærm ved at vælge knappen "Oversæt skærmen"</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du genstarte nu?</translation>
 <translation id="861702415419836452">Chrome skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>

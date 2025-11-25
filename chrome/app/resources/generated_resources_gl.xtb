@@ -1416,6 +1416,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1949980990364952348">Nome da aplicación</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1951823516285577843">Buscar alternativa</translation>
+<translation id="1953626242273481999">Queres permitir a depuración remota?</translation>
 <translation id="1953796913175502363">Configura o teu perfil de traballo</translation>
 <translation id="1954597385941141174">Os sitios poden pedirche permiso para conectarse aos dispositivos USB</translation>
 <translation id="1954813140452229842">Produciuse un erro ao montar a localización compartida. Comproba as túas credenciais e téntao outra vez.</translation>
@@ -1799,6 +1800,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="222115440608612541">Cambia de tema ao amencer e ao solpor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Unha aplicación externa quere o control total sobre esta sesión de Chrome para depurala. Isto inclúe o acceso aos datos que teñas gardados, ás cookies e aos datos dos sitios, así como a posibilidade de navegar a calquera URL.
+
+Só as persoas encargadas da programación web deben activar esta función. Ademais só deben usala con aplicacións de confianza.</translation>
 <translation id="222201875806112242">Fonte de información sen nome</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
@@ -1904,6 +1908,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2294081976975808113">Privacidade da pantalla</translation>
 <translation id="2294358108254308676">Queres instalar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revisa a configuración</translation>
+<translation id="229524410604268773">Desactivar na configuración</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> precisa que o dispositivo estea en liña para iniciar sesión con <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Detección de dispositivo</translation>
@@ -2452,6 +2457,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2665394472441560184">Engadir unha palabra nova</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">Produciuse un erro durante o formatado.</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nivel de batería do dispositivo esquerdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> deixarán de ser as aplicacións predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="2667463864537187133">Xestionar corrector ortográfico</translation>
@@ -5413,6 +5419,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inicio de sesión do pai ou da nai</translation>
 <translation id="4701335814944566468">Consultouse onte</translation>
+<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversión da cor</translation>
 <translation id="4707337002099455863">Sempre en todos os sitios</translation>
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
@@ -9243,7 +9250,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7410344089573941623">Preguntar se <ph name="HOST" /> quere acceder á túa cámara e micrófono</translation>
 <translation id="7410421966064092098">Os sitios non poden axudarche a verificar que non es un bot</translation>
 <translation id="7410852728357935715">Emitir nun dispositivo</translation>
-<translation id="741148343080227980">Podes editar o teu nome na túa <ph name="BEGIN_LINK" />Conta de Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Si, acepto</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>

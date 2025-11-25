@@ -1428,6 +1428,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1949980990364952348">Nome do app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Encontrar alternativa</translation>
+<translation id="1953626242273481999">Permitir a depuração remota?</translation>
 <translation id="1953796913175502363">Configurar perfil de trabalho</translation>
 <translation id="1954597385941141174">Os sites podem pedir permissão para se conectar a dispositivos USB</translation>
 <translation id="1954813140452229842">Erro ao ativar o compartilhamento. Verifique suas credenciais e tente novamente.</translation>
@@ -1811,6 +1812,9 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="222115440608612541">Mudar o tema ao amanhecer e ao anoitecer</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Um app externo quer ter controle total desta sessão do Chrome para depurá-la. Isso inclui acesso aos seus dados salvos, a cookies e a informações do site, além da capacidade de navegar para qualquer URL.
+
+Somente desenvolvedores web devem ativar esse recurso. Use-o sempre com apps confiáveis.</translation>
 <translation id="222201875806112242">Fonte de mídia sem nome</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2224444042887712269">Esta configuração pertence a <ph name="OWNER_EMAIL" />.</translation>
@@ -1919,6 +1923,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2294081976975808113">Privacidade da tela</translation>
 <translation id="2294358108254308676">Quer instalar o <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revise suas configurações</translation>
+<translation id="229524410604268773">Desativar nas configurações</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> exige que o dispositivo esteja on-line para fazer login em <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Descoberta de dispositivos</translation>
@@ -2467,6 +2472,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
 <translation id="2665647207431876759">Expirado</translation>
 <translation id="2665919335226618153">Ah, não! Ocorreu um erro durante a formatação.</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nível da bateria do lado esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outros apps estão configurados para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links compatíveis.</translation>
 <translation id="2667463864537187133">Gerenciar a verificação ortográfica</translation>
@@ -5425,6 +5431,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4699473989647132421">Litoral</translation>
 <translation id="4701025263201366865">Login do familiar responsável</translation>
 <translation id="4701335814944566468">Visualizado ontem</translation>
+<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
@@ -9262,7 +9269,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7410344089573941623">Perguntar se <ph name="HOST" /> deseja acessar sua câmera e seu microfone</translation>
 <translation id="7410421966064092098">Os sites não podem ajudar a verificar que você é uma pessoa real</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
-<translation id="741148343080227980">Você pode editar seu nome <ph name="BEGIN_LINK" />na sua Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sim</translation>
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="741370456693729525">Pesquise seu histórico de navegação usando linguagem natural para encontrar sites que você visitou</translation>

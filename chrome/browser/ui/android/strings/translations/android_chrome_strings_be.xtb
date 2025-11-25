@@ -335,6 +335,7 @@
 <translation id="2461822463642141190">Цяпер</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, укладка з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="2468444275314013497">З браўзерам усё ў парадку</translation>
+<translation id="2471632347767899461">Пашукайце ў Даведачным цэнтры</translation>
 <translation id="2472163211318554013">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
 <translation id="2479148705183875116">Перайсці ў Налады</translation>
@@ -656,6 +657,7 @@
 <translation id="3870908470613821006">Усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />", і яна будзе выдалена з усіх прылад</translation>
 <translation id="3873174561423636563">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK1" />умовамі выкарыстання<ph name="END_LINK1" /> сайта.</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
+<translation id="3893858854379998374">Каб захаваць закладкі ва ўліковым запісе, выдаліце тыя, якімі вы не карыстаецеся</translation>
 <translation id="3898498281932368596">Заблакіраваць і выйсці</translation>
 <translation id="3899682235662194879">Закрыць усе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
@@ -719,6 +721,7 @@
 <translation id="4170011742729630528">Сэрвіс недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="4177222230309051052">Трымайце ўсе свае закладкі пад рукой</translation>
 <translation id="4177501066905053472">Тэмы рэкламы</translation>
+<translation id="417865198503699526">Пошук налады</translation>
 <translation id="4180726336228139707">Толькі на гэтай прыладзе</translation>
 <translation id="4181841719683918333">Мовы</translation>
 <translation id="4188221736490993796">Па алфавіце (ад Я да А)</translation>
@@ -1643,7 +1646,6 @@
 <translation id="7876243839304621966">Выдаліць усе</translation>
 <translation id="7886917304091689118">Выконваецца ў браўзеры Chrome</translation>
 <translation id="7887174313503389866">Даведайцеся пра ключавыя налады бяспекі і прыватнасці. Больш інфармацыі вы можаце атрымаць, знаёмячыся з кожнай наладай асобна.</translation>
-<translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 спампоўка заблакіравана вашай арганізацыяй}one{# спампоўка заблакіравана вашай арганізацыяй}few{# спампоўкі заблакіраваны вашай арганізацыяй}many{# спамповак заблакіраваны вашай арганізацыяй}other{# спампоўкі заблакіраваны вашай арганізацыяй}}</translation>
 <translation id="7914399737746719723">Праграма ўсталявана</translation>
 <translation id="7917574899775263813">Перайсці на апошнюю ўкладку</translation>

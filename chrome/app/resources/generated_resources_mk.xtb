@@ -1428,6 +1428,7 @@
 <translation id="1949980990364952348">Име на апликацијата</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1951823516285577843">Најдете алтернативна екстензија</translation>
+<translation id="1953626242273481999">Да се дозволи далечинско отстранување грешки?</translation>
 <translation id="1953796913175502363">Поставете го вашиот работен профил</translation>
 <translation id="1954597385941141174">Сајтовите може да прашуваат дали да се поврзат со USB-уредите</translation>
 <translation id="1954813140452229842">Грешка при монтирање на споделувањето. Проверете ги вашите акредитиви и обидете се повторно.</translation>
@@ -1811,6 +1812,9 @@
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="222115440608612541">Менувај ги темите на изгрејсонце и зајдисонце</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Конкретна надворешна апликација бара целосна контрола над сесијава во Chrome за да ја отстрани грешката. Ова опфаќа пристап до вашите зачувани податоци, колачиња и податоци од сајтот, а и можноста за навигација до која било URL-адреса.
+
+Функцијава треба да ја вклучат само веб-програмерите и да ја користат само со доверливи апликации.</translation>
 <translation id="222201875806112242">Неименуван извор на аудиовизуелни содржини</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2224444042887712269">Оваа поставка припаѓа на <ph name="OWNER_EMAIL" />.</translation>
@@ -1919,6 +1923,7 @@
 <translation id="2294081976975808113">Приватност на екранот</translation>
 <translation id="2294358108254308676">Дали сакате да инсталирате <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Прегледајте ги поставките</translation>
+<translation id="229524410604268773">Исклучете во „Поставки“</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> резултати</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> бара уредот да биде онлајн кога се најавувате на <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Откривање уреди</translation>
@@ -2467,6 +2472,7 @@
 <translation id="2665394472441560184">Додај нов збор</translation>
 <translation id="2665647207431876759">Истечен</translation>
 <translation id="2665919335226618153">Аман! Имаше грешка за време на форматирањето.</translation>
+<translation id="2666092431469916601">Горе</translation>
 <translation id="2666247341166669829">Ниво на батерија на левата <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Поставени се други апликации да ги отвораат истите линкови како <ph name="APP_NAME" />. Со ова ќе се оневозможи <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да ги отвораат линковите за поддршка.</translation>
 <translation id="2667463864537187133">Управувајте со проверката на правописот</translation>
@@ -5425,6 +5431,7 @@
 <translation id="4699473989647132421">Крајбрежје</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
 <translation id="4701335814944566468">Прегледано вчера</translation>
+<translation id="4702504834785592287">Странична</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
 <translation id="4707337002099455863">Секогаш вклучено на сите сајтови</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
@@ -9260,7 +9267,6 @@
 <translation id="7410344089573941623">Прашај дали <ph name="HOST" /> сака да пристапи до вашите фотоапарат и микрофон</translation>
 <translation id="7410421966064092098">Сајтовите не може да помогнат при потврдувањето дека не сте бот</translation>
 <translation id="7410852728357935715">Емитувај на уред</translation>
-<translation id="741148343080227980">Може да го измените вашето име <ph name="BEGIN_LINK" />во вашата сметка на Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7412226954991670867">ГПУ-меморија</translation>
 <translation id="741370456693729525">Користете секојдневен јазик за да ја пребарувате вашата историја на прелистувањето и да наоѓате сајтови што сте ги посетиле</translation>

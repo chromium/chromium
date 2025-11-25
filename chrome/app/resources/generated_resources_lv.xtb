@@ -1419,6 +1419,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1949980990364952348">Lietotnes nosaukums</translation>
 <translation id="1951012854035635156">Asistents</translation>
 <translation id="1951823516285577843">Meklēt alternatīvu</translation>
+<translation id="1953626242273481999">Vai atļaut attālu atkļūdošanu?</translation>
 <translation id="1953796913175502363">Darba profila izveide</translation>
 <translation id="1954597385941141174">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar USB ierīcēm</translation>
 <translation id="1954813140452229842">Iekļaujot kopīgošanu, radās kļūda. Lūdzu, pārbaudiet akreditācijas datus un mēģiniet vēlreiz.</translation>
@@ -1802,6 +1803,9 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="222115440608612541">Motīvu maiņa līdz ar saullēktu un saulrietu</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Kāda ārēja lietotne vēlas pilnībā kontrolēt šo Chrome sesiju, lai to atkļūdotu. Tas ietver piekļuvi jūsu saglabātajiem datiem, sīkfailiem un vietņu datiem, kā arī iespēju pāriet uz jebkuru vietrādi URL.
+
+Šo funkciju ieteicams ieslēgt tikai tīmekļa izstrādātājiem, un tā ir jāizmanto tikai ar uzticamām lietotnēm.</translation>
 <translation id="222201875806112242">Multivides avots bez nosaukuma</translation>
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="2224444042887712269">Šo iestatījumu veica <ph name="OWNER_EMAIL" />.</translation>
@@ -1907,6 +1911,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2294081976975808113">Ekrāna konfidencialitāte</translation>
 <translation id="2294358108254308676">Vai vēlaties instalēt <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Pārskatiet iestatījumus</translation>
+<translation id="229524410604268773">Izslēgt iestatījumos</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> rezultāti</translation>
 <translation id="2296022312651137376">Domēnā <ph name="DOMAIN_NAME" /> var pierakstīties kontā <ph name="EMAIL" /> tikai tad, ja ierīce ir tiešsaistē.</translation>
 <translation id="2296218178174497398">Ierīces atrašana</translation>
@@ -2455,6 +2460,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2665394472441560184">Pievienot jaunu vārdu</translation>
 <translation id="2665647207431876759">Beidzies derīguma termiņš</translation>
 <translation id="2665919335226618153">Diemžēl formatēšanas laikā radās kļūda.</translation>
+<translation id="2666092431469916601">Augša</translation>
 <translation id="2666247341166669829">Kreisās austiņas akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Citas lietotnes ir iestatītas to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotnes <ph name="APP_NAME_2" /> un <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Pareizrakstības pārbaudes pārvaldība</translation>
@@ -5411,6 +5417,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4699473989647132421">Krasts</translation>
 <translation id="4701025263201366865">Jāpierakstās vienam no vecākiem</translation>
 <translation id="4701335814944566468">Skatīts vakar</translation>
+<translation id="4702504834785592287">sānu</translation>
 <translation id="470644585772471629">Krāsu inversija</translation>
 <translation id="4707337002099455863">Vienmēr ieslēgts visās vietnēs</translation>
 <translation id="4708849949179781599">Aizvērt programmu <ph name="PRODUCT_NAME" /></translation>
@@ -9245,7 +9252,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7410344089573941623">Vaicāt, ja vietne <ph name="HOST" /> vēlas piekļūt jūsu kamerai un mikrofonam</translation>
 <translation id="7410421966064092098">Vietnes nevar palīdzēt apstiprināt, ka neesat robots</translation>
 <translation id="7410852728357935715">Apraide uz ierīci</translation>
-<translation id="741148343080227980">Varat rediģēt savu vārdu <ph name="BEGIN_LINK" />savā Google kontā (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
 <translation id="7412226954991670867">Grafiskā procesora atmiņa</translation>
 <translation id="741370456693729525">Varat izmantot ikdienišķas frāzes, lai veiktu meklēšanu pārlūkošanas vēsturē un atrastu apmeklētās vietnes.</translation>

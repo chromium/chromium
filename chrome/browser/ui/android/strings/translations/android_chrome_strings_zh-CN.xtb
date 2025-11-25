@@ -362,6 +362,7 @@
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
 <translation id="2547843573592965873">个人资料锁定功能可确保您 Google 账号中保存的信息（包括密码、付款信息等）安全地存储在车载系统中。</translation>
 <translation id="254973855621628293">密码已保存到此设备上</translation>
+<translation id="2553962148913791095">部分书签未保存</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{已屏蔽危险下载内容}other{已屏蔽 # 项危险下载内容}}</translation>
 <translation id="2569733278091928697">您将能轻松管理媒体控件、无痕式会话、下载内容等等</translation>
 <translation id="2571711316400087311">询问是否要在其他语言的网页上显示 Google 翻译</translation>
@@ -1641,7 +1642,6 @@
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 个下载项已被您的组织屏蔽}other{# 个下载项已被您的组织屏蔽}}</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7917574899775263813">跳转到最后一个标签页</translation>

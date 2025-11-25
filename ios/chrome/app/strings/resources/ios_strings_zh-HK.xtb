@@ -342,6 +342,7 @@
 <translation id="2245007488813216650">正在翻譯…</translation>
 <translation id="2249119578464404734">輕按畫面頂部的「搜尋」圖示</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
+<translation id="2252378061043785266">永不顯示此網站</translation>
 <translation id="2252749852083403809">正在儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
 <translation id="2256933947031277845">您的機構只允許您透過特定帳戶登入。</translation>
 <translation id="2257567812274161158">同步功能無法正常運作。</translation>
@@ -1510,7 +1511,7 @@
 <translation id="6668619169535738264">編輯書籤</translation>
 <translation id="6670729408462528018">媒體庫</translation>
 <translation id="6671294218820966278">標示為已讀</translation>
-<translation id="6672697278890207089">請輸入你的複雜密碼</translation>
+<translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6674917187596384849">你可以輕鬆切換帳戶</translation>
 <translation id="6676349090816247042">登入選項。</translation>
 <translation id="667999046851023355">文件</translation>

@@ -1526,7 +1526,6 @@
 <translation id="3498215018399854026">我们暂时无法与您父母取得联系，请重试。</translation>
 <translation id="350069200438440499">文件名：</translation>
 <translation id="3501300228850242680">金属音乐</translation>
-<translation id="350274464456291051">您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改名称。</translation>
 <translation id="350421688684366066">标签（高光）</translation>
 <translation id="350763432931695541">正在提取接下来几页中的文本</translation>
 <translation id="3507869775212388416">法律职位</translation>
@@ -2264,7 +2263,7 @@
 <translation id="469028408546145398">“关闭无痕式窗口”按钮，激活它即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="4691093235373904540">屋顶修缮</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
-<translation id="4695702626068620848"><ph name="KEYWORD" /> - 向 <ph name="KEYWORD_SHORT_NAME" /> 提问</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - 问问 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">格斗运动</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">侧边</translation>
@@ -3405,7 +3404,6 @@
 <translation id="6521745193039995384">无效</translation>
 <translation id="6522682797352430154">古典音乐</translation>
 <translation id="6524830701589638230">“管理无障碍设置”按钮，激活它即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
-<translation id="6525222262307262764">保留当前默认搜索引擎</translation>
 <translation id="6527049834925947126">食品生产</translation>
 <translation id="6529173248185917884">第 7 卷</translation>
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>

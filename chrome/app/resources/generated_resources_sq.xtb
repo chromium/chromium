@@ -1413,6 +1413,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1949980990364952348">Emri i aplikacionit</translation>
 <translation id="1951012854035635156">Asistenti</translation>
 <translation id="1951823516285577843">Gjej alternativë</translation>
+<translation id="1953626242273481999">Të lejohet korrigjimi në distancë?</translation>
 <translation id="1953796913175502363">Konfiguro profilin tënd të punës</translation>
 <translation id="1954597385941141174">Sajtet mund të kërkojnë të lidhen me pajisjet me USB</translation>
 <translation id="1954813140452229842">Gabim gjatë montimit të ndarjes. Kontrollo kredencialet e tua dhe provo përsëri.</translation>
@@ -1796,6 +1797,9 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="222115440608612541">Ndërroji temat në agim dhe në perëndim të diellit</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Një aplikacion i jashtëm dëshiron kontroll të plotë mbi këtë seancë të Chrome për ta korrigjuar atë. Kjo përfshin qasjen te të dhënat e tua të ruajtura, kukit dhe të dhënat e sajtit, si dhe aftësinë për të naviguar në çdo URL.
+
+Kjo veçori duhet të aktivizohet vetëm nga zhvilluesit e uebit dhe duhet të përdoret vetëm me aplikacione të besuara.</translation>
 <translation id="222201875806112242">Burim i paemërtuar i medias</translation>
 <translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="2224444042887712269">Ky cilësim i përket <ph name="OWNER_EMAIL" />.</translation>
@@ -1902,6 +1906,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2294081976975808113">Privatësia e ekranit</translation>
 <translation id="2294358108254308676">Dëshiron që të instalosh <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Rishiko cilësimet e tua</translation>
+<translation id="229524410604268773">Çaktivizo te "Cilësimet"</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> rezultate</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> kërkon që pajisja të jetë online kur identifikohesh në <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Zbulimi i pajisjes</translation>
@@ -2450,6 +2455,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2665394472441560184">Shto një fjalë të re</translation>
 <translation id="2665647207431876759">Skaduar</translation>
 <translation id="2665919335226618153">Mos! Kishte një gabim gjatë formatimit.</translation>
+<translation id="2666092431469916601">I sipërm</translation>
 <translation id="2666247341166669829">Niveli i baterisë majtas - <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikacione të tjera janë caktuar për të hapur të njëjtat lidhje si <ph name="APP_NAME" />. Kjo do të çaktivizojë hapjen e lidhjeve të mbështetura nga <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Menaxho kontrollin ortografik</translation>
@@ -5408,6 +5414,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4699473989647132421">Vijë bregdetare</translation>
 <translation id="4701025263201366865">Identifikimi i prindit</translation>
 <translation id="4701335814944566468">Shikuar dje</translation>
+<translation id="4702504834785592287">Ana</translation>
 <translation id="470644585772471629">Anasjellja e ngjyrës</translation>
 <translation id="4707337002099455863">Gjithmonë në të gjitha sajtet</translation>
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
@@ -9238,7 +9245,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7410344089573941623">Pyet nëse <ph name="HOST" /> dëshiron të qaset te kamera dhe mikrofoni</translation>
 <translation id="7410421966064092098">Sajtet nuk mund të ndihmojnë për të verifikuar që je një robot</translation>
 <translation id="7410852728357935715">Transmeto te një pajisje</translation>
-<translation id="741148343080227980">Mund të modifikosh emrin tënd <ph name="BEGIN_LINK" />në "Llogarinë tënde të Google" <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit dhe për të gjetur sajtet që ke vizituar</translation>

@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomienda pausar la pestaña que ralentiza tu navegador}other{Chrome recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="1832046143430087831">Acelera los sitios con el motor V8 de Chrome, pero reduce ligeramente la resistencia de Chrome a los ataques. Este parámetro de configuración está desactivado.</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
+<translation id="1843347690926158494">Buscar esta pestaña con Google Lens</translation>
 <translation id="1849248141818021764">Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, deberás <ph name="BEGIN_LINK" />borrar los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder a tu cámara para este sitio</translation>
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Traducir del</translation>
 <translation id="2846251086934905009">Error de instalación: No se completó el instalador. Se anuló la instalación.</translation>
 <translation id="2853415089995957805">Chrome precarga páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
+<translation id="2856481144859256719">Mostrar siempre el acceso directo al Modo IA en la Búsqueda de Google</translation>
 <translation id="2857540653560290388">Iniciando Chrome…</translation>
 <translation id="286025080868315611">Descubre por qué Chrome bloquea algunas descargas</translation>
 <translation id="2861074815332034794">Actualizando Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -675,6 +677,7 @@
 <translation id="8533056045953418157">Establece Google Chrome como tu lector de PDF predeterminado</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
+<translation id="8575047640889685742">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para encriptar todos los datos de Chrome en tu Cuenta de Google. No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.</translation>
 <translation id="8601359445272098721">¡Novedad! Puedes traducir texto e imágenes en la pantalla seleccionando el botón “Traducir pantalla”</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>

@@ -1417,6 +1417,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1949980990364952348">Nom de l'aplicació</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Cerca una alternativa</translation>
+<translation id="1953626242273481999">Vols permetre la depuració remota?</translation>
 <translation id="1953796913175502363">Configura el perfil de treball</translation>
 <translation id="1954597385941141174">Els llocs web poden demanar permís per connectar-se a dispositius USB</translation>
 <translation id="1954813140452229842">Hi ha hagut un error en activar l'ús compartit. Comprova les credencials i torna-ho a provar.</translation>
@@ -1800,6 +1801,9 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="222115440608612541">Canvia els temes a l'alba i a la posta de sol</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> i <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Una aplicació externa vol tenir el control total d'aquesta sessió de Chrome per depurar-la. Això inclou l'accés a les dades desades, les galetes i les dades del lloc web, així com la capacitat de navegar a qualsevol URL.
+
+Només els desenvolupadors web han d'activar aquesta funció, i només l'han d'utilitzar amb aplicacions de confiança.</translation>
 <translation id="222201875806112242">Font multimèdia sense nom</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2224444042887712269">Aquesta configuració pertany a <ph name="OWNER_EMAIL" />.</translation>
@@ -1905,6 +1909,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2294081976975808113">Privadesa de la pantalla</translation>
 <translation id="2294358108254308676">Voleu instal·lar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revisa la configuració</translation>
+<translation id="229524410604268773">Desactiva a Configuració</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultats</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> requereix que el dispositiu estigui en línia quan iniciïs la sessió a <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Detecció de dispositius</translation>
@@ -2453,6 +2458,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2665394472441560184">Afegeix una paraula nova</translation>
 <translation id="2665647207431876759">Caducat</translation>
 <translation id="2665919335226618153">S'ha produït un error durant la formatació.</translation>
+<translation id="2666092431469916601">Superior</translation>
 <translation id="2666247341166669829">Nivell de bateria de l'auricular esquerre: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestiona el corrector ortogràfic</translation>
@@ -2992,7 +2998,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3022072018423103125">Zona muntanyosa</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> se suprimirà d'aquest Chromebook i no es desarà a <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">No t'he entès.</translation>
-<translation id="3023204744987201088">&amp;Informació de contacte</translation>
+<translation id="3023204744987201088">Informació de &amp;contacte</translation>
 <translation id="3023464535986383522">Escolta la selecció</translation>
 <translation id="3024374909719388945">Utilitza el rellotge de 24 hores</translation>
 <translation id="3027296729579831126">Activa Compartició Nearby</translation>
@@ -5408,6 +5414,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inici de sessió dels pares</translation>
 <translation id="4701335814944566468">Es va veure ahir</translation>
+<translation id="4702504834785592287">Costat</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
 <translation id="4707337002099455863">Sempre en tots els llocs web</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
@@ -9239,7 +9246,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7410344089573941623">Pregunta si <ph name="HOST" /> vol accedir a la càmera i al micròfon</translation>
 <translation id="7410421966064092098">Els llocs web no poden ajudar a verificar que no ets un bot</translation>
 <translation id="7410852728357935715">Emet a un dispositiu</translation>
-<translation id="741148343080227980">Pots editar el teu nom <ph name="BEGIN_LINK" />al teu Compte de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7412226954991670867">Memòria de la GPU</translation>
 <translation id="741370456693729525">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat</translation>
@@ -11007,7 +11013,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8616441548384109662">Afegeix <ph name="CONTACT_NAME" /> als contactes</translation>
 <translation id="8617601976406256334">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Identificador de connexió segura: <ph name="CONNECTION_ID" /></translation>
-<translation id="8618586951885164886">&amp;Informació de contacte</translation>
+<translation id="8618586951885164886">Informació de &amp;contacte</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">No poden instal·lar aplicacions web al dispositiu</translation>
 <translation id="8619803522055190423">Ombra paral·lela</translation>

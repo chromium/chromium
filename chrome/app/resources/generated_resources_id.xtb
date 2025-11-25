@@ -1427,6 +1427,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1949980990364952348">Nama aplikasi</translation>
 <translation id="1951012854035635156">Asisten</translation>
 <translation id="1951823516285577843">Cari alternatif</translation>
+<translation id="1953626242273481999">Izinkan proses debug jarak jauh?</translation>
 <translation id="1953796913175502363">Siapkan profil kerja Anda</translation>
 <translation id="1954597385941141174">Situs dapat meminta untuk terhubung ke perangkat USB</translation>
 <translation id="1954813140452229842">Error saat memasang URL berbagi. Periksa kredensial Anda dan coba lagi.</translation>
@@ -1810,6 +1811,9 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="222115440608612541">Beralih tema saat matahari terbit dan terbenam</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Aplikasi eksternal ingin mengontrol sepenuhnya sesi Chrome ini untuk melakukan debug. Hal ini mencakup akses ke data tersimpan, cookie dan data situs, serta kemampuan untuk membuka URL apa pun.
+
+Hanya developer web yang boleh mengaktifkan fitur ini, dan hanya menggunakannya dengan aplikasi tepercaya.</translation>
 <translation id="222201875806112242">Sumber media tidak bernama</translation>
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2224444042887712269">Setelan ini adalah milik <ph name="OWNER_EMAIL" />.</translation>
@@ -1918,6 +1922,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2294081976975808113">Privasi layar</translation>
 <translation id="2294358108254308676">Apakah Anda ingin memasang <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Tinjau setelan Anda</translation>
+<translation id="229524410604268773">Nonaktifkan di setelan</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> hasil</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> mengharuskan perangkat online saat login ke <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Penemuan Perangkat</translation>
@@ -2466,6 +2471,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2665394472441560184">Tambahkan kata baru</translation>
 <translation id="2665647207431876759">Sudah berakhir</translation>
 <translation id="2665919335226618153">Waduh! Terjadi error saat proses pemformatan.</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2666247341166669829">Tingkat daya baterai kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikasi lain disetel untuk membuka link yang sama dengan <ph name="APP_NAME" />. Penyetelan ini akan membuat <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> tidak dapat membuka link yang didukung.</translation>
 <translation id="2667463864537187133">Kelola pemeriksa ejaan</translation>
@@ -5424,6 +5430,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4699473989647132421">Garis pantai</translation>
 <translation id="4701025263201366865">Login orang tua</translation>
 <translation id="4701335814944566468">Dilihat kemarin</translation>
+<translation id="4702504834785592287">Sisi</translation>
 <translation id="470644585772471629">Inversi warna</translation>
 <translation id="4707337002099455863">Selalu di Semua Situs</translation>
 <translation id="4708849949179781599">Berhenti <ph name="PRODUCT_NAME" /></translation>
@@ -9258,7 +9265,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7410344089573941623">Tanyakan jika <ph name="HOST" /> ingin mengakses kamera dan mikrofon Anda</translation>
 <translation id="7410421966064092098">Situs tidak dapat membantu memverifikasi bahwa Anda bukan bot</translation>
 <translation id="7410852728357935715">Transmisikan ke perangkat</translation>
-<translation id="741148343080227980">Anda dapat mengedit nama Anda <ph name="BEGIN_LINK" />di Akun Google Anda <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7412226954991670867">Memori GPU</translation>
 <translation id="741370456693729525">Gunakan bahasa sehari-hari untuk menelusuri histori penjelajahan dan menemukan situs yang pernah Anda buka</translation>

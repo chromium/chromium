@@ -1427,6 +1427,7 @@
 <translation id="1949980990364952348">應用程式名稱</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1951823516285577843">尋找替代擴充程式</translation>
+<translation id="1953626242273481999">允許遠端偵錯嗎？</translation>
 <translation id="1953796913175502363">設定工作設定檔</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
@@ -1810,6 +1811,9 @@
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="222115440608612541">在日出和日落時切換主題</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">外部應用程式想完全控制這個 Chrome 工作階段以進行偵錯，包括存取已儲存的資料、Cookie 和網站資料，以及前往任何網址。
+
+此功能只應由網絡開發人員開啟，並與受信任的應用程式一併使用。</translation>
 <translation id="222201875806112242">未命名嘅媒體來源</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
@@ -1918,6 +1922,7 @@
 <translation id="2294081976975808113">螢幕私隱設定</translation>
 <translation id="2294358108254308676">您要安裝「<ph name="PRODUCT_NAME" />」嗎？</translation>
 <translation id="229477815107578534">查看您的設定</translation>
+<translation id="229524410604268773">在設定中關閉</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> 項結果</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> 要求裝置在登入 <ph name="EMAIL" /> 時必須在線</translation>
 <translation id="2296218178174497398">裝置探索</translation>
@@ -2466,6 +2471,7 @@
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
 <translation id="2665919335226618153">糟糕！格式化過程中發生錯誤。</translation>
+<translation id="2666092431469916601">返回頁首</translation>
 <translation id="2666247341166669829">左邊嘅電量係 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
@@ -5418,6 +5424,7 @@
 <translation id="4699473989647132421">海岸線</translation>
 <translation id="4701025263201366865">家長登入</translation>
 <translation id="4701335814944566468">昨天看過</translation>
+<translation id="4702504834785592287">側邊</translation>
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
@@ -8190,7 +8197,7 @@
 <translation id="6670983860904543332">自動更新會為你提供所有最新功能。探索最近更新的重點內容。</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="6671497123040790595">正在設定由 <ph name="MANAGER" /> 進行管理</translation>
-<translation id="6672697278890207089">請輸入你的複雜密碼</translation>
+<translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽私隱<ph name="END_LINK" />，防止裝置的其他使用者查看你的瀏覽資料</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -9247,7 +9254,6 @@
 <translation id="7410344089573941623">當 <ph name="HOST" /> 要求使用相機和麥克風時詢問我。</translation>
 <translation id="7410421966064092098">網站無法協助驗證您不是機器人</translation>
 <translation id="7410852728357935715">投放至裝置</translation>
-<translation id="741148343080227980">你可以<ph name="BEGIN_LINK" />在 Google 帳戶 <ph name="USERNAME" /> 中<ph name="END_LINK" />編輯名稱。</translation>
 <translation id="741204030948306876">確認</translation>
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="741370456693729525">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站</translation>

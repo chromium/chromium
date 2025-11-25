@@ -1802,12 +1802,6 @@ Na versão 114 e mais recentes, o uso de <ph name="DOH_SALT_POLICY_NAME" /> é o
       Se a política for definida como verdadeira ou não for definida, o usuário poderá usar a CLI de administração de VM.
       Caso contrário, toda a CLI de administração de VM será desativada e oculta.
       </translation>
-<translation id="2194051055390000601">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios pode ser desativada para os usuários.
-
-Se a política for desativada, a configuração de temas de anúncios também vai ser desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="2195032660890227692">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem mudar para o teclado normal.
 
@@ -8888,7 +8882,7 @@ Essa política se aplica apenas a novas tentativas de conexão e não invalida a
       Se ela estiver desativada, as Respostas rápidas ficarão desativadas.
       Se a política for deixada sem definição, os usuários poderão ativar ou desativar as Respostas rápidas.</translation>
 <translation id="670675748066383347">Configurações do Organizador de guias</translation>
-<translation id="6710714905661200515">Documentos Google (compatível desde a versão 135)</translation>
+<translation id="6710714905661200515">Google Docs (compatível desde a versão 135)</translation>
 <translation id="6712624291905573620">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Quando a política é deixada sem definição ou é desativada, os dados não são coletados nem enviados por upload.
@@ -9932,13 +9926,13 @@ Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.g
 <translation id="7341773449551289679">Lista de permissões de armazenamento externo</translation>
 <translation id="7343004974628511824">Realizar verificações de interceptação de DNS</translation>
 <translation id="7343497214039883642">Arquivo de configuração de impressora empresarial para dispositivos</translation>
-<translation id="7344533124201531786">Configure a lista de domínios em que <ph name="PRODUCT_NAME" /> precisa desativar <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
+<translation id="7344533124201531786">Configure a lista de domínios em que o <ph name="PRODUCT_NAME" /> precisa desativar o <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
 
-Se um domínio estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> será desativado para ele.
+Se um domínio estiver na lista, o <ph name="PASSWORD_MANAGER_NAME" /> será desativado para ele.
 
-Se um domínio não estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> vai estar disponível para ele.
+Se um domínio não estiver na lista, o <ph name="PASSWORD_MANAGER_NAME" /> vai estar disponível para ele.
 
-Se a política for deixada sem definição, <ph name="PASSWORD_MANAGER_NAME" /> vai ficar disponível para todos os domínios.
+Se a política for deixada sem definição, o <ph name="PASSWORD_MANAGER_NAME" /> vai ficar disponível para todos os domínios.
 
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7357148531287978404">Desativar a entrada de áudio</translation>

@@ -1427,6 +1427,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1949980990364952348">Appens namn</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Hitta ett annat alternativ</translation>
+<translation id="1953626242273481999">Vill du tillåta fjärrfelsökning?</translation>
 <translation id="1953796913175502363">Konfigurera en jobbprofil</translation>
 <translation id="1954597385941141174">Webbplatser får begära tillstånd att ansluta till USB-enheter</translation>
 <translation id="1954813140452229842">Det gick inte att montera den delade resursen. Kontrollera användaruppgifterna och försök igen.</translation>
@@ -1810,6 +1811,9 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="222115440608612541">Byt tema vid soluppgången och solnedgången</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">En extern app vill ha fullständig kontroll över den här Chrome-sessionen för att felsöka den. Detta omfattar åtkomst till din sparade data, dina cookies och din webbplatsdata samt förmågan att navigera till valfri webbadress.
+
+Endast webbutvecklare bör aktivera den här funktionen och endast använda den med betrodda appar.</translation>
 <translation id="222201875806112242">Namnlös mediekälla</translation>
 <translation id="2224337661447660594">Inget internet</translation>
 <translation id="2224444042887712269">Den här inställningen tillhör <ph name="OWNER_EMAIL" />.</translation>
@@ -1918,6 +1922,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2294081976975808113">Skärmintegritet</translation>
 <translation id="2294358108254308676">Vill du installera <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Granska dina inställningar</translation>
+<translation id="229524410604268773">Inaktivera i inställningarna</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultat</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> kräver att enheten är online när du loggar in på <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Enhetsidentifiering</translation>
@@ -2466,6 +2471,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2665394472441560184">Lägg till ett nytt ord</translation>
 <translation id="2665647207431876759">Upphört att gälla</translation>
 <translation id="2665919335226618153">Ett fel uppstod vid formateringen.</translation>
+<translation id="2666092431469916601">Överst</translation>
 <translation id="2666247341166669829">Vänster batterinivå är <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" /> och <ph name="APP_NAME_3" /> öppnar länkar som stöds.</translation>
 <translation id="2667463864537187133">Hantera stavningskontrollen</translation>
@@ -5424,6 +5430,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4699473989647132421">Strandlinje</translation>
 <translation id="4701025263201366865">Föräldrainloggning</translation>
 <translation id="4701335814944566468">Visades i går</translation>
+<translation id="4702504834785592287">Sida</translation>
 <translation id="470644585772471629">Inverterade färger</translation>
 <translation id="4707337002099455863">Alltid på alla webbplatser</translation>
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
@@ -9258,7 +9265,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7410344089573941623">Fråga om <ph name="HOST" /> vill använda kameran och mikrofonen</translation>
 <translation id="7410421966064092098">Webbplatser kan inte hjälpa till att verifiera att du inte är en bot</translation>
 <translation id="7410852728357935715">Casta till en enhet</translation>
-<translation id="741148343080227980">Du kan redigera ditt namn <ph name="BEGIN_LINK" />i Google-kontot <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja</translation>
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="741370456693729525">Använd vardagligt språk för att söka i webbhistoriken och hitta webbplatser du har besökt</translation>

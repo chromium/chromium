@@ -1418,6 +1418,7 @@
 <translation id="1949980990364952348">एपको नाम</translation>
 <translation id="1951012854035635156">सहायक</translation>
 <translation id="1951823516285577843">अन्य विकल्प खोज्नुहोस्</translation>
+<translation id="1953626242273481999">टाढैबाट डिबग गर्ने अनुमति दिने हो?</translation>
 <translation id="1953796913175502363">आफ्नो वर्क प्रोफाइल सेटअप गर्नुहोस्</translation>
 <translation id="1954597385941141174">साइटहरूले USB मा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
 <translation id="1954813140452229842">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। कृपया आफ्ना प्रमाणहरूको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -1801,6 +1802,9 @@
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="222115440608612541">थिमहरू बदलेर सूर्योदय र सूर्यास्त थिम बनाउनुहोस्</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">एउटा बाह्य एपले यो Chrome सत्र डिबग गर्ने प्रयोजनका लागि यसमाथि पूर्ण नियन्त्रण गर्न चाहन्छ। यसमा तपाईंको सेभ गरिएको डेटा, कुकी र साइटको डेटा एक्सेस गर्ने र जुनसुकै URL मा नेभिगेट गर्ने अनुमति समावेश हुन्छ।
+
+वेब डेभलपरहरूले मात्र यो सुविधा अन गर्नु पर्छ र विश्वसनीय एपहरूमा मात्र यो सुविधा प्रयोग गर्नु पर्छ।</translation>
 <translation id="222201875806112242">नाम नराखिएको मिडिया स्रोत</translation>
 <translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2224444042887712269">यो सेटिङ <ph name="OWNER_EMAIL" /> को हो</translation>
@@ -1906,6 +1910,7 @@
 <translation id="2294081976975808113">स्क्रिनमा देखिएको सामग्रीको गोपनीयता</translation>
 <translation id="2294358108254308676">के तपाइँ <ph name="PRODUCT_NAME" /> स्थापना गर्न चाहनुहुन्छ?</translation>
 <translation id="229477815107578534">आफ्ना सेटिङ सही छन् कि छैनन् जाँच्नुहोस्</translation>
+<translation id="229524410604268773">सेटिङमा गई अफ गर्नुहोस्</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> परिणामहरू</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> को नीतिअनुसार <ph name="EMAIL" /> मा साइन इन गर्दा साइन इन गर्न प्रयोग गरिने यन्त्र इन्टरनेटमा कनेक्ट भएको हुनु पर्छ</translation>
 <translation id="2296218178174497398">डिभाइस पत्ता लगाउन गरिने खोजी</translation>
@@ -2454,6 +2459,7 @@
 <translation id="2665394472441560184">नयाँ शब्द थप्नुहोस्</translation>
 <translation id="2665647207431876759">म्याद सकियो</translation>
 <translation id="2665919335226618153">ओ, तस्बिर! ढाँचाका क्रममा एउटा त्रुटी भयो ।</translation>
+<translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2666247341166669829">बायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2667144577800272420">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="2667463864537187133">हिज्जे जाँचको व्यवस्थापन गर्नुहोस्</translation>
@@ -5410,6 +5416,7 @@
 <translation id="4699473989647132421">तट रेखा</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
+<translation id="4702504834785592287">सतह</translation>
 <translation id="470644585772471629">कलर इन्भर्सन</translation>
 <translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
@@ -9242,7 +9249,6 @@
 <translation id="7410344089573941623"><ph name="HOST" />लाई तपाइँको क्यामेरा र माइक्रोफोन पहुँच गर्न चाहन्छ की भनेर सोध्नुहोस्।</translation>
 <translation id="7410421966064092098">साइटहरूले तपाईं बट होइन भन्ने कुरा पुष्टि गर्न सक्दैनन्</translation>
 <translation id="7410852728357935715">कुनै डिभाइसमा कास्ट गर्नुहोस्</translation>
-<translation id="741148343080227980">तपाईं <ph name="BEGIN_LINK" />आफ्नो Google खाता <ph name="USERNAME" /><ph name="END_LINK" /> मा गई आफ्नो नाम बदल्न सक्नुहुन्छ।</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7412226954991670867">GPU समृति</translation>
 <translation id="741370456693729525">ब्राउजिङ हिस्ट्री खोज्न र आफूले खोलेका साइटहरू भेट्टाउन बोलीचालीको भाषा प्रयोग गर्नुहोस्</translation>

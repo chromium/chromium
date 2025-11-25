@@ -77,6 +77,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome soovitab teie brauserit aeglustava vahelehe peatada}other{Chrome soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="1832046143430087831">Kiirendab Chrome'i V8 mootoriga saite, kuid muudab Chrome'i rünnetele veidi vähem vastupidavaks. See seade on välja lülitatud.</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
+<translation id="1843347690926158494">Otsi sellelt vahelehelt Google Lensiga</translation>
 <translation id="1849248141818021764">Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, peate <ph name="BEGIN_LINK" />kustutama oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
 <translation id="1873233029667955273">Google Chrome ei ole vaikebrauser</translation>
@@ -165,6 +166,7 @@
 <translation id="2841525013647267359">Tõlke lähtekeel</translation>
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>
 <translation id="2853415089995957805">Chrome eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
+<translation id="2856481144859256719">Kuva Google'i otsingus alati AI-režiimi otsetee</translation>
 <translation id="2857540653560290388">Chrome'i käivitamine …</translation>
 <translation id="286025080868315611">Vaadake, miks Chrome mõned allalaadimised blokeerib</translation>
 <translation id="2861074815332034794">Chrome’i värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -679,6 +681,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8533056045953418157">Määrake Google Chrome oma PDF-vaikevaaturiks</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Keeleloendi otsing</translation>
+<translation id="8575047640889685742">Kasuta kõigi Chrome'i andmete krüpteerimiseks Google'i kontol <ph name="BEGIN_LINK" />minu parooli<ph name="END_LINK" /> Google Payst pärinevaid makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.</translation>
 <translation id="8601359445272098721">Uus! Saate tõlkida nii ekraanil olevat teksti kui ka pilte, valides nupu „Tõlgi kuva“</translation>
 <translation id="8614913330719544658">Google Chrome ei reageeri. Kas soovite kohe taaskäivitada?</translation>
 <translation id="861702415419836452">Chrome vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>

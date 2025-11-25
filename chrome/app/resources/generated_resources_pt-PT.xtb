@@ -2460,6 +2460,7 @@ Apenas os programadores Web devem ativar esta funcionalidade e usá-la apenas co
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
 <translation id="2665647207431876759">Expirada</translation>
 <translation id="2665919335226618153">Ah, bolas! Ocorreu um erro durante a formatação.</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nível da bateria do esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links suportados.</translation>
 <translation id="2667463864537187133">Gerir verificação ortográfica</translation>
@@ -5421,6 +5422,7 @@ Quer pará-lo?</translation>
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Início de sessão pelos pais</translation>
 <translation id="4701335814944566468">Visto ontem</translation>
+<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Sair do <ph name="PRODUCT_NAME" /></translation>
@@ -9256,7 +9258,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7410344089573941623">Perguntar se <ph name="HOST" /> quer aceder à sua câmara e microfone</translation>
 <translation id="7410421966064092098">Os sites não podem ajudar a validar que não é um bot</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
-<translation id="741148343080227980">Pode editar o seu nome <ph name="BEGIN_LINK" />na sua Conta Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="741370456693729525">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou</translation>

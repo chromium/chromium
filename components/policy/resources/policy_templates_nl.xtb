@@ -1725,12 +1725,6 @@ In versie 114 en hoger is <ph name="DOH_SALT_POLICY_NAME" /> optioneel als dit b
 
       Als het beleid is ingesteld op True of als het niet is ingesteld, kan de gebruiker CLI gebruiken voor VM-beheer.
       Zo niet, dan wordt de hele CLI voor VM-beheer uitgezet en verborgen.</translation>
-<translation id="2194051055390000601">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor advertentieonderwerpen uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen aan- of uitzetten op hun apparaat.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.</translation>
 <translation id="2195032660890227692">Dit beleid is in <ph name="PRODUCT_NAME" /> 68 verwijderd en vervangen door <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Als je het beleid instelt op True, wordt het numerieke toetsenbord standaard weergegeven om het wachtwoord op te geven op het inlogscherm. Gebruikers kunnen overschakelen naar het normale toetsenbord.
 
@@ -4239,7 +4233,7 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
 
       Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch invullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
-<translation id="3989635538409502728">Afmelden</translation>
+<translation id="3989635538409502728">Uitloggen</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
 <translation id="3990834929384096140">Opheffing van systeemaudio-echo niet afdwingen</translation>

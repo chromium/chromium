@@ -342,6 +342,7 @@
 <translation id="2245007488813216650">Traduciendo…</translation>
 <translation id="2249119578464404734">En la parte superior de la pantalla, presiona el ícono de Búsqueda</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
+<translation id="2252378061043785266">No mostrar nunca este sitio</translation>
 <translation id="2252749852083403809">Guardando en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Tu organización te permite acceder solo con determinadas cuentas.</translation>
 <translation id="2257567812274161158">La sincronización no funciona.</translation>
@@ -953,7 +954,7 @@
 <translation id="4720530280568305198">Tu selección se abrió en una pestaña nueva</translation>
 <translation id="4720782081196952026">Reducir el tamaño del texto</translation>
 <translation id="472259426228234149">Precio USD 100-180</translation>
-<translation id="4735849923335729414">Accede como <ph name="EMAIL" />, administrada tu organización.</translation>
+<translation id="4735849923335729414">Accede como <ph name="EMAIL" />, administrada por tu organización.</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="474209246745757965">Compra y traduce con la cámara</translation>
 <translation id="4742407542027196863">Administrar contraseñas…</translation>

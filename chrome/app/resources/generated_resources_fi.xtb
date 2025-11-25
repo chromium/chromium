@@ -1426,6 +1426,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1949980990364952348">Sovelluksen nimi</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Etsi toinen vaihtoehto</translation>
+<translation id="1953626242273481999">Sallitaanko vianetsintä etänä?</translation>
 <translation id="1953796913175502363">Ota työprofiili käyttöön</translation>
 <translation id="1954597385941141174">Sivustot saavat pyytää lupaa yhdistää USB-laitteisiin</translation>
 <translation id="1954813140452229842">Virhe jaon käyttöönotossa. Tarkista kirjautumistietosi ja yritä uudelleen.</translation>
@@ -1809,6 +1810,9 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="222115440608612541">Vaihda teemaa auringon noustessa ja laskiessa</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Ulkoinen sovellus haluaa täyden hallinnan tähän Chrome-istuntoon virheenkorjausta varten. Tämä sisältää pääsyn tallennettuun dataan, evästeisiin ja sivustodataan sekä mahdollisuuden siirtyä mihin tahansa URL-osoitteeseen.
+
+Vain web-kehittäjien tulisi laittaa ominaisuus päälle ja käyttää sitä vain luotettujen sovellusten kanssa.</translation>
 <translation id="222201875806112242">Nimetön medialähde</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2224444042887712269">Tämä asetus kuuluu käyttäjälle <ph name="OWNER_EMAIL" />.</translation>
@@ -1917,6 +1921,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2294081976975808113">Näytön yksityisyys</translation>
 <translation id="2294358108254308676">Haluatko asentaa tuotteen <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Tarkista asetukset</translation>
+<translation id="229524410604268773">Laita pois päältä asetuksista</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> tulosta</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> edellyttää, että laite on yhteydessä verkkoon kirjautuessaan tilille <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Laitteiden tunnistaminen</translation>
@@ -2465,6 +2470,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2665394472441560184">Lisää uusi sana</translation>
 <translation id="2665647207431876759">Vanhentunut</translation>
 <translation id="2665919335226618153">Harmin paikka! Alustuksen aikana tapahtui virhe.</translation>
+<translation id="2666092431469916601">Yleisin</translation>
 <translation id="2666247341166669829">Vasemmanpuoleisen akun varaus <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> eivät enää voi avata tuettuja linkkejä.</translation>
 <translation id="2667463864537187133">Hallitse oikeinkirjoituksen tarkistusta</translation>
@@ -5420,6 +5426,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4699473989647132421">Rantaviiva</translation>
 <translation id="4701025263201366865">Vanhemman sisäänkirjautuminen</translation>
 <translation id="4701335814944566468">Nähty eilen</translation>
+<translation id="4702504834785592287">Puoli</translation>
 <translation id="470644585772471629">Käänteiset värit</translation>
 <translation id="4707337002099455863">Aina kaikilla sivustoilla</translation>
 <translation id="4708849949179781599">Sulje <ph name="PRODUCT_NAME" /></translation>
@@ -9254,7 +9261,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7410344089573941623">Kysy, jos <ph name="HOST" /> haluaa käyttää kameraa ja mikrofonia</translation>
 <translation id="7410421966064092098">Sivustot eivät voi auttaa vahvistamaan, ettet ole botti</translation>
 <translation id="7410852728357935715">Striimaa laitteeseen</translation>
-<translation id="741148343080227980">Voit muokata nimeäsi <ph name="BEGIN_LINK" />Google-tilillä (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Kyllä</translation>
 <translation id="7412226954991670867">Keskusyksikön muisti</translation>
 <translation id="741370456693729525">Hae avaamiasi sivustoja selaushistoriasta arkikielellä</translation>

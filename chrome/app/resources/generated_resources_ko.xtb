@@ -1427,6 +1427,7 @@
 <translation id="1949980990364952348">앱 이름</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1951823516285577843">대안 찾기</translation>
+<translation id="1953626242273481999">원격 디버깅을 허용하시겠습니까?</translation>
 <translation id="1953796913175502363">직장 프로필 설정하기</translation>
 <translation id="1954597385941141174">사이트에서 USB 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="1954813140452229842">공유를 마운트하는 중에 오류가 발생했습니다. 사용자 인증 정보를 확인한 후 다시 시도해 주세요.</translation>
@@ -1811,6 +1812,9 @@
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="222115440608612541">일출 및 일몰 시 테마를 전환합니다.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">외부 앱에서 이 Chrome 세션을 완전히 제어하여 디버그하려고 합니다. 여기에는 저장된 데이터, 쿠키, 사이트 데이터에 대한 액세스 권한과 모든 URL로 이동할 수 있는 기능이 포함됩니다.
+
+웹 개발자만 이 기능을 사용 설정해야 하며, 신뢰할 수 있는 앱에서만 사용해야 합니다.</translation>
 <translation id="222201875806112242">이름이 지정되지 않은 미디어 소스</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
@@ -1919,6 +1923,7 @@
 <translation id="2294081976975808113">화면 개인 정보 보호</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" />을(를) 설치하시겠습니까?</translation>
 <translation id="229477815107578534">설정 검토</translation>
+<translation id="229524410604268773">설정에서 사용 중지</translation>
 <translation id="2295864384543949385">검색결과 <ph name="NUM_RESULTS" />개</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" />에서 기기가 온라인 상태여야 <ph name="EMAIL" />에 로그인할 수 있도록 요구합니다.</translation>
 <translation id="2296218178174497398">기기 검색</translation>
@@ -2468,6 +2473,7 @@
 <translation id="2665394472441560184">새 단어 추가</translation>
 <translation id="2665647207431876759">만료됨</translation>
 <translation id="2665919335226618153">포맷 중에 오류가 발생했습니다.</translation>
+<translation id="2666092431469916601">상단</translation>
 <translation id="2666247341166669829">왼쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
@@ -5425,6 +5431,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4699473989647132421">해안선</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
 <translation id="4701335814944566468">어제 확인함</translation>
+<translation id="4702504834785592287">사이드</translation>
 <translation id="470644585772471629">색상 반전</translation>
 <translation id="4707337002099455863">항상 모든 사이트에서 사용</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
@@ -9259,7 +9266,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7410344089573941623"><ph name="HOST" />에서 카메라와 마이크에 액세스하려는 경우 메시지 표시</translation>
 <translation id="7410421966064092098">사이트에서 내가 봇이 아님을 확인할 수 없습니다.</translation>
 <translation id="7410852728357935715">기기로 전송</translation>
-<translation id="741148343080227980"><ph name="BEGIN_LINK" />Google 계정(<ph name="USERNAME" />)<ph name="END_LINK" />에서 이름을 수정할 수 있습니다.</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7412226954991670867">GPU 메모리</translation>
 <translation id="741370456693729525">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요.</translation>

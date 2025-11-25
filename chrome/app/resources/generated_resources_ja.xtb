@@ -2453,6 +2453,7 @@
 <translation id="2665394472441560184">新しい単語を追加</translation>
 <translation id="2665647207431876759">期限切れ</translation>
 <translation id="2665919335226618153">フォーマット中にエラーが発生しました。</translation>
+<translation id="2666092431469916601">上部</translation>
 <translation id="2666247341166669829">左のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
 <translation id="2667463864537187133">スペルチェックの管理</translation>
@@ -2549,7 +2550,7 @@
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Gemini アプリ アクティビティの表示と管理</translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
-<translation id="2730550884708194161">仕事用プロフィールについて</translation>
+<translation id="2730550884708194161">仕事用プロファイルについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
@@ -5406,6 +5407,7 @@
 <translation id="4699473989647132421">海岸線</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
 <translation id="4701335814944566468">昨日表示</translation>
+<translation id="4702504834785592287">側面</translation>
 <translation id="470644585772471629">色反転</translation>
 <translation id="4707337002099455863">すべてのサイトで常に許可</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
@@ -9233,7 +9235,6 @@
 <translation id="7410344089573941623"><ph name="HOST" /> がカメラやマイクへのアクセスを要求しているか確認する</translation>
 <translation id="7410421966064092098">サイトは、あなたが bot でないことを確認する情報を提供できません。</translation>
 <translation id="7410852728357935715">デバイスにキャスト</translation>
-<translation id="741148343080227980">名前は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集できます。</translation>
 <translation id="741204030948306876">オンにする</translation>
 <translation id="7412226954991670867">GPU メモリ</translation>
 <translation id="741370456693729525">普段使う表現で閲覧履歴やアクセスしたサイトを検索します</translation>

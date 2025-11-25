@@ -79,6 +79,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="1832046143430087831">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve. Ky cilësim është joaktiv.</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
+<translation id="1843347690926158494">Kërko në këtë skedë me "Lenten e Google"</translation>
 <translation id="1849248141818021764">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, do të të duhet të <ph name="BEGIN_LINK" />fshish të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
@@ -166,6 +167,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2841525013647267359">Përkthe nga</translation>
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
+<translation id="2856481144859256719">Shfaq gjithmonë shkurtoren e "Modalitetit të IA-së" në "Kërko në Google"</translation>
 <translation id="2857540653560290388">Po hapet Chrome...</translation>
 <translation id="286025080868315611">Mëso se pse Chrome i bllokon disa shkarkime</translation>
 <translation id="2861074815332034794">Po përditëson Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -680,6 +682,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8533056045953418157">Cakto Google Chrome si shikuesin e parazgjedhur të skedarëve PDF</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
+<translation id="8575047640889685742">Përdor <ph name="BEGIN_LINK" />frazën tënde të kalimit<ph name="END_LINK" /> për të enkriptuar të gjitha të dhënat e Chrome në "Llogarinë tënde të Google". Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.</translation>
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>

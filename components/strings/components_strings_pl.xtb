@@ -693,6 +693,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2127747486437921899">Kursywa</translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Pokazujemy je w kolejności losowej. Opcję domyślną możesz w każdej chwili zmienić.</translation>
 <translation id="2137891579555018930">Czekam na uzyskanie pozwolenia…</translation>
 <translation id="213826338245044447">Zakładki na komórce</translation>
@@ -912,6 +913,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2452837234288608067">Nie udało się pomóc. Spróbuj ponownie.</translation>
 <translation id="2453045048779611513">Twoja organizacja nie pozwala na synchronizację niektórych typów danych</translation>
 <translation id="2456755709261364512">Poziom naładowania baterii musi przekraczać <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Zastosowane zasady przeglądarki (zasady dotyczące komputera i profilu)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core to centralne narzędzie do konfigurowania zasad przeglądarki w chmurze</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2462932596748424101">Sieci społecznościowe</translation>
@@ -1123,6 +1125,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Radiowe programy publicystyczne</translation>
 <translation id="2835170189407361413">Wyczyść formularz</translation>
+<translation id="2835907903001172712">Ogólne informacje o przeglądarce</translation>
 <translation id="2837891525090413132">Może poprosić o zablokowanie i używanie klawiatury</translation>
 <translation id="2839032553903800133">Powiadomienia blokowane</translation>
 <translation id="2839501879576190149">Wchodzisz na fałszywą stronę</translation>
@@ -1529,7 +1532,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3498215018399854026">Obecnie nie możemy się skontaktować z Twoim rodzicem. Spróbuj ponownie.</translation>
 <translation id="350069200438440499">Nazwa pliku:</translation>
 <translation id="3501300228850242680">Muzyka metalowa</translation>
-<translation id="350274464456291051">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Etykiety (wysoki połysk)</translation>
 <translation id="350763432931695541">Wyodrębniam tekst na kilku kolejnych stronach</translation>
 <translation id="3507869775212388416">Praca w sektorze prawnym</translation>
@@ -1558,6 +1560,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3543935938072367282">Płać szybciej dzięki autouzupełnianiu</translation>
 <translation id="3547442767634383572">ogólne informacje o profilu służbowym;</translation>
 <translation id="3547746132308051926">20 x 24 cale</translation>
+<translation id="3549904448933807997">Informacje o przeglądarkach i profilach (w tym profilach osobistych i służbowych)</translation>
 <translation id="3552155506104542239">Ostrzeżenie: ta zasada jest w konflikcie z zasadą <ph name="POLICY_NAME" /> i nie będzie miała wpływu na aplikacje na Androida. Gdy konflikt nie występuje, zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
@@ -2399,6 +2402,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4887406273302438710">Chroń hasła za pomocą Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby usunąć historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome</translation>
 <translation id="4892518386797173871">Tył</translation>
+<translation id="4894390983254799375">Takie jak identyfikator urządzenia, nazwa, wersja systemu operacyjnego i nazwa użytkownika systemu operacyjnego</translation>
 <translation id="4895019427244614047">Usuń adres</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
@@ -2934,6 +2938,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5764920692828389743">Wysyłaj na adres <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
 <translation id="57689295674415555">Nie uzupełniono numeru karty wirtualnej?</translation>
+<translation id="5773286975255318081">Takie jak nazwy użytkowników profili i wersje przeglądarek</translation>
 <translation id="5776313857861697733">Priorytet</translation>
 <translation id="577804500166306874">Wczytuję wynik</translation>
 <translation id="5781136890105823427">Eksperyment włączony</translation>
@@ -3410,7 +3415,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6521745193039995384">Nieaktywna</translation>
 <translation id="6522682797352430154">Muzyka klasyczna</translation>
 <translation id="6524830701589638230">Przycisk Zarządzaj ustawieniami ułatwień dostępu; aktywuj, aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome</translation>
-<translation id="6525222262307262764">Zachowaj bieżącą opcję domyślną</translation>
 <translation id="6527049834925947126">Produkcja żywności</translation>
 <translation id="6529173248185917884">Rolka 7</translation>
 <translation id="6529602333819889595">&amp;Ponów usunięcie</translation>
@@ -3549,6 +3553,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6772959465807028761">Aby korzystać z YouTube, zaloguj się na konto Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Korzystaj z YouTube zgodnie z opcjami ustawionymi przez rodzica</translation>
+<translation id="6779290995699117286">Administrator ma dostęp do informacji dotyczących profilu, przeglądarki i urządzenia. Może zobaczyć:</translation>
 <translation id="6779348349813025131">Menedżer haseł Google potrzebuje dostępu do pęku kluczy macOS</translation>
 <translation id="6780449997190414928">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">W każdej chwili możesz zmienić wyszukiwarkę w ustawieniach Chrome.</translation>
@@ -4395,6 +4400,7 @@ Dodatkowe informacje:
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
 <translation id="8149426793427495338">Twój komputer przeszedł w tryb uśpienia.</translation>
 <translation id="815036624016370447">Informacje z Twojego konta Google <ph name="ACCOUNT" /> mogą pomóc Ci szybciej wypełniać formularze w Chrome</translation>
@@ -4684,6 +4690,7 @@ Dodatkowe informacje:
 <translation id="8606988009912891950">Tematy reklam pomagają witrynom wyświetlać trafne reklamy, chroniąc przy tym Twoją tożsamość i historię przeglądania. Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania. Witryna, którą później odwiedzisz, może zapytać Chrome o takie tematy, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="8612919051706159390">Społeczności online</translation>
 <translation id="8617269623452051934">korzystanie z urządzenia</translation>
+<translation id="8619130384334725124">Bieżąca aplikacja domyślna</translation>
 <translation id="8620276786115098679">Koperta Kaku 7</translation>
 <translation id="8622864575115813231">Łączę z instytucją finansową…</translation>
 <translation id="8624354461147303341">Otrzymaj zniżki</translation>

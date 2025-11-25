@@ -1428,6 +1428,7 @@
 <translation id="1949980990364952348">ਐਪ ਦਾ ਨਾਮ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">ਵਿਕਲਪ ਲੱਭੋ</translation>
+<translation id="1953626242273481999">ਕੀ ਰਿਮੋਟ ਡੀਬੱਗਿੰਗ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="1953796913175502363">ਆਪਣੇ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="1954597385941141174">ਸਾਈਟਾਂ USB ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="1954813140452229842">ਸਾਂਝਾਕਰਨ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1811,6 +1812,9 @@
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="222115440608612541">ਸੂਰਜ ਚੜ੍ਹਨ ਅਤੇ ਸੂਰਜ ਡੁੱਬਣ ਵੇਲੇ ਥੀਮਾਂ ਨੂੰ ਬਦਲੋ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ਇੱਕ ਬਾਹਰੀ ਐਪ ਇਸ Chrome ਸੈਸ਼ਨ ਨੂੰ ਡੀਬੱਗ ਕਰਨ ਲਈ ਇਸ 'ਤੇ ਪੂਰਾ ਕੰਟਰੋਲ ਚਾਹੁੰਦੀ ਹੈ। ਇਸ ਵਿੱਚ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਡਾਟੇ, ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਅਤੇ ਕਿਸੇ ਵੀ URL 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਦੀ ਯੋਗਤਾ ਸ਼ਾਮਲ ਹੈ।
+
+ਸਿਰਫ਼ ਵੈੱਬ ਵਿਕਾਸਕਾਰਾਂ ਨੂੰ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਐਪਾਂ ਨਾਲ ਹੀ ਕਰਨੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="222201875806112242">ਬੇਨਾਮ ਮੀਡੀਆ ਸਰੋਤ</translation>
 <translation id="2224337661447660594">ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
 <translation id="2224444042887712269">ਇਹ ਸੈਟਿੰਗ <ph name="OWNER_EMAIL" /> ਨਾਲ ਸੰਬੰਧਿਤ ਹੈ।</translation>
@@ -1919,6 +1923,7 @@
 <translation id="2294081976975808113">ਸਕ੍ਰੀਨ ਦੀ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="2294358108254308676">ਕੀ ਤੁਸੀਂ <ph name="PRODUCT_NAME" /> ਨੂੰ ਇੰਸਟੌਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="229477815107578534">ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
+<translation id="229524410604268773">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰੋ</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> ਨਤੀਜੇ</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> ਲਈ <ph name="EMAIL" /> ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰਨ ਵੇਲੇ ਡੀਵਾਈਸ ਦਾ ਆਨਲਾਈਨ ਹੋਣਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="2296218178174497398">ਡੀਵਾਈਸ ਖੋਜ</translation>
@@ -2467,6 +2472,7 @@
 <translation id="2665394472441560184">ਇੱਕ ਨਵਾਂ ਸ਼ਬਦ ਜੋੜੋ</translation>
 <translation id="2665647207431876759">ਮਿਆਦ ਮੁੱਕ ਗਈ</translation>
 <translation id="2665919335226618153">ਆਹ, ਸਨੈਪ! ਫਾਰਮੈਟਿੰਗ ਦੌਰਾਨ ਇੱਕ ਗੜਬੜ ਹੋਈ ਸੀ।</translation>
+<translation id="2666092431469916601">ਟੌਪ</translation>
 <translation id="2666247341166669829">ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ਹੋਰ ਐਪਾਂ <ph name="APP_NAME" /> ਵਾਂਗ ਉਹੀ ਲਿੰਕ ਖੋਲ੍ਹਣ ਲਈ ਤਿਆਰ ਹਨ। ਇਹ <ph name="APP_NAME_2" /> ਅਤੇ <ph name="APP_NAME_3" /> ਨੂੰ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਖੋਲ੍ਹਣ ਤੋਂ ਰੋਕ ਦੇਵੇਗਾ।</translation>
 <translation id="2667463864537187133">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -5426,6 +5432,7 @@
 <translation id="4699473989647132421">ਤਟ-ਰੇਖਾ</translation>
 <translation id="4701025263201366865">ਮਾਂ-ਪਿਓ ਦਾ ਸਾਈਨ-ਇਨ</translation>
 <translation id="4701335814944566468">ਬੀਤੇ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
+<translation id="4702504834785592287">ਪਾਸਾ</translation>
 <translation id="470644585772471629">ਰੰਗ ਪਲਟਨਾ</translation>
 <translation id="4707337002099455863">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਹਮੇਸ਼ਾਂ ਚਾਲੂ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ਨੂੰ ਛੱਡੋ</translation>
@@ -9260,7 +9267,6 @@
 <translation id="7410344089573941623">ਪੁੱਛੇ ਕਿ <ph name="HOST" /> ਤੁਹਾਡੇ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="7410421966064092098">ਸਾਈਟਾਂ ਇਹ ਪੁਸ਼ਟੀ ਕਰਨ ਵਿੱਚ ਮਦਦ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਕਿ ਤੁਸੀਂ ਬੋਟ ਨਹੀਂ ਹੋ</translation>
 <translation id="7410852728357935715">ਕਿਸੇ ਡੀਵਾਈਸ 'ਤੇ ਕਾਸਟ ਕਰੋ</translation>
-<translation id="741148343080227980">ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਆਪਣੇ Google ਖਾਤੇ <ph name="USERNAME" /> ਵਿੱਚ<ph name="END_LINK" /> ਆਪਣੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="741204030948306876">ਹਾਂ, ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="7412226954991670867">GPU ਮੈਮਰੀ</translation>
 <translation id="741370456693729525">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀ ਖੋਜ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਨੂੰ ਲੱਭਣ ਲਈ, ਆਮ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>

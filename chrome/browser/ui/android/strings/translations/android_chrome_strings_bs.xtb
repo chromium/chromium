@@ -335,6 +335,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, višestruko odabrana kartica s isključenim zvukom</translation>
 <translation id="2468444275314013497">Izgleda da je vaš preglednik siguran</translation>
+<translation id="2471632347767899461">Pokušajte pretražiti centar za pomoć</translation>
 <translation id="2472163211318554013">Prijavite se da iskoristite prednosti Chromea</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
 <translation id="2479148705183875116">Idi u postavke</translation>
@@ -656,6 +657,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3870908470613821006">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih uređaja</translation>
 <translation id="3873174561423636563">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše <ph name="FIELDS_STRING" /> s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK1" />uslove korištenja usluge<ph name="END_LINK1" /> ove web lokacije.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
+<translation id="3893858854379998374">Da biste spremili oznake na svoj račun, izbrišite oznake koje ne upotrebljavate</translation>
 <translation id="3898498281932368596">Blokiraj i napusti</translation>
 <translation id="3899682235662194879">Zatvori sve anonimne kartice</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
@@ -719,6 +721,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4170011742729630528">Ova usluge nije dostupna. Pokušajte ponovo kasnije.</translation>
 <translation id="4177222230309051052">Preuzmite sve svoje oznake</translation>
 <translation id="4177501066905053472">Teme oglasa</translation>
+<translation id="417865198503699526">Pretražite postavku</translation>
 <translation id="4180726336228139707">Samo na ovaj uređaj</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Poredaj od Ž do A</translation>
@@ -1643,7 +1646,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7886917304091689118">Pokrenuto je u Chromeu</translation>
 <translation id="7887174313503389866">Pođite u obilazak s vodičem kroz ključne kontrole privatnosti i sigurnosti. Više opcija možete pronaći u pojedinačnim postavkama.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Vaša organizacija je blokirala 1 preuzimanje}one{Vaša organizacija je blokirala # preuzimanje}few{Vaša organizacija je blokirala # preuzimanja}other{Vaša organizacija je blokirala # preuzimanja}}</translation>
 <translation id="7914399737746719723">Aplikacija je instalirana</translation>
 <translation id="7917574899775263813">Prelazak na posljednju karticu</translation>

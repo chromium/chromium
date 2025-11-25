@@ -79,6 +79,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{IChromium incoma ukumisa ithebhu enciphisa ijubane lebhrawuza yakho}one{IChromium incoma ukumisa amathebhu anciphisa ijubane lebhrawuza yakho}other{IChromium incoma ukumisa amathebhu anciphisa ijubane lebhrawuza yakho}}</translation>
 <translation id="1832046143430087831">Isheshisa amasayithi ngenjini yeChrome ye-V8 kodwa yenza iChrome imelane kancane nokuhlaselwa. Le sethingi livaliwe.</translation>
 <translation id="1838374766361614909">Sula usesho</translation>
+<translation id="1843347690926158494">Sesha le thebhu ngeGoogle Lens</translation>
 <translation id="1849248141818021764">Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. Umshwana wokungena awuthunyelwa noma ulondolozwe yiGoogle. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, uzodinga <ph name="BEGIN_LINK" />ukususa idatha yeChrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">I-Chrome idinga imvume yokufinyelela kukhamera yakho kule sayithi</translation>
 <translation id="1873233029667955273">I-Google Chrome akusona isiphequluli sakho esizenzakalelayo</translation>
@@ -167,6 +168,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="2841525013647267359">Humusha kusuka</translation>
 <translation id="2846251086934905009">Iphutha lokufaka: Isifaki asiqedanga. Ukufakwa kukhanseliwe.</translation>
 <translation id="2853415089995957805">I-Chrome ilayisha kusengaphambili amakhasi okungenzeka uwavakashele, ukuze alayishe ngokushesha lapho uwavakashela</translation>
+<translation id="2856481144859256719">Njalo Veza Imodi ye-AI Kusinqamuleli seGoogle Search</translation>
 <translation id="2857540653560290388">Iqalisa i-Chrome...</translation>
 <translation id="286025080868315611">Funda ukuthi kungani i-Chrome ivimbela ukudawuniloda okuthile</translation>
 <translation id="2861074815332034794">Ibuyekeza i-Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -682,6 +684,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="8533056045953418157">Setha iGoogle Chrome njengesibuki sakho esizenzakalelayo se-PDF</translation>
 <translation id="8555465886620020932">Iphutha lesevisi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Sesha uhlu lwezilimi</translation>
+<translation id="8575047640889685742">Sebenzisa <ph name="BEGIN_LINK" />umushwana wokungena <ph name="END_LINK" />ukuze ubethele yonke idatha yeChrome kuGoogle Account yakho. Izindlela zokukhokha namakheli kusuka kuGoogle Pay ngeke kubethelwe. Umlando wokubhrawuza ovela kuChrome ngeke uvumelanise.</translation>
 <translation id="8601359445272098721">Okusha! Ungahumusha kokubili umbhalo nezithombe esikrinini sakho ngokukhetha inkinobho ethi "humusha isikrini"</translation>
 <translation id="8614913330719544658">I-Google Chrome ayiphenduli. Qalisa kabusha manje?</translation>
 <translation id="861702415419836452">I-Chrome idinga imvume yokufinyelela kwikhamera yakho ukudala imephu engu-3D yendawo yakho ekuzungezile</translation>

@@ -362,6 +362,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2547843573592965873">Le verrouillage de votre profil permet de sécuriser vos données dans la voiture, y compris vos mots de passe, vos modes de paiement et d'autres données enregistrées dans votre compte Google.</translation>
 <translation id="254973855621628293">Mots de passe enregistrés sur cet appareil</translation>
+<translation id="2553962148913791095">Certains favoris n'ont pas été enregistrés</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Téléchargement dangereux bloqué}one{# téléchargement dangereux bloqué}other{# téléchargements dangereux bloqués}}</translation>
 <translation id="2569733278091928697">Vous pourrez facilement gérer les commandes multimédias, les sessions de navigation privée, les téléchargements et plus encore</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
@@ -1643,7 +1644,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7886917304091689118">S'exécute dans Chrome</translation>
 <translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 a été bloqué par votre organisation}one{# a été bloqué par votre organisation}other{# ont été bloqués par votre organisation}}</translation>
 <translation id="7914399737746719723">Application installée</translation>
 <translation id="7917574899775263813">Accéder au dernier onglet</translation>

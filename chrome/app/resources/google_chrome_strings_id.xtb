@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="1832046143430087831">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan. Setelan ini nonaktif.</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
+<translation id="1843347690926158494">Telusuri tab ini dengan Google Lens</translation>
 <translation id="1849248141818021764">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menghapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Terjemahkan dari</translation>
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
 <translation id="2853415089995957805">Chrome melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
+<translation id="2856481144859256719">Selalu Tampilkan Pintasan Mode AI di Google Penelusuran</translation>
 <translation id="2857540653560290388">Meluncurkan Chrome...</translation>
 <translation id="286025080868315611">Pelajari alasan Chrome memblokir beberapa download</translation>
 <translation id="2861074815332034794">Mengupdate Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -675,6 +677,7 @@
 <translation id="8533056045953418157">Setel Google Chrome sebagai penampil PDF default Anda</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Telusuri daftar bahasa</translation>
+<translation id="8575047640889685742">Gunakan <ph name="BEGIN_LINK" />frasa sandi Anda sendiri<ph name="END_LINK" /> untuk mengenkripsi semua data Chrome di Akun Google Anda. Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.</translation>
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>

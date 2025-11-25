@@ -1425,6 +1425,7 @@
 <translation id="1949980990364952348">এপৰ নাম</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">বিকল্প বিচাৰক</translation>
+<translation id="1953626242273481999">ৰিম’ট ডিবাগিঙৰ অনুমতি দিবনে?</translation>
 <translation id="1953796913175502363">আপোনাৰ কৰ্মস্থানৰ প্ৰ’ফাইলটো ছেট আপ কৰক</translation>
 <translation id="1954597385941141174">ছাইটসমূহে ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1954813140452229842">শ্বেয়াৰ মাউণ্ট কৰোঁতে আসোঁৱাহ হ’ল। অনুগ্ৰহ কৰি আপোনাৰ ক্ৰেডেনশ্বিয়েলসমূহ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -1808,6 +1809,9 @@
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
 <translation id="222115440608612541">সূৰ্যোদয় আৰু সূৰ্যাস্তৰ সময়ত থীম সলনি কৰক</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">এটা বাহ্যিক এপে এই Chromeৰ ছেশ্বনটো ডিবাগ কৰিবলৈ ইয়াৰ ওপৰত সম্পূৰ্ণ নিয়ন্ত্ৰণ বিচাৰিছে। ইয়াত আপোনাৰ ছেভ কৰা ডেটা, কুকি আৰু ছাইটৰ ডেটাৰ এক্সেছ আৰু যিকোনো URL নেভিগে’ট কৰাৰ ক্ষমতা অন্তৰ্ভুক্ত।
+
+কেৱল ৱেব বিকাশকৰ্তাসকলেহে এই সুবিধাটো অন কৰিব লাগে আৰু কেৱল বিশ্বাসী এপ্‌সমূহৰ সৈতে ব্যৱহাৰ কৰিব লাগে।</translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়াৰ উৎস</translation>
 <translation id="2224337661447660594">ইণ্টাৰনেট নাই</translation>
 <translation id="2224444042887712269">এই ছেটিংটোৰ গৰাকী হৈছে <ph name="OWNER_EMAIL" />।</translation>
@@ -1916,6 +1920,7 @@
 <translation id="2294081976975808113">স্ক্ৰীনৰ গোপনীয়তা</translation>
 <translation id="2294358108254308676">আপুনি <ph name="PRODUCT_NAME" /> ইনষ্টল কৰিব বিচাৰে নেকি?</translation>
 <translation id="229477815107578534">আপোনাৰ ছেটিং পৰ্যালোচনা কৰক</translation>
+<translation id="229524410604268773">ছেটিংত অফ কৰক</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> টা ফলাফল</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" />ত ছাইন ইন কৰাৰ সময়ত <ph name="DOMAIN_NAME" />ৰ বাবে ডিভাইচটো অনলাইন হৈ থকাৰ আৱশ্যক</translation>
 <translation id="2296218178174497398">ডিভাইচ বিচাৰি পোৱা</translation>
@@ -2464,6 +2469,7 @@
 <translation id="2665394472441560184">নতুন শব্দ এটা যোগ দিয়ক</translation>
 <translation id="2665647207431876759">ম্যাদ উকলিল</translation>
 <translation id="2665919335226618153">আমি দুঃখিত! ফৰ্মেট কৰি থাকোঁতে কিবা আসোঁৱাহ হ'ল।</translation>
+<translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2666247341166669829">বাওঁফালৰ বেটাৰীৰ স্তৰ <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420">অন্য এপ্‌সমূহ <ph name="APP_NAME" />ৰ দৰে একেই লিংকসমূহ খুলিবলৈ সাজু আছে। এইটোৱে <ph name="APP_NAME_2" /> আৰু <ph name="APP_NAME_3" />ক সমৰ্থিত লিংকসমূহ খুলিবলৈ নিদিয়ে।</translation>
 <translation id="2667463864537187133">বানান পৰীক্ষক পৰিচালনা কৰক</translation>
@@ -5421,6 +5427,7 @@
 <translation id="4699473989647132421">উপকূলৰেখা</translation>
 <translation id="4701025263201366865">অভিভাৱকৰ ছাইন-ইন</translation>
 <translation id="4701335814944566468">কালি চোৱা হৈছে</translation>
+<translation id="4702504834785592287">কাষ</translation>
 <translation id="470644585772471629">ৰং বিপৰীতকৰণ</translation>
 <translation id="4707337002099455863">সদায় আটাইবোৰ ছাইটত</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> বাহিৰ হওক</translation>
@@ -9256,7 +9263,6 @@
 <translation id="7410344089573941623"><ph name="HOST" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব বিচাৰিলে সোধক</translation>
 <translation id="7410421966064092098">ছাইটসমূহে আপুনি ব’ট নহয় বুলি সত্যাপন কৰাত সহায় কৰিব নোৱাৰে</translation>
 <translation id="7410852728357935715">ডিভাইচলৈ কাষ্ট কৰক</translation>
-<translation id="741148343080227980">আপুনি <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্ট <ph name="USERNAME" />ত<ph name="END_LINK" /> আপোনাৰ নামটো সম্পাদনা কৰিব পাৰে।</translation>
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
 <translation id="7412226954991670867">GPU মেম’ৰী</translation>
 <translation id="741370456693729525">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক</translation>

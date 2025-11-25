@@ -1423,6 +1423,7 @@
 <translation id="1949980990364952348">Име на приложението</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1951823516285577843">Намиране на алтернативен вариант</translation>
+<translation id="1953626242273481999">Разрешавате ли отдалечено отстраняване на грешки?</translation>
 <translation id="1953796913175502363">Настройване на служебния ви потребителски профил</translation>
 <translation id="1954597385941141174">Сайтовете могат да извеждат запитвания за свързване с USB устройства</translation>
 <translation id="1954813140452229842">Възникна грешка при свързването на дяла. Моля, проверете идентификационните си данни и опитайте отново.</translation>
@@ -1806,6 +1807,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="222115440608612541">Превключване на темите при изгрев и залез</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Външно приложение иска пълен контрол над тази сесия в Chrome с цел отстраняване на грешки. Това включва достъп до запазените ви данни, „бисквитките“ и данните за сайтовете, както и възможност за навигиране до всеки URL адрес.
+
+Тази функция трябва да се включва само от уеб програмисти и да се използва само с надеждни приложения.</translation>
 <translation id="222201875806112242">Мултимедиен източник без име</translation>
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2224444042887712269">Тази настройка принадлежи на <ph name="OWNER_EMAIL" />.</translation>
@@ -1914,6 +1918,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2294081976975808113">Поверителност на екрана</translation>
 <translation id="2294358108254308676">Искате ли да инсталирате <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Прегледайте настройките си</translation>
+<translation id="229524410604268773">Изключване от настройките</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> резултата</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> изисква устройството да е онлайн, когато влизате в <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Откриване на устройства</translation>
@@ -2462,6 +2467,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2665394472441560184">Добавяне на нова дума</translation>
 <translation id="2665647207431876759">Изтекла валидност</translation>
 <translation id="2665919335226618153">Ужас! При форматирането възникна грешка.</translation>
+<translation id="2666092431469916601">Най-горе</translation>
 <translation id="2666247341166669829">Нивото на батерията на лявата слушалка е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Управление на проверката на правописа</translation>
@@ -5421,6 +5427,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4699473989647132421">Брегова линия</translation>
 <translation id="4701025263201366865">Влизане в профила на родител</translation>
 <translation id="4701335814944566468">Прегледано вчера</translation>
+<translation id="4702504834785592287">Страна</translation>
 <translation id="470644585772471629">Инвертиране на цветовете</translation>
 <translation id="4707337002099455863">Винаги на всички сайтове</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
@@ -9256,7 +9263,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7410344089573941623">Да се получава запитване, ако <ph name="HOST" /> иска достъп до камерата и микрофона ви</translation>
 <translation id="7410421966064092098">Сайтовете не могат да ви помогнат да потвърдите, че не сте робот</translation>
 <translation id="7410852728357935715">Предаване към устройство</translation>
-<translation id="741148343080227980">Можете да редактирате името си <ph name="BEGIN_LINK" />в профила си в Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
 <translation id="7412226954991670867">Памет на графичния процесор</translation>
 <translation id="741370456693729525">Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили</translation>

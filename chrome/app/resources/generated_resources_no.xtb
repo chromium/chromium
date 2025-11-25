@@ -1646,6 +1646,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2104166991923847969">Slå av wifi-sonen automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
 <translation id="2106439768713835453">Del også lyd fra appen</translation>
+<translation id="2107359546799360577">JavaScript-optimaliseringer er slått av.</translation>
 <translation id="2108204112555497972">Sjekket for <ph name="NUM_DAYS_HOURS_MINUTES" /> siden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnumre}}</translation>
 <translation id="2109384632594340939">profilbildet ditt</translation>
@@ -2065,6 +2066,7 @@ Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med
 <translation id="2390782873446084770">Wifi-synkronisering</translation>
 <translation id="2391419135980381625">Standardskrift</translation>
 <translation id="2391805183137601570">Åpne Steam</translation>
+<translation id="239185270194776190">Gemini-samtalen din er i et annet vindu. Klikk hvor som helst i dette sidepanelet for å flytte den hit.</translation>
 <translation id="2392369802118427583">Aktiver</translation>
 <translation id="2393136602862631930">Konfigurer <ph name="APP_NAME" /> på Chromebooken din</translation>
 <translation id="2393313392064891208">Innholdet i vilkårene for ChromeOS Flex</translation>
@@ -2465,6 +2467,7 @@ Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med
 <translation id="2665394472441560184">Legg til et nytt ord</translation>
 <translation id="2665647207431876759">Utløpt</translation>
 <translation id="2665919335226618153">Æsj! Det oppsto en feil under formateringen.</translation>
+<translation id="2666092431469916601">Topp</translation>
 <translation id="2666247341166669829">Batterinivået til venstre øreplugg er <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> ikke kan åpne støttede linker.</translation>
 <translation id="2667463864537187133">Administrer stavekontroll</translation>
@@ -4273,6 +4276,7 @@ Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med
 <translation id="3893536212201235195">lese og endre innstillingene for tilgjengelighet</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">Du må slette de ubrukte bokmerkene dine for å lagre bokmerker i kontoen din</translation>
 <translation id="3894427358181296146">Legg til en mappe</translation>
 <translation id="3895076768659607631">Ad&amp;ministrer søkemotorer</translation>
 <translation id="3895090224522145010">Kerberos-brukernavn</translation>
@@ -4996,6 +5000,7 @@ Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med
 <translation id="4405781821077215583">Gjør elementer på skjermen, inkludert tekst, mindre eller større</translation>
 <translation id="4406308048672435032">Du kan gjøre denne fanen inaktiv eller laste inn listen på nytt for å se hele listen igjen</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
+<translation id="4406963243402726564">Ulagrede data</translation>
 <translation id="4408599188496843485">H&amp;jelp</translation>
 <translation id="4409271659088619928">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />. Du varsles når opptaket starter.}=2{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du varsles når opptaket starter.}=3{Administratoren din gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og én annen app. Du varsles når opptaket starter.}other{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apper. Du varsles når opptaket starter.}}</translation>
@@ -5421,6 +5426,7 @@ Bare nettutviklere bør slå på denne funksjonen, og de bør bare bruke den med
 <translation id="4699473989647132421">Strandlinje</translation>
 <translation id="4701025263201366865">Pålogging av forelder</translation>
 <translation id="4701335814944566468">Vist i går</translation>
+<translation id="4702504834785592287">Side</translation>
 <translation id="470644585772471629">Fargeinvertering</translation>
 <translation id="4707337002099455863">Alltid, på alle nettsteder</translation>
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
@@ -9252,7 +9258,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7410344089573941623">Spør om <ph name="HOST" /> ønsker å bruke kameraet og mikrofonen din</translation>
 <translation id="7410421966064092098">Nettsteder kan ikke bidra til å bekrefte at du ikke er en robot</translation>
 <translation id="7410852728357935715">Cast til en enhet</translation>
-<translation id="741148343080227980">Du kan endre navnet ditt <ph name="BEGIN_LINK" />i Google-kontoen din, <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="741370456693729525">Bruk dagligdags språk for å søke i nettleserloggen og finne nettsteder du har besøkt</translation>

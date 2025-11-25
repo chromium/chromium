@@ -1416,6 +1416,7 @@
 <translation id="1949980990364952348">යෙදුමේ නම</translation>
 <translation id="1951012854035635156">සහායක</translation>
 <translation id="1951823516285577843">විකල්පය සොයා ගන්න</translation>
+<translation id="1953626242273481999">දුරස්ථ නිදොස් කිරීමට ඉඩ දෙන්න ද?</translation>
 <translation id="1953796913175502363">ඔබේ කාර්යාල පැතිකඩ සකසන්න</translation>
 <translation id="1954597385941141174">අඩවි USB උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="1954813140452229842">කොටස නැංවීමේ දෝෂයකි. ඔබේ අක්තපත්‍ර පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
@@ -1799,6 +1800,9 @@
 <translation id="2220572644011485463">PIN අංකය හෝ මුරපදය</translation>
 <translation id="222115440608612541">හිරු උදාව සහ හිරු බැස යන විට තේමා මාරු කරන්න</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">බාහිර යෙදුමකට එය නිදොස් කිරීමට මෙම Chrome සැසිය මත සම්පූර්ණ පාලනය අවශ්‍යයි. මෙයට ඔබේ සුරකින ලද දත්ත, කුකීස් සහ අඩවි දත්ත වෙත ප්‍රවේශය සහ ඕනෑම URL එකකට සැරිසැරීමට ඇති හැකියාව ඇතුළත් වේ.
+
+මෙම විශේෂාංගය ක්‍රියාත්මක කළ යුත්තේ වෙබ් සංවර්ධකයින් පමණක් වන අතර, විශ්වාසදායී යෙදුම් සමග පමණක් එය භාවිතා කරන්න.</translation>
 <translation id="222201875806112242">නම් නොකළ මාධ්‍ය මූලාශ්‍රය</translation>
 <translation id="2224337661447660594">අන්තර්ජාලය නැත</translation>
 <translation id="2224444042887712269">මෙම පසුතල අයත් <ph name="OWNER_EMAIL" />හටය.</translation>
@@ -1907,6 +1911,7 @@
 <translation id="2294081976975808113">තිර පෞද්ගලිකත්වය</translation>
 <translation id="2294358108254308676">ඔබට <ph name="PRODUCT_NAME" /> ස්ථාපිත කිරීමට අවශ්‍යද?</translation>
 <translation id="229477815107578534">ඔබගේ සැකසීම් සමාලෝචනය කරන්න</translation>
+<translation id="229524410604268773">සැකසීම් තුළ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2295864384543949385">ප්‍රතිඵල <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> හට <ph name="EMAIL" /> වෙත පුරන විට උපාංගය සබැඳි වීම අවශ්‍යයි</translation>
 <translation id="2296218178174497398">උපාංග ගවේෂණය</translation>
@@ -2455,6 +2460,7 @@
 <translation id="2665394472441560184">නව වදනක් එක් කරන්න</translation>
 <translation id="2665647207431876759">කල් ඉකුත් විය</translation>
 <translation id="2665919335226618153">අහෝ, හැඩසවිය තුළදී ගැටළුවක් ඇති විය.</translation>
+<translation id="2666092431469916601">ඉහල</translation>
 <translation id="2666247341166669829">වම් බැටරි මට්ටම <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">අනෙකුත් යෙදුම් <ph name="APP_NAME" /> ලෙස එකම සබැඳි විවෘත කිරීමට සකසා ඇත. මෙය සහාය දක්වන සබැඳි විවෘත කිරීමෙන් <ph name="APP_NAME_2" /> සහ <ph name="APP_NAME_3" /> අබල කරනු ඇත.</translation>
 <translation id="2667463864537187133">අක්ෂර වින්‍යාස පරීක්ෂාව කළමණාකරණය කරන්න</translation>
@@ -5412,6 +5418,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4699473989647132421">වෙරළ තීරය</translation>
 <translation id="4701025263201366865">මාපිය පුරනය</translation>
 <translation id="4701335814944566468">ඊයේ බැලූ</translation>
+<translation id="4702504834785592287">පැත්ත</translation>
 <translation id="470644585772471629">වර්ණ අපවර්තනය</translation>
 <translation id="4707337002099455863">සියලු අඩවිවල සැම විට ඇත</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ඉවත් වන්න</translation>
@@ -9245,7 +9252,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7410344089573941623"><ph name="HOST" /> ඔබේ කැමරාව සහ මයික්‍රොෆෝනයට ප්‍රවේශ වන්නේ නම් අසන්න</translation>
 <translation id="7410421966064092098">ඔබ බොට් කෙනෙක් නොවන බව සත්‍යාපනය කිරීමට අඩවිවලට උදවු කළ නොහැක</translation>
 <translation id="7410852728357935715">උපාංගයක් වෙත විකාශ කරන්න</translation>
-<translation id="741148343080227980">ඔබට <ph name="BEGIN_LINK" />ඔබේ Google ගිණුමෙන් <ph name="USERNAME" /><ph name="END_LINK" /> ඔබේ නම සංස්කරණය කළ හැක.</translation>
 <translation id="741204030948306876">ඔව්, මම කැමතියි</translation>
 <translation id="7412226954991670867">GPU මතකය</translation>
 <translation id="741370456693729525">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීමට සහ ඔබ පැමිණි අඩවි සොයා ගැනීමට එදිනෙදා භාෂාව භාවිත කරන්න</translation>

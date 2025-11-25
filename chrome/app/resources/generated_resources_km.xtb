@@ -1652,6 +1652,7 @@
 <translation id="2104166991923847969">បិទ​ហតស្ប៉ត​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="2105809836724866556">បានលាក់ <ph name="MODULE_TITLE" /></translation>
 <translation id="2106439768713835453">ចែករំលែក​សំឡេង​កម្មវិធី​ផងដែរ</translation>
+<translation id="2107359546799360577">ការបង្កើនប្រសិទ្ធភាព JavaScript ត្រូវបាន​បិទ។</translation>
 <translation id="2108204112555497972">បានពិនិត្យមើល <ph name="NUM_DAYS_HOURS_MINUTES" />មុន</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{លេខទូរសព្ទ}other{លេខទូរសព្ទ #}}</translation>
 <translation id="2109384632594340939">រូបភាព​កម្រងព័ត៌មាន</translation>
@@ -2071,6 +2072,7 @@
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">ពុម្ពអក្សរបទដ្ឋាន</translation>
 <translation id="2391805183137601570">បើក Steam</translation>
+<translation id="239185270194776190">ការសន្ទនា​របស់អ្នក​ជាមួយ Gemini ស្ថិត​នៅក្នុង​វិនដូ​ផ្សេងទៀត។ ចុច​កន្លែងណា​ក៏បាន​នៅលើ​ផ្ទាំងចំហៀងនេះ ដើម្បី​ផ្លាស់ទីវា​មកទីនេះ។</translation>
 <translation id="2392369802118427583">ធ្វើសកម្មភាព</translation>
 <translation id="2393136602862631930">រៀបចំ <ph name="APP_NAME" /> នៅលើ Chromebook របស់អ្នក</translation>
 <translation id="2393313392064891208">ខ្លឹមសារលក្ខខណ្ឌ Google ChromeOS Flex</translation>
@@ -2471,6 +2473,7 @@
 <translation id="2665394472441560184">បន្ថែមពាក្យថ្មី</translation>
 <translation id="2665647207431876759">បានផុតកំណត់</translation>
 <translation id="2665919335226618153">អូយ ទក់! មានកំហុសឆ្គងកំឡុងពេលសម្អាត។</translation>
+<translation id="2666092431469916601">ខាងលើ</translation>
 <translation id="2666247341166669829">កម្រិតថ្ម​ខាងឆ្វេង <ph name="PERCENTAGE" />%។</translation>
 <translation id="2667144577800272420">កម្មវិធី​ផ្សេងទៀត​ត្រូវបានកំណត់ឱ្យបើក​តំណដូចគ្នានឹង <ph name="APP_NAME" />។ សកម្មភាពនេះ​នឹងបិទ <ph name="APP_NAME_2" /> និង <ph name="APP_NAME_3" /> មិនឱ្យបើក​តំណដែលអាចប្រើបាន។</translation>
 <translation id="2667463864537187133">គ្រប់គ្រងការពិនិត្យអក្ខរាវិរុទ្ធ</translation>
@@ -4277,6 +4280,7 @@
 <translation id="3893536212201235195">អាន និងប្តូរការកំណត់លទ្ធភាពប្រើប្រាស់របស់អ្នក</translation>
 <translation id="3893630138897523026">ChromeVox (មតិនិយាយ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">ដើម្បី​រក្សាទុក​ចំណាំ​នៅក្នុង​គណនី​របស់អ្នក សូមលុប​ចំណាំ​ដែលអ្នក​មិនបានប្រើ</translation>
 <translation id="3894427358181296146">បន្ថែមថតឯកសារ</translation>
 <translation id="3895076768659607631">&amp;គ្រប់គ្រងម៉ាស៊ីន​ស្វែងរក...</translation>
 <translation id="3895090224522145010">ឈ្មោះអ្នកប្រើប្រាស់ Kerberos</translation>
@@ -5002,6 +5006,7 @@
 <translation id="4405781821077215583">ធ្វើឱ្យធាតុ​នៅលើ​អេក្រង់​របស់អ្នក រួមទាំង​អក្សរ​ធំជាងមុន ឬ​តូចជាងមុន</translation>
 <translation id="4406308048672435032">អ្នកអាច​ធ្វើឱ្យ​ផ្ទាំងនេះ​ប្រែជា​អសកម្ម ឬ​ផ្ទុក​ឡើងវិញ ដើម្បី​មើលឃើញ​បញ្ជីពេញ​ម្ដងទៀត</translation>
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
+<translation id="4406963243402726564">ទិន្នន័យ​ដែលមិនបាន​រក្សាទុក</translation>
 <translation id="4408599188496843485">ជំនួយ</translation>
 <translation id="4409271659088619928">ម៉ាស៊ីន​ស្វែងរករបស់អ្នកគឺ <ph name="DSE" />។ មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{អ្នកគ្រប់គ្រង​របស់អ្នក​អាច​ថតអេក្រង់​របស់អ្នក​បាន​ដោយប្រើ <ph name="APP0_NAME" />។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង នៅពេល​ការថត​ចាប់ផ្ដើម។}=2{អ្នកគ្រប់គ្រង​របស់អ្នក​អាច​ថតអេក្រង់​របស់អ្នក​បាន​ដោយប្រើ <ph name="APP0_NAME" /> និង <ph name="APP1_NAME" />។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង នៅពេល​ការថត​ចាប់ផ្ដើម។}=3{អ្នកគ្រប់គ្រង​របស់អ្នក​អាច​ថតអេក្រង់​របស់អ្នក​បាន​ដោយប្រើ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> និង​កម្មវិធី 1 ផ្សេងទៀត។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង នៅពេល​ការថត​ចាប់ផ្ដើម។}other{អ្នកគ្រប់គ្រង​របស់អ្នក​អាច​ថតអេក្រង់​របស់អ្នក​បាន​ដោយប្រើ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> និង​កម្មវិធី # ផ្សេងទៀត។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង នៅពេល​ការថត​ចាប់ផ្ដើម។}}</translation>
@@ -5427,6 +5432,7 @@
 <translation id="4699473989647132421">ច្រាំង</translation>
 <translation id="4701025263201366865">ការចូលគណនីដោយមាតាបិតា</translation>
 <translation id="4701335814944566468">បានមើល​កាលពី​ម្សិលមិញ</translation>
+<translation id="4702504834785592287">ចំហៀង</translation>
 <translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
 <translation id="4707337002099455863">បើកនៅលើ​គេហទំព័រ​ទាំងអស់ជានិច្ច</translation>
 <translation id="4708849949179781599">ចាកចេញ <ph name="PRODUCT_NAME" /></translation>
@@ -9259,7 +9265,6 @@
 <translation id="7410344089573941623">សួរប្រសិនបើ <ph name="HOST" /> ចង់ចូលប្រើកាមេរ៉ា និងម៉ៃក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="7410421966064092098">គេហទំព័រ​មិន​អាចជួយផ្ទៀងផ្ទាត់​ថា​ អ្នកមិនមែន​ជា​បូត​ទេ</translation>
 <translation id="7410852728357935715">ភ្ជាប់​ទៅឧបករណ៍</translation>
-<translation id="741148343080227980">អ្នកអាច​កែឈ្មោះ​របស់អ្នក<ph name="BEGIN_LINK" />នៅក្នុង​គណនី Google របស់អ្នក <ph name="USERNAME" /><ph name="END_LINK" />។</translation>
 <translation id="741204030948306876">បាទ/ចាស ខ្ញុំយល់ព្រម</translation>
 <translation id="7412226954991670867">មេម៉ូរី GPU</translation>
 <translation id="741370456693729525">ប្រើភាសាប្រចាំថ្ងៃ ដើម្បីស្វែងរកក្នុងប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតរបស់អ្នក និងស្វែងរកគេហទំព័រដែលអ្នកបានចូលមើល</translation>

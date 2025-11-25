@@ -692,6 +692,7 @@
 <translation id="2127747486437921899">ಇಟಾಲಿಕ್</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯನ್ನು ಹೊಂದಿಸದೇ ಇರುವ ಕಾರಣದಿಂದಾಗಿ ನೀವು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಟೆಂಪ್ಲೆಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ಇವುಗಳನ್ನು ರ‍್ಯಾಂಡಮ್ ಆರ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಯ್ಕೆಯನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="2137891579555018930">ಅನುಮತಿಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="213826338245044447">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -912,6 +913,7 @@
 <translation id="2453045048779611513">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀವು ಸೇವ್ ಮಾಡಬಹುದಾದದ್ದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="2456755709261364512">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯು <ph name="REQUIRED_BATTERY_PRECENT" />%
  % ಗಿಂತ ಹೆಚ್ಚು ಚಾರ್ಜ್ ಆಗಿರಬೇಕು</translation>
+<translation id="2459882793359532780">ಅನ್ವಯಿಸಲಾದ ಬ್ರೌಸರ್ ನೀತಿಗಳು (ಮಷಿನ್ ಮತ್ತು ಪ್ರೊಫೈಲ್ ನೀತಿಗಳು)</translation>
 <translation id="2461385121573678775">ಕ್ಲೌಡ್‌ನಿಂದ ಬ್ರೌಸರ್‌ ನೀತಿಗಳನ್ನು ಕಾನ್ಫಿಗರ್‌ ಮಾಡಲು Chrome Enterprise Core ನಿಮಗೆ ಕೇಂದ್ರೀಕೃತ ಟೂಲ್‌ ಅನ್ನು ನೀಡುತ್ತದೆ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="2462932596748424101">ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982"><ph name="CIPHER" /> ಬಳಸಿಕೊಂಡು ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ದೃಢೀಕರಿಸಲಾಗಿದೆ ಮತ್ತು <ph name="KX" /> ಅನ್ನು ಕೀ ವಿನಿಮಯ ಯಾಂತ್ರಿಕತೆಯಂತೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="2833637280516285136">ಮಾತನಾಡುವ ರೇಡಿಯೊ</translation>
 <translation id="2835170189407361413">ಫಾರ್ಮ್ ತೆರವುಗೊಳಿಸು</translation>
+<translation id="2835907903001172712">ಬ್ರೌಸರ್ ಅವಲೋಕನ</translation>
 <translation id="2837891525090413132">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="2839032553903800133">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2839501879576190149">ನಕಲಿ ಸೈಟ್ ಮುಂದಿದೆ</translation>
@@ -1527,7 +1530,6 @@
 <translation id="3498215018399854026">ಈ ಕ್ಷಣದಲ್ಲಿ ನಿಮ್ಮ ಪೋಷಕರನ್ನು ತಲುಪಲು ನಮಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="350069200438440499">ಫೈಲ್ ಹೆಸರು:</translation>
 <translation id="3501300228850242680">ಲೋಹ (ಸಂಗೀತ)</translation>
-<translation id="350274464456291051"><ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ಹೆಸರನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="350421688684366066">ಲೇಬಲ್‌ಗಳು (ಹೆಚ್ಚಿನ ಹೊಳಪು)</translation>
 <translation id="350763432931695541">ಮುಂದಿನ ಕೆಲವು ಪುಟಗಳಲ್ಲಿ ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3507869775212388416">ಕಾನೂನು ಉದ್ಯೋಗಗಳು</translation>
@@ -1556,6 +1558,7 @@
 <translation id="3543935938072367282">ಆಟೋಫಿಲ್‌ನೊಂದಿಗೆ ವೇಗವಾಗಿ ಚೆಕ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="3547442767634383572">ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಓವರ್‌ವ್ಯೂ</translation>
 <translation id="3547746132308051926">20 x 24 ಇಂಚು</translation>
+<translation id="3549904448933807997">ಬ್ರೌಸರ್‌ಗಳು ಮತ್ತು ಪ್ರೊಫೈಲ್‌ಗಳ ಮಾಹಿತಿ (ವೈಯಕ್ತಿಕ ಮತ್ತು ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ಗಳು ಸೇರಿದಂತೆ)</translation>
 <translation id="3552155506104542239">ಎಚ್ಚರಿಕೆ: ಈ ನೀತಿ ಮತ್ತು <ph name="POLICY_NAME" /> ನಡುವೆ ಸಂಘರ್ಷವಿದೆ, ಇದು Android ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಪರಿಣಾಮಕಾರಿಯಾಗಿಲ್ಲ. ಇಲ್ಲವಾದರೆ, ಈ ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
@@ -2396,6 +2399,7 @@
 <translation id="4887406273302438710">Windows Hello ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕಿಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಅಳಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4892518386797173871">ಹಿಂಬದಿ</translation>
+<translation id="4894390983254799375">ಸಾಧನ ID, ಹೆಸರು, OS ಆವೃತ್ತಿ ಮತ್ತು OS ಬಳಕೆದಾರರ ಹೆಸರಿನಂತಹ ಮಾಹಿತಿ</translation>
 <translation id="4895019427244614047">ವಿಳಾಸವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ಒಲಂಪಿಕ್ಸ್</translation>
@@ -2931,6 +2935,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5765072501007116331">ವಿತರಣೆಯ ವಿಧಾನಗಳು ಹಾಗೂ ಆವಶ್ಯಕತೆಗಳನ್ನು ನೋಡಲು, ಒಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="57689295674415555">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಿಲ್ಲವೇ?</translation>
+<translation id="5773286975255318081">ಪ್ರೊಫೈಲ್ ಬಳಕೆದಾರರ ಹೆಸರುಗಳು ಮತ್ತು ಬ್ರೌಸರ್ ಆವೃತ್ತಿಗಳಂತಹವು</translation>
 <translation id="5776313857861697733">ಆದ್ಯತೆ</translation>
 <translation id="577804500166306874">ಫಲಿತಾಂಶ ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5781136890105823427">ಪ್ರಾಯೋಗಿಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -3406,7 +3411,6 @@
 <translation id="6521745193039995384">ಸಕ್ರಿಯವಾಗಿಲ್ಲ</translation>
 <translation id="6522682797352430154">ಶಾಸ್ತ್ರೀಯ ಸಂಗೀತ</translation>
 <translation id="6524830701589638230">ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಟೂಲ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
-<translation id="6525222262307262764">ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್ ಅನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6527049834925947126">ಆಹಾರ ಉತ್ಪಾದನೆ</translation>
 <translation id="6529173248185917884">ಏಳನೇ ರೋಲ್</translation>
 <translation id="6529602333819889595">&amp;ಅಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
@@ -3546,6 +3550,7 @@
 <translation id="6772959465807028761">YouTube ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳೊಂದಿಗೆ YouTube ಅನ್ನು ಬಳಸಿ</translation>
+<translation id="6779290995699117286">ಪ್ರೊಫೈಲ್, ಬ್ರೌಸರ್ ಮತ್ತು ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು. ಅವರು ಇದನ್ನು ನೋಡಬಹುದು:</translation>
 <translation id="6779348349813025131">Google Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6780449997190414928">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್‌ ಆಗುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chrome ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು.</translation>
@@ -4391,6 +4396,7 @@
 <translation id="8135546115396015134">ಎಡ ಕೀ</translation>
 <translation id="8137456439814903304">ಇಂಧನ ಮತ್ತು ಯುಟಿಲಿಟಿಗಳು</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ಆವೃತ್ತಿ:</translation>
 <translation id="8149426793427495338">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ನಿದ್ರಾವಸ್ಥೆಗೆ ಹೋಗಿದೆ.</translation>
 <translation id="815036624016370447">ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನ ಮಾಹಿತಿಯು Chrome ನಲ್ಲಿ ಫಾರ್ಮ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಭರ್ತಿ ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
@@ -4681,6 +4687,7 @@
 <translation id="8606988009912891950">ನಿಮ್ಮ ಗುರುತು ಮತ್ತು ನಿಮ್ಮ ಆ್ಯಪ್ ಬಳಕೆಯ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ರಕ್ಷಿಸುವ ಸಂದರ್ಭದಲ್ಲಿ, ನಿಮಗೆ ಸಂಬಂಧಪಟ್ಟ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಆ್ಯಡ್ ವಿಷಯವು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನೀವು ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಆ್ಯಪ್‌ಗಳ ಆಧಾರದ ಮೇಲೆ ಆಸಕ್ತಿಯ ವಿಷಯಗಳನ್ನು Chrome ಗುರುತು ಹಾಕಿಕೊಳ್ಳಬಹುದು. ನಂತರ, ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸಂಬಂಧಿತ ವಿಷಯಗಳಿಗಾಗಿ ನೀವು ಬಳಸುವ ಒಂದು ಆ್ಯಪ್‌ Chrome ಅನ್ನು ಕೇಳಬಹುದು.</translation>
 <translation id="8612919051706159390">ಆನ್‌ಲೈನ್ ಸಮುದಾಯಗಳು</translation>
 <translation id="8617269623452051934">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
+<translation id="8619130384334725124">ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್</translation>
 <translation id="8620276786115098679">ಎನ್ವಲಪ್ ಕಾಕು 7</translation>
 <translation id="8622864575115813231">ನಿಮ್ಮ ಹಣಕಾಸು ಸಂಸ್ಥೆಯನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8624354461147303341">ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>

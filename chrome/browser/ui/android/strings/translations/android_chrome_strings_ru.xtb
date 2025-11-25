@@ -335,6 +335,7 @@
 <translation id="2461822463642141190">Сейчас</translation>
 <translation id="2466378451804467735">Выбранная вместе с несколькими другими вкладка "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2468444275314013497">Ваш браузер в безопасности</translation>
+<translation id="2471632347767899461">Обратитесь в Справочный центр</translation>
 <translation id="2472163211318554013">Чтобы пользоваться всеми возможностями Chrome, войдите в аккаунт.</translation>
 <translation id="247737702124049222">Описания изображений включены.</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
@@ -362,6 +363,7 @@
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="2547843573592965873">Блокировка профиля защищает ваши данные в автомобиле, включая пароли, транзакции и другие сведения, сохраненные в аккаунте Google.</translation>
 <translation id="254973855621628293">Пароли, сохраненные на этом устройстве</translation>
+<translation id="2553962148913791095">Некоторые закладки не сохранены</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Заблокировано скачивание опасного файла}one{Заблокировано скачивание # опасного файла}few{Заблокировано скачивание # опасных файлов}many{Заблокировано скачивание # опасных файлов}other{Заблокировано скачивание # опасного файла}}</translation>
 <translation id="2569733278091928697">Вы сможете легко управлять медиаконтентом, сеансами в режиме инкогнито, скачанными файлами и не только.</translation>
 <translation id="2571711316400087311">Предлагать отправлять страницы на других языках в Google Переводчик</translation>
@@ -656,6 +658,7 @@
 <translation id="3870908470613821006">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="3873174561423636563">Чтобы вы могли продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши <ph name="FIELDS_STRING" />. Ознакомьтесь с <ph name="BEGIN_LINK1" />условиями использования<ph name="END_LINK1" /> сайта.</translation>
 <translation id="3892148308691398805">Скопировать текст</translation>
+<translation id="3893858854379998374">Чтобы сохранить новые закладки в аккаунте, удалите неиспользуемые.</translation>
 <translation id="3898498281932368596">Заблокировать и выйти</translation>
 <translation id="3899682235662194879">Закрыть все вкладки инкогнито</translation>
 <translation id="3900966090527141178">Экспорт паролей</translation>
@@ -719,6 +722,7 @@
 <translation id="4170011742729630528">Сервис недоступен. Повторите попытку позже.</translation>
 <translation id="4177222230309051052">Все ваши закладки под рукой</translation>
 <translation id="4177501066905053472">Темы рекламы</translation>
+<translation id="417865198503699526">Введите название настройки</translation>
 <translation id="4180726336228139707">Только на этом устройстве</translation>
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4188221736490993796">По алфавиту (от Я до А)</translation>
@@ -844,7 +848,7 @@
 <translation id="4685741273709472646">Выберите из списка</translation>
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="468924408576231679">Скопировать ссылку на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
-<translation id="469286762610133730">Более интересный контент</translation>
+<translation id="469286762610133730">Сделайте рекомендации интереснее</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
@@ -1349,7 +1353,7 @@
 <translation id="6754359471209693699">Начать новый поиск</translation>
 <translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
-<translation id="676305334223455055">Войдите в аккаунт, чтобы получать контент на основе своих интересов.</translation>
+<translation id="676305334223455055">Войдите в аккаунт, чтобы мы знали, что вам предлагать.</translation>
 <translation id="6764137532716892442">Общая группа вкладок "<ph name="GROUP_TITLE" />" с новыми действиями</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
@@ -1643,7 +1647,6 @@
 <translation id="7876243839304621966">Удалить все</translation>
 <translation id="7886917304091689118">Выполняется в Chrome</translation>
 <translation id="7887174313503389866">Задайте основные параметры конфиденциальности и безопасности. Другие возможности управления вы найдете в настройках.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Ваша организация заблокировала скачивание 1 файла.}one{Ваша организация заблокировала скачивание # файла.}few{Ваша организация заблокировала скачивание # файлов.}many{Ваша организация заблокировала скачивание # файлов.}other{Ваша организация заблокировала скачивание # файла.}}</translation>
 <translation id="7914399737746719723">Приложение установлено</translation>
 <translation id="7917574899775263813">Перейти на последнюю вкладку</translation>

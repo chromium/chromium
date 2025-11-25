@@ -1726,12 +1726,6 @@ Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les req
       Si la règle est définie sur "true" ou n'est pas définie, l'utilisateur pourra se servir de l'interface de ligne de commande de gestion des machines virtuelles.
       Dans le cas contraire, l'interface de ligne de commande de gestion des machines virtuelles sera entièrement désactivée et masquée.
       </translation>
-<translation id="2194051055390000601">Règle permettant de décider si le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, les utilisateurs pourront activer ou désactiver le paramètre des thèmes publicitaires <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2195032660890227692">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Définissez cette règle sur "True" pour afficher le clavier numérique par défaut lors de la saisie du mot de passe sur l'écran de connexion. Les utilisateurs pourront toujours revenir au clavier normal.
 

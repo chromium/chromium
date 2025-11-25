@@ -195,7 +195,7 @@
 <translation id="1825772852827001597">系統不會加密保護 Google Pay 中的付款方式和地址，也不會同步處理 Chrome 中的瀏覽記錄。
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
-<translation id="1832459821645506983">好，我同意</translation>
+<translation id="1832459821645506983">啟用同步功能</translation>
 <translation id="1845958458910716240">如果有最近未造訪的網站，可以允許 Chrome 移除權限，保護你的資料</translation>
 <translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已停止接收這個網站的通知。你可以查看及管理。}other{Chrome 已停止接收這些網站的通知。你可以查看及管理。}}</translation>
 <translation id="1871098866036088250">在 Chrome 瀏覽器中開啟</translation>
@@ -362,6 +362,7 @@
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2547843573592965873">設定檔鎖定功能可確保車輛上的個人資訊安全無虞，包括密碼、付款及儲存在 Google 帳戶的其他資訊。</translation>
 <translation id="254973855621628293">密碼已儲存到這部裝置</translation>
+<translation id="2553962148913791095">未儲存部分書籤</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{已封鎖危險下載內容}other{已封鎖 # 項危險下載內容}}</translation>
 <translation id="2569733278091928697">你將能輕鬆管理媒體控制項、無痕模式工作階段、下載項目等等</translation>
 <translation id="2571711316400087311">詢問是否要將其他語言的網頁傳送至 Google 翻譯</translation>
@@ -576,7 +577,7 @@
 <translation id="3519014757432845220">與 Google 分享通知內容和網站網址，協助改進垃圾內容防護功能。內容可能會送交專人審查。</translation>
 <translation id="3521388823983121502">無法繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="3522247891732774234">有可用的更新。更多選項</translation>
-<translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="3523789730715594198">你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3524138585025253783">開發人員 UI</translation>
 <translation id="3524334353996115845">讓 <ph name="ORIGIN" /> 驗證你的身分</translation>
 <translation id="3527085408025491307">資料夾</translation>
@@ -1257,7 +1258,7 @@
 <translation id="6399363707848566877">現在可以透過這個選項輕鬆將分頁新增到群組</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
-<translation id="6406506848690869874">同步</translation>
+<translation id="6406506848690869874">同步處理</translation>
 <translation id="6408370409308816490"><ph name="TAB_TITLE" />，選取的固定無痕分頁，正在分享內容</translation>
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
 <translation id="6411009031428071896">聆聽動態消息</translation>
@@ -1326,7 +1327,7 @@
 <translation id="6649642165559792194">預覽圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6671495933530132209">複製圖片</translation>
-<translation id="6672697278890207089">請輸入你的複雜密碼</translation>
+<translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="6676927815633975364">登入這個網站和 Chrome</translation>
@@ -1643,7 +1644,6 @@
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{貴機構已封鎖這 1 個下載項目}other{貴機構已封鎖這 # 個下載項目}}</translation>
 <translation id="7914399737746719723">應用程式已安裝</translation>
 <translation id="7917574899775263813">前往最後一個分頁</translation>
@@ -1788,7 +1788,7 @@
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 # 個網站的權限}}</translation>
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
 <translation id="8455675988389029454">在任何裝置上存取書籤、密碼及其他設定</translation>
-<translation id="8458413889418591446">如要快速重新造訪瀏覽過的網站，可以同步歷史記錄和分頁</translation>
+<translation id="8458413889418591446">如要快速造訪先前瀏覽的網站，請同步處理歷史記錄和分頁</translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8460448946170646641">查看最重要的隱私權和安全性控制項</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>

@@ -1430,6 +1430,7 @@
 <translation id="1949980990364952348">Назва додатка</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1951823516285577843">Знайти заміну</translation>
+<translation id="1953626242273481999">Дозволити дистанційне налагодження?</translation>
 <translation id="1953796913175502363">Налаштуйте робочий профіль</translation>
 <translation id="1954597385941141174">Сайти можуть запитувати дозвіл на підключення до пристроїв USB</translation>
 <translation id="1954813140452229842">Помилка підключення спільного доступу. Перевірте облікові дані та повторіть спробу.</translation>
@@ -1813,6 +1814,9 @@
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="222115440608612541">Міняє теми відповідно до часу доби</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Зовнішній додаток хоче отримати повний контроль над цим сеансом Chrome, щоб виконати налагодження. Зокрема, потрібен доступ до збережених даних, файлів cookie й даних сайтів, а також можливість переходити за будь-якою URL-адресою.
+
+Цю функцію мають вмикати лише веброзробники, і використовувати її можна лише з надійними додатками.</translation>
 <translation id="222201875806112242">Джерело медіа без назви</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2224444042887712269">Це налаштування встановив користувач <ph name="OWNER_EMAIL" />.</translation>
@@ -1921,6 +1925,7 @@
 <translation id="2294081976975808113">Конфіденційність даних на екрані</translation>
 <translation id="2294358108254308676">Установити <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Перегляньте свої налаштування</translation>
+<translation id="229524410604268773">Вимкнути в налаштуваннях</translation>
 <translation id="2295864384543949385">Результатів: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">Адміністратор домену <ph name="DOMAIN_NAME" /> вимагає, щоб під час входу в обліковий запис <ph name="EMAIL" /> пристрій був підключений до Інтернету</translation>
 <translation id="2296218178174497398">Виявлення пристрою</translation>
@@ -2469,6 +2474,7 @@
 <translation id="2665394472441560184">Додати нове слово</translation>
 <translation id="2665647207431876759">Термін дії минув</translation>
 <translation id="2665919335226618153">От халепа! Сталася помилка під час форматування.</translation>
+<translation id="2666092431469916601">Верх</translation>
 <translation id="2666247341166669829">Рівень заряду акумулятора лівого навушника – <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" /> та <ph name="APP_NAME_3" /> більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="2667463864537187133">Керувати перевіркою орфографії</translation>
@@ -5427,6 +5433,7 @@
 <translation id="4699473989647132421">Берегова лінія</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
 <translation id="4701335814944566468">Переглянуто вчора</translation>
+<translation id="4702504834785592287">Сторона</translation>
 <translation id="470644585772471629">Інверсія кольорів</translation>
 <translation id="4707337002099455863">Завжди на всіх сайтах</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
@@ -9262,7 +9269,6 @@
 <translation id="7410344089573941623">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до ваших камери та мікрофона</translation>
 <translation id="7410421966064092098">Сайти не можуть підтверджувати, що ви не бот</translation>
 <translation id="7410852728357935715">Транслювати на пристрій</translation>
-<translation id="741148343080227980">Ви можете змінити ім’я <ph name="BEGIN_LINK" />в обліковому записі Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7412226954991670867">Пам’ять GPU</translation>
 <translation id="741370456693729525">Шукайте інформацію в історії вебперегляду й знаходьте відвідані вебсайти за допомогою запитів розмовною мовою</translation>

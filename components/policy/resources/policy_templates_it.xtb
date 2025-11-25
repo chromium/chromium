@@ -1777,12 +1777,6 @@ Dalla versione 114 in poi, la policy <ph name="DOH_SALT_POLICY_NAME" /> è facol
       Se la policy viene impostata su true o non viene impostata, l'utente potrà usare l'interfaccia a riga di comando di gestione delle macchine virtuali.
       In caso contrario, l'intera interfaccia a riga di comando di gestione delle macchine virtuali viene disattivata e nascosta.
       </translation>
-<translation id="2194051055390000601">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.
-
-Se imposti questa policy su Disabled, l'impostazione relativa agli argomenti degli annunci verrà disattivata per i tuoi utenti.
-Se la imposti su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.</translation>
 <translation id="2195032660890227692">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Se questa policy è impostata su True, per impostazione predefinita viene visualizzata la tastiera numerica per inserire la password nella schermata di accesso. Gli utenti possono comunque passare alla tastiera normale.
 

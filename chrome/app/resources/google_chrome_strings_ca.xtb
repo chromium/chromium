@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomana posar en pausa la pestanya que està alentint el navegador}other{Chrome recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="1832046143430087831">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs. Aquesta opció de configuració està desactivada.</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
+<translation id="1843347690926158494">Cerca en aquesta pestanya amb Google Lens</translation>
 <translation id="1849248141818021764">Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, has de <ph name="BEGIN_LINK" />suprimir les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera</translation>
 <translation id="1873233029667955273">Google Chrome no és el navegador predeterminat</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Tradueix de</translation>
 <translation id="2846251086934905009">Error d'instal·lació: l'instal·lador no ha completat el procés. La instal·lació s'ha anul·lat.</translation>
 <translation id="2853415089995957805">Chrome precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan les visitis</translation>
+<translation id="2856481144859256719">Mostra sempre la drecera del mode IA a la Cerca de Google</translation>
 <translation id="2857540653560290388">S'està iniciant Chrome...</translation>
 <translation id="286025080868315611">Descobreix per què Chrome bloqueja algunes baixades</translation>
 <translation id="2861074815332034794">S'està actualitzant Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -675,6 +677,7 @@
 <translation id="8533056045953418157">Defineix Google Chrome com el visor de PDF predeterminat</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Cerca a la llista d'idiomes</translation>
+<translation id="8575047640889685742">Utilitza la <ph name="BEGIN_LINK" />teva frase de contrasenya<ph name="END_LINK" /> per encriptar totes les dades de Chrome al teu Compte de Google Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.</translation>
 <translation id="8601359445272098721">Novetat! Pots traduir tant el text com les imatges en pantalla seleccionant el botó Tradueix la pantalla.</translation>
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="861702415419836452">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>

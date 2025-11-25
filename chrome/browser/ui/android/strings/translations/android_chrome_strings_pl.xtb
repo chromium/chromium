@@ -335,6 +335,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, jedna z kilku wybranych wyciszonych kart</translation>
 <translation id="2468444275314013497">Zabezpieczenia w przeglądarce wydają się wystarczające</translation>
+<translation id="2471632347767899461">Spróbuj wyszukać w Centrum pomocy</translation>
 <translation id="2472163211318554013">Zaloguj się, aby w pełni wykorzystać możliwości Chrome</translation>
 <translation id="247737702124049222">Opisy do obrazów są włączone</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
@@ -362,6 +363,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="2547843573592965873">Dzięki blokadzie profilu Twoje dane w samochodzie, w tym m.in. hasła i płatności, są bezpieczne.</translation>
 <translation id="254973855621628293">Hasła zostały zapisane na tym urządzeniu</translation>
+<translation id="2553962148913791095">Niektóre zakładki nie zostały zapisane</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Zablokowano pobieranie niebezpiecznego pliku}few{Zablokowano pobieranie # niebezpiecznych plików}many{Zablokowano pobieranie # niebezpiecznych plików}other{Zablokowano pobieranie # niebezpiecznego pliku}}</translation>
 <translation id="2569733278091928697">Będziesz mieć możliwość łatwego zarządzania opcjami sterowania multimediami, sesjami incognito, pobranymi plikami i nie tylko</translation>
 <translation id="2571711316400087311">Proponuj przesyłanie stron w innych językach do Tłumacza Google</translation>
@@ -656,6 +658,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3870908470613821006">Wszyscy natychmiast utracą dostęp do grupy kart <ph name="GROUP_NAME" /> i zostanie ona usunięta ze wszystkich urządzeń</translation>
 <translation id="3873174561423636563">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />. Zobacz jej <ph name="BEGIN_LINK1" />warunki korzystania z usługi<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
+<translation id="3893858854379998374">Aby zapisać zakładki na koncie, usuń zakładki, których nie używasz</translation>
 <translation id="3898498281932368596">Zablokuj i opuść</translation>
 <translation id="3899682235662194879">Zamknij wszystkie karty incognito</translation>
 <translation id="3900966090527141178">Eksportuj hasła</translation>
@@ -719,6 +722,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
 <translation id="4177222230309051052">Zobacz wszystkie swoje zakładki</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
+<translation id="417865198503699526">Wyszukaj ustawienie</translation>
 <translation id="4180726336228139707">Tylko na tym urządzeniu</translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4188221736490993796">Sortuj od Z do A</translation>
@@ -1643,7 +1647,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7876243839304621966">Usuń wszystkie</translation>
 <translation id="7886917304091689118">Otwarta w Chrome</translation>
 <translation id="7887174313503389866">Zapoznaj się z prezentacją najważniejszych funkcji prywatności i bezpieczeństwa. Więcej opcji znajdziesz w poszczególnych ustawieniach.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 został zablokowany przez organizację}few{# zostały zablokowane przez organizację}many{# zostało zablokowanych przez organizację}other{# zostało zablokowane przez organizację}}</translation>
 <translation id="7914399737746719723">Aplikacja została zainstalowana</translation>
 <translation id="7917574899775263813">Przełączenie na ostatnią kartę</translation>

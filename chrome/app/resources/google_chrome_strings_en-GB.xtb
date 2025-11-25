@@ -685,6 +685,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8533056045953418157">Set Google Chrome as your default PDF viewer</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
+<translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>

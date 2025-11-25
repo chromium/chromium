@@ -1425,6 +1425,7 @@
 <translation id="1949980990364952348">အက်ပ်အမည်</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">အစားထိုး ရှာရန်</translation>
+<translation id="1953626242273481999">အဝေးမှ အမှားရှာပြင်ခြင်းကို ခွင့်ပြုမလား</translation>
 <translation id="1953796913175502363">သင့်အလုပ်ပရိုဖိုင်ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="1954597385941141174">ဝဘ်ဆိုက်များက USB ကိရိယာများသို့ ချိတ်ဆက်လိုပါက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1954813140452229842">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ အထောက်အထားများကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1808,6 +1809,9 @@
 <translation id="2220572644011485463">ပင်နံပါတ် သို့မဟုတ် စကားဝှက်</translation>
 <translation id="222115440608612541">ရောင်နီနှင့် ဆည်းဆာတွင် အပြင်အဆင် ချိန်းရန်</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />၊ <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ပြင်ပအက်ပ်သည် ဤ Chrome စက်ရှင်ကို အမှားရှာပြင်ရန်အတွက် အပြည့်အဝထိန်းချုပ်လိုသည်။ ၎င်းတွင် သင်သိမ်းထားသော ဒေတာ၊ ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာတို့ကို သုံးခွင့်နှင့် မည်သည့် URL သို့မဆို သွားနိုင်စွမ်းတို့ ပါဝင်သည်။
+
+ဝဘ်ဆိုက်တည်ဆောက်သူများသာ ဤတူးလ်ကို ဖွင့်သင့်ပြီး ယုံကြည်ရသော အက်ပ်များဖြင့်သာ သုံးသင့်သည်။</translation>
 <translation id="222201875806112242">အမည်မပါသော မီဒီယာရင်းမြစ်</translation>
 <translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
 <translation id="2224444042887712269">ဒီဆက်တင် <ph name="OWNER_EMAIL" />က ပိုင်ဆိုင်သည်။</translation>
@@ -1916,6 +1920,7 @@
 <translation id="2294081976975808113">ဖန်သားပြင် အချက်အလက်လုံခြုံမှု</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" />ကို သင် တပ်ဆင် သင်သည် လိုပါသလား?</translation>
 <translation id="229477815107578534">သင်၏ ဆက်တင်များကို ပြန်ကြည့်ခြင်း</translation>
+<translation id="229524410604268773">ဆက်တင်များတွင် ပိတ်ရန်</translation>
 <translation id="2295864384543949385">ရလဒ် <ph name="NUM_RESULTS" /> ခု</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> သို့ လက်မှတ်ထိုးဝင်သောအခါ စက်အွန်လိုင်းဖြစ်နေရန် <ph name="DOMAIN_NAME" /> က သတ်မှတ်ထားသည်</translation>
 <translation id="2296218178174497398">စက်ပစ္စည်း ရှာဖွေတွေ့ရှိမှု</translation>
@@ -2464,6 +2469,7 @@
 <translation id="2665394472441560184">စာလုံး အသစ်ကို ထည့်ပေးရန်</translation>
 <translation id="2665647207431876759">သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="2665919335226618153">ဪ၊ ဖျောက်! ဖိုင်စီနေစဉ်တွင် မှားယွင်းမှုတစ်ခု ကြုံတွေ့ခဲ့သည်။</translation>
+<translation id="2666092431469916601">ထိပ်</translation>
 <translation id="2666247341166669829">ဘယ်ဘက် ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ကဲ့သို့ အခြားအက်ပ်များကိုလည်း တူညီသောလင့်ခ်များဖွင့်ရန် သတ်မှတ်ထားသည်။ ဤပြောင်းလဲခြင်းက <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို ပံ့ပိုးထားသောလင့်ခ်များ ပေးဖွင့်မည်မဟုတ်ပါ။</translation>
 <translation id="2667463864537187133">စာလုံးပေါင်းသတ်ပုံ စီမံခန့်ခွဲခြင်း</translation>
@@ -5422,6 +5428,7 @@
 <translation id="4699473989647132421">ကမ်းရိုးတန်း</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="4701335814944566468">မနေ့က ကြည့်ထားသည်</translation>
+<translation id="4702504834785592287">ဘေး</translation>
 <translation id="470644585772471629">အရောင် ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="4707337002099455863">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
@@ -9253,7 +9260,6 @@
 <translation id="7410344089573941623"><ph name="HOST" /> သည် သင့်ကင်မရာနှင့် မိုက်ခရိုဖုန်းအား အသုံးပြုလိုသလား မေးပါ</translation>
 <translation id="7410421966064092098">သင်သည် ဘော့တ်မဟုတ်ကြောင်းကို ဝဘ်ဆိုက်များက အတည်ပြုမပေးနိုင်ပါ</translation>
 <translation id="7410852728357935715">စက်တစ်ခုသို့ ကာစ်လုပ်ရန်</translation>
-<translation id="741148343080227980">သင့်အမည်ကို <ph name="BEGIN_LINK" />သင်၏ Google Account <ph name="USERNAME" /> တွင်<ph name="END_LINK" /> ပြင်နိုင်သည်။</translation>
 <translation id="741204030948306876">ပါဝင်ပါမည်</translation>
 <translation id="7412226954991670867">GPU မှတ်ဉာဏ်</translation>
 <translation id="741370456693729525">သင့်ကြည့်ရှုမှုမှတ်တမ်းနှင့် ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များကို ရှာရန်အတွက် နေ့စဉ်သုံးဘာသာစကားကို သုံးသည်</translation>

@@ -1755,12 +1755,6 @@ URI şablonu <ph name="HTTP_VARIABLE_DNS" /> değişkeni içeriyorsa çözümley
       Politika true (doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa, kullanıcı sanal makine yönetici KSA'sını kullanabilir.
       Aksi takdirde tüm sanal makine yönetici KSA'ları devre dışı bırakılır veya saklanır.
       </translation>
-<translation id="2194051055390000601"><ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
-
-Bu politikayı Devre Dışı değerine ayarlarsanız reklam konuları ayarı kullanıcılarınız için devre dışı bırakılır.
-Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını etkinleştirebilir veya devre dışı bırakabilir.
-
-Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> politikasının Devre Dışı değerine ayarlanması gerekir.</translation>
 <translation id="2195032660890227692">Bu politika <ph name="PRODUCT_NAME" /> 68 sürümünde kaldırılmış ve yerine <ph name="ARC_BR_POLICY_NAME" /> kullanılmaya başlanmıştır.</translation>
 <translation id="2197625019569762163">Bu politika true (doğru) değerine ayarlanırsa giriş ekranında şifre girilirken varsayılan olarak sayısal klavye görüntülenir. Kullanıcılar isterlerse normal klavyeye geçebilirler.
 

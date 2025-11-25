@@ -1425,6 +1425,7 @@
 <translation id="1949980990364952348">የመተግበሪያ ስም</translation>
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1951823516285577843">አማራጭ ፈልግ</translation>
+<translation id="1953626242273481999">በርቀት ስህተትን ማረም ይፈቀድ?</translation>
 <translation id="1953796913175502363">የስራ መገለጫዎን ያዋቅሩ</translation>
 <translation id="1954597385941141174">ጣቢያዎች ከዩኤስቢ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="1954813140452229842">ማጋራትን ማፈናጠጥ ላይ ስህተት። እባክዎ ምስክርነቶችዎን ይፈትሹና እንደገና ይሞክሩ።</translation>
@@ -1808,6 +1809,9 @@
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="222115440608612541">ፀሐይ ስትወጣና ስትገባ ገጽታዎችን ይቀያይሩ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">የውጭ መተግበሪያ ስህተቱን ለማረም በዚህ የChrome ክፍለ ጊዜ ላይ ሙሉ ቁጥጥር ይፈልጋል። ይህ የእርስዎን የተቀመጠ ውሂብ፣ ኩኪዎች እና የጣቢያ ውሂብ መዳረሻ እና ወደ ማንኛውም ዩአርኤል የመሄድ ችሎታን ያካትታል።
+
+ይህን ባህሪ ማብራት ያለባቸው የድር ገንቢዎች ብቻ ናቸው እና በታመኑ መተግበሪያዎች ብቻ ጥቅም ላይ መዋል አለባቸው።</translation>
 <translation id="222201875806112242">ያልተሰየመ የሚዲያ ምንጭ</translation>
 <translation id="2224337661447660594">ምንም በይነመረብ የለም</translation>
 <translation id="2224444042887712269">ይህ ቅንብር የ<ph name="OWNER_EMAIL" /> ነው።</translation>
@@ -1914,6 +1918,7 @@
 <translation id="2294081976975808113">የማያ ገፅ ግላዊነት</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" />ን መጫን ይፈልጋሉ?</translation>
 <translation id="229477815107578534">ቅንብሮችዎን ይገምግሙ</translation>
+<translation id="229524410604268773">በቅንብሮች ውስጥ አጥፋ</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> ውጤቶች</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> ወደ <ph name="EMAIL" /> ሲገባ መሣሪያው መስመር ላይ እንዲሆን ይፈልጋል</translation>
 <translation id="2296218178174497398">የመሳሪያ ግኝት</translation>
@@ -2462,6 +2467,7 @@
 <translation id="2665394472441560184">አዲስ ቃል ያክሉ</translation>
 <translation id="2665647207431876759">ጊዜው አልፏል</translation>
 <translation id="2665919335226618153">ኧረ ቴች! ቅርጸት በሚሰራለት ጊዜ የሆነ ስህተት ነበር።</translation>
+<translation id="2666092431469916601">ላይ</translation>
 <translation id="2666247341166669829">የግራ የባትሪ ደረጃ <ph name="PERCENTAGE" />%።</translation>
 <translation id="2667144577800272420">ሌሎች መተግበሪያዎች ከ<ph name="APP_NAME" /> ጋር ተመሳሳይ የሆኑ አገናኞችን ለመክፈት ተቀናብረዋል። ይህ <ph name="APP_NAME_2" /> እና <ph name="APP_NAME_3" /> የሚደገፉ አገናኞችን እንዳይከፍቱ ያሰናክላቸዋል።</translation>
 <translation id="2667463864537187133">ፊደል አራሚን ያቀናብሩ</translation>
@@ -5418,6 +5424,7 @@
 <translation id="4699473989647132421">የባህር ዳርቻ</translation>
 <translation id="4701025263201366865">የወላጆች መግቢያ</translation>
 <translation id="4701335814944566468">ትላንት ታይቷል</translation>
+<translation id="4702504834785592287">ጎን</translation>
 <translation id="470644585772471629">ተቃራኒ ቀለም</translation>
 <translation id="4707337002099455863">በሁሉም ጣቢያዎችን ላይ ሁልጊዜ በርቷል</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ን አቋርጥ</translation>
@@ -9254,7 +9261,6 @@
 <translation id="7410344089573941623"><ph name="HOST" /> ካሜራዎን እና ማይክሮፎንዎን መድረስ ይፈልግ እንደሆነ ይጠይቁ</translation>
 <translation id="7410421966064092098">ጣቢያዎች ቦት አለመሆንዎን ለማረጋገጥ ማገዝ አይችሉም</translation>
 <translation id="7410852728357935715">ወደ አንድ መሣሪያ Cast ያድርጉ</translation>
-<translation id="741148343080227980"><ph name="BEGIN_LINK" />የእርስዎ Google መለያ <ph name="USERNAME" /><ph name="END_LINK" /> ውስጥ ስምዎን ማርትዕ ይችላሉ።</translation>
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
 <translation id="7412226954991670867">የጂፒዩ ማህደረ ትውስታ</translation>
 <translation id="741370456693729525">የአሰሳ ታሪክዎን ለመፈለግ እና የጎበኟቸውን ጣቢያዎች ለማግኘት የዕለት ተዕለት ቋንቋን ይጠቀሙ</translation>

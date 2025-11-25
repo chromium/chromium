@@ -362,6 +362,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="2547843573592965873">El bloqueo de perfil protege tu información en el automóvil, lo que incluye contraseñas, pagos y otros datos guardados en tu Cuenta de Google.</translation>
 <translation id="254973855621628293">Se guardaron las contraseñas en este dispositivo</translation>
+<translation id="2553962148913791095">No se guardaron algunos favoritos</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Se bloqueó una descarga peligrosa}other{Se bloquearon # descargas peligrosas}}</translation>
 <translation id="2569733278091928697">Podrás administrar fácilmente los controles multimedia, las sesiones en modo Incógnito, las descargas y más</translation>
 <translation id="2571711316400087311">Mostrar la opción para enviar páginas en otros idiomas a Google Traductor</translation>
@@ -1643,7 +1644,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7886917304091689118">Se está ejecutando en Chrome</translation>
 <translation id="7887174313503389866">Realiza una visita guiada de los controles de seguridad y privacidad más importantes. Para ver más opciones, ve a la configuración individual.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tu organización bloqueó 1}other{Tu organización bloqueó #}}</translation>
 <translation id="7914399737746719723">Se instaló la app</translation>
 <translation id="7917574899775263813">Pasar a la última pestaña</translation>

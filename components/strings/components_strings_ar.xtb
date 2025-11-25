@@ -1169,7 +1169,7 @@
 <translation id="2922792708490674">{0,plural, =1{تم حظر تنزيل الملف}zero{تم حظر تنزيل <ph name="FILE_COUNT" /> ملف}two{تم حظر تنزيل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر تنزيل <ph name="FILE_COUNT" /> ملفات}many{تم حظر تنزيل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر تنزيل <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="2923275635648511531">منتجات حماية من الشمس وتسمير البشرة</translation>
 <translation id="292371311537977079">‏إعدادات Chrome</translation>
-<translation id="2925032407415783182">‏حفظ تذكرة لحضور فعالية في "محفظة Google"</translation>
+<translation id="2925032407415783182">‏حفظ تذكرة حضور الفعالية في "محفظة Google"</translation>
 <translation id="2925454999967523701">‏زر إنشاء مستند: انقر على هذا الزر لإنشاء مستند Google جديد بسرعة.</translation>
 <translation id="2925673989565098301">طريقة التسليم</translation>
 <translation id="2928426578619531300">مستخدم تابع</translation>
@@ -1529,7 +1529,6 @@
 <translation id="3498215018399854026">لم نتمكن من الوصول إلى أحد والديك في الوقت الحالي. يُرجى إعادة المحاولة مرة أخرى.</translation>
 <translation id="350069200438440499">اسم الملفّ:</translation>
 <translation id="3501300228850242680">ميتال (موسيقى)</translation>
-<translation id="350274464456291051">‏يمكنك تعديل اسمك <ph name="BEGIN_LINK" />في حسابك على Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">تصنيفات (شديدة اللمعان)</translation>
 <translation id="350763432931695541">جارٍ استخراج النص في الصفحات القليلة التالية</translation>
 <translation id="3507869775212388416">وظائف قانونية</translation>
@@ -3410,7 +3409,6 @@
 <translation id="6521745193039995384">غير مفعلة</translation>
 <translation id="6522682797352430154">موسيقى كلاسيكية</translation>
 <translation id="6524830701589638230">‏زر إدارة إعدادات تسهيل الاستخدام: انقر على هذا الزر لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome.</translation>
-<translation id="6525222262307262764">الإبقاء على محرك البحث التلقائي</translation>
 <translation id="6527049834925947126">إنتاج غذائي</translation>
 <translation id="6529173248185917884">اللفافة السابعة</translation>
 <translation id="6529602333819889595">إعادة الح&amp;ذف</translation>

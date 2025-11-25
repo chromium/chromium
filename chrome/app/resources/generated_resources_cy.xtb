@@ -1430,6 +1430,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1949980990364952348">Enw'r ap</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Dod o hyd i un arall</translation>
+<translation id="1953626242273481999">Caniatáu dadfygio o bell?</translation>
 <translation id="1953796913175502363">Gosod eich proffil gwaith</translation>
 <translation id="1954597385941141174">Gall gwefannau ofyn am gysylltu â dyfeisiau USB</translation>
 <translation id="1954813140452229842">Bu gwall wrth osod cyfran. Gwiriwch eich manylion a rhowch gynnig arall arni.</translation>
@@ -1813,6 +1814,9 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="222115440608612541">Newid themâu ar godiad a machlud haul</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Mae ap allanol eisiau rheolaeth lawn dros y sesiwn Chrome hon i'w ddadfygio. Mae hyn yn cynnwys mynediad at eich data sydd wedi'u cadw, cwcis a data gwefan, a'r gallu i lywio i unrhyw URL.
+
+Dim ond datblygwyr gwe ddylai droi'r nodwedd hon ymlaen, a dim ond ei defnyddio gydag apiau dibynadwy.</translation>
 <translation id="222201875806112242">Ffynhonnell cyfryngau ddienw</translation>
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="2224444042887712269">Mae'r gosodiad hwn yn perthyn i <ph name="OWNER_EMAIL" />.</translation>
@@ -1921,6 +1925,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2294081976975808113">Preifatrwydd sgrîn</translation>
 <translation id="2294358108254308676">Ydych chi am osod <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Adolygwch eich gosodiadau</translation>
+<translation id="229524410604268773">Diffodd yn y gosodiadau</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> o ganlyniadau</translation>
 <translation id="2296022312651137376">Mae <ph name="DOMAIN_NAME" /> yn ei gwneud yn ofynnol i'r ddyfais hon fod ar-lein wrth fewngofnodi i <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Darganfod Dyfeisiau</translation>
@@ -2469,6 +2474,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2665394472441560184">Ychwanegu gair newydd</translation>
 <translation id="2665647207431876759">Wedi darfod</translation>
 <translation id="2665919335226618153">Damo! Bu gwall wrth fformatio.</translation>
+<translation id="2666092431469916601">Brig</translation>
 <translation id="2666247341166669829">Lefel batri chwith <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Mae apiau eraill wedi'u gosod i agor yr un dolenni â <ph name="APP_NAME" />. Bydd hyn yn analluogi <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> rhag agor dolenni a gefnogir.</translation>
 <translation id="2667463864537187133">Rheoli gwirio sillafu</translation>
@@ -5427,6 +5433,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4699473989647132421">Ymyl traeth</translation>
 <translation id="4701025263201366865">Mewngofnodi rhiant</translation>
 <translation id="4701335814944566468">Gwelwyd ddoe</translation>
+<translation id="4702504834785592287">Ochr</translation>
 <translation id="470644585772471629">Gwrthdroad lliw</translation>
 <translation id="4707337002099455863">Bob Amser ar bob Gwefan</translation>
 <translation id="4708849949179781599">Gadael <ph name="PRODUCT_NAME" /></translation>
@@ -9268,7 +9275,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7410344089573941623">Gofyn pan fydd <ph name="HOST" /> eisiau cael mynediad at eich camera a'ch meicroffon</translation>
 <translation id="7410421966064092098">Ni all gwefannau helpu i gadarnhau nad bot ydych chi</translation>
 <translation id="7410852728357935715">Castio i ddyfais</translation>
-<translation id="741148343080227980">Gallwch olygu eich enw <ph name="BEGIN_LINK" />yn eich Cyfrif Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Iawn, rwy'n cydsynio</translation>
 <translation id="7412226954991670867">Cof GPU</translation>
 <translation id="741370456693729525">Defnyddiwch iaith bob dydd i chwilio eich hanes pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw</translation>

@@ -1645,6 +1645,7 @@
 <translation id="2104166991923847969">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ಮರೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2106439768713835453">ಆ್ಯಪ್ ಆಡಿಯೋವನ್ನು ಸಹ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="2107359546799360577">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ಸಮಯದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ಫೋನ್ ಸಂಖ್ಯೆ}one{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}other{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}}</translation>
 <translation id="2109384632594340939">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
@@ -2064,6 +2065,7 @@
 <translation id="2390782873446084770">ವೈ-ಫೈ ಸಿಂಕ್</translation>
 <translation id="2391419135980381625">ರೂಢಿಯಲ್ಲಿರುವ ಫಾಂಟ್</translation>
 <translation id="2391805183137601570">Steam ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="239185270194776190">ನಿಮ್ಮ Gemini ಸಂಭಾಷಣೆಯು ಮತ್ತೊಂದು ವಿಂಡೋದಲ್ಲಿದೆ. ಈ ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಇಲ್ಲಿಗೆ ಸರಿಸಲು ಅದರ ಮೇಲೆ ಎಲ್ಲಿಯಾದರೂ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="2392369802118427583">ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2393136602862631930">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ <ph name="APP_NAME" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex ನಿಯಮಗಳ ವಿಷಯಗಳು</translation>
@@ -2464,6 +2466,7 @@
 <translation id="2665394472441560184">ಹೊಸ ಪದವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2665647207431876759">ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="2665919335226618153">ಓಹ್, ಹೋಯ್ತು! ಸ್ವರೂಪಣೆ ಸಂದರ್ಭದಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
+<translation id="2666092431469916601">ಮೇಲೆ</translation>
 <translation id="2666247341166669829">ಎಡಬದಿಯ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಆ್ಯಪ್‌ನ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2667463864537187133">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ನಿರ್ವಹಿಸಿ</translation>
@@ -4271,6 +4274,7 @@
 <translation id="3893536212201235195">ನಿಮ್ಮ ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="3893630138897523026">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು, ನಿಮ್ಮ ಬಳಕೆಯಾಗದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
 <translation id="3894427358181296146">ಫೋಲ್ಡರ್ ಸೇರಿಸು</translation>
 <translation id="3895076768659607631">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳನ್ನು &amp;ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="3895090224522145010">Kerberos ಬಳಕೆದಾರರ ಹೆಸರು</translation>
@@ -4996,6 +5000,7 @@
 <translation id="4405781821077215583">ಪಠ್ಯವನ್ನು ಒಳಗೊಂಡಂತೆ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಐಟಂಗಳನ್ನು ಚಿಕ್ಕದಾಗಿಸಿ ಅಥವಾ ದೊಡ್ಡದಾಗಿಸಿ.</translation>
 <translation id="4406308048672435032">ನೀವು ಈ ಟ್ಯಾಬ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು ಅಥವಾ ಪೂರ್ಣ ಪಟ್ಟಿಯನ್ನು ಮತ್ತೆ ನೋಡಲು ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದು</translation>
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
+<translation id="4406963243402726564">ಸೇವ್ ಮಾಡದ ಡೇಟಾ</translation>
 <translation id="4408599188496843485">ಸ&amp;ಹಾಯ</translation>
 <translation id="4409271659088619928">ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ <ph name="DSE" /> ಆಗಿದೆ. ಅನ್ವಯವಾದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುವುದಕ್ಕಾಗಿ ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುತ್ತದೆ.}=2{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" /> ಮತ್ತು <ph name="APP1_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುತ್ತದೆ.}=3{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು ಇತರ 1 ಆ್ಯಪ್ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುತ್ತದೆ.}one{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುತ್ತದೆ.}other{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುತ್ತದೆ.}}</translation>
@@ -5421,6 +5426,7 @@
 <translation id="4699473989647132421">ಕಡಲತೀರ</translation>
 <translation id="4701025263201366865">ಪೋಷಕರ ಸೈನ್ ಇನ್</translation>
 <translation id="4701335814944566468">ನಿನ್ನೆ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="4702504834785592287">ಅಂಚು</translation>
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
 <translation id="4707337002099455863">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
@@ -9258,7 +9264,6 @@
 <translation id="7410344089573941623">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಬಯಸುತ್ತಾರೆಯೇ ಎಂಬುದನ್ನು ಕೇಳಿ</translation>
 <translation id="7410421966064092098">ನೀವು ಬಾಟ್ ಅಲ್ಲ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು ಸೈಟ್‌ಗಳು ಸಹಾಯ ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7410852728357935715">ಸಾಧನಕ್ಕೆ ಬಿತ್ತರಿಸಿ</translation>
-<translation id="741148343080227980"><ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಾದ <ph name="USERNAME" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ಹೆಸರನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7412226954991670867">GPU ಸ್ಮರಣೆ</translation>
 <translation id="741370456693729525">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್‌ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ದೈನಂದಿನ ಭಾಷೆಯನ್ನು ಬಳಸಿ</translation>

@@ -1692,12 +1692,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       如果將這項政策設為 True 或不予設定，使用者將可以使用 VM 管理 CLI。
       否則系統會停用並隱藏 VM 管理 CLI。
       </translation>
-<translation id="2194051055390000601">這項政策控管是否可停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。
-
-如果將這項政策設為停用，系統就會停用使用者的廣告主題設定。
-如果將這項政策設為啟用或未設定，使用者將可開啟或關閉裝置上的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。
-
-如要設定這項政策，必須將 <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> 政策設為停用。</translation>
 <translation id="2195032660890227692">這項政策已在 <ph name="PRODUCT_NAME" /> 68 中遭到移除，並已由 <ph name="ARC_BR_POLICY_NAME" /> 取代。</translation>
 <translation id="2197625019569762163">將這項政策設為 True 時，系統預設會在登入畫面顯示數字鍵盤，方便使用者輸入密碼。使用者仍可切換為普通鍵盤。
 

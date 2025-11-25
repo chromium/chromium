@@ -1414,6 +1414,7 @@
 <translation id="1949980990364952348">ଆପର ନାମ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">ବିକଳ୍ପ ଖୋଜନ୍ତୁ</translation>
+<translation id="1953626242273481999">ରିମୋଟ ଡିବଗିଂ ପାଇଁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="1953796913175502363">ଆପଣଙ୍କ ୱାର୍କ ପ୍ରୋଫାଇଲ ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="1954597385941141174">USB ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ କରିବାକୁ ସାଇଟଗୁଡ଼ିକ ପଚାରିପାରିବ</translation>
 <translation id="1954813140452229842">ସେୟାର୍ ଖଞ୍ଜିବାରେ ତ୍ରୁଟି। ଦୟାକରି ଆପଣଙ୍କର କ୍ରେଡେନ୍ସିଆଲ୍ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1797,6 +1798,9 @@
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="222115440608612541">ସୂର୍ଯ୍ୟୋଦୟ ଏବଂ ସୂର୍ଯ୍ୟାସ୍ତ ସମୟରେ ଥିମଗୁଡ଼ିକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ଏକ ଏକ୍ସଟର୍ନାଲ ଆପ ଏହାକୁ ଡିବଗ କରିବା ପାଇଁ ଏହି Chrome ସେସନ ଉପରେ ପୂର୍ଣ୍ଣ ନିୟନ୍ତ୍ରଣ ଚାହେଁ। ଏଥିରେ ଆପଣଙ୍କ ସେଭ କରାଯାଇଥିବା ଡାଟା, କୁକୀ ଏବଂ ସାଇଟ ଡାଟାକୁ ଆକ୍ସେସ ଏବଂ ଯେ କୌଣସି URLକୁ ନାଭିଗେଟ କରିବାର କ୍ଷମତା ଅନ୍ତର୍ଭୁକ୍ତ ଅଟେ।
+
+କେବଳ ୱେବ ଡେଭେଲପରମାନେ ଏହି ଫିଚରକୁ ଚାଲୁ କରିବା ଉଚିତ ଏବଂ କେବଳ ବିଶ୍ୱସ୍ତ ଆପ୍ସ ସହ ଏହାକୁ ବ୍ୟବହାର କରିବା ଉଚିତ।</translation>
 <translation id="222201875806112242">ବେନାମୀ ମିଡିଆ ସୋର୍ସ</translation>
 <translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="2224444042887712269">ଏହି ସେଟିଂ <ph name="OWNER_EMAIL" />ର ଅନ୍ତର୍ଗତ ଅଟେ।</translation>
@@ -1903,6 +1907,7 @@
 <translation id="2294081976975808113">ସ୍କ୍ରିନ ଗୋପନୀୟତା</translation>
 <translation id="2294358108254308676">ଆପଣ <ph name="PRODUCT_NAME" /> ଇନ୍‌ଷ୍ଟଲ୍ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="229477815107578534">ଆପଣଙ୍କ ସେଟିଂସର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="229524410604268773">ସେଟିଂସରେ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" />ଟି ଫଳାଫଳ</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" />ରେ ସାଇନ୍ ଇନ୍ କରିବା ସମୟରେ <ph name="DOMAIN_NAME" /> ଡିଭାଇସ୍ ଅନଲାଇନ୍ ହେବା ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2296218178174497398">ଡିଭାଇସ୍ ଖୋଜି ପାଇବା</translation>
@@ -2451,6 +2456,7 @@
 <translation id="2665394472441560184">ଏକ ନୂତନ ଶବ୍ଦ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2665647207431876759">ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="2665919335226618153">ଇସ୍‍, କିଛି ଭୁଲ୍ ହୋଇଛି! ଫର୍ମାଟ୍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
+<translation id="2666092431469916601">ଶୀର୍ଷ</translation>
 <translation id="2666247341166669829">ବାମ ପଟର ବ୍ୟାଟେରୀ ଲେଭେଲ <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420">ସମାନ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଅନ୍ୟ ଆପଗୁଡ଼ିକ <ph name="APP_NAME" /> ଭାବେ ସେଟ ହୋଇଛି। ଏହା ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବାରୁ <ph name="APP_NAME_2" /> ଏବଂ <ph name="APP_NAME_3" />କୁ ଅକ୍ଷମ କରିଦେବ।</translation>
 <translation id="2667463864537187133">ବନାନ ଯାଞ୍ଚ ପରିଚାଳନ କରନ୍ତୁ</translation>
@@ -5408,6 +5414,7 @@
 <translation id="4699473989647132421">ସୋରଲାଇନ</translation>
 <translation id="4701025263201366865">ବାପାମା ସାଇନ୍-ଇନ୍</translation>
 <translation id="4701335814944566468">ଗତକାଲି ଦେଖାଯାଇଛି</translation>
+<translation id="4702504834785592287">ସାଇଡ୍</translation>
 <translation id="470644585772471629">ରଙ୍ଗ ଇନଭର୍ସନ</translation>
 <translation id="4707337002099455863">ସମସ୍ତ ସାଇଟରେ ସର୍ବଦା</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ଛାଡ଼ି ଦିଅନ୍ତୁ</translation>
@@ -9239,7 +9246,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7410344089573941623">ଯଦି <ph name="HOST" /> ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଚାହୁଁଛି, ତେବେ ପଚାରନ୍ତୁ</translation>
 <translation id="7410421966064092098">ଆପଣ ଜଣେ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବାରେ ସାଇଟଗୁଡ଼ିକ ସାହାଯ୍ୟ କରିପାରିବ ନାହିଁ</translation>
 <translation id="7410852728357935715">ଏକ ଡିଭାଇସକୁ କାଷ୍ଟ କରନ୍ତୁ</translation>
-<translation id="741148343080227980">ଆପଣ <ph name="BEGIN_LINK" />ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ <ph name="USERNAME" />ରେ<ph name="END_LINK" /> ଆପଣଙ୍କ ନାମକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="741204030948306876">ହଁ, ମୁଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="7412226954991670867">GPU ମେମୋରୀ</translation>
 <translation id="741370456693729525">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ସର୍ଚ୍ଚ କରିବା ଏବଂ ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକୁ ଖୋଜିବା ପାଇଁ ଦୈନନ୍ଦିନ ବ୍ୟବହାର ହେଉଥିବା ଭାଷାକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>

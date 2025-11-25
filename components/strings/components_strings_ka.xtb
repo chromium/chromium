@@ -1532,7 +1532,6 @@
 <translation id="3498215018399854026">ამ მომენტისათვის, ჩვენ ვერ შევძელით თქვენს მშობლებთან დაკავშირება. გთხოვთ სცადეთ ხელახლა.</translation>
 <translation id="350069200438440499">ფაილის სახელი:</translation>
 <translation id="3501300228850242680">მეტალი (მუსიკა)</translation>
-<translation id="350274464456291051">თქვენი სახელის რედაქტირება შეგიძლიათ <ph name="BEGIN_LINK" />თქვენს Google ანგარიშში <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">ლეიბლები (ძალიან პრიალა)</translation>
 <translation id="350763432931695541">მიმდინარეობს ტექსტის ამოღება მომდევნო რამდენიმე გვერდზე</translation>
 <translation id="3507869775212388416">ვაკანსიები იურიდიულ სფეროში</translation>
@@ -2177,6 +2176,7 @@
 <translation id="4506599922270137252">სისტემის ადმინისტრატორთან დაკავშირება</translation>
 <translation id="450710068430902550">ადმინისტრატორთან გაზიარება</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ამ გვერდის Google Translate-ით სათარგმნად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="4510703642214459906">ღონისძიების ადგილი</translation>
 <translation id="4515275063822566619">ბარათებისა და მისამართების შესახებ ინფორმაცია მიღებულია Chrome-იდან და თქვენი Google ანგარიშიდან (<ph name="ACCOUNT_EMAIL" />). მათი მართვა შეგიძლიათ <ph name="BEGIN_LINK" />პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">მიკრო და კომპაქტური ავტომობილები</translation>
 <translation id="451601984112574365">მწვანე 3</translation>
@@ -3416,7 +3416,6 @@
 <translation id="6521745193039995384">არ არის აქტიური</translation>
 <translation id="6522682797352430154">კლასიკური მუსიკა</translation>
 <translation id="6524830701589638230">მარტივი წვდომის პარამეტრების მართვის ღილაკი, Chrome პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზებისთვის გაააქტიურეთ ის</translation>
-<translation id="6525222262307262764">მიმდინარე ნაგულისხმევი პარამეტრების შენარჩუნება</translation>
 <translation id="6527049834925947126">კვების მრეწველობა</translation>
 <translation id="6529173248185917884">მეშვიდე რულონი</translation>
 <translation id="6529602333819889595">წაშლის &amp;გამეორება</translation>
@@ -4372,6 +4371,7 @@
 <translation id="8077669823243888800">კონვერტი Chinese 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{გსურთ კონფიდენციალური ფაილის ატვირთვა?}other{გსურთ კონფიდენციალური ფაილების ატვირთვა?}}</translation>
 <translation id="8079031581361219619">გსურთ საიტის ხელახლა ჩატვირთვა?</translation>
+<translation id="8079591184016291275">ღონისძიების სახელი</translation>
 <translation id="8079976827192572403">სახიფათო საიტი</translation>
 <translation id="8081087320434522107">სედანები</translation>
 <translation id="8086429410809447605">ქალის ტანსაცმელი</translation>

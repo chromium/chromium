@@ -1055,7 +1055,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5601180634394228718">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="5601924940067278327">Tabs und mehr auf allen deinen Geräten abrufen</translation>
-<translation id="5611398002774823980">In Konto speichern</translation>
+<translation id="5611398002774823980">Im Konto speichern</translation>
 <translation id="5613381935190035031">Wenn du auf allen deinen Geräten auf deine Tabs und mehr zugreifen möchtest, melde dich mit <ph name="EMAIL" /> in Chrome an</translation>
 <translation id="5614625640221885312">Melde dich an, damit du deine Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="5619633276517849615">Deine Organisation hat Safe Browsing aktiviert</translation>
@@ -1643,7 +1643,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7876243839304621966">Alle entfernen</translation>
 <translation id="7886917304091689118">Wird in Chrome ausgeführt</translation>
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
-<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 Download wurde von deiner Organisation blockiert}other{# Downloads wurden von deiner Organisation blockiert}}</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7917574899775263813">Zum letzten Tab wechseln</translation>

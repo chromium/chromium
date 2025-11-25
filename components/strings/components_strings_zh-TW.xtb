@@ -1527,7 +1527,6 @@
 <translation id="3498215018399854026">我們暫時無法與您的家長聯絡，請再試一次。</translation>
 <translation id="350069200438440499">檔案名稱：</translation>
 <translation id="3501300228850242680">金屬 (音樂)</translation>
-<translation id="350274464456291051">你可以前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="ACCOUNT" />)<ph name="END_LINK" /> 編輯姓名。</translation>
 <translation id="350421688684366066">標籤 (高光面)</translation>
 <translation id="350763432931695541">正在擷取接下來幾頁中的文字</translation>
 <translation id="3507869775212388416">法律相關工作</translation>
@@ -3408,7 +3407,6 @@
 <translation id="6521745193039995384">未啟用</translation>
 <translation id="6522682797352430154">古典音樂</translation>
 <translation id="6524830701589638230">「管理無障礙設定」按鈕，啟動後即可在 Chrome 設定中依個人需求調整無障礙工具</translation>
-<translation id="6525222262307262764">繼續使用目前的預設搜尋引擎</translation>
 <translation id="6527049834925947126">食品生產</translation>
 <translation id="6529173248185917884">第七卷</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
@@ -4687,7 +4685,7 @@
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 公釐</translation>
 <translation id="8637362707224133343">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站來欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
-<translation id="8640996933372643759">如要分享分頁及與人協作，必須登入 Chrome</translation>
+<translation id="8640996933372643759">如要分享分頁及多人協作，必須能夠登入 Chrome</translation>
 <translation id="8641131559425911240">信封 (證券紙)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">關閉群組會限制可加入的對象</translation>

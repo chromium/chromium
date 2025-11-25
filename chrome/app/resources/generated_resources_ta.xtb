@@ -1652,6 +1652,7 @@
 <translation id="2104166991923847969">ஹாட்ஸ்பாட்டைத் தானாக ஆஃப் செய்</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> மறைக்கப்பட்டன</translation>
 <translation id="2106439768713835453">ஆப்ஸ் ஆடியோவையும் பகிர்</translation>
+<translation id="2107359546799360577">JavaScript மேம்பாடுகள் ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> முன்பு சரிபார்க்கப்பட்டது</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ஃபோன் எண்}other{# ஃபோன் எண்கள்}}</translation>
 <translation id="2109384632594340939">சுயவிவரப் படம்</translation>
@@ -2071,6 +2072,7 @@
 <translation id="2390782873446084770">வைஃபை ஒத்திசைவு</translation>
 <translation id="2391419135980381625">நிலையான எழுத்துரு</translation>
 <translation id="2391805183137601570">Steamமைத் திற</translation>
+<translation id="239185270194776190">உங்கள் Gemini உரையாடல் வேறொரு சாளரத்தில் உள்ளது. இந்தப் பக்கவாட்டு பேனலில் எங்கேனும் கிளிக் செய்து அதை இங்கே நகர்த்தவும்.</translation>
 <translation id="2392369802118427583">செயல்படுத்து</translation>
 <translation id="2393136602862631930">Chromebookகில் <ph name="APP_NAME" /> ஐ அமையுங்கள்</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex விதிமுறைகளின் உள்ளடக்கம்</translation>
@@ -2471,6 +2473,7 @@
 <translation id="2665394472441560184">புதிய சொல்லைச் சேர்க்கவும்</translation>
 <translation id="2665647207431876759">காலாவதியாகிவிட்டது</translation>
 <translation id="2665919335226618153">அச்சச்சோ! வடிவமைக்கும்போது பிழை ஏற்பட்டது.</translation>
+<translation id="2666092431469916601">மேலே</translation>
 <translation id="2666247341166669829">இடதுபக்க பட் பேட்டரி நிலை <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ஆப்ஸ் திறக்கும் அதே இணைப்புகளைப் பிற ஆப்ஸும் திறக்கும் வகையில் அமைக்கப்பட்டுள்ளன. இதை மாற்றினால், ஆதரிக்கப்படும் இணைப்புகளைத் திறப்பதில் இருந்து <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ஆகியவை முடக்கப்படும்.</translation>
 <translation id="2667463864537187133">எழுத்துப் பிழை சரிபார்ப்பானை நிர்வகி</translation>
@@ -4279,6 +4282,7 @@
 <translation id="3893536212201235195">உங்கள் அணுகல்தன்மை அமைப்புகளைப் படித்தல் மற்றும் மாற்றுதல்</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">உங்கள் கணக்கில் புக்மார்க்குகளைச் சேமிக்க, பயன்படுத்தாத புக்மார்க்குகளை நீக்கவும்</translation>
 <translation id="3894427358181296146">ஃபோல்டரைச் சேர்</translation>
 <translation id="3895076768659607631">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
 <translation id="3895090224522145010">Kerberos பயனர்பெயர்</translation>
@@ -5004,6 +5008,7 @@
 <translation id="4405781821077215583">வார்த்தைகள் உட்பட திரையில் தெரிபவற்றைச் சிறிதாக்கலாம் பெரிதாக்கலாம்</translation>
 <translation id="4406308048672435032">இந்தப் பக்கத்தை முடக்கலாம் அல்லது முழுப் பட்டியலையும் மீண்டும் பார்க்க ரெஃப்ரெஷ் செய்யலாம்</translation>
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
+<translation id="4406963243402726564">தரவு சேமிக்கப்படவில்லை</translation>
 <translation id="4408599188496843485">உ&amp;தவி</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> என்பதே உங்கள் தேடல் இன்ஜின். அதன் வழிமுறைகளைப் பார்த்து தேடல் விவரங்களை நீக்குங்கள் (நீக்க அனுமதி இருந்தால்).</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{உங்கள் நிர்வாகியால் <ph name="APP0_NAME" /> ஆப்ஸ் மூலம் உங்கள் திரையை ரெக்கார்டு செய்ய முடியும். ரெக்கார்டிங் தொடங்கும்போது உங்களுக்குத் தெரிவிக்கப்படும்.}=2{உங்கள் நிர்வாகியால் <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ஆகிய ஆப்ஸ் மூலம் உங்கள் திரையை ரெக்கார்டு செய்ய முடியும். ரெக்கார்டிங் தொடங்கும்போது உங்களுக்குத் தெரிவிக்கப்படும்.}=3{உங்கள் நிர்வாகியால் <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> மற்றும் 1 ஆப்ஸ் மூலம் உங்கள் திரையை ரெக்கார்டு செய்யலாம். ரெக்கார்டிங் தொடங்கும்போது உங்களுக்குத் தெரிவிக்கப்படும்.}other{உங்கள் நிர்வாகியால் <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> மற்றும் # ஆப்ஸ் மூலம் உங்கள் திரையை ரெக்கார்டு செய்ய முடியும். ரெக்கார்டிங் தொடங்கும்போது உங்களுக்குத் தெரிவிக்கப்படும்.}}</translation>
@@ -5429,6 +5434,7 @@
 <translation id="4699473989647132421">கரை</translation>
 <translation id="4701025263201366865">பெற்றோர் உள்நுழைதல்</translation>
 <translation id="4701335814944566468">நேற்று பார்வையிடப்பட்டது</translation>
+<translation id="4702504834785592287">சைடு</translation>
 <translation id="470644585772471629">கலர் இன்வெர்ஷன்</translation>
 <translation id="4707337002099455863">அனைத்துத் தளங்களுக்கும் எப்போதும் அனுமதி</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
@@ -9264,7 +9270,6 @@
 <translation id="7410344089573941623">உங்கள் கேமராவையும் மைக்ரோஃபோனையும் <ph name="HOST" /> அணுக வேண்டுமெனில் கேட்க வேண்டும்</translation>
 <translation id="7410421966064092098">நீங்கள் ரோபோ அல்ல என்பதை உறுதிப்படுத்த தளங்களால் உதவ முடியாது</translation>
 <translation id="7410852728357935715">சாதனத்திற்கு அலைபரப்பு</translation>
-<translation id="741148343080227980"><ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google கணக்கில்<ph name="END_LINK" /> உங்கள் பெயரைத் திருத்தலாம்.</translation>
 <translation id="741204030948306876">ஏற்கிறேன்</translation>
 <translation id="7412226954991670867">GPU நினைவகம்</translation>
 <translation id="741370456693729525">இதுவரை இணையத்தில் பார்த்தவற்றைத் தேடவும் நீங்கள் பார்வையிட்ட தளங்களைக் கண்டறியவும் தினமும் பயன்படுத்தும் மொழியைப் பயன்படுத்தலாம்</translation>

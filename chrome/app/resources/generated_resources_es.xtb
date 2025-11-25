@@ -1417,6 +1417,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1949980990364952348">Nombre de la aplicación</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1951823516285577843">Buscar alternativa</translation>
+<translation id="1953626242273481999">¿Permitir depuración remota?</translation>
 <translation id="1953796913175502363">Configura tu perfil de trabajo</translation>
 <translation id="1954597385941141174">Los sitios pueden solicitar permiso para conectarse a dispositivos USB</translation>
 <translation id="1954813140452229842">No se ha podido activar el recurso compartido. Comprueba tus credenciales y vuelve a intentarlo.</translation>
@@ -1800,6 +1801,9 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="222115440608612541">Cambia de tema al amanecer y al atardecer</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Una aplicación externa quiere tener control total sobre esta sesión de Chrome para depurarla. Esto incluye el acceso a tus datos guardados, cookies y datos de sitios, así como la posibilidad de ir a cualquier URL.
+
+Solo los desarrolladores web deben activar esta función y solo deben usarla con aplicaciones de confianza.</translation>
 <translation id="222201875806112242">Fuente multimedia sin nombre</translation>
 <translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2224444042887712269">Esta opción pertenece a <ph name="OWNER_EMAIL" />.</translation>
@@ -1906,6 +1910,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2294081976975808113">Privacidad de pantalla</translation>
 <translation id="2294358108254308676">¿Quieres instalar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revisa tus ajustes</translation>
+<translation id="229524410604268773">Desactivar en la configuración</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> requiere que el dispositivo esté online cuando se inicie sesión con <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Detección de dispositivos</translation>
@@ -2454,6 +2459,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2665394472441560184">Añade una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">¡Vaya! Se ha producido un error dando formato.</translation>
+<translation id="2666092431469916601">Arriba</translation>
 <translation id="2666247341166669829">Nivel de batería del auricular izquierdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestionar el corrector ortográfico</translation>
@@ -5411,6 +5417,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
+<translation id="4702504834785592287">Cara</translation>
 <translation id="470644585772471629">Invertir colores</translation>
 <translation id="4707337002099455863">Permitir siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
@@ -9243,7 +9250,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7410344089573941623">Preguntar si <ph name="HOST" /> quiere acceder a la cámara y al micrófono</translation>
 <translation id="7410421966064092098">Los sitios no pueden ayudar a verificar que no eres un bot</translation>
 <translation id="7410852728357935715">Enviar a un dispositivo</translation>
-<translation id="741148343080227980">Puedes editar tu nombre <ph name="BEGIN_LINK" />en tu cuenta de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7412226954991670867">Memoria de la GPU</translation>
 <translation id="741370456693729525">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado.</translation>

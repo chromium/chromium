@@ -693,6 +693,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2127747486437921899">Huruf condong</translation>
 <translation id="2130448033692577677">Templat yang anda nyatakan tidak dapat digunakan kerana dasar DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Enjin carian ini ditunjukkan dalam tertib rawak. Anda boleh mengubah pilihan lalai anda pada bila-bila masa.</translation>
 <translation id="2137891579555018930">Menunggu kebenaran...</translation>
 <translation id="213826338245044447">Penanda Halaman Mudah Alih</translation>
@@ -912,6 +913,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2452837234288608067">Perkara itu tidak dapat dibantu. Cuba lagi.</translation>
 <translation id="2453045048779611513">Organisasi anda mengehadkan perkara yang boleh anda simpan</translation>
 <translation id="2456755709261364512">Bateri anda perlu dicas melebihi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Dasar penyemak imbas yang digunakan (dasar mesin dan profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core memberi anda alat terpusat untuk mengkonfigurasikan dasar penyemak imbas daripada awan</translation>
 <translation id="2461822463642141190">Semasa</translation>
 <translation id="2462932596748424101">Rangkaian Sosial</translation>
@@ -1123,6 +1125,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2826760142808435982">Sambungan disulitkan dan disahkan menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2833637280516285136">Radio Bual</translation>
 <translation id="2835170189407361413">Kosongkan borang</translation>
+<translation id="2835907903001172712">Ikhtisar penyemak imbas</translation>
 <translation id="2837891525090413132">Boleh meminta untuk mengunci dan menggunakan papan kekunci anda</translation>
 <translation id="2839032553903800133">Pemberitahuan disekat</translation>
 <translation id="2839501879576190149">Tapak palsu di hadapan</translation>
@@ -1529,7 +1532,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3498215018399854026">Kami tidak dapat menghubungi ibu bapa anda pada masa ini. Sila cuba lagi.</translation>
 <translation id="350069200438440499">Nama fail:</translation>
 <translation id="3501300228850242680">Metal (Muzik)</translation>
-<translation id="350274464456291051">Anda boleh mengedit nama anda <ph name="BEGIN_LINK" />dalam Google Account anda<ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Label (Kilat Tinggi)</translation>
 <translation id="350763432931695541">Mengekstrak teks dalam beberapa halaman seterusnya</translation>
 <translation id="3507869775212388416">Pekerjaan Perundangan</translation>
@@ -1558,6 +1560,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3543935938072367282">Semak keluar lebih pantas dengan ciri autolengkap</translation>
 <translation id="3547442767634383572">Gambaran keseluruhan profil kerja</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
+<translation id="3549904448933807997">Maklumat penyemak imbas &amp; profil (termasuk profil peribadi dan kerja)</translation>
 <translation id="3552155506104542239">Amaran: Dasar ini bercanggah dengan <ph name="POLICY_NAME" /> dan tidak akan memberikan kesan pada apl Android. Jika tidak, dasar ini berfungsi sewajarnya.</translation>
 <translation id="3552297013052089404">Fon Sans-serif</translation>
 <translation id="3558573058928565255">Waktu siang</translation>
@@ -2400,6 +2403,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4887406273302438710">Lindungi kata laluan dengan Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab, kemudian Enter untuk memadamkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="4892518386797173871">Belakang</translation>
+<translation id="4894390983254799375">Seperti ID peranti, nama, versi OS dan nama pengguna OS</translation>
 <translation id="4895019427244614047">Padamkan alamat</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpik</translation>
@@ -2935,6 +2939,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5764920692828389743">Hantar kepada <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
 <translation id="57689295674415555">Nombor kad maya tidak diisikan?</translation>
+<translation id="5773286975255318081">Seperti nama pengguna profil &amp; versi penyemak imbas</translation>
 <translation id="5776313857861697733">Keutamaan</translation>
 <translation id="577804500166306874">Hasil carian sedang dimuatkan</translation>
 <translation id="5781136890105823427">Percubaan didayakan</translation>
@@ -3411,7 +3416,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6522682797352430154">Muzik Klasik</translation>
 <translation id="6524830701589638230">Urus butang tetapan kebolehaksesan, aktifkan untuk memeribadikan alatan kebolehaksesan anda dalam tetapan Chrome</translation>
-<translation id="6525222262307262764">Kekalkan lalai semasa</translation>
 <translation id="6527049834925947126">Pengeluaran Makanan</translation>
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
@@ -3550,6 +3554,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6772959465807028761">Untuk menggunakan YouTube, teruskan langkah dengan Google Account anda</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Gunakan YouTube dengan pilihan ibu bapa anda</translation>
+<translation id="6779290995699117286">Maklumat profil, penyemak imbas dan peranti boleh diakses oleh pentadbir anda. Mereka boleh melihat:</translation>
 <translation id="6779348349813025131">Google Password Manager memerlukan akses kepada MacOS Keychain</translation>
 <translation id="6780449997190414928">Anda biasanya menyambung kepada laman ini dengan selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada masa ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Anda boleh menukar enjin carian anda pada bila-bila masa dalam tetapan Chrome.</translation>
@@ -4396,6 +4401,7 @@ Butiran tambahan:
 <translation id="8135546115396015134">kekunci kiri</translation>
 <translation id="8137456439814903304">Tenaga &amp; Utiliti</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan yang lalu}other{Dibuat {NUM_MONTHS} bulan yang lalu}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, lalai semasa. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer anda dalam mod tidur.</translation>
 <translation id="815036624016370447">Maklumat daripada Google Account <ph name="ACCOUNT" /> anda boleh membantu anda mengisi borang dengan lebih pantas dalam Chrome</translation>
@@ -4686,6 +4692,7 @@ Butiran tambahan:
 <translation id="8606988009912891950">Topik iklan membantu laman memaparkan iklan yang berkaitan kepada anda sambil melindungi sejarah penyemakan imbas dan identiti anda. Chrome boleh mengetahui topik yang anda minati berdasarkan sejarah penyemakan imbas anda baru-baru ini. Kemudian, laman yang anda lawati boleh meminta topik yang berkaitan daripada Chrome untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="8612919051706159390">Komuniti Dalam Talian</translation>
 <translation id="8617269623452051934">penggunaan peranti anda</translation>
+<translation id="8619130384334725124">Lalai semasa</translation>
 <translation id="8620276786115098679">Sampul Kaku 7</translation>
 <translation id="8622864575115813231">Menghubungi institusi kewangan anda...</translation>
 <translation id="8624354461147303341">Dapatkan diskaun</translation>

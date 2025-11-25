@@ -1750,12 +1750,6 @@ Từ phiên bản 114 trở đi, bạn không bắt buộc phải đặt <ph nam
       Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng có thể sử dụng giao diện dòng lệnh (CLI) quản lý máy ảo (VM).
       Nếu không, tất cả CLI quản lý máy ảo đều bị tắt và ẩn.
       </translation>
-<translation id="2194051055390000601">Chính sách kiểm soát việc có thể tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng hay không.
-
-Nếu bạn đặt chính sách này thành Tắt, thì chế độ cài đặt Chủ đề quảng cáo sẽ tắt cho người dùng của bạn.
-Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì người dùng sẽ có thể bật hoặc tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị.
-
-Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> thành Tắt.</translation>
 <translation id="2195032660890227692">Chính sách này đã bị xóa trong <ph name="PRODUCT_NAME" /> 68 và thay thế bằng <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Khi bạn đặt chính sách này thành true, thì bàn phím số sẽ hiển thị theo mặc định để người dùng nhập mật khẩu trên màn hình đăng nhập. Người dùng vẫn có thể chuyển sang bàn phím thông thường.
 
@@ -8197,6 +8191,45 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ 
 <translation id="6412793408912788345">Hiển thị màn hình giới thiệu Gemini trong quy trình đăng nhập</translation>
 <translation id="6416506846917150119">Tắt tính năng gợi ý khi viết bằng bàn phím vật lý khi người dùng đánh máy</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
+<translation id="6417827417523888006">Chính sách này cung cấp một cách ghi đè danh sách các bộ mà trình duyệt dùng cho các tính năng của Bộ trang web có liên quan.
+
+Chính sách này ghi đè chính sách <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Mỗi bộ trong danh sách Bộ trang web có liên quan của trình duyệt đều phải đáp ứng các yêu cầu của Bộ trang web có liên quan.
+Bộ trang web có liên quan phải chứa một trang web chính và tối thiểu một trang web thành viên.
+Một bộ cũng có thể chứa danh sách trang web dịch vụ thuộc sở hữu của bộ đó và bản đồ từ một trang web đến tất cả biến thể ccTLD (miền cấp cao nhất theo mã quốc gia) của trang web đó.
+Hãy truy cập https://github.com/WICG/first-party-sets để biết thêm thông tin về cách <ph name="PRODUCT_NAME" /> sử dụng Bộ trang web có liên quan.
+
+
+Tất cả trang web trong một Bộ trang web có liên quan đều phải là miền có thể đăng ký và được phân phát qua HTTPS. Mỗi trang web trong một Bộ trang web có liên quan cũng phải là duy nhất,
+nghĩa là mỗi trang web chỉ được liệt kê một lần trong một Bộ trang web có liên quan.
+
+Khi bạn cung cấp một từ điển trống cho chính sách này, trình duyệt sẽ sử dụng danh sách Bộ trang web có liên quan công khai.
+
+Đối với mọi trang web ở Bộ trang web có liên quan trong danh sách <ph name="REPLACEMENTS" />, nếu một trang web cũng xuất hiện
+trong Bộ trang web có liên quan thuộc danh sách của trình duyệt thì trang web đó sẽ bị loại bỏ khỏi Bộ trang web có liên quan của trình duyệt.
+Sau đó, Bộ trang web có liên quan của chính sách sẽ được thêm vào danh sách Bộ trang web có liên quan của trình duyệt.
+
+Đối với mọi trang web ở Bộ trang web có liên quan trong danh sách <ph name="ADDITIONS" />, nếu một trang web cũng xuất hiện
+trong Bộ trang web có liên quan thuộc danh sách của trình duyệt thì Bộ trang web có liên quan của trình duyệt sẽ được cập nhật sao cho
+có thể thêm Bộ trang web có liên quan mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt được cập nhật,
+Bộ trang web có liên quan của chính sách sẽ được thêm vào danh sách Bộ trang web có liên quan của trình duyệt.
+
+Danh sách Bộ trang web có liên quan của trình duyệt yêu cầu mỗi trang web thuộc danh sách này
+chỉ được xuất hiện trong một bộ. Đây cũng là yêu cầu đối với cả danh sách <ph name="REPLACEMENTS" />
+và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, một trang web không được xuất hiện trong cả
+danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
+
+Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi Bộ trang web có liên quan thuộc những danh sách này.
+
+Mọi bộ mà chính sách cung cấp đều phải là Bộ trang web có liên quan hợp lệ. Nếu không,
+lỗi tương ứng sẽ xảy ra.
+
+Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Chính sách này không còn được dùng kể từ <ph name="PRODUCT_NAME" /> phiên bản 144 khi tính năng Bộ trang web có liên quan không còn được dùng nữa.</translation>
 <translation id="6419001911253110938">Cho phép hiển thị màn hình giới thiệu các tính năng AI trong phiên hoạt động trong quy trình đăng nhập</translation>
 <translation id="6421254653839955267">Nếu bạn đặt chính sách này thành Enabled (Bật), hệ thống sẽ bỏ qua quá trình tra cứu CNAME. Khi đó, tên máy chủ bạn đã nhập khi tạo SPN Kerberos sẽ được sử dụng.
 
@@ -11636,6 +11669,15 @@ giao thức https.</translation>
 <translation id="8734543507835977857">Bắt đầu thời gian trì hoãn của chính sách quản lý nguồn và giới hạn thời lượng phiên hoạt động khi phiên bắt đầu</translation>
 <translation id="8736538322216687231">Buộc sử dụng Chế độ hạn chế tối thiểu trên YouTube</translation>
 <translation id="873800217865395140">Chu kỳ thu thập dữ liệu đo từ xa của trang web tính bằng mili giây.</translation>
+<translation id="8742596277791362306">Chính sách này cho phép kiểm soát việc bật tính năng Bộ trang web có liên quan.
+
+Chính sách này ghi đè chính sách <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Khi bạn không đặt chính sách này hoặc đặt thành True, tính năng Bộ trang web có liên quan sẽ bật.
+
+Khi bạn đặt chính sách này thành False, tính năng Bộ trang web có liên quan sẽ tắt.
+
+Chính sách này không còn được dùng kể từ <ph name="PRODUCT_NAME" /> phiên bản 144 khi tính năng Bộ trang web có liên quan không còn được dùng nữa.</translation>
 <translation id="8743149927570551353">Định cấu hình thời điểm hoạt động cho công cụ Chuyển nội dung trên <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Cho phép khảo sát về Duyệt web an toàn</translation>
 <translation id="8744844164152340112">Cài đặt giao diện dùng để kết xuất giao diện người dùng khi OOBE và trong phiên sử dụng (tối/sáng/tự động).

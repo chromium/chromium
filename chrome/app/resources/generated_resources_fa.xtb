@@ -1424,6 +1424,7 @@
 <translation id="1949980990364952348">نام برنامه</translation>
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1951823516285577843">پیدا کردن جایگزین</translation>
+<translation id="1953626242273481999">اشکال‌زدایی از راه دور مجاز شود؟</translation>
 <translation id="1953796913175502363">راه‌اندازی نمایه کاری</translation>
 <translation id="1954597385941141174">‏سایت‌ها می‌توانند اتصال به دستگاه‌های USB را درخواست کنند</translation>
 <translation id="1954813140452229842">هنگام نشاندن دستگاه ذخیره‌سازی متصل به شبکه خطایی روی داد. لطفاً اطلاعات کاربری را بررسی کنید و دوباره امتحان کنید.</translation>
@@ -1807,6 +1808,9 @@
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="222115440608612541">عوض شدن طرح زمینه هنگام طلوع و غروب</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">‏برنامه خارجی‌ای می‌خواهد کنترل کامل این جلسه Chrome را برای اشکال‌زدایی کردن آن دراختیار بگیرد. این شامل دسترسی به داده‌های ذخیره‌شده شما، کوکی‌ها، و داده‌های سایت، و امکان پیمایش به هر نشانی وبی می‌شود.
+
+فقط توسعه‌دهندگان وب باید این ویژگی را روشن کنند، و از آن فقط با برنامه‌های مورداعتماد استفاده کنند.</translation>
 <translation id="222201875806112242">منبع رسانه بدون نام</translation>
 <translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
 <translation id="2224444042887712269">این تنظیم به <ph name="OWNER_EMAIL" /> متعلق است.</translation>
@@ -1915,6 +1919,7 @@
 <translation id="2294081976975808113">حریم خصوصی صفحه‌نمایش</translation>
 <translation id="2294358108254308676">آیا می‌خواهید <ph name="PRODUCT_NAME" /> را نصب کنید؟</translation>
 <translation id="229477815107578534">مرور تنظیمات</translation>
+<translation id="229524410604268773">خاموش کردن در «تنظیمات»</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> نتیجه</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> لازم می‌داند که دستگاه هنگام ورود به سیستم <ph name="EMAIL" /> آنلاین باشد</translation>
 <translation id="2296218178174497398">کشف دستگاه</translation>
@@ -2463,6 +2468,7 @@
 <translation id="2665394472441560184">افزودن کلمه جدید</translation>
 <translation id="2665647207431876759">منقضی شد</translation>
 <translation id="2665919335226618153">اوه، نه! هنگام قالب‌بندی خطایی رخ داد.</translation>
+<translation id="2666092431469916601">بالا</translation>
 <translation id="2666247341166669829">سطح باتری سمت چپ <ph name="PERCENTAGE" />٪.</translation>
 <translation id="2667144577800272420">برنامه‌های دیگری تنظیم شده‌اند تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کنند. با این کار <ph name="APP_NAME_2" /> و <ph name="APP_NAME_3" /> غیرفعال خواهند شد تا پیوندهای پشتیبانی‌شده را باز نکنند.</translation>
 <translation id="2667463864537187133">مدیریت غلط‌یاب املایی</translation>
@@ -5421,6 +5427,7 @@
 <translation id="4699473989647132421">خط ساحلی</translation>
 <translation id="4701025263201366865">ورود ولی به سیستم</translation>
 <translation id="4701335814944566468">دیروز مشاهده شده</translation>
+<translation id="4702504834785592287">رو</translation>
 <translation id="470644585772471629">وارونگی رنگ</translation>
 <translation id="4707337002099455863">همیشه در همه سایت‌ها روشن باشد</translation>
 <translation id="4708849949179781599">خروج از <ph name="PRODUCT_NAME" /></translation>
@@ -9257,7 +9264,6 @@
 <translation id="7410344089573941623">بپرسید که آیا <ph name="HOST" /> می‌خواهد به دوربین و میکرفون شما دسترسی داشته باشد</translation>
 <translation id="7410421966064092098">سایت‌ها نمی‌توانند به تأیید اینکه شما روبات نیستید کمک کنند</translation>
 <translation id="7410852728357935715">پخش محتوا به دستگاه</translation>
-<translation id="741148343080227980">‏می‌توانید نامتان را <ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> ویرایش کنید.</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7412226954991670867">‏حافظه GPU</translation>
 <translation id="741370456693729525">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید</translation>

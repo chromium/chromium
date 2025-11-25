@@ -1425,6 +1425,7 @@
 <translation id="1949980990364952348">యాప్ పేరు</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">ఆల్టర్నేటివ్‌ను కనుగొనండి</translation>
+<translation id="1953626242273481999">రిమోట్ డీబగ్గింగ్‌ను అనుమతించాలా?</translation>
 <translation id="1953796913175502363">మీ వర్క్ ప్రొఫైల్‌ను సెటప్ చేయండి</translation>
 <translation id="1954597385941141174">USB పరికరాలకు కనెక్ట్ అవ్వడం కోసం సైట్‌లు అడగగలవు</translation>
 <translation id="1954813140452229842">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మీ ఆధారాలను సరిచూసుకుని, మళ్లీ ట్రై చేయండి.</translation>
@@ -1808,6 +1809,9 @@
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="222115440608612541">సూర్యోదయ సమయంలో, సూర్యాస్తమయం సమయంలో రూపాలను మార్చండి</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">ఎక్స్‌టర్నల్ యాప్ దీన్ని డీబగ్ చేయడానికి ఈ Chrome సెషన్‌పై పూర్తి కంట్రోల్‌ను కోరుతోంది. ఇందులో మీ సేవ్ చేసిన డేటా, కుక్కీలు, సైట్ డేటాకు యాక్సెస్, ఏ URLకైనా నావిగేట్ చేసే సామర్థ్యం ఉంటాయి.
+
+వెబ్ డెవలపర్‌లు మాత్రమే ఈ ఫీచర్‌ను ఆన్ చేయాలి, విశ్వసనీయ యాప్‌లతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="222201875806112242">పేరు లేని మీడియా సోర్స్</translation>
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2224444042887712269">ఈ సెట్టింగ్ <ph name="OWNER_EMAIL" />కి సంబంధించినది.</translation>
@@ -1916,6 +1920,7 @@
 <translation id="2294081976975808113">స్క్రీన్ గోప్యత</translation>
 <translation id="2294358108254308676">మీరు <ph name="PRODUCT_NAME" />ను ఇన్‌స్టాల్ చేయాల‌నుకుంటున్నారా?</translation>
 <translation id="229477815107578534">మీ సెట్టింగ్‌లను రివ్యూ చేయండి</translation>
+<translation id="229524410604268773">సెట్టింగ్‌లలో ఆఫ్ చేయండి</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> ఫలితాలు</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" />కి <ph name="EMAIL" />కు సైన్ ఇన్ చేసేటప్పుడు పరికరం ఆన్‌లో ఉండాలి</translation>
 <translation id="2296218178174497398">పరికర శోధన</translation>
@@ -2464,6 +2469,7 @@
 <translation id="2665394472441560184">కొత్త పదాన్ని జోడించండి</translation>
 <translation id="2665647207431876759">గడువు ముగిసింది</translation>
 <translation id="2665919335226618153">అయ్యో! ఫార్మాటింగ్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
+<translation id="2666092431469916601">పైన</translation>
 <translation id="2666247341166669829">ఎడమ వైపు వైర్‌లెస్ బడ్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
@@ -5422,6 +5428,7 @@
 <translation id="4699473989647132421">సముద్రతీరం</translation>
 <translation id="4701025263201366865">తల్లి/తండ్రి సైన్ ఇన్</translation>
 <translation id="4701335814944566468">నిన్న చూశారు</translation>
+<translation id="4702504834785592287">పక్కన</translation>
 <translation id="470644585772471629">కలర్ మార్పిడి</translation>
 <translation id="4707337002099455863">ఎల్లప్పుడూ అన్ని సైట్‌లలో అనుమతించండి</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> నిష్క్రమించండి</translation>
@@ -9255,7 +9262,6 @@
 <translation id="7410344089573941623"><ph name="HOST" /> మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్ చేయాలని అనుకుంటే నాకు తెలియజేయి</translation>
 <translation id="7410421966064092098">మీరు బాట్ కాదు అని వెరిఫై చేయడంలో సైట్‌లు సహాయపడలేవు</translation>
 <translation id="7410852728357935715">పరికరానికి ప్రసారం చేయండి</translation>
-<translation id="741148343080227980">మీరు <ph name="BEGIN_LINK" />మీ Google ఖాతా <ph name="USERNAME" /><ph name="END_LINK" />‌లో మీ పేరును ఎడిట్ చేయవచ్చు.</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
 <translation id="7412226954991670867">GPU మెమరీ</translation>
 <translation id="741370456693729525">మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయడానికి, మీరు బ్రౌజ్ చేసిన సైట్‌లను కనుగొనడానికి రోజువారీ భాషను ఉపయోగించండి</translation>

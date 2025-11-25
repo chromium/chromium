@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">ઇટાલિક</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode પૉલિસી સેટ ન કરી હોવાને કારણે તમે ઉલ્લેખ કરેલા નમૂનાને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">આને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે. તમારું ડિફૉલ્ટ શોધ એન્જિન કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="2137891579555018930">પરવાનગીની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="213826338245044447">મોબાઇલ બુકમાર્ક</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">તેના માટે મદદ કરી શક્યા નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="2453045048779611513">તમે શું સાચવી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે</translation>
 <translation id="2456755709261364512">તમારી બૅટરી <ph name="REQUIRED_BATTERY_PRECENT" />%થી વધુ ચાર્જ હોવી આવશ્યક છે</translation>
+<translation id="2459882793359532780">લાગુ કરેલી બ્રાઉઝર સંબંધિત પૉલિસીઓ (મશીન અને પ્રોફાઇલ સંબંધિત પૉલિસીઓ)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ક્લાઉડમાંથી બ્રાઉઝર પૉલિસીઓ ગોઠવવા માટે તમને કેન્દ્રીય ટૂલ આપે છે</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2462932596748424101">સોશિયલ નેટવર્ક</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
 <translation id="2833637280516285136">ટૉક રેડિયો</translation>
 <translation id="2835170189407361413">ફોર્મ સાફ કરો</translation>
+<translation id="2835907903001172712">બ્રાઉઝરનો ઓવરવ્યૂ</translation>
 <translation id="2837891525090413132">લૉક કરવા માટે પૂછી શકે છે અને તમારા કીબોર્ડનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2839501879576190149">આગળ નકલી સાઇટ છે</translation>
@@ -1529,7 +1532,6 @@
 <translation id="3498215018399854026">અમે આ પળે તમારા વાલી સુધી પહોંચી શક્યાં નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="350069200438440499">ફાઇલનું નામ:</translation>
 <translation id="3501300228850242680">મેટલ (મ્યુઝિક)</translation>
-<translation id="350274464456291051">તમે <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં<ph name="END_LINK" /> જઈને તમારા નામમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="350421688684366066">લેબલ (હાઇ-ગ્લોસ)</translation>
 <translation id="350763432931695541">આગામી થોડાક પેજમાં ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છે</translation>
 <translation id="3507869775212388416">કાનૂની નોકરીઓ</translation>
@@ -1558,6 +1560,7 @@
 <translation id="3543935938072367282">ઑટોમૅટિક રીતે ભરવાની સુવિધા વડે વધુ ઝડપથી ચેકઆઉટ કરો</translation>
 <translation id="3547442767634383572">ઑફિસની પ્રોફાઇલનો ઓવરવ્યૂ</translation>
 <translation id="3547746132308051926">20 x 24 ઇંચ</translation>
+<translation id="3549904448933807997">બ્રાઉઝર અને પ્રોફાઇલની માહિતી (વ્યક્તિગત અને ઑફિસની પ્રોફાઇલ સહિત)</translation>
 <translation id="3552155506104542239">ચેતવણી: આ પૉલિસી <ph name="POLICY_NAME" /> સાથે વિરોધાભાસ ધરાવે છે અને Android ઍપ પર તેની કોઈ અસર થશે નહીં. નહિંતર, આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
 <translation id="3552297013052089404">Sans-Serif ફૉન્ટ</translation>
 <translation id="3558573058928565255">દિવસનો સમય</translation>
@@ -2399,6 +2402,7 @@
 <translation id="4887406273302438710">Windows Hello વડે પાસવર્ડની સુરક્ષા કરો</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="4892518386797173871">પાછળ</translation>
+<translation id="4894390983254799375">જેમ કે ડિવાઇસ ID, નામ, OS વર્ઝન અને OS વપરાશકર્તાનું નામ</translation>
 <translation id="4895019427244614047">સરનામું ડિલીટ કરો</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ઑલિમ્પિક</translation>
@@ -2934,6 +2938,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> પર મોકલો</translation>
 <translation id="5765072501007116331">વિતરણ પદ્ધતિઓ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="57689295674415555">શું તમારો વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવ્યો નથી?</translation>
+<translation id="5773286975255318081">જેમ કે પ્રોફાઇલના વપરાશકર્તાના નામ અને બ્રાઉઝરના વર્ઝન</translation>
 <translation id="5776313857861697733">પ્રાધાન્યતા</translation>
 <translation id="577804500166306874">પરિણામ લોડ થઈ રહ્યું છે</translation>
 <translation id="5781136890105823427">પ્રયોગ ચાલુ કર્યો</translation>
@@ -3410,7 +3415,6 @@
 <translation id="6521745193039995384">સક્રિય નથી</translation>
 <translation id="6522682797352430154">શાસ્ત્રીય સંગીત</translation>
 <translation id="6524830701589638230">'ઍક્સેસિબિલિટી સેટિંગ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારા ઍક્સેસિબિલિટી ટૂલ મનગમતા બનાવવા માટે સક્રિય કરો</translation>
-<translation id="6525222262307262764">હાલનું ડિફૉલ્ટ જાળવી રાખો</translation>
 <translation id="6527049834925947126">ખાદ્ય પ્રોડક્શન</translation>
 <translation id="6529173248185917884">સાતમો રોલ</translation>
 <translation id="6529602333819889595">&amp;ફરી કરો ડિલીટ કરો</translation>
@@ -3549,6 +3553,7 @@
 <translation id="6772959465807028761">YouTubeનો ઉપયોગ કરવા માટે, તમારા Google એકાઉન્ટ વડે ચાલુ રાખો</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">તમારા માતાપિતાની પસંદગીઓ સાથે YouTubeનો ઉપયોગ કરો</translation>
+<translation id="6779290995699117286">તમારા ઍડમિનિસ્ટ્રેટર પ્રોફાઇલ, બ્રાઉઝર અને ડિવાઇસની માહિતીને ઍક્સેસ કરી શકે છે. તેઓ આ જોઈ શકે છે:</translation>
 <translation id="6779348349813025131">Google Password Managerને MacOS કીચેનનો ઍક્સેસ હોવો જરૂરી છે</translation>
 <translation id="6780449997190414928">તમે સામાન્ય રીતે આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ કરો છો, પણ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ અટૅક કરનારાએ તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">તમે Chromeના સેટિંગમાં જઈને કોઈપણ સમયે તમારા શોધ એન્જિનમાં ફેરફાર કરી શકો છો.</translation>
@@ -4395,6 +4400,7 @@
 <translation id="8135546115396015134">ડાબી કી</translation>
 <translation id="8137456439814903304">ઊર્જા અને યુટિલિટી</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 મહિના પહેલાં બનાવ્યું}one{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}other{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, હાલનું ડિફૉલ્ટ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="815036624016370447">તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માંની માહિતી તમને Chromeમાં વધુ ઝડપથી ફોર્મ ભરવામાં મદદ કરી શકે છે</translation>
@@ -4684,6 +4690,7 @@
 <translation id="8606988009912891950">જાહેરાતના વિષયો તમને સંબંધિત જાહેરાતો બતાવવામાં તેમજ તમારો બ્રાઉઝિંગ ઇતિહાસ અને ઓળખ છુપાવવામાં સાઇટને સહાય કરે છે. તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે Chrome રુચિઓ સંબંધી વિષયોની નોંધ લઈ શકે છે. તે પછી, તમે ઉપયોગ કરો છો એ ઍપ તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવવા માટે, Chrome પાસે સંબંધિત વિષયોની માહિતી માગી શકે છે.</translation>
 <translation id="8612919051706159390">ઑનલાઇન સમુદાયો</translation>
 <translation id="8617269623452051934">તમારા ડિવાઇસનો વપરાશ</translation>
+<translation id="8619130384334725124">હાલનું ડિફૉલ્ટ</translation>
 <translation id="8620276786115098679">એન્વલપ કાકૂ 7</translation>
 <translation id="8622864575115813231">તમારી નાણાકીય સંસ્થાનો સંપર્ક કરી રહ્યાં છીએ...</translation>
 <translation id="8624354461147303341">છૂટ મેળવો</translation>

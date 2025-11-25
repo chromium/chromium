@@ -1417,6 +1417,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1949980990364952348">App-naam</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Alternatief zoeken</translation>
+<translation id="1953626242273481999">Foutopsporing op afstand toestaan?</translation>
 <translation id="1953796913175502363">Je werkprofiel instellen</translation>
 <translation id="1954597385941141174">Sites kunnen vragen of ze verbinding mogen maken met USB-apparaten</translation>
 <translation id="1954813140452229842">Fout bij het activeren van de fileshare. Controleer je inloggegevens en probeer het opnieuw.</translation>
@@ -1800,6 +1801,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="222115440608612541">Wijzig het thema bij zonsopgang en zonsondergang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Een externe app wil volledige controle over deze Chrome-sessie om hiervoor foutopsporing uit te voeren. Dit omvat toegang tot je opgeslagen gegevens, cookies en sitegegevens en de mogelijkheid om naar elke URL te navigeren.
+
+Alleen webontwikkelaars mogen deze functie aanzetten en alleen gebruiken met vertrouwde apps.</translation>
 <translation id="222201875806112242">Naamloze mediabron</translation>
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="2224444042887712269">Deze instelling hoort bij <ph name="OWNER_EMAIL" />.</translation>
@@ -1905,6 +1909,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2294081976975808113">Schermprivacy</translation>
 <translation id="2294358108254308676">Wil je <ph name="PRODUCT_NAME" /> installeren?</translation>
 <translation id="229477815107578534">Bekijk je instellingen</translation>
+<translation id="229524410604268773">Uitzetten in Instellingen</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultaten</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> vereist dat het apparaat online is als er wordt ingelogd op <ph name="EMAIL" /></translation>
 <translation id="2296218178174497398">Apparaatdetectie</translation>
@@ -2453,6 +2458,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
 <translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
+<translation id="2666092431469916601">Boven</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
@@ -4412,7 +4418,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3988124842897276887">Dit tabblad is gekoppeld aan een USB-apparaat</translation>
 <translation id="3988996860813292272">Tijdzone selecteren</translation>
-<translation id="3989635538409502728">Afmelden</translation>
+<translation id="3989635538409502728">Uitloggen</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van dit apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van dit apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" />
@@ -5408,6 +5414,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4699473989647132421">Kustlijn</translation>
 <translation id="4701025263201366865">Inloggen voor ouders</translation>
 <translation id="4701335814944566468">Gisteren bekeken</translation>
+<translation id="4702504834785592287">Team</translation>
 <translation id="470644585772471629">Kleurinversie</translation>
 <translation id="4707337002099455863">Altijd op alle sites</translation>
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
@@ -9237,7 +9244,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7410344089573941623">Vragen of <ph name="HOST" /> toegang wil tot je camera en microfoon</translation>
 <translation id="7410421966064092098">Sites kunnen niet verifiëren dat je geen bot bent</translation>
 <translation id="7410852728357935715">Casten naar een apparaat</translation>
-<translation id="741148343080227980">Je kunt je naam bewerken <ph name="BEGIN_LINK" />in je Google-account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
 <translation id="7412226954991670867">GPU-geheugen</translation>
 <translation id="741370456693729525">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht</translation>
@@ -9501,7 +9507,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7600218158048761260">Google Drive staat uit voor dit accounttype.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>
 <translation id="760197030861754408">Ga naar <ph name="LANDING_PAGE" /> om verbinding te maken.</translation>
-<translation id="7602079150116086782">Geen van andere apparaten</translation>
+<translation id="7602079150116086782">Geen tabbladen van andere apparaten</translation>
 <translation id="7602173054665172958">Afdrukbeheer</translation>
 <translation id="7603785829538808504">De hieronder vermelde sites volgen een aangepaste instelling</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 wachtwoord niet geïmporteerd}other{{NUM_PASSWORDS} wachtwoorden niet geïmporteerd}}</translation>
@@ -9945,7 +9951,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7897900149154324287">Zorg ervoor dat je je verwijderbare apparaat voortaan in de app Bestanden uitwerpt voordat je deze loskoppelt, anders kun je gegevens verliezen.</translation>
 <translation id="7898725031477653577">Altijd vertalen</translation>
 <translation id="7899720074434636454">Verzoek voor <ph name="EXTENSION_NAME" /> sluiten</translation>
-<translation id="7900950034255258543">Je organisatie kan informatie bekijken over het besturingssysteem, de browser, de instellingen en de geïnstalleerde software op het apparaat om te zorgen dat dit apparaat op een beter beveiligde manier kan worden gebruikt.</translation>
+<translation id="7900950034255258543">Je organisatie kan informatie bekijken over het besturingssysteem, de browser, de instellingen en de geïnstalleerde software op het apparaat om te zorgen dat dit apparaat op een beveiligde manier kan worden gebruikt.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901728443188947649">Afbeeldingen maken</translation>
 <translation id="7903429136755645827">Klik om je gamebediening aan te passen</translation>

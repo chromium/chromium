@@ -1420,6 +1420,7 @@
 <translation id="1949980990364952348">Назва праграмы</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1951823516285577843">Знайсці альтэрнатыву</translation>
+<translation id="1953626242273481999">Дазволіць аддаленую адладку?</translation>
 <translation id="1953796913175502363">Наладзьце працоўны профіль</translation>
 <translation id="1954597385941141174">Сайты могуць запытваць дазвол на падключэнне да прылад USB</translation>
 <translation id="1954813140452229842">Не ўдалося падключыць абагулены рэсурс. Праверце ўліковыя даныя і паўтарыце спробу.</translation>
@@ -1642,6 +1643,7 @@
 <translation id="2104166991923847969">Аўтаматычна выключаць хот-спот</translation>
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
 <translation id="2106439768713835453">Таксама абагульваць аўдыя з праграмы</translation>
+<translation id="2107359546799360577">Аптымізацыя JavaScript адключана.</translation>
 <translation id="2108204112555497972">Праверана <ph name="NUM_DAYS_HOURS_MINUTES" /> таму</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="2109384632594340939">відарыс профілю</translation>
@@ -1801,6 +1803,9 @@
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="222115440608612541">Пераключаць тэмы аўтаматычна ў залежнасці ад часу сутак</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Знешняя праграма запытвае поўны кантроль над гэтым сеансам Chrome для адладкі, у прыватнасці доступ да захаваных даных, файлаў cookie і даных сайтаў, а таксама магчымасць пераходу па любым URL-адрасе.
+
+Гэту функцыю павінны ўключаць толькі вэб-распрацоўшчыкі і выкарыстоўваць яе толькі з праграмамі, якім яны давяраюць.</translation>
 <translation id="222201875806112242">Крыніца медыя без назвы</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2224444042887712269">Гэта налада належыць карыстальніку <ph name="OWNER_EMAIL" />.</translation>
@@ -1906,6 +1911,7 @@
 <translation id="2294081976975808113">Прыватнасць змесціва экрана</translation>
 <translation id="2294358108254308676">Сапраўды ўсталяваць <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Праверце налады</translation>
+<translation id="229524410604268773">Выключыць у наладах</translation>
 <translation id="2295864384543949385">Вынікаў: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">Палітыка дамена <ph name="DOMAIN_NAME" /> патрабуе, каб пры ўваходзе ва ўліковы запіс <ph name="EMAIL" /> прылада была падключана да інтэрнэту</translation>
 <translation id="2296218178174497398">Выяўленне прылады</translation>
@@ -2054,6 +2060,7 @@
 <translation id="2390782873446084770">Сінхранізацыя параметраў Wi-Fi</translation>
 <translation id="2391419135980381625">Стандартны шрыфт</translation>
 <translation id="2391805183137601570">Адкрыць Steam</translation>
+<translation id="239185270194776190">Размова з Gemini адбываецца ў іншым акне. Каб перамясціць размову сюды, націсніце ў любым месцы на гэтай бакавой панэлі.</translation>
 <translation id="2392369802118427583">Уключыць</translation>
 <translation id="2393136602862631930">Усталюйце <ph name="APP_NAME" /> на свой Chromebook</translation>
 <translation id="2393313392064891208">Змест умоў выкарыстання АС Google Chrome OS Flex</translation>
@@ -2454,6 +2461,7 @@
 <translation id="2665394472441560184">Дадаць новае слова</translation>
 <translation id="2665647207431876759">Скончыўся тэрмін</translation>
 <translation id="2665919335226618153">На жаль, падчас фармаціравання адбылася памылка.</translation>
+<translation id="2666092431469916601">Зверху</translation>
 <translation id="2666247341166669829">Зарад акумулятара ў левым навушніку: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />" і "<ph name="APP_NAME_3" />" перастануць адкрываць адпаведныя спасылкі.</translation>
 <translation id="2667463864537187133">Кіраванне праверкай правапісу</translation>
@@ -4260,6 +4268,7 @@
 <translation id="3893536212201235195">Прагляд і змена налад спецыяльных магчымасцей</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">Каб захаваць закладкі ва ўліковым запісе, выдаліце тыя, якімі вы не карыстаецеся</translation>
 <translation id="3894427358181296146">Дадаць папку</translation>
 <translation id="3895076768659607631">&amp;Кіраваць пошукавымі сістэмамі...</translation>
 <translation id="3895090224522145010">Імя карыстальніка Kerberos</translation>
@@ -4985,6 +4994,7 @@
 <translation id="4405781821077215583">Павялічвайце або памяншайце памер аб’ектаў на экране, у тым ліку тэксту</translation>
 <translation id="4406308048672435032">Вы можаце зрабіць гэту ўкладку неактыўнай або абнавіць, каб зноў убачыць увесь спіс</translation>
 <translation id="4406883609789734330">Аўтаматычныя субцітры</translation>
+<translation id="4406963243402726564">Незахаваныя даныя</translation>
 <translation id="4408599188496843485">Да&amp;ведка</translation>
 <translation id="4409271659088619928">Ваша пошукавая сістэма – <ph name="DSE" />. Каб выдаліць гісторыю пошуку, выканайце інструкцыі гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Адміністратар можа запісваць ваш экран з дапамогай праграмы "<ph name="APP0_NAME" />". Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}=2{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />" і "<ph name="APP1_NAME" />". Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}=3{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />", "<ph name="APP1_NAME" />" і яшчэ 1 праграмы. Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}one{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />", "<ph name="APP1_NAME" />" і яшчэ # праграмы. Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}few{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />", "<ph name="APP1_NAME" />" і яшчэ # праграм. Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}many{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />", "<ph name="APP1_NAME" />" і яшчэ # праграм. Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}other{Адміністратар можа запісваць ваш экран з дапамогай праграм "<ph name="APP0_NAME" />", "<ph name="APP1_NAME" />" і яшчэ # праграмы. Калі запіс пачнецца, вы атрымаеце апавяшчэнне.}}</translation>
@@ -5410,6 +5420,7 @@
 <translation id="4699473989647132421">Марскі бераг</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
 <translation id="4701335814944566468">Прагледжана ўчора</translation>
+<translation id="4702504834785592287">Бакавы</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
 <translation id="4707337002099455863">Заўсёды на ўсіх сайтах</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
@@ -9248,7 +9259,6 @@
 <translation id="7410344089573941623">Пытаць, калі <ph name="HOST" /> хоча атрымаць доступ да камеры і мікрафона</translation>
 <translation id="7410421966064092098">Сайты не могуць перадаваць інфармацыю пра тое, што вы не бот</translation>
 <translation id="7410852728357935715">Трансліраваць на прыладу</translation>
-<translation id="741148343080227980">Вы можаце змяніць імя <ph name="BEGIN_LINK" />ва Уліковым запісе Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
 <translation id="7412226954991670867">Памяць GPU</translation>
 <translation id="741370456693729525">Выкарыстоўваць звычайныя фразы для пошуку наведаных старонак у гісторыі прагляду сайтаў</translation>

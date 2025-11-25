@@ -75,6 +75,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="1832046143430087831">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi. Questa impostazione non è attiva.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
+<translation id="1843347690926158494">Cerca in questa scheda con Google Lens</translation>
 <translation id="1849248141818021764">Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />eliminare i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
@@ -163,6 +164,7 @@
 <translation id="2841525013647267359">Traduci da</translation>
 <translation id="2846251086934905009">Errore di installazione: il programma di installazione non è stato completato. L'installazione è stata interrotta.</translation>
 <translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
+<translation id="2856481144859256719">Mostra sempre la scorciatoia di AI Mode nella Ricerca Google</translation>
 <translation id="2857540653560290388">Avvio di Chrome...</translation>
 <translation id="286025080868315611">Scopri perché Chrome blocca alcuni download</translation>
 <translation id="2861074815332034794">Aggiornamento di Chrome in corso… (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -674,6 +676,7 @@
 <translation id="8533056045953418157">Imposta Google Chrome come visualizzatore PDF predefinito</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Elenco di ricerca delle lingue</translation>
+<translation id="8575047640889685742">Usa la <ph name="BEGIN_LINK" />tua passphrase<ph name="END_LINK" /> per criptare tutti i dati di Chrome nel tuo Account Google. I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.</translation>
 <translation id="8601359445272098721">Novità. Puoi tradurre sia testo che immagini sullo schermo selezionando il pulsante "Traduzione schermata"</translation>
 <translation id="8614913330719544658">Google Chrome non risponde. Riavviarlo ora?</translation>
 <translation id="861702415419836452">Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>

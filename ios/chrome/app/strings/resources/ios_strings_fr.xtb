@@ -342,6 +342,7 @@
 <translation id="2245007488813216650">Traduction…</translation>
 <translation id="2249119578464404734">En haut de l'écran, appuyez sur l'icône de recherche</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
+<translation id="2252378061043785266">Ne jamais afficher ce site</translation>
 <translation id="2252749852083403809">Enregistrement dans Drive pour <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes.</translation>
 <translation id="2257567812274161158">La synchronisation ne fonctionne pas.</translation>
@@ -1364,7 +1365,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6182851675249594487">Thème de couleurs personnalisé</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
-<translation id="6189413832092199491">Non lus</translation>
+<translation id="6189413832092199491">Non lu</translation>
 <translation id="6192388920090306326">Voyage à Tokyo</translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>

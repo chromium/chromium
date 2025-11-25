@@ -96,7 +96,7 @@
 <translation id="11635448457105324">Botón Administrar direcciones: actívalo para agregar y administrar direcciones en la configuración de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Se visitó una página</translation>
-<translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu Cuenta de Google)}other{De # sitios (no saldrás de tu Cuenta de Google)}}</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu Cuenta de Google)}other{De # sitio (no saldrás de tu Cuenta de Google)}}</translation>
 <translation id="1167877250265821930">No se pudo descargar <ph name="LANGUAGE" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174644974616730562">Sobre chino n.º 1</translation>
@@ -1530,7 +1530,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3498215018399854026">No pudimos comunicarnos con ninguno de tus padres. Vuelve a intentarlo.</translation>
 <translation id="350069200438440499">Nombre de archivo:</translation>
 <translation id="3501300228850242680">Metal (música)</translation>
-<translation id="350274464456291051">Puedes editar tu nombre <ph name="BEGIN_LINK" />en tu Cuenta de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="350421688684366066">Etiquetas (brillo intenso)</translation>
 <translation id="350763432931695541">Extrayendo texto en las siguientes páginas</translation>
 <translation id="3507869775212388416">Trabajos del sector jurídico</translation>
@@ -2327,7 +2326,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4771249073710170730">Radiocontrol y modelismo</translation>
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
 <translation id="4774055414220872623">Suministros para actividades artísticas y manualidades</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{Se bloquearon # vent. emergentes}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{# pop-ups blocked}}</translation>
 <translation id="4780320432697076749">Software de fotografía</translation>
 <translation id="4780366598804516005">Buzón 1</translation>
 <translation id="4785376858512657294">Administrar la Cuenta de Google</translation>
@@ -3411,7 +3410,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6522682797352430154">Música clásica</translation>
 <translation id="6524830701589638230">Botón Administrar la configuración de accesibilidad: actívalo para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
-<translation id="6525222262307262764">Mantener la configuración predeterminada actual</translation>
 <translation id="6527049834925947126">Producción alimentaria</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>

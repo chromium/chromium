@@ -1528,7 +1528,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3498215018399854026">Wir können deinen Vater bzw. deine Mutter momentan nicht erreichen. Bitte versuche es später noch einmal.</translation>
 <translation id="350069200438440499">Dateiname:</translation>
 <translation id="3501300228850242680">Metal (Musik)</translation>
-<translation id="350274464456291051">Du kannst deinen Namen <ph name="BEGIN_LINK" />in deinem Google-Konto <ph name="ACCOUNT" /><ph name="END_LINK" /> bearbeiten.</translation>
 <translation id="350421688684366066">Etiketten (hochglanz)</translation>
 <translation id="350763432931695541">Text auf den nächsten Seiten wird extrahiert</translation>
 <translation id="3507869775212388416">Stellen im Rechtswesen</translation>
@@ -2789,7 +2788,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="55293785478302737">Mehrere Heftklammern</translation>
 <translation id="553377674408670169">Lehrtätigkeiten</translation>
 <translation id="5534785731327961487">Aktuell gutes Angebot</translation>
-<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{1 weitere Website (weitere auf synchronisierten Geräten)}other{# weitere Websites (weitere auf synchronisierten Geräten)}}</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 Website (weitere auf synchronisierten Geräten)}other{+ # Websites (weitere auf synchronisierten Geräten)}}</translation>
 <translation id="553782666181800029">Umschlag Chou 2</translation>
 <translation id="5538270463355278784">automatischer Vollbildmodus</translation>
 <translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, in <ph name="KEYWORD_SUFFIX" /> suchen</translation>
@@ -2842,7 +2841,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Verbindung prüfen</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Karten und Adressen kannst du in den Einstellungen verwalten.<ph name="END_LINK" /></translation>
-<translation id="5611398002774823980">In Konto speichern</translation>
+<translation id="5611398002774823980">Im Konto speichern</translation>
 <translation id="561165882404867731">Diese Seite mit Google Übersetzer übersetzen</translation>
 <translation id="5612720917913232150"><ph name="URL" /> möchte den Standort deines Computers nutzen</translation>
 <translation id="5614520971155863709">Kartenspiele</translation>
@@ -2963,7 +2962,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5838732667866024867">Mit dem Links-/Rechtspfeil kannst du Preisänderungen über das Diagramm überprüfen</translation>
 <translation id="5840318881868981258">In meinem Google-Konto, <ph name="ACCOUNT" /></translation>
 <translation id="5841007907672481419">Von <ph name="TYPE_1" /></translation>
-<translation id="5841338463993781099">In Konto speichern?</translation>
+<translation id="5841338463993781099">Im Konto speichern?</translation>
 <translation id="5843987376989109187">Diese Sprache wird noch nicht unterstützt.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Stromversorgung</translation>
@@ -3408,7 +3407,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6521745193039995384">Nicht aktiv</translation>
 <translation id="6522682797352430154">Klassische Musik</translation>
 <translation id="6524830701589638230">Button „Einstellungen für Bedienungshilfen verwalten“ – aktivieren, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
-<translation id="6525222262307262764">Aktuelle Standardeinstellung beibehalten</translation>
 <translation id="6527049834925947126">Lebensmittelindustrie</translation>
 <translation id="6529173248185917884">Siebte Rolle</translation>
 <translation id="6529602333819889595">&amp;Löschen wiederholen</translation>
@@ -3432,7 +3430,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> eine Frage stellen</translation>
 <translation id="6572867903637058088">Ist das hilfreich?</translation>
 <translation id="6573200754375280815">Doppelte Lochung rechts</translation>
-<translation id="6575408526598156416">In Konto speichern</translation>
+<translation id="6575408526598156416">Im Konto speichern</translation>
 <translation id="6577792494180292262">Risikokapital</translation>
 <translation id="6578434528542148658">Ungültige Erweiterungs-ID.</translation>
 <translation id="6579858392010591435">Feiertage und besondere Anlässe</translation>

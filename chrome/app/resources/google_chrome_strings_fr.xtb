@@ -78,6 +78,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chrome recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="1832046143430087831">Accélère les sites avec le moteur V8 de Chrome, mais rend Chrome légèrement moins résistant aux attaques. Ce paramètre est désactivé.</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
+<translation id="1843347690926158494">Rechercher dans cet onglet avec Google Lens</translation>
 <translation id="1849248141818021764">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
@@ -166,6 +167,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2841525013647267359">Traduire depuis</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
 <translation id="2853415089995957805">Chrome précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
+<translation id="2856481144859256719">Toujours afficher le raccourci vers le Mode IA dans la recherche Google</translation>
 <translation id="2857540653560290388">Lancement de Chrome…</translation>
 <translation id="286025080868315611">Découvrez pourquoi Chrome bloque certains téléchargements</translation>
 <translation id="2861074815332034794">Mise à jour de Chrome… (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -682,6 +684,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8533056045953418157">Définir Google Chrome comme visionneuse de PDF par défaut</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
+<translation id="8575047640889685742">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>
 <translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>

@@ -335,6 +335,7 @@
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું મ્યૂટ કરેલું ટૅબ</translation>
 <translation id="2468444275314013497">તમારા બ્રાઉઝરમાં બધું ઠીક લાગે છે</translation>
+<translation id="2471632347767899461">મદદ કેન્દ્રમાં શોધી જુઓ</translation>
 <translation id="2472163211318554013">Chromeનો સૌથી વધુ લાભ મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="247737702124049222">છબીના વર્ણનોની સુવિધા ચાલુ છે</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
@@ -656,6 +657,7 @@
 <translation id="3870908470613821006">દરેક જણ તાત્કાલિક “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="3873174561423636563">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />સેવાની શરતો<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
+<translation id="3893858854379998374">તમારા એકાઉન્ટમાં બુકમાર્ક સાચવવા માટે, તમારા બિનઉપયોગી બુકમાર્ક ડિલીટ કરો</translation>
 <translation id="3898498281932368596">બ્લૉક કરો અને છોડી દો</translation>
 <translation id="3899682235662194879">બધી છૂપી ટૅબ બંધ કરો</translation>
 <translation id="3900966090527141178">પાસવર્ડની નિકાસ કરો</translation>
@@ -719,6 +721,7 @@
 <translation id="4170011742729630528">સેવા ઉપલબ્ધ નથી; પછી ફરીથી પ્રયાસ કરો</translation>
 <translation id="4177222230309051052">તમારા બધા બુકમાર્ક મેળવો</translation>
 <translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
+<translation id="417865198503699526">સેટિંગ શોધો</translation>
 <translation id="4180726336228139707">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4188221736490993796">Zથી A અનુસાર સૉર્ટ કરો</translation>
@@ -1643,7 +1646,6 @@
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7886917304091689118">Chromeમાં ચાલી રહ્યું છે</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
-<translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{તમારી સંસ્થા દ્વારા 1 ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}one{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}other{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યા હતા}}</translation>
 <translation id="7914399737746719723">ઍપ ઇન્સ્ટૉલ કરી</translation>
 <translation id="7917574899775263813">સીધા છેલ્લા ટૅબ પર જાઓ</translation>

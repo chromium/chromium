@@ -1802,12 +1802,6 @@ En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /
       Si se establece la política como verdadera o no se establece, el usuario podrá usar la CLI de administración de VM.
       De lo contrario, se inhabilitará y ocultará la CLI.
       </translation>
-<translation id="2194051055390000601">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios para los usuarios.
-
-Si la inhabilitas, se desactivará la configuración de temas de anuncios para los usuarios.
-Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos.
-
-Para establecer esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2195032660890227692">En la versión 68 de <ph name="PRODUCT_NAME" />, se quitó esta política y se reemplazó por <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Si estableces la política como verdadera, se muestra el teclado numérico de forma predeterminada para ingresar la contraseña en la pantalla de acceso. Los usuarios pueden cambiar al teclado normal.
 

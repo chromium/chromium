@@ -1419,6 +1419,7 @@
 <translation id="1949980990364952348">Հավելվածի անվանումը</translation>
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1951823516285577843">Գտնել այլընտրանք</translation>
+<translation id="1953626242273481999">Թույլատրե՞լ հեռակա վրիպազերծումը</translation>
 <translation id="1953796913175502363">Կարգավորեք ձեր աշխատանքային պրոֆիլը</translation>
 <translation id="1954597385941141174">Կայքերը կարող են USB սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="1954813140452229842">Ընդհանուր միացման սխալ կա։ Ստուգեք ձեր տվյալներն ու նորից փորձեք:</translation>
@@ -1802,6 +1803,9 @@
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="222115440608612541">Փոխում է թեմաները արևածագին և մայրամուտին</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Արտաքին հավելվածը ցանկանում է ամբողջական վերահսկողություն ստանալ Chrome-ի այս աշխատաշրջանի նկատմամբ՝ այն վրիպազերծելու համար։ Դա ներառում է ձեր պահված տվյալների, քուքիների և կայքի տվյալների հասանելիությունը, ինչպես նաև ցանկացած URL-ով անցնելու հնարավորությունը։
+
+Այս գործառույթը պետք է միացնեն միայն վեբ ծրագրավորողները և օգտագործեն միայն վստահելի հավելվածների հետ։</translation>
 <translation id="222201875806112242">Անանուն մեդիա աղբյուր</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2224444042887712269">Այս կարգավորման հեղինակը <ph name="OWNER_EMAIL" />-ն է:</translation>
@@ -1907,6 +1911,7 @@
 <translation id="2294081976975808113">Էկրանի պաշտպանություն</translation>
 <translation id="2294358108254308676">Ուզո՞ւմ եք տեղադրել <ph name="PRODUCT_NAME" />-ը:</translation>
 <translation id="229477815107578534">Ստուգեք ձեր կարգավորումները</translation>
+<translation id="229524410604268773">Անջատել կարգավորումներում</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> արդյունք</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> տիրույթը պահանջում է, որ սարքը միացած լինի ինտերնետին, որպեսզի կարողանաք մուտք գործել <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="2296218178174497398">Սարքի հայտնաբերում</translation>
@@ -2453,6 +2458,7 @@
 <translation id="2665394472441560184">Ավելացնել նոր բառ</translation>
 <translation id="2665647207431876759">Ժամկետանց է</translation>
 <translation id="2665919335226618153">Ձևաչափման ընթացքում սխալ տեղի ունեցավ:</translation>
+<translation id="2666092431469916601">Վերին</translation>
 <translation id="2666247341166669829">Ձախ մարտկոցի լիցքի մակարդակը՝ <ph name="PERCENTAGE" />%։</translation>
 <translation id="2667144577800272420">Կան այլ հավելվածներ, որոնք կարգավորված են այնպես, որ կարողանան բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածները չեն կարողանա բացել աջակցվող հղումներ։</translation>
 <translation id="2667463864537187133">Կառավարել ուղղագրության ստուգումը</translation>
@@ -5409,6 +5415,7 @@
 <translation id="4699473989647132421">Ծովափ</translation>
 <translation id="4701025263201366865">Մուտք ծնողի համար</translation>
 <translation id="4701335814944566468">Դիտել եք երեկ</translation>
+<translation id="4702504834785592287">Կողմ</translation>
 <translation id="470644585772471629">Գունաշրջում</translation>
 <translation id="4707337002099455863">Միշտ բոլոր կայքերում</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -9240,7 +9247,6 @@
 <translation id="7410344089573941623">Հարցնել, արդյոք <ph name="HOST" />-ն ուզում է օգտագործել ձեր տեսախցիկը և խոսափողը</translation>
 <translation id="7410421966064092098">Կայքերը չեն կարող օգնել ձեզ հաստատել, որ դուք ռոբոտ չեք</translation>
 <translation id="7410852728357935715">Հեռարձակել սարքին</translation>
-<translation id="741148343080227980">Դուք կարող եք փոփոխել ձեր անունը <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="741204030948306876">Լավ</translation>
 <translation id="7412226954991670867">GPU հիշողություն</translation>
 <translation id="741370456693729525">Օգտագործեք խոսակցական լեզուն՝ այցելությունների պատմության մեջ տվյալներ որոնելու և ձեր այցելած կայքերը գտնելու համար</translation>
