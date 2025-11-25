@@ -80,8 +80,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleRegistry
   // The method:
   //   - returns true when any element of |should_stop| is set to true;
   //   - returns false when any error occurs.
-  bool Wait(base::span<const bool*> should_stop,
-            size_t spanification_suspected_redundant_count);
+  bool Wait(base::span<const bool*> should_stop);
 
  private:
   friend class base::RefCounted<SyncHandleRegistry>;

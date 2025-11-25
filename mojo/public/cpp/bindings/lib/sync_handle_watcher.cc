@@ -46,7 +46,7 @@ bool SyncHandleWatcher::SyncWatch(const bool* should_stop) {
   // the boolean that Wait uses.
   auto destroyed = destroyed_;
   const bool* should_stop_array[] = {should_stop, &destroyed->data};
-  bool result = registry_->Wait(should_stop_array, 2);
+  bool result = registry_->Wait(should_stop_array);
 
   // This object has been destroyed.
   if (destroyed->data)

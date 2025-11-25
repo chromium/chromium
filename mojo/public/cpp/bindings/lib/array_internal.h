@@ -104,14 +104,7 @@ struct ArrayDataTraits<bool> {
     return BitRef(&storage[offset / 8],
                   static_cast<uint8_t>(1 << (offset % 8)));
   }
-  static bool ToConstRef(
-      base::span<const StorageType> storage,
-      size_t offset,
-      uint32_t spanification_suspected_redundant_num_elements) {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(spanification_suspected_redundant_num_elements == storage.size(),
-          base::NotFatalUntil::M143);
+  static bool ToConstRef(base::span<const StorageType> storage, size_t offset) {
     return (storage[offset / 8] & (1 << (offset % 8))) != 0;
   }
 };
@@ -539,7 +532,7 @@ class Array_Data {
 
   ConstRef at(size_t offset) const {
     DCHECK(offset < static_cast<size_t>(header_.num_elements));
-    return Traits::ToConstRef(storage(), offset, header_.num_elements);
+    return Traits::ToConstRef(storage(), offset);
   }
 
   StorageType* storage() {

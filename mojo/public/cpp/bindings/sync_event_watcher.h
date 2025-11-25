@@ -48,8 +48,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
   //   - returns true when any flag in |stop_flags| is set to |true|.
   //   - return false when any error occurs, including this object being
   //     destroyed during a callback.
-  bool SyncWatch(base::span<const bool*> stop_flags,
-                 size_t spanification_suspected_redundant_num_stop_flags);
+  bool SyncWatch(base::span<const bool*> stop_flags);
 
  private:
   void IncrementRegisterCount();

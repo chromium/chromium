@@ -160,7 +160,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 
     // |SyncWatch()| may delete |this|.
     auto weak_self = weak_ptr_factory_.GetWeakPtr();
-    bool result = event_watcher_.SyncWatch(stop_flags, 2);
+    bool result = event_watcher_.SyncWatch(stop_flags);
     if (!weak_self)
       return false;
 
