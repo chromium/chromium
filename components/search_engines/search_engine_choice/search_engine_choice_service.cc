@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -291,6 +292,9 @@ void RecordLegacyStaticEligibilityInternal(
 
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
+  base::PumaHistogramEnumeration(
+      base::PumaType::kRc,
+      kPumaSearchChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
 bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
@@ -627,6 +631,9 @@ void SearchEngineChoiceService::RecordTriggeringEligibility(
 
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
+  base::PumaHistogramEnumeration(
+      base::PumaType::kRc, kPumaSearchChoiceScreenNavigationConditionsHistogram,
+      condition);
 
   regional_capabilities::RecordTriggeringFunnelStageDetails(condition);
   regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
@@ -643,6 +650,8 @@ void SearchEngineChoiceService::RecordChoiceScreenEvent(
 
   base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
                                 event);
+  base::PumaHistogramEnumeration(base::PumaType::kRc,
+                                 kPumaSearchChoiceScreenEventsHistogram, event);
 
   if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
       event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||

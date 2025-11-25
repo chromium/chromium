@@ -22,39 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<!-- LINT.IfChange(PUMA.RegionalCapabilities.FunnelStage.Eligibility) -->
-
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Eligibility"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
-    Records the condition state on profile load for whether the profile is
-    possibly eligible for a search engine choice screen.
+    PUMA.RegionalCapabilities.FunnelStage.Eligibility is a version of histogram
+    RegionalCapabilities.FunnelStage.Eligibility that is reported for PUMA.
   </summary>
 </histogram>
-
-<!-- LINT.ThenChange(tools/metrics/histograms/metadata/regional_capabilities/histograms.xml:RegionalCapabilities.FunnelStage.Eligibility) -->
-
-<!-- LINT.IfChange(PUMA.RegionalCapabilities.FunnelStage.Reported) -->
 
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Reported"
     enum="RegionalCapabilitiesFunnelStage" expires_after="2026-03-22">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
-    Reports on which stage of the regional capabilities funnel a given profile
-    is in. (Internal-only: see go/chrome-taiyaki-metrics-dd for more info)
-
-    Can be recorded by profiles on some key events like profile load or attempt
-    to trigger a choice screen.
+    PUMA.RegionalCapabilities.FunnelStage.Reported is a version of histogram
+    RegionalCapabilities.FunnelStage.Reported that is reported for PUMA.
   </summary>
 </histogram>
-
-<!-- LINT.ThenChange(tools/metrics/histograms/metadata/regional_capabilities/histograms.xml:RegionalCapabilities.FunnelStage.Reported) -->
-
-<!-- LINT.IfChange(PUMA.RegionalCapabilities.FunnelStage.Triggering) -->
 
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Triggering"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
@@ -62,17 +49,83 @@ chromium-metrics-reviews@google.com.
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
-    Records the condition state at choice screen triggering attempt, for whether
-    we are determining the profile to be eligible for a search engine choice
-    screen. This is recorded every time the dynamic eligibility state is being
-    checked, which might be as often as every page navigation on desktop, or app
-    warm open on iOS. If a profile was deemed ineligible at profile load time
-    (as recorded by the RegionalCapabilities.FunnelStage.Eligibility histogram),
-    this histogram will not be recorded.
+    PUMA.RegionalCapabilities.FunnelStage.Triggering is a version of histogram
+    RegionalCapabilities.FunnelStage.Triggering that is reported for PUMA.
   </summary>
 </histogram>
 
-<!-- LINT.ThenChange(tools/metrics/histograms/metadata/regional_capabilities/histograms.xml:RegionalCapabilities.FunnelStage.Triggering) -->
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType"
+    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType is a
+    version of histogram Search.ChoiceScreenDefaultSearchEngineType that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2"
+    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2 is a
+    version of histogram Search.ChoiceScreenDefaultSearchEngineType2 that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram name="PUMA.RegionalCapabilities.Search.ChoiceScreenEvents"
+    enum="SearchEngineChoiceScreenEvents" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>samarchehade@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenEvents is a version of
+    histogram Search.ChoiceScreenEvents that is reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions is a
+    version of histogram Search.ChoiceScreenNavigationConditions that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions is a
+    version of histogram Search.ChoiceScreenProfileInitConditions that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex"
+    units="index" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex is a
+    version of histogram Search.ChoiceScreenSelectedEngineIndex that is reported
+    for PUMA.
+  </summary>
+</histogram>
 
 <histogram name="PUMA.RegionalCapabilities.Session.TotalDuration.Recorded"
     enum="Boolean" expires_after="2026-11-21">

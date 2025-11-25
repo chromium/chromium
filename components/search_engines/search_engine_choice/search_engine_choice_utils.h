@@ -36,24 +36,38 @@ namespace search_engines {
 inline constexpr char
     kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
         "Search.ChoiceScreenProfileInitConditions";
+inline constexpr char kPumaSearchChoiceScreenProfileInitConditionsHistogram[] =
+    "PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions";
 inline constexpr char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
     "Search.ChoiceScreenNavigationConditions";
+inline constexpr char kPumaSearchChoiceScreenNavigationConditionsHistogram[] =
+    "PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions";
 inline constexpr char kChoiceScreenProfileInitConditionsPostRestoreHistogram[] =
     "Search.ChoiceScreenProfileInitConditions.PostRestore";
 inline constexpr char kChoiceScreenNavigationConditionsPostRestoreHistogram[] =
     "Search.ChoiceScreenNavigationConditions.PostRestore";
 inline constexpr char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
+inline constexpr char kPumaSearchChoiceScreenEventsHistogram[] =
+    "PUMA.RegionalCapabilities.Search.ChoiceScreenEvents";
 inline constexpr char kChoiceScreenEventsPostRestoreHistogram[] =
     "Search.ChoiceScreenEvents.PostRestore";
 inline constexpr char
     kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
         "Search.ChoiceScreenDefaultSearchEngineType";
 inline constexpr char
+    kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
+        "PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType";
+inline constexpr char
     kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram[] =
         "Search.ChoiceScreenDefaultSearchEngineType2";
+inline constexpr char
+    kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram[] =
+        "PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2";
 inline constexpr char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[] =
     "Search.ChoiceScreenSelectedEngineIndex";
+inline constexpr char kPumaSearchChoiceScreenSelectedEngineIndexHistogram[] =
+    "PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex";
 inline constexpr char
     kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
         "Search.ChoiceScreenShowedEngineAt.Index%d";
