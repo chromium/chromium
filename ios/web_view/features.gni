@@ -8,14 +8,3 @@ declare_args() {
   # Controls the output name of the built framework.
   ios_web_view_output_name = "ChromeWebView"
 }
-
-# Building the framework as app extension safe requires building with
-# `use_partition_alloc = false`. When `use_blink=true`, `gn check`
-# fails as `//third_party/blink` and its dependencies includes files
-# from `//partition_alloc` even when `use_partition_alloc = false`.
-#
-# See https://crbug.com/448107419 for example of failures for this
-# configuration. Since ChromeWebView is not shipped when building with
-# `use_blink = true`, do not build it as app extension safe in that
-# case.
-ios_web_view_as_app_ext_safe = !use_blink

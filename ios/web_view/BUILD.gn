@@ -71,20 +71,11 @@ if (enable_dsyms) {
   action("ios_web_view_dsym_archive") {
     script = "//chrome/tools/build/mac/archive_symbols.py"
 
-    # If the framework is build as app extension safe, the .dSYM will be
-    # created in a secondary toolchain, so take this into consideration.
-    _shared_lib_target = "//ios/web_view/framework:web_view_shared_library"
-    if (ios_web_view_as_app_ext_safe) {
-      _shared_lib_target = "$_shared_lib_target(${current_toolchain}_app_ext)"
-    }
-
-    _shared_lib_output = get_label_info(_shared_lib_target, "root_out_dir")
-
     # These are the dSYMs that will be archived. The sources list must be
     # the target outputs that correspond to the dSYMs (since a dSYM is a
     # directory it cannot be listed as a source file). The targets that
     # generate both the dSYM and binary image are listed in deps.
-    _dsyms = [ "$_shared_lib_output/$ios_web_view_output_name.dSYM" ]
+    _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
 
     sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
 
