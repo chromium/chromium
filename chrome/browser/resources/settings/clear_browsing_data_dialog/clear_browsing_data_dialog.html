@@ -326,7 +326,8 @@
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
-              prefs="{{prefs}}" hide-buttons hide-banner>
+              prefs="{{prefs}}" hide-buttons hide-banner
+              access-point="[[accessPointEnum_.SETTINGS]]">
           </settings-sync-account-control>
           <div class="divider"></div>
           <div id="footerDescription" on-click="onSyncDescriptionLinkClicked_">

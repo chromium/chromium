@@ -230,6 +230,12 @@ export class SettingsClearBrowsingDataDialogElement extends
       },
 
       nonGoogleSearchHistoryString_: String,
+
+      // Exposes ChromeSigninAccessPoint enum to HTML bindings.
+      accessPointEnum_: {
+        type: Object,
+        value: ChromeSigninAccessPoint,
+      },
     };
   }
 
