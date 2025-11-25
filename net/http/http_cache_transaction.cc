@@ -2828,7 +2828,16 @@ int HttpCache::Transaction::BeginCacheValidation() {
     // LOAD_FROM_CACHE_IF_OFFLINE case.
     if (!ConditionalizeRequest()) {
       couldnt_conditionalize_request_ = true;
-      UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE);
+      if (cache_entry_status_ != CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE) {
+        // `cache_entry_status_` may already be marked as
+        // `ENTRY_CANT_CONDITIONALIZE`. This can occur if an existed cache entry
+        // was initially deemed unusable (e.g. a "no-cache" header), and then,
+        // another concurrent same URL transactions receives the "no-cache"
+        // response again which leads this transaction's BeginCacheValidation()
+        // to re-evaluate the entry as unusable. This check avoids redundant
+        // status updates.
+        UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE);
+      }
       if (partial_) {
         return DoRestartPartialRequest();
       }
