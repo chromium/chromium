@@ -59,17 +59,10 @@ bool ComparePolicy(const AddressSorterPosix::PolicyEntry& p1,
   return p1.prefix_length > p2.prefix_length;
 }
 
-// Creates sorted PolicyTable from |table| with |size| entries.
-// TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-// redundant in M143.
+// Creates sorted PolicyTable from |table|.
 AddressSorterPosix::PolicyTable LoadPolicy(
-    base::span<const AddressSorterPosix::PolicyEntry> table,
-    size_t spanification_suspected_redundant_size) {
-  CHECK(spanification_suspected_redundant_size == table.size(),
-        base::NotFatalUntil::M143);
-  AddressSorterPosix::PolicyTable result(
-      table.data(),
-      table.subspan(spanification_suspected_redundant_size).data());
+    base::span<const AddressSorterPosix::PolicyEntry> table) {
+  AddressSorterPosix::PolicyTable result(table.begin(), table.end());
   std::sort(result.begin(), result.end(), ComparePolicy);
   return result;
 }
@@ -353,12 +346,9 @@ class AddressSorterPosix::SortContext {
 
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
     : socket_factory_(socket_factory),
-      precedence_table_(LoadPolicy(kDefaultPrecedenceTable,
-                                   std::size(kDefaultPrecedenceTable))),
-      label_table_(
-          LoadPolicy(kDefaultLabelTable, std::size(kDefaultLabelTable))),
-      ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable,
-                                   std::size(kDefaultIPv4ScopeTable))) {
+      precedence_table_(LoadPolicy(kDefaultPrecedenceTable)),
+      label_table_(LoadPolicy(kDefaultLabelTable)),
+      ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable)) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 }
