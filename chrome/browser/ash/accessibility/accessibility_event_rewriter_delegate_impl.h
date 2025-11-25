@@ -18,7 +18,6 @@ enum class SwitchAccessCommand;
 // Passes key events from Ash's EventRewriter to accessibility component
 // extension code. Used by ChromeVox and Switch Access. Reports ChromeVox's
 // unhandled key events back to Ash for continued dispatch.
-// TODO(http://crbug.com/839541): Avoid reposting unhandled events.
 class AccessibilityEventRewriterDelegateImpl
     : public AccessibilityEventRewriterDelegate,
       public content::WebContentsDelegate {
