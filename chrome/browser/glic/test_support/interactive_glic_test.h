@@ -521,6 +521,14 @@ class InteractiveGlicTestMixin : public T {
     return ClickWebElement(TargetWebContents::kGlicWebUi, ".close-button");
   }
 
+  auto Detach() {
+    return Api::Do([this]() {
+      auto* host = GetHost();
+      CHECK(host);
+      host->DetachPanel(host->GetPrimaryPageHandlerForTesting());
+    });
+  }
+
   base::expected<content::RenderFrameHost*, std::string> GetWebFrame(
       TargetWebContents target) {
     auto* host = GetHost();

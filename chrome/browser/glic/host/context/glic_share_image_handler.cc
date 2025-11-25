@@ -8,10 +8,12 @@
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace glic {
@@ -209,7 +211,19 @@ void GlicShareImageHandler::OnReceivedTabContext(
   }
 
   auto* instance = service_->GetInstanceForTab(tab);
-  if (!instance || !instance->IsShowing()) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (instance &&
+        instance->GetPanelState().kind == mojom::PanelStateKind::kDetached) {
+      CHECK(instance->IsShowing()) << ", should be showing if detached";
+      service_->CloseFloatingPanel();
+    }
+    // We always want to call ToggleUI for multi-instance to force a new
+    // instance to be created.
+    glic_panel_open_time_ = base::TimeTicks::Now();
+    // Note: if the FRE was showing, this will just cause it to be reshown.
+    service_->ToggleUI(browser, /*prevent_close=*/true,
+                       mojom::InvocationSource::kSharedImage);
+  } else if (!instance || !instance->IsShowing()) {
     glic_panel_open_time_ = base::TimeTicks::Now();
     // Note: if the FRE was showing, this will just cause it to be reshown.
     service_->ToggleUI(browser, /*prevent_close=*/true,
