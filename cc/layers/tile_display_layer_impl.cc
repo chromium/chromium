@@ -28,33 +28,34 @@ namespace {
 
 class TilingOrder {
  public:
-  bool operator()(const std::unique_ptr<TileDisplayLayerImpl::Tiling>& left,
-                  const std::unique_ptr<TileDisplayLayerImpl::Tiling>& right) {
+  bool operator()(const std::unique_ptr<TileDisplayLayerTiling>& left,
+                  const std::unique_ptr<TileDisplayLayerTiling>& right) {
     return left->contents_scale_key() > right->contents_scale_key();
   }
 };
 
 }  // namespace
 
-TileDisplayLayerImpl::Tile::Tile(TileDisplayLayerImpl& layer,
-                                 const TileContents& contents)
+TileDisplayLayerTile::TileDisplayLayerTile(
+    TileDisplayLayerImpl& layer,
+    const TileDisplayLayerTileContents& contents)
     : layer_(layer), contents_(contents) {}
 
-TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
+TileDisplayLayerTile::TileDisplayLayerTile(TileDisplayLayerTile&&) = default;
 
-TileDisplayLayerImpl::Tile::~Tile() {
-  if (auto* resource = std::get_if<TileResource>(&contents_)) {
+TileDisplayLayerTile::~TileDisplayLayerTile() {
+  if (auto* resource = std::get_if<TileDisplayLayerTileResource>(&contents_)) {
     layer_->DiscardResource(resource->resource_id);
   }
 }
 
-TileDisplayLayerImpl::Tiling::Tiling(TileDisplayLayerImpl& layer,
-                                     float scale_key)
+TileDisplayLayerTiling::TileDisplayLayerTiling(TileDisplayLayerImpl& layer,
+                                               float scale_key)
     : layer_(layer), scale_key_(scale_key) {}
 
-TileDisplayLayerImpl::Tiling::~Tiling() = default;
+TileDisplayLayerTiling::~TileDisplayLayerTiling() = default;
 
-TileDisplayLayerImpl::Tile* TileDisplayLayerImpl::Tiling::TileAt(
+TileDisplayLayerTile* TileDisplayLayerTiling::TileAt(
     const TileIndex& index) const {
   auto it = tiles_.find(index);
   if (it == tiles_.end()) {
@@ -63,13 +64,13 @@ TileDisplayLayerImpl::Tile* TileDisplayLayerImpl::Tiling::TileAt(
   return it->second.get();
 }
 
-void TileDisplayLayerImpl::Tiling::SetRasterTransform(
+void TileDisplayLayerTiling::SetRasterTransform(
     const gfx::AxisTransform2d& transform) {
   DCHECK_EQ(std::max(transform.scale().x(), transform.scale().y()), scale_key_);
   raster_transform_ = transform;
 }
 
-void TileDisplayLayerImpl::Tiling::SetTileSize(const gfx::Size& size) {
+void TileDisplayLayerTiling::SetTileSize(const gfx::Size& size) {
   if (size == tiling_data_.max_texture_size()) {
     return;
   }
@@ -77,7 +78,7 @@ void TileDisplayLayerImpl::Tiling::SetTileSize(const gfx::Size& size) {
   tiling_data_.SetMaxTextureSize(size);
 }
 
-void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
+void TileDisplayLayerTiling::SetTilingRect(const gfx::Rect& rect) {
   if (rect == tiling_data_.tiling_rect()) {
     return;
   }
@@ -85,9 +86,10 @@ void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
   tiling_data_.SetTilingRect(rect);
 }
 
-void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
-                                                   const TileContents& contents,
-                                                   bool update_damage) {
+void TileDisplayLayerTiling::SetTileContents(
+    const TileIndex& key,
+    const TileDisplayLayerTileContents& contents,
+    bool update_damage) {
   if (update_damage) {
     // Full tree updates receive damage as part of the LayerImpl::update_rect.
     // For incremental tile updates on an Active tree, we need to record the
@@ -100,8 +102,8 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
   }
 
   std::unique_ptr<Tile> old_tile;
-  if (std::holds_alternative<NoContents>(contents)) {
-    const auto& no_contents = std::get<NoContents>(contents);
+  if (std::holds_alternative<TileDisplayLayerNoContents>(contents)) {
+    const auto& no_contents = std::get<TileDisplayLayerNoContents>(contents);
     if (no_contents.reason == mojom::MissingTileReason::kTileDeleted) {
       tiles_.erase(key);
     } else {
@@ -114,10 +116,14 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
   }
 }
 
-TileDisplayLayerImpl::DisplayTilingCoverageIterator
-TileDisplayLayerImpl::Tiling::Cover(const gfx::Rect& coverage_rect,
-                                    float coverage_scale) const {
+DisplayTilingCoverageIterator TileDisplayLayerTiling::Cover(
+    const gfx::Rect& coverage_rect,
+    float coverage_scale) const {
   return DisplayTilingCoverageIterator(this, coverage_scale, coverage_rect);
+}
+
+gfx::Size TileDisplayLayerTiling::raster_size() const {
+  return layer_->bounds();
 }
 
 TileDisplayLayerImpl::TileDisplayLayerImpl(LayerTreeImpl& tree, int id)
@@ -125,8 +131,8 @@ TileDisplayLayerImpl::TileDisplayLayerImpl(LayerTreeImpl& tree, int id)
 
 TileDisplayLayerImpl::~TileDisplayLayerImpl() = default;
 
-TileDisplayLayerImpl::Tiling&
-TileDisplayLayerImpl::GetOrCreateTilingFromScaleKey(float scale_key) {
+TileDisplayLayerTiling& TileDisplayLayerImpl::GetOrCreateTilingFromScaleKey(
+    float scale_key) {
   auto it = std::find_if(tilings_.begin(), tilings_.end(),
                          [scale_key](const auto& tiling) {
                            return tiling->contents_scale_key() == scale_key;
@@ -135,8 +141,9 @@ TileDisplayLayerImpl::GetOrCreateTilingFromScaleKey(float scale_key) {
     return **it;
   }
 
-  tilings_.push_back(std::make_unique<Tiling>(*this, scale_key));
-  Tiling& tiling = *tilings_.back();
+  tilings_.push_back(
+      std::make_unique<TileDisplayLayerTiling>(*this, scale_key));
+  TileDisplayLayerTiling& tiling = *tilings_.back();
   std::sort(tilings_.begin(), tilings_.end(), TilingOrder());
   return tiling;
 }
@@ -151,7 +158,7 @@ void TileDisplayLayerImpl::RemoveTiling(float scale_key) {
   }
 }
 
-const TileDisplayLayerImpl::Tiling* TileDisplayLayerImpl::GetTilingForTesting(
+const TileDisplayLayerTiling* TileDisplayLayerImpl::GetTilingForTesting(
     float scale_key) const {
   auto it = std::find_if(tilings_.begin(), tilings_.end(),
                          [scale_key](const auto& tiling) {
@@ -362,7 +369,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   const auto ideal_scale = GetIdealContentsScale();
   const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
 
-  auto iter = TilingSetCoverageIterator<Tiling>(
+  auto iter = TilingSetCoverageIterator<TileDisplayLayerTiling>(
       tilings_, content_rect, max_contents_scale, ideal_scale_key);
 
   // We cannot do anything if the mask resource was not provided.
@@ -434,17 +441,17 @@ void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   NOTREACHED();
 }
 
-TilingSetCoverageIterator<TileDisplayLayerImpl::Tiling>
-TileDisplayLayerImpl::Cover(const gfx::Rect& coverage_rect,
-                            float coverage_scale,
-                            float ideal_contents_scale) {
-  return TilingSetCoverageIterator<Tiling>(
+TilingSetCoverageIterator<TileDisplayLayerTiling> TileDisplayLayerImpl::Cover(
+    const gfx::Rect& coverage_rect,
+    float coverage_scale,
+    float ideal_contents_scale) {
+  return TilingSetCoverageIterator<TileDisplayLayerTiling>(
       tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
 }
 
 TileBasedLayerImpl::TilingResolution
 TileDisplayLayerImpl::GetTilingResolutionForDebugBorders(
-    const TileDisplayLayerImpl::Tiling* tiling) const {
+    const TileDisplayLayerTiling* tiling) const {
   const auto ideal_scale = GetIdealContentsScale();
   const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
   if (MathUtil::IsFloatNearlyTheSame(tiling->contents_scale_key(),

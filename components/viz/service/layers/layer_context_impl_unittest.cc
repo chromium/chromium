@@ -1923,7 +1923,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_create_tiling))
           .has_value());
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl1 =
+  const cc::TileDisplayLayerTiling* tiling_impl1 =
       tile_display_layer_impl->GetTilingForTesting(kScaleKey1);
   ASSERT_NE(nullptr, tiling_impl1);
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize1);
@@ -1984,7 +1984,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_add_tiling2))
           .has_value());
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl2 =
+  const cc::TileDisplayLayerTiling* tiling_impl2 =
       tile_display_layer_impl->GetTilingForTesting(kScaleKey2);
   ASSERT_NE(nullptr, tiling_impl2);
   EXPECT_EQ(tiling_impl2->tile_size(), kTileSize1);

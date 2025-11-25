@@ -68,7 +68,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/false);
 
   // Set up occlusion that covers the entire layer. Occlusion is specified in
@@ -118,7 +118,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, tile_rect.size());
+      TileDisplayLayerTileResource(resource_id, tile_rect.size());
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/false);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -169,7 +169,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -281,7 +281,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -327,7 +327,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kResourceSize);
+      TileDisplayLayerTileResource(resource_id, kResourceSize);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -408,7 +408,7 @@ TEST_F(TileDisplayLayerImplWithEdgeAADisabledTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -529,7 +529,7 @@ TEST_F(TileDisplayLayerImplTest, OomTileResultsInSolidColorQuad) {
   tiling.SetTilingRect(kLayerRect);
   tiling.SetTileContents(
       TileIndex{0, 0},
-      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kOutOfMemory},
+      TileDisplayLayerNoContents{mojom::MissingTileReason::kOutOfMemory},
       /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -585,7 +585,7 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromHighestResolutionTilingByDefaul
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   high_res_tiling.SetTileContents(TileIndex{0, 0}, contents,
                                   /*update_damage=*/true);
 
@@ -633,7 +633,7 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromIdealResolutionTiling) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents low_res_contents =
-      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(low_res_resource_id, kLayerBounds);
   low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
                                  /*update_damage=*/true);
 
@@ -806,7 +806,7 @@ TEST_F(TileDisplayLayerImplTest,
   // verify that the tile is deleted.
   tiling.SetTileContents(
       kTileIndex,
-      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kTileDeleted},
+      TileDisplayLayerNoContents{mojom::MissingTileReason::kTileDeleted},
       /*update_damage=*/false);
   EXPECT_EQ(tiling.TileAt(kTileIndex), nullptr);
 }
@@ -831,16 +831,16 @@ TEST_F(TileDisplayLayerImplTest,
 
   // Set the tile's contents to NoContents with a reason other than
   // kTileDeleted.
-  tiling.SetTileContents(kTileIndex,
-                         TileDisplayLayerImpl::NoContents{
-                             mojom::MissingTileReason::kResourceNotReady},
-                         /*update_damage=*/false);
+  tiling.SetTileContents(
+      kTileIndex,
+      TileDisplayLayerNoContents{mojom::MissingTileReason::kResourceNotReady},
+      /*update_damage=*/false);
 
   // Verify that the tile still exists and its contents are NoContents.
   auto* tile = tiling.TileAt(kTileIndex);
   EXPECT_NE(tile, nullptr);
-  EXPECT_TRUE(std::holds_alternative<TileDisplayLayerImpl::NoContents>(
-      tile->contents()));
+  EXPECT_TRUE(
+      std::holds_alternative<TileDisplayLayerNoContents>(tile->contents()));
 }
 
 // Verifies that last_append_quads_scales_ is correctly updated after
@@ -884,7 +884,7 @@ TEST_F(TileDisplayLayerImplTest, LastAppendQuadsScalesUpdated) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents high_res_contents =
-      TileDisplayLayerImpl::TileResource(high_res_resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(high_res_resource_id, kLayerBounds);
   high_res_tiling.SetTileContents(TileIndex{0, 0}, high_res_contents,
                                   /*update_damage=*/true);
 
@@ -1085,7 +1085,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents_resource =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents_resource,
                          /*update_damage=*/true);
 
@@ -1146,7 +1146,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents_resource =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+      TileDisplayLayerTileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents_resource,
                          /*update_damage=*/true);
 
@@ -1201,7 +1201,7 @@ TEST_F(TileDisplayLayerImplTest, AppendQuadsAppendsDebugBordersForOomTile) {
   tiling.SetTilingRect(kLayerRect);
   tiling.SetTileContents(
       TileIndex{0, 0},
-      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kOutOfMemory},
+      TileDisplayLayerNoContents{mojom::MissingTileReason::kOutOfMemory},
       /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -1255,10 +1255,10 @@ TEST_F(TileDisplayLayerImplTest,
   auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
   tiling.SetTileSize(kLayerBounds);
   tiling.SetTilingRect(kLayerRect);
-  tiling.SetTileContents(TileIndex{0, 0},
-                         TileDisplayLayerImpl::NoContents{
-                             mojom::MissingTileReason::kResourceNotReady},
-                         /*update_damage=*/true);
+  tiling.SetTileContents(
+      TileIndex{0, 0},
+      TileDisplayLayerNoContents{mojom::MissingTileReason::kResourceNotReady},
+      /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
 
@@ -1294,8 +1294,8 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
 
   // Missing tile due to OOM.
   TileDisplayLayerImpl::TileContents oom_contents{
-      TileDisplayLayerImpl::NoContents(mojom::MissingTileReason::kOutOfMemory)};
-  TileDisplayLayerImpl::Tile oom_tile(*raw_layer, oom_contents);
+      TileDisplayLayerNoContents(mojom::MissingTileReason::kOutOfMemory)};
+  TileDisplayLayerTile oom_tile(*raw_layer, oom_contents);
   EXPECT_TRUE(oom_tile.is_oom());
 
   // OOM tiles should be regarded as ready to draw.
@@ -1303,10 +1303,8 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
 
   // Missing tile due to resource not being ready.
   TileDisplayLayerImpl::TileContents resource_not_ready_contents{
-      TileDisplayLayerImpl::NoContents(
-          mojom::MissingTileReason::kResourceNotReady)};
-  TileDisplayLayerImpl::Tile not_oom_tile(*raw_layer,
-                                          resource_not_ready_contents);
+      TileDisplayLayerNoContents(mojom::MissingTileReason::kResourceNotReady)};
+  TileDisplayLayerTile not_oom_tile(*raw_layer, resource_not_ready_contents);
   EXPECT_FALSE(not_oom_tile.is_oom());
 
   // Non-OOM missing tiles should not be regarded as ready to draw.
@@ -1314,7 +1312,7 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
 
   // Solid color tile.
   TileDisplayLayerImpl::TileContents color_contents(SkColors::kRed);
-  TileDisplayLayerImpl::Tile color_tile(*raw_layer, color_contents);
+  TileDisplayLayerTile color_tile(*raw_layer, color_contents);
   EXPECT_FALSE(color_tile.is_oom());
   EXPECT_TRUE(color_tile.IsReadyToDraw());
 
@@ -1325,8 +1323,8 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents resource_contents =
-      TileDisplayLayerImpl::TileResource(resource_id, gfx::Size(1, 1));
-  TileDisplayLayerImpl::Tile resource_tile(*raw_layer, resource_contents);
+      TileDisplayLayerTileResource(resource_id, gfx::Size(1, 1));
+  TileDisplayLayerTile resource_tile(*raw_layer, resource_contents);
   EXPECT_FALSE(resource_tile.is_oom());
   EXPECT_TRUE(resource_tile.IsReadyToDraw());
 }

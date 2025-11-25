@@ -111,7 +111,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
                                           /*update_damage=*/true)
                   .has_value());
 
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl1 =
+  const cc::TileDisplayLayerTiling* tiling_impl1 =
       layer_impl->GetTilingForTesting(kScaleKey1);
   ASSERT_NE(nullptr, tiling_impl1);
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize);
@@ -159,7 +159,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
                   ->DoUpdateDisplayTiling(std::move(tiling2),
                                           /*update_damage=*/true)
                   .has_value());
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl2 =
+  const cc::TileDisplayLayerTiling* tiling_impl2 =
       layer_impl->GetTilingForTesting(kScaleKey2);
   ASSERT_NE(nullptr, tiling_impl2);
 

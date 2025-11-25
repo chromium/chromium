@@ -29,131 +29,138 @@
 
 namespace cc {
 
+class TileDisplayLayerImpl;
+class TileDisplayLayerTiling;
+class DisplayTilingCoverageIterator;
+
+struct TileDisplayLayerNoContents {
+  mojom::MissingTileReason reason = mojom::MissingTileReason::kResourceNotReady;
+
+  TileDisplayLayerNoContents() = default;
+  explicit TileDisplayLayerNoContents(mojom::MissingTileReason r) : reason(r) {}
+};
+
+struct TileDisplayLayerTileResource {
+  viz::ResourceId resource_id;
+  gfx::Size resource_size;
+};
+
+using TileDisplayLayerTileContents = std::variant<TileDisplayLayerNoContents,
+                                                  SkColor4f,
+                                                  TileDisplayLayerTileResource>;
+
+class CC_EXPORT TileDisplayLayerTile {
+ public:
+  explicit TileDisplayLayerTile(TileDisplayLayerImpl& layer,
+                                const TileDisplayLayerTileContents& contents);
+  ~TileDisplayLayerTile();
+  TileDisplayLayerTile(TileDisplayLayerTile&&);
+
+  TileDrawInfo::Mode draw_mode() {
+    CHECK(IsReadyToDraw());
+    if (solid_color()) {
+      return TileDrawInfo::SOLID_COLOR_MODE;
+    } else if (is_oom()) {
+      return TileDrawInfo::OOM_MODE;
+    } else {
+      CHECK(resource());
+      return TileDrawInfo::RESOURCE_MODE;
+    }
+  }
+
+  const TileDisplayLayerTileContents& contents() const { return contents_; }
+
+  std::optional<SkColor4f> solid_color() const {
+    if (std::holds_alternative<SkColor4f>(contents_)) {
+      return std::get<SkColor4f>(contents_);
+    }
+    return std::nullopt;
+  }
+
+  std::optional<TileDisplayLayerTileResource> resource() const {
+    if (std::holds_alternative<TileDisplayLayerTileResource>(contents_)) {
+      return std::get<TileDisplayLayerTileResource>(contents_);
+    }
+    return std::nullopt;
+  }
+
+  bool is_oom() const {
+    if (std::holds_alternative<TileDisplayLayerNoContents>(contents_)) {
+      return std::get<TileDisplayLayerNoContents>(contents_).reason ==
+             mojom::MissingTileReason::kOutOfMemory;
+    }
+    return false;
+  }
+
+  bool IsReadyToDraw() const {
+    return !std::holds_alternative<TileDisplayLayerNoContents>(contents_) ||
+           is_oom();
+  }
+
+ private:
+  const raw_ref<TileDisplayLayerImpl> layer_;
+  TileDisplayLayerTileContents contents_;
+};
+
+class CC_EXPORT TileDisplayLayerTiling {
+ public:
+  using Tile = TileDisplayLayerTile;
+  using TileMap = std::map<TileIndex, std::unique_ptr<Tile>>;
+  using CoverageIterator = DisplayTilingCoverageIterator;
+
+  explicit TileDisplayLayerTiling(TileDisplayLayerImpl& layer, float scale_key);
+  ~TileDisplayLayerTiling();
+
+  Tile* TileAt(const TileIndex& index) const;
+
+  float contents_scale_key() const { return scale_key_; }
+  TileResolution resolution() const { return HIGH_RESOLUTION; }
+  const TilingData* tiling_data() const { return &tiling_data_; }
+  gfx::Size raster_size() const;
+  const gfx::AxisTransform2d& raster_transform() const {
+    return raster_transform_;
+  }
+  const gfx::Size tile_size() const { return tiling_data_.max_texture_size(); }
+  const gfx::Rect tiling_rect() const { return tiling_data_.tiling_rect(); }
+  const TileMap& tiles() const { return tiles_; }
+
+  void SetRasterTransform(const gfx::AxisTransform2d& transform);
+  void SetTileSize(const gfx::Size& size);
+  void SetTilingRect(const gfx::Rect& rect);
+  void SetTileContents(const TileIndex& key,
+                       const TileDisplayLayerTileContents& contents,
+                       bool update_damage);
+
+  CoverageIterator Cover(const gfx::Rect& coverage_rect,
+                         float coverage_scale) const;
+
+ private:
+  const raw_ref<TileDisplayLayerImpl> layer_;
+  const float scale_key_;
+  gfx::AxisTransform2d raster_transform_;
+  TilingData tiling_data_{gfx::Size(), gfx::Rect(), /*border_texels=*/1};
+  TileMap tiles_;
+};
+
+class CC_EXPORT DisplayTilingCoverageIterator
+    : public TilingCoverageIterator<TileDisplayLayerTiling> {
+ public:
+  using TilingCoverageIterator<TileDisplayLayerTiling>::TilingCoverageIterator;
+};
+
 // Viz-side counterpart to a client-side PictureLayerImpl when TreesInViz is
 // enabled. Clients push tiling information and tile contents from a picture
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
  public:
-  struct NoContents {
-    mojom::MissingTileReason reason =
-        mojom::MissingTileReason::kResourceNotReady;
-
-    NoContents() = default;
-    explicit NoContents(mojom::MissingTileReason r) : reason(r) {}
-  };
-
-  struct TileResource {
-    viz::ResourceId resource_id;
-    gfx::Size resource_size;
-  };
-
-  using TileContents = std::variant<NoContents, SkColor4f, TileResource>;
-
-  class CC_EXPORT Tile {
-   public:
-    explicit Tile(TileDisplayLayerImpl& layer, const TileContents& contents);
-    ~Tile();
-    Tile(Tile&&);
-
-    TileDrawInfo::Mode draw_mode() {
-      CHECK(IsReadyToDraw());
-      if (solid_color()) {
-        return TileDrawInfo::SOLID_COLOR_MODE;
-      } else if (is_oom()) {
-        return TileDrawInfo::OOM_MODE;
-      } else {
-        CHECK(resource());
-        return TileDrawInfo::RESOURCE_MODE;
-      }
-    }
-
-    const TileContents& contents() const { return contents_; }
-
-    std::optional<SkColor4f> solid_color() const {
-      if (std::holds_alternative<SkColor4f>(contents_)) {
-        return std::get<SkColor4f>(contents_);
-      }
-      return std::nullopt;
-    }
-
-    std::optional<TileResource> resource() const {
-      if (std::holds_alternative<TileResource>(contents_)) {
-        return std::get<TileResource>(contents_);
-      }
-      return std::nullopt;
-    }
-
-    bool is_oom() const {
-      if (std::holds_alternative<NoContents>(contents_)) {
-        return std::get<NoContents>(contents_).reason ==
-               mojom::MissingTileReason::kOutOfMemory;
-      }
-      return false;
-    }
-
-    bool IsReadyToDraw() const {
-      return !std::holds_alternative<NoContents>(contents_) || is_oom();
-    }
-
-   private:
-    const raw_ref<TileDisplayLayerImpl> layer_;
-    TileContents contents_;
-  };
-
-  class DisplayTilingCoverageIterator;
-
-  class CC_EXPORT Tiling {
-   public:
-    using Tile = Tile;
-    using TileMap = std::map<TileIndex, std::unique_ptr<Tile>>;
-    using CoverageIterator = DisplayTilingCoverageIterator;
-
-    explicit Tiling(TileDisplayLayerImpl& layer, float scale_key);
-    ~Tiling();
-
-    Tile* TileAt(const TileIndex& index) const;
-
-    float contents_scale_key() const { return scale_key_; }
-    TileResolution resolution() const { return HIGH_RESOLUTION; }
-    const TilingData* tiling_data() const { return &tiling_data_; }
-    gfx::Size raster_size() const { return layer_->bounds(); }
-    const gfx::AxisTransform2d& raster_transform() const {
-      return raster_transform_;
-    }
-    const gfx::Size tile_size() const {
-      return tiling_data_.max_texture_size();
-    }
-    const gfx::Rect tiling_rect() const { return tiling_data_.tiling_rect(); }
-    const TileMap& tiles() const { return tiles_; }
-
-    void SetRasterTransform(const gfx::AxisTransform2d& transform);
-    void SetTileSize(const gfx::Size& size);
-    void SetTilingRect(const gfx::Rect& rect);
-    void SetTileContents(const TileIndex& key,
-                         const TileContents& contents,
-                         bool update_damage);
-
-    CoverageIterator Cover(const gfx::Rect& coverage_rect,
-                           float coverage_scale) const;
-
-   private:
-    const raw_ref<TileDisplayLayerImpl> layer_;
-    const float scale_key_;
-    gfx::AxisTransform2d raster_transform_;
-    TilingData tiling_data_{gfx::Size(), gfx::Rect(), /*border_texels=*/1};
-    TileMap tiles_;
-  };
-
-  class CC_EXPORT DisplayTilingCoverageIterator
-      : public TilingCoverageIterator<Tiling> {
-   public:
-    using TilingCoverageIterator<Tiling>::TilingCoverageIterator;
-  };
+  using NoContents = TileDisplayLayerNoContents;
+  using TileResource = TileDisplayLayerTileResource;
+  using TileContents = TileDisplayLayerTileContents;
 
   TileDisplayLayerImpl(LayerTreeImpl& tree, int id);
   ~TileDisplayLayerImpl() override;
 
-  Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
+  TileDisplayLayerTiling& GetOrCreateTilingFromScaleKey(float scale_key);
   void RemoveTiling(float scale_key);
   void SetIsDirectlyCompositedImage(bool is_directly_composited_image) {
     is_directly_composited_image_ = is_directly_composited_image;
@@ -187,7 +194,7 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
 
   void RecordDamage(const gfx::Rect& damage_rect);
 
-  const Tiling* GetTilingForTesting(float scale_key) const;
+  const TileDisplayLayerTiling* GetTilingForTesting(float scale_key) const;
   void DiscardResource(viz::ResourceId resource);
 
   // Returns a list of tiling scales that were proposed for deletion by
@@ -218,11 +225,12 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) override;
-  TilingSetCoverageIterator<Tiling> Cover(const gfx::Rect& coverage_rect,
-                                          float coverage_scale,
-                                          float ideal_contents_scale);
+  TilingSetCoverageIterator<TileDisplayLayerTiling> Cover(
+      const gfx::Rect& coverage_rect,
+      float coverage_scale,
+      float ideal_contents_scale);
   TilingResolution GetTilingResolutionForDebugBorders(
-      const Tiling* tiling) const;
+      const TileDisplayLayerTiling* tiling) const;
 
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;
@@ -232,7 +240,7 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
-  std::vector<std::unique_ptr<Tiling>> tilings_;
+  std::vector<std::unique_ptr<TileDisplayLayerTiling>> tilings_;
 
   // List of tiling scales that were used last time we appended quads. This is
   // used as an optimization not to remove tilings if they are still being
