@@ -70,6 +70,11 @@ class SingleClientWebApksSyncTest : public SyncTest {
 
   ~SingleClientWebApksSyncTest() override = default;
 
+  // This test suite is Android specific, where there's only transport mode.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
   bool WaitForServerWebApks(
       testing::Matcher<std::vector<WebApkSpecifics>> matcher) {
     return webapks_helper::ServerWebApkMatchChecker(matcher).Wait();
