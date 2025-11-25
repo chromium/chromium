@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,14 +86,24 @@ void ContextualTasksComposeboxHandler::OpenAutocompleteMatch(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
-  lens::ClientToAimMessage client_to_page_message;
-  lens::SubmitQuery* submit_query =
-      client_to_page_message.mutable_submit_query();
-  submit_query->mutable_payload()->set_query_text(query);
-  submit_query->mutable_payload()->set_query_text_source(
-      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
-
-  web_ui_controller_->PostMessageToWebview(client_to_page_message);
+  // Create a client to aim message and send it to the page.
+  if (auto* contextual_search_web_contents_helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              web_ui_controller_->GetWebUIWebContents());
+      contextual_search_web_contents_helper->session_handle()) {
+    auto create_client_to_aim_request_info =
+        std::make_unique<contextual_search::ContextualSearchContextController::
+                             CreateClientToAimRequestInfo>();
+    create_client_to_aim_request_info->query_text = query;
+    create_client_to_aim_request_info->query_text_source =
+        lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+    create_client_to_aim_request_info->query_start_time = base::Time::Now();
+    lens::ClientToAimMessage client_to_page_message =
+        contextual_search_web_contents_helper->session_handle()
+            ->CreateClientToAimRequest(
+                std::move(create_client_to_aim_request_info));
+    web_ui_controller_->PostMessageToWebview(client_to_page_message);
+  }
 }
 
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {

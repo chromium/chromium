@@ -206,6 +206,23 @@ GURL ContextualSearchSessionHandle::CreateSearchUrl(
       std::move(search_url_request_info));
 }
 
+lens::ClientToAimMessage
+ContextualSearchSessionHandle::CreateClientToAimRequest(
+    std::unique_ptr<contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo>
+        create_client_to_aim_request_info) {
+  auto* context_controller = GetController();
+  if (!context_controller) {
+    return lens::ClientToAimMessage();
+  }
+
+  create_client_to_aim_request_info->file_tokens = uploaded_context_tokens_;
+  // TODO(crbug.com/463705266): Add metrics recording.
+
+  return context_controller->CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+}
+
 std::vector<base::UnguessableToken>
 ContextualSearchSessionHandle::GetUploadedContextTokens() const {
   return uploaded_context_tokens_;

@@ -33,6 +33,10 @@ class MockContextualSearchContextController
               CreateSearchUrl,
               (std::unique_ptr<CreateSearchUrlRequestInfo>),
               (override));
+  MOCK_METHOD(lens::ClientToAimMessage,
+              CreateClientToAimRequest,
+              (std::unique_ptr<CreateClientToAimRequestInfo>),
+              (override));
   MOCK_METHOD(void, AddObserver, (FileUploadStatusObserver*), (override));
   MOCK_METHOD(void, RemoveObserver, (FileUploadStatusObserver*), (override));
   MOCK_METHOD(void,

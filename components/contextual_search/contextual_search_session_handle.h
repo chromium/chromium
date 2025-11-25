@@ -99,11 +99,15 @@ class ContextualSearchSessionHandle {
   void ClearFiles();
 
   // Returns the search url for a new query for opening.
-  // TODO(crbug.com/458081018): Create another method for returning a query
-  // payload for followup turns.
   GURL CreateSearchUrl(
       std::unique_ptr<contextual_search::ContextualSearchContextController::
                           CreateSearchUrlRequestInfo> search_url_request_info);
+
+  // Returns the client to aim message for a new query for posting.
+  lens::ClientToAimMessage CreateClientToAimRequest(
+      std::unique_ptr<contextual_search::ContextualSearchContextController::
+                          CreateClientToAimRequestInfo>
+          create_client_to_aim_request_info);
 
   // Returns the list of uploaded but not yet committed context tokens for this
   // particular instance of the session.

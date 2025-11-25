@@ -38,6 +38,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
@@ -92,6 +93,8 @@ using FileUploadStatusTuple = std::tuple<base::UnguessableToken,
                                          std::optional<FileUploadErrorType>>;
 using CreateSearchUrlRequestInfo =
     ComposeboxQueryController::CreateSearchUrlRequestInfo;
+using CreateClientToAimRequestInfo =
+    ComposeboxQueryController::CreateClientToAimRequestInfo;
 
 using base::test::EqualsProto;
 
@@ -1732,6 +1735,52 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSearchModeQueryParameterKey,
                                          &udm_value));
   EXPECT_EQ(udm_value, kAimUdmQueryParameterValue);
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithUploadedPdf) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the ClientToAimRequest.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+  client_to_aim_request_info->file_tokens.push_back(file_token);
+  client_to_aim_request_info->query_start_time = kTestQueryStartTime;
+  std::optional<lens::ClientToAimMessage> client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  // Assert: The ClientToAimRequest is populated correctly.
+  ASSERT_TRUE(client_to_aim_request.has_value());
+  ASSERT_EQ(client_to_aim_request->submit_query()
+                .payload()
+                .lens_image_query_data(0)
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text(),
+            "hello");
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text_source(),
+            lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
+  EXPECT_EQ(client_to_aim_request->submit_query()
+                .payload()
+                .lens_image_query_data(0)
+                .search_session_id(),
+            kTestSearchSessionId);
 }
 
 TEST_F(ComposeboxQueryControllerTest,

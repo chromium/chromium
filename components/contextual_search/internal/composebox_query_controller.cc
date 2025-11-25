@@ -124,6 +124,11 @@ ComposeboxQueryController::CreateSearchUrlRequestInfo::
 ComposeboxQueryController::CreateSearchUrlRequestInfo::
     ~CreateSearchUrlRequestInfo() = default;
 
+ComposeboxQueryController::CreateClientToAimRequestInfo::
+    CreateClientToAimRequestInfo() = default;
+ComposeboxQueryController::CreateClientToAimRequestInfo::
+    ~CreateClientToAimRequestInfo() = default;
+
 namespace {
 
 // Creates a payload for a contextual data upload request, for webpage contents
@@ -218,6 +223,23 @@ lens::LensOverlayInteractionRequestMetadata::Type MediaTypeToInteractionType(
     default:
       return lens::LensOverlayInteractionRequestMetadata::
           CONTEXTUAL_SEARCH_QUERY;
+  }
+}
+
+// Returns the LensOverlayVisualInputType for the given media type.
+lens::LensOverlayVisualInputType MediaTypeToVisualInputType(
+    lens::LensOverlayRequestId::MediaType media_type) {
+  switch (media_type) {
+    case lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE:
+      return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN;
+    case lens::LensOverlayRequestId::MEDIA_TYPE_PDF:
+    case lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE:
+      return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_PDF;
+    case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE:
+    case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE:
+      return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_WEBPAGE;
+    default:
+      return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN;
   }
 }
 
@@ -403,6 +425,43 @@ GURL ComposeboxQueryController::CreateSearchUrl(
                       search_url_request_info->query_start_time,
                       base::UTF8ToUTF16(search_url_request_info->query_text),
                       std::move(search_url_request_info->additional_params));
+}
+
+lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
+    std::unique_ptr<CreateClientToAimRequestInfo>
+        create_client_to_aim_request_info) {
+  lens::ClientToAimMessage client_to_aim_message;
+  lens::SubmitQuery* submit_query =
+      client_to_aim_message.mutable_submit_query();
+  submit_query->mutable_payload()->set_query_text(
+      create_client_to_aim_request_info->query_text);
+  submit_query->mutable_payload()->set_query_text_source(
+      create_client_to_aim_request_info->query_text_source);
+
+  // Add the request id data for each file token.
+  if (!active_files_.empty() && cluster_info_.has_value()) {
+    for (const auto& file_token :
+         create_client_to_aim_request_info->file_tokens) {
+      auto* file_info = GetFileInfo(file_token);
+      if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
+                            file_info->upload_status)) {
+        continue;
+      }
+      lens::LensImageQueryData* lens_image_query_data =
+          submit_query->mutable_payload()->add_lens_image_query_data();
+      lens_image_query_data->set_search_session_id(
+          cluster_info_->search_session_id());
+      lens_image_query_data->mutable_request_id()->CopyFrom(
+          file_info->request_id);
+      auto media_type = file_info->request_id.media_type();
+      lens_image_query_data->set_visual_input_type(
+          MediaTypeToVisualInputType(media_type));
+    }
+  }
+
+  // TODO(crbug.com/463697733): Determine if the visual search interaction data
+  // is needed.
+  return client_to_aim_message;
 }
 
 void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {

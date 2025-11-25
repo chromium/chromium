@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
@@ -117,6 +118,27 @@ class ContextualSearchContextController {
     std::optional<lens::LensOverlayClientLogs> client_logs;
   };
 
+  // Struct containing information needed to create a ClientToAimMessage.
+  struct CreateClientToAimRequestInfo {
+   public:
+    CreateClientToAimRequestInfo();
+    ~CreateClientToAimRequestInfo();
+
+    // The text of the query.
+    std::string query_text;
+
+    // The client-side time the query was started.
+    base::Time query_start_time;
+
+    // The tokens of the newly uploaded contextual inputs to attach to the AIM
+    // turn.
+    std::vector<base::UnguessableToken> file_tokens;
+
+    // The input source of the query text.
+    lens::QueryPayload::QueryTextSource query_text_source =
+        lens::QueryPayload::QUERY_TEXT_SOURCE_UNSPECIFIED;
+  };
+
   virtual ~ContextualSearchContextController() = default;
 
   // Called when a UI is associated with the context controller.
@@ -126,6 +148,12 @@ class ContextualSearchContextController {
   // that the user clicked the submit button.
   virtual GURL CreateSearchUrl(
       std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) = 0;
+
+  // Called when a follow-up Aquery has been submitted. `query_start_time` is
+  // the time that the user clicked the submit button.
+  virtual lens::ClientToAimMessage CreateClientToAimRequest(
+      std::unique_ptr<CreateClientToAimRequestInfo>
+          create_client_to_aim_request_info) = 0;
 
   // Observer management.
   virtual void AddObserver(FileUploadStatusObserver* obs) = 0;

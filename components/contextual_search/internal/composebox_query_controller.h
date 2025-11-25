@@ -20,6 +20,7 @@
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
@@ -80,6 +81,9 @@ class ComposeboxQueryController
   void InitializeIfNeeded() override;
   GURL CreateSearchUrl(std::unique_ptr<CreateSearchUrlRequestInfo>
                            search_url_request_info) override;
+  lens::ClientToAimMessage CreateClientToAimRequest(
+      std::unique_ptr<CreateClientToAimRequestInfo>
+          create_client_to_aim_request_info) override;
   void AddObserver(FileUploadStatusObserver* obs) override;
   void RemoveObserver(FileUploadStatusObserver* obs) override;
   void StartFileUploadFlow(

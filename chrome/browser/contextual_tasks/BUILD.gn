@@ -113,6 +113,7 @@ if (!is_android) {
       ":contextual_tasks",
       ":mojo_bindings",
       "//base",
+      "//chrome/browser/contextual_search",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
