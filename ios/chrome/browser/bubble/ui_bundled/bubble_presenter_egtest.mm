@@ -177,7 +177,15 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 // TODO(crbug.com/427699033): This is also failing on older iOS versions
 // when building with Xcode 26.
-- (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+// TODO(crbug.com/463351924): Test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#else
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  DISABLED_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#endif
+- (void)MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/427699033): Re-enable test when fixed with Xcode 26.
     // Test uses "split screen" (multiwindow) to force compact width.
