@@ -320,6 +320,9 @@ chromium-metrics-reviews@google.com.
       label="Site-scoped session has mismatch between host pattern and site"/>
   <int value="77" label="Signing quota exceeded"/>
   <int value="78" label="Invalid configuration JSON"/>
+  <int value="79"
+      label="Federated session invalid due to failure to restore session
+             provider key"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

@@ -88,6 +88,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kTooManyRelyingOriginLabels:
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
       NOTREACHED();
   }
 }
@@ -162,6 +163,7 @@ bool SessionError::IsServerError() const {
     case kTooManyRelyingOriginLabels:
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
       NOTREACHED();
   }
 }

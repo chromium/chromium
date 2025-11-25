@@ -59,7 +59,7 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     // Don't use initial delay unless the last request was an error.
     false,
 };
-}
+}  // namespace
 
 Session::Session(Id id, SessionInclusionRules inclusion_rules, GURL refresh)
     : id_(id),
@@ -554,6 +554,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kTooManyRelyingOriginLabels:
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
       NOTREACHED();
   }
 

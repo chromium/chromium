@@ -95,7 +95,8 @@ struct NET_EXPORT SessionError {
     kScopeRuleSiteScopedHostPatternMismatch = 76,
     kSigningQuotaExceeded = 77,
     kInvalidConfigJson = 78,
-    kMaxValue = kInvalidConfigJson,
+    kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
+    kMaxValue = kInvalidFederatedSessionProviderFailedToRestoreKey,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 
