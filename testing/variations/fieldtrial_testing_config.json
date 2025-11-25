@@ -8813,6 +8813,24 @@
             ]
         }
     ],
+    "DevToolsConsoleInsightsTeasers": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DevToolsAiPromptApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceBoundSessionCredentials2": [
         {
             "platforms": [
