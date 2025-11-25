@@ -115,7 +115,7 @@
     },
     {
       name: "Autofill",
-      permissions_policy_name: "shared-autofill",
+      permissions_policy_name: "autofill",
       depends_on: ["Autofill"],
     },
     {

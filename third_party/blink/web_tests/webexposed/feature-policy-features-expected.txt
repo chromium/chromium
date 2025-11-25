@@ -5,6 +5,7 @@ accelerometer
 ambient-light-sensor
 aria-notify
 attribution-reporting
+autofill
 autoplay
 browsing-topics
 camera
@@ -79,7 +80,6 @@ rewriter
 run-ad-auction
 screen-wake-lock
 serial
-shared-autofill
 shared-storage
 shared-storage-select-url
 speaker-selection

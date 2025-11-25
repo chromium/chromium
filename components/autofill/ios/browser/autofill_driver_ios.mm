@@ -220,7 +220,7 @@ ukm::SourceId AutofillDriverIOS::GetPageUkmSourceId() const {
 }
 
 bool AutofillDriverIOS::IsPolicyControlledFeatureAutofillEnabled() const {
-  // Give the shared-autofill permission to the main frame of the webstate by
+  // Give the "autofill" permission to the main frame of the webstate by
   // default.
   if (!web_frame() || web_frame()->IsMainFrame()) {
     return true;

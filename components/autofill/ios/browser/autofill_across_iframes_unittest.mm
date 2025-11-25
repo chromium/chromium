@@ -1921,10 +1921,9 @@ TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger) {
                 cc_form_info.all_fields());
 }
 
-// Test that the shared-autofill permission isn't propagated to the nested
-// frames on the main origin that aren't a direct children of the main
-// frame. Fields on the same origin as the trigger field should be filled even
-// if nested.
+// Test that the "autofill" permission isn't propagated to the nested frames on
+// the main origin that aren't a direct children of the main frame. Fields on
+// the same origin as the trigger field should be filled even if nested.
 //
 // Representation of the tested xframe form structure with the expected outcome
 // in [] next to each input field and the trigger field indicated with <--:

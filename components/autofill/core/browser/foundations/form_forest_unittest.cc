@@ -254,13 +254,13 @@ std::vector<std::vector<T>> FlattenedPermutations(
 // - A driver identifies
 //    - a same-origin child by its LocalFrameToken and
 //    - a cross-origin child by a RemoteFrameToken.
-// - A parent driver can inherit, enable, or disable the `shared-autofill`
-//   permission in each descendant frames.
+// - A parent driver can inherit, enable, or disable the policy-controlled
+//   feature "autofill" in each descendant frames.
 class FakeAutofillDriver : public TestAutofillDriver {
  public:
-  // `shared-autofill` may be enabled or disabled per driver. This enum mimics
-  // the behaviour of HTML policy-controlled features. See
-  // SetAutofillPermissionPolicy() for the semantics.
+  // The policy-controlled feature "autofill" may be enabled or disabled per
+  // driver. This enum mimics the behaviour of HTML policy-controlled features.
+  // See SetAutofillPermissionPolicy() for the semantics.
   enum class AutofillPermissionPolicy { kDefault, kEnabled, kDisabled };
 
   static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
@@ -305,8 +305,8 @@ class FakeAutofillDriver : public TestAutofillDriver {
     return nullptr;
   }
 
-  // Mimics how the policy-controlled feature `shared-autofill` is enabled and
-  // disabled in frames.
+  // Mimics how the policy-controlled feature "autofill" is enabled and disabled
+  // in frames.
   void SetAutofillPermissionPolicy(AutofillPermissionPolicy autofill_policy) {
     FakeAutofillDriver* ancestor = GetClosestSameOriginAncestor();
     switch (autofill_policy) {
@@ -318,8 +318,9 @@ class FakeAutofillDriver : public TestAutofillDriver {
       case AutofillPermissionPolicy::kEnabled:
         CHECK(!GetParent() ||
               GetParent()->IsPolicyControlledFeatureAutofillEnabled())
-            << "A parent frame can enable shared-autofill in a subframe only "
-               "if shared-autofill is enabled in that parent frame";
+            << "A parent frame can enable the policy-controlled feature "
+               "\"autofill\" in a subframe only if \"autofill\" is enabled in "
+               "that parent frame";
         SetPolicyControlledFeatureAutofillEnabled(true);
         break;
       case AutofillPermissionPolicy::kDisabled:
@@ -1565,8 +1566,8 @@ TEST_F(FormForestTestUnflatten, InterruptedSameOriginPolicy) {
 }
 
 // Tests that (only) non-sensitive fields are filled across origin into the main
-// frame's origin (since the main frame has the shared-autofill policy by
-// default).
+// frame's origin (since the the policy-controlled feature "autofill" is enabled
+// in the main frame by default).
 TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
   MockFormForest(
       {.url = kMainUrl,
@@ -1591,7 +1592,8 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
 }
 
 // Tests that no fields are filled across origin into frames where
-// shared-autofill is disabled (not even into non-sensitive fields).
+// the policy-controlled feature "autofill" is disabled (not even into
+// non-sensitive fields).
 TEST_F(FormForestTestUnflatten,
        MainOriginPolicyWithoutPolicyControlledFeatureAutofill) {
   MockFormForest(
@@ -1611,7 +1613,7 @@ TEST_F(FormForestTestUnflatten,
               UnorderedArrayEquals(expectation));
 }
 
-// Fixture for the shared-autofill policy tests.
+// Fixture for the tests of the policy-controlled feature "autofill".
 class FormForestTestUnflattenPolicyControlledFeatureAutofill
     : public FormForestTestUnflatten {
  public:
@@ -1631,7 +1633,8 @@ class FormForestTestUnflattenPolicyControlledFeatureAutofill
   }
 };
 
-// Tests filling into frames with shared-autofill policy from the main origin.
+// Tests filling from the main origin into frames where the policy-controlled
+// feature "autofill" is enabled.
 TEST_F(FormForestTestUnflattenPolicyControlledFeatureAutofill, FromMainOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
   std::vector<FormData> expectation = {
@@ -1642,7 +1645,8 @@ TEST_F(FormForestTestUnflattenPolicyControlledFeatureAutofill, FromMainOrigin) {
               UnorderedArrayEquals(expectation));
 }
 
-// Tests filling into frames with shared-autofill policy from the main origin.
+// Tests filling from a 3P origin into frames where the policy-controlled
+// feature "autofill" is enabled.
 TEST_F(FormForestTestUnflattenPolicyControlledFeatureAutofill,
        FromOtherOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});

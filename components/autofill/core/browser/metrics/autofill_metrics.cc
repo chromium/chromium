@@ -1075,46 +1075,49 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
         s.QualitativeMetricAsInt());
   }
 
-  // In a multi-frame form, a cross-origin field is filled only if
-  // shared-autofill is enabled in the field's frame. Here, we log whether
-  // shared-autofill did or would improve the fill seamlessness.
+  // In a multi-frame form, a cross-origin field is filled only if the
+  // policy-controlled feature "autofill" is enabled in the field's frame. Here,
+  // we log whether the policy-controlled feature "autofill" did or would
+  // improve the fill seamlessness.
   //
   // This is referring to the actual fill, not the hypothetical scenarios
   // assuming that the card on file is complete or that there's no security
   // policy.
   //
   // See FormForest::GetRendererFormsOfBrowserForm() for details when a field
-  // requires shared-autofill in order to be autofilled.
+  // requires the policy-controlled feature "autofill" in order to be
+  // autofilled.
   //
-  // Shared-autofill is a policy-controlled feature. As such, a parent frame
-  // can enable it in a child frame with in the iframe's "allow" attribute:
-  // <iframe allow="shared-autofill">. Whether it's enabled in the main frame is
-  // controller by an HTTP header; by default, it is.
-  auto RequiresSharedAutofill = [&](const AutofillField& field) {
-    auto IsSensitiveFieldType = [](FieldType field_type) {
-      switch (field_type) {
-        case CREDIT_CARD_TYPE:
-        case CREDIT_CARD_NAME_FULL:
-        case CREDIT_CARD_NAME_FIRST:
-        case CREDIT_CARD_NAME_LAST:
-          return false;
-        default:
-          return true;
-      }
-    };
-    const url::Origin& main_origin = p.form.main_frame_origin();
-    const url::Origin& triggered_origin = p.field.origin();
-    return field.origin() != triggered_origin &&
-           (field.origin() != main_origin ||
-            std::ranges::any_of(field.Type().GetTypes(),
-                                IsSensitiveFieldType)) &&
-           triggered_origin == main_origin;
-  };
+  // "autofill" is a policy-controlled feature. As such, a parent frame can
+  // enable it in a child frame with in the iframe's "allow" attribute: <iframe
+  // allow="autofill">. Whether it's enabled in the main frame is controller by
+  // an HTTP header; by default, it is.
+  auto requires_enabled_policy_controlled_feature_autofill =
+      [&](const AutofillField& field) {
+        auto IsSensitiveFieldType = [](FieldType field_type) {
+          switch (field_type) {
+            case CREDIT_CARD_TYPE:
+            case CREDIT_CARD_NAME_FULL:
+            case CREDIT_CARD_NAME_FIRST:
+            case CREDIT_CARD_NAME_LAST:
+              return false;
+            default:
+              return true;
+          }
+        };
+        const url::Origin& main_origin = p.form.main_frame_origin();
+        const url::Origin& triggered_origin = p.field.origin();
+        return field.origin() != triggered_origin &&
+               (field.origin() != main_origin ||
+                std::ranges::any_of(field.Type().GetTypes(),
+                                    IsSensitiveFieldType)) &&
+               triggered_origin == main_origin;
+      };
 
   bool some_field_needs_shared_autofill = false;
   bool some_field_has_shared_autofill = false;
   for (const auto& field : p.form) {
-    if (RequiresSharedAutofill(*field) &&
+    if (requires_enabled_policy_controlled_feature_autofill(*field) &&
         p.newly_filled_fields.contains(field->global_id())) {
       if (!p.safe_fields.contains(field->global_id())) {
         some_field_needs_shared_autofill = true;

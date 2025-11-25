@@ -765,9 +765,9 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin
 // while the credit card number and CVC are in iframes hosted by a payment
-// service provider. By enabling the policy-controlled feature "shared-autofill"
-// in those iframes, the merchant's website enable Autofill to fill the credit
-// card number and CVC fields from the cardholder name field, even though this
+// service provider. By enabling the policy-controlled feature "autofill" in
+// those iframes, the merchant's website enable Autofill to fill the credit card
+// number and CVC fields from the cardholder name field, even though this
 // autofill operation crosses origins.
 // TODO(crbug.com/40178859): Enable this feature.
 BASE_FEATURE(kAutofillPolicyControlledFeatureAutofill,

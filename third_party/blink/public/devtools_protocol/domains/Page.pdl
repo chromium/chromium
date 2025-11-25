@@ -100,6 +100,7 @@ domain Page
       ambient-light-sensor
       aria-notify
       attribution-reporting
+      autofill
       autoplay
       bluetooth
       browsing-topics
@@ -182,7 +183,6 @@ domain Page
       run-ad-auction
       screen-wake-lock
       serial
-      shared-autofill
       shared-storage
       shared-storage-select-url
       smart-card

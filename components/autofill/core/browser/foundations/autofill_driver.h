@@ -183,9 +183,9 @@ class AutofillDriver {
   //     LifecycleState::kPendingReset), the driver gets a new UKM source ID.
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
 
-  // Returns whether the policy-controlled feature "shared-autofill" is enabled
-  // in the document. In the main frame the permission is enabled by default.
-  // The main frame may pass it on to its children.
+  // Returns whether the policy-controlled feature "autofill" is enabled in the
+  // document. In the main frame the permission is enabled by default. The main
+  // frame may pass it on to its children.
   virtual bool IsPolicyControlledFeatureAutofillEnabled() const = 0;
 
   // Returns the IsolationInfo of the associated frame. May be nullopt if the

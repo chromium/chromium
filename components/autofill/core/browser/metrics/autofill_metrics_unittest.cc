@@ -3013,7 +3013,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   constexpr uint8_t kNumber = true << 2;
   constexpr uint8_t kExp = true << 1;
   constexpr uint8_t kCvc = true << 0;
-  // The shared-autofill metric.
+  // The metric for the policy-controlled feature "autofill".
   enum SharedAutofillMetric : uint64_t {
     kSharedAutofillIsIrrelevant = 0,
     kSharedAutofillWouldHelp = 1,

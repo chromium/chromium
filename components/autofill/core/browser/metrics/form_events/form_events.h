@@ -137,9 +137,8 @@ enum FormEvent {
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL_BUT_EXPDATE_MISSING = 47,
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL = 48,
 
-  // A cross-origin fill was prevented only because shared-autofill was disabled
-  // in the field's frame. Shared-autofill is a policy-controlled feature by
-  // which a frame can allow a child-frame to be autofilled across origin.
+  // A cross-origin fill was prevented only because the policy-controlled
+  // feature "autofill" was disabled in the field's frame (crbug.com/40178859).
   FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL = 49,
 
   // See AutofillMetrics::CreditCardSeamlessness::Metric for details.

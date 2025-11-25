@@ -585,8 +585,8 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
             return true;
         }
       };
-      // Fields whose document enables the policy-controlled feature
-      // shared-autofill may be safe to fill.
+      // Fields whose document enables the policy-controlled feature "autofill"
+      // may be safe to fill.
       auto IsPolicyControlledFeatureAutofillEnabled =
           [&mutable_this](LocalFrameToken frame_token) {
             FrameData* frame = mutable_this.GetFrameData(frame_token);

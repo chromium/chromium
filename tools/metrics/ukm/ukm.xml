@@ -2588,9 +2588,10 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="SharedAutofill" enum="Boolean">
     <summary>
-      Missing shared-autofill feature prevented a cross-origin credit-card field
-      from being filled. Shared-autofill is a policy-controlled feature by which
-      a frame can allow a child-frame to be autofilled across origin.
+      Disabled policy-controlled feature &quot;autofill&quot; prevented a
+      cross-origin credit-card field from being filled. With
+      &quot;autofill&quot;, a frame can allow a child-frame to be autofilled
+      across origin.
     </summary>
   </metric>
 </event>

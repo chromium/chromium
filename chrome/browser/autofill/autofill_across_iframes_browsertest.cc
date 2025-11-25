@@ -375,7 +375,7 @@ class AutofillAcrossIframesTest_Simple : public AutofillAcrossIframesTest {
   //     <iframe><input autocomplete=cc-exp></iframe>
   //     <iframe><input autocomplete=cc-csc></iframe>
   //   </form>
-  // where the hostnames and attributes, such as "allow=shared-autofill" or
+  // where the hostnames and attributes, such as "allow=autofill" or
   // "sandbox", can be configured.
   [[nodiscard]] const FormStructure* LoadForm(
       std::array<const char*, 4> hostnames = {"$1", "$1", "$1", "$1"},
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Simple,
               ElementsAre("", kNumber, "", ""));
 }
 
-// Test fixture for the policy-controlled feature "shared-autofill".
+// Test fixture for the policy-controlled feature "autofill".
 class AutofillAcrossIframesTest_PolicyControlledFeature
     : public AutofillAcrossIframesTest_Simple {
  private:
@@ -458,22 +458,23 @@ class AutofillAcrossIframesTest_PolicyControlledFeature
 };
 
 // Tests that autofilling on a main-origin field also fills cross-origin fields
-// whose frames have "shared-autofill" enabled.
+// whose frames have the policy-controlled feature "autofill" enabled.
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_PolicyControlledFeature,
                        FillWhenTriggeredOnMainOrigin) {
   const FormStructure* form =
-      LoadForm({"$1", "$2", "$3", "$4"}, {"", "", "", "allow=shared-autofill"});
+      LoadForm({"$1", "$2", "$3", "$4"}, {"", "", "", "allow=autofill"});
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(0)),
               ElementsAre(kNameFull, "", "", kCvc));
 }
 
 // Tests that autofilling on a cross-origin field does not fill cross-origin
-// fields, even if "shared-autofill" is enabled in their document.
+// fields, even if the policy-controlled feature "autofill" is enabled in their
+// document.
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_PolicyControlledFeature,
                        FillWhenTriggeredOnNonMainOriginIffRelaxed) {
   const FormStructure* form =
-      LoadForm({"$1", "$2", "$3", "$4"}, {"", "", "", "allow=shared-autofill"});
+      LoadForm({"$1", "$2", "$3", "$4"}, {"", "", "", "allow=autofill"});
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
               ElementsAre(kNameFull, kNumber, "", ""));

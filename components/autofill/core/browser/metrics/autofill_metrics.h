@@ -773,8 +773,8 @@ class AutofillMetrics {
   };
 
   // Logs several metrics about seamlessness. These are qualitative and bitmask
-  // UMA and UKM metrics as well as a UKM metric indicating whether
-  // "shared-autofill" did or would make a difference.
+  // UMA and UKM metrics as well as a UKM metric indicating whether the
+  // policy-controlled feature "autofill" did or would make a difference.
   //
   // The metrics are:
   // - UMA metrics "Autofill.CreditCard.Seamless{Fillable,Fills}.AtFillTime
