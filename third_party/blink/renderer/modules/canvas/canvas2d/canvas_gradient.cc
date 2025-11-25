@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -139,18 +138,19 @@ void CanvasGradient::addColorStop(double value,
                                   const String& color_string,
                                   ExceptionState& exception_state) {
   if (!(value >= 0 && value <= 1.0)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The provided value (" +
-                                          String::Number(value) +
-                                          ") is outside the range (0.0, 1.0).");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrCat({"The provided value (", String::Number(value),
+                ") is outside the range (0.0, 1.0)."}));
     return;
   }
 
   Color color = Color::kTransparent;
   if (!ParseCanvasColorString(color_string, color)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "The value provided ('" + color_string +
-                                          "') could not be parsed as a color.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"The value provided ('", color_string,
+                "') could not be parsed as a color."}));
     return;
   }
 

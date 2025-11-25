@@ -217,7 +217,7 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
   return std::nullopt;
 }
 
-String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
+StringView XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
   switch (feature) {
     case device::mojom::XRSessionFeature::REF_SPACE_VIEWER:
       return "viewer";

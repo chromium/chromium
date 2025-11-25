@@ -60,13 +60,20 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
+
+namespace {
+
+String StrFloatCat(StringView leading, float value, StringView trailing) {
+  return StrCat({leading, String::Number(value), trailing});
+}
+
+}  // namespace
 
 void CanvasPath::closePath() {
   if (IsEmpty()) [[unlikely]] {
@@ -227,7 +234,7 @@ void CanvasPath::arcTo(double double_x1,
   if (r < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The radius provided (" + String::Number(r) + ") is negative.");
+        StrFloatCat("The radius provided (", r, ") is negative."));
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
@@ -438,7 +445,7 @@ void CanvasPath::arc(double double_x,
   if (radius < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The radius provided (" + String::Number(radius) + ") is negative.");
+        StrFloatCat("The radius provided (", radius, ") is negative."));
     return;
   }
 
@@ -495,17 +502,17 @@ void CanvasPath::ellipse(double double_x,
   }
 
   if (radius_x < 0) [[unlikely]] {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The major-axis radius provided (" +
-                                          String::Number(radius_x) +
-                                          ") is negative.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrFloatCat("The major-axis radius provided (", radius_x,
+                    ") is negative."));
     return;
   }
   if (radius_y < 0) [[unlikely]] {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The minor-axis radius provided (" +
-                                          String::Number(radius_y) +
-                                          ") is negative.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrFloatCat("The minor-axis radius provided (", radius_y,
+                    ") is negative."));
     return;
   }
 
@@ -571,8 +578,8 @@ void CanvasPath::roundRect(
   const int num_radii = radii.size();
   if (num_radii < 1 || num_radii > kMaxRadii) [[unlikely]] {
     exception_state.ThrowRangeError(
-        String::Number(num_radii) +
-        " radii provided. Between one and four radii are necessary.");
+        StrCat({String::Number(num_radii),
+                " radii provided. Between one and four radii are necessary."}));
     return;
   }
 
@@ -603,12 +610,12 @@ void CanvasPath::roundRect(
         }
         if (r_x < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              "X-radius value " + String::Number(r_x) + " is negative.");
+              StrFloatCat("X-radius value ", r_x, " is negative."));
           return;
         }
         if (r_y < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              "Y-radius value " + String::Number(r_y) + " is negative.");
+              StrFloatCat("Y-radius value ", r_y, " is negative."));
           return;
         }
         r[i] = gfx::SizeF(base::saturated_cast<float>(p->x()),
@@ -623,8 +630,8 @@ void CanvasPath::roundRect(
           return;
         }
         if (a < 0.0f) [[unlikely]] {
-          exception_state.ThrowRangeError("Radius value " + String::Number(a) +
-                                          " is negative.");
+          exception_state.ThrowRangeError(
+              StrFloatCat("Radius value ", a, " is negative."));
           return;
         }
         r[i] = gfx::SizeF(a, a);

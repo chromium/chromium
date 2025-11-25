@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -59,8 +58,9 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "The provided type ('" + type +
-          "') is not one of 'repeat', 'no-repeat', 'repeat-x', or 'repeat-y'.");
+      StrCat({"The provided type ('", type,
+              "') is not one of 'repeat', 'no-repeat', 'repeat-x', or "
+              "'repeat-y'."}));
   return Pattern::kRepeatModeNone;
 }
 

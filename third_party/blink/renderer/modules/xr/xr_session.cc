@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -385,7 +384,7 @@ XRSession::XRSession(
       trace_id_(trace_id) {
   FrozenArray<IDLString>::VectorType enabled_features;
   for (const auto& feature : enabled_feature_set_) {
-    enabled_features.push_back(XRSessionFeatureToString(feature));
+    enabled_features.push_back(XRSessionFeatureToString(feature).ToString());
   }
   enabled_features_ =
       MakeGarbageCollected<FrozenArray<IDLString>>(std::move(enabled_features));
@@ -879,8 +878,9 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
   if (!xr_->xrEnvironmentProviderRemote()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        kFeatureNotSupportedByDevicePrefix +
-            XRSessionFeatureToString(device::mojom::XRSessionFeature::ANCHORS));
+        StrCat({kFeatureNotSupportedByDevicePrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::ANCHORS)}));
     return EmptyPromise();
   }
 
@@ -1002,9 +1002,9 @@ ScriptPromise<XRHitTestSource> XRSession::requestHitTestSource(
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        kFeatureNotSupportedBySessionPrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::HIT_TEST));
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::HIT_TEST)}));
     return {};
   }
 
@@ -1017,9 +1017,9 @@ ScriptPromise<XRHitTestSource> XRSession::requestHitTestSource(
   if (!xr_->xrEnvironmentProviderRemote()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        kFeatureNotSupportedByDevicePrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::HIT_TEST));
+        StrCat({kFeatureNotSupportedByDevicePrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::HIT_TEST)}));
     return {};
   }
 
@@ -1102,9 +1102,9 @@ XRSession::requestHitTestSourceForTransientInput(
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        kFeatureNotSupportedBySessionPrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::HIT_TEST));
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::HIT_TEST)}));
     return {};
   }
 
@@ -1117,9 +1117,9 @@ XRSession::requestHitTestSourceForTransientInput(
   if (!xr_->xrEnvironmentProviderRemote()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        kFeatureNotSupportedByDevicePrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::HIT_TEST));
+        StrCat({kFeatureNotSupportedByDevicePrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::HIT_TEST)}));
     return {};
   }
 
@@ -1470,9 +1470,9 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        kFeatureNotSupportedBySessionPrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::LIGHT_ESTIMATION));
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::LIGHT_ESTIMATION)}));
     return EmptyPromise();
   }
 
@@ -1482,9 +1482,9 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
           V8XRReflectionFormat::Enum::kRgba16F) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Reflection format \"" +
-            light_probe_init->reflectionFormat().AsStringView() +
-            "\" not supported.");
+        StrCat({"Reflection format \"",
+                light_probe_init->reflectionFormat().AsStringView(),
+                "\" not supported."}));
     return EmptyPromise();
   }
 
@@ -2001,9 +2001,9 @@ XRSession::getTrackedImageScores(ScriptState* script_state,
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        kFeatureNotSupportedBySessionPrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::IMAGE_TRACKING));
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::IMAGE_TRACKING)}));
     return ScriptPromise<IDLArray<V8XRImageTrackingScore>>();
   }
 
@@ -2069,9 +2069,9 @@ const FrozenArray<XRImageTrackingResult>& XRSession::ImageTrackingResults(
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        kFeatureNotSupportedBySessionPrefix +
-            XRSessionFeatureToString(
-                device::mojom::XRSessionFeature::IMAGE_TRACKING));
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::IMAGE_TRACKING)}));
     return *MakeGarbageCollected<FrozenArray<XRImageTrackingResult>>();
   }
 

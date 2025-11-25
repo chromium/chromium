@@ -65,7 +65,7 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
 
 // Inverse of |StringToXRSessionFeature()|, used for logging to console and for
 // |XRSession::enabledFeatures|.
-String XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
+StringView XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
 
 bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
                                 const ExecutionContext* context);
