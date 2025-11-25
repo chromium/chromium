@@ -109,11 +109,6 @@ ParseEpLibraryPathSwitch(std::wstring_view value) {
   return std::make_pair(ep_name, ep_library_path);
 }
 
-constexpr base::cstring_view kCpuExecutionProvider = "CPUExecutionProvider";
-constexpr base::cstring_view kDmlExecutionProvider = "DmlExecutionProvider";
-constexpr base::cstring_view kWebGpuExecutionProvider =
-    "WebGpuExecutionProvider";
-
 bool IsDefaultCpuEpDevice(const OrtEpDevice* device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 

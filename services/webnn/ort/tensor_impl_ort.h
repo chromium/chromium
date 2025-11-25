@@ -21,7 +21,8 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 base::WeakPtr<WebNNContextImpl> context,
                 mojom::TensorInfoPtr tensor_info,
                 size_t size,
-                ScopedOrtValue tensor);
+                ScopedOrtValue tensor,
+                bool can_access_on_cpu);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;

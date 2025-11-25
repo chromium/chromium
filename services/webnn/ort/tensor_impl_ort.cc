@@ -21,7 +21,8 @@ TensorImplOrt::TensorImplOrt(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     size_t size,
-    ScopedOrtValue tensor)
+    ScopedOrtValue tensor,
+    bool can_access_on_cpu)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info)),
@@ -31,7 +32,9 @@ TensorImplOrt::TensorImplOrt(
   // will get random values.
   // TODO(crbug.com/461303833): check whether fast HW clears can be used
   // instead.
-  std::ranges::fill(AsSpan(), 0);
+  if (can_access_on_cpu) {
+    std::ranges::fill(AsSpan(), 0);
+  }
 }
 
 TensorImplOrt::~TensorImplOrt() = default;

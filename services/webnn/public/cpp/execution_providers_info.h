@@ -13,8 +13,22 @@
 
 namespace webnn {
 
+inline constexpr base::cstring_view kCpuExecutionProvider =
+    "CPUExecutionProvider";
+inline constexpr base::cstring_view kDmlExecutionProvider =
+    "DmlExecutionProvider";
+inline constexpr base::cstring_view kMIGraphXExecutionProvider =
+    "MIGraphXExecutionProvider";
+inline constexpr base::cstring_view kNvTensorRTRTXExecutionProvider =
+    "NvTensorRTRTXExecutionProvider";
 inline constexpr base::cstring_view kOpenVINOExecutionProvider =
     "OpenVINOExecutionProvider";
+inline constexpr base::cstring_view kQNNExecutionProvider =
+    "QNNExecutionProvider";
+inline constexpr base::cstring_view kVitisAIExecutionProvider =
+    "VitisAIExecutionProvider";
+inline constexpr base::cstring_view kWebGpuExecutionProvider =
+    "WebGpuExecutionProvider";
 
 // Describes the workarounds needed for execution provider limitations.
 // TODO(crbug.com/428740146): Remove this struct once all the execution
@@ -61,7 +75,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                                                          EpInfo>({
     // AMD
     {
-        "MIGraphXExecutionProvider",
+        kMIGraphXExecutionProvider,
         {
             .min_package_version =
                 {
@@ -76,7 +90,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
     },
     // NVidia
     {
-        "NvTensorRTRTXExecutionProvider",
+        kNvTensorRTRTXExecutionProvider,
         {
             .min_package_version =
                 {
@@ -141,7 +155,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
     },
     // Qualcomm
     {
-        "QNNExecutionProvider",
+        kQNNExecutionProvider,
         {
             .min_package_version =
                 {
@@ -156,7 +170,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
     },
     // AMD
     {
-        "VitisAIExecutionProvider",
+        kVitisAIExecutionProvider,
         {
             .min_package_version =
                 {

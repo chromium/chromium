@@ -368,14 +368,15 @@ ContextImplOrt::CreateTensorImpl(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                           "Creation of constant tensors is not supported."));
   }
-
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   OrtAllocator* allocator = nullptr;
-  // Use the device allocator if it's present. Otherwise, use the default
-  // allocator which is CPU based and non-arena.
-  if (device_allocator_) {
+  bool can_access_on_cpu = true;
+  // Use the device allocator if it's present and should be used. Otherwise, use
+  // the default allocator which is CPU based and non-arena.
+  if (device_allocator_ && device_allocator_->ShouldUse(tensor_info)) {
     allocator = device_allocator_->get();
+    can_access_on_cpu = device_allocator_->CanAccessOnCPU();
   } else {
     // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
     // same default allocator and its returned value should NOT be freed.
@@ -404,9 +405,9 @@ ContextImplOrt::CreateTensorImpl(
   // Invalid values are rejected in GraphBuilder.
   CHECK(base::IsValueInRangeForNumericType<int>(size));
 
-  return base::MakeRefCounted<TensorImplOrt>(std::move(receiver), AsWeakPtr(),
-                                             std::move(tensor_info), size,
-                                             std::move(tensor));
+  return base::MakeRefCounted<TensorImplOrt>(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info), size,
+      std::move(tensor), can_access_on_cpu);
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
