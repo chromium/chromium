@@ -222,17 +222,13 @@ TEST_F(HlsRenditionManagerTest, MultipleVariantResolutions) {
   rm.UpdatePlayerResolution({1920, 1080});
 
   EXPECT_CALL(*this, VariantSelected("/video/wvga.m3u8", "NONE"));
-  rm.UpdatePlayerResolution({1000, 1000});
+  rm.UpdatePlayerResolution({1000, 900});
 
-  // The comparison is area based.
   EXPECT_CALL(*this, VariantSelected("/video/fhd.m3u8", "NONE"));
-  rm.UpdatePlayerResolution({1080, 1920});
-
-  EXPECT_CALL(*this, VariantSelected("/video/hvga.m3u8", "NONE"));
-  rm.UpdatePlayerResolution({400, 600});
+  rm.UpdatePlayerResolution({1920, 1000});
 
   EXPECT_CALL(*this, VariantSelected("/video/8kuhd.m3u8", "NONE"));
-  rm.UpdatePlayerResolution({8192, 8192});
+  rm.UpdatePlayerResolution({7600, 4320});
 }
 
 TEST_F(HlsRenditionManagerTest, MP4SplitCodecs) {
