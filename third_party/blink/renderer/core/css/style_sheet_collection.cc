@@ -88,8 +88,10 @@ static void CreateRuleSets(const StyleEngine& engine,
   for (auto& [css_sheet, rule_set] : active_style_sheets) {
     CHECK_EQ(rule_set, nullptr);
 
-    if (!seen_contents.insert(css_sheet->Contents()).is_new_entry &&
-        css_sheet->Contents()->GetRuleSet().HasCascadeLayers()) {
+    StyleSheetContents* contents = css_sheet->Contents();
+
+    if (!seen_contents.insert(contents).is_new_entry &&
+        contents->HasRuleSet() && contents->GetRuleSet().HasCascadeLayers()) {
       // We've already seen this StyleSheetContents, but we cannot simply
       // add its cached RuleSet again; it would cause distinct anonymous
       // layers to be misidentified as the same layer.
@@ -98,9 +100,9 @@ static void CreateRuleSets(const StyleEngine& engine,
       rule_set = engine.RuleSetForSheet(*css_sheet, effective_mixins);
     }
 
-    if (css_sheet->Contents()->GetRuleSetDiff()) {
-      rule_set_diffs.push_back(css_sheet->Contents()->GetRuleSetDiff());
-      css_sheet->Contents()->ClearRuleSetDiff();
+    if (contents->GetRuleSetDiff()) {
+      rule_set_diffs.push_back(contents->GetRuleSetDiff());
+      contents->ClearRuleSetDiff();
     }
   }
 }
