@@ -870,7 +870,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_WINDOW);
             // |openInOtherWindow| can handle opening in a new window as well.
             mItemDelegate.openInAnotherWindow(
-                    mParams.getUrl(), mParams.getReferrer(), /* isIncognito= */ false);
+                    mParams.getUrl(),
+                    mParams.getReferrer(),
+                    /* isIncognito= */ mItemDelegate.isIncognito());
         } else if (itemId == R.id.contextmenu_open_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_EPHEMERAL_TAB);
             mItemDelegate.onOpenInEphemeralTab(mParams.getUrl(), mParams.getLinkText());
