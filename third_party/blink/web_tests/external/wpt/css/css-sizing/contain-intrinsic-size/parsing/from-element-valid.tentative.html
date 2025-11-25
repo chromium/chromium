@@ -23,12 +23,22 @@ test_valid_value("contain-intrinsic-height", "from-element 200px");
 
 test_valid_value("contain-intrinsic-size", "from-element");
 test_valid_value("contain-intrinsic-size", "from-element 200px");
+test_valid_value("contain-intrinsic-size", "from-element 300px 200px");
+test_valid_value("contain-intrinsic-size", "300px from-element 200px");
 test_shorthand_value("contain-intrinsic-size", "from-element", {
   "contain-intrinsic-width": "from-element",
   "contain-intrinsic-height": "from-element",
 });
 test_shorthand_value("contain-intrinsic-size", "from-element 200px", {
   "contain-intrinsic-width": "from-element 200px",
+  "contain-intrinsic-height": "from-element 200px",
+});
+test_shorthand_value("contain-intrinsic-size", "from-element 300px 200px", {
+  "contain-intrinsic-width": "from-element 300px",
+  "contain-intrinsic-height": "200px",
+});
+test_shorthand_value("contain-intrinsic-size", "300px from-element 200px", {
+  "contain-intrinsic-width": "300px",
   "contain-intrinsic-height": "from-element 200px",
 });
 </script>
