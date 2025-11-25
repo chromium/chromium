@@ -45,6 +45,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -483,7 +484,15 @@ class AppMenu implements OnKeyListener {
                 new AppMenuPopup(popup),
                 /* drillDownOverrideValue= */ null);
 
-        showPopup(anchorView, popupPosition);
+        // Post the show call to handle keyboard click events.
+        if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+            anchorView.post(
+                    () -> {
+                        showPopup(anchorView, popupPosition);
+                    });
+        } else {
+            showPopup(anchorView, popupPosition);
+        }
 
         mSelectedItemBeforeDismiss = false;
         mMenuShownTimeMs = SystemClock.elapsedRealtime();
