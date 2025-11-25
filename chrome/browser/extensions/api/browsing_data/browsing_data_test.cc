@@ -29,6 +29,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/test/test_extension_dir.h"
@@ -46,6 +47,10 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/browser.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/ui_test_utils.h"
+#endif  //! BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -437,3 +442,86 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, ValidateFilters) {
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, UnsupportedDataType) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["browsingData"]
+         })";
+
+  static constexpr char kPageHtml[] = R"(<script src="page.js"></script>)";
+  static constexpr char kPageJs[] =
+      R"(chrome.browsingData.removePasswords({}, () => {
+           chrome.test.succeed();
+         });
+        )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContentsConsoleObserver console_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  console_observer.SetPattern(
+      "Requested data type(s) are not supported: passwords.");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+
+  ASSERT_TRUE(console_observer.Wait());
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            console_observer.messages()[0].log_level);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, MultipleUnsupportedDataTypes) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["browsingData"]
+         })";
+
+  static constexpr char kPageHtml[] = R"(<script src="page.js"></script>)";
+  static constexpr char kPageJs[] =
+      R"(var options = {'since': 1000};
+         var dataToRemove = {'passwords': true, 'pluginData': true, 'appcache': false, 'history': true};
+         chrome.browsingData.remove(options, dataToRemove, () => {
+           chrome.test.succeed();
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContentsConsoleObserver console_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  console_observer.SetPattern(
+      "Requested data type(s) are not supported: passwords, pluginData.");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+
+  ASSERT_TRUE(console_observer.Wait());
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            console_observer.messages()[0].log_level);
+}
+#endif  //! BUILDFLAG(IS_ANDROID)

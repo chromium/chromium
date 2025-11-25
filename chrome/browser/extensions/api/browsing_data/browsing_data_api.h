@@ -42,7 +42,7 @@ inline constexpr char kFormDataKey[] = "formData";
 inline constexpr char kHistoryKey[] = "history";
 inline constexpr char kIndexedDBKey[] = "indexedDB";
 inline constexpr char kLocalStorageKey[] = "localStorage";
-inline constexpr char kPasswordsKey[] = "passwords";
+inline constexpr char kPasswordsKeyDeprecated[] = "passwords";
 inline constexpr char kPluginDataKeyDeprecated[] = "pluginData";
 inline constexpr char kServiceWorkersKey[] = "serviceWorkers";
 inline constexpr char kCacheStorageKey[] = "cacheStorage";
@@ -69,6 +69,8 @@ inline constexpr char kNonFilterableError[] =
 inline constexpr char kIncompatibleFilterError[] =
     "Don't set both 'origins' and 'excludeOrigins' at the same time.";
 inline constexpr char kInvalidOriginError[] = "'%s' is not a valid origin.";
+inline constexpr char kUnsupportedDataTypeWarning[] =
+    "Requested data type(s) are not supported: %s.";
 
 }  // namespace extension_browsing_data_api_constants
 
@@ -120,6 +122,9 @@ class BrowsingDataRemoverFunction
 
  protected:
   ~BrowsingDataRemoverFunction() override;
+
+  // Writes a console log warning when a datatype is unsupported.
+  void LogUnsupportedDataTypeWarning(const std::string& data_type);
 
  private:
   // Children should override this method to provide the proper removal mask
