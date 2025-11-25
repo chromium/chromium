@@ -608,7 +608,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxShowRecentTabChip",
                      ntp_composebox::kShowRecentTabChip.Get());
   source->AddLocalizedString("askAboutThisTabAriaLabel",
-                             IDS_NTP_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL);
+                             IDS_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL);
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      ntp_composebox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
