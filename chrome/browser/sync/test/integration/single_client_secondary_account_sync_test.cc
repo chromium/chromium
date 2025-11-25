@@ -45,13 +45,6 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
 
-  void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    secondary_account_helper::InitNetwork();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    SyncTest::SetUpOnMainThread();
-  }
-
   Profile* profile() { return GetProfile(0); }
 
  private:

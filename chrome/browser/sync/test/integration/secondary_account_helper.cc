@@ -21,14 +21,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace secondary_account_helper {
 
 namespace {
@@ -80,20 +72,6 @@ base::CallbackListSubscription SetUpSigninClient(
       ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
           &OnWillCreateBrowserContextServices, test_url_loader_factory));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void InitNetwork() {
-  auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
-
-  const ash::NetworkState* default_network =
-      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-
-  portal_detector->SetDefaultNetworkForTesting(default_network->guid());
-
-  // Takes ownership.
-  ash::network_portal_detector::InitializeForTesting(portal_detector);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AccountInfo SignInUnconsentedAccount(
     Profile* profile,
