@@ -216,16 +216,25 @@ class TestFactory : public ContextSharingBorderView::Factory {
   }
 };
 
-class ContextSharingBorderViewUiTest : public test::InteractiveGlicTest {
+class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
  public:
-  ContextSharingBorderViewUiTest() {
+  explicit ContextSharingBorderViewUiTestBase(bool enable_gpu_rasterization) {
+    std::string enabled_features;
+    // These features disable animation, so disable them here.
+    std::string disabled_features =
+        "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder";
+
     // Toggling UiGpuRasterization is only possible via command line.
-    features_.InitFromCommandLine(
-        "UiGpuRasterization",
-        // These features disable animation, so disable them here.
-        "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
+    if (enable_gpu_rasterization) {
+      enabled_features = "UiGpuRasterization";
+    } else {
+      disabled_features += ",UiGpuRasterization";
+    }
+
+    features_.InitFromCommandLine(enabled_features, disabled_features);
   }
-  ~ContextSharingBorderViewUiTest() override = default;
+
+  ~ContextSharingBorderViewUiTestBase() override = default;
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -292,6 +301,15 @@ class ContextSharingBorderViewUiTest : public test::InteractiveGlicTest {
   base::test::ScopedFeatureList features_;
   TestFactory test_factory_;
 };
+
+class ContextSharingBorderViewUiTest
+    : public ContextSharingBorderViewUiTestBase {
+ public:
+  ContextSharingBorderViewUiTest()
+      : ContextSharingBorderViewUiTestBase(/*enable_gpu_rasterization=*/true) {}
+  ~ContextSharingBorderViewUiTest() override = default;
+};
+
 }  // namespace
 
 // Exercise that, the border is resized correctly whenever the browser's size
@@ -1235,25 +1253,19 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPrefersReducedMotionUiTest,
 
 namespace {
 class ContextSharingBorderViewWithoutHardwareAccelerationUiTest
-    : public ContextSharingBorderViewUiTest {
+    : public ContextSharingBorderViewUiTestBase {
  public:
-  ContextSharingBorderViewWithoutHardwareAccelerationUiTest() = default;
+  ContextSharingBorderViewWithoutHardwareAccelerationUiTest()
+      : ContextSharingBorderViewUiTestBase(/*enable_gpu_rasterization=*/false) {
+  }
   ~ContextSharingBorderViewWithoutHardwareAccelerationUiTest() override =
       default;
-
-  void SetUp() override {
-    UseSoftwareCompositing();
-    test::InteractiveGlicTest::SetUp();
-  }
 };
 }  // namespace
 
 // Ensures that when there is no hardware acceleration, the emphasis animation
 // is skipped and we just show an opacity ramp up and ramp down animation.
 // Note: Ramp up and ramp down duration in this case is 200ms.
-// Secondary Note: ChromeOS requires hardware acceleration, so this test doesn't
-// make sense on that platform.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     ContextSharingBorderViewWithoutHardwareAccelerationUiTest,
     BasicRampingUpAndDown) {
@@ -1316,7 +1328,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->IsShowing());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Regression test for crbug.com/409649143. Ensure we clear the "start ramp down
 // state" if StopShowing is called immediately after starting the ramp down.
