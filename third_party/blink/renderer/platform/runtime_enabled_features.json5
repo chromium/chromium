@@ -1360,7 +1360,7 @@
     {
       // https://github.com/w3c/csswg-drafts/issues/12090#issuecomment-3204775586
       name: "CSSContainerNameNotTreeScoped",
-      status: "experimental",
+      status: "stable",
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // container-progress()
