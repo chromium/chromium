@@ -10543,29 +10543,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Chips_v1",
+                    "name": "Variant1",
                     "params": {
-                        "x_iph-variant": "custom-ui-chip-iph"
+                        "x_iph-variant": "custom-action-iph"
                     },
                     "enable_features": [
-                        "IPH_ExtensionsZeroStatePromo"
-                    ]
-                },
-                {
-                    "name": "Chips_v2",
-                    "params": {
-                        "x_iph-variant": "ustom-ui-chip-iph-v2"
-                    },
-                    "enable_features": [
-                        "IPH_ExtensionsZeroStatePromo"
-                    ]
-                },
-                {
-                    "name": "Chips_v3",
-                    "params": {
-                        "x_iph-variant": "custom-ui-chip-iph-v3"
-                    },
-                    "enable_features": [
+                        "ExtensionsCollapseMainMenu",
                         "IPH_ExtensionsZeroStatePromo"
                     ]
                 }
