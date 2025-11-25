@@ -8,6 +8,7 @@ import type {ComposeboxElement} from '//resources/cr_components/composebox/compo
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -32,12 +33,18 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
       isComposeboxFocused: {type: Boolean, reflect: true},
+      showContextMenu: {
+        reflect: true,
+        type: Boolean,
+        value: loadTimeData.getBoolean('composeboxShowContextMenu'),
+      },
     };
   }
 
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
   protected accessor isComposeboxFocused: boolean = false;
+  protected accessor showContextMenu: boolean = loadTimeData.getBoolean('composeboxShowContextMenu');
   private eventTracker_: EventTracker = new EventTracker();
   private composeboxResizeObserver_: ResizeObserver|null = null;
   private composeboxDropdownResizeObserver_: ResizeObserver|null = null;

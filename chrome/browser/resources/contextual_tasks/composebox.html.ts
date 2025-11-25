@@ -16,16 +16,13 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       --composebox-height: ${this.composeboxHeight_}px;
       --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
       >
+    <!-- TODO(crbug.com/454388827): isCollapsible should be false. -->
     <cr-composebox
       id="composebox"
       ?autofocus="${false}"
       carousel-on-top_
       lens-button-disabled_$="${false}"
     >
-        <!-- Currently an empty div that has height to force the input textarea to
-            not flow behind the Lens icon. Eventually, this should contain the
-            submit button and the Lens icon. -->
-      <div id="composeboxFooter" slot="footer"></div>
     </cr-composebox>
   </div>
   <!--_html_template_end_-->`;

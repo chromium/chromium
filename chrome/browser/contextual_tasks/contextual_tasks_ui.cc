@@ -95,11 +95,18 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  // Support no file types.
-  source->AddString("composeboxImageFileTypes", "");
-  source->AddString("composeboxAttachmentFileTypes", "");
-  source->AddInteger("composeboxFileMaxSize", 0);
-  source->AddInteger("composeboxFileMaxCount", 0);
+  source->AddString(
+      "composeboxImageFileTypes",
+      contextual_tasks::kContextualTasksNextboxImageFileTypes.Get());
+  source->AddString(
+      "composeboxAttachmentFileTypes",
+      contextual_tasks::kContextualTasksNextboxAttachmentFileTypes.Get());
+  source->AddInteger(
+      "composeboxFileMaxSize",
+      contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());
+  source->AddInteger(
+      "composeboxFileMaxCount",
+      contextual_tasks::kContextualTasksNextboxMaxFileCount.Get());
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   // Enable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", false);
@@ -109,7 +116,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // Disable image context suggestions.
   source->AddBoolean("composeboxShowImageSuggest", false);
   // Disable context menu and related features.
-  source->AddBoolean("composeboxShowContextMenu", false);
+    source->AddBoolean("composeboxShowContextMenu", contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);

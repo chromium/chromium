@@ -142,18 +142,6 @@
   pointer-events: none;
 }
 
-#composeboxFooter {
-  height: 0px;
-  transition: height var(--emphasized-curve);
-  transition-duration: var(--collapse-duration);
-}
-
-#composeboxContainer:has(#composebox[expanding_]) #composeboxFooter {
-  height: 64px;
-  transition-duration: var(--expand-duration);
-  width: var(--composebox-width);
-}
-
 #composebox::part(icon-container) {
   display: none;
 }
@@ -173,7 +161,6 @@
 
 #composebox::part(action-icon) {
   --cr-icon-button-hover-background-color: var(--color-composebox-hover);
-  --cr-icon-button-size: 48px;
 }
 
 #composebox::part(cancel-icon) {
@@ -192,16 +179,11 @@
   pointer-events: none;
 }
 
-#composebox::part(submit) {
-  --cr-composebox-submit-container-size: 52px;
-  --cr-icon-button-size: 48px;
-  display: block;
-}
-
 #composebox::part(label) {
   display: none;
 }
 
+/* TODO(crbug.com/454388827: - Color the tab chips to spec. */
 #composebox::part(context-entrypoint) {
   transition-delay: 0ms;
 }

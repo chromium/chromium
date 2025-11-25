@@ -16,6 +16,9 @@ namespace contextual_tasks {
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 
+// Enables context menu settings for contextual tasks.
+BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -40,6 +43,21 @@ extern const base::FeatureParam<double> kMinMultiSignalScore;
 // will become associated with the new task. When set to false, task change in
 // the side panel only affects the current tab.
 extern const base::FeatureParam<bool> kTaskScopedSidePanel;
+
+// Whether the context menu is enabled for Nextbox.
+extern bool GetIsContextualTasksNextboxContextMenuEnabled();
+
+// The file types that can be attached to a Nextbox as images.
+extern const base::FeatureParam<std::string> kContextualTasksNextboxImageFileTypes;
+
+// The file types that can be attached to a Nextbox as attachments.
+extern const base::FeatureParam<std::string> kContextualTasksNextboxAttachmentFileTypes;
+
+// The maximum size of a file that can be attached to a Nextbox.
+extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize;
+
+// The maximum number of files that can be attached to a Nextbox.
+extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
 
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;

@@ -18,6 +18,11 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables context menu settings for contextual tasks.
+BASE_FEATURE(kContextualTasksContextMenu,
+             "ContextualTasksContextMenu",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasksContext, "ai-page-url",
@@ -76,6 +81,26 @@ std::vector<std::string> GetContextualTasksSignInDomains() {
   return base::SplitString(kContextualTasksSignInDomains.Get(), ",",
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
+
+bool GetIsContextualTasksNextboxContextMenuEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksContextMenu);
+}
+
+const base::FeatureParam<std::string> kContextualTasksNextboxImageFileTypes{
+    &kContextualTasksContextMenu, "ContextualTasksNextboxImageFileTypes",
+    "image/jpeg,image/png"};
+
+const base::FeatureParam<std::string> kContextualTasksNextboxAttachmentFileTypes{
+    &kContextualTasksContextMenu, "ContextualTasksNextboxAttachmentFileTypes",
+    "text/plain,application/pdf"};
+
+const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize{
+    &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileSize",
+    20 * 1024 * 1024};
+
+const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
+    &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileCount", 4};
+
 
 bool GetEnableLensInContextualTasks() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
