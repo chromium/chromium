@@ -641,6 +641,9 @@ class MediaStreamManager::DeviceRequest {
   void SetVideoType(MediaStreamType video_type) {
     DCHECK(blink::IsVideoInputMediaType(video_type) ||
            video_type == MediaStreamType::NO_SERVICE);
+    SendLogMessage(base::StringPrintf(
+        "DR::SetVideoType([requester_id=%d] {video_type=%s})", requester_id,
+        StreamTypeToString(video_type)));
     video_type_ = video_type;
   }
 
