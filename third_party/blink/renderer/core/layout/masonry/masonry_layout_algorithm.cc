@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
 namespace blink {
@@ -939,7 +939,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     } else {
       placement_data.row_start_offset = start_offset;
     }
-    To<LayoutMasonry>(Node().GetLayoutBox())
+    To<LayoutGridLanes>(Node().GetLayoutBox())
         ->SetCachedPlacementData(std::move(placement_data));
   }
 

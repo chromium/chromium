@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
 namespace blink {
 
-LayoutMasonry::LayoutMasonry(Element* element) : LayoutBlock(element) {}
+LayoutGridLanes::LayoutGridLanes(Element* element) : LayoutBlock(element) {}
 
-const GridLayoutData* LayoutMasonry::LayoutData() const {
+const GridLayoutData* LayoutGridLanes::LayoutData() const {
   return LayoutGrid::GetGridLayoutDataFromFragments(this);
 }
 
-Vector<LayoutUnit> LayoutMasonry::GridTrackPositions(
+Vector<LayoutUnit> LayoutGridLanes::GridTrackPositions(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {
@@ -25,35 +25,36 @@ Vector<LayoutUnit> LayoutMasonry::GridTrackPositions(
                                                   : LayoutData()->Rows());
 }
 
-LayoutUnit LayoutMasonry::GridGap(
+LayoutUnit LayoutGridLanes::GridGap(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   return LayoutGrid::ComputeGridGap(LayoutData(), track_direction);
 }
 
-LayoutUnit LayoutMasonry::MasonryItemOffset(
+LayoutUnit LayoutGridLanes::GridLanesItemOffset(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  // Distribution offset is baked into the `gutter_size` in Masonry.
+  // Distribution offset is baked into the `gutter_size` in Grid Lanes.
   return LayoutUnit();
 }
 
-bool LayoutMasonry::HasCachedPlacementData() const {
+bool LayoutGridLanes::HasCachedPlacementData() const {
   // TODO(almaher): Check for !IsGridPlacementDirty() similar to
   // LayoutGrid.
   return !!cached_placement_data_;
 }
 
-const GridPlacementData& LayoutMasonry::CachedPlacementData() const {
+const GridPlacementData& LayoutGridLanes::CachedPlacementData() const {
   DCHECK(cached_placement_data_);
   return *cached_placement_data_;
 }
 
-void LayoutMasonry::SetCachedPlacementData(GridPlacementData&& placement_data) {
+void LayoutGridLanes::SetCachedPlacementData(
+    GridPlacementData&& placement_data) {
   cached_placement_data_ = std::move(placement_data);
 }
 
-wtf_size_t LayoutMasonry::AutoRepeatCountForDirection(
+wtf_size_t LayoutGridLanes::AutoRepeatCountForDirection(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!cached_placement_data_) {
@@ -62,7 +63,7 @@ wtf_size_t LayoutMasonry::AutoRepeatCountForDirection(
   return cached_placement_data_->AutoRepeatTrackCount(track_direction);
 }
 
-wtf_size_t LayoutMasonry::ExplicitGridStartForDirection(
+wtf_size_t LayoutGridLanes::ExplicitGridStartForDirection(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!cached_placement_data_) {
@@ -71,7 +72,7 @@ wtf_size_t LayoutMasonry::ExplicitGridStartForDirection(
   return cached_placement_data_->StartOffset(track_direction);
 }
 
-wtf_size_t LayoutMasonry::ExplicitGridEndForDirection(
+wtf_size_t LayoutGridLanes::ExplicitGridEndForDirection(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!cached_placement_data_) {
@@ -83,7 +84,7 @@ wtf_size_t LayoutMasonry::ExplicitGridEndForDirection(
       cached_placement_data_->ExplicitGridTrackCount(track_direction));
 }
 
-Vector<LayoutUnit, 1> LayoutMasonry::TrackSizesForComputedStyle(
+Vector<LayoutUnit, 1> LayoutGridLanes::TrackSizesForComputedStyle(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {

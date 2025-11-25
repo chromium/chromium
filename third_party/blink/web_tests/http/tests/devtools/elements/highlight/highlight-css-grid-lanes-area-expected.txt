@@ -92,7 +92,7 @@ grid-lanes-with-areas{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [

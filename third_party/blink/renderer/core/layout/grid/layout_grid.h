@@ -34,7 +34,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   static Vector<LayoutUnit> ComputeExpandedPositions(
       const GridLayoutTrackCollection& track_collection);
 
-  // Helper functions shared between LayoutGrid and LayoutMasonry.
+  // Helper functions shared between LayoutGrid and LayoutGridLanes.
   static const GridLayoutData* GetGridLayoutDataFromFragments(
       const LayoutBlock* layout_block);
   static LayoutUnit ComputeGridGap(const GridLayoutData* grid_layout_data,

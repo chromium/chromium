@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/masonry/masonry_item_group.h"
 
 namespace blink {
@@ -24,7 +24,7 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   }
 
   const GridPlacementData& CachedPlacementData() const {
-    return To<LayoutMasonry>(box_.Get())->CachedPlacementData();
+    return To<LayoutGridLanes>(box_.Get())->CachedPlacementData();
   }
 
   // Collects the children of this node (using the `GridItemData` for each child

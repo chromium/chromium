@@ -61,7 +61,7 @@
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -2072,7 +2072,7 @@ void PopulateGridTrackListComputedValues(CSSValueList* list,
 
 template <typename T>
 typename std::enable_if<std::is_same<T, LayoutGrid>::value ||
-                            std::is_same<T, LayoutMasonry>::value,
+                            std::is_same<T, LayoutGridLanes>::value,
                         CSSValue*>::type
 ValueForGridTrackList(GridTrackSizingDirection direction,
                       const LayoutObject* layout_object,
@@ -2200,7 +2200,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const ComputedStyle& style,
     bool force_computed_value) {
   if (style.IsDisplayGridLanesBox()) {
-    return blink::ValueForGridTrackList<LayoutMasonry>(
+    return blink::ValueForGridTrackList<LayoutGridLanes>(
         direction, layout_object, style, force_computed_value);
   }
   return blink::ValueForGridTrackList<LayoutGrid>(direction, layout_object,

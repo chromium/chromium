@@ -93,7 +93,7 @@ ltrGridLanes{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -311,7 +311,7 @@ rtlGridLanes{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -529,7 +529,7 @@ ltrGridLanesGap{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -753,7 +753,7 @@ rtlGridLanesGap{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [

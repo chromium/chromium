@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -811,7 +811,7 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
       layout_object->IsLayoutGrid()
           ? To<LayoutGrid>(layout_object)
                 ->ExplicitGridStartForDirection(direction)
-          : To<LayoutMasonry>(layout_object)
+          : To<LayoutGridLanes>(layout_object)
                 ->ExplicitGridStartForDirection(direction);
   // Go line by line, calculating the offset to fall in the middle of gaps
   // if needed.
@@ -877,7 +877,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
       layout_object->IsLayoutGrid()
           ? To<LayoutGrid>(layout_object)
                 ->ExplicitGridEndForDirection(direction)
-          : To<LayoutMasonry>(layout_object)
+          : To<LayoutGridLanes>(layout_object)
                 ->ExplicitGridEndForDirection(direction);
 
   {
@@ -1007,7 +1007,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForMasonry(
     GridTrackSizingDirection direction,
     const Vector<LayoutUnit>& masonry_tracks,
     bool is_for_columns) {
-  const auto* masonry = To<LayoutMasonry>(node->GetLayoutObject());
+  const auto* masonry = To<LayoutGridLanes>(node->GetLayoutObject());
   std::unique_ptr<protocol::DictionaryValue> area_paths =
       protocol::DictionaryValue::create();
 
@@ -1162,7 +1162,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForMasonry(
     float scale,
     const Vector<LayoutUnit>& positions,
     LayoutUnit alt_axis_pos) {
-  auto* masonry = To<LayoutMasonry>(node->GetLayoutObject());
+  auto* masonry = To<LayoutGridLanes>(node->GetLayoutObject());
   const bool is_rtl = (direction == kForColumns) &&
                       !masonry->StyleRef().IsLeftToRightDirection();
   const LayoutUnit gap = masonry->GridGap(direction);
@@ -1559,7 +1559,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
     const InspectorGridHighlightConfig& grid_highlight_config,
     float scale) {
   LocalFrameView* containing_view = element->GetDocument().View();
-  auto* masonry = To<LayoutMasonry>(element->GetLayoutObject());
+  auto* masonry = To<LayoutGridLanes>(element->GetLayoutObject());
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
 
@@ -1572,7 +1572,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
       masonry->GridTrackPositions(is_for_columns ? kForColumns : kForRows);
   const LayoutUnit gap =
       masonry->GridGap(is_for_columns ? kForColumns : kForRows) +
-      masonry->MasonryItemOffset(is_for_columns ? kForColumns : kForRows);
+      masonry->GridLanesItemOffset(is_for_columns ? kForColumns : kForRows);
   const LayoutUnit span_start =
       is_for_columns ? masonry->ContentTop() : masonry->ContentLeft();
   const LayoutUnit span_size =

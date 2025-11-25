@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_MASONRY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_MASONRY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_GRID_LANES_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_GRID_LANES_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
@@ -13,15 +13,15 @@
 
 namespace blink {
 
-class CORE_EXPORT LayoutMasonry : public LayoutBlock {
+class CORE_EXPORT LayoutGridLanes : public LayoutBlock {
  public:
-  explicit LayoutMasonry(Element* element);
+  explicit LayoutGridLanes(Element* element);
 
   const char* GetName() const override {
     NOT_DESTROYED();
     // This string can affect a production behavior.
     // See tool_highlight.ts in devtools-frontend.
-    return "LayoutMasonry";
+    return "LayoutGridLanes";
   }
 
   bool HasCachedPlacementData() const;
@@ -38,7 +38,8 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
   wtf_size_t ExplicitGridEndForDirection(
       GridTrackSizingDirection direction) const;
   LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
-  LayoutUnit MasonryItemOffset(GridTrackSizingDirection track_direction) const;
+  LayoutUnit GridLanesItemOffset(
+      GridTrackSizingDirection track_direction) const;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection track_direction) const;
 
@@ -56,14 +57,14 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
   // TODO(almaher): Do we need special overrides of AddChild(),
   // RemoveChild(), StyleDidChange(), MarkGridDirty() etc?
 
-  // Caches masonry placement data for DevTools inspector highlighting.
+  // Caches grid-lanes placement data for DevTools inspector highlighting.
   // This avoids recomputing during inspector queries.
   std::optional<GridPlacementData> cached_placement_data_;
 };
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutMasonry> {
+struct DowncastTraits<LayoutGridLanes> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsLayoutGridLanes();
   }
@@ -71,4 +72,4 @@ struct DowncastTraits<LayoutMasonry> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_MASONRY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_GRID_LANES_H_

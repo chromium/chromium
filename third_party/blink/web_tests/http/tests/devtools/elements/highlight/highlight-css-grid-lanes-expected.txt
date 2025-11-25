@@ -93,7 +93,7 @@ grid-lanes-columns-container{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -356,7 +356,7 @@ grid-lanes-rows-container{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -697,7 +697,7 @@ empty-grid-lanes-container{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutMasonry",
+    "layoutObjectName": "LayoutGridLanes",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
