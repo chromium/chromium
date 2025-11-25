@@ -149,7 +149,9 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
         signin::ConsentLevel::kSignin));
 
     if (as_managed) {
-      account_info.hosted_domain = "example.com";
+      account_info = AccountInfo::Builder(account_info)
+                         .SetHostedDomain("example.com")
+                         .Build();
       identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
       enterprise_connectors::test::SetProfileDMToken(profile(),
