@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -155,6 +156,24 @@ PipelineStatus ConvertToPiplineStatus(HlsDemuxerStatus&& status) {
     return OkStatus();
   }
   return {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(status)};
+}
+
+using HlsDemuxerStatusCallback = base::OnceCallback<void(HlsDemuxerStatus)>;
+
+HlsDemuxerStatusCallback BindOkContinuation(
+    HlsDemuxerStatusCallback err,
+    base::OnceCallback<void(HlsDemuxerStatusCallback)> ok) {
+  return base::BindOnce(
+      [](HlsDemuxerStatusCallback err,
+         base::OnceCallback<void(HlsDemuxerStatusCallback)> ok,
+         HlsDemuxerStatus status) {
+        if (status.is_ok()) {
+          std::move(ok).Run(std::move(err));
+        } else {
+          std::move(err).Run(std::move(status));
+        }
+      },
+      std::move(err), std::move(ok));
 }
 
 }  // namespace
@@ -762,7 +781,7 @@ HlsDemuxerStatusCallback HlsManifestDemuxerEngine::BindPlaylistLoader(
 
   PlaylistParseInfo parse_info = {rendition_uri, selected_variant_codecs_,
                                   rendition_role};
-  return HlsDemuxerStatus::BindOkContinuation(
+  return BindOkContinuation(
       std::move(do_next),
       base::BindOnce(&HlsManifestDemuxerEngine::LoadPlaylist,
                      weak_factory_.GetWeakPtr(), std::move(parse_info)));
