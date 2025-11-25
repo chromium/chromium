@@ -1025,6 +1025,16 @@
         "version": "2.4.0-SNAPSHOT"
     },
     {
+        "name": "uiautomator-shell",
+        "group": "androidx.test.uiautomator",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
+        "name": "uiautomator-shell-android",
+        "group": "androidx.test.uiautomator",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "annotation",
         "group": "androidx.test",
         "version": "1.0.1"
