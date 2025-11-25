@@ -77,6 +77,40 @@ enum class AuthenticationRequestMode {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationRequestMode)
 
+// LINT.IfChange(CredentialRequestResult)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webauthn
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
+enum class CredentialRequestResult {
+  kTimeout = 0,
+  kUserCancelled = 1,
+
+  kWinNativeSuccess = 2,
+  kWinNativeError = 3,
+
+  kTouchIDSuccess = 4,
+  kTouchIDError = 5,
+
+  kChromeOSSuccess = 6,
+  kChromeOSError = 7,
+
+  kPhoneSuccess = 8,
+  kPhoneError = 9,
+
+  kICloudKeychainSuccess = 10,
+  kICloudKeychainError = 11,
+
+  kEnclaveSuccess = 12,
+  kEnclaveError = 13,
+
+  kOtherSuccess = 14,
+  kOtherError = 15,
+
+  kMaxValue = kOtherError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationCredentialRequestResult)
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_REQUEST_OUTCOME_ENUMS_H_

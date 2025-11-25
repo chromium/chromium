@@ -956,9 +956,8 @@ TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
   EXPECT_EQ(
       AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options)).status,
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.MakeCredential.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.MakeCredential.Result",
+                                      CredentialRequestResult::kTimeout, 1);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUiTimeout,
                                  AuthenticationRequestMode::kModalWebAuthn);
 }
@@ -1227,9 +1226,8 @@ TEST_F(AuthenticatorImplTest, TestGetAssertionTimeout) {
   EXPECT_EQ(
       AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GetAssertion.Result",
+                                      CredentialRequestResult::kTimeout, 1);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kUiTimeout,
                                AuthenticationRequestMode::kModalWebAuthn);
 }
@@ -1886,9 +1884,9 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
 
   EXPECT_EQ(AuthenticatorGetAssertion().status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GetAssertion.Result",
+                                      CredentialRequestResult::kUserCancelled,
+                                      1);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kUserCancellation,
                                AuthenticationRequestMode::kModalWebAuthn);
 }
@@ -1900,9 +1898,9 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestMakeCredentialCancel) {
 
   EXPECT_EQ(AuthenticatorMakeCredential().status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.MakeCredential.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.MakeCredential.Result",
+                                      CredentialRequestResult::kUserCancelled,
+                                      1);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUserCancellation,
                                  AuthenticationRequestMode::kModalWebAuthn);
 }
@@ -3636,9 +3634,8 @@ TEST_F(AuthenticatorImplTest, GetAssertionResultMetricError) {
       GetTestPublicKeyCredentialRequestOptions();
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kOtherError, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GetAssertion.Result",
+                                      CredentialRequestResult::kOtherError, 1);
 }
 
 TEST_F(AuthenticatorImplTest, GetAssertionResultMetricSuccess) {
@@ -3651,9 +3648,9 @@ TEST_F(AuthenticatorImplTest, GetAssertionResultMetricSuccess) {
       options->allow_credentials.back().id, kTestRelyingPartyId));
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kOtherSuccess, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GetAssertion.Result",
+                                      CredentialRequestResult::kOtherSuccess,
+                                      1);
 }
 
 TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricError) {
@@ -3667,9 +3664,8 @@ TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricError) {
       options->exclude_credentials[0].id, kTestRelyingPartyId));
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::CREDENTIAL_EXCLUDED);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.MakeCredential.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kOtherError, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.MakeCredential.Result",
+                                      CredentialRequestResult::kOtherError, 1);
 }
 
 TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricSuccess) {
@@ -3677,9 +3673,9 @@ TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricSuccess) {
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.MakeCredential.Result",
-      AuthenticatorCommonImpl::CredentialRequestResult::kOtherSuccess, 1);
+  histogram_tester.ExpectUniqueSample("WebAuthentication.MakeCredential.Result",
+                                      CredentialRequestResult::kOtherSuccess,
+                                      1);
 }
 
 // Tests that for an authenticator that does not support batching, credential

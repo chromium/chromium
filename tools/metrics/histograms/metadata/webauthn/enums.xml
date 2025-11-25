@@ -240,6 +240,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Canceled"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationCredentialRequestResult) -->
+
 <enum name="WebAuthenticationCredentialRequestResult">
   <int value="0" label="Timeout"/>
   <int value="1" label="User cancelled"/>
@@ -258,6 +260,8 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Other device success"/>
   <int value="15" label="Other device error"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:CredentialRequestResult) -->
 
 <!-- LINT.IfChange(WebAuthenticationDeduplicatedType) -->
 

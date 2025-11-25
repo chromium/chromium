@@ -549,44 +549,31 @@ bool IsPlatformAuthenticatorForInvalidStateError(
   }
 }
 
-AuthenticatorCommonImpl::CredentialRequestResult
-CredentialRequestResultFromCode(bool success, device::AuthenticatorType type) {
+CredentialRequestResult CredentialRequestResultFromCode(
+    bool success,
+    device::AuthenticatorType type) {
   switch (type) {
     case device::AuthenticatorType::kChromeOS:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kChromeOSSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kChromeOSError;
+      return success ? CredentialRequestResult::kChromeOSSuccess
+                     : CredentialRequestResult::kChromeOSError;
     case device::AuthenticatorType::kEnclave:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kEnclaveSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kEnclaveError;
+      return success ? CredentialRequestResult::kEnclaveSuccess
+                     : CredentialRequestResult::kEnclaveError;
     case device::AuthenticatorType::kICloudKeychain:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kICloudKeychainSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kICloudKeychainError;
+      return success ? CredentialRequestResult::kICloudKeychainSuccess
+                     : CredentialRequestResult::kICloudKeychainError;
     case device::AuthenticatorType::kOther:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kOtherSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kOtherError;
+      return success ? CredentialRequestResult::kOtherSuccess
+                     : CredentialRequestResult::kOtherError;
     case device::AuthenticatorType::kPhone:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kPhoneSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kPhoneError;
+      return success ? CredentialRequestResult::kPhoneSuccess
+                     : CredentialRequestResult::kPhoneError;
     case device::AuthenticatorType::kTouchID:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kTouchIDSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kTouchIDError;
+      return success ? CredentialRequestResult::kTouchIDSuccess
+                     : CredentialRequestResult::kTouchIDError;
     case device::AuthenticatorType::kWinNative:
-      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
-                           kWinNativeSuccess
-                     : AuthenticatorCommonImpl::CredentialRequestResult::
-                           kWinNativeError;
+      return success ? CredentialRequestResult::kWinNativeSuccess
+                     : CredentialRequestResult::kWinNativeError;
   }
 }
 
@@ -747,10 +734,7 @@ base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
   return transports;
 }
 
-void MaybeRecordBrowserAssistedLogin(
-    AuthenticatorCommonImpl::CredentialRequestResult request_result) {
-  using CredentialRequestResult =
-      AuthenticatorCommonImpl::CredentialRequestResult;
+void MaybeRecordBrowserAssistedLogin(CredentialRequestResult request_result) {
   using AssistedLoginType = ContentBrowserClient::AssistedLoginType;
   std::optional<AssistedLoginType> login_type;
 
