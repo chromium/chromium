@@ -23,8 +23,14 @@ namespace flag_descriptions {
 extern const char kAIHubNewBadgeName[];
 extern const char kAIHubNewBadgeDescription[];
 
+extern const char kAIMEligibilityRefreshNTPModulesName[];
+extern const char kAIMEligibilityRefreshNTPModulesDescription[];
+
 extern const char kAIMEligibilityServiceStartWithProfileName[];
 extern const char kAIMEligibilityServiceStartWithProfileDescription[];
+
+extern const char kAIMNTPEntrypointTabletName[];
+extern const char kAIMNTPEntrypointTabletDescription[];
 
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];

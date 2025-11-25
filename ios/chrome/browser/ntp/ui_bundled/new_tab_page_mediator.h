@@ -28,6 +28,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
+class AimEligibilityService;
 class AuthenticationService;
 class BrowserViewVisibilityNotifierBrowserAgent;
 class ChromeAccountManagerService;
@@ -42,7 +43,6 @@ class HomeBackgroundCustomizationService;
 @protocol NewTabPageHeaderConsumer;
 class PlaceholderService;
 class PrefService;
-class ProfileIOS;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class UserUploadedImageManager;
@@ -79,7 +79,8 @@ class UserUploadedImageManager;
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                               profile:(ProfileIOS*)profile
+                 aimEligibilityService:
+                     (AimEligibilityService*)aimEligibilityService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

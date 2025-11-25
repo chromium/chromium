@@ -15,10 +15,19 @@ const char kAIHubNewBadgeName[] = "AI Hub New Badge";
 const char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
+const char kAIMEligibilityRefreshNTPModulesName[] =
+    "AIMEligibilityRefreshNTPModules";
+const char kAIMEligibilityRefreshNTPModulesDescription[] =
+    "Enables the AIMEligibilityRefreshNTPModules feature.";
+
 const char kAIMEligibilityServiceStartWithProfileName[] =
     "AIMEligibilityServiceStartWithProfile";
 const char kAIMEligibilityServiceStartWithProfileDescription[] =
     "Start the AIM eligibility service with the profile.";
+
+const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
+const char kAIMNTPEntrypointTabletDescription[] =
+    "Enables the AIMNTPEntrypointTablet feature.";
 
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";

@@ -1260,3 +1260,16 @@ BASE_FEATURE(kAIMEligibilityServiceStartWithProfile,
 bool IsAIMEligibilityServiceStartWithProfileEnabled() {
   return base::FeatureList::IsEnabled(kAIMEligibilityServiceStartWithProfile);
 }
+
+BASE_FEATURE(kAIMNTPEntrypointTablet, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAIMNTPEntrypointTabletEnabled() {
+  return base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet);
+}
+
+BASE_FEATURE(kAIMEligibilityRefreshNTPModules,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAIMEligibilityRefreshNTPModulesEnabled() {
+  return base::FeatureList::IsEnabled(kAIMEligibilityRefreshNTPModules);
+}
