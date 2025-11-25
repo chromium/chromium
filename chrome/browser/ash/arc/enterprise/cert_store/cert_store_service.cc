@@ -246,11 +246,11 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
   if (!nss_cert)
     return std::nullopt;
 
-  // TODO(b/193771095) Use a valid wincx.
+  // Passing a nullptr for wincx is a hack but not worth fixing now, see b/193771095
   // Must have a private key in order to access label and ID.
   SECKEYPrivateKey* private_key =
       PK11_FindKeyByAnyCert(nss_cert.get(), nullptr /* wincx */);
-  // TODO(b/193771180) Investigate race condition with null private keys.
+  // Potential race condition with null private keys (see b/193771180)
   if (!private_key)
     return std::nullopt;
   crypto::ScopedSECKEYPrivateKey priv_key_destroyer(private_key);
