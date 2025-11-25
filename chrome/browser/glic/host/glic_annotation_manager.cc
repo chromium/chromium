@@ -90,7 +90,6 @@ GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
     return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
   }
 
-  // TODO(crbug.com/422728758): Implement url verification for PDFs.
   return &pdf_helper->render_frame_host();
 #else
   return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
