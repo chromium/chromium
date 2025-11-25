@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.notifications.tips;
 
 import android.content.Context;
-import android.content.Intent;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -18,7 +16,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -26,9 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
-import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -58,7 +52,6 @@ public class TipsOptInCoordinator {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:TipsNotificationsOptInPromoEventType)
 
-    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TipsOptInSheetContent mSheetContent;
 
@@ -69,7 +62,6 @@ public class TipsOptInCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      */
     public TipsOptInCoordinator(Context context, BottomSheetController bottomSheetController) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
 
         View contentView =
@@ -80,7 +72,7 @@ public class TipsOptInCoordinator {
         ButtonCompat positiveButtonView = contentView.findViewById(R.id.opt_in_positive_button);
         positiveButtonView.setOnClickListener(
                 (view) -> {
-                    launchNotificationSettings();
+                    TipsUtils.launchTipsNotificationsSettings(context);
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     recordOptInPromoEventType(OptInPromoEventType.ACCEPTED);
                 });
@@ -104,38 +96,6 @@ public class TipsOptInCoordinator {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, true);
         recordOptInPromoEventType(OptInPromoEventType.SHOWN);
-    }
-
-    private Intent getNotificationSettingsIntent() {
-        Intent intent = new Intent();
-        if (areAppNotificationsEnabled()) {
-            intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, mContext.getPackageName());
-            intent.putExtra(Settings.EXTRA_CHANNEL_ID, ChromeChannelDefinitions.ChannelId.TIPS);
-        } else {
-            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, mContext.getPackageName());
-        }
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
-    }
-
-    private boolean areAppNotificationsEnabled() {
-        return NotificationProxyUtils.areNotificationsEnabled();
-    }
-
-    private void createNotificationChannel() {
-        new ChannelsInitializer(
-                        BaseNotificationManagerProxyFactory.create(),
-                        ChromeChannelDefinitions.getInstance(),
-                        mContext.getResources())
-                .ensureInitialized(ChromeChannelDefinitions.ChannelId.TIPS);
-    }
-
-    private void launchNotificationSettings() {
-        // Make sure the channel is initialized before sending users to the settings.
-        createNotificationChannel();
-        mContext.startActivity(getNotificationSettingsIntent());
     }
 
     private void recordOptInPromoEventType(@OptInPromoEventType int type) {

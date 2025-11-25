@@ -3231,6 +3231,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
 
             @Override
+            public void showTipsNotificationsChannelSettings() {
+                TipsUtils.launchTipsNotificationsSettings(getContext());
+            }
+
+            @Override
             public int getTabCountForRelaunchFromSharedPrefs() {
                 return MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(mWindowId);
             }

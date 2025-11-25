@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -130,6 +131,8 @@ public class HomeModulesMetricsUtils {
                 return "QuickDeletePromo";
             case HISTORY_SYNC_PROMO:
                 return "HistorySyncPromo";
+            case TIPS_NOTIFICATIONS_PROMO:
+                return "TipsNotificationsPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -156,6 +159,8 @@ public class HomeModulesMetricsUtils {
                 return QUICK_DELETE_PROMO;
             case "HistorySyncPromo":
                 return HISTORY_SYNC_PROMO;
+            case "TipsNotificationsPromo":
+                return TIPS_NOTIFICATIONS_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

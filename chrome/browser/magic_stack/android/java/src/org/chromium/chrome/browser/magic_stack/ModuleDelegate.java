@@ -37,6 +37,7 @@ public interface ModuleDelegate {
         ModuleType.TAB_GROUP_SYNC_PROMO,
         ModuleType.QUICK_DELETE_PROMO,
         ModuleType.HISTORY_SYNC_PROMO,
+        ModuleType.TIPS_NOTIFICATIONS_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -52,7 +53,8 @@ public interface ModuleDelegate {
         int TAB_GROUP_SYNC_PROMO = 8;
         int QUICK_DELETE_PROMO = 9;
         int HISTORY_SYNC_PROMO = 10;
-        int NUM_ENTRIES = 11;
+        int TIPS_NOTIFICATIONS_PROMO = 11;
+        int NUM_ENTRIES = 12;
     }
 
     // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes)

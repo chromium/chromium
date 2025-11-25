@@ -138,6 +138,13 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_history_sync_title,
                 R.string.educational_tip_history_sync_description,
                 R.drawable.history_sync_promo_logo);
+
+        // Test showing tips notifications promo card.
+        testShowModuleImpl(
+                ModuleType.TIPS_NOTIFICATIONS_PROMO,
+                R.string.educational_tip_tips_notifications_title,
+                R.string.educational_tip_tips_notifications_description,
+                R.drawable.tips_notifications_promo_logo);
     }
 
     @Test

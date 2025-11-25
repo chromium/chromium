@@ -23,6 +23,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/cards/QuickDeletePromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupSyncPromoCoordinator.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/cards/TipsNotificationsPromoCoordinator.java",
   ]
   deps = [
     ":java_resources",
@@ -69,6 +70,7 @@ android_resources("java_resources") {
     "java/res/drawable/quick_delete_promo_logo.xml",
     "java/res/drawable/tab_group_promo_logo.xml",
     "java/res/drawable/tab_group_sync_promo_logo.xml",
+    "java/res/drawable/tips_notifications_promo_logo.xml",
     "java/res/layout/educational_tip_default_browser_bottom_sheet.xml",
     "java/res/layout/educational_tip_module_layout.xml",
     "java/res/values-night/colors.xml",

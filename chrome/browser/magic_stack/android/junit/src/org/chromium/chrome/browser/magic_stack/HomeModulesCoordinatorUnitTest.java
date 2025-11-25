@@ -261,7 +261,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.TAB_GROUP_PROMO,
                         ModuleType.TAB_GROUP_SYNC_PROMO,
                         ModuleType.QUICK_DELETE_PROMO,
-                        ModuleType.HISTORY_SYNC_PROMO);
+                        ModuleType.HISTORY_SYNC_PROMO,
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);

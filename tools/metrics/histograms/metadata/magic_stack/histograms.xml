@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabGroupPromo"/>
   <variant name="TabGroupSyncPromo"/>
   <variant name="TabResumption"/>
+  <variant name="TipsNotificationsPromo"/>
 </variants>
 
 <variants name="ScrollState">

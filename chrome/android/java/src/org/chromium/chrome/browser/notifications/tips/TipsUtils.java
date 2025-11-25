@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.notifications.tips;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.provider.Settings;
 
 import androidx.annotation.StringRes;
 
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -225,6 +228,43 @@ public class TipsUtils {
                                 callback.onResult(false);
                             }
                         });
+    }
+
+    /**
+     * Launch the settings page for the Tips Notifications channel.
+     *
+     * @param context The current context.
+     */
+    public static void launchTipsNotificationsSettings(Context context) {
+        // Make sure the channel is initialized before sending users to the settings.
+        createNotificationChannel(context);
+        context.startActivity(getNotificationSettingsIntent(context));
+    }
+
+    private static Intent getNotificationSettingsIntent(Context context) {
+        Intent intent = new Intent();
+        if (areAppNotificationsEnabled()) {
+            intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, ChromeChannelDefinitions.ChannelId.TIPS);
+        } else {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    private static boolean areAppNotificationsEnabled() {
+        return NotificationProxyUtils.areNotificationsEnabled();
+    }
+
+    private static void createNotificationChannel(Context context) {
+        new ChannelsInitializer(
+                        BaseNotificationManagerProxyFactory.create(),
+                        ChromeChannelDefinitions.getInstance(),
+                        context.getResources())
+                .ensureInitialized(ChromeChannelDefinitions.ChannelId.TIPS);
     }
 
     /**
