@@ -215,6 +215,24 @@ class TouchToFillPaymentMethodMediator {
         int MAX_VALUE = DISMISS;
     }
 
+    /** The user actions on the BNPL ToS Touch To Fill sheet. */
+    @IntDef({
+        TouchToFillBnplTosScreenUserAction.SHOWN,
+        TouchToFillBnplTosScreenUserAction.ACCEPTED,
+        TouchToFillBnplTosScreenUserAction.DISMISSED,
+        TouchToFillBnplTosScreenUserAction.WALLET_LINK_CLICKED,
+        TouchToFillBnplTosScreenUserAction.LEGAL_MESSAGE_LINK_CLICKED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TouchToFillBnplTosScreenUserAction {
+        int SHOWN = 0;
+        int ACCEPTED = 1;
+        int DISMISSED = 2;
+        int WALLET_LINK_CLICKED = 3;
+        int LEGAL_MESSAGE_LINK_CLICKED = 4;
+        int MAX_VALUE = LEGAL_MESSAGE_LINK_CLICKED;
+    }
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM =
             "Autofill.TouchToFill.CreditCard.Outcome2";
@@ -321,6 +339,14 @@ class TouchToFillPaymentMethodMediator {
     @VisibleForTesting static final String ZIP_TOS_SCREEN = ".ZipTosScreen";
 
     @VisibleForTesting static final String SCREEN_SHOWN = ".Shown";
+
+    @VisibleForTesting static final String SCREEN_ACCEPTED = ".Accepted";
+
+    @VisibleForTesting static final String SCREEN_DISMISSED = ".Dismissed";
+
+    @VisibleForTesting static final String WALLET_LINK_CLICKED = ".WalletLinkClicked";
+
+    @VisibleForTesting static final String LEGAL_MESSAGE_LINK_CLICKED = ".LegalMessageLinkClicked";
 
     // LINT.ThenChange(/tools/metrics/actions/actions.xml)
 
@@ -800,7 +826,7 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(VISIBLE, true);
 
         mBnplIssuerIdWithTosShown = bnplIssuerTosDetail.getIssuerId();
-        recordTouchToFillBnplTosUserAction();
+        recordTouchToFillBnplTosUserAction(TouchToFillBnplTosScreenUserAction.SHOWN);
     }
 
     void hideSheet() {
@@ -830,6 +856,9 @@ class TouchToFillPaymentMethodMediator {
                     recordTouchToFillBnplUserAction(PROGRESS_SCREEN_DISMISSED);
                 } else if (mModel.get(CURRENT_SCREEN) == ERROR_SCREEN) {
                     recordTouchToFillBnplUserAction(ERROR_SCREEN_DISMISSED);
+                } else if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_TOS_SCREEN) {
+                    recordTouchToFillBnplTosUserAction(
+                            TouchToFillBnplTosScreenUserAction.DISMISSED);
                 }
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
@@ -927,7 +956,13 @@ class TouchToFillPaymentMethodMediator {
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new ChromeClickableSpan(mContext, view -> openLink(mContext, WALLET_URL))));
+                        new ChromeClickableSpan(
+                                mContext,
+                                view -> {
+                                    recordTouchToFillBnplTosUserAction(
+                                            TouchToFillBnplTosScreenUserAction.WALLET_LINK_CLICKED);
+                                    openLink(mContext, WALLET_URL);
+                                })));
     }
 
     // TODO(crbug.com/459842727): Split HOME_SCREEN into CREDIT_CARD_HOME_SCREEN,
@@ -1026,6 +1061,7 @@ class TouchToFillPaymentMethodMediator {
         }
         showProgressScreen();
         mDelegate.onBnplTosAccepted();
+        recordTouchToFillBnplTosUserAction(TouchToFillBnplTosScreenUserAction.ACCEPTED);
     }
 
     private void showAllLoyaltyCards() {
@@ -1309,7 +1345,14 @@ class TouchToFillPaymentMethodMediator {
                 TOS_FOOTER,
                 new PropertyModel.Builder(TosFooterProperties.ALL_KEYS)
                         .with(LEGAL_MESSAGE_LINES, legalMessageLines)
-                        .with(LINK_OPENER, url -> openLink(mContext, url))
+                        .with(
+                                LINK_OPENER,
+                                url -> {
+                                    recordTouchToFillBnplTosUserAction(
+                                            TouchToFillBnplTosScreenUserAction
+                                                    .LEGAL_MESSAGE_LINK_CLICKED);
+                                    openLink(mContext, url);
+                                })
                         .build());
     }
 
@@ -1372,7 +1415,8 @@ class TouchToFillPaymentMethodMediator {
         }
     }
 
-    private void recordTouchToFillBnplTosUserAction() {
+    private void recordTouchToFillBnplTosUserAction(
+            @TouchToFillBnplTosScreenUserAction int userAction) {
         String tosUserAction;
         switch (mBnplIssuerIdWithTosShown) {
             case "affirm":
@@ -1389,7 +1433,26 @@ class TouchToFillPaymentMethodMediator {
                 return;
         }
 
-        tosUserAction += SCREEN_SHOWN;
+        switch (userAction) {
+            case TouchToFillBnplTosScreenUserAction.SHOWN:
+                tosUserAction += SCREEN_SHOWN;
+                break;
+            case TouchToFillBnplTosScreenUserAction.ACCEPTED:
+                tosUserAction += SCREEN_ACCEPTED;
+                break;
+            case TouchToFillBnplTosScreenUserAction.DISMISSED:
+                tosUserAction += SCREEN_DISMISSED;
+                break;
+            case TouchToFillBnplTosScreenUserAction.WALLET_LINK_CLICKED:
+                tosUserAction += WALLET_LINK_CLICKED;
+                break;
+            case TouchToFillBnplTosScreenUserAction.LEGAL_MESSAGE_LINK_CLICKED:
+                tosUserAction += LEGAL_MESSAGE_LINK_CLICKED;
+                break;
+            default:
+                assert false : "Undefined BNPL ToS screen user action: " + userAction;
+                return;
+        }
 
         recordTouchToFillBnplUserAction(tosUserAction);
     }

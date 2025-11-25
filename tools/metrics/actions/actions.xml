@@ -5591,8 +5591,17 @@ should be able to be added at any place in this file.
   </description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
+    <variant name=".AffirmTosScreen.Accepted"
+        summary="BNPL ToS screen for Affirm accepted."/>
+    <variant name=".AffirmTosScreen.Dismissed"
+        summary="BNPL ToS screen for Affirm dismissed."/>
+    <variant name=".AffirmTosScreen.LegalMessageLinkClicked"
+        summary="Link in legal messages on BNPL ToS screen for Affirm was
+                 clicked."/>
     <variant name=".AffirmTosScreen.Shown"
         summary="BNPL ToS screen shown for Affirm."/>
+    <variant name=".AffirmTosScreen.WalletLinkClicked"
+        summary="Wallet link on BNPL ToS screen for Affirm was clicked."/>
     <variant name=".ErrorScreen.Dismissed" summary="Error screen dismissed."/>
     <variant name=".ErrorScreen.Shown" summary="Error screen shown."/>
     <variant name=".IssuerSelectionScreen.AffirmLinkedSelected"
@@ -5615,13 +5624,31 @@ should be able to be added at any place in this file.
         summary="Linked Zip issuer selected."/>
     <variant name=".IssuerSelectionScreen.ZipUnlinkedSelected"
         summary="Unlinked Zip issuer selected."/>
+    <variant name=".KlarnaTosScreen.Accepted"
+        summary="BNPL ToS screen for Klarna accepted."/>
+    <variant name=".KlarnaTosScreen.Dismissed"
+        summary="BNPL ToS screen for Klarna dismissed."/>
+    <variant name=".KlarnaTosScreen.LegalMessageLinkClicked"
+        summary="Link in legal messages on BNPL ToS screen for Klarna was
+                 clicked."/>
     <variant name=".KlarnaTosScreen.Shown"
         summary="BNPL ToS screen shown for Klarna."/>
+    <variant name=".KlarnaTosScreen.WalletLinkClicked"
+        summary="Wallet link on BNPL ToS screen for Klarna was clicked."/>
     <variant name=".ProgressScreen.Dismissed"
         summary="Progress screen dismissed."/>
     <variant name=".ProgressScreen.Shown" summary="Progress screen shown."/>
+    <variant name=".ZipTosScreen.Accepted"
+        summary="BNPL ToS screen for Zip accepted."/>
+    <variant name=".ZipTosScreen.Dismissed"
+        summary="BNPL ToS screen for Zip dismissed."/>
+    <variant name=".ZipTosScreen.LegalMessageLinkClicked"
+        summary="Link in legal messages on BNPL ToS screen for Zip was
+                 clicked."/>
     <variant name=".ZipTosScreen.Shown"
         summary="BNPL ToS screen shown for Zip."/>
+    <variant name=".ZipTosScreen.WalletLinkClicked"
+        summary="Wallet link on BNPL ToS screen for Zip was clicked."/>
   </token>
 </action>
 
