@@ -387,7 +387,9 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)attachSelectedTabsWithWebStateIDs:
-    (std::set<web::WebStateID>)selectedWebStateIDs {
+            (std::set<web::WebStateID>)selectedWebStateIDs
+                        cachedWebStateIDs:
+                            (std::set<web::WebStateID>)cachedWebStateIDs {
   _pageContextWrappers.clear();
 
   std::set<web::WebStateID> alreadyProcessedIDs =
@@ -415,15 +417,25 @@ CreateInputDataFromAnnotatedPageContent(
     const base::UnguessableToken token =
         [self createInputItemForWebState:webState];
 
-    if (IsComposeboxTabPickerCachedAPCEnabled()) {
-      [self attachWebStateContent:webState token:token];
-      continue;
-    }
-
-    [_webStateDeferredExecutor webState:webState
-                      executeOnceLoaded:^{
-                        [weakSelf attachWebStateContent:webState token:token];
+    // When attaching a tab, we must also send its snapshot. The
+    // snapshotTabHelper is only created if the webstate is realized. If the
+    // tab's APC is not cached, we must also load the webstate so its APC can be
+    // extracted on the fly.
+    if (cachedWebStateIDs.contains(candidateID)) {
+      [_webStateDeferredExecutor webState:webState
+                      executeOnceRealized:^{
+                        [weakSelf attachWebStateContent:webState
+                                                  token:token
+                                           hasCachedAPC:YES];
                       }];
+    } else {
+      [_webStateDeferredExecutor webState:webState
+                        executeOnceLoaded:^{
+                          [weakSelf attachWebStateContent:webState
+                                                    token:token
+                                             hasCachedAPC:NO];
+                        }];
+    }
   }
 }
 
@@ -473,12 +485,13 @@ CreateInputDataFromAnnotatedPageContent(
 // The content can be fetched from the cache or computed on the fly. An optional
 // snapshot of the page can be included.
 - (void)attachWebStateContent:(web::WebState*)webState
-                        token:(const base::UnguessableToken)token {
+                        token:(const base::UnguessableToken)token
+                 hasCachedAPC:(BOOL)hasCachedAPC {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak __typeof(self) weakSelf = self;
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
 
-  if (IsComposeboxTabPickerCachedAPCEnabled() && _persistTabContextAgent) {
+  if (hasCachedAPC && _persistTabContextAgent) {
     _persistTabContextAgent->GetSingleContextAsync(
         base::NumberToString(weakWebState->GetUniqueIdentifier().identifier()),
         base::BindOnce(^(std::optional<std::unique_ptr<
@@ -588,7 +601,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   std::set<web::WebStateID> webStateIDs = [self webStateIDsForAttachedTabs];
   webStateIDs.insert(webState->GetUniqueIdentifier());
-  [self attachSelectedTabsWithWebStateIDs:webStateIDs];
+  [self attachSelectedTabsWithWebStateIDs:webStateIDs cachedWebStateIDs:{}];
 }
 
 #pragma mark - ComposeboxFileUploadObserver

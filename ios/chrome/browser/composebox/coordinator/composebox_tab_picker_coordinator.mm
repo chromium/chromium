@@ -66,8 +66,10 @@
 #pragma mark - ComposeboxTabsAttachmentDelegate
 
 - (void)attachSelectedTabs:(ComposeboxTabPickerMediator*)tabPickerMediator
-       selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs {
-  [self.delegate attachSelectedTabsWithWebStateIDs:selectedWebStateIDs];
+       selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
+         cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
+  [self.delegate attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
+                                 cachedWebStateIDs:cachedWebStateIDs];
 }
 
 - (std::set<web::WebStateID>)preselectedWebStateIDs {

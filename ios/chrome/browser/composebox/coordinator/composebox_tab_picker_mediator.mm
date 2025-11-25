@@ -86,11 +86,10 @@
         WebStateSearchCriteria{
             .identifier = itemID.tabSwitcherItem.identifier,
             .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
-    if (IsComposeboxTabPickerCachedAPCEnabled()) {
-      return _validAPCwebStatesIDs.contains(
-          base::NumberToString(webState->GetUniqueIdentifier().identifier()));
-    }
-    return webState->IsRealized() && !webState->IsLoading();
+
+    BOOL cached = _validAPCwebStatesIDs.contains(
+        base::NumberToString(webState->GetUniqueIdentifier().identifier()));
+    return cached || (webState->IsRealized() && !webState->IsLoading());
   }
   return [super shouldShowSnapshotForItem:itemID];
 }
@@ -124,7 +123,11 @@
         WebStateSearchCriteria{
             .identifier = itemID.tabSwitcherItem.identifier,
             .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
-    if (webState && !webState->IsRealized()) {
+    // If the tab's APC is cached avoid updating the snapshot.
+    BOOL cached =
+        webState && _validAPCwebStatesIDs.contains(base::NumberToString(
+                        webState->GetUniqueIdentifier().identifier()));
+    if (webState && !webState->IsRealized() && !cached) {
       // If the web state is not realized, force it to realize in order to have
       // the latest content and updated snapshot.
       __weak ComposeboxTabPickerMediator* weakSelf = self;
@@ -150,9 +153,17 @@
 
 - (void)attachSelectedTabs {
   if (self.selectedEditingItems.itemsIdentifiers.count) {
+    std::set<web::WebStateID> cachedWebStateIDs;
+    for (const auto& webStateID : self.selectedEditingItems.allTabs) {
+      if (_validAPCwebStatesIDs.contains(
+              base::NumberToString(webStateID.identifier()))) {
+        cachedWebStateIDs.insert(webStateID);
+      }
+    }
     [_tabsAttachmentDelegate
          attachSelectedTabs:self
-        selectedWebStateIDs:self.selectedEditingItems.allTabs];
+        selectedWebStateIDs:self.selectedEditingItems.allTabs
+          cachedWebStateIDs:cachedWebStateIDs];
   }
 }
 
@@ -164,21 +175,21 @@
 /// state list. The completion handler is called with the created items.
 - (void)createGridItemsWithCompletion:
     (void (^)(NSArray<GridItemIdentifier*>*))completion {
-  if (!IsComposeboxTabPickerCachedAPCEnabled()) {
-    NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
-    for (int i = 0; i < self.webStateList->count(); i++) {
-      web::WebState* webState = self.webStateList->GetWebStateAt(i);
-      GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
-      [items addObject:item];
-    }
+  NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
+  for (int i = 0; i < self.webStateList->count(); i++) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+    [items addObject:item];
+  }
+
+  if (completion) {
     completion(items);
-    return;
   }
 
   PersistTabContextBrowserAgent* persistTabContextBrowserAgent =
       PersistTabContextBrowserAgent::FromBrowser(self.browser);
-  if (!persistTabContextBrowserAgent) {
-    completion([[NSArray alloc] init]);
+  if (!IsComposeboxTabPickerCachedAPCEnabled() ||
+      !persistTabContextBrowserAgent) {
     return;
   }
   std::vector<std::string> webStateUniqueIDs;
@@ -221,7 +232,9 @@
     [items addObject:item];
   }
 
-  completion(items);
+  if (completion) {
+    completion(items);
+  }
 }
 
 /// Populates the grid consumer with the given `items`. Also pre-selects any

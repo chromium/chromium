@@ -22,9 +22,12 @@
 // Returns the number of non-tab attachments.
 - (NSUInteger)nonTabAttachmentCount;
 
-// Attaches the selected tabs with
+// Attaches the selected tabs. `cachedWebStateIDs` contains the IDs of the
+// tabs that have their content cached.
 - (void)attachSelectedTabsWithWebStateIDs:
-    (std::set<web::WebStateID>)selectedWebStateIDs;
+            (std::set<web::WebStateID>)selectedWebStateIDs
+                        cachedWebStateIDs:
+                            (std::set<web::WebStateID>)cachedWebStateIDs;
 
 @end
 
