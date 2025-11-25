@@ -304,7 +304,7 @@ BASE_FEATURE(kSideBySideLinkMenuNewBadge,
 #endif
 );
 
-BASE_FEATURE(kSideBySideKeyboardShortcut, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSideBySideKeyboardShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSideBySideKeyboardShortcutEnabled() {
   return base::FeatureList::IsEnabled(features::kSideBySide) &&
