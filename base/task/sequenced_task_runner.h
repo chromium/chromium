@@ -343,6 +343,22 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   //    (which includes any thread that runs a MessagePump).
   [[nodiscard]] static bool HasCurrentDefault();
 
+  // Returns a SequencedTaskRunner for the current task. If possible, the
+  // task runner will schedule tasks with BEST_EFFORT TaskPriority. If not, it
+  // returns the same value as GetCurrentDefault(). See the comments on
+  // HasCurrentBestEffort() for more details.
+  [[nodiscard]] static scoped_refptr<SequencedTaskRunner>
+  GetCurrentBestEffort();
+
+  // Returns true if the current task is running on a sequence that multiplexes
+  // multiple task queues (eg. BrowserThread::UI). If so, GetCurrentBestEffort()
+  // will return the task runner for the lowest-priority task queue. Otherwise
+  // it will call GetCurrentDefault(). So if this and GetCurrentDefault() both
+  // return false, it's not safe to call GetCurrentBestEffort().
+  // TODO(crbug.com/441949788): It would also be possible to return true on a
+  // non-multiplexing sequence that only runs BEST_EFFORT tasks. Implement this.
+  [[nodiscard]] static bool HasCurrentBestEffort();
+
   class BASE_EXPORT CurrentDefaultHandle {
    public:
     // Sets the value returned by `SequencedTaskRunner::GetCurrentDefault()` to
@@ -366,7 +382,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
     // SingleThreadTaskRunner::CurrentHandleOverrideForTesting in unit tests to
     // avoid the friend requirement.
     friend class SingleThreadTaskRunner;
-    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
+    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleDeathTest,
                              OverrideWithNull);
     FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
                              OverrideWithNonNull);

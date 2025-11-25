@@ -4,8 +4,10 @@
 
 #include "base/task/sequenced_task_runner.h"
 
+#include <array>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -16,6 +18,8 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -215,6 +219,9 @@ class SequencedTaskRunnerCurrentDefaultHandleTest : public ::testing::Test {
   test::TaskEnvironment task_environment_;
 };
 
+using SequencedTaskRunnerCurrentDefaultHandleDeathTest =
+    SequencedTaskRunnerCurrentDefaultHandleTest;
+
 }  // namespace
 
 TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest, FromTaskEnvironment) {
@@ -239,7 +246,7 @@ TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest,
 
 // Verify that `CurrentDefaultHandle` can be used to set the current default
 // `SequencedTaskRunner` to null in a scope that already has a default.
-TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest, OverrideWithNull) {
+TEST_F(SequencedTaskRunnerCurrentDefaultHandleDeathTest, OverrideWithNull) {
   EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
   auto tr1 = SequencedTaskRunner::GetCurrentDefault();
   EXPECT_TRUE(tr1);
@@ -290,6 +297,169 @@ TEST(SequencedTaskRunnerCurrentDefaultHandleTestWithoutTaskEnvironment,
   }
   EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortTest, SequenceManagerSingleQueue) {
+  // TaskEnvironment wraps a SequenceManager with a single default task queue.
+  test::TaskEnvironment task_env;
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentBestEffort());
+  ASSERT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+
+  // Should fall back to returning the default task runner when no best-effort
+  // task runner is set.
+  EXPECT_EQ(SequencedTaskRunner::GetCurrentBestEffort(),
+            SequencedTaskRunner::GetCurrentDefault());
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortTest, SequenceManagerManyQueues) {
+  // TaskEnvironmentWithMainThreadPriorities wraps a SequenceManager with
+  // several task queues.
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentBestEffort());
+  ASSERT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  ASSERT_TRUE(SequencedTaskRunner::GetCurrentBestEffort());
+
+  // The best-effort task runner should NOT be the default.
+  EXPECT_NE(SequencedTaskRunner::GetCurrentBestEffort(),
+            SequencedTaskRunner::GetCurrentDefault());
+
+  // All should run tasks on the same sequence. They differ only in priority.
+
+  // Use SequenceCheckerImpl to make sure it's not a no-op in Release builds.
+  SequenceCheckerImpl sequence_checker;
+
+  RunLoop run_loop;
+  auto quit_closure = BarrierClosure(2, run_loop.QuitClosure());
+  SequencedTaskRunner::GetCurrentBestEffort()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(sequence_checker.CalledOnValidSequence())
+                       << "GetCurrentBestEffort";
+                 }).Then(quit_closure));
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(sequence_checker.CalledOnValidSequence())
+                       << "GetCurrentDefault";
+                 }).Then(quit_closure));
+  run_loop.Run();
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortTest, ThreadPoolSingleThreadTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentBestEffort());
+  auto task_env_best_effort_task_runner =
+      SequencedTaskRunner::GetCurrentBestEffort();
+
+  // Use SequenceCheckerImpl to make sure it's not a no-op in Release builds.
+  SequenceCheckerImpl sequence_checker;
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::CreateSingleThreadTaskRunner({priority})
+        ->PostTask(FROM_HERE,
+                   BindLambdaForTesting([&] {
+                     SCOPED_TRACE(priority);
+
+                     // TODO(crbug.com/441949788): Even if this is on a
+                     // BEST_EFFORT task runner, HasCurrentBestEffort() returns
+                     // false because it only supports SequenceManager task
+                     // queues.
+                     EXPECT_FALSE(SequencedTaskRunner::HasCurrentBestEffort());
+                     ASSERT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+
+                     // Should fall back to returning the default task runner
+                     // when no best-effort task runner is set.
+                     EXPECT_EQ(SequencedTaskRunner::GetCurrentBestEffort(),
+                               SequencedTaskRunner::GetCurrentDefault());
+
+                     // It should NOT be the TaskEnvironment's best-effort task
+                     // runner.
+                     EXPECT_NE(SequencedTaskRunner::GetCurrentBestEffort(),
+                               task_env_best_effort_task_runner);
+                     EXPECT_FALSE(sequence_checker.CalledOnValidSequence());
+                   }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortTest, ThreadPoolSequencedTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentBestEffort());
+  auto task_env_best_effort_task_runner =
+      SequencedTaskRunner::GetCurrentBestEffort();
+
+  // Use SequenceCheckerImpl to make sure it's not a no-op in Release builds.
+  SequenceCheckerImpl sequence_checker;
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::CreateSequencedTaskRunner({priority})
+        ->PostTask(FROM_HERE,
+                   BindLambdaForTesting([&] {
+                     SCOPED_TRACE(priority);
+
+                     // TODO(crbug.com/441949788): Even if this is on a
+                     // BEST_EFFORT task runner, HasCurrentBestEffort() returns
+                     // false because it only supports SequenceManager task
+                     // queues.
+                     EXPECT_FALSE(SequencedTaskRunner::HasCurrentBestEffort());
+                     ASSERT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+
+                     // Should fall back to returning the default task runner
+                     // when no best-effort task runner is set.
+                     EXPECT_EQ(SequencedTaskRunner::GetCurrentBestEffort(),
+                               SequencedTaskRunner::GetCurrentDefault());
+
+                     // It should NOT be the TaskEnvironment's best-effort task
+                     // runner.
+                     EXPECT_NE(SequencedTaskRunner::GetCurrentBestEffort(),
+                               task_env_best_effort_task_runner);
+                     EXPECT_FALSE(sequence_checker.CalledOnValidSequence());
+                   }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortTest, ThreadPoolUnsequencedTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentBestEffort());
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::PostTask(
+        FROM_HERE, {priority},
+        BindLambdaForTesting([&] {
+          SCOPED_TRACE(priority);
+
+          // The current task isn't bound to a sequence.
+          EXPECT_FALSE(SequencedTaskRunner::HasCurrentBestEffort());
+          EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
+        }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SequencedTaskRunnerCurrentBestEffortDeathTest, NoContext) {
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentBestEffort());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
+  // Ensure that GetCurrentBestEffort() doesn't return a value when
+  // HasCurrentDefault() is false.
+  EXPECT_CHECK_DEATH(
+      { auto task_runner = SequencedTaskRunner::GetCurrentBestEffort(); });
 }
 
 }  // namespace base

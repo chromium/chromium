@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 
@@ -96,6 +97,23 @@ SequencedTaskRunner::GetCurrentDefault() {
 // static
 bool SequencedTaskRunner::HasCurrentDefault() {
   return !!current_default_handle && !!current_default_handle->task_runner_;
+}
+
+// static
+scoped_refptr<SequencedTaskRunner> SequencedTaskRunner::GetCurrentBestEffort() {
+  // Currently only threads that multiplex several task queues have current
+  // best-effort task runners.
+  if (SingleThreadTaskRunner::HasCurrentBestEffort()) {
+    return SingleThreadTaskRunner::GetCurrentBestEffort();
+  }
+  return GetCurrentDefault();
+}
+
+// static
+bool SequencedTaskRunner::HasCurrentBestEffort() {
+  // Currently only threads that multiplex several task queues have current
+  // best-effort task runners.
+  return SingleThreadTaskRunner::HasCurrentBestEffort();
 }
 
 SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(

@@ -974,7 +974,8 @@ _CONFIG = [
         # //third_party/blink/renderer/platform/scheduler/TaskSchedulingInBlink.md
         # for more.
         'inclass_disallowed': [
-            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)'
+            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
+            'base::(SingleThread|Sequenced)TaskRunner::GetCurrentBestEffort',
         ],
     },
     {

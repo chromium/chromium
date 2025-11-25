@@ -14,18 +14,37 @@ sys.path.append(
 from PRESUBMIT_test_mocks import (MockInputApi, MockOutputApi, MockAffectedFile)
 
 class GetTest(unittest.TestCase):
-  def testNewUsageThreadTaskRunnerHandleGet(self):
+  def testNewUsageSingleThreadTaskRunnerGetCurrentDefault(self):
     diff = ['scoped_refptr<SingleThreadTaskRunner> task_runner =',
-             '    base::ThreadTaskRunner::GetCurrentDefault()']
+            '    base::SingleThreadTaskRunner::GetCurrentDefault()']
     input_api = MockInputApi()
     input_api.files = [MockAffectedFile('content/renderer/foo.cc', diff)]
     errors = PRESUBMIT._CheckForUseOfGlobalTaskRunnerGetter(input_api,
                                                             MockOutputApi())
     self.assertEqual(1, len(errors))
 
-  def testNewUsageSequencedTaskRunnerHandleGet(self):
+  def testNewUsageSingleThreadTaskRunnerHandleGetCurrentBestEffort(self):
+    diff = ['scoped_refptr<SingleThreadTaskRunner> task_runner =',
+            '    base::SingleThreadTaskRunner::GetCurrentBestEffort()']
+    input_api = MockInputApi()
+    input_api.files = [MockAffectedFile('content/renderer/foo.cc', diff)]
+    errors = PRESUBMIT._CheckForUseOfGlobalTaskRunnerGetter(input_api,
+                                                            MockOutputApi())
+    self.assertEqual(1, len(errors))
+
+  def testNewUsageSequencedTaskRunnerGetCurrentDefault(self):
     diff = ['scoped_refptr<SequencedTaskRunner> task_runner =',
              '    base::SequencedTaskRunner::GetCurrentDefault()']
+    input_api = MockInputApi()
+    input_api.files = [MockAffectedFile('content/renderer/foo.cc', diff)]
+    errors = PRESUBMIT._CheckForUseOfGlobalTaskRunnerGetter(input_api,
+                                                            MockOutputApi())
+    self.assertEqual(1, len(errors))
+
+
+def testNewUsageSequencedTaskRunnerGetCurrentBestEffort(self):
+    diff = ['scoped_refptr<SequencedTaskRunner> task_runner =',
+            '    base::SequencedTaskRunner::GetCurrentBestEffort()']
     input_api = MockInputApi()
     input_api.files = [MockAffectedFile('content/renderer/foo.cc', diff)]
     errors = PRESUBMIT._CheckForUseOfGlobalTaskRunnerGetter(input_api,

@@ -202,6 +202,11 @@ class BASE_EXPORT SequenceManagerImpl
   // How frequently to perform housekeeping tasks (sweeping canceled tasks etc).
   static constexpr TimeDelta kReclaimMemoryInterval = Seconds(30);
 
+  // Allows SingleThreadTaskRunner to find the best-effort task queue for the
+  // current thread. Returns nullptr if there isn't one.
+  static scoped_refptr<SingleThreadTaskRunner> GetCurrentBestEffortTaskRunner(
+      PassKey<SingleThreadTaskRunner>);
+
  protected:
   static std::unique_ptr<ThreadControllerImpl>
   CreateThreadControllerImplForCurrentThread(const TickClock* clock);

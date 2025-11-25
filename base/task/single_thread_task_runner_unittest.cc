@@ -4,13 +4,18 @@
 
 #include "base/task/single_thread_task_runner.h"
 
+#include "base/barrier_closure.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -310,6 +315,215 @@ TEST(SingleThreadTaskRunnerMainThreadDefaultHandleTest, Basic) {
 
   EXPECT_CHECK_DEATH(std::ignore =
                          SingleThreadTaskRunner::GetMainThreadDefault());
+}
+
+TEST(SingleThreadTaskRunnerCurrentBestEffortTest, SequenceManagerSingleQueue) {
+  // TaskEnvironment wraps a SequenceManager with a single default task queue.
+  test::TaskEnvironment task_env;
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+  ASSERT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+  ASSERT_TRUE(SingleThreadTaskRunner::HasMainThreadDefault());
+
+  // Current thread is the main thread, so should return the same task runner.
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            SingleThreadTaskRunner::GetCurrentBestEffort());
+
+  // Should fall back to returning the default task runner when no best-effort
+  // task runner is set.
+  EXPECT_EQ(SingleThreadTaskRunner::GetCurrentBestEffort(),
+            SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            SingleThreadTaskRunner::GetMainThreadDefault());
+}
+
+TEST(SingleThreadTaskRunnerCurrentBestEffortTest, SequenceManagerManyQueues) {
+  // TaskEnvironmentWithMainThreadPriorities wraps a SequenceManager with
+  // several task queues.
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+  ASSERT_TRUE(SingleThreadTaskRunner::GetCurrentBestEffort());
+  ASSERT_TRUE(SingleThreadTaskRunner::GetMainThreadBestEffort());
+
+  // Current thread is the main thread, so should return the same task runner.
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            SingleThreadTaskRunner::GetCurrentBestEffort());
+
+  // The best-effort task runner should NOT be the default.
+  EXPECT_NE(SingleThreadTaskRunner::GetCurrentBestEffort(),
+            SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_NE(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            SingleThreadTaskRunner::GetMainThreadDefault());
+
+  // All should run tasks on the same thread. They differ only in priority.
+
+  // Use ThreadCheckerImpl to make sure it's not a no-op in Release builds.
+  ThreadCheckerImpl thread_checker;
+
+  RunLoop run_loop;
+  auto quit_closure = BarrierClosure(4, run_loop.QuitClosure());
+  SingleThreadTaskRunner::GetCurrentBestEffort()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(thread_checker.CalledOnValidThread())
+                       << "GetCurrentBestEffort";
+                 }).Then(quit_closure));
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(thread_checker.CalledOnValidThread())
+                       << "GetCurrentDefault";
+                 }).Then(quit_closure));
+  SingleThreadTaskRunner::GetMainThreadBestEffort()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(thread_checker.CalledOnValidThread())
+                       << "GetMainThreadBestEffort";
+                 }).Then(quit_closure));
+  SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+                   EXPECT_TRUE(thread_checker.CalledOnValidThread())
+                       << "GetMainThreadDefault";
+                 }).Then(quit_closure));
+  run_loop.Run();
+}
+
+TEST(SingleThreadTaskRunnerCurrentBestEffortTest, ThreadPoolSingleThreadTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  // Current thread is the main thread, so should return the same task runner.
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  auto task_env_best_effort_task_runner =
+      SingleThreadTaskRunner::GetCurrentBestEffort();
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            task_env_best_effort_task_runner);
+
+  // Use ThreadCheckerImpl to make sure it's not a no-op in Release builds.
+  ThreadCheckerImpl thread_checker;
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::CreateSingleThreadTaskRunner({priority})
+        ->PostTask(
+            FROM_HERE,
+            BindLambdaForTesting([&] {
+              SCOPED_TRACE(priority);
+
+              // TODO(crbug.com/441949788): Even if this is on a BEST_EFFORT
+              // task runner, HasCurrentBestEffort() returns false because it
+              // only supports SequenceManager task queues.
+              EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentBestEffort());
+              ASSERT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+
+              // Should fall back to returning the default task runner when no
+              // best-effort task runner is set.
+              EXPECT_EQ(SingleThreadTaskRunner::GetCurrentBestEffort(),
+                        SingleThreadTaskRunner::GetCurrentDefault());
+
+              // It should NOT be the TaskEnvironment's best-effort task runner.
+              EXPECT_NE(SingleThreadTaskRunner::GetCurrentBestEffort(),
+                        task_env_best_effort_task_runner);
+              EXPECT_FALSE(thread_checker.CalledOnValidThread());
+
+              // GetMainThreadBestEffort() should return the same result
+              // everywhere.
+              EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+              EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+                        task_env_best_effort_task_runner);
+            }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SingleThreadTaskRunnerCurrentBestEffortTest, ThreadPoolSequencedTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  // Current thread is the main thread, so should return the same task runner.
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  auto task_env_best_effort_task_runner =
+      SingleThreadTaskRunner::GetCurrentBestEffort();
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            task_env_best_effort_task_runner);
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::CreateSequencedTaskRunner({priority})
+        ->PostTask(
+            FROM_HERE,
+            BindLambdaForTesting([&] {
+              SCOPED_TRACE(priority);
+
+              // The current task isn't bound to a single thread.
+              EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentBestEffort());
+              EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+
+              // GetMainThreadBestEffort() should return the same result
+              // everywhere.
+              EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+              EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+                        task_env_best_effort_task_runner);
+            }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SingleThreadTaskRunnerCurrentBestEffortTest, ThreadPoolUnsequencedTask) {
+  test::TaskEnvironmentWithMainThreadPriorities task_env;
+
+  // Current thread is the main thread, so should return the same task runner.
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  auto task_env_best_effort_task_runner =
+      SingleThreadTaskRunner::GetCurrentBestEffort();
+  EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+            task_env_best_effort_task_runner);
+
+  // Test GetCurrentBestEffort() from a default-priority task and a BEST_EFFORT
+  // task.
+  constexpr auto kPriorities =
+      std::to_array({TaskPriority::USER_BLOCKING, TaskPriority::BEST_EFFORT});
+
+  for (auto priority : kPriorities) {
+    ThreadPool::PostTask(
+        FROM_HERE, {priority},
+        BindLambdaForTesting([&] {
+          SCOPED_TRACE(priority);
+
+          // The current task isn't bound to a single thread.
+          EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentBestEffort());
+          EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+
+          // GetMainThreadBestEffort() should return the same result everywhere.
+          EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+          EXPECT_EQ(SingleThreadTaskRunner::GetMainThreadBestEffort(),
+                    task_env_best_effort_task_runner);
+        }).Then(task_env.QuitClosure()));
+    task_env.RunUntilQuit();
+  }
+}
+
+TEST(SingleTaskRunnerCurrentBestEffortDeathTest, NoContext) {
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentBestEffort());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  // Ensure that GetCurrentBestEffort() doesn't return a value when
+  // HasCurrentDefault() is false.
+  EXPECT_CHECK_DEATH(
+      { auto task_runner = SingleThreadTaskRunner::GetCurrentBestEffort(); });
+}
+
+TEST(SingleTaskRunnerMainThreadBestEffortDeathTest, NoContext) {
+  EXPECT_FALSE(SingleThreadTaskRunner::HasMainThreadBestEffort());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasMainThreadDefault());
+  // Ensure that GetMainThreadBestEffort() doesn't return a value when
+  // HasMainThreadDefault() is false.
+  EXPECT_CHECK_DEATH({
+    auto task_runner = SingleThreadTaskRunner::GetMainThreadBestEffort();
+  });
 }
 
 }  // namespace base

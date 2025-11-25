@@ -69,6 +69,23 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   // the current thread.
   [[nodiscard]] static bool HasCurrentDefault();
 
+  // Returns a SingleThreadTaskRunner for the current thread. If possible, the
+  // task runner will schedule tasks with BEST_EFFORT TaskPriority.
+  // On threads that service multiple task queues, this returns the
+  // lowest-priority task queue. On other threads, it returns the same value as
+  // GetCurrentDefault().
+  //
+  // CHECKs if the current thread isn't servicing a SingleThreadTaskRunner.
+  [[nodiscard]] static scoped_refptr<SingleThreadTaskRunner>
+  GetCurrentBestEffort();
+
+  // Returns true if the current thread supports multiple task queues, one of
+  // which uses BEST_EFFORT TaskPriority.
+  //
+  // If this returns false and HasCurrentDefault() returns true,
+  // GetCurrentBestEffort() will return the same value as GetCurrentDefault().
+  [[nodiscard]] static bool HasCurrentBestEffort();
+
   // Returns the default SingleThreadTaskRunner for the main thread.
   //
   // CHECKs if the main thread task runner hasn't yet been initialized.
@@ -78,6 +95,22 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   // Returns true if the SingleThreadTaskRunner is already created for
   // the main thread.
   [[nodiscard]] static bool HasMainThreadDefault();
+
+  // Returns a SingleThreadTaskRunner for the main thread. If possible, the
+  // task runner will schedule tasks with BEST_EFFORT TaskPriority. If no
+  // BEST_EFFORT task queue exists for the main threead, this returns the same
+  // value is GetMainThreadDefault().
+  //
+  // CHECKs if the main thread task runner hasn't yet been initialized.
+  [[nodiscard]] static scoped_refptr<SingleThreadTaskRunner>
+  GetMainThreadBestEffort();
+
+  // Returns true if the main thread has a BEST_EFFORT task queue.
+  //
+  // If this returns false and HasMainThreadDefault() returns true,
+  // GetMainThreadBestEffort() will return the same value as
+  // GetMainThreadDefault().
+  [[nodiscard]] static bool HasMainThreadBestEffort();
 
   class CurrentHandleOverrideForTesting;
 
@@ -166,6 +199,9 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     friend class SingleThreadTaskRunner;
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
+
+    // An associated BEST_EFFORT task runner, or nullptr if there is none.
+    scoped_refptr<SingleThreadTaskRunner> best_effort_task_runner_;
 
     // Some tests requires the ability to override the `previous_handle_`.
     // TODO(pmonette): Remove this when this is no longer the case.

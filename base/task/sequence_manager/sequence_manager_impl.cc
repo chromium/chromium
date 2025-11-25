@@ -1084,6 +1084,25 @@ WeakPtr<SequenceManagerImpl> SequenceManagerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+scoped_refptr<SingleThreadTaskRunner>
+SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
+    PassKey<SingleThreadTaskRunner>) {
+  if (SequenceManagerImpl* current = GetCurrent()) {
+    if (std::optional<TaskQueue::QueuePriority> best_effort_priority =
+            current->GetBestEffortPriority()) {
+      // Return the first queue with the right priority.
+      for (internal::TaskQueueImpl* task_queue :
+           current->main_thread_only().active_queues) {
+        if (task_queue->GetQueuePriority() == *best_effort_priority) {
+          return task_queue->task_runner();
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
 void SequenceManagerImpl::SetDefaultTaskRunner(
     scoped_refptr<SingleThreadTaskRunner> task_runner) {
   controller_->SetDefaultTaskRunner(task_runner);

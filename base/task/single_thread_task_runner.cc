@@ -14,10 +14,14 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
+#include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/types/pass_key.h"
 
 namespace base {
 
 namespace {
+
+using SequenceManagerImpl = sequence_manager::internal::SequenceManagerImpl;
 
 constinit thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
     current_default_handle = nullptr;
@@ -69,6 +73,22 @@ bool SingleThreadTaskRunner::HasCurrentDefault() {
 }
 
 // static
+scoped_refptr<SingleThreadTaskRunner>
+SingleThreadTaskRunner::GetCurrentBestEffort() {
+  if (auto task_runner = SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
+          PassKey<SingleThreadTaskRunner>())) {
+    return task_runner;
+  }
+  return GetCurrentDefault();
+}
+
+// static
+bool SingleThreadTaskRunner::HasCurrentBestEffort() {
+  return !!SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
+      PassKey<SingleThreadTaskRunner>());
+}
+
+// static
 const scoped_refptr<SingleThreadTaskRunner>&
 SingleThreadTaskRunner::GetMainThreadDefault() {
   const auto* const handle = main_thread_default_handle;
@@ -84,6 +104,21 @@ SingleThreadTaskRunner::GetMainThreadDefault() {
 bool SingleThreadTaskRunner::HasMainThreadDefault() {
   return !!main_thread_default_handle &&
          !!main_thread_default_handle->task_runner_;
+}
+
+// static
+scoped_refptr<SingleThreadTaskRunner>
+SingleThreadTaskRunner::GetMainThreadBestEffort() {
+  if (HasMainThreadBestEffort()) {
+    return main_thread_default_handle->best_effort_task_runner_;
+  }
+  return GetMainThreadDefault();
+}
+
+// static
+bool SingleThreadTaskRunner::HasMainThreadBestEffort() {
+  return !!main_thread_default_handle &&
+         !!main_thread_default_handle->best_effort_task_runner_;
 }
 
 SingleThreadTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
@@ -125,6 +160,11 @@ SingleThreadTaskRunner::CurrentHandleOverrideForTesting::
 SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
+      // `task_runner` belongs to this thread, so if there's a BEST_EFFORT task
+      // runner for the thread GetCurrentBestEffortTaskRunner will return it.
+      best_effort_task_runner_(
+          SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
+              PassKey<SingleThreadTaskRunner>())),
       previous_handle_(main_thread_default_handle) {
   CHECK(!main_thread_default_handle || can_override);
   main_thread_default_handle = this;
