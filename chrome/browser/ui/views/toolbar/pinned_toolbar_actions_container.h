@@ -23,6 +23,10 @@
 class BrowserView;
 class ToolbarButtonProvider;
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace views {
 class ActionViewController;
 }

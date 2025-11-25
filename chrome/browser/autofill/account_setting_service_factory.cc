@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"

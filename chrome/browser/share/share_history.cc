@@ -5,6 +5,7 @@
 #include "chrome/browser/share/share_history.h"
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

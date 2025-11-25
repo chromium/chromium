@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
