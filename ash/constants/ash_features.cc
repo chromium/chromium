@@ -225,7 +225,7 @@ BASE_FEATURE(kBocaLockPauseUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBocaNavSettingsDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new caption toggle button for boca.
-BASE_FEATURE(kBocaCaptionToggle, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaCaptionToggle, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables using the native ChromeOS implementation of the CRD
 // client for Spotlight within the Boca SWA.
