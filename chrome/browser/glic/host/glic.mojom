@@ -336,6 +336,8 @@ struct WebClientInitialState {
   bool enable_get_tab_by_id;
   // Whether kGlicOpenPasswordManagerSettingsPageApi is enabled.
   bool enable_open_password_manager_settings_page;
+  // Whether kGlicLoadAndExtractContent is enabled.
+  bool enable_load_and_extract_content;
 };
 
 // Options for getting tab context.

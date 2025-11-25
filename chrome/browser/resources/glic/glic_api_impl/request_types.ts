@@ -544,6 +544,16 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserLoadAndExtractContent: {
+    request: {
+      urls: string[],
+      options: TabContextOptions[],
+    },
+    response: {
+      results: TabContextResultPrivate[],
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -839,6 +849,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         ActivateTab: 76,
         CreateActorTab: 77,
         OpenPasswordManagerSettingsPage: 78,
+        LoadAndExtractContent: 79,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

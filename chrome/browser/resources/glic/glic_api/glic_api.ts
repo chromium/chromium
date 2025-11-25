@@ -916,6 +916,14 @@ export declare interface GlicBrowserHost {
 
   /** Returns the host's capability to act on web pages. */
   getActOnWebCapability?(): ObservableValue<boolean>;
+
+  /**
+   * @todo Not yet implemented: https://crbug.com/458761731.
+   *
+   * Load and extract content from given urls.
+   */
+  loadAndExtractContent?(urls: string[], options: TabContextOptions[]):
+      Promise<TabContextResult[]>;
 }
 
 /** Information about a conversation. */

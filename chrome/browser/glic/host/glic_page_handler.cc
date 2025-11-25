@@ -543,6 +543,9 @@ class JournalHandler {
 // events through GlicKeyedService to other components, relies on the assumption
 // that there is exactly 1 WebUI instance. If this assumption is ever violated
 // then many classes will break.
+//
+// TODO(crbug.com/458761731): Once `loadAndExtractContent` is defined in the
+// handler mojom interface, override and implement its mojom declaration.
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver,
                              public GlicWebClientAccess,
