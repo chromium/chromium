@@ -39,13 +39,42 @@ TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
   ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
                 kJournalFileExtension)),
             base::FilePath());
+  ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
+                kWalJournalFileExtension)),
+            base::FilePath());
 }
 
 TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
   auto pending_backend =
       delegate().MakePendingBackend(temp_path(), base_name,
-                                    /*single_connection=*/false);
+                                    /*single_connection=*/false,
+                                    /*journal_mode_wal=*/false);
+  ASSERT_NE(pending_backend, std::nullopt);
+  auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
+  ASSERT_NE(backend, nullptr);
+
+  // The backend should have created some files.
+  ASSERT_FALSE(base::IsDirectoryEmpty(temp_path()));
+
+  // Close the files.
+  backend.reset();
+
+  int64_t dir_size = base::ComputeDirectorySize(temp_path());
+
+  // Ask the delegate to delete them.
+  ASSERT_EQ(delegate().DeleteFiles(temp_path(), base_name), dir_size);
+
+  // The files should now be gone.
+  ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));
+}
+
+TEST_F(SqliteBackendStorageDelegateTest, CreateAndDeleteWal) {
+  base::FilePath base_name = base::FilePath::FromASCII("base_name");
+  auto pending_backend =
+      delegate().MakePendingBackend(temp_path(), base_name,
+                                    /*single_connection=*/true,
+                                    /*journal_mode_wal=*/true);
   ASSERT_NE(pending_backend, std::nullopt);
   auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
   ASSERT_NE(backend, nullptr);

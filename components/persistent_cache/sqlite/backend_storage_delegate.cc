@@ -71,7 +71,10 @@ base::File DuplicateFile(const base::File& source_file,
 std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
     const base::FilePath& directory,
     const base::FilePath& base_name,
-    bool single_connection) {
+    bool single_connection,
+    bool journal_mode_wal) {
+  // Write-ahead logging journaling is only supported for single connections.
+  CHECK(!journal_mode_wal || single_connection);
   PendingBackend pending_backend;
 
   uint32_t create_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
@@ -113,6 +116,20 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
     return std::nullopt;
   }
 
+  if (journal_mode_wal) {
+    auto wal_file_path =
+        directory.Append(base_name).AddExtension(kWalJournalFileExtension);
+    pending_backend.sqlite_data.wal_file =
+        base::File(wal_file_path, create_flags);
+    if (!pending_backend.sqlite_data.wal_file.IsValid()) {
+      base::UmaHistogramExactLinear(
+          "PersistentCache.Sqlite.WalJournalFile.CreateError",
+          -pending_backend.sqlite_data.wal_file.error_details(),
+          -base::File::FILE_ERROR_MAX);
+      return std::nullopt;
+    }
+  }
+
   if (!single_connection) {
     // The shared lock is only needed if multiple connections are permitted.
     pending_backend.sqlite_data.shared_lock =
@@ -130,9 +147,10 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
 std::unique_ptr<Backend> BackendStorageDelegate::MakeBackend(
     const base::FilePath& directory,
     const base::FilePath& base_name,
-    bool single_connection) {
-  if (auto pending_backend =
-          MakePendingBackend(directory, base_name, single_connection);
+    bool single_connection,
+    bool journal_mode_wal) {
+  if (auto pending_backend = MakePendingBackend(
+          directory, base_name, single_connection, journal_mode_wal);
       pending_backend.has_value()) {
     return SqliteBackendImpl::Bind(*std::move(pending_backend));
   }
@@ -180,6 +198,17 @@ int64_t BackendStorageDelegate::DeleteFiles(const base::FilePath& directory,
     bytes_recovered = base::ClampAdd(bytes_recovered, file_size);
   }
 
+  file_path =
+      directory.Append(base_name).AddExtension(kWalJournalFileExtension);
+  file_size = base::GetFileSize(file_path).value_or(0);
+  delete_success = base::DeleteFile(file_path);
+  base::UmaHistogramBoolean(
+      "PersistentCache.ParamsManager.WalJournalFile.DeleteSuccess",
+      delete_success);
+  if (delete_success) {
+    bytes_recovered = base::ClampAdd(bytes_recovered, file_size);
+  }
+
   // TODO (https://crbug.com/377475540): Cleanup when deletion of journal
   // failed.
   return bytes_recovered;
@@ -194,7 +223,13 @@ std::optional<PendingBackend> BackendStorageDelegate::ShareConnection(
       static_cast<const SqliteBackendImpl&>(backend);
   const SqliteVfsFileSet& file_set = sqlite_backend.file_set();
 
+  // Cannot share a single-connection backend. If it ever becomes interesting to
+  // connect to a backend in one process and then move it to another process,
+  // we shall introduce a way to `Unbind()` a backend to convert it back into a
+  // `PendingBackend`.
   CHECK(!file_set.is_single_connection());
+  // All connections using a write-ahead log are single-connection.
+  CHECK(!file_set.wal_journal_mode());
 
   PendingBackend pending_backend;
 

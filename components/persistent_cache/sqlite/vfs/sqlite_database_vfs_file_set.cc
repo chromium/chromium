@@ -6,8 +6,11 @@
 
 #include <atomic>
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -15,28 +18,39 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "sql/database.h"
 
 namespace {
 
 std::atomic<uint64_t> g_file_set_id_generator(0);
-constexpr const char kPathSeperator[] = "_";
 
 }  // namespace
 
 namespace persistent_cache {
 
-SqliteVfsFileSet::SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
-                                   std::unique_ptr<SandboxedFile> journal_file,
-                                   base::UnsafeSharedMemoryRegion shared_lock)
+SqliteVfsFileSet::SqliteVfsFileSet(
+    std::unique_ptr<SandboxedFile> db_file,
+    std::unique_ptr<SandboxedFile> journal_file,
+    std::unique_ptr<SandboxedFile> wal_journal_file,
+    base::UnsafeSharedMemoryRegion shared_lock)
     : shared_lock_(std::move(shared_lock)),
       db_file_(std::move(db_file)),
       journal_file_(std::move(journal_file)),
-      virtual_fs_path_(
-          base::NumberToString(g_file_set_id_generator.fetch_add(1))),
+      wal_journal_file_(std::move(wal_journal_file)),
+      virtual_fs_path_(base::FilePath::FromASCII(
+          base::NumberToString(g_file_set_id_generator.fetch_add(1)))),
       read_only_(db_file_->access_rights() ==
                  SandboxedFile::AccessRights::kReadOnly) {
-  // It makes no sense to have one file writeable and not the other.
+  // It makes no sense to have one file writeable and not the other(s).
   CHECK_EQ(db_file_->access_rights(), journal_file_->access_rights());
+  if (wal_journal_file_) {
+    CHECK_EQ(db_file_->access_rights(), wal_journal_file_->access_rights());
+  }
+  // Write-ahead logging requires single connection.
+  CHECK(!wal_journal_file_ || !shared_lock_.IsValid());
+  // Write-ahead logging requires read-write access.
+  CHECK(!wal_journal_file_ ||
+        db_file_->access_rights() == SandboxedFile::AccessRights::kReadWrite);
 }
 
 SqliteVfsFileSet::SqliteVfsFileSet(SqliteVfsFileSet&& other) = default;
@@ -44,16 +58,19 @@ SqliteVfsFileSet& SqliteVfsFileSet::operator=(SqliteVfsFileSet&& other) =
     default;
 SqliteVfsFileSet::~SqliteVfsFileSet() = default;
 
-std::array<std::pair<base::FilePath, raw_ptr<SandboxedFile>>, 2>
-SqliteVfsFileSet::GetFiles() const {
-  return {std::make_pair(GetDbVirtualFilePath(), db_file_.get()),
-          std::make_pair(GetJournalVirtualFilePath(), journal_file_.get())};
+base::FilePath SqliteVfsFileSet::GetDbVirtualFilePath() const {
+  static constexpr base::FilePath::StringViewType kDbFileName =
+      FILE_PATH_LITERAL("data");
+
+  return virtual_fs_path_.Append(kDbFileName);
 }
 
-base::FilePath SqliteVfsFileSet::GetDbVirtualFilePath() const {
-  constexpr const char kDbFileName[] = "data.db";
-  return base::FilePath::FromASCII(
-      base::StrCat({virtual_fs_path_, kPathSeperator, kDbFileName}));
+base::FilePath SqliteVfsFileSet::GetJournalVirtualFilePath() const {
+  return sql::Database::JournalPath(GetDbVirtualFilePath());
+}
+
+base::FilePath SqliteVfsFileSet::GetWalJournalVirtualFilePath() const {
+  return sql::Database::WriteAheadLogPath(GetDbVirtualFilePath());
 }
 
 const base::File& SqliteVfsFileSet::GetDbFile() const {
@@ -64,14 +81,13 @@ const base::File& SqliteVfsFileSet::GetJournalFile() const {
   return journal_file_->GetFile();
 }
 
-LockState SqliteVfsFileSet::Abandon() {
-  return db_file_->Abandon();
+const base::File& SqliteVfsFileSet::GetWalJournalFile() const {
+  CHECK(wal_journal_mode());
+  return wal_journal_file_->GetFile();
 }
 
-base::FilePath SqliteVfsFileSet::GetJournalVirtualFilePath() const {
-  constexpr const char kJournalFileName[] = "data.db-journal";
-  return base::FilePath::FromASCII(
-      base::StrCat({virtual_fs_path_, kPathSeperator, kJournalFileName}));
+LockState SqliteVfsFileSet::Abandon() {
+  return db_file_->Abandon();
 }
 
 }  // namespace persistent_cache

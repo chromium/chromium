@@ -19,6 +19,7 @@ component("persistent_cache") {
     "backend.cc",
     "backend.h",
     "backend_storage.cc",
+    "pending_backend.cc",
     "persistent_cache_collection.cc",
   ]
 

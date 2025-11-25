@@ -70,10 +70,10 @@ TEST_F(BackendStorageTest, MakePendingBackendFails) {
   base::FilePath base_name(FILE_PATH_LITERAL("some_base_name"));
 
   EXPECT_CALL(mock_delegate(),
-              MakePendingBackend(GetStorageDir(), base_name, true))
+              MakePendingBackend(GetStorageDir(), base_name, true, true))
       .WillOnce(Return(std::nullopt));
   auto result = backend_storage().MakePendingBackend(
-      base_name, /*single_connection=*/true);
+      base_name, /*single_connection=*/true, /*journal_mode_wal=*/true);
   EXPECT_EQ(result, std::nullopt);
 }
 
@@ -83,11 +83,11 @@ TEST_F(BackendStorageTest, MakePendingBackendSucceeds) {
   PendingBackend pending_backend;
   pending_backend.read_write = true;
   EXPECT_CALL(mock_delegate(),
-              MakePendingBackend(GetStorageDir(), base_name, true))
+              MakePendingBackend(GetStorageDir(), base_name, true, true))
       .WillOnce(Return(std::move(pending_backend)));
-  auto result =
-      backend_storage().MakePendingBackend(base_name,
-                                           /*single_connection=*/true);
+  auto result = backend_storage().MakePendingBackend(base_name,
+                                                     /*single_connection=*/true,
+                                                     /*journal_mode_wal=*/true);
   EXPECT_THAT(result, Optional(Field(&PendingBackend::read_write, Eq(true))));
 }
 

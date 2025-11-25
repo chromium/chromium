@@ -8,6 +8,7 @@
 
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -449,22 +450,27 @@ int SandboxedFile::ShmMap(int page_index,
                           int page_size,
                           int extend_file_if_needed,
                           void volatile** result) {
-  // TODO(https://crbug.com/377475540): Implement WAL mode.
-  return SQLITE_IOERR_SHMMAP;
+  // Write-ahead logging is only supported in combination with exclusive mode
+  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
+  NOTREACHED();
 }
 
 int SandboxedFile::ShmLock(int offset, int size, int flags) {
-  // TODO(https://crbug.com/377475540): Implement WAL mode.
-  return SQLITE_IOERR_SHMLOCK;
+  // Write-ahead logging is only supported in combination with exclusive mode
+  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
+  NOTREACHED();
 }
 
 void SandboxedFile::ShmBarrier() {
-  // TODO(https://crbug.com/377475540): Implement WAL mode.
+  // Write-ahead logging is only supported in combination with exclusive mode
+  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
+  NOTREACHED();
 }
 
 int SandboxedFile::ShmUnmap(int also_delete_file) {
-  // TODO(https://crbug.com/377475540): Implement WAL mode.
-  return SQLITE_IOERR_SHMMAP;
+  // Write-ahead logging is only supported in combination with exclusive mode
+  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
+  NOTREACHED();
 }
 
 int SandboxedFile::Fetch(sqlite3_int64 offset, int size, void** result) {

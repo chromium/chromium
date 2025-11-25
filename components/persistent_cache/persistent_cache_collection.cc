@@ -227,7 +227,8 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
   CHECK(!base_name.empty());
 
   auto backend =
-      backend_storage_.MakeBackend(base_name, /*single_connection=*/false);
+      backend_storage_.MakeBackend(base_name, /*single_connection=*/false,
+                                   /*journal_mode_wal=*/false);
   if (!backend) {
     // Failed to open/create the backend's files or bind to them.
     return nullptr;

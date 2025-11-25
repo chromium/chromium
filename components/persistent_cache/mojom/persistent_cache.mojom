@@ -12,6 +12,10 @@ struct PendingReadWriteBackend {
   mojo_base.mojom.File db_file;
   mojo_base.mojom.File journal_file;
 
+  // An optional write-ahead log file, specified only if this backend uses a
+  // write-ahead log rather than a rollback journal.
+  mojo_base.mojom.File? wal_file;
+
   // The shared lock is present if this backend supports multiple connections.
   mojo_base.mojom.UnsafeSharedMemoryRegion? shared_lock;
 };

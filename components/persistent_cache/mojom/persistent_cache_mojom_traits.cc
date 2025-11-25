@@ -21,6 +21,9 @@ bool StructTraits<persistent_cache::mojom::PendingReadWriteBackendDataView,
   if (!data.ReadJournalFile(&sqlite_data.journal_file)) {
     return false;
   }
+  if (!data.ReadWalFile(&sqlite_data.wal_file)) {
+    return false;
+  }
   if (!data.ReadSharedLock(&sqlite_data.shared_lock)) {
     return false;
   }

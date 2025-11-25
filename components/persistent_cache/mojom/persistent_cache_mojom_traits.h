@@ -36,6 +36,12 @@ struct StructTraits<persistent_cache::mojom::PendingReadWriteBackendDataView,
     return std::move(pending_backend.sqlite_data.journal_file);
   }
 
+  static base::File wal_file(
+      persistent_cache::PendingBackend& pending_backend) {
+    CHECK_EQ(pending_backend.read_write, true);
+    return std::move(pending_backend.sqlite_data.wal_file);
+  }
+
   static base::UnsafeSharedMemoryRegion shared_lock(
       persistent_cache::PendingBackend& pending_backend) {
     CHECK_EQ(pending_backend.read_write, true);

@@ -43,10 +43,11 @@ class GpuPersistentCacheTest : public testing::Test {
   }
 
   void InitializeCache() {
-    ASSERT_OK_AND_ASSIGN(auto pending_backend,
-                         backend_storage_->MakePendingBackend(
-                             base::FilePath(FILE_PATH_LITERAL("test")),
-                             /*single_connection=*/true));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage_->MakePendingBackend(
+            base::FilePath(FILE_PATH_LITERAL("test")),
+            /*single_connection=*/true, /*journal_mode_wal=*/true));
     cache_.InitializeCache(std::move(pending_backend));
   }
 
@@ -254,7 +255,7 @@ class GpuPersistentCacheAsyncTest : public GpuPersistentCacheTest {
       size_t max_pending_bytes_to_write = std::numeric_limits<size_t>::max()) {
     auto pending_backend = backend_storage_->MakePendingBackend(
         base::FilePath(FILE_PATH_LITERAL("test")),
-        /*single_connection=*/true);
+        /*single_connection=*/true, /*journal_mode_wal=*/true);
     if (!pending_backend) {
       ADD_FAILURE() << "Failed to make pending backend for test cache";
       return nullptr;
@@ -429,7 +430,7 @@ TEST_F(GpuPersistentCacheTest, MemoryBackingSyncedToDisk) {
         auto pending_backend,
         backend_storage_->MakePendingBackend(
             base::FilePath(FILE_PATH_LITERAL("MemoryBackingSyncedToDisk")),
-            /*single_connection=*/true));
+            /*single_connection=*/true, /*journal_mode_wal=*/true));
 
     cache.InitializeCache(std::move(pending_backend));
   }
@@ -441,7 +442,7 @@ TEST_F(GpuPersistentCacheTest, MemoryBackingSyncedToDisk) {
         auto pending_backend,
         backend_storage_->MakePendingBackend(
             base::FilePath(FILE_PATH_LITERAL("MemoryBackingSyncedToDisk")),
-            /*single_connection=*/true));
+            /*single_connection=*/true, /*journal_mode_wal=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     // Check that the entry exists in the cache.
@@ -468,7 +469,7 @@ TEST_F(GpuPersistentCacheTest, ReOpenCacheFromFile) {
         auto pending_backend,
         backend_storage_->MakePendingBackend(
             base::FilePath(FILE_PATH_LITERAL("ReOpenCacheFromFile")),
-            /*single_connection=*/true));
+            /*single_connection=*/true, /*journal_mode_wal=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     cache.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
@@ -499,7 +500,7 @@ TEST_F(GpuPersistentCacheTest, ReOpenCacheFromFile) {
         auto pending_backend,
         backend_storage_->MakePendingBackend(
             base::FilePath(FILE_PATH_LITERAL("ReOpenCacheFromFile")),
-            /*single_connection=*/true));
+            /*single_connection=*/true, /*journal_mode_wal=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     // Check that the entry exists in the persistent cache.

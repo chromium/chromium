@@ -117,8 +117,10 @@ class PersistentCacheTest : public testing::Test,
 
   // Returns the cache base name for a new cache and the new cache itself.
   std::pair<base::FilePath, std::unique_ptr<PersistentCache>> OpenCache(
-      bool single_connection = false) {
-    auto [cache_name, pending_backend] = MakePendingBackend(single_connection);
+      bool single_connection = false,
+      bool journal_mode_wal = false) {
+    auto [cache_name, pending_backend] =
+        MakePendingBackend(single_connection, journal_mode_wal);
     auto cache = PersistentCache::Bind(*std::move(pending_backend));
     if (!cache) {
       ADD_FAILURE() << "Failed to bind PersistentCache";
@@ -129,11 +131,12 @@ class PersistentCacheTest : public testing::Test,
 
   // Returns the cache base name for a new cache and a pending backend for it.
   std::pair<base::FilePath, std::optional<PendingBackend>> MakePendingBackend(
-      bool single_connection) {
+      bool single_connection,
+      bool journal_mode_wal) {
     auto cache_name = base::FilePath::FromASCII(
         base::StrCat({"Cache", base::NumberToString(next_backend_index_++)}));
-    auto pending_backend =
-        backend_storage_->MakePendingBackend(cache_name, single_connection);
+    auto pending_backend = backend_storage_->MakePendingBackend(
+        cache_name, single_connection, journal_mode_wal);
     if (!pending_backend) {
       ADD_FAILURE() << "Failed to make PendingBackend";
       return {};
@@ -230,11 +233,12 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
                              base::Time::Now().InMillisecondsSinceUnixEpoch()};
 
   auto [cache_name, cache] = OpenCache();
-  EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata),
-              HasValue());
 
   int64_t seconds_since_epoch =
       base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000;
+
+  EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata),
+              HasValue());
 
   EXPECT_THAT(FindEntry(*cache, kKey),
               ValueIs(Optional(Field(
@@ -563,8 +567,7 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
   ASSERT_OK_AND_ASSIGN(
       auto reader_vfs_file_set,
       SqliteBackendImpl::BindToFileSet(std::move(pending_reader)));
-  auto reader_files = reader_vfs_file_set.GetFiles();
-  auto reader_db_file = reader_files[0].second;
+  SandboxedFile* reader_db_file = reader_vfs_file_set.GetSandboxedDbFile();
   reader_db_file->OnFileOpened(
       reader_db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);

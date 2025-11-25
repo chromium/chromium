@@ -143,7 +143,8 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
   persistent_cache::BackendStorage cache_storage(
       persistent_cache::BackendType::kSqlite, cache_dir);
   auto backend = cache_storage.MakePendingBackend(
-      base::FilePath(FILE_PATH_LITERAL("cache")), /*single_connection=*/true);
+      base::FilePath(FILE_PATH_LITERAL("cache")), /*single_connection=*/true,
+      /*journal_mode_wal=*/true);
   if (!backend) {
     PLOG(ERROR) << "Failed to open persistent cache files in directory \""
                 << cache_dir << "\"";

@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
 <variants name="FileType">
   <variant name="DbFile" summary="database file"/>
   <variant name="JournalFile" summary="journal file"/>
+  <variant name="WalJournalFile" summary="write-ahead log file"/>
 </variants>
 
 <variants name="Mode">

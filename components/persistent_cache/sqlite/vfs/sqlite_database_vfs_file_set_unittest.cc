@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -16,6 +18,7 @@
 #include "components/persistent_cache/sqlite/backend_storage_delegate.h"
 #include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_BLINK) && !BUILDFLAG(IS_ANDROID)
@@ -32,8 +35,10 @@ namespace persistent_cache {
 
 namespace {
 
-// Test is parameterized on the value for `single_connection`.
-class SqliteVfsFileSetTest : public testing::TestWithParam<bool> {
+// Test is parameterized on the values for `single_connection` and
+// `journal_mode_wal`.
+class SqliteVfsFileSetTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
   static constexpr base::FilePath::StringViewType kBaseName =
       FILE_PATH_LITERAL("TEST");
@@ -42,18 +47,24 @@ class SqliteVfsFileSetTest : public testing::TestWithParam<bool> {
 
   const base::FilePath& GetTempDir() const { return temp_dir_.GetPath(); }
 
-  std::pair<base::FilePath, base::FilePath> GetFilePaths() {
-    return {temp_dir_.GetPath().Append(kBaseName).AddExtension(
-                sqlite::kDbFileExtension),
-            temp_dir_.GetPath().Append(kBaseName).AddExtension(
-                sqlite::kJournalFileExtension)};
+  std::vector<base::FilePath> GetFilePaths() {
+    std::vector<base::FilePath> paths;
+    paths.push_back(temp_dir_.GetPath().Append(kBaseName).AddExtension(
+        sqlite::kDbFileExtension));
+    paths.push_back(temp_dir_.GetPath().Append(kBaseName).AddExtension(
+        sqlite::kJournalFileExtension));
+    if (journal_mode_wal()) {
+      paths.push_back(temp_dir_.GetPath().Append(kBaseName).AddExtension(
+          sqlite::kWalJournalFileExtension));
+    }
+    return paths;
   }
 
   std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     std::optional<SqliteVfsFileSet> file_set;
     if (auto pending_backend = backend_storage_delegate_.MakePendingBackend(
             temp_dir_.GetPath(), base::FilePath(kBaseName),
-            is_single_connection());
+            is_single_connection(), journal_mode_wal());
         !pending_backend.has_value()) {
       ADD_FAILURE() << "Failed creating pending backend";
     } else {
@@ -70,7 +81,8 @@ class SqliteVfsFileSetTest : public testing::TestWithParam<bool> {
     return temp_dir_.GetPath();
   }
 
-  static bool is_single_connection() { return GetParam(); }
+  static bool is_single_connection() { return std::get<0>(GetParam()); }
+  static bool journal_mode_wal() { return std::get<1>(GetParam()); }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -79,36 +91,34 @@ class SqliteVfsFileSetTest : public testing::TestWithParam<bool> {
 
 // Tests that creating and destroying a file set doesn't delete the files.
 TEST_P(SqliteVfsFileSetTest, FilesAreNotDeleted) {
-  auto [one, two] = GetFilePaths();
+  auto paths = GetFilePaths();
 
   {
     ASSERT_OK_AND_ASSIGN(auto file_set, CreateFilesAndBuildVfsFileSet());
 
-    ASSERT_PRED1(base::PathExists, one);
-    ASSERT_PRED1(base::PathExists, two);
+    ASSERT_THAT(paths,
+                testing::Each(testing::ResultOf(base::PathExists, true)));
   }
 
-  ASSERT_PRED1(base::PathExists, one);
-  ASSERT_PRED1(base::PathExists, two);
+  ASSERT_THAT(paths, testing::Each(testing::ResultOf(base::PathExists, true)));
 }
 
 // Tests that a file set's files can be deleted while it's in use and are
 // absent upon destruction.
 TEST_P(SqliteVfsFileSetTest, FilesCanBeDeleted) {
-  auto [one, two] = GetFilePaths();
+  auto paths = GetFilePaths();
 
   {
     ASSERT_OK_AND_ASSIGN(auto file_set, CreateFilesAndBuildVfsFileSet());
 
-    ASSERT_PRED1(base::PathExists, one);
-    ASSERT_PRED1(base::PathExists, two);
+    ASSERT_THAT(paths,
+                testing::Each(testing::ResultOf(base::PathExists, true)));
 
-    ASSERT_PRED1(base::DeleteFile, one);
-    ASSERT_PRED1(base::DeleteFile, two);
+    ASSERT_THAT(paths,
+                testing::Each(testing::ResultOf(base::DeleteFile, true)));
   }
 
-  ASSERT_FALSE(base::PathExists(one));
-  ASSERT_FALSE(base::PathExists(two));
+  ASSERT_THAT(paths, testing::Each(testing::ResultOf(base::PathExists, false)));
 
   // No other files should have been left behind.
   ASSERT_PRED1(base::IsDirectoryEmpty, GetTempDir());
@@ -121,6 +131,7 @@ TEST_P(SqliteVfsFileSetTest, FilesCanBeDeleted) {
 static constexpr std::string_view kDirectorySwitch = "directory";
 static constexpr std::string_view kBaseNameSwitch = "base-name";
 static constexpr std::string_view kSingleConnection = "single-connection";
+static constexpr std::string_view kJournalModeWal = "journal-mode-wal";
 
 // The main function for a child process that returns EXIT_SUCCESS if a named
 // backend can be opened in a given directory.
@@ -129,10 +140,11 @@ MULTIPROCESS_TEST_MAIN(CanOpenConnectionInChild) {
   base::FilePath directory = cmd_line.GetSwitchValuePath(kDirectorySwitch);
   base::FilePath base_name = cmd_line.GetSwitchValuePath(kBaseNameSwitch);
   bool single_connection = cmd_line.HasSwitch(kSingleConnection);
+  bool journal_mode_wal = cmd_line.HasSwitch(kJournalModeWal);
 
   sqlite::BackendStorageDelegate backend_storage_delegate;
   auto pending_backend = backend_storage_delegate.MakePendingBackend(
-      directory, base_name, single_connection);
+      directory, base_name, single_connection, journal_mode_wal);
 #if BUILDFLAG(IS_WIN)
   // On Windows, the files cannot even be opened a second time if the parent
   // used single_connection=true.
@@ -148,7 +160,7 @@ MULTIPROCESS_TEST_MAIN(CanOpenConnectionInChild) {
   auto file_set = SqliteBackendImpl::BindToFileSet(*std::move(pending_backend));
   CHECK(file_set.has_value());
 
-  auto db_file = file_set->GetFiles()[0].second;
+  SandboxedFile* db_file = file_set->GetSandboxedDbFile();
   if (auto file = db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb);
       file.IsValid()) {
     // Take care to complete the SandboxedVfs open protocol and close the file
@@ -168,7 +180,7 @@ TEST_P(SqliteVfsFileSetTest, MultipleConnections) {
 
   // Open the file, thereby locking it for exclusive access if it was created
   // for only a single connection.
-  auto db_file = file_set.GetFiles()[0].second;
+  SandboxedFile* db_file = file_set.GetSandboxedDbFile();
   db_file->OnFileOpened(
       db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
 
@@ -205,10 +217,16 @@ TEST_P(SqliteVfsFileSetTest, MultipleConnections) {
 
 INSTANTIATE_TEST_SUITE_P(MultipleConnections,
                          SqliteVfsFileSetTest,
-                         testing::Values(false));
+                         testing::Combine(testing::Values(false),
+                                          testing::Values(false)));
 INSTANTIATE_TEST_SUITE_P(SingleConnection,
                          SqliteVfsFileSetTest,
-                         testing::Values(true));
+                         testing::Combine(testing::Values(true),
+                                          testing::Values(false)));
+INSTANTIATE_TEST_SUITE_P(JournalModeWal,
+                         SqliteVfsFileSetTest,
+                         testing::Combine(testing::Values(true),
+                                          testing::Values(true)));
 
 }  // namespace
 

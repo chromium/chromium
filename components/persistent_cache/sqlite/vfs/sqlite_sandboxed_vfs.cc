@@ -6,10 +6,14 @@
 
 #include <mutex>
 #include <optional>
+#include <tuple>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "sql/sandboxed_vfs.h"
 #include "sql/sandboxed_vfs_file.h"
@@ -101,9 +105,11 @@ base::File SqliteSandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
 
   auto file_type = GetFileType(sqlite_requested_flags);
 
-  // Only the main database and its rollback journal are supported.
+  // Only the main database and its rollback journal and/or write-ahead log are
+  // supported.
   CHECK(file_type == SandboxedFile::FileType::kMainDb ||
-        file_type == SandboxedFile::FileType::kMainJournal);
+        file_type == SandboxedFile::FileType::kMainJournal ||
+        file_type == SandboxedFile::FileType::kWal);
 
   // If `file_name` is found in the mapping return the associated file.
   return it->second->TakeUnderlyingFile(file_type);
@@ -162,10 +168,16 @@ void SqliteSandboxedVfsDelegate::UnregisterSandboxedFiles(
     const SqliteVfsFileSet& sqlite_vfs_file_set) {
   base::AutoLock lock(files_map_lock_);
 
-  for (auto& kv : sqlite_vfs_file_set.GetFiles()) {
-    size_t num_erased = sandboxed_files_map_.erase(kv.first);
-    CHECK_EQ(num_erased, 1ull)
-        << "Unregistering the same file set more than once should never happen";
+  auto num_erased =
+      sandboxed_files_map_.erase(sqlite_vfs_file_set.GetDbVirtualFilePath());
+  CHECK_EQ(num_erased, 1U);
+  num_erased = sandboxed_files_map_.erase(
+      sqlite_vfs_file_set.GetJournalVirtualFilePath());
+  CHECK_EQ(num_erased, 1U);
+  if (sqlite_vfs_file_set.wal_journal_mode()) {
+    num_erased = sandboxed_files_map_.erase(
+        sqlite_vfs_file_set.GetWalJournalVirtualFilePath());
+    CHECK_EQ(num_erased, 1U);
   }
 }
 
@@ -175,10 +187,19 @@ SqliteSandboxedVfsDelegate::RegisterSandboxedFiles(
     const SqliteVfsFileSet& sqlite_vfs_file_set) {
   base::AutoLock lock(files_map_lock_);
 
-  for (auto& kv : sqlite_vfs_file_set.GetFiles()) {
-    auto [it, inserted] = sandboxed_files_map_.emplace(kv.first, kv.second);
-    CHECK(inserted)
-        << "Registering the same file set more than once should never happen";
+  auto [it, inserted] =
+      sandboxed_files_map_.emplace(sqlite_vfs_file_set.GetDbVirtualFilePath(),
+                                   sqlite_vfs_file_set.GetSandboxedDbFile());
+  CHECK(inserted);
+  std::tie(it, inserted) = sandboxed_files_map_.emplace(
+      sqlite_vfs_file_set.GetJournalVirtualFilePath(),
+      sqlite_vfs_file_set.GetSandboxedJournalFile());
+  CHECK(inserted);
+  if (sqlite_vfs_file_set.wal_journal_mode()) {
+    std::tie(it, inserted) = sandboxed_files_map_.emplace(
+        sqlite_vfs_file_set.GetWalJournalVirtualFilePath(),
+        sqlite_vfs_file_set.GetSandboxedWalJournalFile());
+    CHECK(inserted);
   }
 
   return UnregisterRunner(sqlite_vfs_file_set);

@@ -14,9 +14,23 @@ namespace persistent_cache {
 // The state required to connect to a backend. Instances are created via a
 // BackendStorage and are bound by a PersistentCache to establish a connection.
 struct COMPONENT_EXPORT(PERSISTENT_CACHE) PendingBackend {
+  PendingBackend();
+  PendingBackend(PendingBackend&&);
+  PendingBackend& operator=(PendingBackend&&);
+  ~PendingBackend();
+
   struct COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteData {
+    SqliteData();
+    SqliteData(SqliteData&&);
+    SqliteData& operator=(SqliteData&&);
+    ~SqliteData();
+
     base::File db_file;
     base::File journal_file;
+
+    // An optional write-ahead log file, specified only if this backend uses a
+    // write-ahead log rather than a rollback journal.
+    base::File wal_file;
 
     // An optional read-write region of memory shared by all processes accessing
     // `db_file_` that holds the locking state for the database. Locks are not
@@ -26,7 +40,7 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) PendingBackend {
 
   // The data specific to the SQLite backend. If there is ever occasion to have
   // more than one type, use std::variant<> to hold the data for each.
-  SqliteData sqlite_data = {};
+  SqliteData sqlite_data;
 
   // False if this backend is read-only, true if read/write.
   bool read_write = false;
