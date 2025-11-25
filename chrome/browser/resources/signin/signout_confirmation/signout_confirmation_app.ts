@@ -12,6 +12,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -55,10 +56,15 @@ export class SignoutConfirmationAppElement extends CrLitElement {
   static override get properties() {
     return {
       data_: {type: Object},
+
+      isUnoPhase2FollowUpEnabled_: {type: Boolean},
     };
   }
 
   protected accessor data_: SignoutConfirmationData = SAMPLE_DATA;
+
+  protected accessor isUnoPhase2FollowUpEnabled_: boolean =
+      loadTimeData.getBoolean('isUnoPhase2FollowUpEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();
 
