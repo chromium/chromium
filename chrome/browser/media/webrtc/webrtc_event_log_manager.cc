@@ -276,7 +276,6 @@ void WebRtcEventLogManager::OnPeerConnectionUpdated(
     int lid,
     const std::string& type,
     const std::string& value) {
-  // TODO(crbug.com/40562061): Get rid of magic value.
   if (type == "stop") {
     OnPeerConnectionStopped(frame_id, lid, base::NullCallback());
   }
