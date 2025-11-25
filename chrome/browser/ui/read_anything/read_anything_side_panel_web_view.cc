@@ -34,6 +34,16 @@ ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
               IDS_READING_MODE_TITLE,
               /*esc_closes_ui=*/false)) {}
 
+ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
+    Profile* profile,
+    SidePanelEntryScope& scope,
+    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+        contents_wrapper)
+    : SidePanelWebUIViewT(scope,
+                          base::RepeatingClosure(),
+                          base::RepeatingClosure(),
+                          std::move(contents_wrapper)) {}
+
 content::WebContents* ReadAnythingSidePanelWebView::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params,

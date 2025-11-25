@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -231,9 +232,15 @@ ReadAnythingSidePanelController::CreateContainerView(
         ReadAnythingSidePanelControllerGlue::UserDataKey());
   }
 
-  auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
-      tab_->GetBrowserWindowInterface()->GetProfile(), scope);
-
+  std::unique_ptr<ReadAnythingSidePanelWebView> web_view;
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    web_view = std::make_unique<ReadAnythingSidePanelWebView>(
+        tab_->GetBrowserWindowInterface()->GetProfile(), scope,
+        ReadAnythingController::From(tab_)->GetOrCreateWebUIWrapper());
+  } else {
+    web_view = std::make_unique<ReadAnythingSidePanelWebView>(
+        tab_->GetBrowserWindowInterface()->GetProfile(), scope);
+  }
   ReadAnythingSidePanelControllerGlue::CreateForWebContents(
       web_view->contents_wrapper()->web_contents(), this);
   web_view_ = web_view->GetWeakPtr();

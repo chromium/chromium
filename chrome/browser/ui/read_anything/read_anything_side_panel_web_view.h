@@ -19,7 +19,15 @@ class ReadAnythingSidePanelWebView
   METADATA_HEADER(ReadAnythingSidePanelWebView,
                   SidePanelWebUIViewT_ReadAnythingUntrustedUI)
  public:
+  // Constructor for when this class creates its own WebUIContentsWrapper.
   ReadAnythingSidePanelWebView(Profile* profile, SidePanelEntryScope& scope);
+
+  // Constructor for when the WebUIContentsWrapper is passed to this class.
+  ReadAnythingSidePanelWebView(
+      Profile* profile,
+      SidePanelEntryScope& scope,
+      std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+          contents_wrapper);
   ReadAnythingSidePanelWebView(const ReadAnythingSidePanelWebView&) = delete;
   ReadAnythingSidePanelWebView& operator=(const ReadAnythingSidePanelWebView&) =
       delete;

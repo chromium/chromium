@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -37,6 +40,26 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
   CHECK(tab_->GetBrowserWindowInterface());
 
   return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+}
+
+// Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
+std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+ReadAnythingController::GetOrCreateWebUIWrapper() {
+  if (!web_ui_wrapper_) {
+    Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
+    web_ui_wrapper_ =
+        std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
+            GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL), profile,
+            IDS_READING_MODE_TITLE,
+            /*esc_closes_ui=*/false);
+  }
+  return std::move(web_ui_wrapper_);
+}
+
+void ReadAnythingController::SetWebUIWrapperForTest(
+    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+        web_ui_wrapper) {
+  web_ui_wrapper_ = std::move(web_ui_wrapper);
 }
 
 // TODO(crbug.com/447418049): Open immersive reading mode via this

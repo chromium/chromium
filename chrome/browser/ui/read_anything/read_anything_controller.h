@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -50,6 +52,16 @@ class ReadAnythingController {
   // Returns the current presentation state of the Reading Mode feature.
   PresentationState GetPresentationState() const;
 
+  // Lazily creates and returns the WebUIContentsWrapper for the
+  // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
+  // caller.
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+  GetOrCreateWebUIWrapper();
+
+  void SetWebUIWrapperForTest(
+      std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+          web_ui_wrapper);
+
  private:
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
@@ -57,6 +69,9 @@ class ReadAnythingController {
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
+
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+      web_ui_wrapper_;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
