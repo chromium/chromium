@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"

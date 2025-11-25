@@ -14,7 +14,6 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

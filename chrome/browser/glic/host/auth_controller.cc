@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 
 #include "base/command_line.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"

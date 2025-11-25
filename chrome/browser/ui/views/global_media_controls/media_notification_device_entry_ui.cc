@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"

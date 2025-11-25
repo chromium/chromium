@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/net/pipe_writer_posix.h"
+
 #include <cmath>
 #include <string>
 
@@ -9,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -21,7 +22,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "chrome/test/chromedriver/net/pipe_writer_posix.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"

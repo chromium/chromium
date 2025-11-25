@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

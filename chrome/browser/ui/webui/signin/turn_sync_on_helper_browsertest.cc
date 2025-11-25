@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

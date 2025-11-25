@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"

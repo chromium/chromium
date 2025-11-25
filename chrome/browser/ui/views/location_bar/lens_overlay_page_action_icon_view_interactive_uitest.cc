@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"

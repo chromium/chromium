@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

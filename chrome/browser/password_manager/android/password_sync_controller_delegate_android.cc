@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"

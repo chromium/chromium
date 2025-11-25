@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"

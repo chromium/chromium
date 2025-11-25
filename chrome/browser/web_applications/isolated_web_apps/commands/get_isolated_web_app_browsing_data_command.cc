@@ -11,7 +11,6 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/memory/raw_ptr.h"

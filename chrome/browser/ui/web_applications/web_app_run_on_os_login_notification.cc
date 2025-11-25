@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"

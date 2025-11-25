@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"

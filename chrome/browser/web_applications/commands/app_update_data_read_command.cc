@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"

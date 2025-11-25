@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
 #include "base/byte_count.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"

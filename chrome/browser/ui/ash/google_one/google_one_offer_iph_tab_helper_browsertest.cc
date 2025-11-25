@@ -8,7 +8,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

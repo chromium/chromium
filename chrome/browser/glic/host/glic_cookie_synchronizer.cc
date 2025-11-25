@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/fre/fre_util.h"

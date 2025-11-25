@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"

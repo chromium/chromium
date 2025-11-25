@@ -18,7 +18,6 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/user_education/recent_session_policy.h"

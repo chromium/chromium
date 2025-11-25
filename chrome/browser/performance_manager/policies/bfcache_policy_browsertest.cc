@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"

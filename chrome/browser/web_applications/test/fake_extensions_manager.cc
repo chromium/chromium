@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 

@@ -4,7 +4,6 @@
 #include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_context_menu.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"

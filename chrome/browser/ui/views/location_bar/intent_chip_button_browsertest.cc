@@ -9,7 +9,6 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"

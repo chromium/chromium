@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

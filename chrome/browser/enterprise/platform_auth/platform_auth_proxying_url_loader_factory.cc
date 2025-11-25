@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/origin.h"

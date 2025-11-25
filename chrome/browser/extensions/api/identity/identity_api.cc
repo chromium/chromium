@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"

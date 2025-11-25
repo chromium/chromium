@@ -14,7 +14,6 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"

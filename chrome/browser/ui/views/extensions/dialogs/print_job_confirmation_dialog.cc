@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"

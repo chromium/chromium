@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

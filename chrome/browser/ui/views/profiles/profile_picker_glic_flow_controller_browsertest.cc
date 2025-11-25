@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"

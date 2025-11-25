@@ -5,7 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"

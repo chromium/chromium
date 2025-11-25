@@ -5,7 +5,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"

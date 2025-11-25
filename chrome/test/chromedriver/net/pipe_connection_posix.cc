@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"

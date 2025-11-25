@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"

@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

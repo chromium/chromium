@@ -10,7 +10,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"

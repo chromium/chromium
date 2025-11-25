@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"

@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

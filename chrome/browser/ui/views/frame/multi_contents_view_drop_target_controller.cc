@@ -9,7 +9,6 @@
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"

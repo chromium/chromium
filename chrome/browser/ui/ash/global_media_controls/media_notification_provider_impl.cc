@@ -11,7 +11,6 @@
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"

@@ -4,7 +4,6 @@
 
 #include "components/user_education/views/help_bubble_factory_views.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

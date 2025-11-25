@@ -13,7 +13,6 @@
 #include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"

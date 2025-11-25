@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"

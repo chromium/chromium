@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

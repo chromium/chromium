@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
 #include "base/auto_reset.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"

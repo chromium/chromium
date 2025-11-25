@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"

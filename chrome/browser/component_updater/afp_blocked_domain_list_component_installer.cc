@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

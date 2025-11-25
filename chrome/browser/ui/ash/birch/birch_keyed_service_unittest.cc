@@ -18,7 +18,6 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"

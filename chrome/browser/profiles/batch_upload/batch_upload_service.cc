@@ -11,7 +11,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"

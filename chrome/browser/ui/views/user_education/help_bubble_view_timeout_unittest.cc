@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

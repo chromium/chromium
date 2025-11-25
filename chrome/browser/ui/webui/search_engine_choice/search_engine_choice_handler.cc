@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 
 SearchEngineChoiceHandler::SearchEngineChoiceHandler(
