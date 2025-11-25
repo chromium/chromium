@@ -10235,6 +10235,27 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="ContextualTasks.WebUI.UserAction{ActionType}">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user interacted with the contextual tasks web UI directly. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenHelp" summary="The user opened the help page."/>
+    <variant name=".OpenInNewTab"
+        summary="The user opened the task in a new tab."/>
+    <variant name=".OpenMyActivity"
+        summary="The user opened the My Activity page."/>
+    <variant name=".OpenNewThread" summary="The user opened a new thread."/>
+    <variant name=".OpenThreadHistory"
+        summary="The user opened the thread history."/>
+    <variant name=".TabFromSourcesMenuClicked"
+        summary="The user clicked on a tab from the sources menu."/>
+  </token>
+</action>
+
 <action name="CookieBlockingDisabledPerDefault">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

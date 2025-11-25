@@ -71,33 +71,47 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   protected onCloseButtonClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.CloseSidePanel');
     this.browserProxy_.handler.closeSidePanel();
   }
 
   protected async onNewThreadClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread');
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.threadUrl_ = url.url;
   }
 
   protected async onThreadHistoryClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenThreadHistory');
     const {threads} = await this.browserProxy_.handler.showThreadHistory();
     this.historyThreads_ = threads;
     // TODO(crbug.com/445469925): Display the threads in a drawer.
   }
 
   protected onOpenInNewTabClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenInNewTab');
     this.browserProxy_.handler.moveTaskUiToToNewTab();
   }
 
   protected onMyActivityClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenMyActivity');
     this.browserProxy_.handler.openMyActivityUi();
   }
 
   protected onHelpClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenHelp');
     this.browserProxy_.handler.openHelpUi();
   }
 
   protected onTabClick_(e: CustomEvent<Tab>) {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
     this.browserProxy_.handler.onTabClickedFromSourcesMenu(
         e.detail.tabId, e.detail.url);
   }
