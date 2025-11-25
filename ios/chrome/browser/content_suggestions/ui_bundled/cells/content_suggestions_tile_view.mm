@@ -56,7 +56,7 @@ const CGFloat kCornerRadius = 8.0;
     }
 
     // Use original rounded-square background image for Shorcuts
-    if (type == ContentSuggestionsTileType::kShortcuts) {
+    if (type == ContentSuggestionsTileType::kAction) {
       [self addSubview:_titleLabel];
 
       // The squircle background view.

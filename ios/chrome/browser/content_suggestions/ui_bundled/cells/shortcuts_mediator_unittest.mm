@@ -9,7 +9,7 @@
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -85,8 +85,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
-  ContentSuggestionsMostVisitedActionItem* readingList =
-      [[ContentSuggestionsMostVisitedActionItem alloc]
+  ContentSuggestionsShortcutItem* readingList =
+      [[ContentSuggestionsShortcutItem alloc]
           initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]
@@ -109,8 +109,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
-  ContentSuggestionsMostVisitedActionItem* whatsNew =
-      [[ContentSuggestionsMostVisitedActionItem alloc]
+  ContentSuggestionsShortcutItem* whatsNew =
+      [[ContentSuggestionsShortcutItem alloc]
           initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]

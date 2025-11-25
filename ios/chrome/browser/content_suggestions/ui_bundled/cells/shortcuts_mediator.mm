@@ -11,7 +11,7 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_config.h"
@@ -41,7 +41,7 @@
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
   // Item for the reading list action item.  Reference is used to update the
   // reading list count.
-  ContentSuggestionsMostVisitedActionItem* _readingListItem;
+  ContentSuggestionsShortcutItem* _readingListItem;
   // Indicates if reading list model is loaded. Readlist cannot be triggered
   // until it is.
   BOOL _readingListModelIsLoaded;
@@ -80,21 +80,21 @@
   _identityManager = nil;
 }
 
-- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
-  _readingListItem = [[ContentSuggestionsMostVisitedActionItem alloc]
+- (NSArray<ContentSuggestionsShortcutItem*>*)shortcutItems {
+  _readingListItem = [[ContentSuggestionsShortcutItem alloc]
       initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   _readingListItem.count = _readingListUnreadCount;
   _readingListItem.disabled = !_readingListModelIsLoaded;
-  NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcuts = @[
+  NSArray<ContentSuggestionsShortcutItem*>* shortcuts = @[
     [self shouldShowWhatsNewActionItem]
-        ? [[ContentSuggestionsMostVisitedActionItem alloc]
+        ? [[ContentSuggestionsShortcutItem alloc]
               initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew]
-        : [[ContentSuggestionsMostVisitedActionItem alloc]
+        : [[ContentSuggestionsShortcutItem alloc]
               initWithCollectionShortcutType:NTPCollectionShortcutTypeBookmark],
     _readingListItem,
-    [[ContentSuggestionsMostVisitedActionItem alloc]
+    [[ContentSuggestionsShortcutItem alloc]
         initWithCollectionShortcutType:NTPCollectionShortcutTypeRecentTabs],
-    [[ContentSuggestionsMostVisitedActionItem alloc]
+    [[ContentSuggestionsShortcutItem alloc]
         initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory]
   ];
   return shortcuts;
@@ -118,8 +118,8 @@
   ContentSuggestionsShortcutTileView* shortcutView =
       static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
 
-  ContentSuggestionsMostVisitedActionItem* shortcutsItem =
-      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
+  ContentSuggestionsShortcutItem* shortcutsItem =
+      base::apple::ObjCCastStrict<ContentSuggestionsShortcutItem>(
           shortcutView.config);
   if (shortcutsItem.disabled) {
     return;

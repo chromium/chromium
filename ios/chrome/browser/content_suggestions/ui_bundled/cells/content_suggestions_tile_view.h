@@ -9,7 +9,7 @@
 
 enum class ContentSuggestionsTileType {
   kMostVisited,
-  kShortcuts,
+  kAction,
 };
 
 // A generic Content Suggestions tile view. Provides a title label and an image

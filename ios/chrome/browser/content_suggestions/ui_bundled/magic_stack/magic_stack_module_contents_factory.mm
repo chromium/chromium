@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_collection_view.h"
@@ -133,8 +134,7 @@
 - (UIView*)shortcutsStackViewForConfig:(ShortcutsConfig*)shortcutsConfig
                            tileSpacing:(CGFloat)spacing {
   NSMutableArray* shortcutsViews = [NSMutableArray array];
-  for (ContentSuggestionsMostVisitedActionItem* item in shortcutsConfig
-           .shortcutItems) {
+  for (ContentSuggestionsShortcutItem* item in shortcutsConfig.shortcutItems) {
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
     [shortcutsConfig.consumerSource addConsumer:view];

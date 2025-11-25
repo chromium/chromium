@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_SHORTCUTS_CONSUMER_H_
 
-@class ContentSuggestionsMostVisitedActionItem;
+@class ContentSuggestionsShortcutItem;
 
 // Interface for listening to events occurring in ShortcutsMediator.
 @protocol ShortcutsConsumer
 @optional
 // Indicates that the `config` has been updated.
-- (void)shortcutsItemConfigDidChange:
-    (ContentSuggestionsMostVisitedActionItem*)config;
+- (void)shortcutsItemConfigDidChange:(ContentSuggestionsShortcutItem*)config;
 
 @end
 

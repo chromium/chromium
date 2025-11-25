@@ -9,7 +9,7 @@
 
 @protocol ShortcutsCommands;
 @protocol ShortcutsConsumerSource;
-@class ContentSuggestionsMostVisitedActionItem;
+@class ContentSuggestionsShortcutItem;
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
 
@@ -18,7 +18,7 @@
 
 // List of Shortcuts to show in module.
 @property(nonatomic, strong)
-    NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcutItems;
+    NSArray<ContentSuggestionsShortcutItem*>* shortcutItems;
 
 // Shortcuts model.
 @property(nonatomic, weak) id<ShortcutsConsumerSource> consumerSource;

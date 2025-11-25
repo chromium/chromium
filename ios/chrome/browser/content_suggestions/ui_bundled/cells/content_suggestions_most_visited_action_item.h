@@ -9,29 +9,21 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 
-// Item containing a most visited action button. These buttons belong to the
-// collection section as most visited items, but have static placement (the last
-// four) and cannot be removed.
+// Item containing a most visited action button.
 @interface ContentSuggestionsMostVisitedActionItem : NSObject
 
-- (nonnull instancetype)initWithCollectionShortcutType:
-    (NTPCollectionShortcutType)type;
+// Text for the title of the tile view.
+@property(nonatomic, strong, nonnull) NSString* title;
 
-// Text for the title of the cell.
-@property(nonatomic, copy, nonnull) NSString* title;
+// Image for the icon in the tile view.
+@property(nonatomic, strong, nonnull) UIImage* icon;
 
-// The accessibility label of the cell.  If none is provided, self.title is used
-// as the label.
-@property(nonatomic, copy, nullable) NSString* accessibilityLabel;
-
-// The collection that this item acts as a shortcut for.
-@property(nonatomic, assign) NTPCollectionShortcutType collectionShortcutType;
+// The accessibility label of the tile view.  If none is provided, self.title is
+// used as the label.
+@property(nonatomic, strong, nullable) NSString* accessibilityLabel;
 
 // Reading list count passed to the most visited cell.
 @property(nonatomic, assign) NSInteger count;
-
-// Index position of this item.
-@property(nonatomic, assign) NTPCollectionShortcutType index;
 
 // Indicate if this suggestion is (temporary) disabled.
 @property(nonatomic, assign) BOOL disabled;

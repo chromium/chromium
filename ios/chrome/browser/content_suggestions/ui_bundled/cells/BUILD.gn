@@ -129,8 +129,8 @@ source_set("most_visited_tiles") {
 
 source_set("shortcuts") {
   sources = [
-    "content_suggestions_most_visited_action_item.h",
-    "content_suggestions_most_visited_action_item.mm",
+    "content_suggestions_shortcut_item.h",
+    "content_suggestions_shortcut_item.mm",
     "content_suggestions_shortcut_tile_view.h",
     "content_suggestions_shortcut_tile_view.mm",
     "shortcuts_config.h",
@@ -139,8 +139,8 @@ source_set("shortcuts") {
     "shortcuts_mediator.mm",
   ]
   deps = [
-    ":cells",
     ":constants",
+    ":most_visited_action",
     ":public",
     "//components/feature_engagement/public",
     "//components/reading_list/core",
@@ -152,12 +152,27 @@ source_set("shortcuts") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/ntp/ui_bundled",
-    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/whats_new/coordinator:util",
+  ]
+}
+
+source_set("most_visited_action") {
+  sources = [
+    "content_suggestions_most_visited_action_item.h",
+    "content_suggestions_most_visited_action_item.mm",
+    "content_suggestions_most_visited_action_tile_view.h",
+    "content_suggestions_most_visited_action_tile_view.mm",
+  ]
+  deps = [
+    ":cells",
+    ":constants",
+    ":public",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
