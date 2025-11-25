@@ -6044,7 +6044,7 @@
     },
     {
       name: "WindowControlsOverlay",
-      status: { "Android": "test", "default": "stable" },
+      status: { "Android": "stable", "default": "stable" },
       base_feature: "AndroidWindowControlsOverlay",
     },
     // If enabled, window.default[Ss]tatus will be supported. This is disabled
