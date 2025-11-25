@@ -287,12 +287,22 @@ void SessionStoreImpl::RestoreSessionBindingKey(
   if (session_data_->TryGetData(session_key.site.Serialize(), &site_proto)) {
     auto it = site_proto.sessions().find(*session_key.id);
     if (it != site_proto.sessions().end()) {
+      // Make sure we only do one key restore at a time for the given
+      // session key.
+      auto [callbacks_it, inserted] =
+          restore_callbacks_.try_emplace(session_key);
+      callbacks_it->second.emplace_back(std::move(callback));
+      if (!inserted) {
+        return;
+      }
+
       // Unwrap the binding key asynchronously.
       std::vector<uint8_t> wrapped_key(it->second.wrapped_key().begin(),
                                        it->second.wrapped_key().end());
       key_service_->FromWrappedSigningKeySlowlyAsync(
           wrapped_key, BackgroundTaskPriority::kUserVisible,
-          std::move(callback));
+          base::BindOnce(&SessionStoreImpl::OnSessionBindingKeyRestored,
+                         weak_ptr_factory_.GetWeakPtr(), session_key));
       return;
     }
   }
@@ -300,6 +310,23 @@ void SessionStoreImpl::RestoreSessionBindingKey(
   // The session is not present in the store,
   // invoke the callback immediately.
   std::move(callback).Run(key_id_or_error);
+}
+
+void SessionStoreImpl::OnSessionBindingKeyRestored(
+    const SessionKey& session_key,
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        key_or_error) {
+  auto it = restore_callbacks_.find(session_key);
+  if (it == restore_callbacks_.end()) {
+    return;
+  }
+
+  auto callbacks = std::move(it->second);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(key_or_error);
+  }
+
+  restore_callbacks_.erase(it);
 }
 
 }  // namespace net::device_bound_sessions
