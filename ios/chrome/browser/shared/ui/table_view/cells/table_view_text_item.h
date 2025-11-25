@@ -33,6 +33,9 @@
 // Sets the `checked` property in the cell.
 @property(nonatomic, assign) BOOL checked;
 
+// Sets the number of line for the cell title. Default is 1.
+@property(nonatomic, assign) NSInteger titleNumberOfLines;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_TEXT_ITEM_H_

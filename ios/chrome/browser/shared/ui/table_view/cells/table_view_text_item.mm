@@ -22,6 +22,7 @@
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     _enabled = YES;
+    _titleNumberOfLines = 1;
   }
   return self;
 }
@@ -52,7 +53,7 @@
         self.accessibilityLabel ? self.accessibilityLabel : self.text;
   }
   configuration.titleColor = self.textColor;
-  configuration.titleNumberOfLines = 1;
+  configuration.titleNumberOfLines = self.titleNumberOfLines;
 
   cell.contentConfiguration = configuration;
 
