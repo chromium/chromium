@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -67,7 +68,7 @@ const bool kSupports3pcBlocking = {
 
 #if !BUILDFLAG(IS_IOS)
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests4";
+    "API.StorageAccess.AllowedRequests4.Subsampled";
 #endif
 
 // To avoid an explosion of test cases, please don't just add a boolean to
@@ -250,6 +251,9 @@ class CookieSettingsTestBase : public testing::Test {
   const net::SiteForCookies kHttpsSiteForCookies;
   const net::SiteForCookies kDevToolsSiteForCookies;
   ContentSettingsPattern kAllHttpsSitesPattern;
+
+ private:
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
 // Default test class to be used by most tests. If you want to add a new

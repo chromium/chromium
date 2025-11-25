@@ -61,7 +61,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Under100KB" summary="DB size under 100KB."/>
 </variants>
 
-<histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"
+<histogram
+    name="API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled"
     enum="AllowedByStorageAccessType" expires_after="2026-05-10">
   <owner>selya@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
@@ -69,11 +70,13 @@ chromium-metrics-reviews@google.com.
     Records whether storage-access or top-level-storage-access allow access to
     cookies in a given context. This will be recorded every time cookies are
     read or set.
+
+    Subsampled to 1% of all cases.
   </summary>
 </histogram>
 
-<histogram name="API.StorageAccess.AllowedRequests4" enum="StorageAccessResult"
-    expires_after="2026-06-28">
+<histogram name="API.StorageAccess.AllowedRequests4.Subsampled"
+    enum="StorageAccessResult" expires_after="2026-06-28">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <owner>cfredric@chromium.org</owner>
@@ -82,6 +85,8 @@ chromium-metrics-reviews@google.com.
     Storage Access API unblocked the request or not. Recorded whenever a
     decision to access storage like getting/setting cookies or opening an
     indexeddb connection is made in CookieSettings.
+
+    Subsampled to 1% of all cases.
   </summary>
 </histogram>
 

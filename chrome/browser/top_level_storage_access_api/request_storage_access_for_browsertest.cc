@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -64,7 +65,7 @@ constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
 
 constexpr char kAllowedByStorageAccessTypeHistogram[] =
-    "API.EffectiveStorageAccess.AllowedByStorageAccessType";
+    "API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled";
 
 constexpr char kRequestStorageAccessUkmEntryName[] =
     "RequestStorageAccessFor.RequestStorageResult";
@@ -608,6 +609,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
 class RequestStorageAccessForWithFirstPartySetsBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {
  public:
+  RequestStorageAccessForWithFirstPartySetsBrowserTest() {
+    // The network service runs in a separate process by default. This is
+    // problematic for tests that check histograms, because
+    // ScopedAlwaysSampleForTesting doesn't affect other processes.
+    content::ForceInProcessNetworkService();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
@@ -622,6 +630,9 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
         permissions::PermissionRequestManager::FromWebContents(
             browser.tab_strip_model()->GetActiveWebContents()));
   }
+
+ private:
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,

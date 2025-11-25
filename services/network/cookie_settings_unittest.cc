@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -46,9 +47,9 @@ using testing::Not;
 using testing::UnorderedElementsAre;
 
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests4";
+    "API.StorageAccess.AllowedRequests4.Subsampled";
 constexpr char kAllowedByStorageAccessTypeHistogram[] =
-    "API.EffectiveStorageAccess.AllowedByStorageAccessType";
+    "API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled";
 
 constexpr char kDomainURL[] = "http://example.com";
 constexpr char kURL[] = "http://foo.com";
@@ -166,6 +167,7 @@ class CookieSettingsTestBase : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
 // Default test class to be used by most tests. If you want to add a new

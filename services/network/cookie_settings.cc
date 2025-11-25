@@ -62,8 +62,11 @@ bool IsValidType(ContentSettingsType type) {
 
 void RecordAllowedByStorageAccessType(
     CookieSettings::AllowedByStorageAccessType value) {
-  base::UmaHistogramEnumeration(
-      "API.EffectiveStorageAccess.AllowedByStorageAccessType", value);
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled",
+        value);
+  }
 }
 
 net::CookieInclusionStatus::ExemptionReason GetExemptionReason(

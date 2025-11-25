@@ -316,7 +316,10 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
-  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests4", result);
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests4.Subsampled",
+                              result);
+  }
 }
 
 bool DomainIsHostOnly(std::string_view domain_string) {
