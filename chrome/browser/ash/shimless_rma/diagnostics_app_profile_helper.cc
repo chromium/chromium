@@ -441,8 +441,7 @@ void PrepareDiagnosticsAppProfileImpl(
   CHECK(g_browser_process);
   CHECK(g_browser_process->profile_manager());
   CHECK(BrowserContextHelper::Get());
-  // TODO(b/292227137): Use ScopedProfileKeepAlive before migrate this to
-  // LaCrOS.
+
   g_browser_process->profile_manager()->CreateProfileAsync(
       BrowserContextHelper::Get()->GetShimlessRmaAppBrowserContextPath(),
       base::BindOnce(&OnProfileLoaded, std::move(state)));
