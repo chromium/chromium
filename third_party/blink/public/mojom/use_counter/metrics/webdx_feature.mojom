@@ -367,7 +367,7 @@ enum WebDXFeature {
   kAppShortcuts = 305,
   kFetchlater = 306,
   kDRAFT_WasmBranchHinting = 307,
-  kDRAFT_ExplicitResourceManagement = 308,
+  kExplicitResourceManagement = 308,
   kAppLaunchHandler = 309,
   kFunction = 310,
   kIf = 311,

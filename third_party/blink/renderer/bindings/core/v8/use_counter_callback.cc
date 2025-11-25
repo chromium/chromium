@@ -467,7 +467,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kDRAFT_WasmBranchHinting;
       break;
     case v8::Isolate::kExplicitResourceManagement:
-      webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
+      webdx_feature = WebDXFeature::kExplicitResourceManagement;
       break;
     case v8::Isolate::kUint8ArrayToFromBase64AndHex:
       webdx_feature = WebDXFeature::kUint8ArrayBase64Hex;
