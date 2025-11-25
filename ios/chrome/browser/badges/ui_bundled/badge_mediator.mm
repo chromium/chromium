@@ -141,6 +141,10 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
       _webState->AddObserver(_webStateObserver.get());
     }
     _badgeButtonFactory = [[BadgeButtonFactory alloc] init];
+    if (_webState) {
+      _badgeButtonFactory.incognito =
+          _webState->GetBrowserState()->IsOffTheRecord();
+    }
   }
   return self;
 }
@@ -264,6 +268,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   if (_webState) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(self);
     _webState->AddObserver(_webStateObserver.get());
+    _badgeButtonFactory.incognito =
+        _webState->GetBrowserState()->IsOffTheRecord();
   }
   [self updateConsumer];
 }

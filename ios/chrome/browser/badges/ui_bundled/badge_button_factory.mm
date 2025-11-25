@@ -299,7 +299,7 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 
 // Returns the size of the infobar symbol image.
 - (CGFloat)infoBarSymbolPointSize {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsProactiveSuggestionsFrameworkEnabled() && !self.incognito) {
     return kInfobarSymbolPointSize - kInfobarSymbolPointSizeModifier;
   }
 
