@@ -60,9 +60,11 @@ BASE_EXPORT NSBundle* FrameworkBundle();
 // Set the bundle that the preceding functions will return, overriding the
 // default values. Restore the default by passing in `nil` or an empty
 // `FilePath`.
+BASE_EXPORT void SetOverrideMainBundlePath(const FilePath& file_path);
 BASE_EXPORT void SetOverrideOuterBundlePath(const FilePath& file_path);
 BASE_EXPORT void SetOverrideFrameworkBundlePath(const FilePath& file_path);
 #if defined(__OBJC__)
+BASE_EXPORT void SetOverrideMainBundle(NSBundle* bundle);
 BASE_EXPORT void SetOverrideOuterBundle(NSBundle* bundle);
 BASE_EXPORT void SetOverrideFrameworkBundle(NSBundle* bundle);
 #endif  // __OBJC__

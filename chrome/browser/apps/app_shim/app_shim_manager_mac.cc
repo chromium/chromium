@@ -66,6 +66,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/crash/core/common/crash_key.h"
@@ -1360,16 +1361,37 @@ void AppShimManager::IsAcceptablyCodeSigned(
 
   if (requires_adhoc_signature) {
     IsAcceptablyAdHocCodeSigned(
-        audit_token, base::BindOnce(
-                         [](base::OnceCallback<void(bool)> callback,
-                            SignatureValidationResult result) {
-                           RecordSignatureValidationResult(result);
-                           const bool is_acceptably_signed =
-                               result ==
-                               SignatureValidationResult::kSuccessAdHoc;
-                           std::move(callback).Run(is_acceptably_signed);
-                         },
-                         std::move(callback)));
+        audit_token,
+        base::BindOnce(
+            [](base::OnceCallback<void(bool)> callback,
+               SignatureValidationResult result) {
+              RecordSignatureValidationResult(result);
+              bool is_acceptably_signed =
+                  result == SignatureValidationResult::kSuccessAdHoc;
+#if !defined(OFFICIAL_BUILD)
+              if (!is_acceptably_signed &&
+                  base::CommandLine::ForCurrentProcess()->HasSwitch(
+                      switches::kAllowAppShimSignatureMismatchForTests)) {
+                // In some tests we need to allow bypassing of code
+                // signing requirements. This is safe because we
+                // only allow this if the framework bundle is not
+                // signed.
+                auto app_shim_requirement = CreateAppShimRequirement();
+                if (!app_shim_requirement.has_value() &&
+                    app_shim_requirement.error() ==
+                        apps::MissingRequirementReason::NoOrAdHocSignature) {
+                  LOG(ERROR) << "Shim is not acceptably code signed, but "
+                                "allowing anyway since this is an "
+                                "unsigned developer build and --"
+                             << switches::kAllowAppShimSignatureMismatchForTests
+                             << " was passed.";
+                  is_acceptably_signed = true;
+                }
+              }
+#endif  // !defined(OFFICIAL_BUILD)
+              std::move(callback).Run(is_acceptably_signed);
+            },
+            std::move(callback)));
     return;
   }
 

@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"
@@ -43,6 +44,8 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
         base::BindOnce(&NativeWidgetBridgeOwner::OnMojoDisconnect,
                        base::Unretained(this)));
   }
+
+  NativeWidgetNSWindowBridge* bridge() { return bridge_.get(); }
 
  private:
   ~NativeWidgetBridgeOwner() override = default;
@@ -135,6 +138,11 @@ void ApplicationBridge::SetContentNSViewCreateCallbacks(
   web_contents_create_callback_ = web_contents_create_callback;
 }
 
+void ApplicationBridge::SetNSWindowCreatedCallbackForTesting(  // IN-TEST
+    base::RepeatingCallback<void(NativeWidgetMacNSWindow*)> callback) {
+  ns_window_created_callback_ = std::move(callback);
+}
+
 void ApplicationBridge::CreateAlert(
     mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver) {
   // The resulting object manages its own lifetime.
@@ -148,9 +156,14 @@ void ApplicationBridge::CreateNativeWidgetNSWindow(
     mojo::PendingAssociatedRemote<mojom::NativeWidgetNSWindowHost> host,
     mojo::PendingAssociatedRemote<mojom::TextInputHost> text_input_host) {
   // The resulting object will be destroyed when its message pipe is closed.
-  std::ignore =
+  auto* bridge_owner =
       new NativeWidgetBridgeOwner(bridge_id, std::move(bridge_receiver),
                                   std::move(host), std::move(text_input_host));
+  if (ns_window_created_callback_) {
+    CHECK_IS_TEST();
+    bridge_owner->bridge()->OnWindowSetForTesting(  // IN-TEST
+        ns_window_created_callback_);
+  }
 }
 
 void ApplicationBridge::CreateRenderWidgetHostNSView(

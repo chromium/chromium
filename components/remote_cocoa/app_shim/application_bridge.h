@@ -18,6 +18,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+#if defined(__OBJC__)
+@class NativeWidgetMacNSWindow;
+#else
+class NativeWidgetMacNSWindow;
+#endif
+
 namespace system_media_controls {
 class SystemMediaControlsBridge;
 }  // namespace system_media_controls
@@ -57,6 +63,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
       RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback,
       WebContentsNSViewCreateCallback web_contents_create_callback);
 
+  void SetNSWindowCreatedCallbackForTesting(
+      base::RepeatingCallback<void(NativeWidgetMacNSWindow*)> callback);
+
   // mojom::Application:
   void CreateAlert(
       mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver) override;
@@ -94,6 +103,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
 
   RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback_;
   WebContentsNSViewCreateCallback web_contents_create_callback_;
+  base::RepeatingCallback<void(NativeWidgetMacNSWindow*)>
+      ns_window_created_callback_;
 
   std::unique_ptr<system_media_controls::SystemMediaControlsBridge>
       system_media_controls_bridge_;

@@ -111,6 +111,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // explicitly set an NSWindow in this way.
   void SetWindow(NativeWidgetMacNSWindow* window);
 
+  void OnWindowSetForTesting(
+      base::OnceCallback<void(NativeWidgetMacNSWindow*)> callback);
+
   // Set the command dispatcher delegate for the window. This will retain
   // |delegate| for the lifetime of |this|.
   void SetCommandDispatcher(
@@ -495,6 +498,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // ImmersiveFullscreenRevealUnlock() calls so locks can persist across
   // immersive_mode_controller_ resets.
   int immersive_fullscreen_reveal_lock_count_ = 0;
+
+  base::OnceCallback<void(NativeWidgetMacNSWindow*)> window_set_callback_;
 
   base::WeakPtrFactory<NativeWidgetNSWindowBridge> factory_{this};
 };

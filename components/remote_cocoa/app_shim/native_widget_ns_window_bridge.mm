@@ -513,6 +513,14 @@ void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
 void NativeWidgetNSWindowBridge::CreateWindow(
     mojom::CreateWindowParamsPtr params) {
   SetWindow(CreateNSWindow(params.get()));
+  if (window_set_callback_) {
+    std::move(window_set_callback_).Run(ns_window());
+  }
+}
+
+void NativeWidgetNSWindowBridge::OnWindowSetForTesting(  // IN-TEST
+    base::OnceCallback<void(NativeWidgetMacNSWindow*)> callback) {
+  window_set_callback_ = std::move(callback);
 }
 
 void NativeWidgetNSWindowBridge::InitWindow(

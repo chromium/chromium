@@ -30,7 +30,7 @@ AtExitManager::AtExitManager() : next_manager_(g_top_manager) {
 // If multiple modules instantiate AtExitManagers they'll end up living in this
 // module... they have to coexist.
 #if !defined(COMPONENT_BUILD)
-  DCHECK(!g_top_manager);
+  DCHECK(!g_top_manager || g_top_manager->allow_shadowing_);
 #endif
   g_top_manager = this;
 }
@@ -104,6 +104,11 @@ void AtExitManager::ProcessCallbacksNow() {
 void AtExitManager::DisableAllAtExitManagers() {
   AutoLock lock(g_top_manager->lock_);
   g_disable_managers = true;
+}
+
+void AtExitManager::AllowShadowingForTesting() {
+  CHECK(g_top_manager);
+  g_top_manager->allow_shadowing_ = true;
 }
 
 AtExitManager::AtExitManager(bool shadow) : next_manager_(g_top_manager) {

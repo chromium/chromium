@@ -102,3 +102,17 @@ executable("app_mode_loader") {
     "Foundation.framework",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "app_shim_controller_browsertest.mm" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    "//chrome/app_shim",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//components/remote_cocoa/app_shim",
+    "//content/test:test_support",
+  ]
+}

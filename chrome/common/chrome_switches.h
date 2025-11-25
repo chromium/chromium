@@ -36,6 +36,9 @@ namespace switches {
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
 extern const char kAcceptLang[];
+#if BUILDFLAG(IS_MAC)
+extern const char kAllowAppShimSignatureMismatchForTests[];
+#endif
 extern const char kAllowCrossOriginAuthPrompt[];
 extern const char kAllowHttpScreenCapture[];
 extern const char kAllowRunningInsecureContent[];
@@ -87,6 +90,9 @@ extern const char kDisableStackProfiler[];
 extern const char kDisableZeroBrowsersOpenForTests[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
+#if BUILDFLAG(IS_MAC)
+extern const char kDoNotCreateNSAppForTests[];
+#endif
 extern const char kDoNotDeElevateOnLaunch[];
 extern const char kDumpBrowserHistograms[];
 extern const char kEnableAudioDebugRecordingsFromExtension[];

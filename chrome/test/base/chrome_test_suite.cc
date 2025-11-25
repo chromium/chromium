@@ -43,6 +43,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/common/chrome_switches.h"
 #endif
 
 namespace {
@@ -83,7 +84,10 @@ ChromeTestSuite::~ChromeTestSuite() {
 void ChromeTestSuite::Initialize() {
 #if BUILDFLAG(IS_MAC)
   base::apple::ScopedNSAutoreleasePool autorelease_pool;
-  chrome_browser_application_mac::RegisterBrowserCrApp();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDoNotCreateNSAppForTests)) {
+    chrome_browser_application_mac::RegisterBrowserCrApp();
+  }
 #endif
 
   if (!browser_dir_.empty()) {
