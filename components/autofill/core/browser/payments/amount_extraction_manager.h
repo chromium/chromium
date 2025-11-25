@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/optimization_guide/proto/features/amount_extraction.pb.h"
 
@@ -100,10 +101,11 @@ class AmountExtractionManager {
   //   There is a feature that can use amount extraction on the current
   //   checkout page;
   //   Amount Extraction feature is enabled;
+  //   In the AI-based amount extraction case, if a BNPL suggestion is present;
   virtual DenseSet<EligibleFeature> GetEligibleFeatures(
       bool is_autofill_payments_enabled,
       bool should_suppress_suggestions,
-      bool has_suggestions,
+      const std::vector<Suggestion>& suggestions,
       FillingProduct filling_product,
       FieldType field_type) const;
 

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -111,38 +112,50 @@ bool AmountExtractionManager::IsValidAmountExtractionResponse(
 }
 
 DenseSet<AmountExtractionManager::EligibleFeature>
-AmountExtractionManager::GetEligibleFeatures(bool is_autofill_payments_enabled,
-                                             bool should_suppress_suggestions,
-                                             bool has_suggestions,
-                                             FillingProduct filling_product,
-                                             FieldType field_type) const {
-  // If there is an ongoing search, do not trigger the search.
-  if (search_request_pending_) {
-    return {};
-  }
-  // If autofill is not available, do not trigger the search.
-  if (!is_autofill_payments_enabled) {
-    return {};
-  }
+AmountExtractionManager::GetEligibleFeatures(
+    bool is_autofill_payments_enabled,
+    bool should_suppress_suggestions,
+    const std::vector<Suggestion>& suggestions,
+    FillingProduct filling_product,
+    FieldType field_type) const {
+  // In AI-based amount extraction case, if there is a BNPL suggestion present,
+  // then the amount extraction flow should be initiated.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    if (std::ranges::none_of(suggestions, [](const Suggestion& suggestion) {
+          return suggestion.type == SuggestionType::kBnplEntry;
+        })) {
+      return {};
+    }
+  } else {
+    // If there is an ongoing search, do not trigger the search.
+    if (search_request_pending_) {
+      return {};
+    }
+    // If autofill is not available, do not trigger the search.
+    if (!is_autofill_payments_enabled) {
+      return {};
+    }
 
-  // If the interacted form field is CVC, do not trigger the search.
-  if (kCvcFieldTypes.find(field_type) != kCvcFieldTypes.end()) {
-    return {};
-  }
+    // If the interacted form field is CVC, do not trigger the search.
+    if (kCvcFieldTypes.find(field_type) != kCvcFieldTypes.end()) {
+      return {};
+    }
 
-  // If there are no suggestions, do not trigger the search as suggestions
-  // showing is a requirement for amount extraction.
-  if (!has_suggestions) {
-    return {};
-  }
-  // If there are no suggestions, do not trigger the search as suggestions
-  // showing is a requirement for amount extraction.
-  if (should_suppress_suggestions) {
-    return {};
-  }
-  // Amount extraction is only offered for Credit Card filling scenarios.
-  if (filling_product != FillingProduct::kCreditCard) {
-    return {};
+    // If there are no suggestions, do not trigger the search as suggestions
+    // showing is a requirement for amount extraction.
+    if (suggestions.empty()) {
+      return {};
+    }
+    // If there are no suggestions, do not trigger the search as suggestions
+    // showing is a requirement for amount extraction.
+    if (should_suppress_suggestions) {
+      return {};
+    }
+    // Amount extraction is only offered for Credit Card filling scenarios.
+    if (filling_product != FillingProduct::kCreditCard) {
+      return {};
+    }
   }
 
   const DenseSet<EligibleFeature> eligible_features =

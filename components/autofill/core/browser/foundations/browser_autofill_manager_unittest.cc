@@ -982,7 +982,7 @@ class MockAmountExtractionManager : public payments::AmountExtractionManager {
               GetEligibleFeatures,
               (bool is_autofill_payments_enabled,
                bool should_suppress_suggestions,
-               bool has_suggestions,
+               const std::vector<Suggestion>& suggestions,
                FillingProduct filling_product,
                FieldType field_type),
               (const, override));
@@ -3274,11 +3274,9 @@ TEST_F(BrowserAutofillManagerTest,
       .WillByDefault(Return(features));
 
   // Verify that the amount extraction is triggered.
-  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
-      .Times(1);
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction);
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              NotifyOfSuggestionGeneration)
-      .Times(1);
+              NotifyOfSuggestionGeneration);
 
   OnAskForValuesToFill(form, card_number_field);
 
@@ -3424,7 +3422,10 @@ TEST_F(BrowserAutofillManagerTest, AiAmountExtraction_TriggerPageContentFetch) {
   ON_CALL(amount_extraction_manager(), GetEligibleFeatures)
       .WillByDefault(Return(features));
 
-  EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent).Times(1);
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS)) {
+    EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent);
+  }
   EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
       .Times(0);
 
@@ -3461,11 +3462,44 @@ TEST_F(BrowserAutofillManagerTest, AiAmountExtractionFeatureDisabled) {
       .WillByDefault(Return(features));
 
   EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent).Times(0);
-  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
-      .Times(1);
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction);
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              NotifyOfSuggestionGeneration)
-      .Times(1);
+              NotifyOfSuggestionGeneration);
+
+  OnAskForValuesToFill(form, card_number_field);
+
+  // Verify that suggestions are returned as normal.
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that `AmountExtractionManager` should not trigger `FetchAiPageContent`
+// if a credit card form is clicked but there is no BNPL suggestion.
+TEST_F(BrowserAutofillManagerTest,
+       AiAmountExtraction_TriggerPageContentFetch_WithoutBnplSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+  // Set up our form data.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Test case for credit-card-number field.
+  const FormFieldData& card_number_field = form.fields()[1];
+  ASSERT_EQ(card_number_field.name(), u"cardnumber");
+
+  // Verify that `FetchAiPageContent` won't be triggered as there is no BNPL
+  // suggestion. This test case is set up by do not add any BNPL issuer to the
+  // `PaymentsDataManager`.
+  EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent).Times(0);
+
+  ON_CALL(amount_extraction_manager(), GetEligibleFeatures)
+      .WillByDefault(
+          Return(DenseSet<MockAmountExtractionManager::EligibleFeature>{}));
 
   OnAskForValuesToFill(form, card_number_field);
 
@@ -6394,8 +6428,7 @@ TEST_F(BrowserAutofillManagerTest,
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
   EXPECT_CALL(*autofill_client().GetAutofillOptimizationGuideDecider(),
-              OnDidParseForm)
-      .Times(1);
+              OnDidParseForm);
 
   test_api(autofill_manager()).OnFormProcessed(form_data, form_structure);
 }

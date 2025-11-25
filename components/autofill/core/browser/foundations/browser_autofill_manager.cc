@@ -1703,37 +1703,29 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   }
 
   // When a user interacts with the credit card form on the merchant checkout
-  // pages, `this` checks `amount_extraction_manager_` if amount extraction
-  // should happen, and if so, triggers amount extraction.
+  // pages, trigger amount extraction if any suggested feature requires it.
   if (autofill_field) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableAiBasedAmountExtraction)) {
-      // TODO(crbug.com/444685282): Add an additional check: if there is no
-      // BNPL suggestion, do not fetch the page content, as BNPL and APC should
-      // be a 1:1 mapping in this case.
-      GetAmountExtractionManager().FetchAiPageContent();
-    } else {
-      const DenseSet<AmountExtractionManager::EligibleFeature>
-          eligible_features = GetAmountExtractionManager().GetEligibleFeatures(
-              client()
-                  .GetPaymentsAutofillClient()
-                  ->IsAutofillPaymentMethodsEnabled(),
-              ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
-              !suggestions.empty(), context.filling_product,
-              autofill_field->Type().GetCreditCardType());
+    const DenseSet<AmountExtractionManager::EligibleFeature> eligible_features =
+        GetAmountExtractionManager().GetEligibleFeatures(
+            client()
+                .GetPaymentsAutofillClient()
+                ->IsAutofillPaymentMethodsEnabled(),
+            ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
+            suggestions, context.filling_product,
+            autofill_field->Type().GetCreditCardType());
 
-      if (!eligible_features.empty()) {
-        for (AmountExtractionManager::EligibleFeature eligible_feature :
-             eligible_features) {
-          switch (eligible_feature) {
-            case AmountExtractionManager::EligibleFeature::kBnpl:
-              GetPaymentsBnplManager()->NotifyOfSuggestionGeneration(
-                  trigger_source);
-              continue;
+    for (AmountExtractionManager::EligibleFeature eligible_feature :
+         eligible_features) {
+      switch (eligible_feature) {
+        case AmountExtractionManager::EligibleFeature::kBnpl:
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillEnableAiBasedAmountExtraction)) {
+            GetAmountExtractionManager().FetchAiPageContent();
+          } else {
+            GetPaymentsBnplManager()->NotifyOfSuggestionGeneration(
+                trigger_source);
+            GetAmountExtractionManager().TriggerCheckoutAmountExtraction();
           }
-          NOTREACHED();
-        }
-        GetAmountExtractionManager().TriggerCheckoutAmountExtraction();
       }
     }
   }
