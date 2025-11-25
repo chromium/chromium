@@ -13,188 +13,9 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
+import shared_test_utils
+from shared_test_utils import Colors, Simulator, print_header, print_command
 
-class Colors:
-  """ANSI color codes for terminal output."""
-  HEADER = '\033[35m'  # Magenta
-  BLUE = '\033[34m'
-  CYAN = '\033[36m'
-  GREEN = '\033[32m'
-  WARNING = '\033[33m'  # Yellow
-  FAIL = '\033[31m'  # Red
-  BOLD = '\033[1m'
-  RESET = '\033[0m'
-
-
-def _parse_version_string(v_str: str) -> Tuple[int, ...]:
-  """Parses a version string into a tuple of integers."""
-  return tuple(map(int, v_str.split('.')))
-
-
-def _find_specific_device(all_devices: Dict[str, List[Dict[str, Any]]],
-                          identifier: str) -> Optional[Dict[str, Any]]:
-  """Finds a specific device by name or UDID.
-
-  Args:
-    all_devices: A dictionary of devices from `simctl list`.
-    identifier: The name or UDID of the device to find.
-
-  Returns:
-    The device dictionary if found, otherwise None.
-  """
-  for runtime, devices in all_devices.items():
-    for device in devices:
-      if (device['name'].lower() == identifier.lower() or
-          device['udid'] == identifier):
-        return device
-  return None
-
-
-def _find_best_available_device(
-    all_devices: Dict[str, List[Dict[str, Any]]]) -> Optional[Dict[str, Any]]:
-  """Finds the best available iPhone simulator to use as a default.
-
-  Args:
-    all_devices: A dictionary of devices from `simctl list`.
-
-  Returns:
-    The device dictionary for the best candidate, or None if none is found.
-  """
-  best_candidate = None
-  best_sdk_version = (0,)
-  best_iphone_version = 0
-
-  for runtime, devices in all_devices.items():
-    if 'iOS' not in runtime:
-      continue
-
-    sdk_version_str = runtime.split('iOS-')[-1].replace('-', '.')
-    current_sdk_version = _parse_version_string(sdk_version_str)
-
-    for device in devices:
-      if not device['isAvailable']:
-        continue
-      match = re.match(r'^iPhone (\d+)', device['name'])
-      if match:
-        iphone_version = int(match.group(1))
-        if current_sdk_version > best_sdk_version:
-          best_sdk_version = current_sdk_version
-          best_iphone_version = iphone_version
-          best_candidate = device
-        elif current_sdk_version == best_sdk_version:
-          if iphone_version > best_iphone_version:
-            best_iphone_version = iphone_version
-            best_candidate = device
-  return best_candidate
-
-
-def _find_device_by_type_and_version(
-    all_devices: Dict[str, List[Dict[str, Any]]],
-    device_type: str,
-    os_version: Optional[str] = None) -> Optional[Dict[str, Any]]:
-  """Finds a device that matches a specific type and OS version.
-
-  Args:
-    all_devices: A dictionary of devices from `simctl list`.
-    device_type: The device type to look for (e.g., 'iPhone 15 Pro').
-    os_version: The OS version to look for (e.g., '17.5'). If None, the latest
-      available OS for the device will be used.
-
-  Returns:
-    The device dictionary if found, otherwise None.
-  """
-  best_candidate = None
-  best_sdk_version = (0,)
-
-  for runtime, devices in all_devices.items():
-    if os_version:
-      if f"iOS-{os_version.replace('.', '-')}" not in runtime:
-        continue
-    elif 'iOS' not in runtime:
-      continue
-
-    sdk_version_str = runtime.split('iOS-')[-1].replace('-', '.')
-    current_sdk_version = _parse_version_string(sdk_version_str)
-
-    for device in devices:
-      if (device['name'].lower() == device_type.lower() and
-          device['isAvailable']):
-        if os_version:
-          return device
-        if current_sdk_version > best_sdk_version:
-          best_sdk_version = current_sdk_version
-          best_candidate = device
-  return best_candidate
-
-
-def _find_and_boot_simulator(device_type: Optional[str],
-                             os_version: Optional[str]) -> Optional[str]:
-  """Finds the requested simulator, booting it if necessary.
-
-  Args:
-    device_type: The device type to look for (e.g., 'iPhone 15 Pro').
-    os_version: The OS version to look for (e.g., '17.5').
-
-  Returns:
-    The UDID of the simulator to use. Returns None on failure.
-  """
-  try:
-    output = subprocess.check_output(
-        ['xcrun', 'simctl', 'list', 'devices', '--json'], encoding='utf-8')
-    all_devices = json.loads(output)['devices']
-
-    device_to_use = None
-    if device_type:
-      device_to_use = _find_device_by_type_and_version(all_devices, device_type,
-                                                       os_version)
-      if not device_to_use:
-        print(f"Could not find a simulator for device '{device_type}' and OS "
-              f"'{os_version}'.")
-        subprocess.call(['xcrun', 'simctl', 'list', 'devices', 'available'])
-        return None
-    else:
-      # No device specified, look for a booted one first.
-      for runtime, devices in all_devices.items():
-        for device in devices:
-          if device['state'] == 'Booted':
-            device_to_use = device
-            break
-        if device_to_use:
-          break
-
-      # No device is booted, find the best one.
-      if not device_to_use:
-        print(f"{Colors.BLUE}No simulator booted. "
-              f"Finding the newest available iPhone...{Colors.RESET}")
-        device_to_use = _find_best_available_device(all_devices)
-        if not device_to_use:
-          print("Could not find a suitable default iPhone simulator.")
-          subprocess.call(['xcrun', 'simctl', 'list', 'devices', 'available'])
-          return None
-
-    # Find the OS version for the selected device.
-    device_os_version = 'Unknown'
-    for runtime, devices in all_devices.items():
-      if any(d['udid'] == device_to_use['udid'] for d in devices):
-        device_os_version = runtime.split('iOS-')[-1].replace('-', '.')
-        break
-
-    print(f'\n{Colors.HEADER}{Colors.BOLD}--- Selecting Simulator ---'
-          f'{Colors.RESET}')
-    print(f"{Colors.BLUE}Device: {device_to_use['name']}{Colors.RESET}")
-    print(f"{Colors.BLUE}OS: {device_os_version}{Colors.RESET}")
-    print(f"{Colors.BLUE}UDID: {device_to_use['udid']}{Colors.RESET}")
-
-    # Boot the selected device if it's not already running.
-    if device_to_use['state'] != 'Booted':
-      print(f"\n{Colors.CYAN}Simulator '{device_to_use['name']}' is not "
-            f"booted. Booting...{Colors.RESET}")
-      subprocess.check_call(['xcrun', 'simctl', 'boot', device_to_use['udid']])
-    return device_to_use['udid']
-
-  except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
-    print(f"Error managing simulators: {e}")
-    return None
 
 
 def _build_tests(out_dir: str) -> bool:
@@ -207,8 +28,8 @@ def _build_tests(out_dir: str) -> bool:
     True if the build was successful, False otherwise.
   """
   build_command = ['autoninja', '-C', out_dir, 'ios_chrome_unittests']
-  print(f'\n{Colors.HEADER}{Colors.BOLD}--- Building Tests ---{Colors.RESET}')
-  print(' '.join(build_command) + '\n')
+  print_header("--- Building Tests ---")
+  print_command(build_command)
   try:
     subprocess.check_call(build_command)
     return True
@@ -227,7 +48,7 @@ def _run_tests(out_dir: str, simulator_udid: str,
     gtest_filter: The gtest filter to apply.
 
   Returns:
-    The exit code of the test runner.
+    The exit code of the test runner (0 for success, non-zero for failure).
   """
   app_path = os.path.join(out_dir, 'ios_chrome_unittests.app')
   info_plist_path = os.path.join(app_path, 'Info.plist')
@@ -236,8 +57,8 @@ def _run_tests(out_dir: str, simulator_udid: str,
   bundle_id = info_plist['CFBundleIdentifier']
 
   install_command = ['xcrun', 'simctl', 'install', simulator_udid, app_path]
-  print(f'\n{Colors.HEADER}{Colors.BOLD}--- Installing App ---{Colors.RESET}')
-  print(' '.join(install_command))
+  print_header("--- Installing App ---")
+  print_command(install_command)
   subprocess.check_call(install_command)
 
   launch_command = [
@@ -245,8 +66,8 @@ def _run_tests(out_dir: str, simulator_udid: str,
   ]
   if gtest_filter:
     launch_command.append('--gtest_filter=' + gtest_filter)
-  print(f'\n{Colors.HEADER}{Colors.BOLD}--- Running Tests ---{Colors.RESET}')
-  print(' '.join(launch_command) + '\n')
+  print_header("--- Running Tests ---")
+  print_command(launch_command)
 
   process = subprocess.Popen(launch_command,
                              stdout=subprocess.PIPE,
@@ -290,7 +111,7 @@ def main() -> int:
   Returns:
     The exit code of the test run.
   """
-  print(f'{Colors.HEADER}{Colors.BOLD}=== Run Unit Tests ==={Colors.RESET}')
+  print_header("=== Run Unit Tests ===")
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--out-dir',
@@ -303,14 +124,15 @@ def main() -> int:
                       help='The OS version to use for the test (e.g., 17.5).')
   args = parser.parse_args()
 
-  simulator_udid = _find_and_boot_simulator(args.device, args.os)
-  if not simulator_udid:
+  simulator = shared_test_utils.find_and_boot_simulator(
+      args.device, args.os)
+  if not simulator:
     return 1
 
   if not _build_tests(args.out_dir):
     return 1
 
-  return _run_tests(args.out_dir, simulator_udid, args.gtest_filter)
+  return _run_tests(args.out_dir, simulator.udid, args.gtest_filter)
 
 
 if __name__ == '__main__':

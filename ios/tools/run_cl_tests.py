@@ -12,17 +12,8 @@ import subprocess
 import sys
 from typing import List, Set
 
-
-class Colors:
-  """ANSI color codes for terminal output."""
-  HEADER = '\033[35m'  # Magenta
-  BLUE = '\033[34m'
-  CYAN = '\033[36m'
-  GREEN = '\033[32m'
-  WARNING = '\033[33m'  # Yellow
-  FAIL = '\033[31m'  # Red
-  BOLD = '\033[1m'
-  RESET = '\033[0m'
+import shared_test_utils
+from shared_test_utils import Colors, print_header, print_command
 
 
 def _get_test_files_in_touched_dirs() -> List[str]:
@@ -78,7 +69,7 @@ def main() -> int:
   Returns:
     The exit code of the test runner script.
   """
-  print(f'{Colors.HEADER}{Colors.BOLD}=== Run CL Tests ==={Colors.RESET}')
+  print_header("=== Run CL Tests ===")
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--out-dir',
@@ -89,9 +80,7 @@ def main() -> int:
                       help='The OS version to use for the test (e.g., 17.5).')
   args = parser.parse_args()
 
-  print(
-      f'\n{Colors.HEADER}{Colors.BOLD}--- Finding Test Suites ---{Colors.RESET}'
-  )
+  print_header("--- Finding Test Suites ---")
   test_files = _get_test_files_in_touched_dirs()
   if not test_files:
     print('No test files found in the touched directories.')
@@ -122,12 +111,8 @@ def main() -> int:
     run_command.extend(['--device', args.device])
     if args.os:
       run_command.extend(['--os', args.os])
-  print(
-      f'\n{Colors.HEADER}{Colors.BOLD}--- Invoking Test Runner ---'
-      f'{Colors.RESET}'
-  )
-  print(' '.join(run_command))
-  print()
+  print_header("--- Invoking Test Runner ---")
+  print_command(run_command)
   return subprocess.call(run_command)
 
 
