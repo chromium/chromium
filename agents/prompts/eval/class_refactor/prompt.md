@@ -10,4 +10,5 @@ initialize the members.
 
 Next, please update `FakeSimpleClass` to use this new `NestedClass`.
 
-Finally, please update the build files to compile the files and tests.
+Finally, please update the build files and compile the code to ensure that the
+refactoring was successful.
