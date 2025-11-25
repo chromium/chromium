@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
@@ -18,13 +19,17 @@ CollectionSaveForwarder::CollectionSaveForwarder(
 
 CollectionSaveForwarder::~CollectionSaveForwarder() = default;
 
+CollectionSaveForwarder::CollectionSaveForwarder(
+    CollectionSaveForwarder&&) noexcept = default;
+CollectionSaveForwarder& CollectionSaveForwarder::operator=(
+    CollectionSaveForwarder&&) noexcept = default;
+
 // static
-std::unique_ptr<CollectionSaveForwarder>
-CollectionSaveForwarder::CreateForTabGroupTabCollection(
+CollectionSaveForwarder CollectionSaveForwarder::CreateForTabGroupTabCollection(
     tab_groups::TabGroupId group_id,
     TabStripCollection* tab_strip_collection,
     TabStateStorageService* service) {
-  return std::make_unique<CollectionSaveForwarder>(
+  return CollectionSaveForwarder(
       tab_strip_collection->GetTabGroupCollection(group_id), service);
 }
 

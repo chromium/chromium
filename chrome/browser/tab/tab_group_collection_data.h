@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_TAB_TAB_GROUP_COLLECTION_DATA_H_
 #define CHROME_BROWSER_TAB_TAB_GROUP_COLLECTION_DATA_H_
 
+#include <string>
+
 #include "base/token.h"
-#include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 

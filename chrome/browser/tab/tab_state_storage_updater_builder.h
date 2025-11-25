@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_UPDATER_BUILDER_H_
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_package.h"

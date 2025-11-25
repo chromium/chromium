@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -47,7 +48,7 @@ class TabStateStorageService : public KeyedService,
   using LoadDataCallback =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
 
-  TabStateStorageService(std::unique_ptr<TabStateStorageBackend> tab_backend,
+  TabStateStorageService(const base::FilePath& profile_path,
                          std::unique_ptr<TabStoragePackager> packager,
                          TabCanonicalizer tab_canonicalizer,
                          AssociatorBuilderFactory builder_factory);
@@ -90,7 +91,7 @@ class TabStateStorageService : public KeyedService,
   void OnCollectionCreated(StorageId storage_id,
                            const TabCollection* collection);
 
-  std::unique_ptr<TabStateStorageBackend> tab_backend_;
+  TabStateStorageBackend tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
 
   TabCanonicalizer tab_canonicalizer_;

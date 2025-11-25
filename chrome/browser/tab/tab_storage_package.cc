@@ -9,11 +9,10 @@
 
 namespace tabs {
 
-TabStoragePackage::TabStoragePackage(
-    int user_agent,
-    base::Token tab_group_id,
-    bool is_pinned,
-    std::unique_ptr<AndroidTabPackage> android_tab_package)
+TabStoragePackage::TabStoragePackage(int user_agent,
+                                     base::Token tab_group_id,
+                                     bool is_pinned,
+                                     AndroidTabPackage android_tab_package)
     : user_agent_(user_agent),
       tab_group_id_(std::move(tab_group_id)),
       is_pinned_(is_pinned),
@@ -23,29 +22,25 @@ TabStoragePackage::~TabStoragePackage() = default;
 
 std::vector<uint8_t> TabStoragePackage::SerializePayload() const {
   tabs_pb::TabState tab_state;
-  const std::unique_ptr<AndroidTabPackage>& android_package =
-      android_tab_package_;
-  if (android_package) {
-    tab_state.set_tab_id(android_package->id_);
-    tab_state.set_parent_id(android_package->parent_id_);
-    tab_state.set_timestamp_millis(android_package->timestamp_millis_);
-    if (android_package->web_contents_state_bytes_) {
-      tab_state.set_web_contents_state_bytes(
-          android_package->web_contents_state_bytes_->data(),
-          android_package->web_contents_state_bytes_->size());
-    }
-    tab_state.set_web_contents_state_version(android_package->version_);
-    if (android_package->opener_app_id_) {
-      tab_state.set_opener_app_id(*android_package->opener_app_id_);
-    }
-    tab_state.set_theme_color(android_package->theme_color_);
-    tab_state.set_launch_type_at_creation(
-        android_package->launch_type_at_creation_);
-    tab_state.set_last_navigation_committed_timestamp_millis(
-        android_package->last_navigation_committed_timestamp_millis_);
-    tab_state.set_tab_has_sensitive_content(
-        android_package->tab_has_sensitive_content_);
+  tab_state.set_tab_id(android_tab_package_.id_);
+  tab_state.set_parent_id(android_tab_package_.parent_id_);
+  tab_state.set_timestamp_millis(android_tab_package_.timestamp_millis_);
+  if (android_tab_package_.web_contents_state_bytes_) {
+    tab_state.set_web_contents_state_bytes(
+        android_tab_package_.web_contents_state_bytes_->data(),
+        android_tab_package_.web_contents_state_bytes_->size());
   }
+  tab_state.set_web_contents_state_version(android_tab_package_.version_);
+  if (android_tab_package_.opener_app_id_) {
+    tab_state.set_opener_app_id(*android_tab_package_.opener_app_id_);
+  }
+  tab_state.set_theme_color(android_tab_package_.theme_color_);
+  tab_state.set_launch_type_at_creation(
+      android_tab_package_.launch_type_at_creation_);
+  tab_state.set_last_navigation_committed_timestamp_millis(
+      android_tab_package_.last_navigation_committed_timestamp_millis_);
+  tab_state.set_tab_has_sensitive_content(
+      android_tab_package_.tab_has_sensitive_content_);
   tab_state.set_user_agent(user_agent_);
   tabs_pb::Token* tab_group_id = tab_state.mutable_tab_group_id();
   tab_group_id->set_high(tab_group_id_.high());

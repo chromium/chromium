@@ -22,15 +22,12 @@ namespace tabs {
 
 CollectionSaveForwarderAndroid::CollectionSaveForwarderAndroid(
     Profile* profile,
-    tabs::TabStripCollection* collection) {
-  TabStateStorageService* service =
-      TabStateStorageServiceFactory::GetForProfile(profile);
-  save_forwarder_ =
-      std::make_unique<CollectionSaveForwarder>(collection, service);
-}
+    tabs::TabStripCollection* collection)
+    : save_forwarder_(collection,
+                      TabStateStorageServiceFactory::GetForProfile(profile)) {}
 
 CollectionSaveForwarderAndroid::CollectionSaveForwarderAndroid(
-    std::unique_ptr<CollectionSaveForwarder> save_forwarder)
+    CollectionSaveForwarder save_forwarder)
     : save_forwarder_(std::move(save_forwarder)) {}
 
 CollectionSaveForwarderAndroid::~CollectionSaveForwarderAndroid() = default;
@@ -43,13 +40,10 @@ static jlong JNI_CollectionSaveForwarder_CreateForTabGroup(
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
 
-  std::unique_ptr<CollectionSaveForwarder> save_forwarder =
+  CollectionSaveForwarderAndroid* wrapper = new CollectionSaveForwarderAndroid(
       CollectionSaveForwarder::CreateForTabGroupTabCollection(
           tab_groups::TabGroupId::FromRawToken(tab_group_id), collection,
-          service);
-
-  CollectionSaveForwarderAndroid* wrapper =
-      new CollectionSaveForwarderAndroid(std::move(save_forwarder));
+          service));
   return reinterpret_cast<intptr_t>(wrapper);
 }
 
@@ -58,7 +52,7 @@ void CollectionSaveForwarderAndroid::Destroy(JNIEnv* env) {
 }
 
 void CollectionSaveForwarderAndroid::SavePayload(JNIEnv* env) {
-  save_forwarder_->SavePayload();
+  save_forwarder_.SavePayload();
 }
 
 }  // namespace tabs

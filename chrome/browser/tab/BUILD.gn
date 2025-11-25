@@ -242,6 +242,7 @@ source_set("tab") {
     "//components/keyed_service/core",
     "//components/tabs:public",
     "//content/public/browser",
+    "//sql",
     "//ui/base",
     "//url",
   ]

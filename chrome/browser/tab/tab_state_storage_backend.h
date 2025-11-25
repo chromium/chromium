@@ -14,8 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_state_storage_updater.h"
-#include "chrome/browser/tab/tab_storage_package.h"
-#include "chrome/browser/tab/tab_storage_type.h"
 
 namespace tabs {
 
@@ -47,6 +45,8 @@ class TabStateStorageBackend {
 
   const base::FilePath profile_path_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  // Use unique_ptr to allow for delayed destruction, as we want all pending
+  // tasks to complete before destroying the object.
   std::unique_ptr<TabStateStorageDatabase> database_;
 
   base::WeakPtrFactory<TabStateStorageBackend> weak_ptr_factory_{this};

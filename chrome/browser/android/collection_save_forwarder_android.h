@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/collection_save_forwarder.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -22,7 +20,7 @@ class CollectionSaveForwarderAndroid {
   CollectionSaveForwarderAndroid(Profile* profile,
                                  tabs::TabStripCollection* collection);
   explicit CollectionSaveForwarderAndroid(
-      std::unique_ptr<CollectionSaveForwarder> save_forwarder);
+      CollectionSaveForwarder save_forwarder);
   ~CollectionSaveForwarderAndroid();
 
   CollectionSaveForwarderAndroid(const CollectionSaveForwarderAndroid&) =
@@ -36,7 +34,7 @@ class CollectionSaveForwarderAndroid {
   void SavePayload(JNIEnv* env);
 
  private:
-  std::unique_ptr<CollectionSaveForwarder> save_forwarder_;
+  CollectionSaveForwarder save_forwarder_;
 };
 
 }  // namespace tabs

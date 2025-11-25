@@ -31,16 +31,19 @@ struct AndroidTabPackage {
   AndroidTabPackage(const AndroidTabPackage&) = delete;
   AndroidTabPackage& operator=(const AndroidTabPackage&) = delete;
 
-  const int version_;
-  const int id_;
-  const int parent_id_;
-  const long timestamp_millis_;
-  const std::optional<std::vector<uint8_t>> web_contents_state_bytes_;
-  const std::optional<std::string> opener_app_id_;
-  const int theme_color_;
-  const long last_navigation_committed_timestamp_millis_;
-  const bool tab_has_sensitive_content_;
-  const int launch_type_at_creation_;
+  AndroidTabPackage(AndroidTabPackage&&) noexcept;
+  AndroidTabPackage& operator=(AndroidTabPackage&&) noexcept;
+
+  int version_;
+  int id_;
+  int parent_id_;
+  long timestamp_millis_;
+  std::optional<std::vector<uint8_t>> web_contents_state_bytes_;
+  std::optional<std::string> opener_app_id_;
+  int theme_color_;
+  long last_navigation_committed_timestamp_millis_;
+  bool tab_has_sensitive_content_;
+  int launch_type_at_creation_;
 };
 
 }  // namespace tabs

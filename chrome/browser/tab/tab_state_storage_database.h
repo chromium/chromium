@@ -6,19 +6,17 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_DATABASE_H_
 
 #include <cstdint>
-#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_type.h"
-
-namespace sql {
-class Database;
-class MetaTable;
-class Transaction;
-}  // namespace sql
+#include "sql/database.h"
+#include "sql/meta_table.h"
+#include "sql/transaction.h"
 
 namespace tabs {
 
@@ -50,6 +48,8 @@ class TabStateStorageDatabase {
   // returned to commit the transaction.
   class OpenTransaction {
    public:
+    OpenTransaction(sql::Database* db, base::PassKey<TabStateStorageDatabase>);
+
     ~OpenTransaction();
     OpenTransaction(const OpenTransaction&) = delete;
     OpenTransaction& operator=(const OpenTransaction&) = delete;
@@ -64,13 +64,11 @@ class TabStateStorageDatabase {
     // Returns whether the transaction is valid.
     static bool IsValid(OpenTransaction* transaction);
 
+    // Returns the underlying transaction.
+    sql::Transaction* GetTransaction(base::PassKey<TabStateStorageDatabase>);
+
    private:
-    friend TabStateStorageDatabase;
-    explicit OpenTransaction(std::unique_ptr<sql::Transaction> transaction);
-
-    sql::Transaction* GetTransaction();
-
-    std::unique_ptr<sql::Transaction> transaction_;
+    sql::Transaction transaction_;
     bool mark_failed_ = false;
   };
 
@@ -121,10 +119,10 @@ class TabStateStorageDatabase {
   void ClearAllNodes();
 
  private:
-  std::unique_ptr<OpenTransaction> open_transaction_;
   base::FilePath profile_path_;
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<sql::MetaTable> meta_table_;
+  sql::Database db_;
+  sql::MetaTable meta_table_;
+  std::optional<OpenTransaction> open_transaction_;
 };
 
 }  // namespace tabs

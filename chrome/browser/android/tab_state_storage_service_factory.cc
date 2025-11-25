@@ -7,19 +7,20 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/android/restore_id_associator_android.h"
+#include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/android/restore_id_associator_builder_android.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/android/tab_storage_packager_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageServiceFactory_jni.h"
 #include "chrome/browser/tab/restore_id_associator.h"
 #include "chrome/browser/tab/restore_id_associator_builder.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_context.h"
 
 namespace tabs {
 
@@ -92,14 +93,12 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(context);
 
   Profile* profile = static_cast<Profile*>(context);
-  std::unique_ptr<TabStateStorageBackend> tab_backend =
-      std::make_unique<TabStateStorageBackend>(profile->GetPath());
   std::unique_ptr<TabStoragePackager> packager;
 #if BUILDFLAG(IS_ANDROID)
   packager = std::make_unique<TabStoragePackagerAndroid>(profile);
 #endif
   return std::make_unique<TabStateStorageService>(
-      std::move(tab_backend), std::move(packager), GetTabCanonicalizer(),
+      profile->GetPath(), std::move(packager), GetTabCanonicalizer(),
       GetAssociatorBuilderFactory());
 }
 

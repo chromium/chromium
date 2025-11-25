@@ -31,4 +31,8 @@ AndroidTabPackage::AndroidTabPackage(
 
 AndroidTabPackage::~AndroidTabPackage() = default;
 
+AndroidTabPackage::AndroidTabPackage(AndroidTabPackage&&) noexcept = default;
+AndroidTabPackage& AndroidTabPackage::operator=(AndroidTabPackage&&) noexcept =
+    default;
+
 }  // namespace tabs

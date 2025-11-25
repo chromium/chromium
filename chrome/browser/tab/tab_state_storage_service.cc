@@ -123,15 +123,15 @@ void SortTabsInOrder(
 }  // namespace
 
 TabStateStorageService::TabStateStorageService(
-    std::unique_ptr<TabStateStorageBackend> tab_backend,
+    const base::FilePath& profile_path,
     std::unique_ptr<TabStoragePackager> packager,
     TabCanonicalizer tab_canonicalizer,
     AssociatorBuilderFactory builder_factory)
-    : tab_backend_(std::move(tab_backend)),
+    : tab_backend_(profile_path),
       packager_(std::move(packager)),
       tab_canonicalizer_(tab_canonicalizer),
       builder_factory_(builder_factory) {
-  tab_backend_->Initialize();
+  tab_backend_.Initialize();
 }
 
 TabStateStorageService::~TabStateStorageService() = default;
@@ -162,7 +162,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record,
                    TabStorageType::kTab, std::move(package));
-  tab_backend_->Update(builder.Build());
+  tab_backend_.Update(builder.Build());
 }
 
 void TabStateStorageService::Save(const TabCollection* collection) {
@@ -180,7 +180,7 @@ void TabStateStorageService::Save(const TabCollection* collection) {
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record, type,
                    std::move(package));
-  tab_backend_->Update(builder.Build());
+  tab_backend_.Update(builder.Build());
 }
 
 void TabStateStorageService::SavePayload(const TabCollection* collection) {
@@ -193,44 +193,44 @@ void TabStateStorageService::SavePayload(const TabCollection* collection) {
   StorageId storage_id = GetStorageId(collection);
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNodePayload(storage_id, std::move(payload));
-  tab_backend_->Update(builder.Build());
+  tab_backend_.Update(builder.Build());
 }
 
 void TabStateStorageService::Remove(const TabInterface* tab,
                                     const TabCollection* prev_parent) {
   RemoveNodeSequence(GetStorageId(tab), prev_parent, this, packager_.get(),
-                     tab_backend_.get());
+                     &tab_backend_);
 }
 
 void TabStateStorageService::Remove(const TabCollection* collection,
                                     const TabCollection* prev_parent) {
   RemoveNodeSequence(GetStorageId(collection), prev_parent, this,
-                     packager_.get(), tab_backend_.get());
+                     packager_.get(), &tab_backend_);
 }
 
 void TabStateStorageService::Move(const TabInterface* tab,
                                   const TabCollection* prev_parent) {
   MoveNodeSequence(prev_parent, tab->GetParentCollection(), this,
-                   packager_.get(), tab_backend_.get());
+                   packager_.get(), &tab_backend_);
 }
 
 void TabStateStorageService::Move(const TabCollection* collection,
                                   const TabCollection* prev_parent) {
   MoveNodeSequence(prev_parent, collection->GetParentCollection(), this,
-                   packager_.get(), tab_backend_.get());
+                   packager_.get(), &tab_backend_);
 }
 
 void TabStateStorageService::LoadAllNodes(std::string window_tag,
                                           bool is_off_the_record,
                                           LoadDataCallback callback) {
-  tab_backend_->LoadAllNodes(
+  tab_backend_.LoadAllNodes(
       std::move(window_tag), is_off_the_record,
       base::BindOnce(&TabStateStorageService::OnAllNodesLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TabStateStorageService::ClearState() {
-  tab_backend_->ClearAllNodes();
+  tab_backend_.ClearAllNodes();
 }
 
 void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
