@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -29,7 +32,10 @@ constexpr char kDocumentWithNamedElement[] = "/select.html";
 class MockReadAnythingSidePanelControllerObserver
     : public ReadAnythingSidePanelController::Observer {
  public:
-  MOCK_METHOD(void, Activate, (bool active), (override));
+  MOCK_METHOD(void,
+              Activate,
+              (bool active, std::optional<ReadAnythingOpenTrigger>),
+              (override));
   MOCK_METHOD(void, OnSidePanelControllerDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
 };
@@ -50,6 +56,10 @@ class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
   }
   void RemoveObserver(ReadAnythingSidePanelController::Observer* observer) {
     side_panel_controller()->RemoveObserver(observer);
+  }
+
+  std::optional<ReadAnythingOpenTrigger> empty_trigger() {
+    return std::optional<ReadAnythingOpenTrigger>();
   }
 
  protected:
@@ -79,8 +89,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
                               ->side_panel_registry()
                               ->GetEntryForKey(SidePanelEntry::Key(
                                   SidePanelEntry::Id::kReadAnything));
+  entry->set_last_open_trigger(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
-  EXPECT_CALL(side_panel_controller_observer_, Activate(true)).Times(1);
+  EXPECT_CALL(side_panel_controller_observer_,
+              Activate(true, std::optional<ReadAnythingOpenTrigger>(
+                                 ReadAnythingOpenTrigger::kOmniboxChip)))
+      .Times(1);
   side_panel_controller()->OnEntryShown(entry);
 }
 
@@ -94,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
                               ->GetEntryForKey(SidePanelEntry::Key(
                                   SidePanelEntry::Id::kReadAnything));
 
-  EXPECT_CALL(side_panel_controller_observer_, Activate(false)).Times(1);
+  EXPECT_CALL(side_panel_controller_observer_, Activate(false, empty_trigger()))
+      .Times(1);
   side_panel_controller()->OnEntryHidden(entry);
 }
 

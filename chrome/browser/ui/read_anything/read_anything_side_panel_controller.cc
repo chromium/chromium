@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -146,16 +148,19 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
 
   std::optional<SidePanelOpenTrigger> open_trigger = entry->last_open_trigger();
+  std::optional<ReadAnythingOpenTrigger> read_anything_trigger =
+      open_trigger.has_value()
+          ? read_anything::SidePanelToReadAnythingOpenTrigger(
+                open_trigger.value())
+          : std::optional<ReadAnythingOpenTrigger>();
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
-      open_trigger.has_value() && GetCurrentPageActionState().showing) {
+      read_anything_trigger.has_value() &&
+      GetCurrentPageActionState().showing) {
     // TODO(crbug.com/447418049): Also log this when immersive mode shows.
-    std::optional<ReadAnythingOpenTrigger> trigger =
-        read_anything::SidePanelToReadAnythingOpenTrigger(open_trigger.value());
-    if (trigger.has_value()) {
-      base::UmaHistogramEnumeration(
-          "Accessibility.ReadAnything.EntryPointAfterOmnibox", trigger.value());
-    }
+    base::UmaHistogramEnumeration(
+        "Accessibility.ReadAnything.EntryPointAfterOmnibox",
+        read_anything_trigger.value());
   }
   // Hide the omnibox entrypoint now that RM is already showing.
   // TODO(crbug.com/447418049): Also hide the omnibox entrypoint when the
@@ -189,7 +194,8 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     }
   }
 
-  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true);
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true,
+                    read_anything_trigger);
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
@@ -219,8 +225,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   if (service) {
     service->OnReadAnythingSidePanelEntryHidden();
   }
-  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate,
-                    false);
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, false,
+                    std::optional<ReadAnythingOpenTrigger>());
 }
 
 std::unique_ptr<views::View>

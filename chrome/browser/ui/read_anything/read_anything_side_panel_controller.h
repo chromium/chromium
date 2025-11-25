@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
@@ -66,7 +67,8 @@ class ReadAnythingSidePanelController
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void Activate(bool active) {}
+    virtual void Activate(bool active,
+                          std::optional<ReadAnythingOpenTrigger> trigger) {}
     virtual void OnSidePanelControllerDestroyed() = 0;
     virtual void OnTabWillDetach() = 0;
   };

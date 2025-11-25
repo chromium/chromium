@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "chrome/common/read_anything/read_anything.mojom-data-view.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -132,6 +133,10 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void, OnReadAloudAudioStateChange, (bool playing), (override));
   MOCK_METHOD(void, LogExtensionState, (), (override));
+  MOCK_METHOD(void,
+              OnDistillationStatus,
+              (read_anything::mojom::DistillationStatus),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -4077,6 +4082,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // Distill() is not called immediately.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(0);
   SetScreenAIServiceReady();
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   Mock::VerifyAndClearExpectations(distiller_);
@@ -4088,6 +4094,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // distiller_->Distill().
   EXPECT_CALL(*distiller_, Distill).Times(1);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   SetScreenAIServiceReady();
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
@@ -4099,6 +4106,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
        DistillsAfterDelayScreenAIServiceReady) {
   // When the AXTreeID changes, and 30s pass, the controller calls
   // distiller_->Distill() once the screenAI service is ready.
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
                                   base::Seconds(1));
@@ -4115,6 +4123,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // distiller_->Distill() as the screenAI service is not ready.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
                                   base::Seconds(1));
@@ -4141,6 +4150,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // page load completion.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   SetScreenAIServiceReady();
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
@@ -4166,6 +4176,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // delayed for another 10s.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   SetScreenAIServiceReady();
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection -
@@ -4199,6 +4210,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // the controller does not call distiller_->Distill().
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   SetScreenAIServiceReady();
 
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
@@ -4236,6 +4248,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // unstable, the controller does not calls distiller_->Distill() after 30s.
   EXPECT_CALL(*distiller_, Distill).Times(1);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
+  EXPECT_CALL(page_handler_, OnDistillationStatus).Times(1);
   SetScreenAIServiceReady();
 
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);

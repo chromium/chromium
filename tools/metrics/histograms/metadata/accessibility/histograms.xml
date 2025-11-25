@@ -2969,6 +2969,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.DistillationStatusAfterOmnibox"
+    enum="ReadAnythingDistillationStatus" expires_after="2026-06-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether distillation was successful after opening Reading mode via
+    the omnibox chip.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.EmptyState"
     enum="ReadAnythingEmptyState" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

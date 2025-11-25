@@ -856,6 +856,17 @@ void ReadAnythingUntrustedPageHandler::OnScreenshotRequested() {
   web_screenshotter_->RequestScreenshot(main_observer_->web_contents());
 }
 
+void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
+    read_anything::mojom::DistillationStatus status) {
+  if (last_open_trigger_.has_value() &&
+      last_open_trigger_.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
+    last_open_trigger_.reset();
+    base::UmaHistogramEnumeration(
+        "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status,
+        read_anything::mojom::DistillationStatus::kMaxValue);
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
     const std::string& code) {
   page_->SetLanguageCode(code);
@@ -866,8 +877,13 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
 // ReadAnythingSidePanelController::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingUntrustedPageHandler::Activate(bool active) {
+void ReadAnythingUntrustedPageHandler::Activate(
+    bool active,
+    std::optional<ReadAnythingOpenTrigger> open_trigger) {
   active_ = active;
+  if (active_) {
+    last_open_trigger_ = open_trigger;
+  }
   if (features::IsReadAnythingReadAloudEnabled() && !active &&
       side_panel_controller_->tab()->IsActivated() && !tab_will_detach_) {
     page_->OnReadingModeHidden();

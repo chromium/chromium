@@ -233,6 +233,9 @@ interface UntrustedPageHandler {
   // Requests the browser to take a screenshot of the active web contents.
   OnScreenshotRequested();
 
+  // Informs the browser of the status of the latest distillation attempt.
+  OnDistillationStatus(read_anything.mojom.DistillationStatus status);
+
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the
   // last line of text on the side page. target_node_id should be the last

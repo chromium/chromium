@@ -14,6 +14,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
@@ -171,6 +172,8 @@ class ReadAnythingUntrustedPageHandler :
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;
+  void OnDistillationStatus(
+      read_anything::mojom::DistillationStatus status) override;
 
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
@@ -248,7 +251,8 @@ class ReadAnythingUntrustedPageHandler :
   void OnScreenshotRequested() override;
 
   // ReadAnythingSidePanelController::Observer:
-  void Activate(bool active) override;
+  void Activate(bool active,
+                std::optional<ReadAnythingOpenTrigger> open_trigger) override;
   void OnSidePanelControllerDestroyed() override;
 
   void SetDefaultLanguageCode(const std::string& code);
@@ -302,6 +306,8 @@ class ReadAnythingUntrustedPageHandler :
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
+
+  std::optional<ReadAnythingOpenTrigger> last_open_trigger_;
 
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.

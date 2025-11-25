@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/values_test_util.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -358,13 +362,16 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 
   void OnTabWillDetach() { handler_->OnTabWillDetach(); }
 
-  void Activate(bool active) {
+  void Activate(bool active, SidePanelOpenTrigger* trigger = nullptr) {
     SidePanelEntry* entry = browser()
                                 ->GetActiveTabInterface()
                                 ->GetTabFeatures()
                                 ->side_panel_registry()
                                 ->GetEntryForKey(SidePanelEntry::Key(
                                     SidePanelEntry::Id::kReadAnything));
+    if (trigger) {
+      entry->set_last_open_trigger(*trigger);
+    }
     if (active) {
       side_panel_controller()->OnEntryShown(entry);
     } else {
@@ -1465,6 +1472,86 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   Activate(true);
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStatus_AfterActivateWithOmnibox_LogsStatus) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStatus(status);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStatus_AfterActivateWithOtherEntrypoint_DoesNotLogStatus) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStatus(status);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStatus_AfterAlreadyLogged_DoesNotLogStatusAgain) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  auto status1 = read_anything::mojom::DistillationStatus::kSuccess;
+  auto status2 = read_anything::mojom::DistillationStatus::kFailure;
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStatus(status1);
+  handler_->OnDistillationStatus(status2);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnDistillationStatus_AfterDeactivate_StillLogsStatus) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+
+  Activate(false);
+  handler_->OnDistillationStatus(status);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStatus_AfterDeactivateAndStatusAlreadyLogged_DoesNotLogStatus) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStatus(status);
+
+  Activate(false);
+  handler_->OnDistillationStatus(status);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,

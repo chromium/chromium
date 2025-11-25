@@ -726,6 +726,7 @@ void ReadAnythingAppController::RecordDistillationSuccess() {
     distillationStatus = read_anything::mojom::DistillationStatus::kFailure;
   }
 
+  page_handler_->OnDistillationStatus(distillationStatus);
   ukm::builders::Accessibility_ReadAnything_Distillation(
       model_.GetUkmSourceId())
       .SetDistillationStatus(static_cast<int>(distillationStatus))
