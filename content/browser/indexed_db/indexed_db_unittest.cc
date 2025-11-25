@@ -379,7 +379,7 @@ class IndexedDBTest : public testing::Test,
 
   void RunPostedTasks() {
     base::RunLoop loop;
-    context_->IDBTaskRunner()->PostTask(FROM_HERE, loop.QuitClosure());
+    context_->idb_task_runner()->PostTask(FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
 
@@ -591,8 +591,8 @@ TEST_P(IndexedDBTest, CloseConnectionBeforeUpgrade) {
 
   base::RunLoop loop;
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      kTransactionId);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, kTransactionId);
   EXPECT_CALL(
       *connection->open_callbacks,
       MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
@@ -634,8 +634,8 @@ TEST_P(IndexedDBTest, CloseAfterUpgrade) {
   base::RunLoop loop;
   // Open connection.
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      kTransactionId);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, kTransactionId);
 
   EXPECT_CALL(
       *connection->open_callbacks,
@@ -708,8 +708,8 @@ TEST_P(IndexedDBTest, MAYBE_OpenNewConnectionWhileUpgrading) {
   base::RunLoop loop;
   // Open connection 1, and expect the upgrade needed.
   connection1 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      kTransactionId);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, kTransactionId);
 
   EXPECT_CALL(
       *connection1->open_callbacks,
@@ -734,8 +734,8 @@ TEST_P(IndexedDBTest, MAYBE_OpenNewConnectionWhileUpgrading) {
       base::BarrierClosure(3, loop2.QuitClosure());
 
   connection2 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      0);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, 0);
 
   // Check that we're called in order and the second connection gets it's
   // database after the first connection completes.
@@ -805,8 +805,8 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
   base::RunLoop loop;
   // Open connection.
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      kTransactionId);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, kTransactionId);
 
   EXPECT_CALL(
       *connection->open_callbacks,
@@ -907,7 +907,7 @@ TEST_P(IndexedDBTest, InvalidObjectStoreId) {
   {
     base::RunLoop loop;
     connection = std::make_unique<TestDatabaseConnection>(
-        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
         kDBVersion, kTransactionId);
 
     EXPECT_CALL(
@@ -983,7 +983,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
   {
     base::RunLoop loop;
     connection1 = std::make_unique<TestDatabaseConnection>(
-        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
         kDBVersion1, kTransactionId1);
 
     EXPECT_CALL(
@@ -1052,7 +1052,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
         base::BarrierClosure(2, loop.QuitClosure());
 
     connection2 = std::make_unique<TestDatabaseConnection>(
-        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
         kDBVersion2, kTransactionId2);
 
     EXPECT_CALL(*connection2->open_callbacks,
@@ -1111,7 +1111,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
     ::testing::InSequence dummy;
     base::RunLoop loop;
     connection3 = std::make_unique<TestDatabaseConnection>(
-        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
         kDBVersion3, kTransactionId3);
 
     EXPECT_CALL(*connection3->open_callbacks,
@@ -1199,8 +1199,8 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   base::RunLoop loop;
   // Open connection 1.
   connection1 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion1,
-      kTransactionId1);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion1, kTransactionId1);
 
   EXPECT_CALL(
       *connection1->open_callbacks,
@@ -1272,8 +1272,8 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   // Open connection 2.
   base::RunLoop loop4;
   connection2 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion2,
-      kTransactionId2);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion2, kTransactionId2);
 
   EXPECT_CALL(
       *connection2->open_callbacks,
@@ -1346,8 +1346,8 @@ TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
   base::RunLoop loop;
   // Open connection.
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
-      kTransactionId);
+      context()->idb_task_runner(), ToOrigin(kOrigin), kDatabaseName,
+      kDBVersion, kTransactionId);
 
   EXPECT_CALL(
       *connection->open_callbacks,

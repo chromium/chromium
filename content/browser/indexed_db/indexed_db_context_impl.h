@@ -58,7 +58,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       public storage::mojom::QuotaClient {
  public:
   // If `base_data_path` is empty, nothing will be saved to disk.
-  // This is *not* called on the IDBTaskRunner, unlike most other functions.
+  // This is *not* called on the idb_task_runner, unlike most other functions.
   IndexedDBContextImpl(
       const base::FilePath& base_data_path,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -70,7 +70,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   ~IndexedDBContextImpl() override;
 
-  // Called to initiate shutdown. This is *not* called on the IDBTaskRunner.
+  // Called to initiate shutdown. This is *not* called on the idb_task_runner.
   static void Shutdown(std::unique_ptr<IndexedDBContextImpl> context);
 
   IndexedDBContextImpl(const IndexedDBContextImpl&) = delete;
@@ -146,7 +146,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool BucketContextExists(storage::BucketId bucket_id);
 
   // Exposed for testing.
-  const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() const {
+  const scoped_refptr<base::SequencedTaskRunner>& idb_task_runner() const {
     return idb_task_runner_;
   }
 
@@ -178,13 +178,17 @@ class CONTENT_EXPORT IndexedDBContextImpl
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
-  void ForceCloseImpl(
-      const storage::mojom::ForceCloseReason reason,
-      base::OnceClosure closure,
-      const std::optional<storage::BucketLocator>& bucket_locator);
 
-  // Always run immediately before destruction.
-  void ShutdownOnIDBSequence(base::TimeTicks start_time);
+  void ForceClose(const storage::BucketLocator& bucket_locator,
+                  storage::mojom::ForceCloseReason reason,
+                  base::OnceClosure callback);
+
+  // Always run immediately before destruction. `purge_origins` owns `this` and
+  // should be run only if it's necessary to delete data for some origins before
+  // destruction of `this`.
+  void ShutdownOnIDBSequence(base::TimeTicks start_time,
+                             base::OnceClosure purge_origins);
+  void PurgeOrigins();
 
   base::FilePath GetDataPath(
       const storage::BucketLocator& bucket_locator) const;
@@ -275,7 +279,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   bool in_memory() const { return base_data_path_.empty(); }
 
-  const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
 
   // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;

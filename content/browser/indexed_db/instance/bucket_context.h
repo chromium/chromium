@@ -156,8 +156,10 @@ class CONTENT_EXPORT BucketContext
   // Returns true if a RunTask invocation is queued. To be used by metrics.
   bool task_run_queued() const { return task_run_queued_; }
 
-  // Normally, in-memory bucket contexts never self-close. If this is called
-  // with `doom` set to true, they will self-close.
+  // Closes the bucket context, i.e. closes the backing store and closes Mojo
+  // connections to renderers. When `doom` is true, the directories containing
+  // data will also be deleted. Normally, in-memory bucket contexts never close.
+  // If this is called with `doom` set to true, they will close.
   void ForceClose(bool doom, const std::string& message);
 
   // Starts capturing state data for indexeddb-internals. The data will be

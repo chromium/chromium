@@ -1137,6 +1137,22 @@ void BucketContext::ResetBackingStore() {
                             base::TimeTicks::Now() - start);
   }
 
+  if (is_doomed_) {
+    if (ShouldUseLegacyFilePath(bucket_locator())) {
+      if (ShouldUseSqlite()) {
+        base::DeletePathRecursively(
+            data_path_.Append(GetSqliteDbDirectory(bucket_locator())));
+      } else {
+        base::DeletePathRecursively(
+            data_path_.Append(GetLevelDBFileName(bucket_locator())));
+        base::DeletePathRecursively(
+            data_path_.Append(GetBlobStoreFileName(bucket_locator())));
+      }
+    } else {
+      base::DeletePathRecursively(data_path_);
+    }
+  }
+
   task_run_queued_ = false;
   is_doomed_ = false;
   bucket_space_check_callbacks_ = {};
