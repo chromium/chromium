@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_plus_button_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
@@ -179,13 +180,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
           @"%@%li", kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
           identifier.longValue];
   if (identifier.intValue == kPlusButtonIdentifier) {
-    /// TODO(crbug.com/462459633): The following code is used for place-holding
-    /// purpose. Use the correct plus button UI.
-    UILabel* plusButton =
-        [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kIconSize, kIconSize)];
-    plusButton.text = @"+";
-    plusButton.font = [UIFont systemFontOfSize:70];
-    [cell.contentView addSubview:plusButton];
+    cell.contentConfiguration = [[ContentSuggestionsPlusButtonItem alloc] init];
   } else {
     [self loadFaviconIfNeeded:identifier];
     cell.contentConfiguration = _items[identifier.unsignedIntValue];

@@ -71,6 +71,8 @@ source_set("cells") {
 
 source_set("most_visited_tiles") {
   sources = [
+    "content_suggestions_plus_button_item.h",
+    "content_suggestions_plus_button_item.mm",
     "content_suggestions_tile_saver.h",
     "content_suggestions_tile_saver.mm",
     "most_visited_tiles_collection_view.h",
@@ -85,6 +87,7 @@ source_set("most_visited_tiles") {
   deps = [
     ":cells",
     ":constants",
+    ":most_visited_action",
     "//components/favicon/core",
     "//components/ntp_tiles",
     "//components/ntp_tiles:pref_names",

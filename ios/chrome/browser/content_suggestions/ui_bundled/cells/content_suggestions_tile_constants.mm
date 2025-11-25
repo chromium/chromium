@@ -66,3 +66,12 @@ NSString* AccessibilityLabelForReadingListCellWithCount(int count) {
     return l10n_util::GetNSString(messageID);
   }
 }
+
+NSString* TitleForMostVisitedTilePlusButton() {
+  return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_ADD_PINNED_SITE);
+}
+
+UIImage* SymbolForMostVisitedTilePlusButton() {
+  return DefaultSymbolTemplateWithPointSize(kPlusSymbol,
+                                            kSymbolContentSuggestionsPointSize);
+}

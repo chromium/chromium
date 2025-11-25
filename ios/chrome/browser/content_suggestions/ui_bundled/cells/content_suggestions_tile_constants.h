@@ -28,4 +28,12 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type);
 // `count` = 0, for a reading list tile with no badge.
 NSString* AccessibilityLabelForReadingListCellWithCount(int count);
 
+// Returns the localized string for the button to add more pinned sites to the
+// most visied tile.
+NSString* TitleForMostVisitedTilePlusButton();
+
+// Returns the symbol image for the button to add more pinned sites to the most
+// visied tile.
+UIImage* SymbolForMostVisitedTilePlusButton();
+
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_
