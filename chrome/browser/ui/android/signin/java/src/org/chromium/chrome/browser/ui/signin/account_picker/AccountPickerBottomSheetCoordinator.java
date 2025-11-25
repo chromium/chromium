@@ -87,7 +87,7 @@ public class AccountPickerBottomSheetCoordinator {
                 AccountConsistencyPromoAction.SHOWN, mSigninAccessPoint);
 
         mAccountPickerBottomSheetMediator =
-                new AccountPickerBottomSheetMediator(
+                AccountPickerBottomSheetMediator.create(
                         windowAndroid,
                         identityManager,
                         signinManager,

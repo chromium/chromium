@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.SeamlessSigninCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -58,6 +59,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private BottomSheetObserver mBottomSheetObserver;
     private BottomSheetController mBottomSheetController;
     private @Nullable AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+    private @Nullable SeamlessSigninCoordinator mSeamlessSigninCoordinator;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -87,14 +89,16 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
      * @param windowAndroid The window that hosts the sign-in flow.
      * @param activity The {@link ComponentActivity} that hosts the sign-in flow.
      * @param containerView The {@link ViewGroup} that should contain the bottom sheet.
-     * @param windowAndroid The window that hosts the sign-in flow.
-     * @param signinManager The sign-in manager to start the sign-in.
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param signinManager The sign-in manager to start the sign-in.
      * @param bottomSheetStrings The object containing the strings shown by the bottom sheet.
      * @param accountPickerLaunchMode Indicate the first bottom sheet view shown to the user.
+     * @param isSeamlessSigninFlow If true, attempt a seamless sign-in flow, which automatically
+     *     signs in the user.
      * @param signinAccessPoint The entry point for the sign-in.
-     * @param selectedAccountId the account id to use as default, if present.
+     * @param selectedAccountId the account id to use as default, if present. Account id must be
+     *     nonnull for seamless signin.
      */
     public SigninBottomSheetCoordinator(
             WindowAndroid windowAndroid,
@@ -105,6 +109,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             SigninManager signinManager,
             AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode,
+            boolean isSeamlessSigninFlow,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedAccountId) {
         mWindowAndroid = windowAndroid;
@@ -116,12 +121,13 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSigninAccessPoint = signinAccessPoint;
         mSelectedCoreAccountId = selectedAccountId;
 
-        initAndShowBottomSheet(bottomSheetStrings, accountPickerLaunchMode);
+        initAndShowBottomSheet(bottomSheetStrings, accountPickerLaunchMode, isSeamlessSigninFlow);
     }
 
     private void initAndShowBottomSheet(
             AccountPickerBottomSheetStrings bottomSheetStrings,
-            @AccountPickerLaunchMode int accountPickerLaunchMode) {
+            @AccountPickerLaunchMode int accountPickerLaunchMode,
+            boolean isSeamlessSigninFlow) {
         ViewGroup sheetContainer = new FrameLayout(mActivity);
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -133,6 +139,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR);
         mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setStatusBarColor);
 
+        // TODO(crbug.com/437038737): Lazy load BottomSheetController in case of seamless sign-in
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> mScrimManager,
@@ -158,25 +165,46 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         BackPressHelper.create(
                 mActivity, mActivity.getOnBackPressedDispatcher(), bottomSheetBackPressHandler);
 
-        mAccountPickerBottomSheetCoordinator =
-                new AccountPickerBottomSheetCoordinator(
-                        mWindowAndroid,
-                        mSigninManager.getIdentityManager(),
-                        mSigninManager,
-                        mBottomSheetController,
-                        this,
-                        bottomSheetStrings,
-                        mDeviceLockActivityLauncher,
-                        accountPickerLaunchMode,
-                        mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
-                        mSigninAccessPoint,
-                        mSelectedCoreAccountId);
+        if (isSeamlessSigninFlow) {
+            assert mSelectedCoreAccountId != null
+                    : "Must provide a nonnullable {@link CoreAccountId} for seamless sign-in flow";
+            mSeamlessSigninCoordinator =
+                    new SeamlessSigninCoordinator(
+                            mWindowAndroid,
+                            mActivity,
+                            mSigninManager.getIdentityManager(),
+                            mSigninManager,
+                            mBottomSheetController,
+                            this,
+                            bottomSheetStrings,
+                            mDeviceLockActivityLauncher,
+                            mSigninAccessPoint,
+                            assertNonNull(mSelectedCoreAccountId));
+        } else {
+            mAccountPickerBottomSheetCoordinator =
+                    new AccountPickerBottomSheetCoordinator(
+                            mWindowAndroid,
+                            mSigninManager.getIdentityManager(),
+                            mSigninManager,
+                            mBottomSheetController,
+                            this,
+                            bottomSheetStrings,
+                            mDeviceLockActivityLauncher,
+                            accountPickerLaunchMode,
+                            mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
+                            mSigninAccessPoint,
+                            mSelectedCoreAccountId);
+        }
     }
 
     /** Called when an account is added on the device. */
     public void onAccountAdded(String accountEmail) {
-        assumeNonNull(mAccountPickerBottomSheetCoordinator);
-        mAccountPickerBottomSheetCoordinator.onAccountAdded(accountEmail);
+        assert mSeamlessSigninCoordinator == null
+                : "The 'add account' flow is not supported from the seamless sign-in flow as it's"
+                        + " designed to be a non-interactive flow for a pre-selected account.";
+        if (mAccountPickerBottomSheetCoordinator != null) {
+            mAccountPickerBottomSheetCoordinator.onAccountAdded(accountEmail);
+        }
     }
 
     /** Implements {@link AccountPickerDelegate}. */
@@ -225,14 +253,19 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             mAccountPickerBottomSheetCoordinator.dismiss();
             mAccountPickerBottomSheetCoordinator = null;
         }
+        if (mSeamlessSigninCoordinator != null) {
+            mSeamlessSigninCoordinator.dismissBottomSheet();
+            mSeamlessSigninCoordinator = null;
+        }
     }
 
     private void onBottomSheetDismiss(@StateChangeReason int reason) {
-        if (mAccountPickerBottomSheetCoordinator == null) {
+        if (mAccountPickerBottomSheetCoordinator == null && mSeamlessSigninCoordinator == null) {
             return;
         }
 
         mAccountPickerBottomSheetCoordinator = null;
+        mSeamlessSigninCoordinator = null;
         // The case of successful sign-in is already handled by the SignInCallBack.
         if (reason != StateChangeReason.INTERACTION_COMPLETE) {
             mDelegate.onSignInCancel();

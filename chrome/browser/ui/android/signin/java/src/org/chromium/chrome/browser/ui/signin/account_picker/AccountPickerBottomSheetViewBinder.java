@@ -23,6 +23,7 @@ class AccountPickerBottomSheetViewBinder {
                                             .ON_SELECTED_ACCOUNT_CLICKED));
         } else if (propertyKey == AccountPickerBottomSheetProperties.VIEW_STATE) {
             @ViewState int viewState = model.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+            assert viewState != ViewState.NONE : "This indicates no specific active view state";
             view.setDisplayedView(viewState);
         } else if (propertyKey == AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA) {
             DisplayableProfileData profileData =

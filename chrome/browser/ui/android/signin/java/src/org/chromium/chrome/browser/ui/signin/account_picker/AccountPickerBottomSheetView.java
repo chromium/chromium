@@ -129,6 +129,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
                 R.string.auth_error_card_button);
 
+        // TODO(crbug.com/460030880): Decouple the 'Confirm Management' cancel button from this
+        // general back press handler using a dedicated property and callback
         mViewFlipper
                 .getChildAt(ViewState.CONFIRM_MANAGEMENT)
                 .findViewById(R.id.confirm_management_cancel_button)
@@ -165,6 +167,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the displayed view according to the given {@link ViewState}. */
     void setDisplayedView(@ViewState int state) {
+        assert state != ViewState.NONE : "This indicates no specific active view state";
         if (mCurrentViewState != null && mCurrentViewState == state) {
             return;
         }

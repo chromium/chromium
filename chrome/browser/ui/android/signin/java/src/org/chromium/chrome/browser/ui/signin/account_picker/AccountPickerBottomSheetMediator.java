@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -56,20 +57,24 @@ public class AccountPickerBottomSheetMediator
                 AccountPickerDelegate.SigninStateController,
                 AccountsChangeObserver,
                 ProfileDataCache.Observer {
+
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
-    private final AccountPickerDelegate mAccountPickerDelegate;
-    private final ProfileDataCache mProfileDataCache;
-    private final PropertyModel mModel;
-    private final AccountManagerFacade mAccountManagerFacade;
     private final IdentityManager mIdentityManager;
     private final SigninManager mSigninManager;
+    private final AccountPickerDelegate mAccountPickerDelegate;
+    private final @Nullable Runnable mRequestDisplayBottomSheet;
+    private final Runnable mDismissBottomSheet;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final @ViewState int mInitialViewState;
     // TODO(crbug.com/328747528): The web sign-in specific logic should be moved out of the bottom
     // sheet MVC.
     private final boolean mIsWebSignin;
     private final @SigninAccessPoint int mSigninAccessPoint;
+    private final ProfileDataCache mProfileDataCache;
+    private final PropertyModel mModel;
+    private final AccountManagerFacade mAccountManagerFacade;
+    private final boolean mIsSeamlessSignin;
 
     private @Nullable SigninFlowTimestampsLogger mSigninTimestampsLogger;
     private @Nullable CoreAccountInfo mSelectedAccount;
@@ -84,15 +89,88 @@ public class AccountPickerBottomSheetMediator
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
 
-    AccountPickerBottomSheetMediator(
+    static AccountPickerBottomSheetMediator create(
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
             SigninManager signinManager,
             AccountPickerDelegate accountPickerDelegate,
-            Runnable onDismissButtonClicked,
+            Runnable dismissBottomSheet,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             @AccountPickerLaunchMode int launchMode,
+            boolean isWebSignin,
+            @SigninAccessPoint int signinAccessPoint,
+            @Nullable CoreAccountId accountId) {
+
+        final @ViewState int initialView;
+        switch (launchMode) {
+            case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
+                initialView = ViewState.EXPANDED_ACCOUNT_LIST;
+                break;
+            case AccountPickerLaunchMode.DEFAULT:
+                initialView = ViewState.COLLAPSED_ACCOUNT_LIST;
+                break;
+            case AccountPickerLaunchMode.SEAMLESS_SIGNIN:
+                throw new IllegalStateException("Should be handled by createForSeamlessSignin()");
+            default:
+                throw new IllegalStateException(
+                        "All values of AccountPickerLaunchMode should be handled.");
+        }
+
+        return new AccountPickerBottomSheetMediator(
+                windowAndroid,
+                identityManager,
+                signinManager,
+                accountPickerDelegate,
+                /* requestDisplayBottomSheet= */ null,
+                dismissBottomSheet,
+                accountPickerBottomSheetStrings,
+                deviceLockActivityLauncher,
+                launchMode,
+                initialView,
+                isWebSignin,
+                signinAccessPoint,
+                accountId);
+    }
+
+    static AccountPickerBottomSheetMediator createForSeamlessSignin(
+            WindowAndroid windowAndroid,
+            IdentityManager identityManager,
+            SigninManager signinManager,
+            AccountPickerDelegate accountPickerDelegate,
+            Runnable requestDisplayBottomSheet,
+            Runnable dismissBottomSheet,
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            @SigninAccessPoint int signinAccessPoint,
+            CoreAccountId accountId) {
+        return new AccountPickerBottomSheetMediator(
+                windowAndroid,
+                identityManager,
+                signinManager,
+                accountPickerDelegate,
+                requestDisplayBottomSheet,
+                dismissBottomSheet,
+                accountPickerBottomSheetStrings,
+                deviceLockActivityLauncher,
+                AccountPickerLaunchMode.SEAMLESS_SIGNIN,
+                ViewState.NONE,
+                /* isWebSignin= */ false,
+                signinAccessPoint,
+                accountId);
+    }
+
+    private AccountPickerBottomSheetMediator(
+            WindowAndroid windowAndroid,
+            IdentityManager identityManager,
+            SigninManager signinManager,
+            AccountPickerDelegate accountPickerDelegate,
+            @Nullable Runnable requestDisplayBottomSheet,
+            Runnable dismissBottomSheet,
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            @AccountPickerLaunchMode int launchMode,
+            @ViewState int initialViewState,
             boolean isWebSignin,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId) {
@@ -101,29 +179,55 @@ public class AccountPickerBottomSheetMediator
         mIdentityManager = identityManager;
         mSigninManager = signinManager;
         mAccountPickerDelegate = accountPickerDelegate;
+        mRequestDisplayBottomSheet = requestDisplayBottomSheet;
+        mDismissBottomSheet = dismissBottomSheet;
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, identityManager);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mInitialViewState = initialViewState;
         mIsWebSignin = isWebSignin;
         mSigninAccessPoint = signinAccessPoint;
 
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        List<AccountInfo> accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
+
         switch (launchMode) {
             case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
-                mInitialViewState = ViewState.EXPANDED_ACCOUNT_LIST;
-                break;
             case AccountPickerLaunchMode.DEFAULT:
-                mInitialViewState = ViewState.COLLAPSED_ACCOUNT_LIST;
+                mIsSeamlessSignin = false;
+                mModel =
+                        AccountPickerBottomSheetProperties.createModel(
+                                this::onSelectedAccountClicked,
+                                this::onContinueAsClicked,
+                                view -> assertNonNull(dismissBottomSheet).run(),
+                                accountPickerBottomSheetStrings);
+                initializeAccountPickerAccountAndModel(accounts, accountId);
+                break;
+            case AccountPickerLaunchMode.SEAMLESS_SIGNIN:
+                assert requestDisplayBottomSheet != null
+                        : "Seamless sign-in requires a display request callback.";
+                assert accountId != null : "Seamless sign-in requires an initial account ID.";
+                mIsSeamlessSignin = true;
+                mModel =
+                        AccountPickerBottomSheetProperties.createModelForSeamlessSignin(
+                                this::onContinueAsClicked, accountPickerBottomSheetStrings);
+                if (accounts.isEmpty()) {
+                    // TODO(crbug.com/437038737): Handle missing account during seamless sign-in
+                    // initialization.
+                    throw new UnsupportedOperationException(
+                            "Account being unavailable during initialization is not supported.");
+                }
+                mDefaultAccount =
+                        assertNonNull(
+                                AccountUtils.findAccountByGaiaId(accounts, accountId.getId()));
+                setSelectedAccount(mDefaultAccount);
                 break;
             default:
                 throw new IllegalStateException(
                         "All values of AccountPickerLaunchMode should be handled.");
         }
-        mModel =
-                AccountPickerBottomSheetProperties.createModel(
-                        this::onSelectedAccountClicked,
-                        this::onContinueAsClicked,
-                        view -> onDismissButtonClicked.run(),
-                        accountPickerBottomSheetStrings);
+
         mModelPropertyChangedObserver =
                 (source, propertyKey) -> {
                     if (AccountPickerBottomSheetProperties.VIEW_STATE == propertyKey) {
@@ -132,17 +236,14 @@ public class AccountPickerBottomSheetMediator
                 };
         mModel.addObserver(mModelPropertyChangedObserver);
         mProfileDataCache.addObserver(this);
-
-        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        initializeViewState(
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()),
-                accountId);
         mAccountManagerFacade.addObserver(this);
     }
 
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void onAccountSelected(CoreAccountInfo account) {
+        assert !mIsSeamlessSignin
+                : "Account selection is not supported in the seamless sign-in flow.";
         if (mPendingAddedAccountEmail != null) {
             // If another account is selected before the added account is available in account
             // manager facade then clear the pending added account email so that it doesn't get
@@ -156,6 +257,8 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void addAccount() {
+        assert !mIsSeamlessSignin
+                : "Adding an account is not supported in the seamless sign-in flow.";
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED, mSigninAccessPoint);
 
@@ -194,6 +297,8 @@ public class AccountPickerBottomSheetMediator
      * user.
      */
     public void onAccountAdded(@NonNull String accountEmail) {
+        assert !mIsSeamlessSignin
+                : "Signing in an added account is not supported in the seamless sign-in flow.";
         assert mAccountPickerDelegate.canHandleAddAccount();
         onAccountAddedInternal(accountEmail);
     }
@@ -225,6 +330,11 @@ public class AccountPickerBottomSheetMediator
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
             return true;
         }
+        if (mIsSeamlessSignin) {
+            // TODO(crbug.com/460030880): Decouple the 'Confirm Management' cancel button from this
+            // general back press handler using a dedicated property and callback
+            mDismissBottomSheet.run();
+        }
         return false;
     }
 
@@ -236,6 +346,12 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
+        if (mIsSeamlessSignin) {
+            // TODO(crbug.com/437038737): Handle selected account disappearance in seamless sign-in
+            // when bottom sheet is shown.
+            throw new UnsupportedOperationException(
+                    "Account changes are not yet supported in the seamless sign-in flow.");
+        }
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
@@ -256,11 +372,16 @@ public class AccountPickerBottomSheetMediator
             mSigninManager.setUserAcceptedAccountManagement(false);
         }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+        if (mIsSeamlessSignin) {
+            assumeNonNull(mRequestDisplayBottomSheet).run();
+        }
     }
 
     /** Implements {@link AccountPickerDelegate.SigninStateController controller}. */
     @Override
     public void showAuthError() {
+        assert !mIsSeamlessSignin
+                : "Showing auth error is not supported for seamless sign-in flow.";
         // Switches the bottom sheet to the auth error view that asks the user to reauth.
         assertNonNull(mSigninTimestampsLogger).recordTimestamp(Event.SIGNIN_ABORTED);
         if (mAcceptedAccountManagement) {
@@ -289,6 +410,10 @@ public class AccountPickerBottomSheetMediator
     }
 
     private boolean shouldHandleBackPress() {
+        if (mIsSeamlessSignin) {
+            // Seamless sign-in always dismisses the bottom sheet on back press
+            return false;
+        }
         boolean hasExpandedAccountList =
                 mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
                                 == ViewState.EXPANDED_ACCOUNT_LIST
@@ -304,7 +429,7 @@ public class AccountPickerBottomSheetMediator
         return hasExpandedAccountList || isOnConfirmManagement || isOnErrorScreen;
     }
 
-    private void initializeViewState(
+    private void initializeAccountPickerAccountAndModel(
             List<AccountInfo> accounts, @Nullable CoreAccountId accountId) {
         if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list initial state, we will go
@@ -366,6 +491,7 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void setNoAccountState() {
+        assert !mIsSeamlessSignin;
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NO_ACCOUNTS);
         mSelectedAccount = null;
         mDefaultAccount = null;
@@ -394,6 +520,8 @@ public class AccountPickerBottomSheetMediator
      * {@link AccountPickerBottomSheetProperties#ON_SELECTED_ACCOUNT_CLICKED}.
      */
     private void onSelectedAccountClicked() {
+        assert !mIsSeamlessSignin;
+
         // Clicking on the selected account when the account list is collapsed will expand the
         // account list and make the account list visible
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
@@ -406,6 +534,7 @@ public class AccountPickerBottomSheetMediator
     private void onContinueAsClicked() {
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
         if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
+            assert !mIsSeamlessSignin;
             launchDeviceLockIfNeededAndSignIn();
         } else if (viewState == ViewState.SIGNIN_GENERAL_ERROR) {
             if (mAcceptedAccountManagement) {
@@ -417,8 +546,10 @@ public class AccountPickerBottomSheetMediator
                 launchDeviceLockIfNeededAndSignIn();
             }
         } else if (viewState == ViewState.NO_ACCOUNTS) {
+            assert !mIsSeamlessSignin;
             addAccount();
         } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {
+            assert !mIsSeamlessSignin;
             updateCredentials();
         } else if (viewState == ViewState.CONFIRM_MANAGEMENT) {
             mAcceptedAccountManagement = true;
@@ -429,7 +560,7 @@ public class AccountPickerBottomSheetMediator
         }
     }
 
-    private void launchDeviceLockIfNeededAndSignIn() {
+    void launchDeviceLockIfNeededAndSignIn() {
         if (DeviceInfo.isAutomotive()) {
             mDeviceLockActivityLauncher.launchDeviceLockActivity(
                     mActivity,
@@ -451,6 +582,12 @@ public class AccountPickerBottomSheetMediator
         // If the account is not available or disappears right after the user adds it, the sign-in
         // can't be done and a general error view with retry button is shown.
         if (mSelectedAccount == null) {
+            if (mIsSeamlessSignin) {
+                // TODO(crbug.com/437038737): Confirm if error screen should be shown or sign-in
+                // should be abandoned.
+                throw new UnsupportedOperationException(
+                        "Account being unavailable during sign-in is not supported.");
+            }
             mModel.set(
                     AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
             return;
@@ -467,9 +604,7 @@ public class AccountPickerBottomSheetMediator
                         SigninMetricsUtils.logAccountConsistencyPromoAction(
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 mSigninAccessPoint);
-                        mModel.set(
-                                AccountPickerBottomSheetProperties.VIEW_STATE,
-                                ViewState.CONFIRM_MANAGEMENT);
+                        shownConfirmManagementSheet();
                         assertNonNull(mSigninTimestampsLogger).onManagementNoticeShown();
                     } else {
                         signInAfterCheckingManagement();
@@ -477,10 +612,23 @@ public class AccountPickerBottomSheetMediator
                 });
     }
 
+    private void shownConfirmManagementSheet() {
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.CONFIRM_MANAGEMENT);
+        if (mIsSeamlessSignin) {
+            assumeNonNull(mRequestDisplayBottomSheet).run();
+        }
+    }
+
     private void signInAfterCheckingManagement() {
         // If the account is not available or disappears right after the user adds it, the sign-in
         // can't be done and a general error view with retry button is shown.
         if (mSelectedAccount == null) {
+            if (mIsSeamlessSignin) {
+                // TODO(crbug.com/437038737): Confirm if error screen should be shown or sign-in
+                // should be abandoned.
+                throw new UnsupportedOperationException(
+                        "Account being unavailable during sign-in is not supported.");
+            }
             mModel.set(
                     AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
             return;
