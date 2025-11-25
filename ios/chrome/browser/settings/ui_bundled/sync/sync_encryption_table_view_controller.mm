@@ -219,6 +219,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark - UIView
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  [self.presentationDelegate
+      syncEncryptionTableViewControllerDidDisappear:self];
+}
+
 #pragma mark - SettingsControllerProtocol callbacks
 
 - (void)reportDismissalUserAction {

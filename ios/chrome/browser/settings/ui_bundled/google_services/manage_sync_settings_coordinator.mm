@@ -85,6 +85,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
+    SyncEncryptionTableViewControllerPresentationDelegate,
     SyncErrorSettingsCommandHandler,
     TrustedVaultReauthenticationCoordinatorDelegate> {
   // Sync observer.
@@ -588,6 +589,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     controllerToPush = _syncEncryptionTableViewController =
         [[SyncEncryptionTableViewController alloc]
             initWithBrowser:self.browser];
+    _syncEncryptionTableViewController.presentationDelegate = self;
   }
 
   [self.viewController configureHandlersForRootViewController:controllerToPush];
@@ -709,6 +711,17 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
+}
+
+#pragma mark - SyncEncryptionTableViewControllerPresentationDelegate
+
+- (void)syncEncryptionTableViewControllerDidDisappear:
+    (SyncEncryptionTableViewController*)viewController {
+  CHECK_EQ(_syncEncryptionTableViewController, viewController,
+           base::NotFatalUntil::M150);
+  _syncEncryptionTableViewController.presentationDelegate = nil;
+  [_syncEncryptionTableViewController settingsWillBeDismissed];
+  _syncEncryptionTableViewController = nil;
 }
 
 @end
