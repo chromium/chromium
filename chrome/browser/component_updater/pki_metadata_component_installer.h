@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/hash_value.h"
@@ -43,6 +42,15 @@ class PKIMetadataComponentInstallerService final {
 
   // Returns the live server instance, creating it if it does not exist.
   static PKIMetadataComponentInstallerService* GetInstance();
+
+  // Wraps BytesArrayFromProtoBytes, exposed for testing.
+  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytesForTesting(
+      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
+
+  // Wraps SHA256HashValueArrayFromProtoBytes, exposed for testing.
+  static std::vector<net::SHA256HashValue>
+  SHA256HashValueArrayFromProtoBytesForTesting(
+      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
 
   PKIMetadataComponentInstallerService();
   ~PKIMetadataComponentInstallerService() = delete;
@@ -161,79 +169,6 @@ class PKIMetadataComponentInstallerService final {
   base::WeakPtrFactory<PKIMetadataComponentInstallerService> weak_factory_{
       this};
 };
-
-// Component installer policy for the PKIMetadata component. This component
-// includes any dynamically updateable needed for PKI policies enforcement.
-class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
- public:
-  PKIMetadataComponentInstallerPolicy();
-  PKIMetadataComponentInstallerPolicy(
-      const PKIMetadataComponentInstallerPolicy&) = delete;
-  PKIMetadataComponentInstallerPolicy operator=(
-      const PKIMetadataComponentInstallerPolicy&) = delete;
-  ~PKIMetadataComponentInstallerPolicy() override;
-
-  // Wraps BytesArrayFromProtoBytes, exposed for testing.
-  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytesForTesting(
-      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
-
-  // Wraps SHA256HashValueArrayFromProtoBytes, exposed for testing.
-  static std::vector<net::SHA256HashValue>
-  SHA256HashValueArrayFromProtoBytesForTesting(
-      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
-
- private:
-  // ComponentInstallerPolicy methods:
-  bool SupportsGroupPolicyEnabledComponentUpdates() const override;
-  bool RequiresNetworkEncryption() const override;
-  update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
-      const base::FilePath& install_dir) override;
-  void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value::Dict& manifest,
-                          const base::FilePath& install_dir) const override;
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
-  base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
-  std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
-};
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// Component installer policy for the PKIMetadataFastpush component. This
-// component goes along with PKIMetadata component, but includes data that
-// needs lower update latency.
-class PKIMetadataFastpushComponentInstallerPolicy
-    : public ComponentInstallerPolicy {
- public:
-  PKIMetadataFastpushComponentInstallerPolicy();
-  PKIMetadataFastpushComponentInstallerPolicy(
-      const PKIMetadataFastpushComponentInstallerPolicy&) = delete;
-  PKIMetadataFastpushComponentInstallerPolicy operator=(
-      const PKIMetadataFastpushComponentInstallerPolicy&) = delete;
-  ~PKIMetadataFastpushComponentInstallerPolicy() override;
-
- private:
-  // ComponentInstallerPolicy methods:
-  bool SupportsGroupPolicyEnabledComponentUpdates() const override;
-  bool RequiresNetworkEncryption() const override;
-  update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
-      const base::FilePath& install_dir) override;
-  void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value::Dict& manifest,
-                          const base::FilePath& install_dir) const override;
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
-  base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
-  std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
-};
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus);
 
