@@ -169,6 +169,11 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
+
+    @Override
     boolean shouldHideSecondaryButton() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             return mPromoState != PromoState.SIGNIN;

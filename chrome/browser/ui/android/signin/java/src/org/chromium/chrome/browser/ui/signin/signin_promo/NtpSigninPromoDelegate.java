@@ -168,6 +168,11 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
+
+    @Override
     void recordImpression() {
         final long currentTime = System.currentTimeMillis();
         final long lastShownTime =

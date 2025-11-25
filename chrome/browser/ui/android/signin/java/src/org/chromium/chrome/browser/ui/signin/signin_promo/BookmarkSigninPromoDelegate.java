@@ -173,6 +173,11 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
+
+    @Override
     boolean shouldHideSecondaryButton() {
         switch (mPromoState) {
             case PromoState.SIGNIN:
@@ -183,11 +188,6 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
             default:
                 throw new IllegalStateException("Forbidden promo type: " + mPromoState);
         }
-    }
-
-    @Override
-    boolean shouldShowSigninSnackbar() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
     }
 
     @Override
@@ -214,10 +214,10 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    void onPrimaryButtonClicked() {
+    void onPrimaryButtonClicked(@Nullable CoreAccountInfo visibleAccount) {
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                super.onPrimaryButtonClicked();
+                super.onPrimaryButtonClicked(visibleAccount);
                 break;
             case PromoState.ACCOUNT_SETTINGS:
                 mOnOpenSettingsClicked.run();

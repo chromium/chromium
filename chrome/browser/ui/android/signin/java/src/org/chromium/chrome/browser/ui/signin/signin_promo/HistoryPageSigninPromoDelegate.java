@@ -117,6 +117,11 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return false;
+    }
+
+    @Override
     AccountPickerBottomSheetStrings getBottomSheetStrings() {
         return new AccountPickerBottomSheetStrings.Builder(
                         mContext.getString(R.string.signin_account_picker_bottom_sheet_title))

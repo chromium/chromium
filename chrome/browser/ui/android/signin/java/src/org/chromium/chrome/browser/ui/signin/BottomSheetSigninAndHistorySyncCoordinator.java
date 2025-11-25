@@ -384,7 +384,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         signinManager,
                         mConfig.bottomSheetStrings,
                         accountPickerMode,
-                        /* isSeamlessSigninFlow= */ false,
+                        mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN,
                         mSigninAccessPoint,
                         mConfig.selectedCoreAccountId);
         mDidShowSigninStep = true;

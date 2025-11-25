@@ -198,6 +198,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncHelperTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfigTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninSnackbarControllerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerTest.java",
