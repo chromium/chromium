@@ -105,6 +105,12 @@ int DumpMinidumpAnnotationsMain(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
+  printf("Snapshot Annotations\n");
+  for (const auto& kv : snapshot.AnnotationsSimpleMap()) {
+    printf("  snapshot_annotations[\"%s\"] = %s\n",
+           kv.first.c_str(), kv.second.c_str());
+  }
+
   for (const ModuleSnapshot* module : snapshot.Modules()) {
     printf("Module: %s\n", module->Name().c_str());
     printf("  Simple Annotations\n");

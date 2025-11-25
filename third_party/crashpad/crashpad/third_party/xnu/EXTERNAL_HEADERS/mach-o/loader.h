@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999-2010 Apple Inc.  All Rights Reserved.
+ * Copyright (c) 1999-2019 Apple Inc.  All Rights Reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
  * 
@@ -120,6 +120,7 @@ struct mach_header_64 {
 #define	MH_DSYM		0xa		/* companion file with only debug */
 					/*  sections */
 #define	MH_KEXT_BUNDLE	0xb		/* x86_64 kexts */
+#define	MH_FILESET	0xc		/* set of mach-o's */
 
 /* Constants for the flags field of the mach_header */
 #define	MH_NOUNDEFS	0x1		/* the object file has no undefined
@@ -322,6 +323,7 @@ struct load_command {
 #define LC_BUILD_VERSION 0x32 /* build for platform min OS version */
 #define LC_DYLD_EXPORTS_TRIE (0x33 | LC_REQ_DYLD) /* used with linkedit_data_command, payload is trie */
 #define LC_DYLD_CHAINED_FIXUPS (0x34 | LC_REQ_DYLD) /* used with linkedit_data_command */
+#define LC_FILESET_ENTRY      (0x35 | LC_REQ_DYLD) /* used with fileset_entry_command */
 
 /*
  * A variable length string in a load command is represented by an lc_str
@@ -621,6 +623,9 @@ struct section_64 { /* for 64-bit architectures */
 					/* editor.  Created with -seglinkedit */
 					/* option to ld(1) for MH_EXECUTE and */
 					/* FVMLIB file types only */
+
+#define SEG_LINKINFO	"__LINKINFO"	/* the segment overlapping with linkedit */
+					/* containing linking information */
 
 #define SEG_UNIXSTACK	"__UNIXSTACK"	/* the unix stack segment */
 
@@ -1196,6 +1201,15 @@ struct linkedit_data_command {
     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
 };
 
+struct fileset_entry_command {
+    uint32_t        cmd;        /* LC_FILESET_ENTRY */
+    uint32_t        cmdsize;    /* includes id string */
+    uint64_t        vmaddr;     /* memory address of the dylib */
+    uint64_t        fileoff;    /* file offset of the dylib */
+    union lc_str    entry_id;   /* contained entry id */
+    uint32_t        reserved;   /* entry_id is 32-bits long, so this is the reserved padding */
+};
+
 /*
  * The encryption_info_command contains the file offset and size of an
  * of an encrypted segment.
@@ -1264,11 +1278,13 @@ struct build_tool_version {
 #define PLATFORM_TVOS 3
 #define PLATFORM_WATCHOS 4
 #define PLATFORM_BRIDGEOS 5
-#define PLATFORM_IOSMAC 6
+#define PLATFORM_MACCATALYST 6
 #define PLATFORM_IOSSIMULATOR 7
 #define PLATFORM_TVOSSIMULATOR 8
 #define PLATFORM_WATCHOSSIMULATOR 9
 #define PLATFORM_DRIVERKIT 10
+#define PLATFORM_MAX PLATFORM_DRIVERKIT
+/* Addition of simulated platfrom also needs to update proc_is_simulated() */ 
 
 /* Known values for the tool field above. */
 #define TOOL_CLANG 1

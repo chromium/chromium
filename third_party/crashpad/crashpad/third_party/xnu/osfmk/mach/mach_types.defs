@@ -71,8 +71,8 @@
 
 #include <mach/std_types.defs>
 
-type memory_object_offset_t 	= uint64_t;
-type memory_object_size_t 	= uint64_t;
+type memory_object_offset_t 	= uint64_t VM_UNSAFE_TYPE(memory_object_offset_ut);
+type memory_object_size_t 	= uint64_t VM_UNSAFE_TYPE(memory_object_size_ut);
 type memory_object_cluster_size_t = uint32_t;
 type memory_object_fault_info_t = array[16] of integer_t;
 
@@ -119,35 +119,77 @@ type mach_port_info_t		= array[*:17] of integer_t;
 type mach_msg_trailer_type_t = int;
 type mach_msg_trailer_info_t	= array[*:68] of char;
 
+type mach_task_flavor_t = int;
+
+/* Task control, read, inspect, name port. In descending capability. */
 type task_t = mach_port_t
 #if	KERNEL_SERVER
-		intran: task_t convert_port_to_task(mach_port_t)
-		outtran: mach_port_t convert_task_to_port(task_t)
-		destructor: task_deallocate(task_t)
+		intran: task_t convert_port_to_task_mig(mach_port_t)
+		outtran: mach_port_t convert_task_to_port_kernel(task_t)
+		destructor: task_deallocate_mig(task_t)
 #endif	/* KERNEL_SERVER */
 		;
 
-type task_name_t = mach_port_t
+type task_read_t = mach_port_t
 #if	KERNEL_SERVER
-		intran: task_name_t convert_port_to_task_name(mach_port_t)
-		outtran: mach_port_t convert_task_name_to_port(task_name_t)
-		destructor: task_name_deallocate(task_name_t)
+		intran: task_read_t convert_port_to_task_read_mig(mach_port_t)
+		outtran: mach_port_t convert_task_read_to_port_kernel(task_read_t)
+		destructor: task_read_deallocate_mig(task_read_t)
 #endif	/* KERNEL_SERVER */
 		;
 
 type task_inspect_t = mach_port_t
 #if	KERNEL_SERVER
-		intran: task_inspect_t convert_port_to_task_inspect(mach_port_t)
+		intran: task_inspect_t convert_port_to_task_inspect_mig(mach_port_t)
 		outtran: mach_port_t convert_task_inspect_to_port(task_inspect_t)
-		destructor: task_inspect_deallocate(task_inspect_t)
+		destructor: task_inspect_deallocate_mig(task_inspect_t)
 #endif	/* KERNEL_SERVER */
 		;
 
+type task_name_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_name_t convert_port_to_task_name_mig(mach_port_t)
+		outtran: mach_port_t convert_task_name_to_port(task_name_t)
+		destructor: task_name_deallocate_mig(task_name_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_policy_set_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_policy_set_t convert_port_to_task_policy_set_mig(mach_port_t)
+		destructor: task_policy_set_deallocate_mig(task_policy_set_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_policy_get_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_policy_get_t convert_port_to_task_policy_get_mig(mach_port_t)
+		destructor: task_policy_get_deallocate_mig(task_policy_get_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_id_token_t = mach_port_t
+#if KERNEL_SERVER
+		intran: task_id_token_t convert_port_to_task_id_token(mach_port_t)
+		outtran: mach_port_t convert_task_id_token_to_port(task_id_token_t)
+		destructor: task_id_token_release(task_id_token_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+/* Thread control, read, inspect port. In descending capability. */
 type thread_t = mach_port_t
 #if	KERNEL_SERVER
 		intran: thread_t convert_port_to_thread(mach_port_t)
 		outtran: mach_port_t convert_thread_to_port(thread_t)
 		destructor: thread_deallocate(thread_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type thread_read_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: thread_read_t convert_port_to_thread_read(mach_port_t)
+		outtran: mach_port_t convert_thread_read_to_port(thread_read_t)
+		destructor: thread_read_deallocate(thread_read_t)
 #endif	/* KERNEL_SERVER */
 		;
 
@@ -196,6 +238,20 @@ type vm_map_t = mach_port_t
 #endif	/* KERNEL_SERVER */
 		;
 
+type vm_map_inspect_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: vm_map_inspect_t convert_port_to_map_inspect(mach_port_t)
+		destructor: vm_map_inspect_deallocate(vm_map_inspect_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type vm_map_read_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: vm_map_read_t convert_port_to_map_read(mach_port_t)
+		destructor: vm_map_read_deallocate(vm_map_read_t)
+#endif	/* KERNEL_SERVER */
+		;
+
 type vm_task_entry_t = mach_port_t
 		cusertype: vm_map_t
 #if	KERNEL_SERVER
@@ -208,6 +264,13 @@ type ipc_space_t = mach_port_t
 #if	KERNEL_SERVER
 		intran: ipc_space_t convert_port_to_space(mach_port_t)
 		destructor: space_deallocate(ipc_space_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type ipc_space_read_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_space_read_t convert_port_to_space_read(mach_port_t)
+		destructor: space_read_deallocate(ipc_space_read_t)
 #endif	/* KERNEL_SERVER */
 		;
 
@@ -224,11 +287,19 @@ type arcade_register_t = mach_port_t
 #endif	/* KERNEL_SERVER */
 		;
 
-type vm_prot_t = int;
-type vm_inherit_t = int;
+type kcdata_object_t = mach_port_t
+#if KERNEL_SERVER
+		intran: kcdata_object_t convert_port_to_kcdata_object(mach_port_t)
+		outtran: mach_port_t convert_kcdata_object_to_port(kcdata_object_t)
+		destructor: kcdata_object_release(kcdata_object_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type vm_prot_t = int VM_UNSAFE_TYPE(vm_prot_ut);
+type vm_inherit_t = int VM_UNSAFE_TYPE(vm_inherit_ut);
 type vm_purgable_t = int;
 type xxx_vm_statistics_data_t = struct[13] of integer_t;
-type vm_behavior_t = int;
+type vm_behavior_t = int VM_UNSAFE_TYPE(vm_behavior_ut);
 type vm_statistics_data_t = struct[15] of integer_t;
 type vm_machine_attribute_t = int;
 type vm_machine_attribute_val_t = int;
@@ -264,12 +335,22 @@ type thread_policy_t		= array[*:16] of integer_t;
 		 * task_basic_info_64_2_t
 		 * mach_task_basic_info_t (12 ints)
 		 * task_power_info_t (18 ints)
-		 * task_vm_info_t (87 ints)
+		 * task_vm_info_t (93 ints)
 		 * If other task_info flavors are added, this
 		 * definition may need to be changed. (See
-		 * mach/task_info.h and mach/policy.h) */
+		 * mach/task_info.h and mach/policy.h)
+		 *
+		 * Add at least 1 extra element to allow task_info(TASK_VM_INFO)
+		 * to detect callers that may pass "count" as the number of
+		 * bytes instead of number of integer_t, for example.
+		 * The MIG user stub truncates that number to the maximum
+		 * number of elements in "task_info_t" which currently
+		 * happens to be TASK_VM_INFO_COUNT, making it impossible
+		 * for the kernel to detect the misuse of "count" and
+		 * possibly causing an overflow of the user's buffer.
+		 */
 type task_flavor_t		= int;
-type task_info_t		= array[*:87] of integer_t;
+type task_info_t		= array[*:93+1] of integer_t;
 
 type task_purgable_info_t	= struct[68] of integer_t;
 
@@ -280,6 +361,7 @@ type task_inspect_flavor_t = natural_t;
 type task_inspect_info_t = array[*:4] of integer_t;
 
 type task_exc_guard_behavior_t = uint32_t;
+type task_corpse_forking_behavior_t = uint32_t;
 
 type mem_entry_name_port_t = mach_port_t
 #if     KERNEL_SERVER
@@ -303,21 +385,14 @@ type memory_object_default_t = mach_port_t
 #endif	/* KERNEL_PRIVATE */
 		;
  
-type memory_object_t = mach_port_t
+type memory_object_t = mach_port_t /* obsolete */
 #if	KERNEL_PRIVATE
 		intran: memory_object_t convert_port_to_memory_object(mach_port_t)
 		outtran: mach_port_t convert_memory_object_to_port(memory_object_t)
 #endif	/* KERNEL_PRIVATE */
 		;
 
-
-type memory_object_control_t = mach_port_t
-#if	KERNEL_PRIVATE
-		intran: memory_object_control_t convert_port_to_mo_control(mach_port_t)
-		outtran: mach_port_t convert_mo_control_to_port(memory_object_control_t)
-		destructor: memory_object_control_deallocate(memory_object_control_t)
-#endif	/* KERNEL_PRIVATE */
-		;
+type memory_object_control_t = mach_port_t; /* obsolete */
 
 type memory_object_name_t = mach_port_t
 		ctype: mach_port_t
@@ -343,11 +418,7 @@ type host_priv_t = mach_port_t
 #endif	/* KERNEL_SERVER */
 		;
 
-type host_security_t = mach_port_t
-#if	KERNEL_SERVER
-		intran: host_security_t convert_port_to_host_security(mach_port_t)
-#endif	/* KERNEL_SERVER */
-		;
+type host_security_t = mach_port_t; /* obsolete */
 
 		/* 
 		 * host_info_t: variable-sized inline array that can contain:
@@ -407,7 +478,6 @@ type processor_set_t = mach_port_t
 #if	KERNEL_SERVER
 		intran: processor_set_t convert_port_to_pset(mach_port_t)
 		outtran: mach_port_t convert_pset_to_port(processor_set_t)
-		destructor: pset_deallocate(processor_set_t)
 #endif	/* KERNEL_SERVER */
 		;
 
@@ -417,7 +487,6 @@ type processor_set_name_t = mach_port_t
 #if	KERNEL_SERVER
 		intran: processor_set_name_t convert_port_to_pset_name(mach_port_t)
 		outtran: mach_port_t convert_pset_name_to_port(processor_set_name_t)
-		destructor: pset_deallocate(processor_set_name_t)
 #endif	/* KERNEL_SERVER */
 		;
 
@@ -450,6 +519,8 @@ type mach_port_qos_t = struct[2] of integer_t;
 
 type mach_port_options_t = struct[3] of uint64_t;
 type mach_port_options_ptr_t = ^ mach_port_options_t;
+
+type mach_service_port_info_data_t = struct[256] of char;
 
 type emulation_vector_t		= ^array[] of vm_offset_t;
 
@@ -510,13 +581,21 @@ type vm_read_entry_t = array[512] of vm_offset_t;
 type vm32_read_entry_t = array[512] of vm32_offset_t;
 #endif
 
+type mach_vm_range_flavor_t = uint32_t;
+type mach_vm_range_recipes_raw_t = array[*:1024] of uint8_t;
+
 type exception_mask_t		= int;
 type exception_behavior_t	= int;
 
 type    exception_handler_t = mach_port_t;
 
+type    exception_handler_info_t = struct[2] of natural_t;
+
 type	exception_handler_array_t	=
 			array[*:32] of exception_handler_t;
+
+type    exception_handler_info_array_t =
+			array[*:32] of exception_handler_info_t;
 
 type	exception_behavior_array_t	=
 			array[*:32] of exception_behavior_t;
@@ -543,23 +622,50 @@ type semaphore_consume_ref_t = mach_port_move_send_t
 #endif	/* KERNEL_SERVER */
 		;
 
-type lock_set_t = mach_port_t
+#ifndef _MACH_MACH_EVENTLINK_TYPE_DEFS
+#define _MACH_MACH_EVENTLINK_TYPE_DEFS
+
+type eventlink_t = mach_port_t
+		ctype: mach_port_t
 #if	KERNEL_SERVER
-		intran: lock_set_t convert_port_to_lock_set(mach_port_t)
-		outtran: mach_port_t convert_lock_set_to_port(lock_set_t)
-		destructor: lock_set_dereference(lock_set_t)
+		intran: ipc_eventlink_t convert_port_to_eventlink(mach_port_t)
+		destructor: ipc_eventlink_deallocate(ipc_eventlink_t)
 #endif	/* KERNEL_SERVER */
 		;
 
+type eventlink_consume_ref_t = mach_port_move_send_t
+		ctype: mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_eventlink_t convert_port_to_eventlink(mach_port_t)
+		destructor: ipc_eventlink_deallocate(ipc_eventlink_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type eventlink_port_pair_t = array[2] of mach_port_t;
+type mach_eventlink_create_option_t = uint32_t;
+type mach_eventlink_associate_option_t = uint32_t;
+type mach_eventlink_disassociate_option_t = uint32_t;
+type mach_eventlink_signal_wait_option_t = uint32_t;
+
+#endif /* _MACH_MACH_EVENTLINK_TYPE_DEFS */
+
+/* obsolete */
+type lock_set_t = mach_port_t;
+
 type task_suspension_token_t = mach_port_move_send_once_t
 #if	KERNEL_SERVER
-		intran: task_suspension_token_t convert_port_to_task_suspension_token(mach_port_t)
-		outtran: mach_port_t convert_task_suspension_token_to_port(task_suspension_token_t)
+		intran: task_suspension_token_t convert_port_to_task_suspension_token_mig(mach_port_t)
+		outtran: mach_port_t convert_task_suspension_token_to_port_mig(task_suspension_token_t)
 #endif	/* KERNEL_SERVER */
 		;
 
 type vfs_path_t = c_string[4096];
-type nspace_path_t = c_string[1024];	/* 1024 == PATH_MAX */
+/*
+ * 8K, c.f. MAXLONGPATHLEN in sys/syslimits.h.
+ * These types should NEVER be allocated on the stack.
+ */
+type nspace_path_t = c_string[8192];
+type nspace_name_t = c_string[8192];
 
 /* public voucher types */
 
@@ -580,13 +686,7 @@ type ipc_voucher_t = mach_port_t
 	        ;
 
 /* IPC voucher attribute control internal object */
-type ipc_voucher_attr_control_t = mach_port_t
-#if	KERNEL_SERVER
-		intran: ipc_voucher_attr_control_t convert_port_to_voucher_attr_control(mach_port_t)
-		outtran: mach_port_t convert_voucher_attr_control_to_port(ipc_voucher_attr_control_t)
-		destructor: ipc_voucher_attr_control_release(ipc_voucher_attr_control_t)
-#endif	/* KERNEL_SERVER */
-                ;
+type ipc_voucher_attr_control_t = mach_port_t; /* obsolete */
 
 type mach_voucher_attr_key_t = uint32_t;
 
@@ -614,7 +714,7 @@ type kmod_control_flavor_t = int;
 type kmod_args_t = ^array[] of MACH_MSG_TYPE_BYTE
 	ctype: kmod_args_t;
 
-type io_master_t = mach_port_t;
+type io_main_t = mach_port_t;
 type UNDServerRef = mach_port_t;
 
 /* These must be kept in sync with definitions in osfmk/mach/dyld_kernel.h */
@@ -622,26 +722,29 @@ type dyld_kernel_image_info_t = struct[40] of MACH_MSG_TYPE_BYTE;
 type dyld_kernel_image_info_array_t = ^array[] of dyld_kernel_image_info_t;
 type dyld_kernel_process_info_t = struct[64] of MACH_MSG_TYPE_BYTE;
 
+type mach_vm_offset_list_t = array[*:512] of mach_vm_offset_t;
+
 #if KERNEL_SERVER
 #ifdef	MACH_KERNEL_PRIVATE
 simport <ipc/ipc_voucher.h>;	/* for voucher conversions */
 simport <kern/ipc_kobject.h>;	/* for null conversion */
-simport <kern/ipc_tt.h>;	/* for task/thread conversion */
-simport <kern/ipc_host.h>;	/* for host/processor/pset conversions */
-simport <kern/ipc_sync.h>;      /* for lock_set and semaphore conversions */
-simport <kern/ledger.h>;	/* for ledger conversions */
-simport <kern/processor.h>;	/* for processor conversions */
-simport <kern/sync_lock.h>;	/* for lock-set conversions */
-simport <kern/sync_sema.h>;	/* for semaphore conversions */
+simport <kern/ipc_tt.h>;	    /* for task/thread conversion */
+simport <kern/ipc_host.h>;	    /* for host/processor/pset conversions */
+simport <kern/ledger.h>;	    /* for ledger conversions */
+simport <kern/processor.h>;	    /* for processor conversions */
+simport <kern/sync_sema.h>;	    /* for semaphore conversions */
+simport <ipc/ipc_eventlink.h>;  /* for eventlink conversions */
 simport <vm/memory_object.h>;	/* for memory object type conversions */
-simport <vm/vm_map.h>;		/* for vm_map conversions */
+simport <vm/vm_map.h>;		    /* for vm_map conversions */
 #if CONFIG_ARCADE
-simport <kern/arcade.h>;    /* for arcade_register conversions */
+simport <kern/arcade.h>;        /* for arcade_register conversions */
 #endif
 #endif	/* MACH_KERNEL_PRIVATE */
 
-simport <kern/ipc_mig.h>;	/* pick up kernel-specific MIG things */
+simport <kern/ipc_mig.h>;	    /* pick up kernel-specific MIG things */
 
+simport <kern/task_ident.h>;    /* for task_id_token conversions */
+simport <kern/kern_cdata.h>;    /* for kcdata_object conversions */
 #endif /* KERNEL_SERVER */
 
 import <mach/mig.h>;
