@@ -4,7 +4,7 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
-#include "components/browser_ui/accessibility/android/accessibility_jni_headers/AccessibilityFeatureMap_jni.h"
+#include "components/browser_ui/accessibility/android/accessibility_feature_map_jni_headers/AccessibilityFeatureMap_jni.h"
 #include "components/browser_ui/accessibility/android/features.h"
 
 namespace browser_ui {

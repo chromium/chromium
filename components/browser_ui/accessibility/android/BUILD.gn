@@ -7,10 +7,13 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("accessibility_jni_headers") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
   ]
+}
+
+generate_jni("accessibility_feature_map_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java" ]
 }
 
 source_set("android") {
@@ -24,6 +27,7 @@ source_set("android") {
     "page_zoom_metrics.h",
   ]
   deps = [
+    ":accessibility_feature_map_jni_headers",
     ":accessibility_jni_headers",
     "//base",
     "//components/prefs",
@@ -41,7 +45,6 @@ android_library("constants_java") {
 android_library("lib_java") {
   srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
-    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
@@ -93,7 +96,9 @@ android_library("lib_java") {
 }
 
 android_library("page_zoom_utils_java") {
+  srcjar_deps = [ ":accessibility_feature_map_jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
   ]
@@ -105,6 +110,8 @@ android_library("page_zoom_utils_java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

@@ -38,6 +38,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -1320,7 +1321,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo && PageZoomUtils.shouldShowZoomMenuItem()) {
             // Page Zoom IPH should only show if the menu item is visible, and not on NTP or CCT.
-            if (tab != null && tab.getWebContents() != null && !tab.isNativePage()) {
+            if (!BuildConfig.IS_FOR_TEST
+                    && tab != null
+                    && tab.getWebContents() != null
+                    && !tab.isNativePage()) {
                 PageZoomIphController mPageZoomIphController =
                         new PageZoomIphController(
                                 mActivity,
