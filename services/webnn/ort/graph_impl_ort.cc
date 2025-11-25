@@ -57,6 +57,7 @@ class GraphImplOrt::ComputeResources {
                       named_output_tensors) {
     SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.Inference");
 
+    ScopedTrace scoped_trace("GraphImplOrt::ComputeResources::OrtRunSync");
     std::vector<const char*> input_names;
     std::vector<const OrtValue*> input_tensors;
     input_names.reserve(named_input_tensors.size());
