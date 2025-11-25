@@ -59,8 +59,6 @@ public class BiometricErrorDialogController {
                         .with(MORE_DETAILS, moreDetails)
                         .build();
 
-        // TODO(crbug.com/367922864): Add controller that handles the click on the "Lock screen"
-        // button.
         PropertyModelChangeProcessor.create(
                 customViewModel, dialogCustomView, BiometricErrorDialogViewBinder::bind);
         PropertyModel modalDialogModel =
@@ -84,7 +82,6 @@ public class BiometricErrorDialogController {
     }
 
     private SpannableString getLockoutErrorDetails(String text) {
-        // TODO(crbug.com/367922864): Link this to the Identity Check settings.
         return SpanApplier.applySpans(
                 text,
                 new SpanApplier.SpanInfo(
