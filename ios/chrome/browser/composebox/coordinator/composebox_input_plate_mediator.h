@@ -65,6 +65,9 @@ class WebStateList;
 // Processes the given `PDFFileURL` for a file.
 - (void)processPDFFileURL:(GURL)PDFFileURL;
 
+// Returns whether more attachments can be added.
+- (BOOL)canAddMoreAttachments;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_MEDIATOR_H_

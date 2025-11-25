@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -89,7 +90,6 @@ const CGFloat kFadeViewWidth = 30.0f;
 /// The size of the close icon in the context indicator buttons.
 const CGFloat kCloseIndicatorSize = 10.0f;
 }  // namespace
-
 
 @interface ComposeboxInputPlateViewController () <
     UITextViewDelegate,
@@ -163,12 +163,23 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 /// ComposeboxAnimationContextProvider
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
+@synthesize keyboardHeight = _keyboardHeight;
 
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme {
   self = [super init];
   if (self) {
     _omniboxContainer = [[UIView alloc] init];
     _theme = theme;
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardWillShow:)
+               name:UIKeyboardWillShowNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardWillHide:)
+               name:UIKeyboardWillHideNotification
+             object:nil];
   }
   return self;
 }
@@ -228,6 +239,10 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 - (CGFloat)inputHeight {
   return _inputPlateContainerView.frame.size.height;
+}
+
+- (CGFloat)keyboardHeight {
+  return _keyboardHeight;
 }
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
@@ -410,81 +425,6 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   return composeboxAttachments::kTabFileInputItemSize;
 }
 
-#pragma mark - Private
-
-- (void)handleAttachTabs {
-  [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
-}
-
-- (void)handleAIMTappedFromToolMenu {
-  self.AIModeEnabled = !self.AIModeEnabled;
-  if (self.AIModeEnabled) {
-    [self.metricsRecorder
-        recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
-  }
-}
-
-- (void)updateCarouselFade {
-  CGFloat contentOffsetX = _carouselView.contentOffset.x;
-  CGFloat contentWidth = _carouselView.contentSize.width;
-  CGFloat boundsWidth = _carouselView.bounds.size.width;
-
-  _leadingCarouselFadeView.hidden = contentOffsetX <= 0;
-  _trailingCarouselFadeView.hidden =
-      contentOffsetX + boundsWidth >= contentWidth;
-}
-
-- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
-  if (AIModeEnabled == _AIModeEnabled) {
-    return;
-  }
-  _AIModeEnabled = AIModeEnabled;
-  [self updateAIMButtonAppearance];
-  [self updatePlusButtonItems];
-  [self.mutator setAIModeEnabled:_AIModeEnabled];
-  [self triggerGlowEffect];
-}
-
-- (void)triggerGlowEffect {
-  if (!_glowEffectView) {
-    return;
-  }
-
-  // Cancel any previously scheduled updates.
-  _updateGlowCallback.Cancel();
-
-  if (_AIModeEnabled) {
-    // When turning on, ensure the glow is started. The view's state machine
-    // will prevent it from restarting if it's already active.
-    [_glowEffectView startGlow];
-  } else if (_glowEffectView.glowState == GlowState::kStoppingRotation) {
-    // If the user toggles off while the rotation is already stopping, stop the
-    // glow immediately.
-    [_glowEffectView stopGlow];
-    return;
-  }
-
-  // Schedule the next state transition after the delay, regardless of whether
-  // the mode was turned on or off.
-  __weak __typeof__(self) weakSelf = self;
-  _updateGlowCallback.Reset(base::BindOnce(^{
-    [weakSelf updateGlow];
-  }));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, _updateGlowCallback.callback(),
-      base::Seconds(kGlowEffectDuration));
-}
-
-/// Called after a delay to transition the glow effect to its next state.
-- (void)updateGlow {
-  [_glowEffectView stopGlow];
-}
-
-- (void)userInterfaceStyleChanged {
-  [self updateAIMButtonAppearance];
-  [self updateDepthShadowAppearance];
-}
-
 #pragma mark - UICollectionViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
@@ -531,6 +471,97 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 #pragma mark - Private helpers
 
+/// Handles keyboard appearance notifications to adjust layout.
+- (void)keyboardWillShow:(NSNotification*)notification {
+  CGRect keyboardFrame =
+      [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  _keyboardHeight = keyboardFrame.size.height;
+}
+
+/// Handles keyboard disappearance notifications to reset layout.
+- (void)keyboardWillHide:(NSNotification*)notification {
+  _keyboardHeight = 0;
+}
+
+/// Notifies the delegate to show the tab attachment UI.
+- (void)handleAttachTabs {
+  [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
+}
+
+- (void)handleAIMTappedFromToolMenu {
+  self.AIModeEnabled = !self.AIModeEnabled;
+  if (self.AIModeEnabled) {
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
+  }
+}
+
+/// Updates the visibility of the leading/trailing fade views for the carousel.
+- (void)updateCarouselFade {
+  CGFloat contentOffsetX = _carouselView.contentOffset.x;
+  CGFloat contentWidth = _carouselView.contentSize.width;
+  CGFloat boundsWidth = _carouselView.bounds.size.width;
+
+  _leadingCarouselFadeView.hidden = contentOffsetX <= 0;
+  _trailingCarouselFadeView.hidden =
+      contentOffsetX + boundsWidth >= contentWidth;
+}
+
+/// Enables or disables AI Mode and updates the UI accordingly.
+- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
+  if (AIModeEnabled == _AIModeEnabled) {
+    return;
+  }
+  _AIModeEnabled = AIModeEnabled;
+  [self updateAIMButtonAppearance];
+  [self updatePlusButtonItems];
+  [self.mutator setAIModeEnabled:_AIModeEnabled];
+  [self triggerGlowEffect];
+}
+
+/// Initiates the glow animation around the input plate.
+- (void)triggerGlowEffect {
+  if (!_glowEffectView) {
+    return;
+  }
+
+  // Cancel any previously scheduled updates.
+  _updateGlowCallback.Cancel();
+
+  if (_AIModeEnabled) {
+    // When turning on, ensure the glow is started. The view's state machine
+    // will prevent it from restarting if it's already active.
+    [_glowEffectView startGlow];
+  } else if (_glowEffectView.glowState == GlowState::kStoppingRotation) {
+    // If the user toggles off while the rotation is already stopping, stop the
+    // glow immediately.
+    [_glowEffectView stopGlow];
+    return;
+  }
+
+  // Schedule the next state transition after the delay, regardless of whether
+  // the mode was turned on or off.
+  __weak __typeof__(self) weakSelf = self;
+  _updateGlowCallback.Reset(base::BindOnce(^{
+    [weakSelf updateGlow];
+  }));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, _updateGlowCallback.callback(),
+      base::Seconds(kGlowEffectDuration));
+}
+
+/// Called after a delay to transition the glow effect to its next state.
+- (void)updateGlow {
+  [_glowEffectView stopGlow];
+}
+
+/// Responds to changes in the user interface style (e.g.: dark/light mode).
+- (void)userInterfaceStyleChanged {
+  [self updateAIMButtonAppearance];
+  [self updateDepthShadowAppearance];
+}
+
+/// Adjusts the shadow of the input plate based on UI style and theme.
 - (void)updateDepthShadowAppearance {
   if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark ||
       _theme.isTopInputPlate) {
@@ -606,6 +637,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   }
 }
 
+/// Adds and constraints the 'X' mark indicator to the AI Mode button.
 - (void)setupXMarkInAIMButton {
   [_aimButtonXIndicator removeFromSuperview];
 
@@ -714,6 +746,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   return lensButton;
 }
 
+/// Creates and returns the toolbar view containing action buttons.
 - (UIView*)createToolbarView {
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -746,6 +779,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   return buttonsStackView;
 }
 
+/// Configures the menu items for the plus (+) button.
 - (void)updatePlusButtonItems {
   if (!_plusButton) {
     return;
@@ -842,6 +876,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
 }
 
+/// Initializes and configures the collection view for the attachment carousel.
 - (void)setupCarouselContainer {
   // Carousel view
   UICollectionViewFlowLayout* layout =
@@ -907,6 +942,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   ]];
 }
 
+/// Sets up the main container view for the input plate.
 - (void)setupInputPlateContainerView {
   _inputPlateContainerView = [[UIView alloc] init];
   _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -928,6 +964,8 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   }
 }
 
+/// Updates the content and layout of the input plate stack view based on the
+/// current mode (compact or expanded).
 - (void)updateInputPlateStackViewContent {
   for (UIView* arrangedSubview in _inputPlateStackView.arrangedSubviews) {
     if (arrangedSubview != _omniboxContainer) {
@@ -960,6 +998,8 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   }
 }
 
+/// Animates the transition of the input plate stack view between compact and
+/// expanded states.
 - (void)updateInputPlateStackViewAnimated:(BOOL)animated {
   if (!animated) {
     [self updateInputPlateStackViewContent];
@@ -1001,6 +1041,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                             completion:nil];
 }
 
+/// Generates a banana icon image to be used in the UI.
 - (UIImage*)bananaIcon {
   CGFloat iconPadding = 4.0;
   CGSize size = CGSizeMake(kSymbolActionPointSize + iconPadding,

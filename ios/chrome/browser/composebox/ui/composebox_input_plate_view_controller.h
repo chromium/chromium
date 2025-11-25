@@ -58,6 +58,7 @@
 
 /// Height of the input view.
 @property(nonatomic, readonly) CGFloat inputHeight;
+@property(nonatomic, readonly) CGFloat keyboardHeight;
 
 // The input plate view to be used in animations.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;

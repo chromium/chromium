@@ -34,6 +34,7 @@
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -292,6 +293,11 @@ CreateInputDataFromAnnotatedPageContent(
                                      fromURL:PDFFileURL
                                     withData:data];
       }));
+}
+
+- (BOOL)canAddMoreAttachments {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _items.count < kAttachmentLimit;
 }
 
 #pragma mark - ComposeboxInputPlateMutator

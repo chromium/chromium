@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -58,6 +59,7 @@
 
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
+const CGFloat kSnackbarBottomMargin = 10;
 }
 
 @interface ComposeboxInputPlateCoordinator () <
@@ -266,6 +268,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     (ComposeboxInputPlateViewController*)composeboxViewController {
   [_metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kGallery];
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
   if (!_picker) {
     [self
         composeboxViewControllerMayShowGalleryPicker:composeboxViewController];
@@ -278,6 +284,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     (ComposeboxInputPlateViewController*)composeboxViewController {
   [_metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCamera];
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
   if (![UIImagePickerController
           isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     // TODO(crbug.com/40280872): Show an error to the user.
@@ -307,6 +317,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     (ComposeboxInputPlateViewController*)composeboxViewController {
   [_metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kFiles];
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
   UIDocumentPickerViewController* picker =
       [[UIDocumentPickerViewController alloc]
           initForOpeningContentTypes:@[ UTTypePDF ]];
@@ -317,6 +331,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)viewController {
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
   [self showComposeboxTabPicker];
 }
 
@@ -447,12 +465,25 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _tabPickerCoordinator = nil;
 }
 
-#pragma mark - Private
+#pragma mark - Private helpers
 
+/// Dismisses the composebox via a command to the browser coordinator.
 - (void)dismissComposebox {
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [commands hideComposeboxImmediately:NO];
+}
+
+/// Displays a snackbar error indicating the maximum number of attachments has
+/// been reached.
+- (void)showMaxAttachmentSnackbarError {
+  ComposeboxSnackbarPresenter* snackbar =
+      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+  CGFloat offset = _viewController.keyboardHeight;
+  if (!_theme.isTopInputPlate) {
+    offset += _viewController.inputHeight + kSnackbarBottomMargin;
+  }
+  [snackbar showAttachmentLimitSnackbarWithBottomOffset:offset];
 }
 
 @end

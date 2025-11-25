@@ -25,6 +25,10 @@
 }
 
 - (void)showAttachmentLimitSnackbar {
+  [self showAttachmentLimitSnackbarWithBottomOffset:0];
+}
+
+- (void)showAttachmentLimitSnackbarWithBottomOffset:(CGFloat)bottomOffset {
   NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED, kAttachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
@@ -32,7 +36,7 @@
   CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
+  [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
 @end
