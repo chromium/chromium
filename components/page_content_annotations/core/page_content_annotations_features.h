@@ -35,6 +35,10 @@ BASE_DECLARE_FEATURE(kPageContentCache);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays;
 
+// The maximum number of tabs to keep page content in the cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<int> kPageContentCacheMaxTabs;
+
 // Whether to enable taking screenshots for page content cache.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
