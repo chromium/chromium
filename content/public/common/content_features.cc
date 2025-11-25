@@ -389,6 +389,11 @@ BASE_FEATURE(kWebContentsDiscard,
 #endif
 );
 
+// Enables fast-shutdown to ignore workers during urgent discards on certain
+// platforms.
+const base::FeatureParam<bool> kUrgentDiscardIgnoreWorkers{
+    &kWebContentsDiscard, "urgent_discard_ignore_workers", false};
+
 // When this feature is enabled, partial storage cleanup will be
 // disabled for the GPU disk cache. (Performance improvement)
 BASE_FEATURE(kDisablePartialStorageCleanupForGPUDiskCache,

@@ -15,6 +15,19 @@ namespace resource_coordinator {
 
 class TabLifecycleUnitSource;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AttemptFastKillForDiscardResult)
+enum class AttemptFastKillForDiscardResult {
+  kKilled = 0,
+  kSkipped = 1,
+  kKilledWithoutUnloadHandlers = 2,
+  kKilledWithoutUnloadHandlersAndWorkers = 3,
+  kMaxValue = kKilledWithoutUnloadHandlersAndWorkers,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AttemptFastKillForDiscardResult)
+
 // Returns the TabLifecycleUnitSource indirectly owned by g_browser_process.
 TabLifecycleUnitSource* GetTabLifecycleUnitSource();
 

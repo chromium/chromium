@@ -13,21 +13,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 
 namespace resource_coordinator {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AttemptFastKillForDiscardResult)
-enum class AttemptFastKillForDiscardResult {
-  kKilled = 0,
-  kSkipped = 1,
-  kKilledWithoutUnloadHandlers = 2,
-  kMaxValue = kKilledWithoutUnloadHandlers,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AttemptFastKillForDiscardResult)
 
 TabLifecycleUnitSource* GetTabLifecycleUnitSource() {
   DCHECK(g_browser_process);
@@ -56,12 +45,19 @@ void AttemptFastKillForDiscard(
       discard_reason == ::mojom::LifecycleUnitDiscardReason::URGENT) {
     // We avoid fast shutdown on tabs with beforeunload handlers on the main
     // frame, as that is often an indication of unsaved user state.
+    static const bool should_ignore_workers =
+        features::kUrgentDiscardIgnoreWorkers.Get();
     if (!main_frame->GetSuddenTerminationDisablerState(
             blink::mojom::SuddenTerminationDisablerType::
                 kBeforeUnloadHandler) &&
         render_process_host->FastShutdownIfPossible(
-            1u, /*skip_unload_handlers=*/true)) {
-      result = AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
+            1u, /*skip_unload_handlers=*/true,
+            /*ignore_workers=*/should_ignore_workers)) {
+      result =
+          should_ignore_workers
+              ? AttemptFastKillForDiscardResult::
+                    kKilledWithoutUnloadHandlersAndWorkers
+              : AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
     }
   }
 #endif

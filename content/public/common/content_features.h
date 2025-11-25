@@ -119,6 +119,8 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kBtmClientBounceDetectionTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtmDualUse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebContentsDiscard);
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kUrgentDiscardIgnoreWorkers;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kDisablePartialStorageCleanupForGPUDiskCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDrawCutoutEdgeToEdge);

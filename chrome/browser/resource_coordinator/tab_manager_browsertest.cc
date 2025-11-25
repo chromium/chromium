@@ -13,6 +13,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -711,6 +712,60 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
 }
 
+class TabManagerIgnoreWorkersTest : public TabManagerTest {
+ public:
+  TabManagerIgnoreWorkersTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kWebContentsDiscard,
+          {{"urgent_discard_ignore_workers", "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(TabManagerIgnoreWorkersTest,
+                       UrgentFastShutdownWithWorker) {
+  base::HistogramTester histogram_tester;
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTwoTabs(embedded_test_server()->GetURL("a.com", "/title1.html"),
+              embedded_test_server()->GetURL("/register_service_worker.html"));
+
+  // Wait for the service worker to become ready.
+  content::RenderFrameHost* main_frame =
+      tsm()->GetWebContentsAt(1)->GetPrimaryMainFrame();
+  EXPECT_EQ("DONE",
+            EvalJs(main_frame, "register('/fetch_event_passthrough.js')"));
+
+  // Advance time so everything is urgent discardable.
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
+
+  // The Tab Manager will not be able to safely fast-kill either of the tabs as
+  // one of them is current, and the other has a service worker. An unsafe
+  // attempt will be made on some platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // The unsafe attempt for ChromeOS should succeed as ChromeOS ignores unload
+  // handlers and workers when in critical condition.
+  WindowedRenderProcessHostExitObserver observer;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(
+      tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
+#if BUILDFLAG(IS_CHROMEOS)
+  observer.Wait();
+  histogram_tester.ExpectBucketCount(
+      "Discarding.AttemptFastKillForDiscardResult",
+      AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlersAndWorkers,
+      1);
+#else
+  histogram_tester.ExpectBucketCount(
+      "Discarding.AttemptFastKillForDiscardResult",
+      AttemptFastKillForDiscardResult::kSkipped, 1);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 // Verifies the following state transitions for a tab:
 // - Initial state: ACTIVE
 // - Discard(kUrgent): ACTIVE->DISCARDED
@@ -1133,6 +1188,13 @@ INSTANTIATE_TEST_SUITE_P(
            info) {
       return info.param ? "RetainedWebContents" : "UnretainedWebContents";
     });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabManagerIgnoreWorkersTest,
+    ::testing::Values(true),
+    [](const ::testing::TestParamInfo<TabManagerTestWithTwoTabs::ParamType>&
+           info) { return "RetainedWebContents"; });
 
 INSTANTIATE_TEST_SUITE_P(
     ,
