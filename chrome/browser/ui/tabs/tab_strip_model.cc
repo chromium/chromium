@@ -301,8 +301,11 @@ void TabStripModel::SetFocusedGroup(
                  /*triggered_by_other_operation=*/false);
   }
 
+  auto old_focused_group = focused_group_;
   focused_group_ = group;
-  // Notify Observers
+  for (auto& observer : observers_) {
+    observer.OnTabGroupFocusChanged(focused_group_, old_focused_group);
+  }
 }
 
 TabStripModel::~TabStripModel() {

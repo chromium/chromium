@@ -355,6 +355,10 @@ void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
+void TabStripModelObserver::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group_id,
+    std::optional<tab_groups::TabGroupId> old_focused_group_id) {}
+
 void TabStripModelObserver::OnTabGroupAdded(
     const tab_groups::TabGroupId& group_id) {}
 

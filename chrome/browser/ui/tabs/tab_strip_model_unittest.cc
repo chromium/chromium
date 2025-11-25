@@ -369,6 +369,12 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
+  MOCK_METHOD(void,
+              OnTabGroupFocusChanged,
+              (std::optional<tab_groups::TabGroupId> new_focused_group_id,
+               std::optional<tab_groups::TabGroupId> old_focused_group_id),
+              (override));
+
   ObservedSelectionChange GetLatestSelectionChange() {
     return latest_selection_change_;
   }
@@ -1512,6 +1518,112 @@ TEST_P(TabStripModelTest, FocusGroupClampsSelection) {
   EXPECT_TRUE(tabstrip()->IsTabSelected(3));
   EXPECT_EQ(2u, tabstrip()->selection_model().size());
   EXPECT_EQ(2, tabstrip()->active_index());
+}
+
+TEST_P(TabStripModelTest, OnTabGroupFocusChangedObserver) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+
+  // Add some tabs and create a group.
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), false);
+  tabstrip()->AppendWebContents(CreateWebContents(), false);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0, 1});
+
+  // Mock observer to track calls to OnTabGroupFocusChanged.
+  testing::StrictMock<MockTabStripModelObserver> mock_observer;
+  tabstrip()->AddObserver(&mock_observer);
+
+  // Expect a call when the group is focused.
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group_id),
+                                                    testing::Eq(std::nullopt)));
+  tabstrip()->SetFocusedGroup(group_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Expect no call when the same group is focused again.
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::_, testing::_))
+      .Times(0);
+  tabstrip()->SetFocusedGroup(group_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Expect a call when the group is unfocused.
+  EXPECT_CALL(mock_observer,
+              OnTabGroupFocusChanged(testing::Eq(std::nullopt),
+                                     testing::Optional(group_id)));
+  tabstrip()->SetFocusedGroup(std::nullopt);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  tabstrip()->RemoveObserver(&mock_observer);
+}
+
+TEST_P(TabStripModelTest, ClosingFocusedGroupUnsetsFocusAndNotifies) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1});
+
+  testing::StrictMock<MockTabStripModelObserver> mock_observer;
+  tabstrip()->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
+                                                    testing::Eq(std::nullopt)));
+  tabstrip()->SetFocusedGroup(group);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
+                                                    testing::Optional(group)));
+  tabstrip()->CloseAllTabsInGroup(group);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(tabstrip()->GetFocusedGroup(), std::nullopt);
+  tabstrip()->RemoveObserver(&mock_observer);
+}
+
+TEST_P(TabStripModelTest, UngroupingFocusedGroupUnsetsFocusAndNotifies) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1});
+
+  testing::StrictMock<MockTabStripModelObserver> mock_observer;
+  tabstrip()->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
+                                                    testing::Eq(std::nullopt)));
+  tabstrip()->SetFocusedGroup(group);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
+                                                    testing::Optional(group)));
+  tabstrip()->RemoveFromGroup({0, 1});
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(tabstrip()->GetFocusedGroup(), std::nullopt);
+  tabstrip()->RemoveObserver(&mock_observer);
+}
+
+TEST_P(TabStripModelTest, ClosingLastTabOfFocusedGroupUnsetsFocusAndNotifies) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+  tabstrip()->AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0});
+
+  testing::StrictMock<MockTabStripModelObserver> mock_observer;
+  tabstrip()->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
+                                                    testing::Eq(std::nullopt)));
+  tabstrip()->SetFocusedGroup(group);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
+                                                    testing::Optional(group)));
+  tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(tabstrip()->GetFocusedGroup(), std::nullopt);
+  tabstrip()->RemoveObserver(&mock_observer);
 }
 
 // This test constructs a tabstrip, and then simulates loading several tabs in
