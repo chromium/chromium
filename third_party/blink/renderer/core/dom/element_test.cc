@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1472,7 +1473,7 @@ TEST_F(ElementTest, ThePickerIconPseudoElement) {
   EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdPickerIcon));
 }
 
-TEST_F(ElementTest, GenerateOverscrollPseudoElements) {
+TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
   ScopedCSSOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
@@ -1511,15 +1512,9 @@ TEST_F(ElementTest, GenerateOverscrollPseudoElements) {
                                           AtomicString("--baz")));
 
   // Parentage of children and pseudos within content:
-  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdBefore)
-                  ->GetLayoutObject()
-                  ->Parent()
-                  ->IsAnonymousBlockFlow());
-  EXPECT_EQ(scroller->GetPseudoElement(kPseudoIdBefore)
-                ->GetLayoutObject()
-                ->Parent()
-                ->Parent(),
-            overscroll_client_area->GetLayoutObject());
+  EXPECT_EQ(
+      scroller->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject()->Parent(),
+      overscroll_client_area->GetLayoutObject());
   EXPECT_EQ(GetElementById("child")->GetLayoutObject()->PreviousSibling(),
             scroller->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
 
@@ -1593,6 +1588,78 @@ TEST_F(ElementTest, ReorderOverscrollPseudoElements) {
             overscroll_parent_bar->GetLayoutObject());
   EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
             scroller->GetLayoutObject());
+}
+
+TEST_F(ElementTest, OverscrollPseudoElementStyles) {
+  ScopedCSSOverscrollGesturesForTest enabled(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #scroller, #non-scroller {
+        overscroll-area: --foo;
+      }
+      #scroller {
+        overflow: auto;
+      }
+      /* Only UA stylesheets should be able to style these pseudo-elements.
+       * The following styles SHOULD NOT apply. */
+      #scroller::-internal-overscroll-area-parent(*),
+      #non-scroller::-internal-overscroll-area-parent(*) {
+        backface-visibility: hidden;
+      }
+      #scroller::-internal-overscroll-client-area,
+      #non-scroller::-internal-overscroll-client-area {
+        backface-visibility: hidden;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="non-scroller"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  Element* non_scroller = GetElementById("non-scroller");
+  PseudoElement* scroller_client_area =
+      scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
+  PseudoElement* non_scroller_client_area =
+      non_scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
+  PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
+      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
+
+  ASSERT_TRUE(scroller_client_area);
+  ASSERT_TRUE(non_scroller_client_area);
+  ASSERT_TRUE(overscroll_parent_foo);
+
+  // Computed style of the overscroll area parent pseudo-elements
+  EXPECT_EQ(EOverflow::kAuto,
+            overscroll_parent_foo->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kAuto,
+            overscroll_parent_foo->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(EScrollbarWidth::kNone,
+            overscroll_parent_foo->GetComputedStyle()->ScrollbarWidth());
+
+  // The scroller client area should be scrollable
+  EXPECT_EQ(EOverflow::kAuto,
+            scroller_client_area->GetComputedStyle()->OverflowY());
+
+  // Computed style of the overscroll area parent pseudo-elements
+  EXPECT_EQ(EOverflow::kAuto,
+            overscroll_parent_foo->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kAuto,
+            overscroll_parent_foo->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(EScrollbarWidth::kNone,
+            overscroll_parent_foo->GetComputedStyle()->ScrollbarWidth());
+
+  // The non scroller client area is not scrollable
+  EXPECT_EQ(EOverflow::kVisible,
+            non_scroller_client_area->GetComputedStyle()->OverflowY());
+
+  // Only UA selectors can match these pseudo-elements,
+  // backface-visibility should be unchanged.
+  EXPECT_EQ(EBackfaceVisibility::kVisible,
+            overscroll_parent_foo->GetComputedStyle()->BackfaceVisibility());
+  EXPECT_EQ(EBackfaceVisibility::kVisible,
+            scroller_client_area->GetComputedStyle()->BackfaceVisibility());
 }
 
 TEST_F(ElementTest, GenerateScrollMarkerGroup) {

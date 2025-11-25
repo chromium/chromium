@@ -1866,6 +1866,16 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       output_.push_back(std::move(selector));
       return true;
     }
+    case CSSSelector::kPseudoOverscrollAreaParent: {
+      const CSSParserToken& ident = stream.Peek();
+      if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
+        selector.SetArgument(AtomicString("*"));
+      } else {
+        return false;
+      }
+      output_.push_back(std::move(selector));
+      return true;
+    }
     case CSSSelector::kPseudoScrollButton: {
       const CSSParserToken& ident = stream.Peek();
       if (ident.GetType() == kIdentToken) {

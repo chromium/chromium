@@ -100,6 +100,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* ScrollMarkerStyleSheet() {
     return scroll_marker_style_sheet_.Get();
   }
+  StyleSheetContents* OverscrollStyleSheet() {
+    return overscroll_style_sheet_.Get();
+  }
   StyleSheetContents* ForcedColorsStyleSheet() {
     return forced_colors_style_sheet_.Get();
   }
@@ -189,6 +192,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> scroll_button_style_sheet_;
   Member<StyleSheetContents> scroll_marker_style_sheet_;
+  Member<StyleSheetContents> overscroll_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
   Member<StyleSheetContents> view_source_style_sheet_;
   Member<StyleSheetContents> json_style_sheet_;

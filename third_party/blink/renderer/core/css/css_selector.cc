@@ -577,6 +577,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-menulist-popover-with-menulist-anchor",
      CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
+    {"-internal-overscroll-client-area",
+     CSSSelector::kPseudoOverscrollClientArea},
     {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
@@ -698,6 +700,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
 };
 
 constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
+    {"-internal-overscroll-area-parent",
+     CSSSelector::kPseudoOverscrollAreaParent},
     {"-webkit-any", CSSSelector::kPseudoAny},
     {"active-view-transition-type",
      CSSSelector::kPseudoActiveViewTransitionType},
@@ -836,6 +840,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoHasSlotted &&
       !RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if ((match->type == CSSSelector::kPseudoOverscrollAreaParent ||
+       match->type == CSSSelector::kPseudoOverscrollClientArea) &&
+      !RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

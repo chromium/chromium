@@ -3143,6 +3143,10 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       result.dynamic_pseudo = context.pseudo_id;
       return true;
     }
+    case CSSSelector::kPseudoOverscrollAreaParent:
+    case CSSSelector::kPseudoOverscrollClientArea: {
+      return element.GetPseudoIdForStyling() == pseudo_id;
+    }
     case CSSSelector::kPseudoScrollButton:
       return MatchScrollButton(element, context, result);
     case CSSSelector::kPseudoTargetText:

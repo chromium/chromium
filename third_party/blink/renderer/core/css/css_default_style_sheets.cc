@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -144,6 +145,7 @@ void CSSDefaultStyleSheets::Reset() {
   marker_style_sheet_.Clear();
   scroll_button_style_sheet_.Clear();
   scroll_marker_style_sheet_.Clear();
+  overscroll_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   view_source_style_sheet_.Clear();
   json_style_sheet_.Clear();
@@ -466,6 +468,21 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       rule_set_group_cache_.clear();
       return true;
     }
+    case kPseudoIdOverscrollAreaParent:
+    case kPseudoIdOverscrollClientArea: {
+      if (overscroll_style_sheet_) {
+        return false;
+      }
+      overscroll_style_sheet_ = ParseUASheet(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_OVERSCROLL_CSS));
+      if (!default_pseudo_element_style_) {
+        default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
+      default_pseudo_element_style_->AddRulesFromSheet(
+          OverscrollStyleSheet(), ScreenEval(), /*mixins=*/{});
+      default_pseudo_element_style_->CompactRulesIfNeeded();
+      return true;
+    }
     case kPseudoIdMarker: {
       if (marker_style_sheet_) {
         return false;
@@ -643,6 +660,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(scroll_button_style_sheet_);
   visitor->Trace(scroll_marker_style_sheet_);
+  visitor->Trace(overscroll_style_sheet_);
   visitor->Trace(view_source_style_sheet_);
   visitor->Trace(json_style_sheet_);
 

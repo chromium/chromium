@@ -1,0 +1,10 @@
+::-internal-overscroll-area-parent(*) {
+  display: block;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+::-internal-overscroll-client-area {
+  display: block;
+  overflow: inherit;
+}
