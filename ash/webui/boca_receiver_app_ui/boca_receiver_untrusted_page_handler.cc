@@ -314,8 +314,10 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
       connection_info_->connection_details().initiator().user_identity();
   const ::boca::UserIdentity& presenter =
       connection_info_->connection_details().presenter().user_identity();
+  const bool is_initiator_presenting =
+      initiator.gaia_id() == presenter.gaia_id();
   page_->OnConnecting(mojom::UserInfo::New(initiator.full_name()),
-                      initiator.gaia_id() != presenter.gaia_id()
+                      !is_initiator_presenting
                           ? mojom::UserInfo::New(presenter.full_name())
                           : nullptr);
   connection_info_->set_receiver_connection_state(
@@ -337,6 +339,15 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
       base::BindRepeating(
           &BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated,
           weak_ptr_factory_.GetWeakPtr()));
+  if (!is_initiator_presenting) {
+    connection_info_poller_.Start(
+        receiver_id_.value(), connection_info_->connection_id(),
+        delegate_->CreateRequestSender(
+            kRequesterId, GetReceiverConnectionInfoRequest::kTrafficAnnotation),
+        base::BindOnce(
+            &BocaReceiverUntrustedPageHandler::OnConnectionClosedByPoller,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void BocaReceiverUntrustedPageHandler::MaybeEndConnection(
@@ -356,6 +367,7 @@ void BocaReceiverUntrustedPageHandler::MaybeEndConnection(
   auto connection_state = reason == mojom::ConnectionClosedReason::kError
                               ? ::boca::ReceiverConnectionState::ERROR
                               : ::boca::ReceiverConnectionState::DISCONNECTED;
+  connection_info_poller_.Stop();
   UpdateConnection(connection_info_->connection_id(), connection_state);
   connection_info_.reset();
 }
@@ -435,6 +447,13 @@ void BocaReceiverUntrustedPageHandler::OnActiveNetworksChanged(
     return;
   }
   Init();
+}
+
+void BocaReceiverUntrustedPageHandler::OnConnectionClosedByPoller(
+    bool server_unreachable) {
+  MaybeEndConnection(server_unreachable
+                         ? mojom::ConnectionClosedReason::kError
+                         : mojom::ConnectionClosedReason::kInitiatorClosed);
 }
 
 boca::FCMHandler* BocaReceiverUntrustedPageHandler::fcm_handler() const {

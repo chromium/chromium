@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -37,6 +38,7 @@
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_status_code.h"
 #include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -292,6 +294,14 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
         base::Value(shill::kStateOnline));
   }
 
+  std::string GetConnectionInfoUrlWithConnectionId() {
+    return base::StrCat(
+        {get_connection_url_.spec(), "?",
+         base::ReplaceStringPlaceholders(
+             GetReceiverConnectionInfoRequest::kConnectionIdQueryParam,
+             {std::string(kConnectionId)}, /*offsets=*/nullptr)});
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
@@ -426,6 +436,11 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
   EXPECT_EQ(initiator->name, kInitiatorName);
   ASSERT_FALSE(presenter.is_null());
   EXPECT_EQ(presenter->name, kPresenterName);
+
+  // Polling should start since the initiator is not the presenter.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(
+      url_loader_factory_.IsPending(GetConnectionInfoUrlWithConnectionId()));
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest,
@@ -452,6 +467,11 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
   ASSERT_FALSE(initiator.is_null());
   EXPECT_EQ(initiator->name, kInitiatorName);
   EXPECT_TRUE(presenter.is_null());
+
+  // Polling should not start since the initiator is the presenter.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_FALSE(
+      url_loader_factory_.IsPending(GetConnectionInfoUrlWithConnectionId()));
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
@@ -731,6 +751,85 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kInitiatorClosed);
   EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
+
+  // No more polling after stop.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_FALSE(
+      url_loader_factory_.IsPending(GetConnectionInfoUrlWithConnectionId()));
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedFetchedByPolling) {
+  base::test::TestFuture<mojom::ConnectionClosedReason>
+      connection_closed_future;
+  // Establish a connection first.
+  url_loader_factory_.AddResponse(get_connection_url_.spec(),
+                                  CreateConnectionInfo(kConnectionId));
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  // Wait for CONNECTING update.
+  url_loader_factory_.WaitForRequest(update_connection_url_);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      update_connection_url_.spec(), kConnectingPair);
+
+  // Now simulate a STOP_REQUESTED response for polling.
+  url_loader_factory_.AddResponse(
+      GetConnectionInfoUrlWithConnectionId(),
+      CreateConnectionInfo(kConnectionId, "STOP_REQUESTED"));
+  EXPECT_CALL(page_, OnConnectionClosed)
+      .WillOnce(
+          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
+            connection_closed_future.GetCallback().Run(reason);
+          });
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_EQ(connection_closed_future.Get(),
+            mojom::ConnectionClosedReason::kInitiatorClosed);
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
+
+  // No more polling after stop.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_FALSE(
+      url_loader_factory_.IsPending(GetConnectionInfoUrlWithConnectionId()));
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, StopByPollingFailure) {
+  base::test::TestFuture<mojom::ConnectionClosedReason>
+      connection_closed_future;
+  // Establish a connection first.
+  url_loader_factory_.AddResponse(get_connection_url_.spec(),
+                                  CreateConnectionInfo(kConnectionId));
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  // Wait for CONNECTING update.
+  url_loader_factory_.WaitForRequest(update_connection_url_);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      update_connection_url_.spec(), kConnectingPair);
+
+  // Simulate polling failure.
+  url_loader_factory_.AddResponse(GetConnectionInfoUrlWithConnectionId(),
+                                  /*content=*/"",
+                                  net::HTTP_SERVICE_UNAVAILABLE);
+  EXPECT_CALL(page_, OnConnectionClosed)
+      .WillOnce(
+          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
+            connection_closed_future.GetCallback().Run(reason);
+          });
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  EXPECT_EQ(connection_closed_future.Get(),
+            mojom::ConnectionClosedReason::kError);
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kErrorPair);
+
+  // No more polling after stop.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_FALSE(
+      url_loader_factory_.IsPending(GetConnectionInfoUrlWithConnectionId()));
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
