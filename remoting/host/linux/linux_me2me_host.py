@@ -1345,15 +1345,6 @@ class WaylandDesktop(Desktop):
       self.host_proc = None
 
     super(WaylandDesktop, self).cleanup()
-    if self._wayland_socket:
-      runtime_dir = xdg.BaseDirectory.get_runtime_dir(strict=True)
-      full_socket_path = os.path.join(runtime_dir, self._wayland_socket)
-      for to_remove in (full_socket_path, "%s.lock" % full_socket_path):
-        try:
-          os.remove(to_remove)
-        except FileNotFoundError:
-          pass
-      self._wayland_socket = None
 
   def check_server_responding(self):
     """
