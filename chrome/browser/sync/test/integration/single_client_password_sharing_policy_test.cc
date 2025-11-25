@@ -17,11 +17,21 @@ namespace {
 using policy::PolicyMap;
 using testing::NiceMock;
 
-class SingleClientPasswordSharingPolicyTest : public SyncTest {
+class SingleClientPasswordSharingPolicyTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
   }
   ~SingleClientPasswordSharingPolicyTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
@@ -41,10 +51,16 @@ class SingleClientPasswordSharingPolicyTest : public SyncTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPasswordSharingPolicyTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordSharingPolicyTest,
                        ShouldDisablePasswordSharingDataTypes) {
   ASSERT_TRUE(SetupSync());
 
