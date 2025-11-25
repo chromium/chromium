@@ -252,10 +252,9 @@ void MaybeRegisterChromeFeaturePromos(
   using user_education::FeaturePromoSpecification;
   using user_education::HelpBubbleArrow;
   using user_education::Metadata;
-  using AdditionalCondition = user_education::FeaturePromoSpecification::
-      AdditionalConditions::AdditionalCondition;
-  using AdditionalConditions =
-      user_education::FeaturePromoSpecification::AdditionalConditions;
+  using AdditionalCondition =
+      FeaturePromoSpecification::AdditionalConditions::AdditionalCondition;
+  using AdditionalConditions = FeaturePromoSpecification::AdditionalConditions;
 
   // This icon got updated, so select the 2023 Refresh version.
   // Note that the WebUI refresh state is not taken into account, so
@@ -516,7 +515,7 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
-      std::move(user_education::FeaturePromoSpecification::CreateForLegacyPromo(
+      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                     &feature_engagement::kIPHDesktopPwaInstallFeature,
                     kInstallPwaElementId, IDS_DESKTOP_PWA_INSTALL_PROMO)
                     .SetMetadata(89, "phillis@chromium.org",
@@ -596,7 +595,7 @@ void MaybeRegisterChromeFeaturePromos(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(
-      user_education::FeaturePromoSpecification::CreateForSnoozePromo(
+      FeaturePromoSpecification::CreateForSnoozePromo(
           feature_engagement::kIPHExtensionsMenuFeature,
           kExtensionsMenuButtonElementId,
           IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY)
@@ -607,7 +606,7 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHExtensionsRequestAccessButtonFeature
   registry.RegisterFeature(std::move(
-      user_education::FeaturePromoSpecification::CreateForSnoozePromo(
+      FeaturePromoSpecification::CreateForSnoozePromo(
           feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
           kExtensionsRequestAccessButtonElementId,
           IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_BODY)
@@ -618,14 +617,14 @@ void MaybeRegisterChromeFeaturePromos(
                        "requests access permission.")));
 
   // kIPHExtensionsZeroStatePromoFeature
-  user_education::Metadata kIPHExtensionsZeroStatePromoFeatureMetaData =
-      user_education::Metadata(140, "uwyiming@google.com",
-                               "Triggered when a user has no "
-                               "extensions installed.");
+  Metadata iph_extensions_zero_state_promo_feature_metaData(
+      140, "uwyiming@google.com",
+      "Triggered when a user has no "
+      "extensions installed.");
   switch (feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get()) {
     case feature_engagement::kCustomActionIph:
       registry.RegisterFeature(std::move(
-          user_education::FeaturePromoSpecification::CreateForCustomAction(
+          FeaturePromoSpecification::CreateForCustomAction(
               feature_engagement::kIPHExtensionsZeroStatePromoFeature,
               kToolbarAppMenuButtonElementId,
               IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_DESCRIPTION,
@@ -636,7 +635,7 @@ void MaybeRegisterChromeFeaturePromos(
               .SetCustomActionIsDefault(true)
               .SetBubbleTitleText(IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE)
               .SetMetadata(
-                  std::move(kIPHExtensionsZeroStatePromoFeatureMetaData))
+                  std::move(iph_extensions_zero_state_promo_feature_metaData))
               .SetHighlightedMenuItem(
                   ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
       break;
@@ -645,7 +644,7 @@ void MaybeRegisterChromeFeaturePromos(
     case feature_engagement::kCustomUiChipIphV3:
     case feature_engagement::kCustomUIPlainLinkIph:
       registry.RegisterFeature(std::move(
-          user_education::FeaturePromoSpecification::CreateForCustomUi(
+          FeaturePromoSpecification::CreateForCustomUi(
               feature_engagement::kIPHExtensionsZeroStatePromoFeature,
               kToolbarAppMenuButtonElementId,
               MakeCustomWebUIHelpBubbleFactoryCallback<
@@ -655,7 +654,7 @@ void MaybeRegisterChromeFeaturePromos(
               // actual actions.
               base::DoNothing())
               .SetMetadata(
-                  std::move(kIPHExtensionsZeroStatePromoFeatureMetaData))
+                  std::move(iph_extensions_zero_state_promo_feature_metaData))
               .SetBubbleArrow(HelpBubbleArrow::kTopRight)
               .SetHighlightedMenuItem(
                   ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
@@ -904,8 +903,8 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER,
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo(IDC_SHOW_AVATAR_MENU))
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kKeyedNotice)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kKeyedNotice)
           .SetBubbleTitleText(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -920,8 +919,8 @@ void MaybeRegisterChromeFeaturePromos(
           kNotificationContentSettingImageView, IDS_QUIET_NOTIFICATION_IPH_TEXT,
           IDS_QUIET_NOTIFICATION_IPH_TEXT_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kKeyedNotice)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kKeyedNotice)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetReshowPolicy(base::Days(100), /*max_show_count=*/5)
           .SetMetadata(80, "lyf@chromium.org",
@@ -1221,8 +1220,8 @@ void MaybeRegisterChromeFeaturePromos(
                     "SupervisedUserProfileSignIn_IPHPromo_"
                     "ParentalControlsPageOpened"));
               }))
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kActionableAlert)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)
           .SetBubbleIcon(&vector_icons::kFamilyLinkIcon)
           .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -1244,8 +1243,8 @@ void MaybeRegisterChromeFeaturePromos(
                 ShowSingletonTab(GetBrowser(ctx),
                                  GURL(chrome::kChromeUIAccountSettingsURL));
               }))
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kActionableAlert)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetCustomActionIsDefault(false)
           .SetMetadata(142, "ddac@google.com",
@@ -1269,7 +1268,7 @@ void MaybeRegisterChromeFeaturePromos(
       std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                     &feature_engagement::kIPHTabSearchFeature,
                     kTabSearchButtonElementId, IDS_TAB_SEARCH_PROMO)
-                    .SetBubbleArrow(user_education::HelpBubbleArrow::kTopLeft)
+                    .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
                     .SetMetadata(92, "tluk@chromium.org",
                                  "Triggered once when there are more than 8 "
                                  "tabs in the tab strip.")));
@@ -1281,7 +1280,7 @@ void MaybeRegisterChromeFeaturePromos(
           kTabSearchButtonElementId, IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_BODY,
           IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_BODY,
           FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_TITLE)
           .SetMetadata(136, "emshack@chromium.org",
@@ -1371,8 +1370,7 @@ void MaybeRegisterChromeFeaturePromos(
                 params.target_url =
                     chrome::GetSettingsUrl(chrome::kPerformanceSubPage);
                 params.bubble_anchor_id = kInactiveTabSettingElementId;
-                params.bubble_arrow =
-                    user_education::HelpBubbleArrow::kBottomRight;
+                params.bubble_arrow = HelpBubbleArrow::kBottomRight;
                 params.bubble_text =
                     l10n_util::GetStringUTF16(IDS_DISCARD_RING_SETTINGS_TOAST);
                 params.close_button_alt_text_id = IDS_CLOSE_PROMO;
@@ -1504,8 +1502,8 @@ void MaybeRegisterChromeFeaturePromos(
                 }
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kKeyedNotice)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kKeyedNotice)
           .SetMetadata(122, "dibyapal@chromium.org",
                        "Triggered once per-app when a link is captured and "
                        "opened in a PWA.")));
@@ -1543,8 +1541,8 @@ void MaybeRegisterChromeFeaturePromos(
                 }
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kKeyedNotice)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kKeyedNotice)
           .SetMetadata(122, "finnur@chromium.org",
                        "Triggered once per-app when a link is captured and "
                        "opened in a browser tab.")));
@@ -1571,7 +1569,7 @@ void MaybeRegisterChromeFeaturePromos(
   if (MobilePromoOnDesktopTypeEnabled(
           MobilePromoOnDesktopPromoType::kLensPromo)) {
     registry.RegisterFeature(
-        std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
+        std::move(FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
                       kSidePanelElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
@@ -1587,15 +1585,15 @@ void MaybeRegisterChromeFeaturePromos(
   if (MobilePromoOnDesktopTypeEnabled(
           MobilePromoOnDesktopPromoType::kESBPromo)) {
     registry.RegisterFeature(std::move(
-        user_education::FeaturePromoSpecification::CreateForCustomUi(
+        FeaturePromoSpecification::CreateForCustomUi(
             feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
             kToolbarAppMenuButtonElementId,
             user_education::CreateCustomHelpBubbleViewFactoryCallback(
                 base::BindRepeating(
                     &IOSPromoBubbleView::Create,
                     desktop_to_mobile_promos::PromoType::kEnhancedBrowsing)))
-            .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                                 PromoSubtype::kActionableAlert)
+            .SetPromoSubtype(
+                FeaturePromoSpecification::PromoSubtype::kActionableAlert)
             .SetMetadata(144, "scottyoder@google.com",
                          "Triggered when ESB is first enabled.")));
   }
@@ -1604,7 +1602,7 @@ void MaybeRegisterChromeFeaturePromos(
   if (MobilePromoOnDesktopTypeEnabled(
           MobilePromoOnDesktopPromoType::kAutofillPromo)) {
     registry.RegisterFeature(
-        std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
+        std::move(FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSPasswordPromoDesktopFeature,
                       kPasswordsOmniboxKeyIconElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
@@ -1766,7 +1764,7 @@ void MaybeRegisterChromeTutorials(
     auto password_manager_tutorial =
         TutorialDescription::Create<kPasswordManagerTutorialMetricPrefix>(
             // Bubble step - Browser app menu
-            TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
+            BubbleStep(kToolbarAppMenuButtonElementId)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
@@ -1779,46 +1777,41 @@ void MaybeRegisterChromeTutorials(
             TutorialDescription::If(AppMenuModel::kPasswordAndAutofillMenuItem)
                 .Then(
                     // Bubble step - Passwords and Autofill sub menu item
-                    TutorialDescription::BubbleStep(
-                        AppMenuModel::kPasswordAndAutofillMenuItem)
+                    BubbleStep(AppMenuModel::kPasswordAndAutofillMenuItem)
                         .SetBubbleBodyText(
                             IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORDS_MENU)
                         .SetBubbleArrow(HelpBubbleArrow::kRightCenter)),
 
             // Bubble step - "Password Manager" menu item
-            TutorialDescription::BubbleStep(
-                AppMenuModel::kPasswordManagerMenuItem)
+            BubbleStep(AppMenuModel::kPasswordManagerMenuItem)
                 .SetBubbleBodyText(
                     IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORD_MANAGER)
                 .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
                 .AbortIfVisibilityLost(false),
 
             // Bubble step - "Add shortcut" row
-            TutorialDescription::BubbleStep(
-                PasswordManagerUI::kAddShortcutElementId)
+            BubbleStep(PasswordManagerUI::kAddShortcutElementId)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_ADD_SHORTCUT)
                 .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
                 .InAnyContext(),
 
             // Event step - Click on "Add shortcut"
-            TutorialDescription::EventStep(
-                PasswordManagerUI::kAddShortcutCustomEventId)
+            EventStep(PasswordManagerUI::kAddShortcutCustomEventId)
                 .InSameContext(),
 
             // Bubble step - "Install" row
-            TutorialDescription::BubbleStep(
-                web_app::WebAppInstallDialogDelegate::
-                    kPwaInstallDialogInstallButton)
+            BubbleStep(web_app::WebAppInstallDialogDelegate::
+                           kPwaInstallDialogInstallButton)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_INSTALL)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
             // Event step - Click on "Install"
-            TutorialDescription::EventStep(
+            EventStep(
                 web_app::WebAppInstallDialogDelegate::kInstalledPWAEventId)
                 .InSameContext(),
 
             // Completion of the tutorial.
-            TutorialDescription::BubbleStep(kTopContainerElementId)
+            BubbleStep(kTopContainerElementId)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_SUCCESS_BODY)
                 .SetBubbleArrow(HelpBubbleArrow::kNone));
@@ -1837,12 +1830,12 @@ void MaybeRegisterChromeTutorials(
         TutorialDescription::Create<kLensOverlayTutorialMetricPrefix>(
 
             // Bubble step - Address bar
-            TutorialDescription::BubbleStep(kOmniboxElementId)
+            BubbleStep(kOmniboxElementId)
                 .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_ADDRESS_BAR)
                 .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
 
             // Bubble step - Lens button
-            TutorialDescription::BubbleStep(kLensOverlayPageActionIconElementId)
+            BubbleStep(kLensOverlayPageActionIconElementId)
                 .SetBubbleBodyText(
                     IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_CLICK_LENS)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
@@ -1851,7 +1844,7 @@ void MaybeRegisterChromeTutorials(
             HiddenStep::WaitForHidden(kLensOverlayPageActionIconElementId),
 
             // Completion of the tutorial after side panel appears.
-            TutorialDescription::BubbleStep(kLensSidePanelSearchBoxElementId)
+            BubbleStep(kLensSidePanelSearchBoxElementId)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
                 .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX)
                 .SetBubbleArrow(HelpBubbleArrow::kLeftTop)
@@ -1893,15 +1886,14 @@ void MaybeRegisterChromeTutorials(
                     })),
 
             // Bubble step - inactive tab to right click.
-            TutorialDescription::BubbleStep(kLastInactiveTabElementName)
+            BubbleStep(kLastInactiveTabElementName)
                 .SetBubbleBodyText(IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY)
                 .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
 
             HiddenStep::WaitForShown(kToolbarSplitTabsToolbarButtonElementId),
 
             // Bubble step - highlight the toolbar button.
-            TutorialDescription::BubbleStep(
-                kToolbarSplitTabsToolbarButtonElementId)
+            BubbleStep(kToolbarSplitTabsToolbarButtonElementId)
                 .SetBubbleBodyText(IDS_SPLIT_VIEW_TOOLBAR_BUTTON_STEP_IPH_BODY)
                 .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
 
@@ -1909,8 +1901,7 @@ void MaybeRegisterChromeTutorials(
                 SplitTabMenuModel::kReversePositionMenuItem),
 
             // Completion of the tutorial after split view appears.
-            TutorialDescription::BubbleStep(
-                SplitTabMenuModel::kExitSplitMenuItem)
+            BubbleStep(SplitTabMenuModel::kExitSplitMenuItem)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
                 .SetBubbleBodyText(
                     IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY)
