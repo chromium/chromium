@@ -114,7 +114,8 @@ std::u16string HostedDomainForPrimaryAccount(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin))
-          .hosted_domain);
+          .GetHostedDomain()
+          .value_or(std::string()));
 }
 
 AlertCoordinator* ErrorCoordinator(NSError* error,
