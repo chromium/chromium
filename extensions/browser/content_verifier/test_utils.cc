@@ -495,7 +495,7 @@ scoped_refptr<Extension> UnzipToDirAndLoadExtension(
     ADD_FAILURE() << "Failed to unzip path.";
     return nullptr;
   }
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
       unzip_dir, mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
   EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";

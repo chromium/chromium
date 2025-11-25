@@ -51,7 +51,7 @@ class ExtensionCreator {
            int run_flags);
 
   // Returns the error message that will be present if Run(...) returned false.
-  std::string error_message() { return error_message_; }
+  const std::u16string& error_message() { return error_message_; }
 
   ErrorType error_type() { return error_type_; }
 
@@ -108,7 +108,7 @@ class ExtensionCreator {
       const std::optional<std::string>& compressed_verified_contents);
 
   // Holds a message for any error that is raised during Run(...).
-  std::string error_message_;
+  std::u16string error_message_;
 
   // Type of error that was raised, if any.
   ErrorType error_type_;

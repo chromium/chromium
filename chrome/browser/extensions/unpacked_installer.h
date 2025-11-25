@@ -168,13 +168,13 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // error, returns false and populates `error`.
   bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
-                     std::string* error);
+                     std::u16string* error);
 
   // Reads the Declarative Net Request JSON rulesets for the extension, if it
   // provided any, and persists the indexed rulesets. Returns false and
   // populates `error` in case of an error. Should be called on a sequence where
   // file IO is allowed.
-  bool IndexAndPersistRulesIfNeeded(std::string* error);
+  bool IndexAndPersistRulesIfNeeded(std::u16string* error);
 
   // Records command-line extension metrics, emitted when a command line
   // extension is installed.

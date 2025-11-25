@@ -49,15 +49,15 @@ TEST(ExtensionActionHandlerTest, LoadInvisibleBrowserActionIconUnpacked) {
       GetTestDataDir().AppendASCII("browser_action_invisible_icon");
   // Set the flag that enables the error.
   file_util::SetReportErrorForInvisibleIconForTesting(true);
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
       &error));
   file_util::SetReportErrorForInvisibleIconForTesting(false);
   EXPECT_FALSE(extension);
   EXPECT_EQ(
-      "Icon 'invisible_icon.png' specified in 'browser_action' is not "
-      "sufficiently visible.",
+      u"Icon 'invisible_icon.png' specified in 'browser_action' is not "
+      u"sufficiently visible.",
       error);
 }
 
@@ -68,15 +68,15 @@ TEST(ExtensionActionHandlerTest, LoadInvisiblePageActionIconUnpacked) {
       GetTestDataDir().AppendASCII("page_action_invisible_icon");
   // Set the flag that enables the error.
   file_util::SetReportErrorForInvisibleIconForTesting(true);
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
       &error));
   file_util::SetReportErrorForInvisibleIconForTesting(false);
   EXPECT_FALSE(extension);
   EXPECT_EQ(
-      "Icon 'invisible_icon.png' specified in 'page_action' is not "
-      "sufficiently visible.",
+      u"Icon 'invisible_icon.png' specified in 'page_action' is not "
+      u"sufficiently visible.",
       error);
 }
 
@@ -84,13 +84,14 @@ TEST(ExtensionActionHandlerTest, LoadInvisiblePageActionIconUnpacked) {
 TEST(ExtensionActionHandlerTest, InvalidActionIcon_ManifestV3) {
   base::FilePath extension_dir =
       GetTestDataDir().AppendASCII("action_invalid_icon");
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
       &error));
   EXPECT_FALSE(extension);
-  EXPECT_EQ("Could not load icon 'nonexistent_icon.png' specified in 'action'.",
-            error);
+  EXPECT_EQ(
+      u"Could not load icon 'nonexistent_icon.png' specified in 'action'.",
+      error);
 }
 
 using ExtensionActionHandlerManifestTest = ManifestTest;
@@ -198,7 +199,7 @@ class ExtensionActionManifestTest
       const char* popup_file_name,
       int manifest_version,
       TestExtensionDir* test_extension_dir,
-      std::string* error) {
+      std::u16string* error) {
     const char* action_key =
         ActionInfo::GetManifestKeyForActionType(GetParam());
 
@@ -333,7 +334,7 @@ TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
   constexpr char valid_popup_file_name[] = "popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
       valid_popup_file_name, manifest_version, &test_extension_dir, &error);
   ASSERT_TRUE(test_extension) << error;
@@ -359,7 +360,7 @@ TEST_P(ExtensionActionManifestTest, EmptyDefaultPopup) {
   constexpr char empty_popup_file_name[] = "";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
       empty_popup_file_name, manifest_version, &test_extension_dir, &error);
   ASSERT_TRUE(test_extension) << error;
@@ -385,13 +386,12 @@ TEST_P(ExtensionActionManifestTest, OtherExtensionSpecifiedDefaultPopup) {
       "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
       other_extension_specified_popup_file_name, manifest_version,
       &test_extension_dir, &error);
   ASSERT_FALSE(test_extension);
-  ASSERT_EQ(base::UTF16ToUTF8(manifest_errors::kInvalidActionDefaultPopup),
-            error);
+  ASSERT_EQ(manifest_errors::kInvalidActionDefaultPopup, error);
 }
 
 // Tests warning when the default_popup doesn't exist on file system.
@@ -399,7 +399,7 @@ TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
   constexpr char nonexistent_popup_file_name[] = "nonexistent_popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
       nonexistent_popup_file_name, manifest_version, &test_extension_dir,
       &error);

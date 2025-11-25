@@ -10,6 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/android/content_uri_test_utils.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
@@ -79,7 +81,7 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyPathNonExistent) {
   const base::FilePath file_path =
       CreateTestPath().Append(FILE_PATH_LITERAL("non_existent.pem"));
   EXPECT_EQ(std::nullopt, ReadInputKey(file_path));
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_NO_EXISTS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PRIVATE_KEY_NO_EXISTS),
             extension_creator()->error_message());
 }
 
@@ -97,7 +99,7 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyDangerousPath) {
 
   // If a path includes parent reference `..`, reading the path must fail.
   EXPECT_EQ(std::nullopt, ReadInputKey(file_path_dangerous));
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_READ),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_READ),
             extension_creator()->error_message());
 }
 
@@ -111,13 +113,13 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyInvalidPEMFormat) {
   ASSERT_TRUE(base::WriteFile(file_path, kTestData));
 
   EXPECT_EQ(std::nullopt, ReadInputKey(file_path));
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PRIVATE_KEY_INVALID),
             extension_creator()->error_message());
 }
 
 TEST_F(ExtensionCreatorTest, ReadInputKeyNotPKCSFormat) {
   EXPECT_EQ(std::nullopt, ReadInputKey(GetTestFile("not_pkcs.pem")));
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID_FORMAT),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PRIVATE_KEY_INVALID_FORMAT),
             extension_creator()->error_message());
 }
 
@@ -131,7 +133,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
   ASSERT_TRUE(base::CreateDirectory(src_path));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_EQ("Manifest file is missing or unreadable",
+  EXPECT_EQ(u"Manifest file is missing or unreadable",
             extension_creator()->error_message());
 
   // Add partial manifest file.
@@ -140,7 +142,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
   EXPECT_TRUE(extension_creator()->error_message().starts_with(
-      "Manifest is not valid JSON."));
+      u"Manifest is not valid JSON."));
 
   // Replace partial manifest with correct minimum file.
   ASSERT_TRUE(base::WriteFile(manifest_file,
@@ -155,7 +157,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
       "name": "test", "version": "1", "default_locale": "en" })"));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_EQ("Default locale was specified, but _locales subtree is missing.",
+  EXPECT_EQ(u"Default locale was specified, but _locales subtree is missing.",
             extension_creator()->error_message());
 
   // Add localization folder.
@@ -164,7 +166,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
   ASSERT_TRUE(base::CreateDirectory(en_locale));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_EQ("Catalog file is missing for locale en.",
+  EXPECT_EQ(u"Catalog file is missing for locale en.",
             extension_creator()->error_message());
 
   // Add valid default localization file.
@@ -183,7 +185,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
   ASSERT_TRUE(base::WriteFile(de_messages_file, de_data));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_THAT(extension_creator()->error_message(),
+  EXPECT_THAT(base::UTF16ToUTF8(extension_creator()->error_message()),
               testing::HasSubstr("Variable $VAR$ used but not defined."));
 }
 

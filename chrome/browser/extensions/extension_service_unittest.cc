@@ -2448,9 +2448,9 @@ TEST_F(ExtensionServiceTest, PackExtensionContainingKeyFails) {
   // This pack should fail because of the contained private key.
   EXPECT_FALSE(creator->Run(input_directory, crx_path, base::FilePath(),
       privkey_path, ExtensionCreator::kNoRunFlags));
-  EXPECT_THAT(creator->error_message(),
-              testing::ContainsRegex(
-                  "extension includes the key file.*privkey.pem"));
+  EXPECT_THAT(
+      base::UTF16ToUTF8(creator->error_message()),
+      testing::ContainsRegex("extension includes the key file.*privkey.pem"));
 }
 
 // Test Packaging and installing an extension using an openssl generated key.

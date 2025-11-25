@@ -133,7 +133,7 @@ extensions::MessageBundle* LoadMessageCatalogs(
 // validating unpacked extensions.
 bool ValidateExtensionLocales(const base::FilePath& extension_path,
                               const base::Value::Dict& manifest,
-                              std::string* error);
+                              std::u16string* error);
 
 // Returns true if directory has "." in the name (for .svn) or if it doesn't
 // belong to Chrome locales.

@@ -65,7 +65,7 @@ class PackExtensionJob {
   void ReportSuccessOnClientSequence(
       std::unique_ptr<base::FilePath> crx_file_out,
       std::unique_ptr<base::FilePath> key_file_out);
-  void ReportFailureOnClientSequence(const std::string& error,
+  void ReportFailureOnClientSequence(const std::u16string& error,
                                      ExtensionCreator::ErrorType error_type);
 
   const raw_ptr<Client> client_;  // Owns us.

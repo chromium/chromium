@@ -385,18 +385,16 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       // thread.
       base::ScopedAllowBlocking allow_blocking;
 
-      // TODO(crbug.com/41317803): Continue removing std::string errors and
-      // replacing with std::u16string.
-      std::string error;
+      std::u16string error;
       scoped_refptr<const Extension> extension(
           file_util::LoadExtension(info.extension_path, info.extension_location,
                                    GetCreationFlags(&info), &error));
 
       if (!extension.get() || extension->id() != info.extension_id) {
         invalid_extensions_.insert(info.extension_path);
-        LoadErrorReporter::GetInstance()->ReportLoadError(
-            info.extension_path, base::UTF8ToUTF16(error), profile,
-            false);  // Be quiet.
+        LoadErrorReporter::GetInstance()->ReportLoadError(info.extension_path,
+                                                          error, profile,
+                                                          false);  // Be quiet.
         continue;
       }
 

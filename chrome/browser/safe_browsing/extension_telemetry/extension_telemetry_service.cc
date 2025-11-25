@@ -411,7 +411,7 @@ extensions::ExtensionSet CollectCommandLineExtensionInfo() {
     auto tmp_path = extensions::path_util::ResolveHomeDirectory(
         base::FilePath(t.token_piece()));
     auto extension_path = base::MakeAbsoluteFilePath(tmp_path);
-    std::string error;
+    std::u16string error;
     // Use default creation flags. Since we are not installing the extension,
     // it doesn't really mattter.
     int flags = extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE |

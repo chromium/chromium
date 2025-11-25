@@ -240,7 +240,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
                           resources_for_hashes.value());
     }
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         temp_dir->UnpackedPath(), mojom::ManifestLocation::kInternal,
         Extension::InitFromValueFlags::NO_FLAGS, &error);

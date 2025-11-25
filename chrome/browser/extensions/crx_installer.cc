@@ -948,10 +948,8 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   // just moved the extension.
   // TODO(aa): All paths to resources inside extensions should be created
   // lazily and based on the Extension's root path at that moment.
-  // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with std::u16string
   ExtensionId extension_id = extension()->id();
-  std::string error;
+  std::u16string error;
   extension_ = file_util::LoadExtension(
       version_dir, install_source_,
       // Note: modified by UpdateCreationFlagsAndCompleteInstall.
@@ -961,9 +959,9 @@ void CrxInstaller::ReloadExtensionAfterInstall(
     ReportSuccessFromSharedFileThread();
   } else {
     LOG(ERROR) << error << " " << extension_id << " " << download_url_;
-    ReportFailureFromSharedFileThread(CrxInstallError(
-        CrxInstallErrorType::OTHER, CrxInstallErrorDetail::CANT_LOAD_EXTENSION,
-        base::UTF8ToUTF16(error)));
+    ReportFailureFromSharedFileThread(
+        CrxInstallError(CrxInstallErrorType::OTHER,
+                        CrxInstallErrorDetail::CANT_LOAD_EXTENSION, error));
   }
 }
 

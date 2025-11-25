@@ -98,7 +98,7 @@ void PackExtensionJob::Run(
   std::optional<CrxAndKeyFiles> files =
       GetCrxAndKeyFilePaths(root_directory_, key_file_);
   if (!files) {
-    ReportFailureOnClientSequence("Failed to create files under Downloads",
+    ReportFailureOnClientSequence(u"Failed to create files under Downloads",
                                   ExtensionCreator::ErrorType::kOtherError);
   }
   auto crx_file_out = std::make_unique<base::FilePath>(std::move(files->crx));
@@ -144,11 +144,13 @@ void PackExtensionJob::ReportSuccessOnClientSequence(
 }
 
 void PackExtensionJob::ReportFailureOnClientSequence(
-    const std::string& error,
+    const std::u16string& error,
     ExtensionCreator::ErrorType error_type) {
   DCHECK(client_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_->OnPackFailure(error, error_type);
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  client_->OnPackFailure(base::UTF16ToUTF8(error), error_type);
 }
 
 // static

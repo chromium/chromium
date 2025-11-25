@@ -112,15 +112,15 @@ TEST_F(ContentScriptsManifestTest, FailLoadingNonUTF8Scripts) {
                     .AppendASCII("bad")
                     .AppendASCII("bad_encoding");
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
                                Extension::NO_FLAGS, &error));
   ASSERT_EQ(extension.get(), nullptr);
-  ASSERT_STREQ(
-      "Could not load file 'bad_encoding.js' for content script. "
-      "It isn't UTF-8 encoded.",
-      error.c_str());
+  ASSERT_EQ(
+      u"Could not load file 'bad_encoding.js' for content script. "
+      u"It isn't UTF-8 encoded.",
+      error);
 }
 
 TEST_F(ContentScriptsManifestTest, FailLoadingNonJsScripts) {
