@@ -186,8 +186,6 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
   }
 }
 
-// TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
-// check the enum instead of the string
 AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
     const std::optional<base::Value::Dict>& response) {
   if (!response) {
