@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
+#include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace {
@@ -177,6 +180,12 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 
   std::sort(tab_indices.begin(), tab_indices.end());
   if (group_id.has_value()) {
+    // No-op if the specified tab group does not exist.
+    // TODO(crbug.com/460650221): Add a quick test for this.
+    if (!tab_strip_->group_model()->GetTabGroup(*group_id)) {
+      return std::nullopt;
+    }
+
     tab_strip_->AddToExistingGroup(std::move(tab_indices), *group_id);
     return group_id;
   }
@@ -200,7 +209,56 @@ void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
   tab_strip_->RemoveFromGroup(tab_indices);
 }
 
-void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
+void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
+  // We don't know the group size because all we have here is a group id...
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group) << "Tab group does not exist";
+
+  gfx::Range tabs = tab_group->ListTabs();
+  CHECK_GT(tabs.length(), 0u) << "Tab group is empty";
+
+  // Clamp the index to move for the first tab in the group to a valid index
+  // within the tab strip: the group should be after all pinned tabs and before
+  // the end of the tab strip.
+  size_t target_index =
+      std::clamp(static_cast<size_t>(index),
+                 static_cast<size_t>(tab_strip_->IndexOfFirstNonPinnedTab()),
+                 tab_strip_->count() - tabs.length());
+  // Return early if the index to move to is the same as the group's current
+  // index.
+  if (tabs.start() == target_index) {
+    return;
+  }
+
+  // Check that the index to move to is not in the middle of a tab group by
+  // checking whether the tab at `index_to_check` and the tab to its left is in
+  // the same tab group. Note that `GetTabGroupForTab` returns std::nullopt if
+  // the index is out of bounds.
+
+  // If the group will move to the right, compensate for the displacement of
+  // other tabs or tab groups to the right of the group before the move by
+  // adding the group's size to `target_index`. Basically, before MoveGroupTo is
+  // called:
+  // `index_to_check` points to the tab that will be to the right of the group
+  // after the move.
+  // `index_to_check` - 1 points to the tab that will be to the left of the
+  // group after the move.
+  const size_t index_to_check =
+      target_index > tabs.start() ? target_index + tabs.length() : target_index;
+
+  std::optional<tab_groups::TabGroupId> target_group =
+      tab_strip_->GetTabGroupForTab(index_to_check);
+  std::optional<tab_groups::TabGroupId> adjacent_group =
+      tab_strip_->GetTabGroupForTab(index_to_check - 1);
+
+  // TODO(crbug.com/460650221) As mentioned in the comment in TabListInterface,
+  // use the closest valid index if `index_to_check` falls in the middle of a
+  // group.
+  CHECK(!target_group.has_value() || target_group != adjacent_group)
+      << "Cannot move tab group into the middle of another group.";
+
+  tab_strip_->MoveGroupTo(group_id, target_index);
+}
 
 void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
                                     SessionID destination_window_id,
