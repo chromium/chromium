@@ -207,11 +207,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   if (self.preferToCompressContent) {
-    // Constrain the height of _scrollContentView to the height of _scrollView,
-    // making the content unscrollable.  Set constraint priority to
-    // UILayoutPriorityDefaultLow + 1 so that this constraint is deactivated and
-    // content is made scrollable only after views with compression resistence
-    // of UILayoutPriorityDefaultLow are first compressed.
+    // To make the content unscrollable, constrain the height of the content
+    // view. Set constraint priority to UILayoutPriorityDefaultLow + 1 so that
+    // this constraint is deactivated and content is made scrollable only after
+    // views with compression resistance of UILayoutPriorityDefaultLow are
+    // first compressed.
     NSLayoutConstraint* contentViewUnscrollableHeightConstraint =
         [self.contentView.heightAnchor
             constraintEqualToAnchor:self.view.heightAnchor];
@@ -448,10 +448,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     self.didReachBottom = YES;
   }
 
-  // Only add the scroll view delegate after all the view layouts are fully
+  // Update views based on the initial scroll state, once the layout is fully
   // done.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self setupScrollView];
+    [self updateViewsForInitialScrollState];
   });
 }
 
@@ -1026,9 +1026,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }];
 }
 
-// Adds the scroll view delegate and sets up the content views. This should be
+// Updates views based on the initial scroll state. This should be
 // done only once all the view layouts are fully done.
-- (void)setupScrollView {
+- (void)updateViewsForInitialScrollState {
   _canUpdateViewsOnScroll = YES;
 
   // At this point, the scroll view has computed its content height. If
