@@ -217,8 +217,7 @@ void FrameSinkImpl::UIResourceReleased(cc::UIResourceId ui_resource_id,
                                        bool is_lost) {
   auto itr = uploaded_resources_.find(ui_resource_id);
   CHECK(itr != uploaded_resources_.end());
-  auto* sii = context_provider_->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(itr->second.shared_image));
+  itr->second.shared_image->UpdateDestructionSyncToken(sync_token);
   uploaded_resources_.erase(itr);
 }
 
