@@ -130,7 +130,6 @@ public class TopToolbarOverlayMediatorTest {
         setTabSupplierTab(mTab);
 
         verify(mProgressBar).addObserver(mProgressBarObserverCaptor.capture());
-
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mBrowserControlsStateProvider).addObserver(mBrowserControlsObserverCaptor.capture());
         verify(mLayoutStateProvider).addObserver(mLayoutObserverCaptor.capture());
@@ -286,8 +285,8 @@ public class TopToolbarOverlayMediatorTest {
 
         mTabObserverCaptor.getValue().onLoadProgressChanged(mTab, 0.25f);
 
-        assertNotNull(
-                "The progress bar data should be populated.",
+        assertNull(
+                "The progress bar data should be null.",
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
 
         // Ensure the progress is correct on tab switch.

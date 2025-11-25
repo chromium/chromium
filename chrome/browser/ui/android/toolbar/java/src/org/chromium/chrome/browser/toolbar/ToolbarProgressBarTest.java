@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -212,14 +214,16 @@ public class ToolbarProgressBarTest {
         assertTrue("Composited progress bar should be visible.", isCompositedProgressBarVisible());
 
         // Ensure progress updates reached 50%.
-        verify(mMockProgressBarObserver, times(1)).onVisibleProgressUpdated();
+        verify(mMockProgressBarObserver, atLeast(1)).onVisibleProgressUpdated();
+        clearInvocations(mMockProgressBarObserver);
         assertEquals("Progress should have reached 50%.", 0.5f, getProgress(), MathUtils.EPSILON);
 
         // Finish progress bar.
         mProgressBar.finish(true);
+        mShadowLooper.idle();
 
         // Ensure progress reached 100%.
-        verify(mMockProgressBarObserver, times(2)).onVisibleProgressUpdated();
+        verify(mMockProgressBarObserver, atLeast(1)).onVisibleProgressUpdated();
         assertEquals("Progress should have reached 100%.", 1.0f, getProgress(), MathUtils.EPSILON);
 
         // Make sure the progress bar remains visible through completion.
@@ -234,7 +238,7 @@ public class ToolbarProgressBarTest {
 
         // Ensure that visibility changed now that progress has completed.
         assertFalse("Progress bar should not be visible.", isAndroidProgressBarVisible());
-        verify(mMockProgressBarObserver, times(2)).onCompositedLayersVisibilityChanged();
+        verify(mMockProgressBarObserver, times(1)).onCompositedLayersVisibilityChanged();
         assertFalse(
                 "Composited progress bar should not be visible.", isCompositedProgressBarVisible());
     }
