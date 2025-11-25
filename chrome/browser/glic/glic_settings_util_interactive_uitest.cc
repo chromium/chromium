@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -198,15 +199,34 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
-// TODO(crbug.com/460830590): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RefreshSettingsAfterAcceptingFRE \
-  DISABLED_RefreshSettingsAfterAcceptingFRE
-#else
-#define MAYBE_RefreshSettingsAfterAcceptingFRE RefreshSettingsAfterAcceptingFRE
-#endif
-IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
-                       MAYBE_RefreshSettingsAfterAcceptingFRE) {
+// Following SettingsUI test assumes there is chrome://settings/ai page
+// which requires some (at least one) AI feature to be enabled.
+// TabOrganization is used for the purpose.
+// kAiSettingsPageForceAvailable feature flag cannot be used for the purpose
+// in the test, because it forces to show glic settings page, too, but
+// we'd like to make sure that is invisible until glic FRE is completed.
+class GlicSettingsUtilSettingsUiTest : public GlicSettingsUtilUiTest {
+ public:
+  GlicSettingsUtilSettingsUiTest() = default;
+  ~GlicSettingsUtilSettingsUiTest() override = default;
+
+  void SetUp() override {
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+    GlicSettingsUtilUiTest::SetUp();
+  }
+
+  void TearDown() override {
+    GlicSettingsUtilUiTest::TearDown();
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(false);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kTabOrganization};
+};
+
+IN_PROC_BROWSER_TEST_F(GlicSettingsUtilSettingsUiTest,
+                       RefreshSettingsAfterAcceptingFRE) {
   const DeepQuery kPathToAiPageIndex{"settings-ui", "settings-main",
                                      "settings-ai-page-index"};
   const DeepQuery kPathToGlicPage{"settings-ui", "settings-main",

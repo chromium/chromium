@@ -503,6 +503,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs/organization",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/zoom",
     "//chrome/common",
