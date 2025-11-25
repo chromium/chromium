@@ -28,6 +28,10 @@
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using base::test::FeatureRef;
 
 namespace glic {
@@ -48,8 +52,14 @@ class GlicEnablingTest : public InProcessBrowserTest {
  protected:
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicRollout},
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kGlicRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         {});
   }
 
@@ -93,8 +103,14 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicTieredRollout},
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kGlicTieredRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         {features::kGlicRollout});
   }
   ~GlicEnablingTieredRolloutTest() override = default;
@@ -154,8 +170,16 @@ class GlicEnablingSimultaneousRolloutTest
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicTieredRollout, features::kGlicRollout},
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kGlicTieredRollout,
+            features::kGlicRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+        },
         {});
   }
   ~GlicEnablingSimultaneousRolloutTest() override = default;

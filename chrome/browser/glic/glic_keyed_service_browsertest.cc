@@ -25,6 +25,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 // The maximum number of times the closing toast should be shown for a profile.
 constexpr int kToastShownMax = 2;
@@ -35,9 +39,15 @@ class GlicKeyedServiceBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         // Both these features are required for the glic service to be properly
         // created.
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}}},
+        {
+            {features::kGlic, {}},
+            {features::kTabstripComboButton, {}},
+            {features::kGlicActorUi,
+             {{features::kGlicActorUiToastName, "true"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+            {chromeos::features::kFeatureManagementGlic, {}},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         /*disabled_features*/ {});
   }
 

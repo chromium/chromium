@@ -18,6 +18,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::test::FeatureRef;
@@ -32,7 +33,14 @@ class GlicEnablingTest : public testing::Test {
 
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        {});
   }
 
   void TearDown() override {
@@ -69,7 +77,14 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
  public:
   GlicEnablingProfileEligibilityTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         /*disabled_features=*/{});
   }
   ~GlicEnablingProfileEligibilityTest() override = default;

@@ -19,6 +19,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace glic {
 namespace {
 
@@ -34,8 +38,16 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
  public:
   GlicSidePanelCoordinatorTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicRollout,
-         features::kTabstripComboButton, features::kGlicMultiInstance},
+        {
+            features::kGlic,
+            features::kGlicRollout,
+            features::kTabstripComboButton,
+            features::kGlicMultiInstance,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+        },
         {});
   }
 

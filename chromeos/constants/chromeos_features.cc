@@ -157,6 +157,10 @@ BASE_FEATURE(kFeatureManagementOrca, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementDisableChromeCompose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables GLIC on ChromeOS. This flag is intended to be controlled by the
+// feature management module.
+BASE_FEATURE(kFeatureManagementGlic, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables rounded windows. This flag is intended to be controlled by the
 // feature management module.
 BASE_FEATURE(kFeatureManagementRoundedWindows,

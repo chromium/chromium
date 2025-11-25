@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 
@@ -28,6 +29,7 @@ class NonInteractiveGlicTest
   BrowserActivator& browser_activator() { return browser_activator_; }
 
  private:
+  base::test::ScopedFeatureList features_;
   BrowserActivator browser_activator_;
 };
 

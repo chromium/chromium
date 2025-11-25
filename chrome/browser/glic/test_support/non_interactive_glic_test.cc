@@ -6,9 +6,17 @@
 
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace glic {
 
 NonInteractiveGlicTest::NonInteractiveGlicTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+  features_.InitAndEnableFeature(chromeos::features::kFeatureManagementGlic);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   GlicFocusedBrowserManager::SetTestingModeForTesting(true);
 }
 

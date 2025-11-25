@@ -20,7 +20,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#endif
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace glic {
 
@@ -111,7 +112,11 @@ class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
 
 std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
   return {features::kGlic, features::kTabstripComboButton,
-          features::kGlicRollout};
+          features::kGlicRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+          chromeos::features::kFeatureManagementGlic
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
 }
 std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures() {
   return {features::kGlicWarming, features::kGlicFreWarming};
