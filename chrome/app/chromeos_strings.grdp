@@ -471,8 +471,8 @@
   <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
     If you download the update over your mobile network, it could result in overage charges.
   </message>
-  <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device">
-    Your hardware is ready to set up
+  <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device. Google Beam is the name of a product.">
+    Your Google Beam hardware is ready to set up
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
     Your Google Meet hardware is ready to set up
