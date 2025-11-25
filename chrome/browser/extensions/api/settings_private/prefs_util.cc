@@ -1711,19 +1711,6 @@ bool PrefsUtil::IsPrefUserModifiable(const std::string& pref_name) {
 PrefService* PrefsUtil::FindServiceForPref(const std::string& pref_name) {
   PrefService* user_prefs = profile_->GetPrefs();
 
-  // Proxy is a peculiar case: on ChromeOS, settings exist in both user
-  // prefs and local state, but chrome://settings should affect only user prefs.
-  // Elsewhere the proxy settings are stored in local state.
-  // See http://crbug.com/157147
-
-  if (pref_name == proxy_config::prefs::kProxy) {
-#if BUILDFLAG(IS_CHROMEOS)
-    return user_prefs;
-#else
-    return g_browser_process->local_state();
-#endif
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Secure DNS configurations should apply to the current user session. The
   // secure DNS preferences are mapped to local_state, which is applied to the
