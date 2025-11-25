@@ -28,6 +28,7 @@ public final class FuseboxAttachment extends ListItem {
     public final String mimeType;
     public final byte[] data;
     public final @Nullable Tab tab;
+    public final @Nullable Integer tabId;
     private @Nullable String mToken;
 
     private FuseboxAttachment(
@@ -42,7 +43,13 @@ public final class FuseboxAttachment extends ListItem {
         this.title = title;
         this.mimeType = mimeType;
         this.data = data;
-        this.tab = tab;
+        if (tab != null && tab.getId() != Tab.INVALID_TAB_ID) {
+            this.tab = tab;
+            this.tabId = tab.getId();
+        } else {
+            this.tab = null;
+            this.tabId = null;
+        }
         mToken = null;
 
         // Set the ATTACHMENT property to this instance after construction

@@ -51,7 +51,9 @@ import org.chromium.url.GURL;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
@@ -307,10 +309,13 @@ public class FuseboxMediator {
             return;
         }
 
-        Long[] preselectedIds = getPreselectionTabIds();
+        Integer[] preselectedIntegerIds = getPreselectionTabIds();
+        Long[] preselectedIds = new Long[preselectedIntegerIds.length];
+        for (int i = 0; i < preselectedIntegerIds.length; i++) {
+            preselectedIds[i] = (long) preselectedIntegerIds[i];
+        }
 
         if (preselectedIds != null && preselectedIds.length > 0) {
-            // Send the IDs to the activity using the defined extra.
             intent.putExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
         }
 
@@ -321,14 +326,47 @@ public class FuseboxMediator {
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
         // Retrieve list of tab ids.
-        long[] tabIds = data.getLongArrayExtra(EXTRA_ATTACHMENT_TAB_IDS);
-        if (tabIds == null) return;
-        for (long tabId : tabIds) {
-            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            if (tabModelSelector == null) return;
-            Tab tab = mTabModelSelectorSupplier.get().getTabById((int) tabId);
-            if (tab == null) break;
-            onAddCurrentTab(tab);
+        long[] selectedTabIds = data.getLongArrayExtra(EXTRA_ATTACHMENT_TAB_IDS);
+        if (selectedTabIds == null) {
+            selectedTabIds = new long[0];
+        }
+
+        Set<Integer> newSelectedIds = new HashSet<>();
+        for (long id : selectedTabIds) {
+            newSelectedIds.add((int) id);
+        }
+
+        updateCurrentlyAttachedTabs(newSelectedIds);
+    }
+
+    /**
+     * Reconciles the model list attachments with a new set of selected tab IDs by removing
+     * deselected tabs and adding newly selected tabs in one pass.
+     *
+     * @param newlySelectedTabIds The set of Tab IDs (as Integer) that are now selected by the user.
+     */
+    @VisibleForTesting
+    public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        if (tabModelSelector == null) return;
+        Set<Integer> currentAttachedIds = new HashSet<Integer>();
+        Collections.addAll(currentAttachedIds, getPreselectionTabIds());
+        currentAttachedIds.remove(null);
+        mModelList.removeIf(
+                item -> {
+                    if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
+                    FuseboxAttachment attachment =
+                            item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
+                    Integer tabId = assumeNonNull(attachment).tabId;
+                    return !newlySelectedTabIds.contains(tabId);
+                });
+
+        for (int id : newlySelectedTabIds) {
+            if (!currentAttachedIds.contains(id)) {
+                Tab tab = tabModelSelector.getTabById(id);
+                mModelList.add(
+                        FuseboxAttachment.forTab(assumeNonNull(tab), mContext.getResources()));
+            }
         }
     }
 
@@ -547,27 +585,18 @@ public class FuseboxMediator {
     }
 
     /**
-     * @return Array of Tab IDs (as Long[]), empty if no attachments.
+     * @return Array of Tab IDs (as Integer[]), empty if no attachments.
      */
-    public Long[] getPreselectionTabIds() {
-        List<Long> attachedTabIds = new ArrayList<>();
+    public Integer[] getPreselectionTabIds() {
+        List<Integer> attachedTabIds = new ArrayList<>();
 
         for (int i = 0; i < mModelList.size(); i++) {
-            MVCListAdapter.ListItem listItem = mModelList.get(i);
-            if (listItem.type != FuseboxAttachmentType.ATTACHMENT_TAB) {
+            FuseboxAttachment attachment = mModelList.get(i);
+            if (attachment.type != FuseboxAttachmentType.ATTACHMENT_TAB) {
                 continue;
             }
-
-            FuseboxAttachment attachment =
-                    listItem.model.get(FuseboxAttachmentProperties.ATTACHMENT);
-            @Nullable Tab tab = attachment.tab;
-
-            if (tab != null) {
-                attachedTabIds.add((long) tab.getId());
-            }
+            attachedTabIds.add(attachment.tabId);
         }
-
-        Long[] resultArray = attachedTabIds.toArray(new Long[0]);
-        return resultArray;
+        return attachedTabIds.toArray(new Integer[0]);
     }
 }

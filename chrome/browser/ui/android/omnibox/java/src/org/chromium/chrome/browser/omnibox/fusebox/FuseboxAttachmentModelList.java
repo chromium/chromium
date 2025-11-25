@@ -9,7 +9,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * A specialized ModelList for Fusebox attachments that maintains tight coupling with
@@ -85,6 +90,38 @@ public class FuseboxAttachmentModelList extends ModelList {
     }
 
     /**
+     * Removes FuseboxAttachments from the model list and backend that satisfy the given filter
+     * predicate.
+     *
+     * @param filter The predicate to test each {@link ListItem} against for removal.
+     * @return True if one or more attachments were removed; False, otherwise.
+     */
+    public boolean removeIf(Predicate<ListItem> filter) {
+        List<FuseboxAttachment> attachmentsToRemove = new ArrayList<>();
+
+        // Identify attachments that satisfy the filter.
+        for (int index = 0; index < size(); index++) {
+            FuseboxAttachment attachment = get(index);
+            if (filter.test(attachment)) {
+                attachmentsToRemove.add(attachment);
+            }
+        }
+
+        // If nothing was found, return false.
+        if (attachmentsToRemove.isEmpty()) {
+            return false;
+        }
+
+        // Execute removal using the existing single-item method.
+        for (FuseboxAttachment attachment : attachmentsToRemove) {
+            remove(attachment);
+        }
+
+        // Since we executed actual removal logic one or more times, return true.
+        return true;
+    }
+
+    /**
      * Removes all attachments from the model list and backend. This is the preferred method for
      * clearing all attachments.
      */
@@ -100,6 +137,17 @@ public class FuseboxAttachmentModelList extends ModelList {
 
         assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         super.clear();
+    }
+
+    /**
+     * Retrieves the FuseboxAttachment at the specified position in this list.
+     *
+     * @param index index of the element to return.
+     * @return the FuseboxAttachment at the specified position.
+     */
+    @Override
+    public FuseboxAttachment get(int index) {
+        return (FuseboxAttachment) super.get(index);
     }
 
     /** Apply a variant of the branded color scheme to Fusebox Attachment elements. */

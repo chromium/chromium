@@ -55,6 +55,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -66,10 +67,13 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 /** Unit tests for {@link FuseboxMediator}. */
@@ -175,6 +179,42 @@ public class FuseboxMediatorUnitTest {
         when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
         when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
         mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
+    }
+
+    private void addTabAttachment(Tab tab) {
+        int id = tab.getId();
+        String title = tab.getTitle();
+
+        mAttachments.add(FuseboxAttachment.forTab(tab, mResources));
+    }
+
+    private Tab mockTab(int id, boolean webContentsReady) {
+        Tab tab = mock(Tab.class);
+        String token = "token-" + id;
+        when(tab.getId()).thenReturn(id);
+        when(tab.getWebContents()).thenReturn(webContentsReady ? mWebContents : null);
+        when(tab.getTitle()).thenReturn("Tab " + id);
+        when(mTabModelSelector.getTabById(id)).thenReturn(tab);
+
+        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
+        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
+        return tab;
+    }
+
+    private Set<Integer> getCurrentlyAttachedIdsFromModel() {
+        Set<Integer> ids = new HashSet<>();
+        for (int i = 0; i < mAttachments.size(); i++) {
+            MVCListAdapter.ListItem listItem = mAttachments.get(i);
+            if (listItem.type != FuseboxAttachmentType.ATTACHMENT_TAB) continue;
+
+            FuseboxAttachment attachment =
+                    listItem.model.get(FuseboxAttachmentProperties.ATTACHMENT);
+            Tab tab = attachment.tab;
+            if (tab != null) {
+                ids.add(tab.getId());
+            }
+        }
+        return ids;
     }
 
     @Test
@@ -599,5 +639,42 @@ public class FuseboxMediatorUnitTest {
         mMediator.setUseCompactUi(false);
         assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
         assertFalse(mCompactModeEnabled);
+    }
+
+    @Test
+    public void testUpdateCurrentlyAttachedTabs_Reconciliation() {
+        // Setup Tabs for the TabModelSelector
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        Tab tab3 = mockTab(103, true);
+        Tab tab4 = mockTab(104, false);
+
+        addTabAttachment(tab1);
+        addTabAttachment(tab3);
+        // Verify initial setup.
+        assertEquals(2, mAttachments.size());
+        assertTrue(getCurrentlyAttachedIdsFromModel().contains(101));
+        assertTrue(getCurrentlyAttachedIdsFromModel().contains(103));
+        clearInvocations(mMediator);
+
+        // Mock getPreselectionTabIds to return the current attached IDs (as Integer[]).
+        doReturn(new Integer[] {101, 103}).when(mMediator).getPreselectionTabIds();
+
+        // Create set of newly selected Ids.
+        Set<Integer> newlySelectedIds = new HashSet<>();
+        newlySelectedIds.add(102);
+        newlySelectedIds.add(103);
+        newlySelectedIds.add(104);
+
+        // Call updateCurrentlyAttachedTabs to add newly selected tabs and remove unselected tabs.
+        mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
+
+        // Verify final state.
+        Set<Integer> finalIds = getCurrentlyAttachedIdsFromModel();
+        assertEquals(3, finalIds.size());
+        assertFalse(finalIds.contains(101));
+        assertTrue(finalIds.contains(102));
+        assertTrue(finalIds.contains(103));
+        assertTrue(finalIds.contains(104));
     }
 }
