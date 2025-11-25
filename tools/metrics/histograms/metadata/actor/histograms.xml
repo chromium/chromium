@@ -282,56 +282,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.ObservationDelay.DidTimeout" enum="Boolean"
-    expires_after="2026-08-11">
-  <owner>linnan@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Records whether the ObservationDelayController's Wait() timed out. Recorded
-    when the observation delay is completed.
-  </summary>
-</histogram>
-
-<histogram name="Actor.ObservationDelay.LcpDelayNeeded" enum="Boolean"
-    expires_after="2026-08-11">
-  <owner>linnan@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Records whether an additional delay was added by the
-    ObservationDelayController because the Largest Contentful Paint (LCP) had
-    not yet occurred. Not recorded for timeouts.
-  </summary>
-</histogram>
-
-<histogram name="Actor.ObservationDelay.StateDuration.{State}" units="ms"
-    expires_after="2026-08-11">
-  <owner>linnan@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Measures the duration of {State} in the ObservationDelayController's state
-    machine. Not recorded for timeouts.
-  </summary>
-  <token key="State">
-    <variant name="WaitForLoadCompletion"/>
-    <variant name="WaitForPageStability"/>
-    <variant name="WaitForVisualStateUpdate"/>
-  </token>
-</histogram>
-
-<histogram name="Actor.ObservationDelay.TotalWaitDuration" units="ms"
-    expires_after="2026-08-11">
-  <owner>linnan@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Measures the total time from when Wait() is called until the observation
-    delay completes. Not recorded for timeouts.
-  </summary>
-</histogram>
-
 <histogram name="Actor.PageContext.APC.Duration" units="ms"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

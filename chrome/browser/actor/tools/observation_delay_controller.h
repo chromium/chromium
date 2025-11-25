@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_OBSERVATION_DELAY_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_OBSERVATION_DELAY_CONTROLLER_H_
 
-#include <memory>
 #include <ostream>
 #include <string_view>
 
@@ -26,8 +25,6 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace actor {
-
-class ObservationDelayMetrics;
 
 // Observes a page during tool-use and determines when the page has settled
 // after an action and is ready for for an observation.
@@ -80,7 +77,6 @@ class ObservationDelayController : public content::WebContentsObserver {
     kWaitForLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
-    kDelayForLcp,
     kDidTimeout,
     kDone
   };
@@ -97,8 +93,6 @@ class ObservationDelayController : public content::WebContentsObserver {
       std::ostream& o,
       const ObservationDelayController::State& state);
 
-  void OnPageStable();
-  void OnVisualStateUpdated(bool);
   void OnMonitorDisconnected();
   void DCheckStateTransition(State old_state, State new_state);
   void MoveToState(State state);
@@ -119,8 +113,6 @@ class ObservationDelayController : public content::WebContentsObserver {
   // provides its own async entries.
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> inner_journal_entry_;
   base::TimeDelta page_stability_start_delay_;
-
-  std::unique_ptr<ObservationDelayMetrics> metrics_;
 
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};
 };
