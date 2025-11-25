@@ -68,7 +68,7 @@ TEST(SanitizerBuiltinsTest, DefaultSafeIsAllowList) {
   CHECK_EMPTY(sanitizer->RemoveElements());
   CHECK_EMPTY(sanitizer->ReplaceElements());
   CHECK_EMPTY(sanitizer->RemoveAttrs());
-  CHECK(sanitizer->AllowAttrsPerElement().empty());
+  CHECK(!sanitizer->AllowAttrsPerElement().empty());
   CHECK(sanitizer->RemoveAttrsPerElement().empty());
 }
 

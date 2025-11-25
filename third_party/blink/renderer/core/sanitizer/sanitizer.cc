@@ -84,6 +84,8 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
                      std::unique_ptr<SanitizerNameSet> replace_elements,
                      std::unique_ptr<SanitizerNameSet> allow_attrs,
                      std::unique_ptr<SanitizerNameSet> remove_attrs,
+                     SanitizerNameMap allow_attrs_per_element,
+                     SanitizerNameMap remove_attrs_per_element,
                      bool allow_data_attrs,
                      bool allow_comments)
     : allow_elements_(allow_elements.release()),
@@ -91,6 +93,8 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
       replace_elements_(replace_elements.release()),
       allow_attrs_(allow_attrs.release()),
       remove_attrs_(remove_attrs.release()),
+      allow_attrs_per_element_(allow_attrs_per_element),
+      remove_attrs_per_element_(remove_attrs_per_element),
       data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
                                    : SanitizerBoolWithAbsence::kFalse),
       comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
