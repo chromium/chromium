@@ -901,14 +901,15 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
                                            needs_intrinsic_track_size));
   const auto& node = Node();
   if (masonry_items.IsEmpty()) {
-    masonry_items = node.ConstructMasonryItems(line_resolver, opt_oof_children);
+    masonry_items =
+        node.ConstructGridLanesItems(line_resolver, opt_oof_children);
   } else {
     // If `masonry_items` is not empty, that means that we are in
     // a second track sizing pass required for intrinsic tracks within
     // a repeat() track definition. Don't construct the masonry items
     // from scratch. Rather, adjust their spans based on the updated
     // `line_resolver`.
-    node.AdjustMasonryItemSpans(masonry_items, line_resolver);
+    node.AdjustGridLanesItemSpans(masonry_items, line_resolver);
   }
 
   return BuildGridAxisTracks(line_resolver, masonry_items, sizing_constraint,

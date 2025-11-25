@@ -27,11 +27,12 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
     collapsed_track_indexes_.clear();
 
-    auto masonry_items = algorithm.Node().ConstructMasonryItems(line_resolver);
+    auto grid_lanes_items =
+        algorithm.Node().ConstructGridLanesItems(line_resolver);
     bool needs_intrinsic_track_size = false;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
-        masonry_items, collapsed_track_indexes_, start_offset,
+        grid_lanes_items, collapsed_track_indexes_, start_offset,
         needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
@@ -45,11 +46,11 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
       CHECK(collapsed_track_indexes_.empty());
 
       Vector<LayoutUnit> intrinsic_repeat_track_sizes =
-          algorithm.GetIntrinsicRepeaterTrackSizes(!masonry_items.IsEmpty(),
+          algorithm.GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                                    grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
-          masonry_items, collapsed_track_indexes_, start_offset,
+          grid_lanes_items, collapsed_track_indexes_, start_offset,
           needs_intrinsic_track_size);
     }
 
@@ -57,7 +58,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     ASSERT_EQ(grid_axis_direction, style.GridLanesTrackSizingDirection());
 
     for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
-             line_resolver, masonry_items, needs_intrinsic_track_size,
+             line_resolver, grid_lanes_items, needs_intrinsic_track_size,
              SizingConstraint::kLayout,
              line_resolver.AutoRepetitions(grid_axis_direction),
              start_offset)) {
@@ -142,7 +143,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   Vector<wtf_size_t> collapsed_track_indexes_;
 };
 
-TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
+TEST_F(MasonryLayoutAlgorithmTest, ConstructGridLanesItems) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -162,10 +163,10 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
     </div>
   )HTML");
 
-  MasonryNode node(GetLayoutBoxByElementId("grid-lanes"));
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  auto masonry_items = node.ConstructMasonryItems(line_resolver);
+  auto grid_lanes_items = node.ConstructGridLanesItems(line_resolver);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -177,13 +178,13 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
       GridSpan::TranslatedDefiniteGridSpan(0, 2),
       GridSpan::TranslatedDefiniteGridSpan(2, 4)};
 
-  EXPECT_EQ(masonry_items.Size(), expected_spans.size());
+  EXPECT_EQ(grid_lanes_items.Size(), expected_spans.size());
 
   const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
-  for (wtf_size_t i = 0; auto& masonry_item : masonry_items) {
-    masonry_item.MaybeTranslateSpan(/*start_offset=*/0,
-                                    GridTrackSizingDirection::kForColumns);
-    EXPECT_EQ(masonry_item.resolved_position.Span(grid_axis_direction),
+  for (wtf_size_t i = 0; auto& grid_lanes_item : grid_lanes_items) {
+    grid_lanes_item.MaybeTranslateSpan(/*start_offset=*/0,
+                                       GridTrackSizingDirection::kForColumns);
+    EXPECT_EQ(grid_lanes_item.resolved_position.Span(grid_axis_direction),
               expected_spans[i++]);
   }
 }
@@ -277,14 +278,14 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
     </div>
   )HTML");
 
-  MasonryNode node(GetLayoutBoxByElementId("grid-lanes"));
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto masonry_items = node.ConstructMasonryItems(line_resolver);
+  const auto grid_lanes_items = node.ConstructGridLanesItems(line_resolver);
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
-      node.CollectItemGroups(line_resolver, masonry_items, max_end_line,
+      node.CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,
                              start_offset, unplaced_item_span_count);
 
   EXPECT_EQ(item_groups.size(), 4u);

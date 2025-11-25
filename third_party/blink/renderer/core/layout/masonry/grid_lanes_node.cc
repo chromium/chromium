@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/masonry_node.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_node.h"
 
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
@@ -11,26 +11,27 @@ namespace blink {
 
 namespace {
 
-void AdjustMasonryItemSpan(GridItemData& masonry_item,
-                           const GridLineResolver& line_resolver,
-                           const GridTrackSizingDirection grid_axis_direction) {
+void AdjustGridLanesItemSpan(
+    GridItemData& grid_lanes_item,
+    const GridLineResolver& line_resolver,
+    const GridTrackSizingDirection grid_axis_direction) {
   // Resolve the positions of the items based on style. We can only resolve
   // the number of spans for each item based on the grid axis.
   GridSpan item_span = line_resolver.ResolveGridPositionsFromStyle(
-      masonry_item.node.Style(), grid_axis_direction);
+      grid_lanes_item.node.Style(), grid_axis_direction);
 
   if (item_span.IsIndefinite()) {
-    masonry_item.is_auto_placed = true;
+    grid_lanes_item.is_auto_placed = true;
   }
 
-  masonry_item.resolved_position.SetSpan(item_span, grid_axis_direction);
+  grid_lanes_item.resolved_position.SetSpan(item_span, grid_axis_direction);
 }
 
 }  // namespace
 
-MasonryItemGroups MasonryNode::CollectItemGroups(
+MasonryItemGroups GridLanesNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
-    const GridItems& masonry_items,
+    const GridItems& grid_lanes_items,
     wtf_size_t& max_end_line,
     wtf_size_t& start_offset,
     wtf_size_t& unplaced_item_span_count) const {
@@ -39,11 +40,11 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
   start_offset = 0;
   MasonryItemGroupMap item_group_map;
 
-  for (wtf_size_t index = 0; index < masonry_items.Size(); ++index) {
-    const Member<GridItemData>& masonry_item = masonry_items[index];
-    DCHECK(masonry_item);
+  for (wtf_size_t index = 0; index < grid_lanes_items.Size(); ++index) {
+    const Member<GridItemData>& grid_lanes_item = grid_lanes_items[index];
+    DCHECK(grid_lanes_item);
 
-    const BlockNode& child = masonry_item->node;
+    const BlockNode& child = grid_lanes_item->node;
     if (child.IsOutOfFlowPositioned()) {
       continue;
     }
@@ -54,7 +55,7 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
 
     const auto& item_span = item_properties.Span();
     // Keep a running sum of unplaced item spans to determine where to
-    // place auto placed virtual items per the auto-fit masonry heuristic.
+    // place auto placed virtual items per the auto-fit grid-lanes heuristic.
     //
     // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
     if (item_span.IsIndefinite()) {
@@ -68,9 +69,9 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
     const auto group_it = item_group_map.find(item_properties);
     if (group_it == item_group_map.end()) {
       item_group_map.insert(item_properties,
-                            GridItems::GridItemDataVector({masonry_item}));
+                            GridItems::GridItemDataVector({grid_lanes_item}));
     } else {
-      group_it->value.emplace_back(masonry_item);
+      group_it->value.emplace_back(grid_lanes_item);
     }
   }
 
@@ -96,16 +97,16 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
   return item_groups;
 }
 
-GridItems MasonryNode::ConstructMasonryItems(
+GridItems GridLanesNode::ConstructGridLanesItems(
     const GridLineResolver& line_resolver,
     HeapVector<Member<LayoutBox>>* opt_oof_children) const {
   const ComputedStyle& style = Style();
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
 
-  GridItems masonry_items;
+  GridItems grid_lanes_items;
   {
-    bool should_sort_masonry_items_by_order_property = false;
+    bool should_sort_grid_lanes_items_by_order_property = false;
     const int initial_order = ComputedStyleInitialValues::InitialOrder();
 
     // This collects all our children, and orders them by their order property.
@@ -117,32 +118,34 @@ GridItems MasonryNode::ConstructMasonryItems(
         continue;
       }
 
-      GridItemData* masonry_item = MakeGarbageCollected<GridItemData>(
+      GridItemData* grid_lanes_item = MakeGarbageCollected<GridItemData>(
           To<BlockNode>(child), /*parent_style=*/style);
 
       // We'll need to sort when we encounter a non-initial order property.
-      should_sort_masonry_items_by_order_property |=
+      should_sort_grid_lanes_items_by_order_property |=
           child.Style().Order() != initial_order;
 
-      AdjustMasonryItemSpan(*masonry_item, line_resolver, grid_axis_direction);
-      masonry_items.Append(masonry_item);
+      AdjustGridLanesItemSpan(*grid_lanes_item, line_resolver,
+                              grid_axis_direction);
+      grid_lanes_items.Append(grid_lanes_item);
     }
 
     // Sort items by order property if needed.
-    if (should_sort_masonry_items_by_order_property) {
-      masonry_items.SortByOrderProperty();
+    if (should_sort_grid_lanes_items_by_order_property) {
+      grid_lanes_items.SortByOrderProperty();
     }
   }
-  return masonry_items;
+  return grid_lanes_items;
 }
 
-void MasonryNode::AdjustMasonryItemSpans(
-    GridItems& masonry_items,
+void GridLanesNode::AdjustGridLanesItemSpans(
+    GridItems& grid_lanes_items,
     const GridLineResolver& line_resolver) const {
   const GridTrackSizingDirection grid_axis_direction =
       Style().GridLanesTrackSizingDirection();
-  for (GridItemData& masonry_item : masonry_items) {
-    AdjustMasonryItemSpan(masonry_item, line_resolver, grid_axis_direction);
+  for (GridItemData& grid_lanes_item : grid_lanes_items) {
+    AdjustGridLanesItemSpan(grid_lanes_item, line_resolver,
+                            grid_axis_direction);
   }
 }
 

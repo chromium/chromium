@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/masonry/masonry_node.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_node.h"
 
 namespace blink {
 
@@ -25,7 +25,9 @@ struct GridItemData;
 struct GridPlacementData;
 
 class CORE_EXPORT MasonryLayoutAlgorithm
-    : public LayoutAlgorithm<MasonryNode, BoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<GridLanesNode,
+                             BoxFragmentBuilder,
+                             BlockBreakToken> {
  public:
   explicit MasonryLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
