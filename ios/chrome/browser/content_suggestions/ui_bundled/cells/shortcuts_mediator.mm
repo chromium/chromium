@@ -145,8 +145,6 @@
     case NTPCollectionShortcutTypeWhatsNew:
       [self.dispatcher showWhatsNew];
       break;
-    case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
   }
   return;
 }

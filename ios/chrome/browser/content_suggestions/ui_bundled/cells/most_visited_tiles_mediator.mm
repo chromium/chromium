@@ -156,7 +156,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     item.incognitoAvailable = _incognitoAvailable;
     item.index = index;
     item.menuElementsProvider = self;
-    DCHECK(index < kShortcutMinimumIndex);
     index++;
     [_freshMostVisitedItems addObject:item];
   }
