@@ -126,7 +126,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      * @param isSelected whether to apply hairline
      */
     private void highlightActionButton(int buttonIndex, boolean isHighlighted) {
-        ActionButtonView actionButtonView = mActionButtons.get(buttonIndex);
+        highlightActionButton(mActionButtons.get(buttonIndex), isHighlighted);
+    }
+
+    private void highlightActionButton(ActionButtonView actionButtonView, boolean isHighlighted) {
         actionButtonView.setForeground(
                 isHighlighted
                         ? AppCompatResources.getDrawable(getContext(), R.drawable.hairline_circle)
@@ -252,6 +255,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
             }
         }
         setHovered(mIsHovered || isAnyActionButtonHovered);
+
+        if (actionButtonView != null) {
+            highlightActionButton(actionButtonView, isActionButtonHovered);
+        }
     }
 
     @Override
