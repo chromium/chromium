@@ -1679,6 +1679,20 @@ void AutofillAgent::ExtractLabeledTextNodeValue(
   std::move(callback).Run(result);
 }
 
+void AutofillAgent::OnDevToolsSessionConnectionChanged(bool attached) {
+  if (!attached) {
+    return;
+  }
+  if (is_dom_content_loaded_) {
+    // Re-extract all forms. Otherwise, ExtractFormsUnthrottled() would emit
+    // DevTools issues only for the updated forms.
+    form_cache_.Reset();
+    ExtractFormsUnthrottled(
+        /*callback=*/{},
+        GetCallTimerState(kOnDevToolsSessionConnectionChanged));
+  }
+}
+
 void AutofillAgent::EmitFormIssuesToDevtools() {
   // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
   ExtractFormsUnthrottled(/*callback=*/{},

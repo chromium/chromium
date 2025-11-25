@@ -2289,7 +2289,6 @@ WebLocalFrameImpl::WebLocalFrameImpl(
     : WebNavigationControl(scope, frame_token),
       client_(client),
       local_frame_client_(MakeGarbageCollected<LocalFrameClientImpl>(this)),
-      autofill_client_(nullptr),
       find_in_page_(
           MakeGarbageCollected<FindInPage>(*this, interface_registry)),
       interface_registry_(interface_registry),
@@ -3265,6 +3264,9 @@ WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl(
 void WebLocalFrameImpl::OnDevToolsSessionConnectionChanged(bool attached) {
   if (frame_widget_) {
     frame_widget_->OnDevToolsSessionConnectionChanged(attached);
+  }
+  if (autofill_client_) {
+    autofill_client_->OnDevToolsSessionConnectionChanged(attached);
   }
 }
 

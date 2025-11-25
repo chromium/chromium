@@ -37,6 +37,8 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
       return "JavaScriptChangedValue";
     case kNotifyPasswordManagerAboutClearedForm:
       return "NotifyPasswordManagerAboutClearedForm";
+    case kOnDevToolsSessionConnectionChanged:
+      return "OnDevToolsSessionConnectionChanged";
     case kOnProvisionallySaveForm:
       return "OnProvisionallySaveForm";
     case kOnTextFieldValueChanged:

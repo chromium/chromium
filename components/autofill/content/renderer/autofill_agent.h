@@ -336,6 +336,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element) override;
   void FormElementReset(const blink::WebFormElement& form) override;
   void PasswordFieldReset(const blink::WebInputElement& element) override;
+  void OnDevToolsSessionConnectionChanged(bool attached) override;
   void EmitFormIssuesToDevtools() override;
 
   // Starts observing the caret in the given element. Previous observers are

@@ -687,7 +687,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   Member<WebDevToolsAgentImpl> dev_tools_agent_;
 
-  WebAutofillClient* autofill_client_;
+  WebAutofillClient* autofill_client_ = nullptr;
 
   WebContentCaptureClient* content_capture_client_ = nullptr;
 

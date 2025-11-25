@@ -399,6 +399,7 @@ chromium-metrics-reviews@google.com.
   <variant name="HandleCaretMovedInFormField"/>
   <variant name="JavaScriptChangedValue"/>
   <variant name="NotifyPasswordManagerAboutClearedForm"/>
+  <variant name="OnDevToolsSessionConnectionChanged"/>
   <variant name="OnProvisionallySaveForm"/>
   <variant name="OnTextFieldValueChanged"/>
   <variant name="QueryAutofillSuggestions"/>
