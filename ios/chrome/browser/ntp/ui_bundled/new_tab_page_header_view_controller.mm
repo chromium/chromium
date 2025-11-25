@@ -1133,10 +1133,16 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
 
   _identityDiscWidthConstraint.constant = dimension;
   _identityDiscHeightConstraint.constant = dimension;
-  _identityDiscWidthConstraint.active = !showSignInButtonWithoutAvatar;
-  _identityDiscHeightConstraint.active = !showSignInButtonWithoutAvatar;
+  if (showSignInButtonWithoutAvatar) {
+    _identityDiscWidthConstraint.active = NO;
+    _identityDiscHeightConstraint.active = NO;
+    _identityDiscCapsuleWidthConstraint.active = YES;
+  } else {
+    _identityDiscCapsuleWidthConstraint.active = NO;
+    _identityDiscWidthConstraint.active = YES;
+    _identityDiscHeightConstraint.active = YES;
+  }
   _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
-  _identityDiscCapsuleWidthConstraint.active = showSignInButtonWithoutAvatar;
 }
 
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
