@@ -76,9 +76,12 @@ class DomScenarioRunner
       base::optional_ref<
           const std::vector<std::pair<QualifiedName, std::string>>> attributes);
   void SetParent(Element* child,
+                 size_t child_index,
                  int parent_index,
                  Element* root,
-                 const HeapVector<Member<Element>>& created_elements);
+                 const HeapVector<Member<Element>>& created_elements,
+                 bool in_shadow_dom,
+                 bool use_slot_projection);
 
   // Get DOM tree as string with pretty-printing.
   std::string GetDOMTreeAsString();
@@ -88,8 +91,17 @@ class DomScenarioRunner
   void SerializeNode(Node* node, std::string& result, int indent);
   std::string EscapeString(const std::string& str);
 
+  // Creates a shadow host wrapper for an element and returns the shadow host.
+  // Called by `SetParent` when shadow DOM usage is indicated.
+  Element* WrapInShadowDOM(Element* element,
+                           bool use_slot_projection,
+                           size_t child_index);
+
   // Set from --enable-dom-fuzzer-logging at construction time.
   bool logging_enabled_ = false;
+
+  // Counter for generating unique shadow host IDs within a test case.
+  inline static int shadow_host_counter_ = 0;
 };
 
 }  // namespace blink

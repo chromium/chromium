@@ -41,6 +41,9 @@ std::string DomScenarioToString(const DomScenario& scenario) {
   if (!scenario.stylesheet.empty()) {
     base::StrAppend(&out, {"Stylesheet: ", scenario.stylesheet, "\n"});
   }
+  if (scenario.use_shadow_dom) {
+    base::StrAppend(&out, {"Shadow DOM: enabled\n"});
+  }
 
   base::StrAppend(
       &out, {"Nodes (", base::ToString(scenario.node_specs.size()), "):\n"});
@@ -111,6 +114,30 @@ std::string DomScenarioToString(const DomScenario& scenario) {
       base::StrAppend(&out,
                       {"   Attributes:", initial_attrs_str, " (Unchanged)\n"});
     }
+
+    if (scenario.use_shadow_dom) {
+      if (initial.in_shadow_dom != modified.in_shadow_dom) {
+        base::StrAppend(
+            &out,
+            {"   In Shadow DOM: ", (initial.in_shadow_dom ? "true" : "false"),
+             " -> ", (modified.in_shadow_dom ? "true" : "false"), "\n"});
+      } else {
+        base::StrAppend(&out, {"   In Shadow DOM: ",
+                               (initial.in_shadow_dom ? "true" : "false"),
+                               " (Unchanged)\n"});
+      }
+
+      if (initial.use_slot_projection != modified.use_slot_projection) {
+        base::StrAppend(
+            &out, {"   Use Slot Projection: ",
+                   (initial.use_slot_projection ? "true" : "false"), " -> ",
+                   (modified.use_slot_projection ? "true" : "false"), "\n"});
+      } else {
+        base::StrAppend(&out, {"   Use Slot Projection: ",
+                               (initial.use_slot_projection ? "true" : "false"),
+                               " (Unchanged)\n"});
+      }
+    }
   }
   base::StrAppend(&out, {"--------------------------------------"});
   return out;
@@ -121,12 +148,19 @@ std::string DomScenarioToString(const DomScenario& scenario) {
 // Domain for a node's state (parent index, attributes, styles, text).
 fuzztest::Domain<NodeState> AnyNodeState(DomScenarioDomainSpecification* spec,
                                          int num_nodes) {
+  fuzztest::Domain<bool> in_shadow_dom_domain =
+      spec->UseShadowDOM() ? fuzztest::ElementOf({true, false})
+                           : fuzztest::Just(false);
+  fuzztest::Domain<bool> use_slot_projection_domain =
+      spec->UseShadowDOM() ? fuzztest::ElementOf({true, false})
+                           : fuzztest::Just(false);
   return fuzztest::StructOf<NodeState>(
       fuzztest::InRange(kIndexOfRootElement, num_nodes - 1),
       fuzztest::OptionalOf(fuzztest::VectorOf(spec->AnyAttributeNameValuePair())
                                .WithMaxSize(spec->GetMaxAttributesPerNode())),
       fuzztest::OptionalOf(spec->AnyStyles()),
-      fuzztest::OptionalOf(spec->AnyText()));
+      fuzztest::OptionalOf(spec->AnyText()), in_shadow_dom_domain,
+      use_slot_projection_domain);
 }
 
 // Domain for a complete node specification (tag + initial state + modified
@@ -179,9 +213,9 @@ fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(
               .WithSize(num_nodes);
         }();
 
-        return fuzztest::StructOf<DomScenario>(spec->GetRootElementTag(),
-                                               node_specs_domain,
-                                               spec->AnyStylesheet());
+        return fuzztest::StructOf<DomScenario>(
+            spec->GetRootElementTag(), node_specs_domain, spec->AnyStylesheet(),
+            fuzztest::Just(spec->UseShadowDOM()));
       },
       fuzztest::InRange(1, spec->GetMaxDomNodes()));
 }

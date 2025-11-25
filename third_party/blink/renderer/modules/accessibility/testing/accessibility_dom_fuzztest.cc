@@ -66,6 +66,7 @@ class HtmlAndAria : public DomScenarioDomainSpecification {
                         "#id_4::before, #id_5::before { content: '['; } "
                         "#id_4::after, #id_5::after { content: ']'; }")));
   }
+  bool UseShadowDOM() override { return true; }
 };
 
 class CanvasFallbackContent : public HtmlAndAria {

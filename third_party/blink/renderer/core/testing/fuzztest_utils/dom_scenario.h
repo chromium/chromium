@@ -29,6 +29,8 @@ struct NodeState {
   std::optional<std::vector<std::pair<QualifiedName, std::string>>> attributes;
   std::optional<std::string> styles;
   std::optional<std::string> text;
+  bool in_shadow_dom;
+  bool use_slot_projection;  // Only meaningful if in_shadow_dom is true.
 };
 
 // Specification for a single DOM node, including its tag, initial state,
@@ -46,6 +48,7 @@ struct DomScenario {
   QualifiedName root_tag;
   std::vector<NodeSpecification> node_specs;
   std::string stylesheet;
+  bool use_shadow_dom;
   std::string ToString() const;
 };
 
@@ -75,6 +78,10 @@ class DomScenarioDomainSpecification {
   virtual std::optional<std::vector<NodeSpecification>> GetPredefinedNodes() {
     return std::nullopt;
   }
+
+  // If true, nodes can be fuzzed to have in_shadow_dom=true, which causes
+  // the runner to wrap them in a div shadow host.
+  virtual bool UseShadowDOM() { return false; }
 };
 
 // Domain building functions
