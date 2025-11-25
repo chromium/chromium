@@ -195,10 +195,11 @@ bool FeatureFlagsUpdate::DiffersFromCommandLine(
 }
 
 void FeatureFlagsUpdate::UpdateSessionManager() {
-  // TODO(crbug.com/832857): Introduce a CHECK to ensure primary user.
   // Early out so that switches for secondary users are not applied to the whole
-  // session. This could be removed when things like flags UI of secondary users
-  // are fixed properly and TODO above to add CHECK() is done.
+  // session.
+  // Note that this early return could be removed when things like flags UI of
+  // secondary users are fixed properly - in that case a CHECK should be added
+  // that the active user is the primary user.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
   if (!primary_user || primary_user != user_manager->GetActiveUser())
