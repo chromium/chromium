@@ -146,6 +146,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
+  void SetEntryInMemoryData(uint8_t data) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   // Changes the entry's priority in its TaskRunner.

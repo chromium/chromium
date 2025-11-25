@@ -309,14 +309,13 @@ class NET_EXPORT Backend {
   // GetEntryInMemoryData has the following behavior:
   // - If the data is not available at this time for any reason, returns 0.
   // - Otherwise, returns a value that was with very high probability
-  //   given to SetEntryInMemoryData(|key|) (and with a very low probability
+  //   given to Entry::SetEntryInMemoryData() (and with a very low probability
   //   to a different key that collides in the in-memory index).
   //
   // Due to the probability of collisions, including those that can be induced
   // by hostile 3rd parties, this interface should not be used to make decisions
   // that affect correctness (especially security).
   virtual uint8_t GetEntryInMemoryData(const std::string& key);
-  virtual void SetEntryInMemoryData(const std::string& key, uint8_t data);
 
   // Returns the maximum length an individual stream can have.
   virtual int64_t MaxFileSize() const = 0;
@@ -487,6 +486,13 @@ class NET_EXPORT Entry {
   // object that refers to the same physical disk entry.
   // Note: This method is deprecated.
   virtual net::Error ReadyForSparseIO(CompletionOnceCallback callback) = 0;
+
+  // Sets data associated with this entry.
+  // This data is persisted and loaded into memory when the backend index is
+  // initialized. It can be retrieved via Backend::GetEntryInMemoryData()
+  // without opening the entry.
+  // See Backend::GetEntryInMemoryData() for important usage information.
+  virtual void SetEntryInMemoryData(uint8_t data);
 
   // Used in tests to set the last used time. Note that backend might have
   // limited precision. Also note that this call may modify the last modified

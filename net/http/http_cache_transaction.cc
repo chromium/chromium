@@ -3515,8 +3515,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
     if (request_->is_main_frame_navigation) {
       in_memory_data |= HINT_HIGH_PRIORITY;
     }
-    cache_->GetCurrentBackend()->SetEntryInMemoryData(cache_key_,
-                                                      in_memory_data);
+    entry_->GetEntry()->SetEntryInMemoryData(in_memory_data);
   }
 
   BeginDiskCacheAccessTimeCount();

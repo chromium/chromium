@@ -64,6 +64,7 @@ class EntryMock : public Entry {
               ReadyForSparseIO,
               (CompletionOnceCallback callback),
               (override));
+  MOCK_METHOD(void, SetEntryInMemoryData, (uint8_t data), (override));
   MOCK_METHOD(void, SetLastUsedTimeForTest, (base::Time time), (override));
 };
 

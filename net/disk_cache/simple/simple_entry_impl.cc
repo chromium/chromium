@@ -642,6 +642,12 @@ net::Error SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
   return net::OK;
 }
 
+void SimpleEntryImpl::SetEntryInMemoryData(uint8_t data) {
+  if (backend_) {
+    backend_->index()->SetEntryInMemoryData(entry_hash_, data);
+  }
+}
+
 void SimpleEntryImpl::SetLastUsedTimeForTest(base::Time time) {
   last_used_ = time;
   backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);

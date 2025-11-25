@@ -127,7 +127,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   void GetStats(base::StringPairs* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
   uint8_t GetEntryInMemoryData(const std::string& key) override;
-  void SetEntryInMemoryData(const std::string& key, uint8_t data) override;
 
   net::PrioritizedTaskRunner* prioritized_task_runner() const {
     return prioritized_task_runner_.get();

@@ -351,6 +351,10 @@ Error MockDiskEntry::ReadyForSparseIO(CompletionOnceCallback callback) {
   return ERR_IO_PENDING;
 }
 
+void MockDiskEntry::SetEntryInMemoryData(uint8_t data) {
+  in_memory_data_ = data;
+}
+
 void MockDiskEntry::SetLastUsedTimeForTest(base::Time time) {
   NOTREACHED();
 }
@@ -662,13 +666,6 @@ uint8_t MockDiskCache::GetEntryInMemoryData(const std::string& key) {
     return it->second->in_memory_data();
   }
   return 0;
-}
-
-void MockDiskCache::SetEntryInMemoryData(const std::string& key, uint8_t data) {
-  auto it = entries_.find(key);
-  if (it != entries_.end()) {
-    it->second->set_in_memory_data(data);
-  }
 }
 
 int64_t MockDiskCache::MaxFileSize() const {
