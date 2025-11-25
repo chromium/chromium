@@ -112,7 +112,7 @@ class MOJO_CPP_SYSTEM_EXPORT WaitSet {
             size_t* num_ready_handles,
             base::span<Handle> ready_handles,
             base::span<MojoResult> ready_results,
-            MojoHandleSignalsState* signals_states = nullptr);
+            base::span<HandleSignalsState> signals_states = {});
 
  private:
   class State;

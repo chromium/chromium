@@ -138,7 +138,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
             size_t* num_ready_handles,
             base::span<Handle> ready_handles,
             base::span<MojoResult> ready_results,
-            MojoHandleSignalsState* signals_states) {
+            base::span<HandleSignalsState> signals_states) {
     DCHECK(trap_handle_.is_valid());
     DCHECK(num_ready_handles);
     DCHECK(!ready_handles.empty());
@@ -216,8 +216,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       auto it = ready_handles_.begin();
       ready_handles[i] = it->first;
       ready_results[i] = it->second.result;
-      if (signals_states)
-        UNSAFE_TODO(signals_states[i]) = it->second.signals_state;
+      if (!signals_states.empty()) {
+        signals_states[i] = it->second.signals_state;
+      }
       ready_handles_.erase(it);
     }
 
@@ -361,7 +362,7 @@ void WaitSet::Wait(base::WaitableEvent** ready_event,
                    size_t* num_ready_handles,
                    base::span<Handle> ready_handles,
                    base::span<MojoResult> ready_results,
-                   MojoHandleSignalsState* signals_states) {
+                   base::span<HandleSignalsState> signals_states) {
   state_->Wait(ready_event, num_ready_handles, ready_handles, ready_results,
                signals_states);
 }
