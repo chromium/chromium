@@ -19,8 +19,9 @@ using storage::FileStreamReader;
 
 namespace {
 
-const size_t kDesiredNumberOfBuffers = 2;  // So we are always one buffer ahead.
-const int kBufferSize = 1024*1024;  // 1MB to minimize transaction costs.
+// So that we are always one buffer ahead.
+constexpr size_t kDesiredNumberOfBuffers = 2;
+constexpr int kBufferSize = 1024 * 1024;  // 1MB to minimize transaction costs.
 
 }  // namespace
 
@@ -73,13 +74,11 @@ int ReadaheadFileStreamReader::FinishReadFromCacheOrStoredError(
   while (sink->BytesRemaining() > 0 && !buffers_.empty()) {
     net::DrainableIOBuffer* source_buffer = buffers_.front().get();
 
-    DCHECK(source_buffer->BytesRemaining() > 0);
+    DCHECK_GT(source_buffer->BytesRemaining(), 0);
 
-    int copy_len = std::min(source_buffer->BytesRemaining(),
-                            sink->BytesRemaining());
-    std::copy(source_buffer->data(),
-              UNSAFE_TODO(source_buffer->data() + copy_len), sink->data());
-
+    const int copy_len =
+        std::min(source_buffer->BytesRemaining(), sink->BytesRemaining());
+    sink->first(copy_len).copy_from(source_buffer->first(copy_len));
     source_buffer->DidConsume(copy_len);
     sink->DidConsume(copy_len);
 
