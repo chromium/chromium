@@ -832,6 +832,9 @@ void ImportMap::MergeExistingAndNewImportMaps(
   // 6. Set oldImportMap's imports to the result of merge module specifier
   // maps, given newImportMapImports and oldImportMap's imports.
   MergeModuleSpecifierMaps(imports_, new_import_map_imports, logger);
+
+  // Re-sort scopes_vector_ to ensure proper ordering after merging.
+  InitializeScopesVector();
 }
 
 // To be called when scopes_map_ is set/updated to make scopes_vector_ and
