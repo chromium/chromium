@@ -92,6 +92,15 @@ const base::FeatureParam<bool> kCsdCreditCardFormPingOnDetection{
 const base::FeatureParam<bool> kCsdCreditCardFormPingOnInteraction{
     &kClientSideDetectionCreditCardForm, "PingOnInteraction",
     /*default_value=*/false};
+const base::FeatureParam<bool> kCsdCreditCardFormEnableNewSiteFilter{
+    &kClientSideDetectionCreditCardForm, "EnableNewSiteFilter",
+    /*default_value=*/false};
+const base::FeatureParam<bool> kCsdCreditCardFormEnableHeuristicFilter{
+    &kClientSideDetectionCreditCardForm, "EnableHeuristicFilter",
+    /*default_value=*/false};
+const base::FeatureParam<bool> kCsdCreditCardFormEnableReferringAppFilter{
+    &kClientSideDetectionCreditCardForm, "EnableReferringAppFilter",
+    /*default_value=*/false};
 
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);

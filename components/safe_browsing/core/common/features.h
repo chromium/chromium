@@ -79,6 +79,15 @@ extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnDetection;
 // Specifies whether to allow pre-classification to continue on a credit card
 // form interaction event after logging telemetry.
 extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnInteraction;
+// Specifies whether to filter credit card CSD pings based on whether the user
+// is on a new site.
+extern const base::FeatureParam<bool> kCsdCreditCardFormEnableNewSiteFilter;
+// Specifies whether to filter credit card CSD pings based on what heuristic
+// was used to detect the form.
+extern const base::FeatureParam<bool> kCsdCreditCardFormEnableHeuristicFilter;
+// Specifies whether to filter credit card CSD pings based on the referring app.
+extern const base::FeatureParam<bool>
+    kCsdCreditCardFormEnableReferringAppFilter;
 
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);

@@ -1115,9 +1115,29 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     return;
   }
 
-  // Early exit if it is known that the user has visited this site before.
-  if (site_visit == credit_card_form::kRepeatSiteVisit) {
+  // Early exit if the user has visited this site before.
+  if (kCsdCreditCardFormEnableNewSiteFilter.Get() &&
+      site_visit == credit_card_form::kRepeatSiteVisit) {
     return;
+  }
+
+  // Early exit if the credit card form was detected using a server heuristic.
+  if (kCsdCreditCardFormEnableHeuristicFilter.Get() &&
+      field_heuristic == credit_card_form::kAutofillServer) {
+    return;
+  }
+
+  if (kCsdCreditCardFormEnableReferringAppFilter.Get()) {
+#if BUILDFLAG(IS_ANDROID)
+    // Early exit if referring app is not an SMS app.
+    if (referring_app != credit_card_form::ReferringApp::kSmsApp) {
+      return;
+    }
+#else
+    // On non-Android platforms, we do not have referring app info,
+    // so always fail the check for SMS app.
+    return;
+#endif
   }
 
   MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM,

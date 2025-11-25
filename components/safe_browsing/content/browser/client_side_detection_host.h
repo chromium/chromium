@@ -326,7 +326,16 @@ class ClientSideDetectionHost
       InteractionDoesNotStartPreclassificationOnRepeatSiteVisit);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      DetectionAndInteractionProceedWithClassificationOnNewSiteVisit);
+      DetectionDoesNotStartPreclassificationOnServerHeuristic);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormTest,
+      InteractionDoesNotStartPreclassificationOnServerHeuristic);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormReferringAppTest,
+      DetectionDoesNotStartPreclassificationBecauseOfReferringAppFilter);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormReferringAppTest,
+      InteractionDoesNotStartPreclassificationBecauseOfReferringAppFilter);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            DetectionPreclassificationIsDedupedByURL);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
