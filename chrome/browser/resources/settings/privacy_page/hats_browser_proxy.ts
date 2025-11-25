@@ -26,18 +26,25 @@ export enum TrustSafetyInteraction {
 }
 
 /**
- * All interactions from the security settings page which may result in a HaTS
- * survey. Must be kept in sync with the enum of the same name located in:
+ * Enumeration of interactions with the security settings v2 page. Must be kept
+ * in sync with the enum of the same name located in:
  * chrome/browser/ui/webui/settings/hats_handler.h
  */
-export enum SecurityPageInteraction {
-  RADIO_BUTTON_ENHANCED_CLICK = 0,
-  RADIO_BUTTON_STANDARD_CLICK = 1,
-  RADIO_BUTTON_DISABLE_CLICK = 2,
-  EXPAND_BUTTON_ENHANCED_CLICK = 3,
-  EXPAND_BUTTON_STANDARD_CLICK = 4,
-  NO_INTERACTION = 5,
+export enum SecurityPageV2Interaction {
+  STANDARD_BUNDLE_RADIO_BUTTON_CLICK = 0,
+  ENHANCED_BUNDLE_RADIO_BUTTON_CLICK = 1,
+  SAFE_BROWSING_ROW_EXPANDED = 2,
+  STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK = 3,
+  ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK = 4,
 }
+
+/** Enumeration of all security settings bundle modes.*/
+// LINT.IfChange(SecuritySettingsBundleSetting)
+export enum SecuritySettingsBundleSetting {
+  STANDARD = 0,
+  ENHANCED = 1,
+}
+// LINT.ThenChange(/components/safe_browsing/core/common/safe_browsing_prefs.h:SecuritySettingsBundleSetting)
 
 /**
  * All interactions from the security settings page which may result in a HaTS
@@ -53,17 +60,20 @@ export interface HatsBrowserProxy {
   trustSafetyInteractionOccurred(interaction: TrustSafetyInteraction): void;
 
   /**
-   * Inform HaTS that the user performed an interaction on security page.
-   * @param securityPageInteraction The type of interaction performed on the
-   *     security page.
-   * @param safeBrowsingSetting The type of safe browsing settings the user was
-   *     on prior to the interaction.
+   * Inform HaTS that the user visited the security page.
+   * @param securityPageInteractions The interactions performed on the security
+   *     page.
+   * @param safeBrowsingSetting The safe browsing settings the user had
+   *      when they opened the security page.
    * @param totalTimeOnPage The amount of time the user spent on the security
    *     page.
+   * @param securitySettingsBundleSetting The security settings bundle the user
+   *     had when they opened the security page.
    */
   securityPageHatsRequest(
-      securityPageInteraction: SecurityPageInteraction,
-      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number): void;
+      securityPageInteractions: SecurityPageV2Interaction[],
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number,
+      securitySettingsBundleSetting: SecuritySettingsBundleSetting): void;
 
   /**
    * Returns the current date value.
@@ -77,11 +87,15 @@ export class HatsBrowserProxyImpl implements HatsBrowserProxy {
   }
 
   securityPageHatsRequest(
-      securityPageInteraction: SecurityPageInteraction,
-      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number) {
-    chrome.send(
-        'securityPageHatsRequest',
-        [securityPageInteraction, safeBrowsingSetting, totalTimeOnPage]);
+      securityPageInteractions: SecurityPageV2Interaction[],
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number,
+      securitySettingsBundleSetting: SecuritySettingsBundleSetting) {
+    chrome.send('securityPageHatsRequest', [
+      securityPageInteractions,
+      safeBrowsingSetting,
+      totalTimeOnPage,
+      securitySettingsBundleSetting,
+    ]);
   }
 
   now() {
