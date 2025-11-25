@@ -6018,7 +6018,10 @@ if (!is_android) {
     sources += metric_integration_sources
 
     if (!is_chromeos) {
-      sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
+      sources += [
+        "../browser/webauthn/change_pin_controller_impl_browsertest.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest.cc",
+      ]
       deps += [ "//chrome/browser/webauthn:test_support" ]
     }
 
