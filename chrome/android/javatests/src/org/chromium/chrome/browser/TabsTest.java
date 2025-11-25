@@ -875,11 +875,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    // TODO(crbug.com/461879409): Remove disable Incognito windows when fixed
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 
