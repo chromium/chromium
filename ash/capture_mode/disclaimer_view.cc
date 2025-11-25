@@ -17,7 +17,6 @@
 #include "ash/style/typography.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"

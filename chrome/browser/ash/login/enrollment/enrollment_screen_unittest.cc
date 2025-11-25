@@ -13,7 +13,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"

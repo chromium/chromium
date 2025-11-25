@@ -29,7 +29,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"

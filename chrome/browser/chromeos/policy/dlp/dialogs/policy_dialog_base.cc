@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"

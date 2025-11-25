@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"

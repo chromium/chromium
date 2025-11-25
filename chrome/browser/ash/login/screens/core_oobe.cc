@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/system/input_device_settings.h"

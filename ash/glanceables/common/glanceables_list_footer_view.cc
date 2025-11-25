@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/vector_icons/vector_icons.h"

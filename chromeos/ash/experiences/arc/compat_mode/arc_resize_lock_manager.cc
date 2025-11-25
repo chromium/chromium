@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"

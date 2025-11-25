@@ -23,7 +23,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"

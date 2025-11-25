@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/uuid.h"

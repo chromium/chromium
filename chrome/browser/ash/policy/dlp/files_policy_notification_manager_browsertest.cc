@@ -11,7 +11,6 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"

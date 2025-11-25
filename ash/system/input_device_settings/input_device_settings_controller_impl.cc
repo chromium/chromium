@@ -45,7 +45,6 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

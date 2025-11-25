@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

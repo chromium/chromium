@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"

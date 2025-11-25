@@ -8,7 +8,6 @@
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"

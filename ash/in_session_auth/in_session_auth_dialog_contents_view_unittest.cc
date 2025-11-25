@@ -12,7 +12,6 @@
 #include "ash/public/cpp/test/mock_in_session_auth_token_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

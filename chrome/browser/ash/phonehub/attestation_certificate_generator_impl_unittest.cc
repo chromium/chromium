@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "attestation_certificate_generator_impl.h"
+
 #include <iterator>
 #include <memory>
-#include "base/functional/callback_forward.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/fake_soft_bind_attestation_flow.h"

@@ -40,7 +40,6 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"

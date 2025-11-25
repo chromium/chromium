@@ -14,7 +14,6 @@
 #include "ash/system/mahi/mahi_utils.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"

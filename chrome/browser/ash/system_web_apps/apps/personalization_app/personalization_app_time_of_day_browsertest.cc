@@ -23,7 +23,6 @@
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/run_loop.h"

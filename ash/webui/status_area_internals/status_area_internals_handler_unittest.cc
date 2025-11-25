@@ -36,7 +36,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"

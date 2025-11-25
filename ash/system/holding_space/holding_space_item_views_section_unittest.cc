@@ -18,7 +18,6 @@
 #include "ash/system/holding_space/test_holding_space_item_views_section.h"
 #include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

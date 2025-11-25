@@ -7,7 +7,6 @@
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"

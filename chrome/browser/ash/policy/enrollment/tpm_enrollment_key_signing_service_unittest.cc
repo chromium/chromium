@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"

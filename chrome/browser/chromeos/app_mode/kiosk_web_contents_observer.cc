@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "content/public/browser/web_contents_observer.h"
 

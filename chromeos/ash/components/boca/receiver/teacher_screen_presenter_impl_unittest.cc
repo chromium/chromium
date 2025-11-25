@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

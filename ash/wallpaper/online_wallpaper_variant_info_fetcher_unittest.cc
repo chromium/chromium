@@ -9,7 +9,6 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"

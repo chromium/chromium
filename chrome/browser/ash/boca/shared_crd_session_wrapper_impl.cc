@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session_provider.h"

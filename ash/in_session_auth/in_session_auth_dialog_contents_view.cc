@@ -18,7 +18,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"

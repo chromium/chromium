@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"

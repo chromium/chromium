@@ -26,7 +26,6 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"

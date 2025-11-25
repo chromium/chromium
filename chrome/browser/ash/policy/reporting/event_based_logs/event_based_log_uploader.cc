@@ -13,7 +13,6 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"

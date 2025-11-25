@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"

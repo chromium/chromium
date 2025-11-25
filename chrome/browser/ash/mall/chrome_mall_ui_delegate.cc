@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/ash/mall/mall_url.h"

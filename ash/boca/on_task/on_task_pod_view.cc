@@ -15,7 +15,6 @@
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

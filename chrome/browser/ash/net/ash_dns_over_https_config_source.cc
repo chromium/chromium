@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

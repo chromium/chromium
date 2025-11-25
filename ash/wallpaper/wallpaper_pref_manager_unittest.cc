@@ -16,7 +16,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"

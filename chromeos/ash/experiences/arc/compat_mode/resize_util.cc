@@ -13,7 +13,6 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/stl_util.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_pref_delegate.h"

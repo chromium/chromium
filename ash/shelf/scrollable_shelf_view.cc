@@ -20,7 +20,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"

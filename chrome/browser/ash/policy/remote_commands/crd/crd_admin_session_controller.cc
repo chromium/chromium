@@ -19,7 +19,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"

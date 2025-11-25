@@ -12,7 +12,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"

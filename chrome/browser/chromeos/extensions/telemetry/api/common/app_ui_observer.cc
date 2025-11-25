@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"

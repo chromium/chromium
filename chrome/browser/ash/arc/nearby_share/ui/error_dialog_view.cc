@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/frame/frame_view_ash.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "components/strings/grit/components_strings.h"

@@ -21,7 +21,6 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

@@ -32,7 +32,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

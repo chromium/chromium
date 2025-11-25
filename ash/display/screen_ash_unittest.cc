@@ -4,7 +4,6 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/test_future.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"

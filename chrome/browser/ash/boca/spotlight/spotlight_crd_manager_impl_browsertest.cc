@@ -11,7 +11,6 @@
 #include "ash/boca/spotlight/spotlight_notification_bubble_controller.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"

@@ -10,7 +10,6 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"

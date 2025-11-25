@@ -21,7 +21,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

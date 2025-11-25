@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"

@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
