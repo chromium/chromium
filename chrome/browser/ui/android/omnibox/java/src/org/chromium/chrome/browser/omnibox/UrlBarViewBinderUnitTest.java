@@ -36,7 +36,9 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -81,6 +83,7 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void testSetSelectAllOnFocus() {
         testSetSelectAllOnFocus(
                 /* selectAllOnFocus= */ true,
