@@ -23,14 +23,17 @@ net::NetworkChangeNotifier* g_network_change_notifer = nullptr;
 
 namespace ios_global_state {
 
+CreateParams::CreateParams() = default;
+
+CreateParams::~CreateParams() = default;
+
 void Create(const CreateParams& create_params) {
   static dispatch_once_t once_token;
   dispatch_once(&once_token, ^{
     if (create_params.install_at_exit_manager) {
       g_exit_manager = new base::AtExitManager();
     }
-    base::CommandLine::Init(create_params.argc, create_params.argv);
-
+    base::CommandLine::Init(create_params.args);
     base::ThreadPoolInstance::Create("Browser");
   });
 }

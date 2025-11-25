@@ -11,7 +11,7 @@ namespace web {
 WebMainParams::WebMainParams() : WebMainParams(nullptr) {}
 
 WebMainParams::WebMainParams(WebMainDelegate* delegate)
-    : delegate(delegate), register_exit_manager(true), argc(0), argv(nullptr) {}
+    : delegate(delegate), register_exit_manager(true) {}
 
 WebMainParams::~WebMainParams() = default;
 

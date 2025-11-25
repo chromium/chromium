@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/content/init/ios_content_main_runner.h"
 
 #import "base/types/fixed_array.h"
@@ -24,11 +19,7 @@ IOSContentMainRunner::~IOSContentMainRunner() {}
 void IOSContentMainRunner::Initialize(WebMainParams params) {
   static crash_reporter::CrashKeyString<4> key("blink");
   key.Set("yes");
-  argv_.resize(params.argc);
-  const char* const* argv = params.argv;
-  for (int i = 0; i < params.argc; ++i) {
-    argv_[i].assign(argv[i]);
-  }
+  argv_ = std::move(params.args);
 }
 
 int IOSContentMainRunner::Startup() {

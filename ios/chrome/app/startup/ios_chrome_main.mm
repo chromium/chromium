@@ -20,23 +20,12 @@ base::TimeTicks* g_start_time;
 
 IOSChromeMain::IOSChromeMain() {
   web::WebMainParams main_params(&main_delegate_);
-  NSArray* arguments = [[NSProcessInfo processInfo] arguments];
-  main_params.argc = [arguments count];
-  base::FixedArray<const char*> argv(main_params.argc);
-  std::vector<std::string> argv_store;
+  NSArray<NSString*>* arguments = [[NSProcessInfo processInfo] arguments];
 
-  // Avoid using std::vector::push_back (or any other method that could cause
-  // the vector to grow) as this will cause the std::string to be copied or
-  // moved (depends on the C++ implementation) which may invalidates the pointer
-  // returned by std::string::c_str(). Even if the strings are moved, this may
-  // cause garbage if std::string uses optimisation for small strings (by
-  // returning pointer to the object internals in that case).
-  argv_store.resize([arguments count]);
-  for (NSUInteger i = 0; i < [arguments count]; i++) {
-    argv_store[i] = base::SysNSStringToUTF8([arguments objectAtIndex:i]);
-    argv[i] = argv_store[i].c_str();
+  main_params.args.reserve([arguments count]);
+  for (NSString* argument in arguments) {
+    main_params.args.push_back(base::SysNSStringToUTF8(argument));
   }
-  main_params.argv = argv.data();
 
   // Chrome registers an AtExitManager in main in order to initialize the crash
   // handler early, so prevent a second registration by WebMainRunner.
