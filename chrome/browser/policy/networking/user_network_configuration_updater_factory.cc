@@ -77,8 +77,6 @@ UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
   // expect to have UserNetworkConfigurationUpdater, because
   // ManagedNetworkConfigurationHandler requires a (possibly empty) policy to be
   // set for all user sessions.
-  // TODO(crbug.com/40097732): Evaluate if this is can be solved in a
-  // more elegant way.
   return UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
       profile, *user, profile->GetProfilePolicyConnector()->policy_service(),
       ash::NetworkHandler::Get()->managed_network_configuration_handler());
