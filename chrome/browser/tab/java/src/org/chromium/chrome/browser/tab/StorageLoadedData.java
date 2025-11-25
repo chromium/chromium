@@ -9,7 +9,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -29,16 +28,9 @@ public class StorageLoadedData implements Destroyable {
         public final @TabId int tabId;
         public final TabState tabState;
 
-        /** This must always be run or destroyed to avoid leaks. */
-        public final JniOnceCallback<@Nullable Tab> onTabCreationCallback;
-
-        public LoadedTabState(
-                @TabId int tabId,
-                TabState tabState,
-                JniOnceCallback<@Nullable Tab> onTabCreationCallback) {
+        public LoadedTabState(@TabId int tabId, TabState tabState) {
             this.tabId = tabId;
             this.tabState = tabState;
-            this.onTabCreationCallback = onTabCreationCallback;
         }
     }
 
@@ -60,11 +52,6 @@ public class StorageLoadedData implements Destroyable {
 
     @Override
     public void destroy() {
-        for (LoadedTabState loadedTabState : getLoadedTabStates()) {
-            loadedTabState.onTabCreationCallback.destroy();
-            // We don't destroy the contentsState here. Leave this to clients to clean.
-        }
-
         for (TabGroupCollectionData groupData : getGroupsData()) {
             groupData.destroy();
         }
@@ -89,11 +76,8 @@ public class StorageLoadedData implements Destroyable {
     }
 
     @CalledByNative
-    public static LoadedTabState createLoadedTabState(
-            @TabId int tabId,
-            TabState tabState,
-            JniOnceCallback<@Nullable Tab> onTabCreationCallback) {
-        return new LoadedTabState(tabId, tabState, onTabCreationCallback);
+    public static LoadedTabState createLoadedTabState(@TabId int tabId, TabState tabState) {
+        return new LoadedTabState(tabId, tabState);
     }
 
     @CalledByNative

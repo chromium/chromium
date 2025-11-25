@@ -92,8 +92,8 @@ void SortTabsInOrder(
     StorageId current_node_storage_id,
     std::optional<StorageId> active_tab_storage_id,
     const absl::flat_hash_map<StorageId, std::vector<StorageId>>& children_map,
-    absl::flat_hash_map<StorageId, LoadedTabState>& loaded_tabs_map,
-    std::vector<LoadedTabState>& sorted_tabs,
+    absl::flat_hash_map<StorageId, tabs_pb::TabState>& loaded_tabs_map,
+    std::vector<tabs_pb::TabState>& sorted_tabs,
     std::optional<int>& active_tab_index,
     int depth = 0) {
   DCHECK_LE(depth, kMaxTreeHeight) << "Tree is too tall, possible cycle?";
@@ -248,7 +248,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
   if (entries.empty()) {
     std::move(callback).Run(std::make_unique<StorageLoadedData>(
-        std::vector<LoadedTabState>(),
+        std::vector<tabs_pb::TabState>(),
         std::vector<std::unique_ptr<TabGroupCollectionData>>(),
         builder->BuildAssociator(), std::nullopt));
     return;
@@ -256,7 +256,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
   std::optional<StorageId> root_storage_id;
   std::optional<StorageId> active_tab_storage_id;
-  absl::flat_hash_map<StorageId, LoadedTabState> loaded_tabs_map;
+  absl::flat_hash_map<StorageId, tabs_pb::TabState> loaded_tabs_map;
   absl::flat_hash_map<StorageId, std::vector<StorageId>> children_map;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
 
@@ -266,12 +266,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
       if (tab_state.ParseFromArray(entry.payload.data(),
                                    entry.payload.size())) {
         builder->RegisterTab(entry.id, tab_state);
-        loaded_tabs_map.emplace(
-            entry.id,
-            std::make_pair(
-                std::move(tab_state),
-                base::BindOnce(&TabStateStorageService::OnTabCreated,
-                               weak_ptr_factory_.GetWeakPtr(), entry.id)));
+        loaded_tabs_map.emplace(entry.id, std::move(tab_state));
       }
     } else {
       if (entry.type == TabStorageType::kTabStrip) {
@@ -310,7 +305,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     }
   }
 
-  std::vector<LoadedTabState> loaded_tabs;
+  std::vector<tabs_pb::TabState> loaded_tabs;
   loaded_tabs.reserve(loaded_tabs_map.size());
   std::optional<int> active_tab_index;
 

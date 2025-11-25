@@ -32,17 +32,9 @@ namespace {
 
 using ScopedJavaLocalRef = base::android::ScopedJavaLocalRef<jobject>;
 
-base::OnceCallback<void(TabAndroid*)> WrapCallbackForJni(
-    OnTabInterfaceCreation&& callback) {
-  return base::BindOnce([](OnTabInterfaceCreation inner_cb,
-                           TabAndroid* tab) { std::move(inner_cb).Run(tab); },
-                        std::move(callback));
-}
-
 base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     JNIEnv* env,
-    LoadedTabState& loaded_tab) {
-  tabs_pb::TabState& tab_state = loaded_tab.first;
+    tabs_pb::TabState& tab_state) {
   base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer;
   long j_web_contents_state_string_pointer = 0;
   if (tab_state.has_web_contents_state_bytes()) {
@@ -64,10 +56,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     j_tab_group_id = base::android::TokenAndroid::Create(env, tab_group_token);
   }
 
-  base::android::ScopedJavaLocalRef<jobject> j_on_tab_created_callback =
-      base::android::ToJniCallback(
-          env, WrapCallbackForJni(std::move(loaded_tab.second)));
-
   base::android::ScopedJavaLocalRef<jobject> j_tab_state =
       Java_StorageLoadedData_createTabState(
           env, tab_state.parent_id(), tab_state.root_id(),
@@ -80,13 +68,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
           j_tab_group_id, tab_state.tab_has_sensitive_content(),
           tab_state.is_pinned());
 
-  return Java_StorageLoadedData_createLoadedTabState(
-      env, tab_state.tab_id(), j_tab_state, j_on_tab_created_callback);
+  return Java_StorageLoadedData_createLoadedTabState(env, tab_state.tab_id(),
+                                                     j_tab_state);
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray> CreateLoadedTabStates(
     JNIEnv* env,
-    std::vector<LoadedTabState>& loaded_tabs) {
+    std::vector<tabs_pb::TabState>& loaded_tabs) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>>
       j_loaded_tab_state_vector;
   for (auto& loaded_tab : loaded_tabs) {

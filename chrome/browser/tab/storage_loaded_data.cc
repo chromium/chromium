@@ -7,7 +7,7 @@
 namespace tabs {
 
 StorageLoadedData::StorageLoadedData(
-    std::vector<LoadedTabState> loaded_tabs,
+    std::vector<tabs_pb::TabState> loaded_tabs,
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
     std::unique_ptr<RestoreIdAssociator> node_associator,
     std::optional<int> active_tab_index)
@@ -24,7 +24,7 @@ RestoreIdAssociator* StorageLoadedData::GetNodeAssociator() const {
   return node_associator_.get();
 }
 
-std::vector<LoadedTabState>& StorageLoadedData::GetLoadedTabs() {
+std::vector<tabs_pb::TabState>& StorageLoadedData::GetLoadedTabs() {
   return loaded_tabs_;
 }
 

@@ -395,7 +395,6 @@ public class TabStateStore implements TabPersistentStore {
         Tab tab = resolveTab(loadedTabState.tabState, tabId, index);
         if (tab == null) return;
 
-        loadedTabState.onTabCreationCallback.onResult(tab);
         // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
         // from how the previous implementation did it. Verify this doesn't break anything.
         for (TabPersistentStoreObserver observer : mObservers) {

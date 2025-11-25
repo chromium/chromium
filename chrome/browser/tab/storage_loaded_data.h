@@ -21,14 +21,11 @@
 
 namespace tabs {
 
-using OnTabInterfaceCreation = base::OnceCallback<void(const TabInterface*)>;
-using LoadedTabState = std::pair<tabs_pb::TabState, OnTabInterfaceCreation>;
-
 // Represents data loaded from the database.
 class StorageLoadedData {
  public:
   StorageLoadedData(
-      std::vector<LoadedTabState> loaded_tabs,
+      std::vector<tabs_pb::TabState> loaded_tabs,
       std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
       std::unique_ptr<RestoreIdAssociator> associator,
       std::optional<int> active_tab_index);
@@ -41,12 +38,12 @@ class StorageLoadedData {
   StorageLoadedData& operator=(StorageLoadedData&&);
 
   RestoreIdAssociator* GetNodeAssociator() const;
-  std::vector<LoadedTabState>& GetLoadedTabs();
+  std::vector<tabs_pb::TabState>& GetLoadedTabs();
   std::vector<std::unique_ptr<TabGroupCollectionData>>& GetLoadedGroups();
   std::optional<int> GetActiveTabIndex() const;
 
  private:
-  std::vector<LoadedTabState> loaded_tabs_;
+  std::vector<tabs_pb::TabState> loaded_tabs_;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
   std::unique_ptr<RestoreIdAssociator> node_associator_;
   std::optional<int> active_tab_index_;
