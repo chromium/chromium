@@ -193,14 +193,14 @@ void WebNNGraphImpl::Dispatch(
                  name_to_input_tensor_map,
              base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
                  name_to_output_tensor_map,
-             ScopedTrace scoped_trace) {
+             ScopedTrace scoped_trace,
+             mojo::ReportBadMessageCallback bad_message_cb) {
             for (auto& [name, tensor] : name_to_input_tensor_map) {
               if (tensor->is_exported()) {
                 LOG(ERROR)
                     << "[WebNN] Invalid to dispatch graph when input tensor (" +
                            name + ") is exported.";
-                self->GetMojoReceiver().ReportBadMessage(
-                    kBadMessageInvalidTensor);
+                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
                 return;
               }
             }
@@ -210,8 +210,7 @@ void WebNNGraphImpl::Dispatch(
                 LOG(ERROR) << "[WebNN] Invalid to dispatch graph when output "
                               "tensor (" +
                                   name + ") is exported.";
-                self->GetMojoReceiver().ReportBadMessage(
-                    kBadMessageInvalidTensor);
+                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
                 return;
               }
             }
@@ -220,7 +219,8 @@ void WebNNGraphImpl::Dispatch(
                                std::move(name_to_output_tensor_map));
           },
           base::RetainedRef(this), std::move(name_to_input_tensor_map),
-          std::move(name_to_output_tensor_map), std::move(scoped_trace)));
+          std::move(name_to_output_tensor_map), std::move(scoped_trace),
+          GetMojoReceiver().GetBadMessageCallback()));
 }
 
 }  // namespace webnn
