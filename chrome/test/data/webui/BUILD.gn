@@ -93,10 +93,13 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/engagement",
-      "//chrome/browser/glic",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/subscription_eligibility",
     ]
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
 
     if (is_chrome_branded) {
       sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]
