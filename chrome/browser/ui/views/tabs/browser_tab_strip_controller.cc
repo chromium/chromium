@@ -762,6 +762,16 @@ bool BrowserTabStripController::IsGroupCollapsed(
              ->is_collapsed();
 }
 
+std::optional<tab_groups::TabGroupId>
+BrowserTabStripController::GetFocusedGroup() const {
+  return model_->GetFocusedGroup();
+}
+
+void BrowserTabStripController::SetFocusedGroup(
+    std::optional<tab_groups::TabGroupId> group) {
+  model_->SetFocusedGroup(group);
+}
+
 void BrowserTabStripController::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
@@ -1071,6 +1081,10 @@ void BrowserTabStripController::OnSplitTabChanged(
     tabstrip_->StopAnimating();
   }
 }
+
+void BrowserTabStripController::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_group_id,
+    std::optional<tab_groups::TabGroupId> old_group_id) {}
 
 BrowserFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->browser_widget()->GetFrameView();

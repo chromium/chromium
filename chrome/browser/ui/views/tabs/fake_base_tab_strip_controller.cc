@@ -318,6 +318,16 @@ std::u16string FakeBaseTabStripController::GetAccessibleTabName(
   return std::u16string();
 }
 
+std::optional<tab_groups::TabGroupId>
+FakeBaseTabStripController::GetFocusedGroup() const {
+  return focused_group_;
+}
+
+void FakeBaseTabStripController::SetFocusedGroup(
+    std::optional<tab_groups::TabGroupId> group) {
+  focused_group_ = group;
+}
+
 Profile* FakeBaseTabStripController::GetProfile() const {
   return nullptr;
 }

@@ -194,6 +194,13 @@ class TabStripController {
   // exist or is not collapsed.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the ID of the group that is focused. If no group is focused,
+  // returns nullopt.
+  virtual std::optional<tab_groups::TabGroupId> GetFocusedGroup() const = 0;
+
+  // Sets the group to be focused.
+  virtual void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) = 0;
+
   // Sets the title and color ID of the given `group`.
   virtual void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,

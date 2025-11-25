@@ -113,6 +113,9 @@ class BrowserTabStripController : public TabStripController,
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
 
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
+  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;
+
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
@@ -160,6 +163,9 @@ class BrowserTabStripController : public TabStripController,
   void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
                                  bool attention) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_group_id,
+      std::optional<tab_groups::TabGroupId> old_group_id) override;
 
   const Browser* browser() const { return browser_view_->browser(); }
 

@@ -383,3 +383,62 @@ IN_PROC_BROWSER_TEST_F(
   // Group should be collapsed
   EXPECT_TRUE(controller()->IsGroupCollapsed(group));
 }
+
+class BrowserTabStripControllerTestFocusedGroup
+    : public BrowserTabStripControllerTestBase {
+ public:
+  BrowserTabStripControllerTestFocusedGroup() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+  ~BrowserTabStripControllerTestFocusedGroup() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       SetAndGetFocusedGroup) {
+  // Create tabs and groups.
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 4);
+
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group2 =
+      tab_strip_model()->AddToNewGroup({2, 3});
+
+  // Initially, no group is focused.
+  EXPECT_EQ(controller()->GetFocusedGroup(), std::nullopt);
+
+  // Focus on group1.
+  controller()->SetFocusedGroup(group1);
+  EXPECT_EQ(controller()->GetFocusedGroup(), group1);
+
+  // Focus on group2.
+  controller()->SetFocusedGroup(group2);
+  EXPECT_EQ(controller()->GetFocusedGroup(), group2);
+
+  // Unset focused group.
+  controller()->SetFocusedGroup(std::nullopt);
+  EXPECT_EQ(controller()->GetFocusedGroup(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       FocusedGroupIsResetWhenDeleted) {
+  // Create tabs and a group.
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Focus on the group.
+  controller()->SetFocusedGroup(group);
+  EXPECT_EQ(controller()->GetFocusedGroup(), group);
+
+  // Delete the group by ungrouping all its tabs.
+  tab_strip_model()->RemoveFromGroup({0, 1});
+
+  // Verify the focused group is reset.
+  EXPECT_EQ(controller()->GetFocusedGroup(), std::nullopt);
+}

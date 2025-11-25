@@ -107,6 +107,9 @@ class FakeBaseTabStripController : public TabStripController {
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
 
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
+  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 
@@ -131,6 +134,7 @@ class FakeBaseTabStripController : public TabStripController {
   tab_groups::TabGroupVisualData fake_group_data_;
   std::vector<std::optional<tab_groups::TabGroupId>> tab_groups_;
 
+  std::optional<tab_groups::TabGroupId> focused_group_;
   ui::ListSelectionModel selection_model_;
 };
 
