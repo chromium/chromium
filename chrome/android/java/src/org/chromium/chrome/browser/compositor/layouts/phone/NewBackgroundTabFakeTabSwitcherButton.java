@@ -66,7 +66,6 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     private ImageView mTabSwitcherButtonView;
     private TabSwitcherDrawable mTabSwitcherDrawable;
 
-    private @BrandedColorScheme int mBrandedColorScheme;
     private int mTabCount;
     private boolean mIsIncognito;
 
@@ -80,13 +79,14 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mBrandedColorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
         mTabCount = 0;
         mIsIncognito = false;
         mTabSwitcherDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
-                        getContext(), mBrandedColorScheme, TabSwitcherDrawableLocation.TAB_TOOLBAR);
-        setBrandedColorScheme(mBrandedColorScheme);
+                        getContext(),
+                        BrandedColorScheme.LIGHT_BRANDED_THEME,
+                        TabSwitcherDrawableLocation.TAB_TOOLBAR);
+        setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         setTabCount(mTabCount, mIsIncognito);
         setNotificationIconStatus(false);
 
@@ -96,7 +96,6 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     }
 
     /* package */ void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        mBrandedColorScheme = brandedColorScheme;
         mTabSwitcherDrawable.setTint(
                 ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme));
         mTabSwitcherDrawable.setNotificationBackground(brandedColorScheme);
@@ -301,11 +300,6 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     @Override
     public void runOnNextLayoutRunnables() {
         mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
-    }
-
-    /* package */ @BrandedColorScheme
-    int getBrandedColorSchemeForTesting() {
-        return mBrandedColorScheme;
     }
 
     /* package */ int getTabCountForTesting() {

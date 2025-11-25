@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -59,10 +60,12 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.CustomTabCount;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
@@ -105,6 +108,9 @@ public class NewTabAnimationLayout extends Layout {
     private @Nullable NewBackgroundTabAnimationHostView mBackgroundHostView;
     private @Nullable NewForegroundTabAnimationHostView mForegroundHostView;
     private @Nullable AnimatorSet mTabCreatedBackgroundAnimation;
+    // The real tab switcher button view. This is used to update the view visibility based on the
+    // background animation progress.
+    private @Nullable View mTabSwitcherButton;
     private @Nullable TopInsetCoordinator mTopInsetCoordinator;
     private @Nullable Runnable mAnimationRunnable;
     private @Nullable Runnable mTimeoutRunnable;
@@ -688,7 +694,7 @@ public class NewTabAnimationLayout extends Layout {
         boolean isIncognito = animationTab.isIncognitoBranded();
         assert assumeNonNull(mLayoutTabs).length == 1;
         mSkipForceAnimationToFinish = true;
-        startHiding();
+        forceHidingImmediatelyIfNeeded(isRegularNtp);
 
         if (!isRegularNtp && mBrowserControlsVisibilityToken == TokenHolder.INVALID_TOKEN) {
             mBrowserControlsVisibilityToken = mBrowserVisibilityDelegate.showControlsPersistent();
@@ -697,6 +703,9 @@ public class NewTabAnimationLayout extends Layout {
         ToggleTabStackButton tabSwitcherButton =
                 mAnimationHostView.findViewById(R.id.tab_switcher_button);
         assert tabSwitcherButton != null;
+        Rect tabSwitcherRect = new Rect();
+        boolean tabSwitcherButtonIsVisible =
+                tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
 
         Context context = getContext();
         mBackgroundHostView =
@@ -709,34 +718,58 @@ public class NewTabAnimationLayout extends Layout {
         assumeNonNull(mTabModelSelector);
         int prevTabCount = mTabModelSelector.getModel(isIncognito).getCount() - 1;
         mCustomTabCountToken = mCustomTabCount.setCount(prevTabCount);
+
         @ColorInt
         int toolbarColor =
                 isRegularNtp
                         ? NewTabAnimationUtils.getBackgroundColor(context, isIncognito)
                         : mToolbarManager.getPrimaryColor();
-
         int[] toolbarPosition = new int[2];
         mAnimationHostView.findViewById(R.id.toolbar).getLocationInWindow(toolbarPosition);
-        Rect compositorViewRect = new Rect();
-        mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
         boolean isTopToolbar =
                 isRegularNtp || ToolbarPositionController.shouldShowToolbarOnTop(animationTab);
+        int toolbarHeight = toolbarPosition[1] + getTopInsetIfNeeded(animationTab);
+
+        Rect compositorViewRect = new Rect();
+        mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
+
         ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
                 mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
 
-        int toolbarHeight = toolbarPosition[1] + getTopInsetIfNeeded(animationTab);
+        @AnimationType
+        int animationType =
+                NewBackgroundTabAnimationHostView.calculateAnimationType(
+                        tabSwitcherButtonIsVisible,
+                        isRegularNtp,
+                        ntpSearchBoxTransitionPercentageSupplier.get());
+
+        @BrandedColorScheme int brandedColorScheme;
+        if (isRegularNtp
+                && animationType == AnimationType.DEFAULT
+                && NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false)) {
+            brandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
+        } else {
+            brandedColorScheme =
+                    ThemeUtils.getBrandedColorScheme(context, toolbarColor, isIncognito);
+        }
+
+        if (mTopInsetCoordinator != null && animationType == AnimationType.DEFAULT) {
+            mTabSwitcherButton = tabSwitcherButton;
+            toolbarColor = Color.TRANSPARENT;
+        }
 
         mBackgroundHostView.setUpAnimation(
                 tabSwitcherButton,
-                isRegularNtp,
+                tabSwitcherRect,
                 isIncognito,
                 isTopToolbar,
                 toolbarColor,
+                animationType,
+                brandedColorScheme,
                 prevTabCount,
                 toolbarHeight,
                 compositorViewRect.top,
-                compositorViewRect.left,
-                ntpSearchBoxTransitionPercentageSupplier.get());
+                compositorViewRect.left);
 
         // {@link View#INVISIBLE} is needed to generate the geometry information.
         mBackgroundHostView.setVisibility(View.INVISIBLE);
@@ -760,7 +793,6 @@ public class NewTabAnimationLayout extends Layout {
                     mTimeoutRunnable = null;
                     assumeNonNull(mTabModelSelector);
                     assumeNonNull(mBackgroundHostView);
-                    @AnimationType int animationType = mBackgroundHostView.getAnimationType();
                     boolean shouldObserveNtp =
                             isRegularNtp && animationType == AnimationType.DEFAULT;
                     AnimationInterruptor interruptor =
@@ -786,6 +818,10 @@ public class NewTabAnimationLayout extends Layout {
                                 @Override
                                 public void onStart(Animator animation) {
                                     checker.onAnimationStart();
+
+                                    if (mTabSwitcherButton != null) {
+                                        mTabSwitcherButton.setVisibility(View.INVISIBLE);
+                                    }
                                     // Release custom tab count as soon as the animation starts to
                                     // avoid showing the old tab count if the user decides to scroll
                                     // up during AnimationType.NTP_PARTIAL_SCROLL or
@@ -840,8 +876,6 @@ public class NewTabAnimationLayout extends Layout {
 
         if (visibilitySupplier.get()) {
             visibilitySupplier.addObserver(mVisibilityObserver);
-            // TODO(crbug.com/40282469): Check with UX about the NTP bottom sheet's scrim taking a
-            // bit to disappear and decrease the timeout.
             mHandler.postDelayed(mTimeoutRunnable, ANIMATION_TIMEOUT_MS);
         } else {
             setRunOnNextLayout(mBackgroundHostView, mAnimationRunnable);
@@ -849,6 +883,10 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     private void cleanUpBackgroundAnimation() {
+        if (mTabSwitcherButton != null) {
+            mTabSwitcherButton.setVisibility(View.VISIBLE);
+            mTabSwitcherButton = null;
+        }
         mTabCreatedBackgroundAnimation = null;
         mAnimationHostView.removeView(mBackgroundHostView);
         mBackgroundHostView = null;
@@ -865,6 +903,11 @@ public class NewTabAnimationLayout extends Layout {
             return mTopInsetCoordinator.getSystemTopInset();
         }
         return 0;
+    }
+
+    private void forceHidingImmediatelyIfNeeded(boolean isNtp) {
+        startHiding();
+        if (mTopInsetCoordinator != null && isNtp) doneHiding();
     }
 
     private void onTopInsetCoordinatorAvailable(TopInsetCoordinator topInsetCoordinator) {
