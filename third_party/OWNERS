@@ -24,6 +24,10 @@ thakis@chromium.org
 per-file ...README.chromium=jsca@google.com
 per-file ...README.chromium=renewitt@google.com
 
+# For testing Copybara workflows from GoB
+per-file ...copy.bara.sky=jsca@google.com
+per-file ...copy.bara.sky=renewitt@google.com
+
 per-file .gitignore=*
 
 # Translation artifacts:
