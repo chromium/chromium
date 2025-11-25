@@ -45,8 +45,7 @@ class TabContainerImpl : public TabContainer,
   TabContainerImpl(TabContainerController& controller,
                    TabHoverCardController* hover_card_controller,
                    TabDragContextBase* drag_context,
-                   TabSlotController& tab_slot_controller,
-                   views::View* scroll_contents_view);
+                   TabSlotController& tab_slot_controller);
   ~TabContainerImpl() override;
 
   // TabContainer:
@@ -65,9 +64,6 @@ class TabContainerImpl : public TabContainer,
   Tab* AddTabToViewModel(Tab* tab, int model_index, TabPinned pinned) override;
   void ReturnTabSlotView(TabSlotView* view) override;
 
-  void ScrollTabToVisible(int model_index) override;
-
-  void ScrollTabContainerByOffset(int offset) override;
   void OnGroupCreated(const tab_groups::TabGroupId& group) override;
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group) override;
   void OnGroupMoved(const tab_groups::TabGroupId& group) override;
@@ -218,9 +214,6 @@ class TabContainerImpl : public TabContainer,
 
   views::ViewModelT<Tab>* GetTabsViewModel();
 
-  // Private getter to retrieve the visible rect of the scroll container.
-  std::optional<gfx::Rect> GetVisibleContentRect();
-
   // Uses `bounds_animator_` to animate `view` to `target`. Use this rather than
   // calling `bounds_animator_.AnimateViewTo()` directly so animations correctly
   // track changes in rich animation enable state.
@@ -229,11 +222,6 @@ class TabContainerImpl : public TabContainer,
       const gfx::Rect& target,
       std::unique_ptr<gfx::AnimationDelegate> delegate = nullptr);
 
-  // Animates and scrolls the tab container from the start_edge to the
-  // target_edge. If the target_edge is beyond the tab strip it will be clamped
-  // bounds of the tabstrip.
-  void AnimateScrollToShowXCoordinate(const int start_edge,
-                                      const int target_edge);
   // Animates `tab_slot_view` to `target_bounds`
   void AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
                             const gfx::Rect& target_bounds);
@@ -371,10 +359,6 @@ class TabContainerImpl : public TabContainer,
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
-  // The View that is to be scrolled by `tab_scrolling_animation_`. May be
-  // nullptr in tests.
-  const raw_ptr<views::View> scroll_contents_view_;
-
   // This view is animated by `bounds_animator_` to guarantee that this
   // container's bounds change smoothly when tabs are animated into or out of
   // this container.
@@ -382,9 +366,6 @@ class TabContainerImpl : public TabContainer,
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;
-
-  // Responsible for animating the scroll of the tab container.
-  std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
   const std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 

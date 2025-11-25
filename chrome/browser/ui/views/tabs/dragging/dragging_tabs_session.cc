@@ -52,34 +52,6 @@ DraggingTabsSession::DraggingTabsSession(DragSessionData drag_data,
                                               start_point_in_screen)
               .x()),
       last_point_in_screen_(start_point_in_screen) {
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
-      base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
-    const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
-        tabs::kScrollableTabStripWithDragging,
-        tabs::kTabScrollingWithDraggingModeName,
-        static_cast<int>(
-            TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed));
-
-    switch (drag_with_scroll_mode) {
-      case static_cast<int>(
-          TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed):
-        tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kConstantTimer);
-        break;
-      case static_cast<int>(
-          TabStripScrollSession::ScrollWithDragStrategy::kVariableSpeed):
-        tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kVariableTimer);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   MoveAttachedImpl(start_point_in_screen, true);
 }
 
@@ -114,10 +86,6 @@ gfx::Point DraggingTabsSession::GetLastPointInScreen() {
 
 views::View* DraggingTabsSession::GetAttachedContext() {
   return attached_context_;
-}
-
-views::ScrollView* DraggingTabsSession::GetScrollView() {
-  return attached_context_->GetScrollView();
 }
 
 void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
@@ -202,10 +170,6 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
         attached_model->GetIndexOfWebContents(last_contents)) {
       last_move_attached_context_loc_ = point_in_attached_context.x();
     }
-  }
-
-  if (tab_strip_scroll_session_) {
-    tab_strip_scroll_session_->MaybeStart();
   }
 
   if (!did_layout) {
@@ -357,8 +321,6 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
     // window. In this case, since the dragged tabs can't move further right in
     // the tabstrip, it will never go "beyond" the left_group and therefore
     // never leave it unless we add this check. See crbug.com/1134376.
-    // TODO(crbug.com/40842551): Update this to work better with Tab Scrolling
-    // once dragging near the end of the tabstrip is cleaner.
     if (tab_bounds_in_drag_context_coords(selected_unpinned.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
       return std::nullopt;

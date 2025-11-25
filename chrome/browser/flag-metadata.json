@@ -9897,11 +9897,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "tab-scrolling-button-position",
-    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "tab-search-position-setting",
     "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 137

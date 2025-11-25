@@ -23,8 +23,6 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -78,23 +76,14 @@ class LayoutWaiter : public views::ViewObserver {
 };
 
 // TabStripRegionViewTestBase contains no test cases.
-class TabStripRegionViewTestBase : public InProcessBrowserTest {
+class TabStripRegionViewTest : public InProcessBrowserTest {
  public:
-  explicit TabStripRegionViewTestBase(bool has_scrolling)
+  TabStripRegionViewTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
-    if (has_scrolling) {
-      scoped_feature_list_.InitWithFeatures(
-          {tabs::kScrollableTabStrip, features::kTabScrollingButtonPosition},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {tabs::kScrollableTabStrip});
-    }
-  }
-  TabStripRegionViewTestBase(const TabStripRegionViewTestBase&) = delete;
-  TabStripRegionViewTestBase& operator=(const TabStripRegionViewTestBase&) =
-      delete;
-  ~TabStripRegionViewTestBase() override = default;
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
+  TabStripRegionViewTest(const TabStripRegionViewTest&) = delete;
+  TabStripRegionViewTest& operator=(const TabStripRegionViewTest&) = delete;
+  ~TabStripRegionViewTest() override = default;
 
   void SetUp() override {
     InProcessBrowserTest::SetUp();
@@ -125,20 +114,9 @@ class TabStripRegionViewTestBase : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TabStripRegionViewTest contains tests that will run with scrolling enabled
-// and disabled.
-class TabStripRegionViewTest : public TabStripRegionViewTestBase,
-                               public testing::WithParamInterface<bool> {
- public:
-  TabStripRegionViewTest() : TabStripRegionViewTestBase(GetParam()) {}
-  TabStripRegionViewTest(const TabStripRegionViewTest&) = delete;
-  TabStripRegionViewTest& operator=(const TabStripRegionViewTest&) = delete;
-  ~TabStripRegionViewTest() override = default;
-};
-
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        DISABLED_GrabHandleSpaceStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -161,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        DISABLED_NewTabButtonStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -181,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        DISABLED_NewTabButtonRightOfTabs) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -200,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
 
 // TODO(crbug.com/41496209): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth,
                                      GetLayoutConstant(TAB_STRIP_HEIGHT));
@@ -231,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
 // This is important in ensuring that we maximise the targetable area of these
 // views when the tab strip is flush with the top of the screen when the window
 // is maximized (Fitt's Law).
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        ChildrenAreFlushWithTopOfTabStripRegionView) {
   tab_strip_region_view()->SetBounds(0, 0, 1000, 100);
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -258,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
   EXPECT_EQ(0, new_tab_button_origin.y());
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        TabSearchPositionLoggedOnConstruction) {
   using TabSearchPositionEnum = TabStripRegionView::TabSearchPositionEnum;
   const bool tab_search_trailing_tabstrip =
@@ -273,26 +251,12 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
                                       expected_enum_val, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest, HasMultiselectableState) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, HasMultiselectableState) {
   ui::AXNodeData ax_node_data;
   tab_strip_region_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data);
   EXPECT_TRUE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
 }
-
-class TabStripRegionViewTestWithScrollingDisabled
-    : public TabStripRegionViewTestBase {
- public:
-  TabStripRegionViewTestWithScrollingDisabled()
-      : TabStripRegionViewTestBase(false) {}
-  TabStripRegionViewTestWithScrollingDisabled(
-      const TabStripRegionViewTestWithScrollingDisabled&) = delete;
-  TabStripRegionViewTestWithScrollingDisabled& operator=(
-      const TabStripRegionViewTestWithScrollingDisabled&) = delete;
-  ~TabStripRegionViewTestWithScrollingDisabled() override = default;
-
- private:
-};
 
 // When scrolling is disabled, the tab strip cannot be larger than the container
 // so tabs that do not fit in the tabstrip will become invisible. This is the
@@ -306,7 +270,7 @@ class TabStripRegionViewTestWithScrollingDisabled
 #define MAYBE_TabStripCannotBeLargerThanContainer \
   TabStripCannotBeLargerThanContainer
 #endif
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingDisabled,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                        MAYBE_TabStripCannotBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -343,128 +307,3 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingDisabled,
   EXPECT_FALSE(
       tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
 }
-
-class TabStripRegionViewTestWithScrollingEnabled
-    : public TabStripRegionViewTestBase {
- public:
-  TabStripRegionViewTestWithScrollingEnabled()
-      : TabStripRegionViewTestBase(true) {}
-  TabStripRegionViewTestWithScrollingEnabled(
-      const TabStripRegionViewTestWithScrollingEnabled&) = delete;
-  TabStripRegionViewTestWithScrollingEnabled& operator=(
-      const TabStripRegionViewTestWithScrollingEnabled&) = delete;
-  ~TabStripRegionViewTestWithScrollingEnabled() override = default;
-};
-
-// When scrolling is enabled, the tab strip can grow to be larger than the
-// container. This is the opposite behavior from
-// TabStripRegionViewTestWithScrollingDisabled.
-// TabStripCannotBeLargerThanContainer.
-// TODO(crbug.com/442378742): Fix failures on the Linux ASan LSan Tests bot.
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-                       DISABLED_TabStripCanBeLargerThanContainer) {
-  const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  {
-    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-    RunScheduledLayouts();
-    waiter.Wait();
-  }
-
-  // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (tab_strip()->tab_at(0)->width() > minimum_active_width) {
-    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-    {
-      LayoutWaiter waiter(
-          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-      RunScheduledLayouts();
-      waiter.Wait();
-    }
-    EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
-  }
-
-  // Add a few more tabs after the tabstrip is full to ensure the tabstrip
-  // starts scrolling. This needs to expand the tabstrip width by a decent
-  // amount in order to get the tabstrip to be wider than the entire tabstrip
-  // region, not just the portion of that that's allocated to the tabstrip
-  // itself (e.g. some of that space is for the NTB).
-  for (int i = 0; i < 10; i++) {
-    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-    {
-      LayoutWaiter waiter(
-          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-      RunScheduledLayouts();
-      waiter.Wait();
-    }
-  }
-  EXPECT_GT(tab_strip()->width(), tab_strip_region_view()->width());
-  EXPECT_TRUE(
-      tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-                       DISABLED_TabStripScrollButtonsNotInWindowCaption) {
-  const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  {
-    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-    RunScheduledLayouts();
-    waiter.Wait();
-  }
-
-  // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (tab_strip()->tab_at(0)->width() > minimum_active_width) {
-    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-    {
-      LayoutWaiter waiter(
-          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-      RunScheduledLayouts();
-      waiter.Wait();
-    }
-  }
-
-  // Add a few more tabs after the tabstrip is full to ensure the tabstrip
-  // starts scrolling. This needs to expand the tabstrip width by a decent
-  // amount in order to get the tabstrip to be wider than the entire tabstrip
-  // region, not just the portion of that that's allocated to the tabstrip
-  // itself (e.g. some of that space is for the NTB).
-  for (int i = 0; i < 10; i++) {
-    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-    {
-      LayoutWaiter waiter(
-          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
-      RunScheduledLayouts();
-      waiter.Wait();
-    }
-  }
-
-  raw_ptr<TabStripScrollContainer> scroll_container =
-      views::AsViewClass<TabStripScrollContainer>(
-          tab_strip_region_view()->GetTabStripContainerForTesting());
-  raw_ptr<views::ImageButton> leading_scroll_button_ =
-      scroll_container->GetLeadingScrollButtonForTesting();
-  raw_ptr<views::ImageButton> trailing_scroll_button_ =
-      scroll_container->GetTrailingScrollButtonForTesting();
-
-  // Check to see if children are visible
-  EXPECT_TRUE(leading_scroll_button_ != nullptr &&
-              leading_scroll_button_->IsDrawn());
-  EXPECT_TRUE(trailing_scroll_button_ != nullptr &&
-              trailing_scroll_button_->IsDrawn());
-
-  gfx::Point scrolling_button_point =
-      leading_scroll_button_->bounds().CenterPoint();
-  gfx::Rect scrolling_button_rect =
-      gfx::Rect(scrolling_button_point, gfx::Size(1, 1));
-  gfx::RectF floating_rect_in_target_coords_f(scrolling_button_rect);
-  views::View::ConvertRectToTarget(leading_scroll_button_,
-                                   tab_strip_region_view(),
-                                   &floating_rect_in_target_coords_f);
-
-  EXPECT_FALSE(tab_strip_region_view()->IsRectInWindowCaption(
-      gfx::ToEnclosingRect(floating_rect_in_target_coords_f)));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabStripRegionViewTest,
-                         ::testing::Values(true, false));

@@ -3865,11 +3865,6 @@ inline constexpr char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
 
-inline constexpr char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
-inline constexpr char kScrollableTabStripName[] = "Tab Scrolling";
-inline constexpr char kScrollableTabStripDescription[] =
-    "Enables tab strip to scroll left and right when full.";
-
 inline constexpr char kAppBrowserUseNewLayoutId[] =
     "app-browser-use-new-layout";
 inline constexpr char kAppBrowserUseNewLayoutName[] =
@@ -3897,34 +3892,6 @@ inline constexpr char kLaunchedTabSearchToolbarDescription[] =
     "Enables tab search button to be in toolbar area. "
     "Might require enabling the tab strip combo button configuration to also "
     "match to toolbar in specific regions.";
-
-inline constexpr char kTabScrollingButtonPositionFlagId[] =
-    "tab-scrolling-button-position";
-inline constexpr char kTabScrollingButtonPositionName[] =
-    "Tab Scrolling Buttons";
-inline constexpr char kTabScrollingButtonPositionDescription[] =
-    "Enables buttons on the tab strip to scroll left and right when full";
-
-inline constexpr char kScrollableTabStripWithDraggingFlagId[] =
-    "scrollable-tabstrip-with-dragging";
-inline constexpr char kScrollableTabStripWithDraggingName[] =
-    "Tab Scrolling With Dragging";
-inline constexpr char kScrollableTabStripWithDraggingDescription[] =
-    "Scrolls the tabstrip while dragging tabs towards the end of the visible "
-    "view.";
-
-inline constexpr char kScrollableTabStripOverflowFlagId[] =
-    "scrollable-tabstrip-overflow";
-inline constexpr char kScrollableTabStripOverflowName[] =
-    "Tab Scrolling Overflow Indicator";
-inline constexpr char kScrollableTabStripOverflowDescription[] =
-    "Choices for overflow indicators shown when the tabstrip is in scrolling "
-    "mode.";
-
-inline constexpr char kSplitTabStripName[] = "Split TabStrip";
-inline constexpr char kSplitTabStripDescription[] =
-    "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
-    "Pure refactoring, no user-visible behavioral changes are included.";
 
 inline constexpr char kSidePanelRelativeAlignmentName[] =
     "Side Panel Relative Alignment";

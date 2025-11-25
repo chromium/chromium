@@ -8,14 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
-#include "chrome/browser/ui/views/tabs/dragging/tab_strip_scroll_session.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 // Handles dragging tabs within a single TabDragContext on behalf of
 // TabDragController.
-class DraggingTabsSession final : public TabDragWithScrollManager {
+class DraggingTabsSession final {
  public:
   // `drag_data` is a copy of the drag configuration for the full session.
   // `attached_context` is the context in which the tabs are being dragged.
@@ -29,14 +28,12 @@ class DraggingTabsSession final : public TabDragWithScrollManager {
                                float offset_to_width_ratio_,
                                bool initial_move,
                                gfx::Point point_in_screen);
-  ~DraggingTabsSession() final;
+  ~DraggingTabsSession();
 
-  // TabDragWithScrollManager:
-  void MoveAttached(gfx::Point point_in_screen) override;
-  gfx::Rect GetEnclosingRectForDraggedTabs() override;
-  gfx::Point GetLastPointInScreen() override;
-  views::View* GetAttachedContext() override;
-  views::ScrollView* GetScrollView() override;
+  void MoveAttached(gfx::Point point_in_screen);
+  gfx::Rect GetEnclosingRectForDraggedTabs();
+  gfx::Point GetLastPointInScreen();
+  views::View* GetAttachedContext();
 
  private:
   void MoveAttachedImpl(gfx::Point point_in_screen, bool just_attached);
@@ -77,10 +74,6 @@ class DraggingTabsSession final : public TabDragWithScrollManager {
   int last_move_attached_context_loc_;
 
   gfx::Point last_point_in_screen_;
-
-  // the scrolling session that handles scrolling when the tabs are dragged
-  // to the scrollable regions of the tab_strip.
-  std::unique_ptr<TabStripScrollSession> tab_strip_scroll_session_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_DRAGGING_TABS_SESSION_H_

@@ -67,13 +67,6 @@ int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
   const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
       close_button_size + insets.left() + insets.right();
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-    return std::max(
-        min_active_width,
-        base::GetFieldTrialParamByFeatureAsInt(
-            tabs::kScrollableTabStrip,
-            tabs::kMinimumTabWidthFeatureParameterName, min_active_width));
-  }
 
   if (is_split) {
     // Only have one set of horizontal padding between tabs in an active split.
@@ -91,14 +84,6 @@ int TabStyle::GetMinimumInactiveWidth() const {
   // width; avoid double-counting it.
   int min_inactive_width =
       kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
-
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-    return std::max(
-        min_inactive_width,
-        base::GetFieldTrialParamByFeatureAsInt(
-            tabs::kScrollableTabStrip,
-            tabs::kMinimumTabWidthFeatureParameterName, min_inactive_width));
-  }
 
   return min_inactive_width;
 }

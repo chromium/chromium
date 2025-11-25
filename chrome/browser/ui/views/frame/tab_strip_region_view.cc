@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -265,32 +264,16 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     }
   }
 
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-    std::unique_ptr<TabStripScrollContainer> scroll_container =
-        std::make_unique<TabStripScrollContainer>(std::move(tab_strip));
-    tab_strip_scroll_container_ = scroll_container.get();
-    tab_strip_container_ = AddChildView(std::move(scroll_container));
-    // Allow the |tab_strip_container_| to grow into the free space available in
-    // the TabStripRegionView.
-    const views::FlexSpecification tab_strip_container_flex_spec =
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kScaleToMinimum,
-                                 views::MaximumFlexSizeRule::kPreferred);
-    tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
-                                      tab_strip_container_flex_spec);
+  tab_strip_container_ = AddChildView(std::move(tab_strip));
 
-  } else {
-    tab_strip_container_ = AddChildView(std::move(tab_strip));
-
-    // Allow the |tab_strip_container_| to grow into the free space available in
-    // the TabStripRegionView.
-    const views::FlexSpecification tab_strip_container_flex_spec =
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kPreferred);
-    tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
-                                      tab_strip_container_flex_spec);
-  }
+  // Allow the |tab_strip_container_| to grow into the free space available in
+  // the TabStripRegionView.
+  const views::FlexSpecification tab_strip_container_flex_spec =
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred);
+  tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
+                                    tab_strip_container_flex_spec);
 
   if (ShouldShowNewTabButton(browser)) {
     std::unique_ptr<TabStripControlButton> tab_strip_control_button =
@@ -391,16 +374,7 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // true.
   if (tab_strip_container_->HitTestRect(
           get_target_rect(tab_strip_container_))) {
-    if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-      TabStripScrollContainer* scroll_container =
-          views::AsViewClass<TabStripScrollContainer>(tab_strip_container_);
-
-      return scroll_container->IsRectInWindowCaption(
-          get_target_rect(scroll_container));
-
-    } else {
-      return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
-    }
+    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
   }
 
   // The child could have a non-rectangular shape, so if the rect is not in the

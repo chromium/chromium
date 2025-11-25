@@ -82,12 +82,6 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // may be called during `view`'s destruction.
   virtual void ReturnTabSlotView(TabSlotView* view) = 0;
 
-  // Scrolls so the tab at `model_index` is fully visible.
-  virtual void ScrollTabToVisible(int model_index) = 0;
-
-  // Animates and scrolls the tab container by an offset.
-  virtual void ScrollTabContainerByOffset(int offset) = 0;
-
   // Handle tab group model changes.
   virtual void OnGroupCreated(const tab_groups::TabGroupId& group) = 0;
   // Opens the editor bubble for the tab `group` as a result of an explicit user
