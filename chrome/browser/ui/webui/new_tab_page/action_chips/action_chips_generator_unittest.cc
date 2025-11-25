@@ -75,6 +75,11 @@ const ActionChip& GetStaticImageGenerationChip() {
   return *kInstance;
 }
 
+ActionChip CreateStaticDeepDiveChip(std::string_view suggestion) {
+  return ActionChip("Deep dive", std::string(suggestion), ChipType::kDeepDive,
+                    nullptr);
+}
+
 // A container to store WebContents and its dependency.
 // The main usage is to populate TabInterface.
 struct TabFixture {
@@ -168,6 +173,42 @@ TEST(ActionChipGeneratorTest,
       ElementsAre(Pointee(Eq(std::cref(most_resent_tab_chip))),
                   Pointee(Eq(std::cref(GetStaticDeepSearchChip()))),
                   Pointee(Eq(std::cref(GetStaticImageGenerationChip())))));
+}
+
+TEST(ActionChipGeneratorTest,
+     GenerateDeepDiveChipsWhenNtpNextShowDeepDiveSuggestionsParamIsTrue) {
+  const GURL page_url("https://google.com/");
+  const std::u16string page_title(u"Google");
+  std::unique_ptr<TabFixture> tab_fixture =
+      CreateTabFixture(page_url, page_title);
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(Return(tab_fixture->web_contents.get()));
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowDeepDiveSuggestionsParam.name, "true"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  CreateActionChipsGenerator().GenerateActionChips(
+      static_cast<const TabInterface*>(&mock_tab),
+      base::BindLambdaForTesting(
+          [&run_loop, &actual](std::vector<ActionChipPtr> chips) {
+            actual = std::move(chips);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  ActionChip most_recent_tab_chip = CreateStaticRecentTabChip(
+      TabInfo::New(GetTabHandleId(&mock_tab), base::UTF16ToUTF8(page_title),
+                   page_url, base::Time::FromMillisecondsSinceUnixEpoch(0)));
+  ActionChip deep_dive_chip_1 = CreateStaticDeepDiveChip("Test suggestion 1");
+  ActionChip deep_dive_chip_2 = CreateStaticDeepDiveChip("Test suggestion 2");
+
+  EXPECT_THAT(actual, ElementsAre(Pointee(Eq(std::cref(most_recent_tab_chip))),
+                                  Pointee(Eq(std::cref(deep_dive_chip_1))),
+                                  Pointee(Eq(std::cref(deep_dive_chip_2)))));
 }
 
 }  // namespace

@@ -44,7 +44,10 @@ ChipsGenerationScenario GetScenario(
     return ChipsGenerationScenario::kStaticChipsOnly;
   }
   // TODO: b:457512149 - Support the deep dive chips when the EDU tab check is
-  // in.
+  // in. For now, the param is used to enable the deep dive chips.
+  if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get()) {
+    return ChipsGenerationScenario::kDeepDive;
+  }
   return ChipsGenerationScenario::kSteady;
 }
 
@@ -69,6 +72,14 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
       !suggestion.empty()
           ? suggestion
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
+  return chip;
+}
+
+ActionChipPtr CreateDeepDiveChip(std::string_view suggestion) {
+  ActionChipPtr chip = ActionChip::New();
+  chip->type = ChipType::kDeepDive;
+  chip->title = "Deep dive";
+  chip->suggestion = suggestion;
   return chip;
 }
 
@@ -131,6 +142,18 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
           tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
           /*options=*/{}));
       return;
+    case ChipsGenerationScenario::kDeepDive: {
+      std::vector<ActionChipPtr> chips;
+      if (tab.has_value()) {
+        chips.push_back(CreateRecentTabChip(
+            CreateTabInfo(*tab_id_generator_, *tab), /*suggestion=*/""));
+        // TODO: b:457512149 - Use suggestions from the server side.
+        chips.push_back(CreateDeepDiveChip("Test suggestion 1"));
+        chips.push_back(CreateDeepDiveChip("Test suggestion 2"));
+      }
+      std::move(callback).Run(std::move(chips));
+      return;
+    }
     default:
       // TODO: b:457512149 - handle the other cases correctly.
       std::move(callback).Run(CreateChipsForSteadyState(

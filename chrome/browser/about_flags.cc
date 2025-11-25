@@ -1771,7 +1771,7 @@ const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
 };
 
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
-    {"NtpNextShowDeepDiveSuggestionsParam", "false"},
+    {"NtpNextShowDeepDiveSuggestionsParam", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
