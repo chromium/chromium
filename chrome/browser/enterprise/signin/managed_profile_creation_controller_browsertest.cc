@@ -20,11 +20,8 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 enum class ManagedProfileCreationResult {
   kNull,
@@ -350,17 +347,18 @@ class ManagedProfileCreationBrowserTest
         email, signin::SimpleAccountAvailabilityOptions{
                    .primary_account_consent_level = consent_level});
     // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = hosted_domain;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(hosted_domain)
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_enterprise_features(hosted_domain !=
-                                                  kNoHostedDomainFound);
+    mutator.set_is_subject_to_enterprise_features(!hosted_domain.empty());
     mutator.set_is_subject_to_account_level_enterprise_policies(
-        hosted_domain != kNoHostedDomainFound);
+        !hosted_domain.empty());
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);

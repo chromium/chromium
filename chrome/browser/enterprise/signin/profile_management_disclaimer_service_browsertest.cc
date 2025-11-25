@@ -32,11 +32,8 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 signin::IdentityManager* GetIdentityManager(Profile* profile) {
@@ -249,14 +246,16 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSignin);
     // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = hosted_domain;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(hosted_domain)
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
@@ -299,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(
   AccountInfo primary_account_info =
       MakeValidPrimaryAccountInfoAvailableAndUpdate(
           "bob@example.com",
-          GetParam().is_managed ? "example.com" : kNoHostedDomainFound);
+          GetParam().is_managed ? "example.com" : std::string());
   base::RunLoop().RunUntilIdle();
   std::move(resetter).RunAndReset();
 
@@ -437,14 +436,16 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
   AccountInfo MakeValidAccountInfoForAccount(AccountInfo&& account_info,
                                              const std::string& hosted_domain) {
     // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = hosted_domain;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(hosted_domain)
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
 
   primary_account_info = MakeValidAccountInfoForAccount(
       std::move(primary_account_info),
-      GetParam().is_managed ? "example.com" : kNoHostedDomainFound);
+      GetParam().is_managed ? "example.com" : std::string());
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager()
@@ -610,14 +611,16 @@ class ProfileManagementDisclaimerServiceBrowserTest
                                              const std::string& hosted_domain) {
     AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
     // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = hosted_domain;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(hosted_domain)
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
@@ -631,14 +634,16 @@ class ProfileManagementDisclaimerServiceBrowserTest
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSignin);
     // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = hosted_domain;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(hosted_domain)
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
