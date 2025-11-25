@@ -21,8 +21,7 @@ namespace {
 // whereas the inner_url can't, so it uses spec.
 template <typename CHAR>
 bool DoCanonicalizeFileSystemUrl(std::basic_string_view<CHAR> spec,
-                                 const URLComponentSource<CHAR>& source,
-                                 const Parsed& parsed,
+                                 const Replacements<CHAR>& source,
                                  CharsetConverter* charset_converter,
                                  CanonOutput* output,
                                  Parsed* new_parsed) {
@@ -32,7 +31,7 @@ bool DoCanonicalizeFileSystemUrl(std::basic_string_view<CHAR> spec,
   new_parsed->host.reset();
   new_parsed->port.reset();
 
-  const Parsed* inner_parsed = parsed.inner_parsed();
+  const Parsed* inner_parsed = source.components().inner_parsed();
   Parsed new_inner_parsed;
 
   // Scheme (known, so we don't bother running it through the more
@@ -70,14 +69,12 @@ bool DoCanonicalizeFileSystemUrl(std::basic_string_view<CHAR> spec,
   // The filesystem type must be more than just a leading slash for validity.
   success &= new_inner_parsed.path.len > 1;
 
-  success &= CanonicalizePath(parsed.path.maybe_as_string_view_on(source.path),
-                              output, &new_parsed->path);
+  success &= CanonicalizePath(source.MaybePath(), output, &new_parsed->path);
 
   // Ignore failures for query/ref since the URL can probably still be loaded.
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
-                    charset_converter, output, &new_parsed->query);
-  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
-                  &new_parsed->ref);
+  CanonicalizeQuery(source.MaybeQuery(), charset_converter, output,
+                    &new_parsed->query);
+  CanonicalizeRef(source.MaybeRef(), output, &new_parsed->ref);
   if (success)
     new_parsed->set_inner_parsed(new_inner_parsed);
 
@@ -91,9 +88,8 @@ bool CanonicalizeFileSystemUrl(std::string_view spec,
                                CharsetConverter* charset_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
-  return DoCanonicalizeFileSystemUrl(spec, URLComponentSource(spec.data()),
-                                     parsed, charset_converter, output,
-                                     new_parsed);
+  return DoCanonicalizeFileSystemUrl(spec, Replacements<char>(spec, parsed),
+                                     charset_converter, output, new_parsed);
 }
 
 bool CanonicalizeFileSystemUrl(std::u16string_view spec,
@@ -101,9 +97,8 @@ bool CanonicalizeFileSystemUrl(std::u16string_view spec,
                                CharsetConverter* charset_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
-  return DoCanonicalizeFileSystemUrl(spec, URLComponentSource(spec.data()),
-                                     parsed, charset_converter, output,
-                                     new_parsed);
+  return DoCanonicalizeFileSystemUrl(spec, Replacements<char16_t>(spec, parsed),
+                                     charset_converter, output, new_parsed);
 }
 
 bool ReplaceFileSystemUrl(std::string_view base,
@@ -114,8 +109,7 @@ bool ReplaceFileSystemUrl(std::string_view base,
                           Parsed* new_parsed) {
   Replacements<char> overridden(base, base_parsed);
   SetupOverrideComponents(replacements, overridden);
-  return DoCanonicalizeFileSystemUrl(base, overridden.sources(),
-                                     overridden.components(), charset_converter,
+  return DoCanonicalizeFileSystemUrl(base, overridden, charset_converter,
                                      output, new_parsed);
 }
 
@@ -128,8 +122,7 @@ bool ReplaceFileSystemUrl(std::string_view base,
   RawCanonOutput<1024> utf8;
   Replacements<char> overridden(base, base_parsed);
   SetupUtf16OverrideComponents(replacements, utf8, overridden);
-  return DoCanonicalizeFileSystemUrl(base, overridden.sources(),
-                                     overridden.components(), charset_converter,
+  return DoCanonicalizeFileSystemUrl(base, overridden, charset_converter,
                                      output, new_parsed);
 }
 

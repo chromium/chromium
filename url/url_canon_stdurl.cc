@@ -15,18 +15,17 @@ namespace url {
 namespace {
 
 template <typename CHAR>
-bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
-                               const Parsed& parsed,
+bool DoCanonicalizeStandardUrl(const Replacements<CHAR>& source,
                                SchemeType scheme_type,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
+  const Parsed& parsed = source.components();
   DCHECK(!parsed.has_opaque_path);
 
   // Scheme: this will append the colon.
   bool success =
-      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
-                         output, &new_parsed->scheme);
+      CanonicalizeScheme(source.MaybeScheme(), output, &new_parsed->scheme);
 
   bool scheme_supports_user_info =
       (scheme_type == SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION);
@@ -51,18 +50,15 @@ bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
     // User info: the canonicalizer will handle the : and @.
     if (scheme_supports_user_info) {
       success &= CanonicalizeUserInfo(
-          parsed.username.maybe_as_string_view_on(source.username),
-          parsed.password.maybe_as_string_view_on(source.password), output,
+          source.MaybeUsername(), source.MaybePassword(), output,
           &new_parsed->username, &new_parsed->password);
     } else {
       new_parsed->username.reset();
       new_parsed->password.reset();
     }
 
-    success &= CanonicalizeHost(
-        std::basic_string_view<CHAR>(
-            source.host, parsed.host.is_valid() ? parsed.host.end() : 0),
-        parsed.host, output, &new_parsed->host);
+    success &= CanonicalizeHost(source.SpecUntilHostOrEmpty(), parsed.host,
+                                output, &new_parsed->host);
 
     // Host must not be empty for standard URLs.
     if (parsed.host.is_empty())
@@ -73,9 +69,8 @@ bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
       int default_port = DefaultPortForScheme(std::string_view(
           &UNSAFE_TODO(output->data()[new_parsed->scheme.begin]),
           new_parsed->scheme.len));
-      success &=
-          CanonicalizePort(parsed.port.maybe_as_string_view_on(source.port),
-                           default_port, output, &new_parsed->port);
+      success &= CanonicalizePort(source.MaybePort(), default_port, output,
+                                  &new_parsed->port);
     } else {
       new_parsed->port.reset();
     }
@@ -91,8 +86,7 @@ bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
 
   // Path
   if (parsed.path.is_valid()) {
-    success &= CanonicalizePath(parsed.path.as_string_view_on(source.path),
-                                output, &new_parsed->path);
+    success &= CanonicalizePath(source.MaybePath(), output, &new_parsed->path);
   } else if (have_authority ||
              parsed.query.is_valid() || parsed.ref.is_valid()) {
     // When we have an empty path, make up a path when we have an authority
@@ -106,12 +100,11 @@ bool DoCanonicalizeStandardUrl(const URLComponentSource<CHAR>& source,
   }
 
   // Query
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
-                    query_converter, output, &new_parsed->query);
+  CanonicalizeQuery(source.MaybeQuery(), query_converter, output,
+                    &new_parsed->query);
 
   // Ref: ignore failure for this, since the page can probably still be loaded.
-  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
-                  &new_parsed->ref);
+  CanonicalizeRef(source.MaybeRef(), output, &new_parsed->ref);
 
   // Carry over the flag for potentially dangling markup:
   if (parsed.potentially_dangling_markup)
@@ -161,7 +154,7 @@ bool CanonicalizeStandardUrl(std::string_view spec,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardUrl(URLComponentSource(spec.data()), parsed,
+  return DoCanonicalizeStandardUrl(Replacements<char>(spec, parsed),
                                    scheme_type, query_converter, output,
                                    new_parsed);
 }
@@ -172,7 +165,7 @@ bool CanonicalizeStandardUrl(std::u16string_view spec,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardUrl(URLComponentSource(spec.data()), parsed,
+  return DoCanonicalizeStandardUrl(Replacements<char16_t>(spec, parsed),
                                    scheme_type, query_converter, output,
                                    new_parsed);
 }
@@ -195,9 +188,8 @@ bool ReplaceStandardUrl(std::string_view base,
                         Parsed* new_parsed) {
   Replacements<char> overridden(base, base_parsed);
   SetupOverrideComponents(replacements, overridden);
-  return DoCanonicalizeStandardUrl(overridden.sources(),
-                                   overridden.components(), scheme_type,
-                                   query_converter, output, new_parsed);
+  return DoCanonicalizeStandardUrl(overridden, scheme_type, query_converter,
+                                   output, new_parsed);
 }
 
 // For 16-bit replacements, we turn all the replacements into UTF-8 so the
@@ -212,9 +204,8 @@ bool ReplaceStandardUrl(std::string_view base,
   RawCanonOutput<1024> utf8;
   Replacements<char> overridden(base, base_parsed);
   SetupUtf16OverrideComponents(replacements, utf8, overridden);
-  return DoCanonicalizeStandardUrl(overridden.sources(),
-                                   overridden.components(), scheme_type,
-                                   query_converter, output, new_parsed);
+  return DoCanonicalizeStandardUrl(overridden, scheme_type, query_converter,
+                                   output, new_parsed);
 }
 
 }  // namespace url

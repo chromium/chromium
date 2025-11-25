@@ -925,6 +925,11 @@ class Replacements {
     sources_.scheme = nullptr;
     components_.scheme = Component();
   }
+  // Return the scheme part of the source string if the scheme component is
+  // valid.
+  std::optional<StringViewT> MaybeScheme() const {
+    return components_.scheme.maybe_as_string_view_on(sources_.scheme);
+  }
   bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
 
   // Username
@@ -936,6 +941,11 @@ class Replacements {
   void ClearUsername() {
     sources_.username = Placeholder();
     components_.username = Component();
+  }
+  // Return the username part of the source string if the username component is
+  // valid.
+  std::optional<StringViewT> MaybeUsername() const {
+    return components_.username.maybe_as_string_view_on(sources_.username);
   }
   bool IsUsernameOverridden() const { return sources_.username != NULL; }
 
@@ -949,6 +959,11 @@ class Replacements {
     sources_.password = Placeholder();
     components_.password = Component();
   }
+  // Return the password part of the source string if the password component is
+  // valid.
+  std::optional<StringViewT> MaybePassword() const {
+    return components_.password.maybe_as_string_view_on(sources_.password);
+  }
   bool IsPasswordOverridden() const { return sources_.password != NULL; }
 
   // Host
@@ -960,6 +975,20 @@ class Replacements {
   void ClearHost() {
     sources_.host = Placeholder();
     components_.host = Component();
+  }
+  // Return the host part of the source string if the host component is
+  // valid.
+  std::optional<StringViewT> MaybeHost() const {
+    return components_.host.maybe_as_string_view_on(sources_.host);
+  }
+  // Return the string starting at the beginning of the source string and ending
+  // at the end of the host part.  The beginning of the source string is
+  // different from the beginning of the host part if components().host.begin()
+  // is not 0.
+  StringViewT SpecUntilHostOrEmpty() const {
+    return StringViewT(sources_.host, components_.host.is_valid()
+                                          ? components_.host.end()
+                                          : 0);
   }
   bool IsHostOverridden() const { return sources_.host != NULL; }
 
@@ -973,6 +1002,10 @@ class Replacements {
     sources_.port = Placeholder();
     components_.port = Component();
   }
+  // Return the port part of the source string if the port component is valid.
+  std::optional<StringViewT> MaybePort() const {
+    return components_.port.maybe_as_string_view_on(sources_.port);
+  }
   bool IsPortOverridden() const { return sources_.port != NULL; }
 
   // Path
@@ -984,6 +1017,10 @@ class Replacements {
   void ClearPath() {
     sources_.path = Placeholder();
     components_.path = Component();
+  }
+  // Return the path part of the source string if the path component is alid.
+  std::optional<StringViewT> MaybePath() const {
+    return components_.path.maybe_as_string_view_on(sources_.path);
   }
   bool IsPathOverridden() const { return sources_.path != NULL; }
 
@@ -997,6 +1034,11 @@ class Replacements {
     sources_.query = Placeholder();
     components_.query = Component();
   }
+  // Return the query part of the source string if the query component is
+  // valid.
+  std::optional<StringViewT> MaybeQuery() const {
+    return components_.query.maybe_as_string_view_on(sources_.query);
+  }
   bool IsQueryOverridden() const { return sources_.query != NULL; }
 
   // Ref
@@ -1008,6 +1050,10 @@ class Replacements {
   void ClearRef() {
     sources_.ref = Placeholder();
     components_.ref = Component();
+  }
+  // Return the ref part of the source string if the ref component is valid.
+  std::optional<StringViewT> MaybeRef() const {
+    return components_.ref.maybe_as_string_view_on(sources_.ref);
   }
   bool IsRefOverridden() const { return sources_.ref != NULL; }
 

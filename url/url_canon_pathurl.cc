@@ -50,14 +50,12 @@ void DoCanonicalizePathComponent(
 }
 
 template <typename CHAR, typename UCHAR>
-bool DoCanonicalizePathUrl(const URLComponentSource<CHAR>& source,
-                           const Parsed& parsed,
+bool DoCanonicalizePathUrl(const Replacements<CHAR>& source,
                            CanonOutput* output,
                            Parsed* new_parsed) {
   // Scheme: this will append the colon.
   bool success =
-      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
-                         output, &new_parsed->scheme);
+      CanonicalizeScheme(source.MaybeScheme(), output, &new_parsed->scheme);
 
   // We assume there's no authority for path URLs. Note that hosts should never
   // have -1 length.
@@ -70,17 +68,14 @@ bool DoCanonicalizePathUrl(const URLComponentSource<CHAR>& source,
   //
   // Note: parsing the path part should never cause a failure, see
   // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
-  DoCanonicalizePathComponent<CHAR, UCHAR>(
-      parsed.path.maybe_as_string_view_on(source.path), '\0', output,
-      &new_parsed->path);
+  DoCanonicalizePathComponent<CHAR, UCHAR>(source.MaybePath(), '\0', output,
+                                           &new_parsed->path);
 
   // Similar to mailto:, always use the default UTF-8 charset converter for
   // query.
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query), nullptr,
-                    output, &new_parsed->query);
+  CanonicalizeQuery(source.MaybeQuery(), nullptr, output, &new_parsed->query);
 
-  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
-                  &new_parsed->ref);
+  CanonicalizeRef(source.MaybeRef(), output, &new_parsed->ref);
 
   return success;
 }
@@ -92,7 +87,7 @@ bool CanonicalizePathUrl(std::string_view spec,
                          CanonOutput* output,
                          Parsed* new_parsed) {
   return DoCanonicalizePathUrl<char, unsigned char>(
-      URLComponentSource<char>(spec.data()), parsed, output, new_parsed);
+      Replacements<char>(spec, parsed), output, new_parsed);
 }
 
 bool CanonicalizePathUrl(std::u16string_view spec,
@@ -100,7 +95,7 @@ bool CanonicalizePathUrl(std::u16string_view spec,
                          CanonOutput* output,
                          Parsed* new_parsed) {
   return DoCanonicalizePathUrl<char16_t, char16_t>(
-      URLComponentSource<char16_t>(spec.data()), parsed, output, new_parsed);
+      Replacements<char16_t>(spec, parsed), output, new_parsed);
 }
 
 void CanonicalizePathUrlPath(std::optional<std::string_view> source,
@@ -124,8 +119,8 @@ bool ReplacePathUrl(std::string_view base,
                     Parsed* new_parsed) {
   Replacements<char> overridden(base, base_parsed);
   SetupOverrideComponents(replacements, overridden);
-  return DoCanonicalizePathUrl<char, unsigned char>(
-      overridden.sources(), overridden.components(), output, new_parsed);
+  return DoCanonicalizePathUrl<char, unsigned char>(overridden, output,
+                                                    new_parsed);
 }
 
 bool ReplacePathUrl(std::string_view base,
@@ -136,8 +131,8 @@ bool ReplacePathUrl(std::string_view base,
   RawCanonOutput<1024> utf8;
   Replacements<char> overridden(base, base_parsed);
   SetupUtf16OverrideComponents(replacements, utf8, overridden);
-  return DoCanonicalizePathUrl<char, unsigned char>(
-      overridden.sources(), overridden.components(), output, new_parsed);
+  return DoCanonicalizePathUrl<char, unsigned char>(overridden, output,
+                                                    new_parsed);
 }
 
 }  // namespace url

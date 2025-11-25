@@ -21,16 +21,12 @@ namespace url {
 
 namespace {
 
-bool IsLocalhost(const char* spec, int begin, int end) {
-  if (begin > end)
-    return false;
-  return std::string_view(&spec[begin], end - begin) == "localhost";
+bool IsLocalhost(std::optional<std::string_view> host) {
+  return host.has_value() && *host == "localhost";
 }
 
-bool IsLocalhost(const char16_t* spec, int begin, int end) {
-  if (begin > end)
-    return false;
-  return std::u16string_view(&spec[begin], end - begin) == u"localhost";
+bool IsLocalhost(std::optional<std::u16string_view> host) {
+  return host.has_value() && *host == u"localhost";
 }
 
 template <typename CHAR>
@@ -131,12 +127,11 @@ bool DoFileCanonicalizePath(std::optional<std::basic_string_view<CHAR>> path,
 }
 
 template <typename CHAR, typename UCHAR>
-bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
-                           const Parsed& parsed,
+bool DoCanonicalizeFileUrl(const Replacements<CHAR>& source,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* new_parsed) {
-  DCHECK(!parsed.has_opaque_path);
+  DCHECK(!source.components().has_opaque_path);
 
   // Things we don't set in file: URLs.
   new_parsed->username = Component();
@@ -157,11 +152,10 @@ bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
   //
   // TODO(crbug.com/41299821): According to the latest URL spec, this
   // transformation should be done regardless of the path.
-  Component host_range = parsed.host;
+  Component host_range = source.components().host;
   using string_view = std::basic_string_view<CHAR>;
-  if (IsLocalhost(source.host, host_range.begin, host_range.end()) &&
-      FindWindowsDriveLetter(parsed.path.maybe_as_string_view_on(
-          source.path)) != string_view::npos) {
+  if (IsLocalhost(source.MaybeHost()) &&
+      FindWindowsDriveLetter(source.MaybePath()) != string_view::npos) {
     host_range.reset();
   }
 
@@ -170,17 +164,14 @@ bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
   // TODO(brettw) This doesn't do any checking for host name validity. We
   // should probably handle validity checking of UNC hosts differently than
   // for regular IP hosts.
-  bool success = CanonicalizeFileHost(
-      string_view(source.host, host_range.is_valid() ? host_range.end() : 0),
-      host_range, *output, new_parsed->host);
-  success &= DoFileCanonicalizePath<CHAR, UCHAR>(
-      parsed.path.maybe_as_string_view_on(source.path), output,
-      &new_parsed->path);
+  bool success = CanonicalizeFileHost(source.SpecUntilHostOrEmpty(), host_range,
+                                      *output, new_parsed->host);
+  success &= DoFileCanonicalizePath<CHAR, UCHAR>(source.MaybePath(), output,
+                                                 &new_parsed->path);
 
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
-                    query_converter, output, &new_parsed->query);
-  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
-                  &new_parsed->ref);
+  CanonicalizeQuery(source.MaybeQuery(), query_converter, output,
+                    &new_parsed->query);
+  CanonicalizeRef(source.MaybeRef(), output, &new_parsed->ref);
 
   return success;
 }
@@ -201,8 +192,7 @@ bool CanonicalizeFileUrl(std::string_view spec,
                          CanonOutput* output,
                          Parsed* new_parsed) {
   return DoCanonicalizeFileUrl<char, unsigned char>(
-      URLComponentSource<char>(spec.data()), parsed, query_converter, output,
-      new_parsed);
+      Replacements<char>(spec, parsed), query_converter, output, new_parsed);
 }
 
 bool CanonicalizeFileUrl(std::u16string_view spec,
@@ -211,8 +201,8 @@ bool CanonicalizeFileUrl(std::u16string_view spec,
                          CanonOutput* output,
                          Parsed* new_parsed) {
   return DoCanonicalizeFileUrl<char16_t, char16_t>(
-      URLComponentSource<char16_t>(spec.data()), parsed, query_converter,
-      output, new_parsed);
+      Replacements<char16_t>(spec, parsed), query_converter, output,
+      new_parsed);
 }
 
 bool FileCanonicalizePath(std::optional<std::string_view> path,
@@ -235,9 +225,8 @@ bool ReplaceFileUrl(std::string_view base,
                     Parsed* new_parsed) {
   Replacements overridden(base, base_parsed);
   SetupOverrideComponents(replacements, overridden);
-  return DoCanonicalizeFileUrl<char, unsigned char>(
-      overridden.sources(), overridden.components(), query_converter, output,
-      new_parsed);
+  return DoCanonicalizeFileUrl<char, unsigned char>(overridden, query_converter,
+                                                    output, new_parsed);
 }
 
 bool ReplaceFileUrl(std::string_view base,
@@ -249,9 +238,8 @@ bool ReplaceFileUrl(std::string_view base,
   RawCanonOutput<1024> utf8;
   Replacements overridden(base, base_parsed);
   SetupUtf16OverrideComponents(replacements, utf8, overridden);
-  return DoCanonicalizeFileUrl<char, unsigned char>(
-      overridden.sources(), overridden.components(), query_converter, output,
-      new_parsed);
+  return DoCanonicalizeFileUrl<char, unsigned char>(overridden, query_converter,
+                                                    output, new_parsed);
 }
 
 }  // namespace url
