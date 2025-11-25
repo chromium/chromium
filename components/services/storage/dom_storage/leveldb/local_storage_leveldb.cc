@@ -184,12 +184,9 @@ DomStorageDatabaseLevelDB& LocalStorageLevelDB::GetLevelDB() {
 }
 
 StatusOr<DomStorageDatabase::Metadata> LocalStorageLevelDB::ReadAllMetadata() {
-  std::vector<DomStorageDatabase::KeyValuePair> leveldb_metadata_entries;
-  DbStatus status =
-      leveldb_->GetPrefixed(kMetaPrefix, &leveldb_metadata_entries);
-  if (!status.ok()) {
-    return base::unexpected(std::move(status));
-  }
+  ASSIGN_OR_RETURN(
+      std::vector<DomStorageDatabase::KeyValuePair> leveldb_metadata_entries,
+      leveldb_->GetPrefixed(kMetaPrefix));
 
   // Each map may have up to two LevelDB metadata entries for a single
   // `StorageKey`: one for "META:" and one for "METAACCESS:". Collapse both of

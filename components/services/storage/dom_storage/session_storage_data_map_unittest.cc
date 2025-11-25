@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
@@ -109,8 +110,7 @@ class SessionStorageDataMapTest : public testing::Test {
     database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](DomStorageDatabase* dom_storage_database) {
           DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          DbStatus status = db.GetPrefixed({}, &entries);
-          ASSERT_TRUE(status.ok());
+          ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
           loop.Quit();
         }));
     loop.Run();

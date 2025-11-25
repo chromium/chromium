@@ -60,8 +60,7 @@ class DomStorageDatabaseLevelDB
 
   StatusOr<Value> Get(KeyView key) const;
   DbStatus Put(KeyView key, ValueView value);
-  DbStatus GetPrefixed(KeyView prefix,
-                       std::vector<KeyValuePair>* entries) const;
+  StatusOr<std::vector<KeyValuePair>> GetPrefixed(KeyView prefix) const;
   std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
 
   DbStatus RewriteDB();

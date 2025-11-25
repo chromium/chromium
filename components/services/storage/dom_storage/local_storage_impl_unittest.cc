@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -208,8 +209,7 @@ class LocalStorageImplTest : public testing::Test {
             [&](DomStorageDatabase* dom_storage_database) {
               DomStorageDatabaseLevelDB& db =
                   dom_storage_database->GetLevelDB();
-              DbStatus status = db.GetPrefixed({}, &entries);
-              ASSERT_TRUE(status.ok());
+              ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
               loop.Quit();
             }));
     loop.Run();

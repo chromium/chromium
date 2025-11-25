@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/uuid.h"
@@ -126,8 +127,7 @@ class SessionStorageMetadataTest : public testing::Test {
     database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](DomStorageDatabase* dom_storage_database) {
           DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          DbStatus status = db.GetPrefixed({}, &entries);
-          ASSERT_TRUE(status.ok());
+          ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
           loop.Quit();
         }));
     loop.Run();

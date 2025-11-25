@@ -10,6 +10,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/test_support/test_leveldb_utils.h"
@@ -350,10 +351,9 @@ TEST_F(SessionStorageLevelDBTest, PutMetadata) {
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which includes the "version" entry.
-  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
-  status = session_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
-
-  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 3u);
 
   EXPECT_EQ(all_entries[0].key, SessionStorageLevelDB::CreateMapMetadataKey(
@@ -395,11 +395,9 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
     EXPECT_TRUE(status.ok()) << status.ToString();
 
     // Verify the contents in the database, which includes the "version" entry.
-    std::vector<DomStorageDatabase::KeyValuePair> all_entries;
-    status =
-        session_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
-
-    EXPECT_TRUE(status.ok()) << status.ToString();
+    ASSERT_OK_AND_ASSIGN(
+        std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+        session_storage_leveldb->GetLevelDB().GetPrefixed({}));
     ASSERT_EQ(all_entries.size(), 5u);
 
     EXPECT_EQ(all_entries[0].key,

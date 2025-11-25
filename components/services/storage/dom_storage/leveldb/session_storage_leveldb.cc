@@ -201,11 +201,8 @@ StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {
 StatusOr<std::vector<DomStorageDatabase::MapMetadata>>
 SessionStorageLevelDB::ReadAllMapMetadata() const {
   // Read all 'namespace-' prefixed entries from the LevelDB.
-  std::vector<KeyValuePair> namespace_entries;
-  DbStatus status = leveldb_->GetPrefixed(kNamespacePrefix, &namespace_entries);
-  if (!status.ok()) {
-    return base::unexpected(std::move(status));
-  }
+  ASSIGN_OR_RETURN(std::vector<KeyValuePair> namespace_entries,
+                   leveldb_->GetPrefixed(kNamespacePrefix));
 
   // Create a `MapMetadata` for each entry.
   std::vector<DomStorageDatabase::MapMetadata> results;

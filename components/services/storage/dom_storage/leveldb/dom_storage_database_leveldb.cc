@@ -191,18 +191,24 @@ DbStatus DomStorageDatabaseLevelDB::Put(KeyView key, ValueView value) {
       db_->Put(leveldb::WriteOptions(), MakeSlice(key), MakeSlice(value)));
 }
 
-DbStatus DomStorageDatabaseLevelDB::GetPrefixed(
-    KeyView prefix,
-    std::vector<KeyValuePair>* entries) const {
+StatusOr<std::vector<DomStorageDatabase::KeyValuePair>>
+DomStorageDatabaseLevelDB::GetPrefixed(KeyView prefix) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
-    return DbStatus::IOError(kInvalidDatabaseMessage);
+    return base::unexpected(DbStatus::IOError(kInvalidDatabaseMessage));
   }
-  return ForEachWithPrefix(
+
+  std::vector<DomStorageDatabase::KeyValuePair> entries;
+  DbStatus status = ForEachWithPrefix(
       db_.get(), prefix,
       [&](const leveldb::Slice& key, const leveldb::Slice& value) {
-        entries->push_back(MakeKeyValuePair(key, value));
+        entries.push_back(MakeKeyValuePair(key, value));
       });
+  if (!status.ok()) {
+    return base::unexpected(std::move(status));
+  }
+
+  return entries;
 }
 
 std::unique_ptr<DomStorageBatchOperationLevelDB>
