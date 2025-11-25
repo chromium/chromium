@@ -50,6 +50,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -1902,16 +1903,18 @@ public class AwContentsTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    public void testInsetsAreUpdatedInScrollView() throws Exception {
+    public void testInsetsAreUpdatedInScrollView() {
         mActivityTestRule.startBrowserProcess();
         AwTestContainerView containerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwViewAndroidDelegate viewAndroidDelegate =
+                containerView.getAwContents().getViewAndroidDelegateForTesting();
         AtomicInteger oldInset = new AtomicInteger();
         int scrollAmount = 2000;
+        ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().removeAllViews();
-                    ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
                     int width = mActivityTestRule.getActivity().getRootLayoutWidth();
 
                     // Create a ScrollView containing both a FrameLayout and an AwTestContainerView
@@ -1925,36 +1928,20 @@ public class AwContentsTest extends AwParameterizedTest {
                     container.addView(containerView, new LinearLayout.LayoutParams(width, 4000, 1));
                     scrollView.addView(container, new FrameLayout.LayoutParams(width, 6000));
                     mActivityTestRule.getActivity().addView(scrollView);
-
-                    View.OnLayoutChangeListener listener =
-                            (view,
-                                    left,
-                                    top,
-                                    right,
-                                    bottom,
-                                    oldLeft,
-                                    oldTop,
-                                    oldRight,
-                                    oldBottom) -> {
-                                if (oldInset.get() == 0) {
-                                    oldInset.set(
-                                            containerView
-                                                    .getAwContents()
-                                                    .getViewAndroidDelegateForTesting()
-                                                    .getViewportInsetBottom());
-                                }
-                                scrollView.scrollBy(0, scrollAmount);
-                                scrollView.getViewTreeObserver().dispatchOnPreDraw();
-                            };
-                    containerView.addOnLayoutChangeListener(listener);
                 });
+
+        // This sets up the base inset for when the view is added to the activity's hierarchy.
+        containerView.getAwContents().getDisplayCutoutController().recalculateBottomImeInset();
         CriteriaHelper.pollUiThread(
-                () ->
-                        containerView
-                                        .getAwContents()
-                                        .getViewAndroidDelegateForTesting()
-                                        .getViewportInsetBottom()
-                                == oldInset.get() - scrollAmount,
+                () -> {
+                    oldInset.set(viewAndroidDelegate.getViewportInsetBottom());
+                    return oldInset.get() != 0;
+                });
+
+        // Scroll by scroll amount and wait for the update to take effect.
+        scrollView.scrollBy(0, scrollAmount);
+        CriteriaHelper.pollUiThread(
+                () -> viewAndroidDelegate.getViewportInsetBottom() == oldInset.get() - scrollAmount,
                 "Insets never updated after scroll");
     }
 }
