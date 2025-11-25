@@ -2915,11 +2915,21 @@ void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
 }
 
 void BrowserView::TouchModeChanged() {
-  if (ui::TouchUiController::Get()->touch_ui()) {
-    ReparentTabStripToTopContainer();
-  } else {
-    ReparentTabStripToBrowserView();
+#if BUILDFLAG(IS_CHROMEOS)
+  // Reparenting is unnecessary when kWebUITabStrip is enabled because ChromeOS
+  // touch mode will use webui_tab_strip_ instead of tab_strip_region_view_ for
+  // the tab strip. web_ui_tab_strip_ is always parented to top_container, so
+  // this work is not needed.
+  if (!base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
+    if (ui::TouchUiController::Get()->touch_ui()) {
+      ReparentTabStripAndWebAppViewsToTopContainer(
+          TabStripAndWebAppViewsReparentedState::kTouchMode);
+    } else {
+      ReparentTabStripAndWebAppViewsToBrowserView(
+          TabStripAndWebAppViewsReparentedState::kTouchMode);
+    }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   MaybeInitializeWebUITabStrip();
 }
 
@@ -4053,24 +4063,8 @@ void BrowserView::ReparentTopContainerForStartOfImmersive() {
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
 
-#if BUILDFLAG(IS_MAC)
-  if (!UsesImmersiveFullscreenTabbedMode()) {
-    ReparentTabStripToTopContainer();
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  top_container()->SetBackground(
-      views::CreateSolidBackground(ui::kColorFrameActive));
-  ReparentTabStripToTopContainer();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (web_app_frame_toolbar_) {
-    top_container()->AddChildView(web_app_frame_toolbar_);
-  }
-  if (web_app_window_title_) {
-    top_container()->AddChildView(web_app_window_title_);
-  }
+  ReparentTabStripAndWebAppViewsToTopContainer(
+      TabStripAndWebAppViewsReparentedState::kImmersiveMode);
 
   CHECK(overlay_view_tracker_);
   overlay_view_tracker_.view()->AddChildView(top_container());
@@ -4092,30 +4086,74 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   DCHECK(top_container_insertion_index_);
   AddChildViewAt(top_container_.get(), top_container_insertion_index_.value());
 
-  ReparentTabStripToBrowserView();
-
-  // Reparent PWA views that were moved for immersive mode.
-  if (web_app_frame_toolbar_) {
-    AddChildView(web_app_frame_toolbar_.get());
-  }
-  if (web_app_window_title_) {
-    AddChildView(web_app_window_title_.get());
-  }
+  ReparentTabStripAndWebAppViewsToBrowserView(
+      TabStripAndWebAppViewsReparentedState::kImmersiveMode);
 
   EnsureFocusOrder();
 }
 
-void BrowserView::ReparentTabStripToTopContainer() {
+void BrowserView::ReparentTabStripAndWebAppViewsToTopContainer(
+    TabStripAndWebAppViewsReparentedState mode) {
+  const bool needs_reparenting = tab_strip_web_apps_reparented_state_.empty();
+  tab_strip_web_apps_reparented_state_.Put(mode);
+
+  if (!needs_reparenting) {
+    return;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (!UsesImmersiveFullscreenTabbedMode()) {
+    top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only reparent and set background if the tab_strip_region_view_ is parented
+  // to browser_view.
+  top_container()->SetBackground(
+      views::CreateSolidBackground(ui::kColorFrameActive));
   top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (web_app_frame_toolbar_ &&
+      web_app_frame_toolbar_->parent() != top_container()) {
+    top_container()->AddChildView(web_app_frame_toolbar_);
+  }
+  if (web_app_window_title_ &&
+      web_app_window_title_->parent() != top_container()) {
+    top_container()->AddChildView(web_app_window_title_);
+  }
 }
 
-void BrowserView::ReparentTabStripToBrowserView() {
-  // The TabStrip must be placed in the same position before the reparenting to
-  // maintain the correct Z-order to ensure it can receive mouse events. See
-  // crbug.com/454852658.
+void BrowserView::ReparentTabStripAndWebAppViewsToBrowserView(
+    TabStripAndWebAppViewsReparentedState mode) {
+  // If nothing has moved off browser_view as a parent, no need to do any work.
+  if (tab_strip_web_apps_reparented_state_.empty()) {
+    return;
+  }
+
+  // Remove this mode and only continue if reparented state is empty, meaning
+  // all states requiring the reparenting have been exited.
+  tab_strip_web_apps_reparented_state_.Remove(mode);
+  if (!tab_strip_web_apps_reparented_state_.empty()) {
+    return;
+  }
+
+  // The TabStrip must be placed in the same position before the reparenting
+  // to maintain the correct Z-order to ensure it can receive mouse events.
+  // See crbug.com/454852658.
   DCHECK(tab_strip_region_insertion_index_);
   AddChildViewAt(tab_strip_region_view_.get(),
                  tab_strip_region_insertion_index_.value());
+
+  // Reparent PWA views that were moved for immersive and ChromeOS tablet
+  // mode.
+  if (web_app_frame_toolbar_ && web_app_frame_toolbar_->parent() != this) {
+    AddChildView(web_app_frame_toolbar_.get());
+  }
+  if (web_app_window_title_ && web_app_window_title_->parent() != this) {
+    AddChildView(web_app_window_title_.get());
+  }
 }
 
 void BrowserView::EnsureFocusOrder() {
@@ -5189,6 +5227,21 @@ void BrowserView::AddedToWidget() {
       web_app_window_title_->SetID(VIEW_ID_WINDOW_TITLE);
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Reparenting is unnecessary when kWebUITabStrip is enabled because ChromeOS
+  // touch mode will use webui_tab_strip_ instead of tab_strip_region_view_ for
+  // the tab strip. web_ui_tab_strip_ is always parented to top_container, so
+  // this work is not needed.
+  if (!base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
+    // If in tablet mode, reparent web app views since they have different
+    // parent requirements.
+    if (ui::TouchUiController::Get()->touch_ui()) {
+      ReparentTabStripAndWebAppViewsToTopContainer(
+          TabStripAndWebAppViewsReparentedState::kTouchMode);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   UpdateWindowControlsOverlayEnabled();
   UpdateBorderlessModeEnabled();
