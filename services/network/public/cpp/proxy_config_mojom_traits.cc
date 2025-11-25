@@ -95,8 +95,8 @@ EnumTraits<network::mojom::ProxyOverrideRuleResult,
   switch (result) {
     case net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound:
       return network::mojom::ProxyOverrideRuleResult::kNotFound;
-    case net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves:
-      return network::mojom::ProxyOverrideRuleResult::kResolves;
+    case net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved:
+      return network::mojom::ProxyOverrideRuleResult::kResolved;
   }
 }
 
@@ -111,9 +111,9 @@ bool EnumTraits<
       *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
           kNotFound;
       return true;
-    case network::mojom::ProxyOverrideRuleResult::kResolves:
+    case network::mojom::ProxyOverrideRuleResult::kResolved:
       *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
-          kResolves;
+          kResolved;
       return true;
   }
   return false;

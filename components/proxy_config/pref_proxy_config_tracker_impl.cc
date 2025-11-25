@@ -63,7 +63,7 @@ ValueToDnsCondition(const base::Value& value) {
   // {
   //   "DnsProbe": {
   //     "Host": "corp.ads",
-  //     "Result": "resolves", // or "not_found"
+  //     "Result": "resolved", // or "not_found"
   //   }
   // }
   // For now "DnsProbe" is always expected, but eventually other types of
@@ -77,15 +77,15 @@ ValueToDnsCondition(const base::Value& value) {
   const std::string* host_value = dns_probe_value->FindString("Host");
   const std::string* result_value = dns_probe_value->FindString("Result");
   if (!host_value || !result_value ||
-      (*result_value != "resolves" && *result_value != "not_found")) {
+      (*result_value != "resolved" && *result_value != "not_found")) {
     return std::nullopt;
   }
 
   net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition dns_probe_condition;
   dns_probe_condition.host = url::SchemeHostPort(GURL(*host_value));
   dns_probe_condition.result =
-      *result_value == "resolves"
-          ? net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves
+      *result_value == "resolved"
+          ? net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved
           : net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound;
   return dns_probe_condition;
 }
@@ -175,7 +175,7 @@ bool AddConditions(const base::Value::Dict& value,
   //        {
   //            "DnsProbe": {
   //                "Host": "corp.ads",
-  //                "Result": "resolves"
+  //                "Result": "resolved"
   //            }
   //        }
   //   ]
@@ -213,7 +213,7 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
   //        {
   //            "DnsProbe": {
   //                "Host": "corp.ads",
-  //                "Result": "resolves"
+  //                "Result": "resolved"
   //            }
   //        }
   //   ]

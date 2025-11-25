@@ -450,7 +450,7 @@ ProxyOverrideRule CreateOverrideRule(
     const ProxyList& proxy_list,
     std::optional<std::string_view> dns_host = std::nullopt,
     ProxyOverrideRule::DnsProbeCondition::Result dns_condition_result =
-        ProxyOverrideRule::DnsProbeCondition::Result::kResolves) {
+        ProxyOverrideRule::DnsProbeCondition::Result::kResolved) {
   ProxyConfig::ProxyOverrideRule override_rule;
   override_rule.destination_matchers.AddRuleFromString(destination_matcher);
   override_rule.proxy_list = proxy_list;
@@ -5808,14 +5808,14 @@ TEST_P(TwoDnsConditionsConfiguredProxyResolutionServiceTest,
   auto override_rule = CreateOverrideRule(
       kMatchingRule, proxy_list, kDnsHost1,
       params.first_condition_resolves
-          ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+          ? ProxyOverrideRule::DnsProbeCondition::Result::kResolved
           : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
   override_rule.dns_conditions.push_back(
       ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort(GURL(kDnsHost2)),
           .result =
               params.second_condition_resolves
-                  ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+                  ? ProxyOverrideRule::DnsProbeCondition::Result::kResolved
                   : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound});
   config.set_proxy_override_rules({std::move(override_rule)});
 
@@ -6065,7 +6065,7 @@ TEST_P(TwoRulesConfiguredProxyResolutionServiceTest,
     override_rule1.dns_conditions.emplace_back(
         url::SchemeHostPort(GURL(kDnsHost1)),
         params.first_dns_host_resolves
-            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolved
             : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
   }
 
@@ -6077,7 +6077,7 @@ TEST_P(TwoRulesConfiguredProxyResolutionServiceTest,
     override_rule2.dns_conditions.emplace_back(
         url::SchemeHostPort(GURL(kDnsHost2)),
         params.second_dns_host_resolves
-            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolved
             : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
   }
 

@@ -342,7 +342,7 @@ bool ConfiguredProxyResolutionRequest::CheckDnsCondition(
   switch (dns_condition.result) {
     case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kNotFound:
       return dns_result.is_address_list_empty;
-    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolves:
+    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolved:
       return !dns_result.is_address_list_empty;
   }
 }

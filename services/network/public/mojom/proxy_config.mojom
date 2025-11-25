@@ -41,7 +41,7 @@ struct ProxyRules {
 // This corresponds to `net::ProxyConfig::ProxyOverrideRule::Result`.
 enum ProxyOverrideRuleResult {
   kNotFound,
-  kResolves,
+  kResolved,
 };
 
 // This corresponds to `net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition`.

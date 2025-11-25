@@ -25,7 +25,7 @@
                       {
                           "DnsProbe": {
                               "Host": "corp.ads",
-                              "Result": "resolves"
+                              "Result": "resolved"
                           }
                       }
                   ]

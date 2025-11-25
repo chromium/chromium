@@ -143,7 +143,7 @@ class ProxyConfigOverrideRulesTest
         break;
       case TestCondition::kHostMatches:
         condition.result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-            Result::kResolves;
+            Result::kResolved;
         break;
       case TestCondition::kResultMatches:
         condition.host = url::SchemeHostPort("http", "other.corps", 321);
@@ -155,7 +155,7 @@ class ProxyConfigOverrideRulesTest
         ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
             .host = url::SchemeHostPort("https", "corp.ads", 123),
             .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-                Result::kResolves,
+                Result::kResolved,
         },
         condition};
 
@@ -365,7 +365,7 @@ ProxyConfigToValueTestCase GetTestCaseOverrideRule() {
       ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "ads2.corps", 443),
           .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
-              kResolves},
+              kResolved},
   };
 
   auto config = ProxyConfig::CreateDirect();
@@ -374,7 +374,7 @@ ProxyConfigToValueTestCase GetTestCaseOverrideRule() {
           "{\"override_rules\":[{\"destination_matchers\":\"http://"
           "www.example.com;\",\"dns_conditions\":[{\"host\":\"http://"
           "ads.corps:321\",\"result\":\"NotFound\"},{\"host\":\"https://"
-          "ads2.corps\",\"result\":\"Resolves\"}],\"proxy_list\":[\"[https://"
+          "ads2.corps\",\"result\":\"Resolved\"}],\"proxy_list\":[\"[https://"
           "foo:333]\",\"direct://\"]}]}"};
 }
 

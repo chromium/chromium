@@ -281,13 +281,13 @@ base::Value::Dict ProxyConfig::ProxyOverrideRule::DnsProbeCondition::ToDict()
   base::Value::Dict dict;
   dict.Set("host", host.Serialize());
 
-  std::string result_str;
+  std::string_view result_str;
   switch (result) {
     case DnsProbeCondition::Result::kNotFound:
       result_str = "NotFound";
       break;
-    case DnsProbeCondition::Result::kResolves:
-      result_str = "Resolves";
+    case DnsProbeCondition::Result::kResolved:
+      result_str = "Resolved";
       break;
   }
   dict.Set("result", result_str);

@@ -173,7 +173,7 @@ class NET_EXPORT ProxyConfig {
     // be used. Each condition includes a `host` to try to resolve, and the rule
     // only applies if host resolution matches the expected `result`.
     struct NET_EXPORT DnsProbeCondition {
-      enum Result { kNotFound, kResolves };
+      enum Result { kNotFound, kResolved };
 
       bool operator==(const DnsProbeCondition& other) const;
 

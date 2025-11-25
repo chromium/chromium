@@ -154,7 +154,7 @@ TEST(ProxyConfigTraitsTest, ProxyOverrideRules) {
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "corp.ads", 123),
           .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-              Result::kResolves,
+              Result::kResolved,
       },
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "ads.corps", 321),
@@ -179,7 +179,7 @@ TEST(ProxyConfigTraitsTest, ProxyOverrideRules_EmptyDestinationMatchers) {
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "corp.ads", 123),
           .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-              Result::kResolves,
+              Result::kResolved,
       },
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "ads.corps", 321),
@@ -211,7 +211,7 @@ TEST(ProxyConfigTraitsTest, ProxyOverrideRules_EmptyProxyList) {
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "corp.ads", 123),
           .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-              Result::kResolves,
+              Result::kResolved,
       },
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
           .host = url::SchemeHostPort("https", "ads.corps", 321),

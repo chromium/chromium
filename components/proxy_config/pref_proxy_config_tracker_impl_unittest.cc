@@ -522,7 +522,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -552,7 +552,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
   EXPECT_EQ(rule.dns_conditions.at(0).host,
             url::SchemeHostPort(GURL("corp.ads")));
   EXPECT_EQ(rule.dns_conditions.at(0).result,
-            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 
   // Setting the pref again in the same test scope validates the policy is
   // dynamic and that the retrieved config changes appropriately.
@@ -572,7 +572,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      },
                      {
@@ -618,7 +618,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
   EXPECT_EQ(rule_0.dns_conditions.at(0).host,
             url::SchemeHostPort(GURL("corp.ads")));
   EXPECT_EQ(rule_0.dns_conditions.at(0).result,
-            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
   EXPECT_EQ(rule_0.dns_conditions.at(1).host,
             url::SchemeHostPort(GURL("ads.corps")));
   EXPECT_EQ(rule_0.dns_conditions.at(1).result,
@@ -682,7 +682,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, URLAndPacProxyList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -714,7 +714,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, URLAndPacProxyList) {
   EXPECT_EQ(rule.dns_conditions.at(0).host,
             url::SchemeHostPort(GURL("corp.ads")));
   EXPECT_EQ(rule.dns_conditions.at(0).result,
-            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 }
 
 TEST_F(PrefProxyConfigOverrideRulesTest, NonListValues) {
@@ -764,7 +764,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -778,7 +778,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -796,7 +796,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -810,7 +810,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -828,7 +828,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": "corp.ads",
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -858,7 +858,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                  "Conditions": [
                      {
                          "DnsProbe": {
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -911,7 +911,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
                      {
                          "DnsProbe": {
                              "Host": 1234,
-                             "Result": "resolves",
+                             "Result": "resolved",
                          },
                      }
                  ]
@@ -958,7 +958,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
   EXPECT_EQ(rule.dns_conditions.at(0).host,
             url::SchemeHostPort(GURL("corp.ads")));
   EXPECT_EQ(rule.dns_conditions.at(0).result,
-            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 }
 
 }  // namespace
