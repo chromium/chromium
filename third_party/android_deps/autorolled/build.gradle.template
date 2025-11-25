@@ -62,6 +62,7 @@ dependencies {
     compileLatest 'com.google.android.gms:play-services-instantapps:+'
     compileLatest 'com.google.android.gms:play-services-location:+'
     compileLatest 'com.google.android.gms:play-services-tasks:+'
+    compileLatest 'com.google.android.gms:play-services-time:+'
     compileLatest 'com.google.android.gms:play-services-vision-common:+'
     compileLatest 'com.google.android.gms:play-services-vision:+'
     compileLatest 'com.google.firebase:firebase-messaging:+'
