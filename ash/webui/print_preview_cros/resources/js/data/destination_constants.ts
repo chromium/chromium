@@ -11,7 +11,6 @@ import {PrinterType} from '../utils/print_preview_cros_app_types.js';
  * to destinations used in multiple files.
  */
 
-// TODO(b/323585997): Replace display name with localized string.
 export const PDF_DESTINATION: Destination = {
   id: 'SAVE_AS_PDF',
   displayName: 'Save as PDF',
