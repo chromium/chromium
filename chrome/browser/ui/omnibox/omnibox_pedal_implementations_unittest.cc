@@ -15,13 +15,20 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures({}, {});
+    feature_list_.InitWithFeatures(
+        {
+#if !BUILDFLAG(IS_CHROMEOS)
+            syncer::kUnoPhase2FollowUp
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+        },
+        {});
     InitPedals();
   }
 
@@ -11036,6 +11043,15 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "sync settings google",
             "sync settings google chrome",
             "sync settings manage",
+#if !BUILDFLAG(IS_CHROMEOS)
+            "manage my stuff",
+            "manage my chrome stuff",
+            "manage my chrome data",
+            "manage my chrome info",
+            "manage bookmarks and stuff",
+            "edit what I save",
+            "edit what's in my account",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
         },
 
         // ID#12
