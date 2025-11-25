@@ -4,9 +4,13 @@ desc: |-
 
   Leaving the policy unset has no effect on other proxy policies or user settings.
 
-  When the browser needs to decide what proxy to use, entries of the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy are evaluated in sequence until an entry has a match for at least one of the URL hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> and if all entries in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> are met. The value in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> will be used as a proxy for such a match. If no match is found, proxy settings will fall back to what is set in the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy.
+  When the browser needs to decide what proxy to use, entries of the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy are evaluated in sequence until an entry satisfies all the following points:
+    * At least one of the URL patterns in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
+    * None of the URL patterns in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS">ExcludeDestinationMatchers</ph> is matched.
+    * If <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> is specified and is a non-empty list, all conditions represented by its entries are satisfied.
+  The value in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> will be used as a proxy for such a match. If no match is found, proxy settings will fall back to what is set in the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy.
 
-  The URL patterns supported by <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> are documented at https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+  The URL patterns supported by <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> and <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS">ExcludeDestinationMatchers</ph> are documented at https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
 
   The <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> field entries correspond to string values of PAC files such as:
     * DIRECT
@@ -36,6 +40,13 @@ example_value:
   - DnsProbe:
       Host: 'corp.ads'
       Result: "resolved"
+- DestinationMatchers:
+  - 'https://google.com'
+  ExcludeDestinationMatchers:
+  - 'https://mail.google.com'
+  ProxyList:
+  - 'HTTPS proxy.app:443'
+  - 'DIRECT'
 features:
   cloud_only: true
   dynamic_refresh: true
@@ -54,6 +65,10 @@ schema:
     type: object
     properties:
       DestinationMatchers:
+        type: array
+        items:
+          type: string
+      ExcludeDestinationMatchers:
         type: array
         items:
           type: string

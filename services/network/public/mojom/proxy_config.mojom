@@ -53,6 +53,7 @@ struct DnsProbeCondition {
 // These fields mirror those of `net::ProxyConfig::ProxyOverrideRule`.
 struct ProxyOverrideRule {
   ProxyHostMatchingRules destination_matchers;
+  ProxyHostMatchingRules exclude_destination_matchers;
   array<DnsProbeCondition> dns_conditions;
 
   ProxyList proxy_list;

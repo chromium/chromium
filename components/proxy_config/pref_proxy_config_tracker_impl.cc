@@ -90,29 +90,55 @@ ValueToDnsCondition(const base::Value& value) {
   return dns_probe_condition;
 }
 
-// Returns false if an unexpected value was found in the passed `value`.
-bool AddDestinationMatchers(const base::Value::Dict& value,
-                            net::ProxyConfig::ProxyOverrideRule& rule) {
+// Generic parser for a list of URL patterns to populate into the passed
+// `rules`. Returns false if an unexpected value was found in the passed
+// `value`. `optional_field` indicates if the matcher list is required to be
+// present in the rule or not, and will be returned directly if `value` doesn't
+// have an entry for `key`.
+//
+// Implicit rules are not applied to URL pattern listsof the
+// "ProxyOverrideRules" policy, so on a valid `value` there is always an extra
+// rule added to subtract them from the matcher evaluation.
+bool AddUrlMatcher(const base::Value::Dict& value,
+                   net::ProxyHostMatchingRules& rules,
+                   const std::string& key,
+                   bool optional_field) {
   // Expected schema:
   // {
   //   ...
-  //   "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+  //   "<key>": [ "https://app1.com", "https://app2.com" ],
   //   ...
   // }
-  auto* destination_matchers_value = value.FindList("DestinationMatchers");
-  if (!destination_matchers_value) {
-    return false;
+  auto* matchers_value = value.FindList(key);
+  if (!matchers_value) {
+    rules.AddRulesToSubtractImplicit();
+    return optional_field;
   }
 
-  for (const auto& matcher : *destination_matchers_value) {
+  for (const auto& matcher : *matchers_value) {
     if (matcher.is_string()) {
-      rule.destination_matchers.AddRuleFromString(matcher.GetString());
+      rules.AddRuleFromString(matcher.GetString());
     } else {
       return false;
     }
   }
 
+  rules.AddRulesToSubtractImplicit();
   return true;
+}
+
+// Returns false if an unexpected value was found in the passed `value`.
+bool AddDestinationMatchers(const base::Value::Dict& value,
+                            net::ProxyConfig::ProxyOverrideRule& rule) {
+  return AddUrlMatcher(value, rule.destination_matchers, "DestinationMatchers",
+                       /*optional_field=*/false);
+}
+
+// Returns false if an unexpected value was found in the passed `value`.
+bool AddExcludeDestinationMatchers(const base::Value::Dict& value,
+                                   net::ProxyConfig::ProxyOverrideRule& rule) {
+  return AddUrlMatcher(value, rule.exclude_destination_matchers,
+                       "ExcludeDestinationMatchers", /*optional_field=*/true);
 }
 
 // Returns false if an unexpected value was found in the passed `value`, or if
@@ -208,6 +234,7 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
   // Expected schema:
   // {
   //   "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+  //   "ExcludeDestinationMatchers: ["https://exception.com"],
   //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
   //   "Conditions": [
   //        {
@@ -221,8 +248,9 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
   const base::Value::Dict& dict = value.GetDict();
   net::ProxyConfig::ProxyOverrideRule rule;
 
-  if (!AddDestinationMatchers(dict, rule) || !AddProxyChain(dict, rule) ||
-      !AddConditions(dict, rule)) {
+  if (!AddDestinationMatchers(dict, rule) ||
+      !AddExcludeDestinationMatchers(dict, rule) ||
+      !AddProxyChain(dict, rule) || !AddConditions(dict, rule)) {
     return std::nullopt;
   }
 

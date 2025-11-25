@@ -67,7 +67,7 @@ int ConfiguredProxyResolutionRequest::Start() {
     CHECK(host_resolver);
 
     for (const auto& rule : service_->config_->value().proxy_override_rules()) {
-      if (rule.destination_matchers.Matches(url_)) {
+      if (rule.MatchesDestination(url_)) {
         // TODO(crbug.com/454638342): Add optimization to skip marking a rule as
         // applicable if we can already discard it based on cached DNS
         // resolution state (and avoid starting actual DNS resolution that is

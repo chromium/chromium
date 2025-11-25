@@ -135,6 +135,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
       const net::ProxyConfig::ProxyOverrideRule& r) {
     return r.destination_matchers;
   }
+  static net::ProxyHostMatchingRules exclude_destination_matchers(
+      const net::ProxyConfig::ProxyOverrideRule& r) {
+    return r.exclude_destination_matchers;
+  }
   static const std::vector<
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition>&
   dns_conditions(const net::ProxyConfig::ProxyOverrideRule& r) {

@@ -107,81 +107,91 @@ enum class TestCondition {
   kHostMatches,
   kResultMatches,
   kNoConditions,
+  kNoExcludeDestinationMatchers,
 };
 
-class ProxyConfigOverrideRulesTest
-    : public testing::TestWithParam<testing::tuple<bool, bool, TestCondition>> {
- public:
-  ProxyConfig::ProxyOverrideRule CreateOverrideRule(
-      bool include_matchers,
-      bool include_proxy_list,
-      TestCondition test_condition) {
-    ProxyConfig::ProxyOverrideRule rule;
+ProxyConfig::ProxyOverrideRule CreateOverrideRule(
+    bool include_matchers,
+    bool include_proxy_list,
+    TestCondition test_condition) {
+  ProxyConfig::ProxyOverrideRule rule;
 
-    if (include_matchers) {
-      rule.destination_matchers.AddRuleFromString("192.168.1.1");
-      rule.destination_matchers.AddRuleFromString(
-          "[3ffe:2a00:100:7031:0:0::1]");
-      rule.destination_matchers.AddRuleFromString("*.org:443");
-      rule.destination_matchers.AddRuleFromString("www.google.com");
-      rule.destination_matchers.AddRuleFromString("http://www.google.com");
-    }
+  if (include_matchers) {
+    rule.destination_matchers.AddRuleFromString("192.168.1.1");
+    rule.destination_matchers.AddRuleFromString("[3ffe:2a00:100:7031:0:0::1]");
+    rule.destination_matchers.AddRuleFromString("*.org:443");
+    rule.destination_matchers.AddRuleFromString("*google.com");
 
-    if (include_proxy_list) {
-      rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
-    }
-
-    auto condition = ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
-        .host = url::SchemeHostPort("http", "ads.corps", 321),
-        .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
-            kNotFound,
-    };
-    // Only one condition is changed in the non `kDefault` cases to validate the
-    // entire array is evaluated for equality.
-    switch (test_condition) {
-      case TestCondition::kDefault:
-        break;
-      case TestCondition::kHostMatches:
-        condition.result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-            Result::kResolved;
-        break;
-      case TestCondition::kResultMatches:
-        condition.host = url::SchemeHostPort("http", "other.corps", 321);
-        break;
-      case TestCondition::kNoConditions:
-        return rule;
-    }
-    rule.dns_conditions = {
-        ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
-            .host = url::SchemeHostPort("https", "corp.ads", 123),
-            .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
-                Result::kResolved,
-        },
-        condition};
-
-    return rule;
+    rule.exclude_destination_matchers.AddRuleFromString("mail.google.com");
+    rule.exclude_destination_matchers.AddRuleFromString("http://*.org");
   }
+
+  if (include_proxy_list) {
+    rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
+  }
+
+  auto condition = ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+      .host = url::SchemeHostPort("http", "ads.corps", 321),
+      .result =
+          ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kNotFound,
+  };
+
+  // Only one condition is changed in the non `kDefault` cases to validate the
+  // entire array is evaluated for equality.
+  switch (test_condition) {
+    case TestCondition::kDefault:
+      break;
+    case TestCondition::kHostMatches:
+      condition.result =
+          ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolved;
+      break;
+    case TestCondition::kResultMatches:
+      condition.host = url::SchemeHostPort("http", "other.corps", 321);
+      break;
+    case TestCondition::kNoConditions:
+      return rule;
+    case TestCondition::kNoExcludeDestinationMatchers:
+      rule.exclude_destination_matchers.Clear();
+      break;
+  }
+  rule.dns_conditions = {
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "corp.ads", 123),
+          .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+              kResolved,
+      },
+      condition};
+
+  return rule;
+}
+
+class ProxyConfigOverrideRulesEqualityTest
+    : public testing::TestWithParam<testing::tuple<bool, bool, TestCondition>> {
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ProxyConfigOverrideRulesTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(TestCondition::kDefault,
-                                     TestCondition::kHostMatches,
-                                     TestCondition::kResultMatches,
-                                     TestCondition::kNoConditions)));
+    ProxyConfigOverrideRulesEqualityTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(TestCondition::kDefault,
+                        TestCondition::kHostMatches,
+                        TestCondition::kResultMatches,
+                        TestCondition::kNoConditions,
+                        TestCondition::kNoExcludeDestinationMatchers)));
 
-TEST_P(ProxyConfigOverrideRulesTest, Equals) {
+TEST_P(ProxyConfigOverrideRulesEqualityTest, Equals) {
   ProxyConfig config1;
   ProxyConfig config2;
 
-  config1.set_proxy_override_rules(
-      {CreateOverrideRule(true, true, TestCondition::kDefault)});
+  config1.set_proxy_override_rules({CreateOverrideRule(
+      /*include_matchers=*/true, /*include_proxy_list=*/true,
+      TestCondition::kDefault)});
   config2.set_proxy_override_rules(
-      {CreateOverrideRule(std::get<0>(GetParam()), std::get<1>(GetParam()),
-                          std::get<2>(GetParam()))});
+      {CreateOverrideRule(/*include_matchers=*/std::get<0>(GetParam()),
+                          /*include_proxy_list=*/std::get<1>(GetParam()),
+                          /*test_condition=*/std::get<2>(GetParam()))});
 
   if (std::get<0>(GetParam()) && std::get<1>(GetParam()) &&
       std::get<2>(GetParam()) == TestCondition::kDefault) {
@@ -191,6 +201,45 @@ TEST_P(ProxyConfigOverrideRulesTest, Equals) {
     EXPECT_FALSE(config1.Equals(config2));
     EXPECT_FALSE(config2.Equals(config1));
   }
+}
+
+TEST(ProxyConfigTest, OverrideRulesMatchesDestination) {
+  ProxyConfig config;
+
+  config.set_proxy_override_rules({CreateOverrideRule(
+      /*include_matchers=*/true, /*include_proxy_list=*/true,
+      TestCondition::kDefault)});
+  const auto& rule = config.proxy_override_rules().at(0);
+
+  // Rules are set to match the following URLs:
+  // - 192.168.1.1
+  // - [3ffe:2a00:100:7031:0:0::1]
+  // - *.org:443
+  // - *google.com
+  EXPECT_TRUE(rule.MatchesDestination(GURL("http://192.168.1.1")));
+  EXPECT_TRUE(rule.MatchesDestination(GURL("https://192.168.1.1")));
+  EXPECT_TRUE(
+      rule.MatchesDestination(GURL("http://[3ffe:2a00:100:7031:0:0::1]")));
+  EXPECT_TRUE(
+      rule.MatchesDestination(GURL("https://[3ffe:2a00:100:7031:0:0::1]")));
+  EXPECT_TRUE(rule.MatchesDestination(GURL("http://google.com")));
+  EXPECT_TRUE(rule.MatchesDestination(GURL("https://google.com")));
+  EXPECT_TRUE(rule.MatchesDestination(GURL("https://calendar.google.com")));
+  EXPECT_TRUE(rule.MatchesDestination(GURL("https://google.org:443")));
+
+  EXPECT_FALSE(rule.MatchesDestination(GURL("http://192.168.1.2")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("https://192.168.1.2")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("[3ffe:ffff:100:7031:0:0::1]")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("http://gooogle.com")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("https://google.net")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("https://google.org:123")));
+
+  // The following patterns are exceptions:
+  // - mail.google.com
+  // - http://*.org
+  EXPECT_FALSE(rule.MatchesDestination(GURL("http://mail.google.com")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("https://mail.google.com")));
+  EXPECT_FALSE(rule.MatchesDestination(GURL("http://google.org:443")));
 }
 
 #if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)

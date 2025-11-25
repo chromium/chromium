@@ -450,13 +450,18 @@ ProxyOverrideRule CreateOverrideRule(
     const ProxyList& proxy_list,
     std::optional<std::string_view> dns_host = std::nullopt,
     ProxyOverrideRule::DnsProbeCondition::Result dns_condition_result =
-        ProxyOverrideRule::DnsProbeCondition::Result::kResolved) {
+        ProxyOverrideRule::DnsProbeCondition::Result::kResolved,
+    std::string_view exclude_destination_matcher = "") {
   ProxyConfig::ProxyOverrideRule override_rule;
   override_rule.destination_matchers.AddRuleFromString(destination_matcher);
   override_rule.proxy_list = proxy_list;
   if (dns_host) {
     override_rule.dns_conditions.emplace_back(
         url::SchemeHostPort(GURL(dns_host.value())), dns_condition_result);
+  }
+  if (!exclude_destination_matcher.empty()) {
+    override_rule.exclude_destination_matchers.AddRuleFromString(
+        exclude_destination_matcher);
   }
   return override_rule;
 }
@@ -4796,6 +4801,80 @@ TEST_F(ConfiguredProxyResolutionServiceTest, NoMatchingOverrideRuleWithPac) {
   auto config = ProxyConfig::CreateAutoDetect();
   auto override_rule =
       CreateOverrideRule(kNonMatchingRule, CreateProxyList(kProxy1));
+  config.set_proxy_override_rules({override_rule});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  RecordingNetLogObserver net_log_observer;
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 7U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 2,
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 3, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 4, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 6,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, ExcludedOverrideRuleWithPac) {
+  auto config = ProxyConfig::CreateAutoDetect();
+  auto override_rule = CreateOverrideRule(
+      kMatchingRule, CreateProxyList(kProxy1), /*dns_host=*/std::nullopt,
+      ProxyOverrideRule::DnsProbeCondition::Result::kResolved,
+      /*exclude_destination_matcher=*/"*.test");
   config.set_proxy_override_rules({override_rule});
 
   mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();

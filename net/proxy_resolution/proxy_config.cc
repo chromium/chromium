@@ -255,6 +255,7 @@ ProxyConfig::ProxyOverrideRule::~ProxyOverrideRule() = default;
 bool ProxyConfig::ProxyOverrideRule::operator==(
     const ProxyOverrideRule& other) const {
   return destination_matchers == other.destination_matchers &&
+         exclude_destination_matchers == other.exclude_destination_matchers &&
          dns_conditions == other.dns_conditions &&
          proxy_list.Equals(other.proxy_list);
 }
@@ -271,6 +272,11 @@ base::Value::Dict ProxyConfig::ProxyOverrideRule::ToDict() const {
 
   dict.Set("dns_conditions", std::move(dns_conditions_value));
   return dict;
+}
+
+bool ProxyConfig::ProxyOverrideRule::MatchesDestination(const GURL& url) const {
+  return destination_matchers.Matches(url) &&
+         !exclude_destination_matchers.Matches(url);
 }
 
 bool ProxyConfig::ProxyOverrideRule::DnsProbeCondition::operator==(

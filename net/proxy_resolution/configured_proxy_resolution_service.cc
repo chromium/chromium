@@ -1045,7 +1045,7 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
       !config_->value().proxy_override_rules().empty()) {
     // Override rules are prioritized in the order that they are defined.
     for (const auto& rule : config_->value().proxy_override_rules()) {
-      if (rule.destination_matchers.Matches(url)) {
+      if (rule.MatchesDestination(url)) {
         if (rule.dns_conditions.empty()) {
           net_log.AddEvent(
               NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,

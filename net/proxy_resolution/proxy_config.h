@@ -197,7 +197,14 @@ class NET_EXPORT ProxyConfig {
     // Creates a Value::Dict dump of this override rule.
     base::Value::Dict ToDict() const;
 
+    // Returns true if `url` matches `destination_matchers` without matching
+    // `exclude_destination_matchers`. This should be used instead of directly
+    // accessing the matcher members for evaluating if the rule is applicable or
+    // not.
+    bool MatchesDestination(const GURL& url) const;
+
     ProxyHostMatchingRules destination_matchers;
+    ProxyHostMatchingRules exclude_destination_matchers;
     std::vector<DnsProbeCondition> dns_conditions;
 
     ProxyList proxy_list;

@@ -145,6 +145,8 @@ bool StructTraits<network::mojom::ProxyOverrideRuleDataView,
     Read(network::mojom::ProxyOverrideRuleDataView data,
          net::ProxyConfig::ProxyOverrideRule* out) {
   return data.ReadDestinationMatchers(&out->destination_matchers) &&
+         data.ReadExcludeDestinationMatchers(
+             &out->exclude_destination_matchers) &&
          data.ReadProxyList(&out->proxy_list) &&
          data.ReadDnsConditions(&out->dns_conditions) &&
          !out->destination_matchers.rules().empty() &&
