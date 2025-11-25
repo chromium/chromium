@@ -164,6 +164,8 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // to send it to the guest content.
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
+  mojo::Remote<contextual_tasks::mojom::Page>& page() { return page_; }
+
  private:
   // A an observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the

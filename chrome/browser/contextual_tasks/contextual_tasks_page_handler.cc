@@ -41,11 +41,10 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
 
 ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
-    mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     ContextualTasksUI* web_ui_controller,
     contextual_tasks::ContextualTasksUiService* ui_service)
     : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
+
       web_ui_controller_(web_ui_controller),
       ui_service_(ui_service) {}
 
@@ -165,7 +164,7 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   }
 
   if (aim_to_client_message.has_handshake_response()) {
-    page_->OnHandshakeComplete();
+    web_ui_controller_->page()->OnHandshakeComplete();
   }
 }
 
@@ -182,8 +181,8 @@ void ContextualTasksPageHandler::GetHandshakeMessage(
 
 void ContextualTasksPageHandler::PostMessageToWebview(
     const lens::ClientToAimMessage& message) {
-  DCHECK(page_);
-  if (!page_) {
+  DCHECK(web_ui_controller_->page());
+  if (!web_ui_controller_->page()) {
     return;
   }
 
@@ -198,5 +197,5 @@ void ContextualTasksPageHandler::PostMessageToWebview(
     return;
   }
 
-  page_->PostMessageToWebview(serialized_message);
+  web_ui_controller_->page()->PostMessageToWebview(serialized_message);
 }

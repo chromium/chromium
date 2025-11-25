@@ -36,7 +36,6 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
  public:
   ContextualTasksPageHandler(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
-      mojo::PendingRemote<contextual_tasks::mojom::Page> page,
       ContextualTasksUI* web_ui_controller,
       contextual_tasks::ContextualTasksUiService* ui_service);
   ~ContextualTasksPageHandler() override;
@@ -68,7 +67,6 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
 
   std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
-  mojo::Remote<contextual_tasks::mojom::Page> page_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 };

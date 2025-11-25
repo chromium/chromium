@@ -172,8 +172,9 @@ ContextualTasksUI::~ContextualTasksUI() = default;
 void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
+  page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page_handler), std::move(page), this, ui_service_);
+      std::move(page_handler), this, ui_service_);
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
