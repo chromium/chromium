@@ -313,11 +313,8 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   // Set managed account as the primary one.
   CoreAccountInfo core_account =
       identity_test_environment_.MakeAccountAvailable("foo@gmail.com");
-  AccountInfo account;
-  account.account_id = core_account.account_id;
-  account.gaia = core_account.gaia;
-  account.email = core_account.email;
-  account.hosted_domain = "managed.com";
+  AccountInfo account =
+      AccountInfo::Builder(core_account).SetHostedDomain("managed.com").Build();
   ASSERT_EQ(account.IsManaged(), signin::Tribool::kTrue);
   identity_test_environment_.UpdateAccountInfoForAccount(account);
   identity_test_environment_.SetPrimaryAccount("foo@gmail.com",
