@@ -703,8 +703,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 #endif
 }
 
-// TODO(b/302576851): Consider removing after EnableRelaxedAffiliationCheck
-// is cleaned up.
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        Affiliation) {
   SetPrefs(AnalysisConnectorPref(BULK_DATA_ENTRY),
