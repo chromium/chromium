@@ -476,6 +476,8 @@ bool IsAndroidAnimatedProgressBarInBrowserEnabled();
 // Controls whether the updated What's New page is enabled.
 BASE_DECLARE_FEATURE(kWhatsNewDesktopRefresh);
 
+BASE_DECLARE_FEATURE(kTabGroupsFocusing);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

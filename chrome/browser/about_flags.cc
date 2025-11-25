@@ -7535,6 +7535,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripComboButton,
                                     kTabstripComboButtonVariations,
                                     "TabstripComboButton")},
+
+    {"tab-groups-focusing", flag_descriptions::kTabGroupsFocusingName,
+     flag_descriptions::kTabGroupsFocusingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupsFocusing)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

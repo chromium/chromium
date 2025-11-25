@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -460,7 +462,8 @@ class TabStripModel {
   // notifications this method causes.
   void CloseAllTabs();
 
-  // Close all tabs in the given |group| at once.
+  // Close all tabs in the given |group| at once, but sets the focus state
+  // first.
   void CloseAllTabsInGroup(const tab_groups::TabGroupId& group);
 
   // Returns true if there are any WebContentses that are currently loading
@@ -695,6 +698,13 @@ class TabStripModel {
   TabGroupModel* group_model() const { return group_model_.get(); }
 
   bool SupportsTabGroups() const { return group_model_.get() != nullptr; }
+
+  // Returns the ID of the group that is focused. If no group is focused,
+  // returns nullopt.
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
+
+  // Sets the group to be focused.
+  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group);
 
   // Returns true if one or more of the tabs pointed to by |indices| are
   // supported by read later.
@@ -1147,6 +1157,9 @@ class TabStripModel {
       TabStripModelObserver::ChangeReason reason,
       bool triggered_by_other_operation);
 
+  // Close all tabs in the given |group| at once.
+  void CloseAllTabsInGroupImpl(const tab_groups::TabGroupId& group);
+
   // Direction of relative tab movements or selections. kNext indicates moving
   // forward (positive increment) in the tab strip. kPrevious indicates
   // backward (negative increment).
@@ -1408,6 +1421,9 @@ class TabStripModel {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // The focused group. If no group is focused, this is nullopt.
+  std::optional<tab_groups::TabGroupId> focused_group_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };

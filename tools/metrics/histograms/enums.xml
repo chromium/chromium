@@ -9267,6 +9267,7 @@ from previous Chrome versions.
   <int value="-1724238554"
       label="AutofillEnableLogFormEventsToAllParsedFormTypes:enabled"/>
   <int value="-1723847451" label="EnableChromeRefreshTokenBinding:enabled"/>
+  <int value="-1723531810" label="TabGroupsFocusing:enabled"/>
   <int value="-1723086446"
       label="AccessibilityMagnifyAcceleratorDialog:enabled"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
@@ -16959,6 +16960,7 @@ from previous Chrome versions.
   <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
+  <int value="974840558" label="TabGroupsFocusing:disabled"/>
   <int value="975104092" label="show-taps"/>
   <int value="975249239" label="PasswordManagerRedesign:enabled"/>
   <int value="975463471" label="WebViewExtraHeadersSameOriginOnly:enabled"/>

@@ -3899,6 +3899,11 @@ inline constexpr char kSidePanelRelativeAlignmentDescription[] =
     "Set the relative alignment between the toolbar height side panel and the "
     "content height side panel";
 
+inline constexpr char kTabGroupsFocusingName[] = "Tab Groups Focusing";
+inline constexpr char kTabGroupsFocusingDescription[] =
+    "When a tab group is focused, the tabstrip constrains visiblity to the "
+    "tabs in that group.";
+
 inline constexpr char kTabStorageSqlitePrototypeName[] =
     "Tab Storage SQLite Prototype";
 inline constexpr char kTabStorageSqlitePrototypeDescription[] =

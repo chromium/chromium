@@ -81,6 +81,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -245,7 +246,8 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
                              TabGroupModelFactory* group_model_factory)
     : delegate_(delegate),
       profile_(profile),
-      selection_model_(std::make_unique<ui::ListSelectionModel>()) {
+      selection_model_(std::make_unique<ui::ListSelectionModel>()),
+      focused_group_(std::nullopt) {
   DCHECK(delegate_);
 
   contents_data_ = std::make_unique<tabs::TabStripCollection>(false);
@@ -254,6 +256,53 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
     group_model_ = group_model_factory->Create();
   }
   scrubbing_metrics_.Init();
+}
+
+void TabStripModel::SetFocusedGroup(
+    std::optional<tab_groups::TabGroupId> group) {
+  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
+
+  if (focused_group_ == group) {
+    return;
+  }
+
+  if (group.has_value() && group_model_ &&
+      group_model_->ContainsTabGroup(group.value())) {
+    const gfx::Range tabs_in_group =
+        group_model_->GetTabGroup(group.value())->ListTabs();
+    CHECK(!tabs_in_group.is_empty());
+
+    // Copy the previous selection model, but remove tabs not part of the
+    // tab_group in the list of selected tabs.
+    ui::ListSelectionModel new_selection_model = selection_model();
+    for (int index : selection_model_->selected_indices()) {
+      if (index < static_cast<int>(tabs_in_group.start()) ||
+          index >= static_cast<int>(tabs_in_group.end())) {
+        new_selection_model.RemoveIndexFromSelection(index);
+      }
+    }
+
+    // Update the anchor if its not within the tabgroup.
+    if (new_selection_model.anchor() <
+            static_cast<int>(tabs_in_group.start()) ||
+        new_selection_model.anchor() >= static_cast<int>(tabs_in_group.end())) {
+      new_selection_model.set_anchor(std::nullopt);
+    }
+
+    // Update the active tab if its not within the tabgroup.
+    if (GetTabGroupForTab(new_selection_model.active().value()) != group) {
+      new_selection_model.set_active(tabs_in_group.start());
+      new_selection_model.AddIndexToSelection(tabs_in_group.start());
+    }
+
+    DCHECK(!new_selection_model.empty());
+    SetSelection(std::move(new_selection_model),
+                 TabStripModelObserver::CHANGE_REASON_NONE,
+                 /*triggered_by_other_operation=*/false);
+  }
+
+  focused_group_ = group;
+  // Notify Observers
 }
 
 TabStripModel::~TabStripModel() {
@@ -501,6 +550,10 @@ TabStripModel::DetachTabGroupForInsertion(
                          base::Unretained(this),
                          contents_data_->GetTabGroupCollection(group_id),
                          splits_in_group));
+
+  if (focused_group_ == group_id) {
+    SetFocusedGroup(std::nullopt);
+  }
 
   return std::make_unique<DetachedTabCollection>(
       base::WrapUnique(static_cast<tabs::TabGroupTabCollection*>(
@@ -1198,11 +1251,19 @@ void TabStripModel::CloseAllTabs() {
 
 void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
   if (!group_model_) {
     return;
   }
 
+  if (focused_group_ == group) {
+    SetFocusedGroup(std::nullopt);
+  }
+
+  CloseAllTabsInGroupImpl(group);
+}
+
+void TabStripModel::CloseAllTabsInGroupImpl(
+    const tab_groups::TabGroupId& group) {
   delegate_->WillCloseGroup(group);
 
   for (TabStripModelObserver& observer : observers_) {
@@ -2050,6 +2111,15 @@ void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
 
   RemoveSplitImpl(split_id,
                   SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+}
+
+// Returns the ID of the group that is focused. If no group is focused,
+// returns nullopt.
+std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    return std::nullopt;
+  }
+  return focused_group_;
 }
 
 bool TabStripModel::IsReadLaterSupportedForAny(
@@ -4516,6 +4586,9 @@ void TabStripModel::TabGroupStateChanged(
 
     // If the group model must be deleted, then do that at this point.
     if (tab_group->IsEmpty()) {
+      if (focused_group_ == initial_group) {
+        SetFocusedGroup(std::nullopt);
+      }
       NotifyTabGroupClosed(initial_group.value());
       group_model_->RemoveTabGroup(initial_group.value(),
                                    base::PassKey<TabStripModel>());

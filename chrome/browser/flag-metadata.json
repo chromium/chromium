@@ -9880,6 +9880,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-groups-focusing",
+    "owners": [ "dpenning@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-groups-on-ipad",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 137
