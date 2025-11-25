@@ -1768,6 +1768,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.PowerSupplyMaxVoltageHPBCharger" units="V"
+    expires_after="2026-04-10">
+  <owner>mqg@chromium.org</owner>
+  <owner>chromeos-power-team@google.com</owner>
+  <summary>
+    The maximum voltage supported by the connected power supply on ChromeOS. A
+    sample is reported every time the power manager polls sysfs. Polling occurs
+    at a regular 30-second interval and is also triggered by connecting or
+    disconnecting a power supply. Polling is temporarily more frequent (every
+    second) after other events such as system boot, system resume and battery
+    saver state change. This metric is only reported on devices with Hybrid
+    Power Boost chargers. The connected power supply includes both compatible
+    power supply and low voltage power supply.
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
     expires_after="2026-05-17">
   <owner>bleung@chromium.org</owner>
