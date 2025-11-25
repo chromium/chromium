@@ -418,6 +418,7 @@ source_set("test_support") {
   deps = [
     ":capture_lib",
     "//base/test:test_support",
+    "//gpu:test_support",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//media:test_support",
