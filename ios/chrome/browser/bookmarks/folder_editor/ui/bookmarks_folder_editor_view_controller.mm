@@ -102,13 +102,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 authenticationService:(AuthenticationService*)authService
                           syncService:(syncer::SyncService*)syncService
                               browser:(Browser*)browser {
-  DCHECK(bookmarkModel);
-  DCHECK(bookmarkModel->loaded());
-  DCHECK(parentFolder);
+  CHECK(bookmarkModel, base::NotFatalUntil::M152);
+  CHECK(bookmarkModel->loaded(), base::NotFatalUntil::M152);
+  CHECK(parentFolder, base::NotFatalUntil::M152);
   if (folder) {
-    DCHECK(!bookmarkModel->is_permanent_node(folder));
+    CHECK(!bookmarkModel->is_permanent_node(folder), base::NotFatalUntil::M152);
   }
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M152);
 
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
@@ -142,7 +142,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dealloc {
-  DCHECK(!_parentFolder);
+  CHECK(!_parentFolder, base::NotFatalUntil::M152);
 }
 
 #pragma mark - Public
@@ -194,7 +194,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateParentFolder:(const BookmarkNode*)parent {
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M152);
   _parentFolder = parent;
   _manuallyChangedTheFolder = YES;
   [self updateParentFolderState];
@@ -272,8 +272,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)deleteFolder {
-  DCHECK(_editingExistingFolder);
-  DCHECK(_folder);
+  CHECK(_editingExistingFolder, base::NotFatalUntil::M152);
+  CHECK(_folder, base::NotFatalUntil::M152);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderEditorDeletedFolder"));
   std::set<const BookmarkNode*> editedNodes;
@@ -286,15 +286,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)saveFolder {
-  DCHECK(_parentFolder);
+  CHECK(_parentFolder, base::NotFatalUntil::M152);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderEditorSaved"));
   NSString* folderString = _titleItem.text;
-  DCHECK(folderString.length > 0);
+  CHECK(folderString.length > 0, base::NotFatalUntil::M152);
   std::u16string folderTitle = base::SysNSStringToUTF16(folderString);
 
   if (_editingExistingFolder) {
-    DCHECK(_folder);
+    CHECK(_folder, base::NotFatalUntil::M152);
     // Tell delegate if folder title has been changed.
     if (_folder->GetTitle() != folderTitle) {
       [self.delegate bookmarksFolderEditorWillCommitTitleChange:self];
@@ -315,7 +315,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       _folder = bookmarksVector[0];
     }
   } else {
-    DCHECK(!_folder);
+    CHECK(!_folder, base::NotFatalUntil::M152);
     _folder = _bookmarkModel->AddFolder(
         _parentFolder, _parentFolder->children().size(), folderTitle);
   }
@@ -344,7 +344,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 - (void)didChangeNode:(const BookmarkNode*)bookmarkNode {
@@ -364,7 +364,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
   if (bookmarkNode == _folder) {
-    DCHECK(oldParent == _parentFolder);
+    CHECK_EQ(oldParent, _parentFolder, base::NotFatalUntil::M152);
     _parentFolder = newParent;
     [self updateParentFolderState];
   }
@@ -441,7 +441,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(tableView, self.tableView);
+  CHECK_EQ(tableView, self.tableView, base::NotFatalUntil::M152);
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeParentFolder) {
     [self changeParentFolder];

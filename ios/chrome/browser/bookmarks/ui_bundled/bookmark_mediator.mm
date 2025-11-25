@@ -106,7 +106,7 @@ using bookmarks::BookmarkNode;
 
 - (SnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
                                   viewAction:(void (^)())viewAction {
-  DCHECK([URLs count] > 0);
+  CHECK([URLs count] > 0, base::NotFatalUntil::M152);
   base::RecordAction(base::UserMetricsAction("IOSBookmarksAddedInBulk"));
 
   const BookmarkNode* defaultFolder =

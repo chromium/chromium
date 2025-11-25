@@ -62,10 +62,11 @@
                   profile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
-    DCHECK(bookmarkModel);
-    DCHECK(bookmarkModel->loaded());
-    DCHECK(bookmarkNode);
-    DCHECK(bookmarkNode->is_url()) << "Type: " << bookmarkNode->type();
+    CHECK(bookmarkModel, base::NotFatalUntil::M152);
+    CHECK(bookmarkModel->loaded(), base::NotFatalUntil::M152);
+    CHECK(bookmarkNode, base::NotFatalUntil::M152);
+    CHECK(bookmarkNode->is_url(), base::NotFatalUntil::M152)
+        << "Type: " << bookmarkNode->type();
     _bookmarkModel = bookmarkModel->AsWeakPtr();
     _bookmark = bookmarkNode;
     _folder = bookmarkNode->parent();
@@ -95,7 +96,7 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarkModel);
+  CHECK(!_bookmarkModel, base::NotFatalUntil::M152);
 }
 
 #pragma mark - Public
@@ -116,8 +117,8 @@
 
 // Change the folder of this editor and update the view.
 - (void)changeFolder:(const bookmarks::BookmarkNode*)folder {
-  DCHECK(folder);
-  DCHECK(folder->is_folder());
+  CHECK(folder, base::NotFatalUntil::M152);
+  CHECK(folder->is_folder(), base::NotFatalUntil::M152);
   [self setFolder:folder];
   [self updateFolderLabel];
 }
@@ -217,7 +218,7 @@
 
   GURL url = bookmark_utils_ios::ConvertUserDataToGURL(URLString);
   // If the URL was not valid, the `save` message shouldn't have been sent.
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M152);
 
   // Tell delegate if bookmark name or title has been changed.
   if ([self bookmark] &&

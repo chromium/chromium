@@ -221,16 +221,17 @@ using bookmarks::BookmarkNode;
     }
     // If new folders are allowed, we need to offset by 1 to get the right
     // BookmarkNode from folders.
-    DCHECK(folderIndex > 0);
+    CHECK(folderIndex > 0, base::NotFatalUntil::M152);
     folderIndex--;
   }
 
   const BookmarkNode* folder;
   if (sectionID == SectionIdentifierAccountBookmarks) {
-    DCHECK(folderIndex < _accountFolderNodes.size());
+    CHECK(folderIndex < _accountFolderNodes.size(), base::NotFatalUntil::M152);
     folder = _accountFolderNodes[folderIndex];
   } else {
-    DCHECK(folderIndex < _localOrSyncableFolderNodes.size());
+    CHECK(folderIndex < _localOrSyncableFolderNodes.size(),
+          base::NotFatalUntil::M152);
     folder = _localOrSyncableFolderNodes[folderIndex];
   }
   [_mutator setSelectedFolderNode:folder];
@@ -269,7 +270,7 @@ using bookmarks::BookmarkNode;
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  DCHECK_EQ(_searchController, searchController);
+  CHECK_EQ(_searchController, searchController, base::NotFatalUntil::M152);
   _searchTerm = searchController.searchBar.text;
 
   if (_searchTerm.length == 0) {
@@ -420,7 +421,7 @@ using bookmarks::BookmarkNode;
       }
       // The root node is not shown as a folder, so top level folders have a
       // level strictly positive.
-      DCHECK(level > 0);
+      CHECK(level > 0, base::NotFatalUntil::M152);
       folderItem.indentationLevel = level - 1;
     }
     [self.tableViewModel addItem:folderItem toSectionWithIdentifier:sectionID];

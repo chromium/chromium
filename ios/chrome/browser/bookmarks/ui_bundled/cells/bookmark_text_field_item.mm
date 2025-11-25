@@ -53,7 +53,7 @@
 #pragma mark UIControlEventEditingChanged
 
 - (void)textFieldDidChange:(UITextField*)textField {
-  DCHECK_EQ(textField.tag, self.type);
+  CHECK_EQ(textField.tag, self.type, base::NotFatalUntil::M152);
   self.text = textField.text;
   [self.delegate textDidChangeForItem:self];
 }

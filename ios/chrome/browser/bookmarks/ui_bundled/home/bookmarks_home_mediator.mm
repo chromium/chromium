@@ -149,7 +149,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                   displayedNode:(const BookmarkNode*)displayedNode {
   if ((self = [super init])) {
-    DCHECK(browser);
+    CHECK(browser, base::NotFatalUntil::M152);
     CHECK(displayedNode);
     CHECK(bookmarkModel);
     CHECK(bookmarkModel->loaded());
@@ -162,7 +162,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)startMediating {
-  DCHECK(self.consumer);
+  CHECK(self.consumer, base::NotFatalUntil::M152);
 
   // Set up observers.
   ProfileIOS* profile = [self originalProfile];
@@ -208,7 +208,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarkPromoController);
+  CHECK(!_bookmarkPromoController, base::NotFatalUntil::M152);
 }
 
 - (BOOL)canDismiss {
@@ -389,8 +389,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   SigninPromoViewMediator* signinPromoViewMediator =
       self.bookmarkPromoController.signinPromoViewMediator;
   if (self.promoVisible) {
-    DCHECK(![self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        ![self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         insertSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo
                             atIndex:0];
@@ -422,8 +424,10 @@ bool IsABookmarkNodeSectionForIdentifier(
       [signinPromoViewMediator signinPromoViewIsHidden];
     }
 
-    DCHECK([self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        [self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   }
@@ -466,7 +470,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)setCurrentlyInEditMode:(BOOL)currentlyInEditMode {
-  DCHECK(self.consumer.tableView);
+  CHECK(self.consumer.tableView, base::NotFatalUntil::M152);
 
   // If not in editing mode but the tableView's editing is ON, it means the
   // table is waiting for a swipe-to-delete confirmation.  In this case, we need
@@ -513,7 +517,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded {
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 // The node has changed, but not its children.
@@ -569,7 +573,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // `node` will be deleted from `folder`.
 - (void)willDeleteNode:(const BookmarkNode*)node
             fromFolder:(const BookmarkNode*)folder {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M152);
   if (self.displayedNode && self.displayedNode->HasAncestor(node)) {
     self.displayedNode = nullptr;
     [self.consumer closeThisFolder];
@@ -589,7 +593,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (void)didChangeFaviconForNode:(const BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
-  DCHECK(bookmarkNode->is_url());
+  CHECK(bookmarkNode->is_url(), base::NotFatalUntil::M152);
 
   // Update image of corresponding cell.
   BookmarksHomeNodeItem* nodeItem = [self itemForNode:bookmarkNode];
@@ -920,7 +924,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
-  DCHECK(self.syncService);
+  CHECK(self.syncService, base::NotFatalUntil::M152);
   bool syncDisabledPolicy = self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   bool syncTypesDisabledPolicy =

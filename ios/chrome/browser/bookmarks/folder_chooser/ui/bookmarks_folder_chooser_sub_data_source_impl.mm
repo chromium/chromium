@@ -34,9 +34,9 @@ using bookmarks::BookmarkNode;
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource {
-  DCHECK(bookmarkModel);
-  DCHECK(bookmarkModel->loaded());
-  DCHECK(parentDataSource);
+  CHECK(bookmarkModel, base::NotFatalUntil::M152);
+  CHECK(bookmarkModel->loaded(), base::NotFatalUntil::M152);
+  CHECK(parentDataSource, base::NotFatalUntil::M152);
 
   self = [super init];
   if (self) {
@@ -56,7 +56,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarkModel);
+  CHECK(!_bookmarkModel, base::NotFatalUntil::M152);
 }
 
 #pragma mark - BookmarksFolderChooserSubDataSource
@@ -68,7 +68,7 @@ using bookmarks::BookmarkNode;
     case BookmarkStorageType::kAccount:
       return _bookmarkModel->account_mobile_node();
   }
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 - (std::vector<const BookmarkNode*>)visibleFolderNodes {
@@ -87,7 +87,7 @@ using bookmarks::BookmarkNode;
 
 - (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 - (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {

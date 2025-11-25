@@ -257,7 +257,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 @synthesize editingFolderCell = _editingFolderCell;
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M152);
 
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
@@ -277,7 +277,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)dealloc {
-  DCHECK(_isShutDown);
+  CHECK(_isShutDown, base::NotFatalUntil::M152);
 }
 
 - (void)shutdown {
@@ -321,7 +321,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // This method is only designed to be called for the view controller
   // associated with the root node.
   CHECK(_bookmarkModel->loaded());
-  DCHECK([self isDisplayingBookmarkRoot]);
+  CHECK([self isDisplayingBookmarkRoot], base::NotFatalUntil::M152);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
   // Configure the root controller Navigationbar at this time when
@@ -354,7 +354,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     int64_t nodeID = [[path objectAtIndex:ii] longLongValue];
     const BookmarkNode* node =
         bookmark_utils_ios::FindFolderById(_bookmarkModel.get(), nodeID);
-    DCHECK(node);
+    CHECK(node, base::NotFatalUntil::M152);
     // if node is an empty permanent node, stop.
     if (node->children().empty() && node->is_permanent_node()) {
       break;
@@ -532,7 +532,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 #pragma mark - Protected
 
 - (void)loadBookmarkViews {
-  DCHECK(self.displayedFolderNode);
+  CHECK(self.displayedFolderNode, base::NotFatalUntil::M152);
   [self loadModel];
 
   self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
@@ -570,8 +570,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(_bookmarkModel->loaded());
-  DCHECK([self isViewLoaded]);
+  CHECK(_bookmarkModel->loaded(), base::NotFatalUntil::M152);
+  CHECK([self isViewLoaded], base::NotFatalUntil::M152);
 }
 
 - (void)cacheIndexPathRow {
@@ -1168,7 +1168,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     if (node->is_url()) {
       [self setContextBarState:BookmarksContextBarSingleURLSelection];
     } else {
-      DCHECK_EQ(node->type(), BookmarkNode::FOLDER);
+      CHECK_EQ(node->type(), BookmarkNode::FOLDER, base::NotFatalUntil::M152);
       [self setContextBarState:BookmarksContextBarSingleFolderSelection];
     }
     return;
@@ -1204,7 +1204,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 - (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
@@ -1238,7 +1238,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (!_bookmarkModel) {
     return;
   }
-  DCHECK(self.mediator.editingFolderNode);
+  CHECK(self.mediator.editingFolderNode, base::NotFatalUntil::M152);
   self.mediator.addingNewFolder = NO;
   if (newName.length > 0) {
     _bookmarkModel->SetTitle(self.mediator.editingFolderNode,
@@ -1256,8 +1256,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
             (BookmarksFolderChooserCoordinator*)coordinator
                                  withSelectedFolder:
                                      (const BookmarkNode*)folder {
-  DCHECK(_folderChooserCoordinator);
-  DCHECK(folder);
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M152);
+  CHECK(folder, base::NotFatalUntil::M152);
 
   // Copy the list of edited nodes from BookmarksFolderChooserCoordinator
   // as the reference may become invalid when `_folderChooserCoordinator`
@@ -1269,8 +1269,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                                                      editedNodesSet.end());
   [self stopFolderChooserCoordinator];
 
-  DCHECK(!folder->is_url());
-  DCHECK_GE(editedNodesVector.size(), 1u);
+  CHECK(!folder->is_url(), base::NotFatalUntil::M152);
+  CHECK_GE(editedNodesVector.size(), 1u, base::NotFatalUntil::M152);
 
   [self setTableViewEditing:NO];
   ProfileIOS* profile = self.profile;
@@ -1286,7 +1286,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
     (BookmarksFolderChooserCoordinator*)coordinator {
-  DCHECK(_folderChooserCoordinator);
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M152);
   [self stopFolderChooserCoordinator];
   [self setTableViewEditing:NO];
 }
@@ -1301,7 +1301,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded {
-  DCHECK(!self.displayedFolderNode);
+  CHECK(!self.displayedFolderNode, base::NotFatalUntil::M152);
   self.displayedFolderNode = _bookmarkModel->root_node();
 
   // If the view hasn't loaded yet, then return early. The eventual call to
@@ -1324,7 +1324,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     self.isReconstructingFromCache = YES;
   }
 
-  DCHECK(self.spinnerView);
+  CHECK(self.spinnerView, base::NotFatalUntil::M152);
   __weak BookmarksHomeViewController* weakSelf = self;
   [self.spinnerView stopWaitingWithCompletion:^{
     // Early return if the controller has been deallocated.
@@ -1528,7 +1528,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   NSArray<BookmarksHomeViewController*>* replacementViewControllers =
       [self cachedViewControllerStack];
-  DCHECK(replacementViewControllers);
+  CHECK(replacementViewControllers, base::NotFatalUntil::M152);
   [self.navigationController setViewControllers:replacementViewControllers];
 }
 
@@ -1791,7 +1791,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return nodeItem.bookmarkNode;
   }
 
-  DUMP_WILL_BE_NOTREACHED() << "Unexpected item type " << item.type;
+  NOTREACHED(base::NotFatalUntil::M152) << "Unexpected item type " << item.type;
   return nullptr;
 }
 
@@ -2549,7 +2549,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  DCHECK_EQ(self.searchController, searchController);
+  CHECK_EQ(self.searchController, searchController, base::NotFatalUntil::M152);
   NSString* text = searchController.searchBar.text;
   self.searchTerm = text;
 
@@ -2788,7 +2788,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
           sectionIdentifierForSectionIndex:indexPath.section]);
   if (IsABookmarkNodeSectionForIdentifier(sectionIdentifier)) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
-    DCHECK(node);
+    CHECK(node, base::NotFatalUntil::M152);
     // If table is in edit mode, record all the nodes added to edit set.
     if (self.mediator.currentlyInEditMode) {
       if ([self isNodeEditableByUser:node]) {
@@ -2840,7 +2840,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (sectionIdentifier == BookmarksHomeSectionIdentifierBookmarks &&
       self.mediator.currentlyInEditMode) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
-    DCHECK(node);
+    CHECK(node, base::NotFatalUntil::M152);
     self.mediator.selectedNodesForEditMode.erase(node);
     [self handleSelectEditNodes:self.mediator.selectedNodesForEditMode];
   }

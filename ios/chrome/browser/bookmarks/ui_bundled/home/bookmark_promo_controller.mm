@@ -114,7 +114,7 @@
 }
 
 - (void)updateShouldShowSigninPromo {
-  DCHECK(_browser);
+  CHECK(_browser, base::NotFatalUntil::M152);
   ProfileIOS* profile = _browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);

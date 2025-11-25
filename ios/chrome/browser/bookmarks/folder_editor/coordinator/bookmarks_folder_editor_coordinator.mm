@@ -56,7 +56,7 @@
                                 parentFolderNode:
                                     (const bookmarks::BookmarkNode*)
                                         parentFolder {
-  DCHECK(parentFolder);
+  CHECK(parentFolder, base::NotFatalUntil::M152);
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -71,8 +71,8 @@
                                    browser:(Browser*)browser
                                 folderNode:
                                     (const bookmarks::BookmarkNode*)folder {
-  DCHECK(folder);
-  DCHECK(folder->parent());
+  CHECK(folder, base::NotFatalUntil::M152);
+  CHECK(folder->parent(), base::NotFatalUntil::M152);
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _folderNode = folder;
@@ -104,7 +104,7 @@
   if (_baseNavigationController) {
     [_baseNavigationController pushViewController:_viewController animated:YES];
   } else {
-    DCHECK(!_navigationController);
+    CHECK(!_navigationController, base::NotFatalUntil::M152);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -121,7 +121,7 @@
   // Stop child coordinator before stopping `self`.
   [self stopBookmarksFolderChooserCoordinator];
 
-  DCHECK(_viewController);
+  CHECK(_viewController, base::NotFatalUntil::M152);
   if (_navigationController) {
     [_navigationController.presentingViewController
         dismissViewControllerAnimated:YES
@@ -134,7 +134,8 @@
     // the parent coordinator (who owns the `_baseNavigationController`) has
     // already been dismissed. In this case `_baseNavigationController` itself
     // is no longer being presented and this coordinator was dismissed as well.
-    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
+    CHECK_EQ(_baseNavigationController.topViewController, _viewController,
+             base::NotFatalUntil::M152);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (!_baseNavigationController) {
     // If there is no `_baseNavigationController` and `_navigationController`,
@@ -143,18 +144,19 @@
     // `bookmarksFolderEditorDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
     // `nil`.
-    DCHECK(!self.baseViewController.presentedViewController);
+    CHECK(!self.baseViewController.presentedViewController,
+          base::NotFatalUntil::M152);
   }
   [_viewController disconnect];
   _viewController = nil;
 }
 
 - (void)dealloc {
-  DCHECK(!_viewController);
+  CHECK(!_viewController, base::NotFatalUntil::M152);
 }
 
 - (BOOL)canDismiss {
-  DCHECK(_viewController);
+  CHECK(_viewController, base::NotFatalUntil::M152);
   return [_viewController canDismiss];
 }
 
@@ -193,7 +195,7 @@
     (BookmarksFolderEditorViewController*)folderEditor {
   // Deleting the folder is only allowed when the user is editing an existing
   // folder.
-  DCHECK(_folderNode);
+  CHECK(_folderNode, base::NotFatalUntil::M152);
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
 
@@ -204,7 +206,7 @@
 
 - (void)bookmarksFolderEditorDidDismiss:
     (BookmarksFolderEditorViewController*)folderEditor {
-  DCHECK(_baseNavigationController);
+  CHECK(_baseNavigationController, base::NotFatalUntil::M152);
   _baseNavigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
@@ -220,8 +222,8 @@
             (BookmarksFolderChooserCoordinator*)coordinator
                                  withSelectedFolder:
                                      (const bookmarks::BookmarkNode*)folder {
-  DCHECK(_folderChooserCoordinator);
-  DCHECK(folder);
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M152);
+  CHECK(folder, base::NotFatalUntil::M152);
   [self stopBookmarksFolderChooserCoordinator];
 
   [_viewController updateParentFolder:folder];
@@ -229,7 +231,7 @@
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
     (BookmarksFolderChooserCoordinator*)coordinator {
-  DCHECK(_folderChooserCoordinator);
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M152);
   [self stopBookmarksFolderChooserCoordinator];
 }
 
@@ -251,7 +253,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  DCHECK(_navigationController);
+  CHECK(_navigationController, base::NotFatalUntil::M152);
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];

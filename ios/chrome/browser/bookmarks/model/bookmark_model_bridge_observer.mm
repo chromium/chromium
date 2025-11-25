@@ -14,8 +14,8 @@ BookmarkModelBridge::BookmarkModelBridge(
     id<BookmarkModelBridgeObserver> observer,
     bookmarks::BookmarkModel* model)
     : observer_(observer) {
-  DCHECK(observer_);
-  DCHECK(model);
+  CHECK(observer_, base::NotFatalUntil::M152);
+  CHECK(model, base::NotFatalUntil::M152);
   model_observation_.Observe(model);
 }
 

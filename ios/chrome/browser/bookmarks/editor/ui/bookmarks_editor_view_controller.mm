@@ -374,7 +374,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(tableView, self.tableView);
+  CHECK_EQ(tableView, self.tableView, base::NotFatalUntil::M152);
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
   NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
@@ -393,7 +393,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(tableView, self.tableView);
+  CHECK_EQ(tableView, self.tableView, base::NotFatalUntil::M152);
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeFolder) {
     [self moveBookmark];
   }
