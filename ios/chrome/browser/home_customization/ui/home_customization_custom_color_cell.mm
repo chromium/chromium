@@ -56,6 +56,7 @@ const CGFloat kEyedropperSymbolSize = 15.0;
     _innerContentView = [[UIView alloc] init];
     _innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
     _innerContentView.layer.masksToBounds = YES;
+    _innerContentView.layer.borderWidth = 1;
     [_borderWrapperView addSubview:_innerContentView];
 
     // Eye dropper icon.
@@ -78,6 +79,10 @@ const CGFloat kEyedropperSymbolSize = 15.0;
       [_symbolImageView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateCGColors)];
+    [self updateCGColors];
   }
   return self;
 }
@@ -117,6 +122,13 @@ const CGFloat kEyedropperSymbolSize = 15.0;
     _borderWrapperView.layer.borderWidth = 0;
     self.accessibilityValue = nil;
   }
+}
+
+// Updates CGColors when the user interface style changes, as they do not
+// update automatically.
+- (void)updateCGColors {
+  _innerContentView.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
 }
 
 @end

@@ -37,14 +37,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-
-// Enables the liquid glass effect for the home customization menu background.
-BASE_FEATURE(kHomeCustomizationLiquidGlassBackground,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The height of the menu's initial detent, which roughly represents a header
 // and 3 cells.
@@ -361,9 +358,10 @@ CGFloat const kSheetCornerRadius = 30;
       [[UINavigationController alloc] initWithRootViewController:menuPage];
 
   if (@available(iOS 26, *)) {
-    if (base::FeatureList::IsEnabled(kHomeCustomizationLiquidGlassBackground)) {
-      menuPage.view.backgroundColor = [UIColor clearColor];
-    }
+    menuPage.view.backgroundColor = [UIColor clearColor];
+  } else {
+    menuPage.view.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   }
 
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -454,6 +452,7 @@ CGFloat const kSheetCornerRadius = 30;
   _backgroundPickerActionSheetCoordinator.presentationDelegate = self;
   _backgroundPickerActionSheetCoordinator.searchEngineLogoMediatorProvider =
       self;
+
   [_backgroundPickerActionSheetCoordinator start];
   // Disable customization interactions while the background picker views are
   // open so the user can't choose a new background from the main menu while in

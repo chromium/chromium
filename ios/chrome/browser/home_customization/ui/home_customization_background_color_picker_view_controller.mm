@@ -116,7 +116,12 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   self.title = l10n_util::GetNSStringWithFixup(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE);
 
-  self.view.backgroundColor = [UIColor systemBackgroundColor];
+  if (@available(iOS 26, *)) {
+    self.view.backgroundColor = UIColor.clearColor;
+  } else {
+    self.view.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  }
 
   UICollectionViewFlowLayout* layout = [[CenteredFlowLayout alloc] init];
 
@@ -172,6 +177,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   _collectionView.dataSource = self;
   _collectionView.delegate = self;
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  _collectionView.backgroundColor = UIColor.clearColor;
   [self.view addSubview:_collectionView];
 
   [self selectInitialColor];

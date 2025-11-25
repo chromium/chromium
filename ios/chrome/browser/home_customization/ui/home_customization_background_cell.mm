@@ -134,6 +134,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
     self.innerContentView.layer.masksToBounds = YES;
     self.innerContentView.axis = UILayoutConstraintAxisVertical;
+    self.innerContentView.layer.borderWidth = 1;
 
     // Adds the empty background image.
     _backgroundImageView = [[HomeCustomizationImageView alloc] init];
@@ -164,6 +165,10 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     [self registerForTraitChanges:
               @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
                        withAction:@selector(applyTheme)];
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateCGColors)];
+    [self updateCGColors];
   }
   return self;
 }
@@ -337,6 +342,13 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
       [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor];
   _magicStackView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   _feedsView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+}
+
+// Updates CGColors when the user interface style changes, as they do not
+// update automatically.
+- (void)updateCGColors {
+  self.innerContentView.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
 }
 
 @end

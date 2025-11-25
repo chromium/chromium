@@ -23,8 +23,10 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -115,7 +117,12 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   self.title = l10n_util::GetNSStringWithFixup(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE);
 
-  self.view.backgroundColor = [UIColor systemBackgroundColor];
+  if (@available(iOS 26, *)) {
+    self.view.backgroundColor = UIColor.clearColor;
+  } else {
+    self.view.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  }
 
   UICollectionViewCompositionalLayout* layout =
       [[UICollectionViewCompositionalLayout alloc]
@@ -134,6 +141,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   _collectionView.accessibilityIdentifier =
       kHomeCustomizationGalleryPickerViewAccessibilityIdentifier;
   _collectionView.prefetchDataSource = self;
+  _collectionView.backgroundColor = UIColor.clearColor;
 
   _diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_collectionView

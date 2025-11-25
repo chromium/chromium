@@ -62,6 +62,7 @@ const CGFloat kGapBorderWidth = 3.0;
     _innerContentView = [[UIView alloc] init];
     _innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
     _innerContentView.layer.masksToBounds = YES;
+    _innerContentView.layer.borderWidth = 1;
     [_borderWrapperView addSubview:_innerContentView];
 
     _lightColorView = [[UIView alloc] init];
@@ -117,6 +118,10 @@ const CGFloat kGapBorderWidth = 3.0;
     AddSameConstraints(_borderWrapperView, self.contentView);
     AddSameConstraintsWithInset(_innerContentView, _borderWrapperView,
                                 kGapBorderWidth + kHighlightBorderWidth);
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateCGColors)];
+    [self updateCGColors];
   }
   return self;
 }
@@ -158,6 +163,13 @@ const CGFloat kGapBorderWidth = 3.0;
     _borderWrapperView.layer.borderWidth = 0;
     self.accessibilityValue = nil;
   }
+}
+
+// Updates CGColors when the user interface style changes, as they do not
+// update automatically.
+- (void)updateCGColors {
+  _innerContentView.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
 }
 
 @end

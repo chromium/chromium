@@ -62,7 +62,8 @@ const CGFloat kSymbolAddBackgroundPointSize = 18;
 }
 
 - (void)applyTheme {
-  self.innerContentView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  self.innerContentView.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 }
 
 #pragma mark - Private
