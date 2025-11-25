@@ -18,7 +18,6 @@ public class ContainerStyle {
     private final int mTopMargin;
     private final int mBottomMargin;
     private final int mHorizontalMargin;
-    private final int mHorizontalPadding;
     private final int mVerticalPadding;
     private final int mBackgroundColor;
 
@@ -31,7 +30,6 @@ public class ContainerStyle {
         mTopMargin = builder.mTopMargin;
         mBottomMargin = builder.mBottomMargin;
         mHorizontalMargin = builder.mHorizontalMargin;
-        mHorizontalPadding = builder.mHorizontalPadding;
         mVerticalPadding = builder.mVerticalPadding;
         mBackgroundColor = builder.mBackgroundColor;
     }
@@ -43,7 +41,6 @@ public class ContainerStyle {
         private int mTopMargin = DEFAULT_MARGIN;
         private int mBottomMargin = DEFAULT_MARGIN;
         private int mHorizontalMargin = DEFAULT_MARGIN;
-        private int mHorizontalPadding = DEFAULT_MARGIN;
         private int mVerticalPadding = DEFAULT_MARGIN;
         private int mBackgroundColor = DEFAULT_COLOR;
 
@@ -69,11 +66,6 @@ public class ContainerStyle {
 
         public Builder setHorizontalMargin(int horizontalMargin) {
             mHorizontalMargin = horizontalMargin;
-            return this;
-        }
-
-        public Builder setHorizontalPadding(int horizontalPadding) {
-            mHorizontalPadding = horizontalPadding;
             return this;
         }
 
@@ -125,13 +117,6 @@ public class ContainerStyle {
      */
     public int getHorizontalMargin() {
         return mHorizontalMargin;
-    }
-
-    /**
-     * @return The horizontal padding in pixels.
-     */
-    public int getHorizontalPadding() {
-        return mHorizontalPadding;
     }
 
     /**

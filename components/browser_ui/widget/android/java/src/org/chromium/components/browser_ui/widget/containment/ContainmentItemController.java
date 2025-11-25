@@ -231,7 +231,6 @@ public class ContainmentItemController {
                     .setBottomRadius(mDefaultRadius)
                     .setTopMargin(topMargin)
                     .setBottomMargin(bottomMargin)
-                    .setHorizontalPadding(mDefaultPadding)
                     .setVerticalPadding(isSingleLine ? mDefaultPadding : mMultiLineVerticalPadding)
                     .setHorizontalMargin(horizontalMargin)
                     .setBackgroundColor(backgroundColor)
@@ -277,7 +276,6 @@ public class ContainmentItemController {
                 .setTopMargin(mDefaultContainerVerticalMargin)
                 .setBottomMargin(bottomMargin)
                 .setHorizontalMargin(mDefaultMargin)
-                .setHorizontalPadding(mDefaultPadding)
                 .setVerticalPadding(verticalPadding)
                 .setBackgroundColor(mDefaultBackgroundColor)
                 .build();

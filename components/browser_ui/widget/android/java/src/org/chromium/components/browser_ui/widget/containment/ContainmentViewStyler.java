@@ -94,9 +94,9 @@ public class ContainmentViewStyler {
         // Apply custom padding to the root view, conditionally.
         if (innerContentPaddingNeutralized) {
             view.setPadding(
-                    style.getHorizontalPadding(),
+                    view.getPaddingLeft(),
                     style.getVerticalPadding(),
-                    style.getHorizontalPadding(),
+                    view.getPaddingRight(),
                     style.getVerticalPadding());
         }
     }
