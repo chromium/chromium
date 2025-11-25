@@ -200,7 +200,7 @@ base::File::Error NativeMediaFileUtil::IsMediaFile(
     return base::File::FILE_ERROR_FAILED;
   }
 
-  return IsMediaHeader(buffer_span);
+  return IsMediaHeader(buffer_span.first(*len));
 }
 
 // static
