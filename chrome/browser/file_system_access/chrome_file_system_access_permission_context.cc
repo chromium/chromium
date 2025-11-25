@@ -2087,11 +2087,6 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     HandleType handle_type,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40101272): Figure out what external paths should be
-  // blocked. We could resolve the external path to a local path, and check for
-  // blocked directories based on that, but that doesn't work well. Instead we
-  // should have a separate Chrome OS only code path to block for example the
-  // root of certain external file systems.
   if (path_info.type == content::PathType::kExternal) {
     std::move(callback).Run(/*should_block=*/false);
     return;
