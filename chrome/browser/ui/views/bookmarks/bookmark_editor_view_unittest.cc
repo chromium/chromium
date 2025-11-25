@@ -367,7 +367,6 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
   // F1 should have one child, F11
   const BookmarkEditorView::EditorNode* F1 =
       local_bookmark_bar->children()[0].get();
-  account_bookmark_bar_editor_node()->children()[0].get();
   ASSERT_EQ(1u, F1->children().size());
   EXPECT_EQ(u"F11", F1->children()[0]->GetTitle());
   // Local other node should have one child (OF1).
