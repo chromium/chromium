@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelecti
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.List;
@@ -203,17 +205,27 @@ public class TabItemPickerCoordinatorUnitTest {
                 .thenReturn(mTabModelSelector);
 
         // 1. Setup tabs
+        GURL testUrl = JUnitTestGURLs.URL_1;
         Tab tab1WithWebContents = Mockito.mock(Tab.class);
         when(tab1WithWebContents.getId()).thenReturn(101);
         when(tab1WithWebContents.getWebContents()).thenReturn(Mockito.mock(WebContents.class));
+        when(tab1WithWebContents.isInitialized()).thenReturn(true);
+        when(tab1WithWebContents.isFrozen()).thenReturn(false);
+        when(tab1WithWebContents.getUrl()).thenReturn(testUrl);
 
         Tab tab2NoWebContentsCached = Mockito.mock(Tab.class);
         when(tab2NoWebContentsCached.getId()).thenReturn(102);
         when(tab2NoWebContentsCached.getWebContents()).thenReturn(null);
+        when(tab2NoWebContentsCached.isInitialized()).thenReturn(true);
+        when(tab2NoWebContentsCached.isFrozen()).thenReturn(false);
+        when(tab2NoWebContentsCached.getUrl()).thenReturn(testUrl);
 
         Tab tab3NoWebContentsNotCached = Mockito.mock(Tab.class);
         when(tab3NoWebContentsNotCached.getId()).thenReturn(103);
         when(tab3NoWebContentsNotCached.getWebContents()).thenReturn(null);
+        when(tab3NoWebContentsNotCached.isInitialized()).thenReturn(true);
+        when(tab3NoWebContentsNotCached.isFrozen()).thenReturn(false);
+        when(tab3NoWebContentsNotCached.getUrl()).thenReturn(testUrl);
 
         List<Tab> allTabs =
                 Arrays.asList(

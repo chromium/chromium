@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
@@ -251,15 +250,8 @@ public class FuseboxMediator {
         assumeNonNull(tabModelSelector);
         Tab currentTab = assumeNonNull(tabModelSelector.getCurrentTab());
         boolean tabIsEligible =
-                currentTab != null
-                        && !currentTab.isIncognitoBranded()
-                        && currentTab.isInitialized()
-                        && !currentTab.isFrozen()
-                        && (currentTab.getUrl().getScheme().equals(UrlConstants.HTTP_SCHEME)
-                                || currentTab
-                                        .getUrl()
-                                        .getScheme()
-                                        .equals(UrlConstants.HTTPS_SCHEME));
+                FuseboxTabUtils.isTabEligibleForAttachment(currentTab)
+                        && !currentTab.isIncognitoBranded();
 
         if (tabIsEligible) {
             mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
@@ -335,7 +327,7 @@ public class FuseboxMediator {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             if (tabModelSelector == null) return;
             Tab tab = mTabModelSelectorSupplier.get().getTabById((int) tabId);
-            if (tab == null) return;
+            if (tab == null) break;
             onAddCurrentTab(tab);
         }
     }

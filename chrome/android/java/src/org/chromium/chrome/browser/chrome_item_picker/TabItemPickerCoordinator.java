@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -168,7 +169,7 @@ public class TabItemPickerCoordinator {
         pageContentExtractionService.getAllCachedTabIds(this::onCachedTabIdsRetrieved);
     }
 
-    private void onCachedTabIdsRetrieved(long[] tabIds) {
+    private void onCachedTabIdsRetrieved(long[] cachedTabIds) {
         if (mTabModelSelector == null) return;
 
         Profile profile = mProfileSupplier.get();
@@ -180,19 +181,21 @@ public class TabItemPickerCoordinator {
         List<Tab> allTabs =
                 TabModelUtils.convertTabListToListOfTabs(
                         mTabModelSelector.getModel(profile.isIncognitoBranded()));
-        if (tabIds == null || tabIds.length == 0) {
+        if (cachedTabIds == null || cachedTabIds.length == 0) {
             showEditorUi(allTabs);
             return;
         }
 
         List<Tab> tabsToShow = new ArrayList<>();
-        Set<Integer> tabIdsSet = new HashSet<>();
-        for (long id : tabIds) {
-            tabIdsSet.add((int) id);
+        Set<Integer> cachedTabIdsSet = new HashSet<>();
+        for (long id : cachedTabIds) {
+            cachedTabIdsSet.add((int) id);
         }
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
-            if (tab.getWebContents() != null || tabIdsSet.contains(tab.getId())) {
+            boolean isActiveOrCachedTab =
+                    tab.getWebContents() != null || cachedTabIdsSet.contains(tab.getId());
+            if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && isActiveOrCachedTab) {
                 tabsToShow.add(tab);
             }
         }
