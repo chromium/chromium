@@ -295,6 +295,35 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
                   }));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       LogRmOpenedAfterOmniboxIphShown) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+      InvokePageAction(), WaitForPageActionChipNotVisible(), Do([this]() {
+        histogram_tester().ExpectUniqueSample(
+            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", true, 1);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       LogRmNotOpenedAfterOmniboxIphShownAndPageChanged) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+      NavigateWebContents(kActiveTab, non_distillable_url_),
+      WaitForPageActionChipNotVisible(), Do([this]() {
+        histogram_tester().ExpectUniqueSample(
+            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", false, 1);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);

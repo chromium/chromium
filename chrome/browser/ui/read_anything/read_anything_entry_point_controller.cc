@@ -102,7 +102,9 @@ void ReadAnythingEntryPointController::ToggleUI(
 // static
 void ReadAnythingEntryPointController::UpdatePageActionVisibility(
     bool should_show_page_action,
-    BrowserWindowInterface* bwi) {
+    BrowserWindowInterface* bwi,
+    base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
+        show_promo_callback) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration) ||
       !features::IsReadAnythingOmniboxChipEnabled()) {
     return;
@@ -117,8 +119,12 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
     page_action_controller->Show(kActionSidePanelShowReadAnything);
     page_action_controller->ShowSuggestionChip(
         kActionSidePanelShowReadAnything);
-    user_ed->MaybeShowFeaturePromo(
+    user_education::FeaturePromoParams params(
         feature_engagement::kIPHReadingModePageActionLabelFeature);
+    if (show_promo_callback) {
+      params.show_promo_result_callback = std::move(show_promo_callback);
+    }
+    user_ed->MaybeShowFeaturePromo(std::move(params));
   } else {
     user_ed->AbortFeaturePromo(
         feature_engagement::kIPHReadingModePageActionLabelFeature);

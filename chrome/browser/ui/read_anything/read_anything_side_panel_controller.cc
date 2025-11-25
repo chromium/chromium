@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -146,6 +147,11 @@ void ReadAnythingSidePanelController::RemoveObserver(
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
+
+  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
+    iph_response_timer_->Stop();
+    RecordOpenedAfterPromo();
+  }
 
   std::optional<SidePanelOpenTrigger> open_trigger = entry->last_open_trigger();
   std::optional<ReadAnythingOpenTrigger> read_anything_trigger =
@@ -374,7 +380,26 @@ void ReadAnythingSidePanelController::UpdateOmniboxEntryPoint(
   }
 
   read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      should_show, tab_->GetBrowserWindowInterface());
+      should_show, tab_->GetBrowserWindowInterface(),
+      base::BindOnce(&ReadAnythingSidePanelController::OnShowPromoResult,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingSidePanelController::OnShowPromoResult(
+    user_education::FeaturePromoResult result) {
+  if (result == user_education::FeaturePromoResult::Success()) {
+    iph_response_timer_ = std::make_unique<base::OneShotTimer>();
+    iph_response_timer_->Start(
+        FROM_HERE, base::Seconds(kOmniboxIPHResponseTimeoutSecs),
+        base::BindOnce(&ReadAnythingSidePanelController::RecordOpenedAfterPromo,
+                       base::Unretained(this)));
+  }
+}
+
+void ReadAnythingSidePanelController::RecordOpenedAfterPromo() {
+  base::UmaHistogramBoolean(
+      "Accessibility.ReadAnything.OpenedAfterOmniboxIPH",
+      IsReadAnythingEntryShowing(tab_->GetBrowserWindowInterface()));
 }
 
 void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
@@ -383,6 +408,13 @@ void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
   loading_ = true;
   distillable_ = IsActivePageDistillable();
   UpdateIphVisibility();
+
+  // If the user navigated to a new page, stop any pending IPH response timer,
+  // since they are likely not interested in opening RM after seeing the IPH.
+  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
+    iph_response_timer_->Stop();
+    RecordOpenedAfterPromo();
+  }
 }
 
 void ReadAnythingSidePanelController::UpdateIphVisibility() {

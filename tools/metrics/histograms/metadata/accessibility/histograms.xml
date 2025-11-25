@@ -3089,6 +3089,17 @@ even if they fit the naming pattern. -->
   <summary>Records when the Read Anything omnibox icon is shown.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.OpenedAfterOmniboxIPH"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether the Read Anything panel is opened within a certain amount of
+    time after the omnibox IPH is shown. Approximates whether or not the IPH
+    influenced the user to open the panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.EngineVersion"
     units="yyyymmdd0" expires_after="2026-07-10">
   <owner>lwinston@google.com</owner>

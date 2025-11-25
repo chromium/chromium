@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/actions/actions.h"
 
 namespace read_anything {
@@ -28,9 +29,16 @@ class ReadAnythingEntryPointController {
   static void ShowUI(BrowserWindowInterface* bwi,
                      ReadAnythingOpenTrigger open_trigger);
 
-  // Shows or hides the omnibox entry point.
-  static void UpdatePageActionVisibility(bool should_show_page_action,
-                                         BrowserWindowInterface* bwi);
+  // Shows or hides the omnibox entry point and the IPH for it.
+  // show_promo_callback is called with the result of whether the IPH was shown.
+  // TODO(crbug.com/447418049): Ensure immersive reading mode shows and hides
+  // the omnibox entry point too, and use the callback here, or refactor such
+  // that immersive and side panel share the same logic.
+  static void UpdatePageActionVisibility(
+      bool should_show_page_action,
+      BrowserWindowInterface* bwi,
+      base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
+          show_promo_callback = {});
 
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
