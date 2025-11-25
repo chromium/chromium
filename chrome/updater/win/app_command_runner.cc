@@ -329,29 +329,29 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                   [](scoped_refptr<AppCommandRunner> obj,
                      scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
                          result,
-                     HRESULT hr) {
+                     AppCommandEndEvent end_event, HRESULT hr) {
                     result->hr = hr;
                     result->process_event.Signal();
                     obj->command_completed_event_.Signal();
+
+                    if (FAILED(hr)) {
+                      end_event.AddError({.code = hr});
+                    }
+                    if (result->exit_code) {
+                      end_event.SetExitCode(*result->exit_code);
+                    }
+                    std::string command_output = obj->output();
+                    if (!command_output.empty()) {
+                      end_event.SetOutput(command_output);
+                    }
+                    end_event.WriteAsync();
                   },
-                  base::WrapRefCounted(this), result)));
+                  base::WrapRefCounted(this), result, std::move(end_event))));
 
   result->process_event.Wait();
 
-  HRESULT hr = result->hr.value_or(E_UNEXPECTED);
-  if (FAILED(hr)) {
-    end_event.AddError({.code = hr});
-  }
-  if (result->exit_code) {
-    end_event.SetExitCode(*result->exit_code);
-  }
-  std::string command_output = output();
-  if (!command_output.empty()) {
-    end_event.SetOutput(command_output);
-  }
-  end_event.WriteAsync();
-
   if (!result->process) {
+    HRESULT hr = result->hr.value_or(E_UNEXPECTED);
     LOG(ERROR) << __func__ << ": base::LaunchProcess failed: " << hr;
     return hr;
   }
