@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -45,8 +46,7 @@ std::unique_ptr<std::string> ReadOnFileThread(const base::FilePath& path) {
 
   result = std::make_unique<std::string>();
   result->resize(file_info.size);
-  if (UNSAFE_TODO(file.Read(0, std::data(*result), file_info.size)) !=
-      file_info.size) {
+  if (file.Read(0, base::as_writable_byte_span(*result)) != file_info.size) {
     result.reset();
   }
 
