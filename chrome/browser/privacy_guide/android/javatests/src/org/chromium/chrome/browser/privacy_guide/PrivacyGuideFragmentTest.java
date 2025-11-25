@@ -94,7 +94,10 @@ import java.util.Set;
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
 })
-@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
+@DisableFeatures({
+    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN
+})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";

@@ -69,6 +69,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -150,6 +151,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";

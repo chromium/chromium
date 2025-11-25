@@ -23367,6 +23367,21 @@
             ]
         }
     ],
+    "SettingsMultiColumn": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SettingsMultiColumn"
+                    ]
+                }
+            ]
+        }
+    ],
     "SettingsSingleActivity": [
         {
             "platforms": [

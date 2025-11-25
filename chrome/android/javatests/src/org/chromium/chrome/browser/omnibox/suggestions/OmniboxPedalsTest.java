@@ -80,6 +80,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class OmniboxPedalsTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =

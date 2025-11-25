@@ -122,7 +122,10 @@ import java.util.List;
 /** Tests for various Safety Hub settings surfaces. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+@Features.DisableFeatures({
+    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN
+})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DisableIf.Build(
         sdk_equals = Build.VERSION_CODES.Q,
