@@ -644,9 +644,7 @@ void AutofillAgent::FocusedElementChanged(
   // unclear if this is still needed.
   auto handle_focus_change = [&](base::optional_ref<FormData> extracted_form =
                                      std::nullopt) {
-    if (((config_.uses_keyboard_accessory_for_suggestions &&
-          !base::FeatureList::IsEnabled(
-              features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) ||
+    if ((config_.uses_keyboard_accessory_for_suggestions ||
          !config_.focus_requires_scroll) &&
         new_focused_element && unsafe_render_frame() &&
         unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation()) {
@@ -1851,9 +1849,7 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     }
   }
 
-  if ((!config_.uses_keyboard_accessory_for_suggestions ||
-       base::FeatureList::IsEnabled(
-           features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) &&
+  if (!config_.uses_keyboard_accessory_for_suggestions &&
       config_.focus_requires_scroll) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
@@ -1871,13 +1867,8 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
                          contenteditable.Focused());
 #if defined(ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
-    last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = is_focused;
-  } else {
-    HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused,
-                              /*form_cache=*/{});
-  }
+  HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused,
+                            /*form_cache=*/{});
 #else
   last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = is_focused;
 #endif

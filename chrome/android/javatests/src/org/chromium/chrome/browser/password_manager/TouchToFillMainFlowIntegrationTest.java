@@ -23,8 +23,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -112,10 +110,8 @@ public class TouchToFillMainFlowIntegrationTest {
         mSigninTestRule.tearDownRule();
     }
 
-    // TODO(crbug.com/462636368): Turn on the flag after blink bug is fixed.
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testClickingSuggestionPopulatesForm()
             throws TimeoutException, InterruptedException {
         // Fill the password store.
