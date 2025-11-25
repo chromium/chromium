@@ -48,16 +48,17 @@ FileErrorOrFileAndBytesRead ReadBytesBlocking(
     file = std::make_unique<base::File>(
         path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
-  int bytes_read = file->Read(offset, buffer->data(), length);
-  if (bytes_read < 0) {
+  const std::optional<size_t> bytes_read =
+      file->Read(offset, buffer->first(length));
+  if (!bytes_read) {
     PLOG(ERROR) << "Failed to read bytes from file";
     return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
-  VLOG(2) << "ReadBytesBlocking: {bytes_read = '" << bytes_read
+  VLOG(2) << "ReadBytesBlocking: {bytes_read = '" << *bytes_read
           << "', file.GetLength = '" << file->GetLength() << "', offset = '"
           << offset << "', length = '" << length << "'}";
-  return std::make_pair(std::move(file), bytes_read);
+  return std::make_pair(std::move(file), *bytes_read);
 }
 
 }  // namespace
