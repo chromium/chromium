@@ -359,10 +359,12 @@ TEST_F(BrowsingHistoryHandlerTest, SendsUpdatedInfoOnAccountChange) {
   EXPECT_CALL(*mock_page(), SendAccountInfo(_));
   // Update the account info with all the necessary fields for
   // AccountInfo::isValid() to be true.
-  account_info.hosted_domain = "example.com";
-  account_info.full_name = "Test User";
-  account_info.given_name = "Test";
-  account_info.picture_url = "http://example.com/test.jpg";
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("Test User")
+                     .SetGivenName("Test")
+                     .SetHostedDomain("example.com")
+                     .SetAvatarUrl("http://example.com/test.jpg")
+                     .Build();
   ASSERT_TRUE(account_info.IsValid());
 
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
