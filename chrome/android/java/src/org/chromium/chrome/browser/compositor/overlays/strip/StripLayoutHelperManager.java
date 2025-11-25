@@ -1118,6 +1118,17 @@ public class StripLayoutHelperManager
     }
 
     @Override
+    public void updateOffsetTagsInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && offsetTagsInfo != null) {
+            // Use the content OffsetTag here, because the tab strip and content are part of
+            // the same subtree and move together with the same offset.
+            mTabStripTreeProvider.updateOffsetTag(offsetTagsInfo.getContentOffsetTag());
+        } else {
+            mTabStripTreeProvider.updateOffsetTag(null);
+        }
+    }
+
+    @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         if (!mIsHeaderCustomizationSupported) return;
@@ -1532,12 +1543,7 @@ public class StripLayoutHelperManager
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            // Use the content OffsetTag here, because the tab strip and content
-                            // are part of the same subtree and move together with the same offset.
-                            mTabStripTreeProvider.updateOffsetTag(
-                                    offsetTagsInfo.getContentOffsetTag());
-                        }
+                        updateOffsetTagsInfo(offsetTagsInfo);
                     }
 
                     @Override
