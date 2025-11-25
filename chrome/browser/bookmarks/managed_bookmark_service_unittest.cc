@@ -86,7 +86,6 @@ class ManagedBookmarkServiceTest : public testing::Test {
     prefs_ = profile_->GetTestingPrefService();
     ASSERT_FALSE(prefs_->HasPrefPath(bookmarks::prefs::kManagedBookmarks));
 
-    // TODO(crbug.com/40508978): Convert SetManagedPrefs to take a unique_ptr.
     prefs_->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
                            base::Value(CreateTestTree()));
 
