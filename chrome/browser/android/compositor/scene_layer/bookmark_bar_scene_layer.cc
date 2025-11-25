@@ -117,9 +117,12 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     const base::android::JavaParamRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+  if (!resource_manager) {
+    return;
+  }
+
   ui::Resource* resource = resource_manager->GetResource(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC_BITMAP, view_resource_id);
-
   if (!resource) {
     return;
   }

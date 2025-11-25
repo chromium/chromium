@@ -80,6 +80,8 @@ public class BookmarkBarCoordinator
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final SimpleRecyclerViewAdapter mItemsAdapter;
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
+    private final BookmarkButtonItemAnimator mItemAnimator;
+    private final RecyclerView mItemsContainer;
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
     private final FrameLayout mContentContainer;
@@ -204,20 +206,21 @@ public class BookmarkBarCoordinator
                 BookmarkBarUtils.ViewType.ITEM,
                 this::inflateBookmarkBarButton,
                 BookmarkBarButtonViewBinder::bind);
-        final RecyclerView itemsContainer =
-                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_items_container);
-        itemsContainer.setAdapter(mItemsAdapter);
+        mItemsContainer = mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_items_container);
+        mItemsContainer.setAdapter(mItemsAdapter);
         mBookmarkBarItemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
         mBookmarkBarItemsLayoutManager.setItemWidthConstraints(
                 activity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width),
                 activity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width));
-        itemsContainer.setLayoutManager(mBookmarkBarItemsLayoutManager);
+        mItemsContainer.setLayoutManager(mBookmarkBarItemsLayoutManager);
 
         // NOTE: Scrolling isn't supported and items rarely change so item view caching is disabled.
-        itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
-        itemsContainer.setItemViewCacheSize(0);
-        itemsContainer.setItemAnimator(
-                new BookmarkButtonItemAnimator(this::handleBookmarkBarChange));
+        mItemAnimator = new BookmarkButtonItemAnimator(this::handleBookmarkBarChange);
+        mItemsContainer
+                .getRecycledViewPool()
+                .setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
+        mItemsContainer.setItemViewCacheSize(0);
+        mItemsContainer.setItemAnimator(mItemAnimator);
 
         Supplier<Pair<Integer, Integer>> controlsHeightSupplier =
                 () ->
@@ -240,7 +243,7 @@ public class BookmarkBarCoordinator
                         currentTab,
                         bookmarkOpener,
                         bookmarkManagerOpenerSupplier,
-                        itemsContainer,
+                        mItemsContainer,
                         mView);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
@@ -294,6 +297,14 @@ public class BookmarkBarCoordinator
 
     /** Destroys the bookmark bar coordinator. */
     public void destroy() {
+        // Stop all pending animations and remove animator to stop any running async update calls.
+        if (mItemsContainer != null) {
+            mItemsContainer.setItemAnimator(null);
+            if (mItemAnimator != null) {
+                mItemAnimator.destroy();
+            }
+        }
+
         mTopControlsStacker.removeControl(this);
         mItemsAdapter.destroy();
         mMediator.destroy();
@@ -703,6 +714,7 @@ public class BookmarkBarCoordinator
      */
     private static class BookmarkButtonItemAnimator extends DefaultItemAnimator {
         private final Runnable mPostAnimationRunnable;
+        private boolean mIsDestroyed;
 
         BookmarkButtonItemAnimator(Runnable mPostAnimationRunnable) {
             this.mPostAnimationRunnable = mPostAnimationRunnable;
@@ -711,7 +723,14 @@ public class BookmarkBarCoordinator
         @Override
         public void onAnimationFinished(@NonNull RecyclerView.ViewHolder viewHolder) {
             super.onAnimationFinished(viewHolder);
-            mPostAnimationRunnable.run();
+            if (!mIsDestroyed) {
+                mPostAnimationRunnable.run();
+            }
+        }
+
+        public void destroy() {
+            super.endAnimations();
+            mIsDestroyed = true;
         }
     }
 
