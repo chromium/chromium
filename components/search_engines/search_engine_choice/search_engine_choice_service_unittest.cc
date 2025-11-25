@@ -166,7 +166,15 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   histogram_tester_.ExpectUniqueSample(
       search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -188,7 +196,15 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
   histogram_tester_.ExpectUniqueSample(
       search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -218,7 +234,15 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
   histogram_tester_.ExpectUniqueSample(
       search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }
 
@@ -261,9 +285,17 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation_Waffle) {
         search_engines::
             kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
         SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
+    histogram_tester_.ExpectBucketCount(
+        search_engines::
+            kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
     histogram_tester_.ExpectUniqueSample(
         search_engines::
             kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
+    histogram_tester_.ExpectBucketCount(
+        search_engines::
+            kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
         SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
     WipeSearchEngineChoicePrefs(*pref_service(),
                                 SearchEngineChoiceWipeReason::kCommandLineFlag);
@@ -357,9 +389,17 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
   histogram_tester_.ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectBucketCount(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
   histogram_tester_.ExpectUniqueSample(
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -395,9 +435,17 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
   histogram_tester_.ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectBucketCount(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
   histogram_tester_.ExpectUniqueSample(
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -429,6 +477,8 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
 
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 2, 1);
   histogram_tester.ExpectBucketCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, false,
       1);
@@ -479,6 +529,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 2, 1);
   histogram_tester.ExpectBucketCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, false,
       1);
@@ -530,6 +582,8 @@ TEST_F(SearchEngineChoiceServiceTest,
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
   histogram_tester.ExpectTotalCount(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   // The choice is coming from a non-eea country and won't be logged, don't
@@ -552,6 +606,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 0);
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
@@ -582,6 +638,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectBucketCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, true, 1);
 
@@ -651,6 +709,8 @@ TEST_F(SearchEngineChoiceServiceTest,
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
   histogram_tester.ExpectTotalCount(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   // The choice screen state should now be cleared.
@@ -692,6 +752,8 @@ TEST_F(SearchEngineChoiceServiceTest,
   // cached the screen state.
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kPumaSearchChoiceScreenSelectedEngineIndexHistogram, 0);
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
@@ -1327,7 +1389,13 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
+      search_engines::kPumaSearchChoiceScreenProfileInitConditionsHistogram,
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Eligibility",
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PUMA.RegionalCapabilities.FunnelStage.Eligibility",
       expected_eligibility_condition, 1);
   if (GetParam().restore_detected_in_current_session &&
       GetParam().is_feature_enabled) {
@@ -1343,7 +1411,13 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
+      search_engines::kPumaSearchChoiceScreenNavigationConditionsHistogram,
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Triggering",
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PUMA.RegionalCapabilities.FunnelStage.Triggering",
       expected_eligibility_condition, 1);
   if (GetParam().restore_detected_in_current_session &&
       GetParam().is_feature_enabled) {
@@ -1597,6 +1671,9 @@ TEST_P(SearchEngineChoiceServiceFunnelTest, RecordsFunnelStage) {
     CheckHistogramExpectation(scoped_histogram_tester,
                               "RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_static);
+    CheckHistogramExpectation(scoped_histogram_tester,
+                              "PUMA.RegionalCapabilities.FunnelStage.Reported",
+                              GetParam().expected_if_static);
   }
 
   {
@@ -1605,6 +1682,9 @@ TEST_P(SearchEngineChoiceServiceFunnelTest, RecordsFunnelStage) {
         GetParam().condition);
     CheckHistogramExpectation(scoped_histogram_tester,
                               "RegionalCapabilities.FunnelStage.Reported",
+                              GetParam().expected_if_dynamic);
+    CheckHistogramExpectation(scoped_histogram_tester,
+                              "PUMA.RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_dynamic);
   }
 }
