@@ -3670,7 +3670,7 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
     const StyleResolverState& state,
     const CSSValue& value) {
   // The valid grammar for this value is the following:
-  // `auto? [ none | <length [0,∞]> ] | from-element`.
+  // `auto? [ none | <length [0,∞]> ] | from-element <length [0,∞]>?`.
 
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     if (identifier_value->GetValueID() == CSSValueID::kNone) {
@@ -3694,17 +3694,27 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   DCHECK(list);
   DCHECK_EQ(list->length(), 2u);
   DCHECK(IsA<CSSIdentifierValue>(list->Item(0)));
-  DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
-         CSSValueID::kAuto);
 
-  // Handle "auto <length>"
+  // Handle `auto <length> | from-element <length>`
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(1))) {
+    if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+      const auto& identifier = To<CSSIdentifierValue>(list->Item(0));
+      if (identifier.GetValueID() == CSSValueID::kFromElement) {
+        return StyleIntrinsicLength(
+            /*has_auto=*/false, /*matches_element=*/true,
+            ConvertLength(state, *primitive_value));
+      }
+    }
+    DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
+           CSSValueID::kAuto);
     return StyleIntrinsicLength(
         /*has_auto=*/true, /*matches_element=*/false,
         ConvertLength(state, *primitive_value));
   }
 
   // The only grammar left is "auto none".
+  DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
+         CSSValueID::kAuto);
   DCHECK(IsA<CSSIdentifierValue>(list->Item(1)));
   DCHECK(To<CSSIdentifierValue>(list->Item(1)).GetValueID() ==
          CSSValueID::kNone);

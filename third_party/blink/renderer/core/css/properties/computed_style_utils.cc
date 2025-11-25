@@ -4813,12 +4813,18 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
+  const std::optional<Length>& length = intrinsic_length.GetLength();
   if (intrinsic_length.MatchesElement()) {
     DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
-    return CSSIdentifierValue::Create(CSSValueID::kFromElement);
+    if (!length) {
+      return CSSIdentifierValue::Create(CSSValueID::kFromElement);
+    }
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFromElement));
+    list->Append(*ZoomAdjustedPixelValueForLength(*length, style));
+    return list;
   }
 
-  const std::optional<Length>& length = intrinsic_length.GetLength();
   CSSValue* length_value = length
                                ? ZoomAdjustedPixelValueForLength(*length, style)
                                : CSSIdentifierValue::Create(CSSValueID::kNone);

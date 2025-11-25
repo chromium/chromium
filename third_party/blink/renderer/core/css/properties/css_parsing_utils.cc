@@ -3236,10 +3236,20 @@ CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
-      css_parsing_utils::IdentMatches<CSSValueID::kFromElement>(
-          stream.Peek().Id())) {
-    return css_parsing_utils::ConsumeIdent(stream);
+  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+    if (CSSValue* from_element =
+            css_parsing_utils::ConsumeIdent<CSSValueID::kFromElement>(stream)) {
+      // `from-element <length [0,∞]>?`
+      CSSValue* length = css_parsing_utils::ConsumeLength(
+          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      if (!length) {
+        return from_element;
+      }
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      list->Append(*from_element);
+      list->Append(*length);
+      return list;
+    }
   }
 
   // `auto? [ none | <length [0,∞]> ]`
