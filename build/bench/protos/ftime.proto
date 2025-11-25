@@ -1,0 +1,47 @@
+edition = "2023";
+
+package build.bench.ftime;
+
+// The analysis of -ftime-trace across a whole build.
+message Analysis {
+  // The directory that the build was run in.
+  string out_dir = 1;
+
+  // The number of compile actions *with an associated "total source" time*
+  int64 n_compiles = 2;
+
+  // The total time spent under "total Source" in microseconds.
+  int64 total_source_us = 3;
+  // The total time spent on "total ExecuteCompiler" in microseconds.
+  int64 total_us = 4;
+
+  // A list of files parsed in a build.
+  repeated SourceFile sources = 5;
+}
+
+message SourceFile {
+  // The name of the file.
+  string name = 1;
+
+  // An ID associated with this file.
+  int32 id = 2;
+
+  // The number of times this header file was included.
+  // Note: If this file does not have a header guard, this number can exceed
+  // the number of compilation actions.
+  int64 count = 3;
+
+  // The total amount of time spent on including this header file.
+  // Does not include the time spent on the header files this header includes.
+  int64 direct_us = 4;
+
+  // The total amount of time spent on including this header file.
+  // Note that this can vary wildly between actions based on whether the headers
+  // it depends on have already been included.
+  int64 transitive_us = 5;
+
+  // A list of IDs of other sources that this file includes.
+  // Note that this list may be incomplete, if a header it depends on was
+  // always included.
+  repeated int32 includes = 6;
+}
