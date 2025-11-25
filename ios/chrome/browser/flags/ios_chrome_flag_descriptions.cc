@@ -944,6 +944,10 @@ const char kLensLoadAIMInLensResultPageName[] =
 const char kLensLoadAIMInLensResultPageDescription[] =
     "Opens in Lens result page rather than a new tab.";
 
+const char kLensOmnientShaderV2EnabledName[] = "Enable Lens Omnient Shader V2";
+const char kLensOmnientShaderV2EnabledDescription[] =
+    "When enabled, Lens Omnient will use the new Shader V2";
+
 const char kLensOverlayCustomBottomSheetName[] =
     "Use a custom bottom sheet presentation for Lens Overlay";
 const char kLensOverlayCustomBottomSheetDescription[] =

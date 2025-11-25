@@ -566,6 +566,9 @@ extern const char kLensInitialLvfZoomLevel90PercentDescription[];
 extern const char kLensLoadAIMInLensResultPageName[];
 extern const char kLensLoadAIMInLensResultPageDescription[];
 
+extern const char kLensOmnientShaderV2EnabledName[];
+extern const char kLensOmnientShaderV2EnabledDescription[];
+
 extern const char kLensOverlayCustomBottomSheetName[];
 extern const char kLensOverlayCustomBottomSheetDescription[];
 

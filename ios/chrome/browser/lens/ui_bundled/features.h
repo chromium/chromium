@@ -79,4 +79,7 @@ BASE_DECLARE_FEATURE(kLensTripleCameraEnabled);
 // Whether to enable the Strokes API for Lens.
 BASE_DECLARE_FEATURE(kLensStrokesAPIEnabled);
 
+// Whether to enable the Shader V2 for Lens Omnient.
+BASE_DECLARE_FEATURE(kLensOmnientShaderV2Enabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_
