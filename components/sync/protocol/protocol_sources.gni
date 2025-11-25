@@ -42,7 +42,6 @@ sync_protocol_sources = [
   "history_status.proto",
   "loopback_server.proto",
   "managed_user_setting_specifics.proto",
-  "managed_user_shared_setting_specifics.proto",
   "nigori_local_data.proto",
   "nigori_specifics.proto",
   "note_entity.proto",
