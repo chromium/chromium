@@ -74,7 +74,10 @@ class TransactionTestBase : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*special_storage_policy=*/nullptr);
+    SetUpBucketContext();
+  }
 
+  void SetUpBucketContext() {
     BucketContext::Delegate delegate;
     delegate.on_ready_for_destruction = base::BindOnce(
         &TransactionTestBase::OnDbReadyForDestruction, base::Unretained(this));
@@ -396,7 +399,10 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
     EXPECT_EQ(test_case.can_timeout ? 1 : 0, transaction->timeout_strikes_);
 
     // Clean up for the next iteration.
-    db_->ForceCloseAndRunTasks("The database is force-closed for testing.");
+    db_ = nullptr;
+    bucket_context_->ForceClose(false,
+                                "The database is force-closed for testing.");
+    SetUpBucketContext();
   }
 }
 

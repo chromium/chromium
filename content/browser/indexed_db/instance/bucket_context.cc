@@ -235,12 +235,13 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
   {
     // This handle keeps `this` from closing until it goes out of scope.
     BucketContextHandle handle(*this);
-    for (const auto& [name, database] : databases_) {
-      // Note: We purposefully ignore the result here as force close needs to
-      // continue tearing things down anyways.
-      database->ForceCloseAndRunTasks(SanitizeErrorMessage(message));
+    for (auto iter = databases_.begin(); iter != databases_.end();
+         iter = databases_.erase(iter)) {
+      // The result is irrelevant as the database and backing store are already
+      // closing.
+      std::move(*iter->second).ForceClose(SanitizeErrorMessage(message));
     }
-    databases_.clear();
+    CHECK(databases_.empty());
     has_blobs_outstanding_ = false;
     close_timer_.Stop();
     if (backing_store()) {
@@ -613,21 +614,6 @@ void BucketContext::Open(
     database_ptr = CreateAndAddDatabase(name);
   } else {
     database_ptr = it->second.get();
-
-    // The `Database` might have been forced closed by dev tools, in which case
-    // no new connections should be added. The `Database` should be deleted
-    // *soon* in this case, but the request can arrive while `RunTasks()` is
-    // still queued. We could try to reschedule this open() request, but if the
-    // open request had already made it to ConnectionCoordinator, it would be
-    // pruned and errors reported: see `ShouldPruneForForceClose()`. So do that
-    // here too.
-    if (!database_ptr->IsAcceptingConnections()) {
-      std::move(connection->factory_client)
-          ->Error(blink::mojom::IDBException::kAbortError,
-                  u"The connection was closed.");
-      connection->database_callbacks->OnForcedClose();
-      return;
-    }
   }
 
   database_ptr->ScheduleOpenConnection(std::move(connection));
@@ -650,18 +636,26 @@ void BucketContext::DeleteDatabase(
   // First, check the databases that are already represented by
   // `Database` objects. If one exists, schedule it to be deleted and
   // we're done.
-  auto it = databases_.find(name);
-  if (it != databases_.end()) {
+  auto delete_database = [&]() {
+    auto it = databases_.find(name);
+    if (it == databases_.end()) {
+      return false;
+    }
     CHECK(backing_store_);
-    base::WeakPtr<Database> database = it->second->AsWeakPtr();
-    database->ScheduleDeleteDatabase(std::move(factory_client),
-                                     std::move(on_deletion_complete));
+    it->second->ScheduleDeleteDatabase(std::move(factory_client),
+                                       std::move(on_deletion_complete));
     if (force_close) {
-      Status status = database->ForceCloseAndRunTasks(force_close_message);
-      if (!status.ok()) {
-        OnDatabaseError(database.get(), status, "Error aborting transactions.");
+      std::unique_ptr<Database> database = std::move(it->second);
+      databases_.erase(it);
+      Status status = std::move(*database).ForceClose(force_close_message);
+      if (!status.ok() && !ShouldUseSqlite()) {
+        OnDatabaseError(nullptr, status, "Error aborting transactions.");
       }
     }
+
+    return true;
+  };
+  if (delete_database()) {
     return;
   }
 
@@ -706,17 +700,10 @@ void BucketContext::DeleteDatabase(
     return;
   }
 
-  // If it exists but does not already have an `Database` object,
+  // If it exists but does not already have a `Database` object,
   // create it and initiate deletion.
-  Database* database_ptr = CreateAndAddDatabase(name);
-  database_ptr->ScheduleDeleteDatabase(std::move(factory_client),
-                                       std::move(on_deletion_complete));
-  if (force_close) {
-    Status status = database_ptr->ForceCloseAndRunTasks(force_close_message);
-    if (!status.ok()) {
-      OnDatabaseError(database_ptr, status, "Error aborting transactions.");
-    }
-  }
+  CreateAndAddDatabase(name);
+  CHECK(delete_database());
 }
 
 storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(
@@ -759,7 +746,7 @@ void BucketContext::BindMockFailureSingletonForTesting(
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(databases_, name));
+  CHECK(!base::Contains(databases_, name));
   auto database =
       std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
   return databases_.emplace(name, std::move(database)).first->second.get();
@@ -932,9 +919,17 @@ void BucketContext::OnDatabaseError(Database* database,
       message.empty() ? status.ToString() : message;
   if (ShouldUseSqlite()) {
     // Unlike in the LevelDB case, an error in one database doesn't indicate a
-    // problem with the entire bucket.
+    // problem with the entire bucket, so we just `ForceClose` the one
+    // `Database`.
     CHECK(database);
-    database->ForceCloseAndRunTasks(error_message);
+    // Error during force close; `database` was already removed.
+    if (database->force_closing()) {
+      return;
+    }
+    auto iter = databases_.find(database->name());
+    CHECK(iter != databases_.end());
+    std::move(*iter->second).ForceClose(error_message);
+    databases_.erase(iter);
   } else {
     if (status.IsCorruption()) {
       HandleBackingStoreCorruption(error_message);

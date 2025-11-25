@@ -81,8 +81,7 @@ class LevelDBScopes {
 
   void Rollback(int64_t scope_id, std::vector<PartitionedLock> locks);
 
-  void OnCleanupTaskResult(base::OnceClosure on_complete,
-                           leveldb::Status result);
+  void OnCleanupTaskResult(leveldb::Status result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const std::vector<uint8_t> metadata_key_prefix_;

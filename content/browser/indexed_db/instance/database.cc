@@ -386,15 +386,8 @@ size_t Database::GetNumTransactionsAcrossAllConnections() const {
   return num_transactions;
 }
 
-Status Database::ForceCloseAndRunTasks(const std::string& message) {
-  if (!bucket_context_->ShouldUseSqlite()) {
-    CHECK(!force_closing_);
-  } else if (force_closing_) {
-    // Re-entrancy can validly occur if there's an error in the code below,
-    // e.g. in `CloseAndReportForceClose`.
-    return Status::OK();
-  }
-
+Status Database::ForceClose(const std::string& message) && {
+  CHECK(!force_closing_);
   force_closing_ = true;
   for (Connection* connection : connections_) {
     connection->CloseAndReportForceClose(message);
@@ -415,14 +408,12 @@ Status Database::ForceCloseAndRunTasks(const std::string& message) {
   } while (task_state != ConnectionCoordinator::ExecuteTaskResult::kDone &&
            task_state != ConnectionCoordinator::ExecuteTaskResult::kError);
   CHECK(connections_.empty());
-  bucket_context_->QueueRunTasks();
   return status;
 }
 
 void Database::ScheduleOpenConnection(
     std::unique_ptr<PendingConnection> connection) {
-  CHECK(IsAcceptingConnections());
-
+  CHECK(!force_closing_);
   connection_coordinator_.ScheduleOpenConnection(std::move(connection));
 }
 

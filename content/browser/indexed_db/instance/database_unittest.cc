@@ -188,13 +188,13 @@ TEST_P(DatabaseTest, ForcedClose) {
       upgrade_transaction_id, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
   db_->ScheduleOpenConnection(std::move(connection));
+  db_ = nullptr;
 
   base::RunLoop run_loop;
   EXPECT_CALL(request, Error);
   EXPECT_CALL(database_callbacks, ForcedClose)
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  db_->ForceCloseAndRunTasks(kTestForceCloseMessage);
-  db_ = nullptr;
+  bucket_context_->ForceClose(false, kTestForceCloseMessage);
   run_loop.Run();
 }
 
@@ -261,10 +261,10 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
+  db_ = nullptr;
 
   EXPECT_FALSE(run_loop.AnyQuitCalled());
-  db_->ForceCloseAndRunTasks(kTestForceCloseMessage);
-  db_ = nullptr;
+  bucket_context_->ForceClose(false, kTestForceCloseMessage);
   run_loop.Run();
   delete_success_loop.Run();
 

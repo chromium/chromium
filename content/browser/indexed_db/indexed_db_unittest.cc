@@ -1649,16 +1649,12 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
 
   // Open the database again, without waiting for any of the previous steps to
   // finish. The timing of this is very particular, which is why this test does
-  // not use `VerifyForcedClosedCalled()`. If the second open() comes any later,
-  // it will succeed because the original Database will have finished being
-  // deleted. We want to verify that there is no crash in the situation where
-  // the second open is handled while the database is still in the process of
-  // being deleted.
+  // not use `VerifyForcedClosedCalled()`. The second open succeeds because the
+  // `DeleteDatabase` call synchronously destroyed the DB.
   MockMojoFactoryClient client2;
-  EXPECT_CALL(client2, Error);
   MockMojoDatabaseCallbacks database_callbacks2;
   base::RunLoop run_loop_for_second_open;
-  EXPECT_CALL(database_callbacks2, ForcedClose())
+  EXPECT_CALL(client2, MockedUpgradeNeeded)
       .WillOnce(
           ::base::test::RunClosure(run_loop_for_second_open.QuitClosure()));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote2;
