@@ -21,7 +21,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
       Segment[] {
-    if (this.currentIndex_ < 0 || !this.sentences_[this.currentIndex_]) {
+    if (this.currentIndex_ < 0 || !this.sentences_[this.currentIndex_] || index < 0) {
       return [];
     }
     const currentSentence = this.sentences_[this.currentIndex_]!;
