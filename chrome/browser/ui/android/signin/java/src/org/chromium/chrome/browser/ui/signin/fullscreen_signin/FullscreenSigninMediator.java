@@ -13,7 +13,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
@@ -310,7 +309,7 @@ public class FullscreenSigninMediator
                 getFooterString(isMetricsReportingDisabledByPolicy));
     }
 
-    void onAccountAdded(@NonNull String accountEmail) {
+    void onAccountAdded(String accountEmail) {
         var accounts =
                 AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
         mAddedAccount = AccountUtils.findAccountByEmail(accounts, accountEmail);
