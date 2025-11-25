@@ -105,6 +105,11 @@ public class AwScrollOffsetManagerTest {
 
         @Override
         public void smoothScroll(int targetX, int targetY, long durationMs) {}
+
+        @Override
+        public int getBottomViewportInset() {
+            return 0;
+        }
     }
 
     private void simulateScrolling(
@@ -178,6 +183,33 @@ public class AwScrollOffsetManagerTest {
         Assert.assertEquals(0, delegate.getScrollY());
         Assert.assertEquals(0, delegate.getNativeScrollX());
         Assert.assertEquals(0, delegate.getNativeScrollY());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testWhenWebViewHasBottomInset() {
+        final int bottomInset = 25;
+        TestScrollOffsetManagerDelegate delegate =
+                new TestScrollOffsetManagerDelegate() {
+                    @Override
+                    public int getBottomViewportInset() {
+                        return bottomInset;
+                    }
+                };
+        AwScrollOffsetManager offsetManager = new AwScrollOffsetManager(delegate);
+
+        final int width = 132;
+        final int height = 212;
+        final int scrollX = 11;
+        final int scrollY = 13;
+
+        offsetManager.setMaxScrollOffset(scrollX, scrollY);
+        offsetManager.setContainerViewSize(width, height);
+
+        Assert.assertEquals(width + scrollX, offsetManager.computeHorizontalScrollRange());
+        Assert.assertEquals(
+                height - bottomInset + scrollY, offsetManager.computeVerticalScrollRange());
     }
 
     private static final int VIEW_WIDTH = 211;

@@ -807,6 +807,11 @@ public class AwContents implements SmartClipProvider {
         public void cancelFling() {
             mWebContents.getEventForwarder().cancelFling(SystemClock.uptimeMillis(), false);
         }
+
+        @Override
+        public int getBottomViewportInset() {
+            return mDisplayCutoutController.getBottomImeInset();
+        }
     }
 
     // --------------------------------------------------------------------------------------------
