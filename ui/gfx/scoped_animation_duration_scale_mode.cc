@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #include "base/check_op.h"
 
-namespace ui {
+namespace gfx {
 
 // static
 constexpr float ScopedAnimationDurationScaleMode::NORMAL_DURATION;
@@ -35,4 +35,4 @@ ScopedAnimationDurationScaleMode::~ScopedAnimationDurationScaleMode() {
   duration_multiplier_ = old_duration_multiplier_;
 }
 
-}  // namespace ui
+}  // namespace gfx

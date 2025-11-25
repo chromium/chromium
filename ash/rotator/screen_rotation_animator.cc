@@ -30,7 +30,6 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -40,6 +39,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -300,8 +300,8 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
   // TODO(oshima): We need a better way to control animation and other
   // activities during system wide animation.
   animation_scale_mode_ =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   for (auto& observer : screen_rotation_animator_observers_)
     observer.OnScreenCopiedBeforeRotation();

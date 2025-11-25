@@ -79,6 +79,7 @@ class DelegatedInkPointRenderer;
 struct PresentationFeedback;
 class Rect;
 class Size;
+class ScopedAnimationDurationScaleMode;
 }  // namespace gfx
 
 namespace viz {
@@ -95,7 +96,6 @@ class RasterContextProvider;
 namespace ui {
 class Compositor;
 class Layer;
-class ScopedAnimationDurationScaleMode;
 class ScrollInputHandler;
 class CompositorMetricsTracker;
 class CompositorPropertyTreeDelegate;
@@ -679,7 +679,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   LayerAnimatorCollection layer_animator_collection_;
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
-  std::unique_ptr<ScopedAnimationDurationScaleMode> slow_animations_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> slow_animations_;
 
   SkM44 display_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;

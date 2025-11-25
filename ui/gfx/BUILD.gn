@@ -129,6 +129,8 @@ component("gfx") {
     "overlay_transform_utils.h",
     "platform_font.cc",
     "platform_font.h",
+    "scoped_animation_duration_scale_mode.cc",
+    "scoped_animation_duration_scale_mode.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
     "selection_model.cc",

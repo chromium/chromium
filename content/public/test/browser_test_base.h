@@ -51,7 +51,7 @@ class DiscardableSharedMemoryManager;
 }
 #endif
 
-namespace ui {
+namespace gfx {
 class ScopedAnimationDurationScaleMode;
 }
 
@@ -382,7 +382,7 @@ class BrowserTestBase : public ::testing::Test {
   bool use_fake_media_stream_devices_ = true;
 
   // When verifying pixel output, animations are disabled to reduce flakiness.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
       disable_layer_animations_;
   gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_;
 

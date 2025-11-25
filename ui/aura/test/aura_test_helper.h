@@ -12,9 +12,12 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/wm/core/wm_state.h"
 
+namespace gfx {
+class ScopedAnimationDurationScaleMode;
+}
+
 namespace ui {
 class ContextFactory;
-class ScopedAnimationDurationScaleMode;
 class TestContextFactories;
 }
 
@@ -81,7 +84,7 @@ class AuraTestHelper {
 
  private:
   std::unique_ptr<wm::WMState> wm_state_ = std::make_unique<wm::WMState>();
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
   std::unique_ptr<Env> env_;
   raw_ptr<ui::ContextFactory> context_factory_to_restore_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> context_factories_;
