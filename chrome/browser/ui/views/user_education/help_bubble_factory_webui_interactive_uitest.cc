@@ -210,8 +210,14 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   raw_ptr<views::View> side_panel_ = nullptr;
 };
 
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
+#else
+#define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowFloatingHelpBubble) {
+                       MAYBE_ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
   gfx::Rect bubble_rect;
@@ -311,8 +317,16 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 }
 
 // Regression test for item (1) in crbug.com/1422875.
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
+#else
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  FloatingHelpBubbleHiddenOnWebUiHidden
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       FloatingHelpBubbleHiddenOnWebUiHidden) {
+                       MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -345,8 +359,14 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
 // This is a regression test for crbug.com/1425487.
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate
+#else
+#define MAYBE_ResizeSidePanelSendsUpdate ResizeSidePanelSendsUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
-                       ResizeSidePanelSendsUpdate) {
+                       MAYBE_ResizeSidePanelSendsUpdate) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(

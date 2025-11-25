@@ -334,10 +334,18 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BorderResize) {
   auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 
-  // Note: there is a minimal size that the desktop window can be. It seems to
-  // be around 500px by 500px.
-  const gfx::Size new_size(600, 600);
-  auto* browser_window = browser()->window();
+  // Resize the browser view to closer to its minimum size.
+  //
+  // Note: the widget will often be larger (for example, if it needs to render
+  // a shadow border; this is especially true on Linux.
+  const auto& browser_view = browser()->GetBrowserView();
+  const int widget_additional_width =
+      browser_view.GetWidget()->GetWindowBoundsInScreen().width() -
+      browser_view.width();
+  const int minimum_width =
+      browser_view.GetMinimumSize().width() + widget_additional_width;
+  const gfx::Size new_size(minimum_width, 600);
+  auto* const browser_window = browser()->window();
   const gfx::Rect new_bounds(browser_window->GetBounds().origin(), new_size);
   EXPECT_NE(browser_window->GetBounds(), new_bounds);
 
