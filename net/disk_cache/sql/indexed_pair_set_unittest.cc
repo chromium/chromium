@@ -232,7 +232,7 @@ TEST_F(IndexedPairSetTest, MoveAssignmentSelf) {
 TEST_F(IndexedPairSetTest, RemoveLastValueFromSecondaryMapRemovesKey) {
   set_.Insert(10, 100);
   set_.Insert(10, 200);
-  EXPECT_TRUE(set_.SecondaryMapContainsKeyForTesting(10));
+  EXPECT_TRUE(set_.HasMultipleValues(10));
 
   // Remove the value from the secondary_map.
   EXPECT_TRUE(set_.Remove(10, 200));
@@ -240,13 +240,13 @@ TEST_F(IndexedPairSetTest, RemoveLastValueFromSecondaryMapRemovesKey) {
   EXPECT_THAT(set_.Find(10), UnorderedElementsAre(100));
 
   // The key should no longer exist in the secondary_map.
-  EXPECT_FALSE(set_.SecondaryMapContainsKeyForTesting(10));
+  EXPECT_FALSE(set_.HasMultipleValues(10));
 }
 
 TEST_F(IndexedPairSetTest, RemoveAndPromoteWithEmptyingSecondaryMapRemovesKey) {
   set_.Insert(10, 100);
   set_.Insert(10, 200);
-  EXPECT_TRUE(set_.SecondaryMapContainsKeyForTesting(10));
+  EXPECT_TRUE(set_.HasMultipleValues(10));
 
   // This will remove 100 from the primary_map and promote 200 from the
   // secondary_map. After promotion, the secondary_map should be empty for key
@@ -256,7 +256,23 @@ TEST_F(IndexedPairSetTest, RemoveAndPromoteWithEmptyingSecondaryMapRemovesKey) {
   EXPECT_THAT(set_.Find(10), UnorderedElementsAre(200));
 
   // The key should no longer exist in the secondary_map.
-  EXPECT_FALSE(set_.SecondaryMapContainsKeyForTesting(10));
+  EXPECT_FALSE(set_.HasMultipleValues(10));
+}
+
+TEST_F(IndexedPairSetTest, TryGetSingleValue) {
+  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
+
+  EXPECT_TRUE(set_.Insert(10, 100));
+  EXPECT_THAT(set_.TryGetSingleValue(10), 100);
+
+  EXPECT_TRUE(set_.Insert(10, 200));
+  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
+
+  EXPECT_TRUE(set_.Remove(10, 200));
+  EXPECT_THAT(set_.TryGetSingleValue(10), 100);
+
+  EXPECT_TRUE(set_.Remove(10, 100));
+  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
 }
 
 }  // namespace disk_cache

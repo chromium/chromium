@@ -5,6 +5,7 @@
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
 #include <limits>
+#include <optional>
 
 namespace disk_cache {
 
@@ -57,6 +58,44 @@ bool SqlPersistentStoreInMemoryIndex::Remove(Hash hash, ResId res_id) {
 void SqlPersistentStoreInMemoryIndex::Clear() {
   impl32_.Clear();
   impl64_.reset();
+}
+
+std::optional<SqlPersistentStoreResId>
+SqlPersistentStoreInMemoryIndex::TryGetSingleResId(
+    CacheEntryKeyHash hash) const {
+  const auto res_id_32 = impl32_.TryGetSingleResId(hash);
+  const auto res_id_64 =
+      impl64_ ? impl64_->TryGetSingleResId(hash) : std::nullopt;
+  if (res_id_32.has_value() && !res_id_64.has_value()) {
+    return ResId(res_id_32->value());
+  } else if (!res_id_32.has_value() && res_id_64.has_value()) {
+    return *res_id_64;
+  }
+  return std::nullopt;
+}
+
+void SqlPersistentStoreInMemoryIndex::SetEntryDataHints(
+    ResId res_id,
+    MemoryEntryDataHints hints) {
+  if (auto res_id_32 = ToResId32(res_id); res_id_32.has_value()) {
+    impl32_.SetEntryDataHints(*res_id_32, hints);
+  } else if (impl64_) {
+    impl64_->SetEntryDataHints(res_id, hints);
+  }
+}
+
+std::optional<MemoryEntryDataHints>
+SqlPersistentStoreInMemoryIndex::GetEntryDataHints(
+    CacheEntryKeyHash hash) const {
+  const auto res_id_32 = impl32_.TryGetSingleResId(hash);
+  const auto res_id_64 =
+      impl64_ ? impl64_->TryGetSingleResId(hash) : std::nullopt;
+  if (res_id_32.has_value() && !res_id_64.has_value()) {
+    return impl32_.GetEntryDataHints(*res_id_32);
+  } else if (!res_id_32.has_value() && res_id_64.has_value()) {
+    return impl64_->GetEntryDataHints(*res_id_64);
+  }
+  return std::nullopt;
 }
 
 // static

@@ -5,6 +5,7 @@
 #ifndef NET_DISK_CACHE_SQL_INDEXED_PAIR_SET_H_
 #define NET_DISK_CACHE_SQL_INDEXED_PAIR_SET_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -160,9 +161,25 @@ class NET_EXPORT_PRIVATE IndexedPairSet {
     size_ = 0;
   }
 
-  // Test-only methods
-  bool SecondaryMapContainsKeyForTesting(const Key& key) const {
+  bool HasMultipleValues(const Key& key) const {
     return secondary_map_.contains(key);
+  }
+
+  // Attempts to retrieve the unique value associated with the given `key`.
+  //
+  // This method returns the value if and only if there is exactly one value
+  // for the specified key. If the key is associated with multiple values or if
+  // the key does not exist in the set, it returns `std::nullopt`.
+  std::optional<Value> TryGetSingleValue(const Key& key) const {
+    if (HasMultipleValues(key)) {
+      return std::nullopt;
+    }
+
+    if (const auto primary_it = primary_map_.find(key);
+        primary_it != primary_map_.end()) {
+      return primary_it->second;
+    }
+    return std::nullopt;
   }
 
  private:

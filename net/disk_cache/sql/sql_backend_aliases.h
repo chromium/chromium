@@ -25,6 +25,14 @@ using SqlPersistentStoreShardId =
 using CacheEntryKeyHash =
     base::StrongAlias<class CacheEntryKeyHashTag, int32_t>;
 
+// Represents hints for an entry's in-memory data, used for optimizing cache
+// behavior. For example, these hints can indicate if an entry is unusable due
+// to stale freshness headers, allowing for quicker optimistic deletion.
+// The values correspond to the flags defined in MemoryEntryDataHints in
+// net/disk_cache/memory_entry_data_hints.h.
+using MemoryEntryDataHints =
+    base::StrongAlias<class MemoryEntryDataHintsTag, uint8_t>;
+
 }  // namespace disk_cache
 
 #endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_ALIASES_H_

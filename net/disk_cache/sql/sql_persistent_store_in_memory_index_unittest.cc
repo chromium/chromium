@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
@@ -182,6 +183,161 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperationsWithResId64) {
   EXPECT_TRUE(index3.Contains(kHash1));
   EXPECT_TRUE(index3.Contains(kHashLarge));
   EXPECT_EQ(2u, index3.size());
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdNoEntry) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_EQ(index.TryGetSingleResId(kHash1), std::nullopt);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntrySmall) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_THAT(index.TryGetSingleResId(kHash1), kResId1);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntryLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+  EXPECT_THAT(index.TryGetSingleResId(kHashLarge), kResIdLarge);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest,
+     TryGetSingleResIdCollisionSmallSmall) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_TRUE(index.Insert(kHash1, kResId2));
+
+  // Should fail because there are multiple entries for the same hash.
+  EXPECT_EQ(index.TryGetSingleResId(kHash1), std::nullopt);
+
+  // After removing one, it should be unique again.
+  EXPECT_TRUE(index.Remove(kResId2));
+  EXPECT_THAT(index.TryGetSingleResId(kHash1), kResId1);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest,
+     TryGetSingleResIdCollisionLargeLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge1(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const SqlPersistentStoreResId kResIdLarge2(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 2);
+
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge1));
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge2));
+
+  // Should fail because there are multiple entries for the same hash.
+  EXPECT_EQ(index.TryGetSingleResId(kHashLarge), std::nullopt);
+
+  EXPECT_TRUE(index.Remove(kResIdLarge2));
+  EXPECT_THAT(index.TryGetSingleResId(kHashLarge), kResIdLarge1);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest,
+     TryGetSingleResIdCollisionSmallLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashCollision(10);
+  const SqlPersistentStoreResId kResIdSmall(100);
+  const SqlPersistentStoreResId kResIdLarge(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+
+  EXPECT_TRUE(index.Insert(kHashCollision, kResIdSmall));
+  EXPECT_TRUE(index.Insert(kHashCollision, kResIdLarge));
+
+  // Should fail because there are multiple entries for the same hash.
+  EXPECT_EQ(index.TryGetSingleResId(kHashCollision), std::nullopt);
+
+  EXPECT_TRUE(index.Remove(kResIdLarge));
+  EXPECT_THAT(index.TryGetSingleResId(kHashCollision), kResIdSmall);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntrySmall) {
+  SqlPersistentStoreInMemoryIndex index;
+  const MemoryEntryDataHints kHints(1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  index.SetEntryDataHints(kResId1, kHints);
+
+  EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntryLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const MemoryEntryDataHints kHints(5);
+
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+  index.SetEntryDataHints(kResIdLarge, kHints);
+
+  EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
+  SqlPersistentStoreInMemoryIndex index;
+  const MemoryEntryDataHints kHints1(1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  index.SetEntryDataHints(kResId1, kHints1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId2));
+
+  // Even if we don't set hints for the second one, ambiguous hash lookups
+  // should fail.
+  EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
+
+  EXPECT_TRUE(index.Remove(kResId2));
+  EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints1);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionLargeLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge1(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const SqlPersistentStoreResId kResIdLarge2(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 2);
+  const MemoryEntryDataHints kHints(5);
+
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge1));
+  index.SetEntryDataHints(kResIdLarge1, kHints);
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge2));
+
+  EXPECT_EQ(index.GetEntryDataHints(kHashLarge), std::nullopt);
+
+  EXPECT_TRUE(index.Remove(kResIdLarge2));
+  EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallLarge) {
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashCollision(10);
+  const SqlPersistentStoreResId kResIdSmall(100);
+  const SqlPersistentStoreResId kResIdLarge(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const MemoryEntryDataHints kHints(1);
+
+  EXPECT_TRUE(index.Insert(kHashCollision, kResIdSmall));
+  index.SetEntryDataHints(kResIdSmall, kHints);
+  EXPECT_TRUE(index.Insert(kHashCollision, kResIdLarge));
+
+  EXPECT_EQ(index.GetEntryDataHints(kHashCollision), std::nullopt);
+
+  EXPECT_TRUE(index.Remove(kResIdLarge));
+  EXPECT_THAT(index.GetEntryDataHints(kHashCollision), kHints);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsNoHint) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
 }  // namespace disk_cache
