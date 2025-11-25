@@ -253,7 +253,7 @@ void ChangePasswordFormWaiter::DidStartLoading() {
 }
 
 void ChangePasswordFormWaiter::DidStopLoading() {
-  if (web_contents()->IsLoading()) {
+  if (web_contents()->IsLoading() || model_loaded_subscription_) {
     return;
   }
   timeout_timer_.Start(FROM_HERE, timeout_, this,
