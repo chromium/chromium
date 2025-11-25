@@ -35,7 +35,6 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   // Returns email of the active Gaia user based on the values provided by
   // `tab_url()` and `identity_manager()`. Only returns a value for Workspace
   // sites.
-  // TODO(crbug.com/415002299): Add tests for this.
   std::string GetContentAreaAccountEmail() const;
 };
 
