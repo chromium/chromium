@@ -6,6 +6,7 @@ import {registerAllChildFrames} from '//components/autofill/ios/form_util/resour
 import * as elementInferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -54,6 +55,7 @@ fillApi.addFunction('isSelectElement', inferenceUtil.isSelectElement);
 fillApi.addFunction('registerAllChildFrames', registerAllChildFrames);
 fillApi.addFunction('setInputElementValue', fillUtil.setInputElementValue);
 fillApi.addFunction('shouldAutocomplete', fillUtil.shouldAutocomplete);
+fillApi.addFunction('webFormElementToFormData', webFormElementToFormData);
 // go/keep-sorted end
 
 

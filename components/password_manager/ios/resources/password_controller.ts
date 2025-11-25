@@ -4,6 +4,7 @@
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -413,9 +414,8 @@ function getPasswordFormDataFromUnownedElements(): object|null {
 function getPasswordFormData(
     formElement: HTMLFormElement): fillUtil.AutofillFormData|null {
   const formData = {} as fillUtil.AutofillFormData;
-  const ok = gCrWebLegacy.fill.webFormElementToFormData(
-      window, formElement, /*formControlElement=*/ null, formData,
-      /*field=*/ null);
+  const ok = webFormElementToFormData(
+      window, formElement, /*formControlElement=*/ null, formData);
   return ok ? formData : null;
 }
 

@@ -2,14 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, MAX_DATA_LENGTH, MAX_EXTRACTABLE_FIELDS} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
+import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, MAX_DATA_LENGTH, MAX_EXTRACTABLE_FIELDS, MAX_EXTRACTABLE_FRAMES} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import {findChildText, isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type {AutofillFormData, AutofillFormFieldData, FrameTokenWithPredecessor} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getCanonicalActionForForm, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getFormControlElements, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
+
+/**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+    gCrWeb.getRegisteredApi('autofill_form_features');
+
+declare global {
+  // Defines an additional property, `__gcrweb`, on the Window object.
+  // This definition is needed in order to call into gCrWeb inside an iframe.
+  interface Window {
+    __gCrWeb: any;
+  }
+}
 
 // Returns the URL for the frame to be set in the FormData.
 export function getFrameUrlOrOrigin(frame: Window): string {
@@ -23,6 +40,87 @@ export function getFrameUrlOrOrigin(frame: Window): string {
     // parent frame URL, only to the origin. Use it as the only available data.
     return frame.origin;
   }
+}
+
+/**
+ * Fills |form| with the form data object corresponding to the
+ * |formElement|. If |field| is non-NULL, also fills |field| with the
+ * FormField object corresponding to the |formControlElement|.
+ * |extract_mask| controls what data is extracted.
+ * Returns true if |form| is filled out. Returns false if there are no
+ * fields or too many fields in the |form|.
+ *
+ * It is based on the logic in
+ *     bool WebFormElementToFormData(
+ *         const blink::WebFormElement& form_element,
+ *         const blink::WebFormControlElement& form_control_element,
+ *         ExtractMask extract_mask,
+ *         FormData* form,
+ *         FormFieldData* field)
+ * in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc
+ *
+ * @param frame The window or frame where the
+ *     formElement is in.
+ * @param formElement The form element that will be processed.
+ * @param formControlElement A control element in
+ *     formElement, the FormField of which will be returned in field.
+ * @param form Form to fill in the AutofillFormData
+ *     information of formElement.
+ * @param field Field to fill in the form field
+ *     information of formControlElement.
+ * @return Whether there are fields and not too many fields in the
+ *     form.
+ */
+export function webFormElementToFormData(
+    frame: Window, formElement: HTMLFormElement,
+    formControlElement: FormControlElement|null, form: AutofillFormData,
+    field?: AutofillFormFieldData,
+    extractChildFrames: boolean = true): boolean {
+  if (!frame) {
+    return false;
+  }
+
+  form.name = getFormIdentifier(formElement);
+  form.origin = getFrameUrlOrOrigin(frame);
+  form.action =
+      formElement !== null ? getCanonicalActionForForm(formElement) : '';
+
+  // The raw name and id attributes, which may be empty.
+  form.name_attribute = formElement?.getAttribute('name') || '';
+  form.id_attribute = formElement?.getAttribute('id') || '';
+
+  form.renderer_id = getUniqueID(formElement);
+
+  form.host_frame = frame.__gCrWeb.getFrameId();
+
+  // Note different from form_autofill_util.cc version of this method, which
+  // computes |form.action| using document.completeURL(form_element.action())
+  // and falls back to formElement.action() if the computed action is invalid,
+  // here the action returned by |absoluteURL_| is always valid, which is
+  // computed by creating a <a> element, and we don't check if the action is
+  // valid.
+
+  const controlElements =
+      getFormControlElements(formElement) as FormControlElement[];
+
+  let iframeElements = extractChildFrames &&
+          autofillFormFeaturesApi.getFunction(
+              'isAutofillAcrossIframesEnabled')() ?
+      gCrWebLegacy.form.getIframeElements(formElement) :
+      [];
+
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > MAX_EXTRACTABLE_FRAMES &&
+      autofillFormFeaturesApi.getFunction(
+          'isAutofillAcrossIframesThrottlingEnabled')()) {
+    iframeElements = [];
+  }
+
+  return formOrFieldsetsToFormData(
+      formElement, formControlElement, /*fieldsets=*/[], controlElements,
+      iframeElements, form, field);
 }
 
 /**

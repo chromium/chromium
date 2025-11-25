@@ -866,7 +866,7 @@ class AutofillControllerJsTest : public web::JavascriptTest {
                                       NSArray* test_data,
                                       NSString* tag_name);
 
-  // Helper method that EXPECTs `__gCrWeb.fill.webFormElementToFormData` on
+  // Helper method that EXPECTs `webFormElementToFormData` on
   // a form element obtained by `get_form_element_javascripts`. The results
   // are verified with `verifying_java_scripts`.
   void TestWebFormElementToFormDataForOneForm(
@@ -900,6 +900,11 @@ class AutofillControllerJsTest : public web::JavascriptTest {
                                            NSArray* expected_results);
 
   id ExecuteJavaScript(NSString* java_script);
+
+  // Rolls up the `user_script`, and its dependencies, with `java_script` into
+  // one NSString.
+  NSString* RollupJavaScriptWithUserScript(NSString* java_script,
+                                           NSString* user_script);
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -984,6 +989,18 @@ id AutofillControllerJsTest::ExecuteJavaScript(NSString* java_script) {
   return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
       web_state(), java_script,
       autofill::AutofillJavaScriptFeature::GetInstance());
+}
+
+NSString* AutofillControllerJsTest::RollupJavaScriptWithUserScript(
+    NSString* java_script,
+    NSString* user_script) {
+  NSArray<NSString*>* user_scripts = @[ @"gcrweb", user_script ];
+  NSMutableString* rollup_script = [NSMutableString string];
+  for (NSString* script in user_scripts) {
+    [rollup_script appendString:web::test::GetPageScript(script)];
+  }
+  [rollup_script appendString:java_script];
+  return rollup_script;
 }
 
 TEST_F(AutofillControllerJsTest, HasTagName) {
@@ -1513,25 +1530,29 @@ void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
     NSString* get_form_element_javascripts,
     NSString* expected_result,
     NSString* verifying_javascripts) {
-  NSString* actual = ExecuteJavaScript(
+  NSString* java_script =
       [NSString stringWithFormat:@"var form={}; var field={};"
-                                  "(__gCrWeb.fill.webFormElementToFormData("
-                                  "window, %@, null, form, field) "
+                                 @"(__gCrWeb.getRegisteredApi('fill_test_api')."
+                                 @"getFunction('webFormElementToFormData')"
+                                 @"(window, %@, null, form, field) "
                                   "=== %@) && %@",
                                  get_form_element_javascripts, expected_result,
-                                 verifying_javascripts]);
+                                 verifying_javascripts];
+  NSString* script =
+      RollupJavaScriptWithUserScript(java_script, @"fill_util_test");
+  NSString* actual = ExecuteJavaScript(script);
 
+  java_script =
+      [NSString stringWithFormat:@"var form={};"
+                                 @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                                 @"getFunction('webFormElementToFormData')"
+                                 @"(window, %@, null, form, null);"
+                                  "__gCrWeb.stringify(form);",
+                                 get_form_element_javascripts];
+  script = RollupJavaScriptWithUserScript(java_script, @"fill_util_test");
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
-      stringWithFormat:
-          @"Actual:\n%@; expected to be verifyied by\n%@",
-          ExecuteJavaScript([NSString
-              stringWithFormat:@"var form={};"
-                                "__gCrWeb.fill."
-                                "webFormElementToFormData(window, %@, null,"
-                                "form, null);"
-                                "__gCrWeb.stringify(form);",
-                               get_form_element_javascripts]),
-          verifying_javascripts]);
+      stringWithFormat:@"Actual:\n%@; expected to be verifyied by\n%@",
+                       ExecuteJavaScript(script), verifying_javascripts]);
 }
 
 void AutofillControllerJsTest::TestWebFormElementToFormData(
