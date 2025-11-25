@@ -20,8 +20,14 @@
 namespace autofill {
 
 using autofill::test::MakeFormGlobalId;
+using base::Bucket;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace {
+
+constexpr char kOtpPresentInMainTabHistogram[] =
+    "PasswordManager.OtpPresentInMainTab";
 
 class TestOtpFieldDetector : public OtpFieldDetector {
  public:
@@ -112,24 +118,21 @@ TEST_F(OtpFieldDetectorTest, IsOtpFieldPresent) {
   // 0 OTP fields are present.
 
   EXPECT_FALSE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectUniqueSample("PasswordManager.OtpPresentInMainTab",
-                                      false, 1);
+  histogram_tester.ExpectUniqueSample(kOtpPresentInMainTabHistogram, false, 1);
 
   detector.AddFormAndNotifyIfNecessary(form);
   // Now 1 OTP field is present.
 
   EXPECT_TRUE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
-                                     true, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 2);
+  histogram_tester.ExpectBucketCount(kOtpPresentInMainTabHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kOtpPresentInMainTabHistogram, 2);
 
   detector.RemoveFormAndNotifyIfNecessary(form);
   // Now 0 OTP fields are present.
 
   EXPECT_FALSE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
-                                     false, 2);
-  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 3);
+  histogram_tester.ExpectBucketCount(kOtpPresentInMainTabHistogram, false, 2);
+  histogram_tester.ExpectTotalCount(kOtpPresentInMainTabHistogram, 3);
 }
 
 // Tests that the AutofillManager::Observer notifications work as expected.
@@ -212,23 +215,21 @@ class OtpFieldDetectorAutofillManagerObserverTest
 TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
-  histogram_tester.ExpectUniqueSample("PasswordManager.OtpPresentInMainTab",
-                                      false, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
+              ElementsAre(Bucket(0, 1)));  // false == 0
 
   FormData form = CreateSimpleOtp();
   AddOtpToThePage(form);
 
   EXPECT_TRUE(otp_field_detector().IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
-                                     true, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 2);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
+              ElementsAre(Bucket(0, 1), Bucket(1, 1)));  // true == 1
 
   RemoveOtpFromThePage(form);
 
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
-                                     false, 2);
-  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 3);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
+              ElementsAre(Bucket(0, 2), Bucket(1, 1)));
 }
 
 // Verify that the OtpFieldsDetectedCallback is triggered when an OTP form is

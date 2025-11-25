@@ -33,6 +33,15 @@ namespace autofill {
 
 namespace {
 
+constexpr char kDefaultOtpValue[] = "123456";
+
+constexpr char kPhishGuardCheckPerformedHistogram[] =
+    "Autofill.OneTimeTokens.PhishGuard.CheckPerformed";
+constexpr char kPhishGuardLatencyHistogram[] =
+    "Autofill.OneTimeTokens.PhishGuard.Latency";
+constexpr char kPhishGuardVerdictHistogram[] =
+    "Autofill.OneTimeTokens.PhishGuard.Verdict";
+
 class MockSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
  public:
   MOCK_METHOD(void,
@@ -87,7 +96,7 @@ class OtpManagerImplTest : public testing::Test,
   one_time_tokens::OtpFetchReply GetDefaultOtpFetchReply() {
     return one_time_tokens::OtpFetchReply(
         one_time_tokens::OneTimeToken(
-            one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
+            one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
             base::Time::Now()),
         /*request_complete=*/true);
   }
@@ -308,7 +317,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
   // Prepare the reply from the SMS backend.
   one_time_tokens::OtpFetchReply reply = one_time_tokens::OtpFetchReply(
       one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
-                                    "123456",
+                                    kDefaultOtpValue,
                                     task_environment_.GetMockClock()->Now()),
       /*request_complete=*/true);
   base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
@@ -374,12 +383,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_PhishingCheckReturnsTrue) {
 
   EXPECT_TRUE(future.Get().empty());
 
+  histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram, true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPhishGuardLatencyHistogram, 50, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.Latency", 50, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.Verdict",
+      kPhishGuardVerdictHistogram,
       /*OneTimeTokensPhishGuardVerdict::kPhishing*/ 1, 1);
 }
 
@@ -413,12 +421,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_PhishingCheckReturnsFalse) {
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0], reply.otp_value->value());
 
+  histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram, true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPhishGuardLatencyHistogram, 50, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.Latency", 50, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.Verdict",
+      kPhishGuardVerdictHistogram,
       /*OneTimeTokensPhishGuardVerdict::kNotPhishing*/ 2, 1);
 }
 
@@ -442,10 +449,10 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0], reply.otp_value->value());
 
+  histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram,
+                                       false, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", false, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.PhishGuard.Verdict",
+      kPhishGuardVerdictHistogram,
       /*OneTimeTokensPhishGuardVerdict::kUnknown*/ 0, 1);
 }
 
