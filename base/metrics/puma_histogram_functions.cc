@@ -8,16 +8,6 @@
 
 namespace base {
 
-namespace {
-
-// Converts the given PumaType to histogram flags that should be applied to
-// records emitted with this PumaType.
-constexpr HistogramBase::Flags PumaTypeToHistogramFlags(PumaType puma_type) {
-  return static_cast<HistogramBase::Flags>(static_cast<uint16_t>(puma_type));
-}
-
-}  // namespace
-
 void PumaHistogramBoolean(PumaType puma_type,
                           std::string_view name,
                           bool sample) {

@@ -42,6 +42,12 @@ enum class PumaType : uint16_t {
   kRc = HistogramBase::Flags::kPumaRcTargetedHistogramFlag,
 };
 
+// Converts the given PumaType to histogram flags that should be applied to
+// records emitted with this PumaType.
+constexpr HistogramBase::Flags PumaTypeToHistogramFlags(PumaType puma_type) {
+  return static_cast<HistogramBase::Flags>(static_cast<uint16_t>(puma_type));
+}
+
 // PUMA version of base::UmaHistogramBoolean().
 BASE_EXPORT void PumaHistogramBoolean(PumaType puma_type,
                                       std::string_view name,
