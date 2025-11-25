@@ -185,8 +185,24 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     clear_frame_ = false;
 
     if (!skia_canvas_) {
+      if (!canvas_image_provider_) {
+        // Create an ImageDecodeCache for half float images only if the canvas
+        // is using half float back storage.
+        cc::ImageDecodeCache* cache_f16 = nullptr;
+        if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+          cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
+        }
+
+        cc::ImageDecodeCache* cache_rgba8 =
+            &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+        canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cc::PlaybackImageProvider::RasterMode::kSoftware);
+      }
+
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
+          surface_->getCanvas(), canvas_image_provider_.get());
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
