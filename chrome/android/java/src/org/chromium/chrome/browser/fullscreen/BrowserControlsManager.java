@@ -243,19 +243,21 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                                     renderDrivenShowConstraint);
                         }
 
-                        // From https://crbug.com/452885338: Some devices when changing the top
-                        // controls visibility when exiting fullscreen, the visibility change might
-                        // not honor a redraw. We do this through forcing a relayout to avoid
-                        // the toolbar remains hidden.
-                        if (getAndroidControlsVisibility() != View.VISIBLE
-                                && BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {
-                            mForceRelayoutOnVisibilityChange = true;
-                        }
-
                         // If controls become locked, it's possible we've previously delayed
                         // actually setting visibility until a touch event is over. In this case, we
                         // need to trigger an update again now, which should go through due to
                         // constraints.
+                        scheduleVisibilityUpdate();
+                    }
+
+                    // From https://crbug.com/452885338, https://crbug.com/461532432: When changing
+                    // controls visibility when exiting fullscreen, the visibility change might not
+                    // honor a redraw. We do this through forcing a relayout to avoid the toolbar
+                    // remains hidden.
+                    if ((constraints == BrowserControlsState.SHOWN
+                                    || constraints == BrowserControlsState.BOTH)
+                            && getAndroidControlsVisibility() != View.VISIBLE) {
+                        mForceRelayoutOnVisibilityChange = true;
                         scheduleVisibilityUpdate();
                     }
                 });
