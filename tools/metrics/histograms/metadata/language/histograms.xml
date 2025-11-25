@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage"
-    enum="LocaleCodeBCP47" expires_after="2025-11-30">
+    enum="LocaleCodeBCP47" expires_after="2026-04-05">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
