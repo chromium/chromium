@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PAGE_INFO_UI_BUNDLED_FEATURES_H_
 #define IOS_CHROME_BROWSER_PAGE_INFO_UI_BUNDLED_FEATURES_H_
 
-#include "base/feature_list.h"
-
 // Whether the AboutThisSite feature is enabled. Only users with languages that
 // are supported should fetch the AboutThisSite information and see the UI.
 bool IsAboutThisSiteFeatureEnabled();

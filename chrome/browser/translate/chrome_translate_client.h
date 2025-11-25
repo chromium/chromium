@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/accept_languages_service.h"

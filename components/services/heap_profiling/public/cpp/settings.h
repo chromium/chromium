@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_SETTINGS_H_
 #define COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_SETTINGS_H_
 
-#include "base/feature_list.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 
 // These helper functions parse the command line and FeatureList settings to

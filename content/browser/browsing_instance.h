@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <optional>
 
 #include "base/check_op.h"

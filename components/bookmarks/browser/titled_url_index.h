@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"

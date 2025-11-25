@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/feature_list.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace extensions::declarative_net_request {

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/enterprise/connectors/core/common.h"

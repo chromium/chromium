@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CUSTOMTABS_CUSTOM_TAB_SESSION_STATE_TRACKER_H_
 #define CHROME_BROWSER_ANDROID_CUSTOMTABS_CUSTOM_TAB_SESSION_STATE_TRACKER_H_
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "third_party/metrics_proto/custom_tab_session.pb.h"
 

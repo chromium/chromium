@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"

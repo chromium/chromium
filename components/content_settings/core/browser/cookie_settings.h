@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"

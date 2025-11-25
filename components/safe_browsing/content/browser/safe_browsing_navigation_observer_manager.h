@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/containers/circular_deque.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"

@@ -18,13 +18,8 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-#include "base/feature_list.h"
-#include "components/supervised_user/core/common/features.h"
-#endif
-
-class PrefService;
 class ChildAccountServiceFactory;
+class PrefService;
 
 namespace supervised_user {
 

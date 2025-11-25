@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "media/base/media_switches.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"

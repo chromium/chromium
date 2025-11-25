@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"

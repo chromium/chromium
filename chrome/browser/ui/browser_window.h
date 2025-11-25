@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

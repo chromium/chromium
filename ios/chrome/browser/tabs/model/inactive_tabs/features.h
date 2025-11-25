@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/feature_list.h"
-
 namespace base {
 class TimeDelta;
 }  // namespace base

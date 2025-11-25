@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_RESOURCES_UI_RESOURCE_PROVIDER_H_
 #define UI_ANDROID_RESOURCES_UI_RESOURCE_PROVIDER_H_
 
-#include "base/feature_list.h"
 #include "cc/resources/ui_resource_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixelRef.h"

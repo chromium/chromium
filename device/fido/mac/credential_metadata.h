@@ -15,7 +15,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "crypto/aead.h"
 #include "device/fido/features.h"
 

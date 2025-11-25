@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "build/build_config.h"
 #include "components/language_detection/core/language_detection_model.h"

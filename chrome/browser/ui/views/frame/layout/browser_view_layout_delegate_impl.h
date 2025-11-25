@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_IMPL_H_
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 

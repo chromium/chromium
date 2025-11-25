@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_
 
-#include "base/feature_list.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

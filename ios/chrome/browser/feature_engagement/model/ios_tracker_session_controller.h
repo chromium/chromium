@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_IOS_TRACKER_SESSION_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_IOS_TRACKER_SESSION_CONTROLLER_H_
 
-#import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/time/clock.h"
 #import "base/time/default_clock.h"
 #import "base/time/time.h"

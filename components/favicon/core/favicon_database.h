@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"

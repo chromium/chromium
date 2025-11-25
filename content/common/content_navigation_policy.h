@@ -5,11 +5,10 @@
 #ifndef CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 #define CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 
-#include "base/feature_list.h"
-#include "content/common/content_export.h"
-
 #include <array>
 #include <string>
+
+#include "content/common/content_export.h"
 
 namespace content {
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMMERCE_UTILS_H_
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_UTILS_H_
 
-#include "base/feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_MANAGER_H_
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

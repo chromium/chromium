@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"

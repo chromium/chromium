@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 class BackForwardCachePageLoadMetricsObserverTest;

@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"

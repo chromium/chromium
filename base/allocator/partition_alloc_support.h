@@ -15,7 +15,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/base_export.h"
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"

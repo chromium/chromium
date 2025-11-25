@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_GROUP_HOME_CONSTANTS_H_
 #define CHROME_BROWSER_UI_TABS_TAB_GROUP_HOME_CONSTANTS_H_
 
-#include "base/feature_list.h"
-
 namespace tabs {
 
 inline constexpr char kTabGroupHomeHost[] = "tab-group-home";

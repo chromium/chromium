@@ -8,7 +8,6 @@
 #include <array>
 #include <string>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "google_apis/buildflags.h"
 #include "google_apis/google_api_keys.h"

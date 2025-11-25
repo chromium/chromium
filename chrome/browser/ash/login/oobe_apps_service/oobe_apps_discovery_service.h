@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_types.h"

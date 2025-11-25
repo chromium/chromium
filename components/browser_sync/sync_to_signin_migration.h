@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BROWSER_SYNC_SYNC_TO_SIGNIN_MIGRATION_H_
 #define COMPONENTS_BROWSER_SYNC_SYNC_TO_SIGNIN_MIGRATION_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/sync/base/data_type.h"
 

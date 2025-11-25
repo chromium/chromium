@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/feature_list.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/device_form_factor.h"
 

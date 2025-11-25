@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/feature_list.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 

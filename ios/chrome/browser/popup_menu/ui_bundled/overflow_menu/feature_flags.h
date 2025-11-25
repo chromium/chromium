@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_FEATURE_FLAGS_H_
 #define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_FEATURE_FLAGS_H_
 
-#include "base/feature_list.h"
-
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 

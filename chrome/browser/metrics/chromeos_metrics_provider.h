@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"

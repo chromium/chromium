@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/files/drive_info.h"
 #include "base/time/time.h"
 

@@ -6,10 +6,10 @@
 #define COMPONENTS_SECURITY_STATE_CORE_SECURITY_STATE_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/sct_status_flags.h"

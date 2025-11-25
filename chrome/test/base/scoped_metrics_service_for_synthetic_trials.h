@@ -6,7 +6,7 @@
 #define CHROME_TEST_BASE_SCOPED_METRICS_SERVICE_FOR_SYNTHETIC_TRIALS_H_
 
 #include <memory>
-#include "base/feature_list.h"
+
 #include "base/scoped_observation.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"

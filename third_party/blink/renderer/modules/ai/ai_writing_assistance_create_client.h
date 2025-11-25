@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_WRITING_ASSISTANCE_CREATE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_WRITING_ASSISTANCE_CREATE_CLIENT_H_
 
-#include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"

@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_DEFAULT_BROWSER_PUBLIC_FEATURES_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_DEFAULT_BROWSER_PUBLIC_FEATURES_H_
 
-#import "base/feature_list.h"
-
 // An enum representing the arms of the feature `kDefaultBrowserMagicStackIos`.
 // Each arm determines where users are directed when they tap the Default
 // Browser Magic Stack card.

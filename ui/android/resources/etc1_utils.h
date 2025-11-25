@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_RESOURCES_ETC1_UTILS_H_
 #define UI_ANDROID_RESOURCES_ETC1_UTILS_H_
 
-#include "base/feature_list.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/android/ui_android_export.h"
 

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_member.h"
 #include "components/safe_browsing/core/common/features.h"

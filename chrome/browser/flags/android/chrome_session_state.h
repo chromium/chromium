@@ -7,7 +7,7 @@
 
 #include <jni.h>
 
-#include "base/feature_list.h"
+#include <optional>
 
 class PrefRegistrySimple;
 class PrefService;

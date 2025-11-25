@@ -18,7 +18,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"

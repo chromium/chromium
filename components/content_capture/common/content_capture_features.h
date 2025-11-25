@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_FEATURES_H_
 #define COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_FEATURES_H_
 
-#include "base/feature_list.h"
-
 namespace content_capture::features {
 
 bool IsContentCaptureEnabled();

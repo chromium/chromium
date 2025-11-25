@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_SELECTION_UTIL_H_
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_SELECTION_UTIL_H_
 
-#include "base/feature_list.h"
-
 // Feature parameters for long-press and one-tap for
 // `kEnableExpKitTextClassifierAddress` feature.
 extern const char kTextClassifierAddressParameterName[];

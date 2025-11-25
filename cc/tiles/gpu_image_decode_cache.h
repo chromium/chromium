@@ -16,7 +16,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"

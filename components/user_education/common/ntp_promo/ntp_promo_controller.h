@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"

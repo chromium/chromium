@@ -10,7 +10,6 @@
 #include <optional>
 #include <variant>
 
-#include "base/feature_list.h"
 #include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
