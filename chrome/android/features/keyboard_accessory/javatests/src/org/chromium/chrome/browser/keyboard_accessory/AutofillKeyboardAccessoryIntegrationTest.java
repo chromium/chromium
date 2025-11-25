@@ -66,9 +66,11 @@ import java.util.function.Supplier;
 
 /** Integration tests for autofill keyboard accessory. */
 // TODO(crbug.com/447076444): Enable Keyboard Accessory revamp flag
+// TODO(crbug.com/462636368): Turn on the dynamic positioning flag after blink bug is fixed.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
 public class AutofillKeyboardAccessoryIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
