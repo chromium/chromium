@@ -92,16 +92,15 @@ base::FilePath GetSqlitePath(const base::FilePath& data_path,
   return data_path.Append(indexed_db::GetSqliteDbDirectory(bucket_locator));
 }
 
-// Creates a task runner suitable for use either as the main IDB thread or for a
-// backing store. See https://crbug.com/329221141 for notes on task priority.
-scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::FeatureList::IsEnabled(base::kUseUtilityThreadGroup)
-           ? base::TaskPriority::USER_BLOCKING
-           : base::TaskPriority::USER_VISIBLE,
-       // BLOCK_SHUTDOWN to support clearing session-only storage.
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+// Task traits suitable for use either as the main IDB thread or for a backing
+// store. See https://crbug.com/329221141 for notes on task priority.
+base::TaskTraits GetTaskTraits() {
+  return {base::MayBlock(), base::WithBaseSyncPrimitives(),
+          base::FeatureList::IsEnabled(base::kUseUtilityThreadGroup)
+              ? base::TaskPriority::USER_BLOCKING
+              : base::TaskPriority::USER_VISIBLE,
+          // BLOCK_SHUTDOWN to support clearing session-only storage.
+          base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 }
 
 bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
@@ -235,14 +234,22 @@ IndexedDBContextImpl::IndexedDBContextImpl(
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         file_system_access_context,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
-    : idb_task_runner_(custom_task_runner ? custom_task_runner
-                                          : CreateTaskRunner()),
-      base_data_path_(base_data_path.empty() ? base::FilePath()
-                                             : base_data_path),
+    : idb_task_runner_(custom_task_runner),
+      base_data_path_(base_data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       quota_client_receiver_(&quota_client_wrapper_),
       force_single_thread_(!!custom_task_runner) {
   TRACE_EVENT0("IndexedDB", "init");
+
+  if (!idb_task_runner_) {
+    if (in_memory()) {
+      idb_task_runner_ =
+          base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
+    } else {
+      idb_task_runner_ = base::ThreadPool::CreateSequencedTaskRunnerForResource(
+          GetTaskTraits(), base_data_path_);
+    }
+  }
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
   // until crbug.com/1182630 is fixed.
@@ -1159,11 +1166,13 @@ void IndexedDBContextImpl::EnsureBucketContext(
   static int kTaskRunnerCountLimit = base::SysInfo::NumberOfProcessors();
   if (++task_runner_limiter.active_bucket_count > kTaskRunnerCountLimit) {
     if (!task_runner_limiter.overflow_task_runner) {
-      task_runner_limiter.overflow_task_runner = CreateTaskRunner();
+      task_runner_limiter.overflow_task_runner =
+          base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
     }
     bucket_task_runner = task_runner_limiter.overflow_task_runner;
   } else {
-    bucket_task_runner = CreateTaskRunner();
+    bucket_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
   }
 
   const auto& [iter, inserted] = bucket_contexts_.emplace(
