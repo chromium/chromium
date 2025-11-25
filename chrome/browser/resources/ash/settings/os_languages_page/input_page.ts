@@ -165,7 +165,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set([
     Setting.kAddInputMethod,
-    Setting.kShowEmojiSuggestions,
     Setting.kShowInputOptionsInShelf,
     Setting.kSpellCheckOnOff,
   ]);

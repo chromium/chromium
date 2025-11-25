@@ -250,7 +250,8 @@ enum Setting {
   kShowInputOptionsInShelf = 1201,
   // Note: Value 1202 was deprecated for kShowPersonalInformationSuggestions.
   // Do not reuse.
-  kShowEmojiSuggestions = 1203,
+  // Note: Value 1203 was deprecated for kShowEmojiSuggestions.
+  // Do not reuse.
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,

@@ -512,7 +512,6 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kAddInputMethod,
       mojom::Setting::kRemoveInputMethod,
       mojom::Setting::kSetCurrentInputMethod,
-      mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kShowInputOptionsInShelf,
       mojom::Setting::kSpellCheckOnOff,
       mojom::Setting::kAddSpellCheckLanguage,
