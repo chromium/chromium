@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/histogram_macros.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 
 namespace cc {
@@ -179,12 +179,14 @@ void ScrollJankV4HistogramEmitter::EmitPerWindowHistogramsAndResetCounters() {
                               kVsyncCountsMin, kVsyncCountsMax,
                               kVsyncCountsBuckets);
 
-  for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {
+  constexpr int kMaxJankReasonIndex = static_cast<int>(JankReason::kMaxValue);
+  for (int i = 0; i <= kMaxJankReasonIndex; i++) {
     JankReason reason = static_cast<JankReason>(i);
     int delayed_frames_for_reason = fixed_window_.delayed_frames_per_reason[i];
     DCHECK_LE(delayed_frames_for_reason, fixed_window_.delayed_frames);
-    base::UmaHistogramPercentage(
-        GetDelayedFramesPercentageFixedWindow4HistogramName(reason),
+    STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
+        GetDelayedFramesPercentageFixedWindow4HistogramName(reason), i,
+        kMaxJankReasonIndex + 1,
         (100 * delayed_frames_for_reason) / kHistogramEmitFrequency);
   }
 
