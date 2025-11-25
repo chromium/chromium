@@ -8774,6 +8774,11 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webcodecs/videoFrame-metadata-r
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
+crbug.com/460753333 virtual/threaded/external/wpt/css/css-view-transitions/scoped/clip-on-target-in-callback.html [ Failure ]
+crbug.com/460753333 virtual/threaded/external/wpt/css/css-view-transitions/scoped/scrolled-target-position.html [ Failure ]
+crbug.com/460753333 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/scoped/clip-on-target-in-callback.html [ Failure ]
+crbug.com/460753333 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/scoped/scrolled-target-position.html [ Failure ]
+
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/create/background.py [ Failure Pass ]
