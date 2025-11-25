@@ -88,7 +88,6 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   base::OnceCallback<void(bool)> start_success_cb_;
   bool stop_request_in_progress_ = false;
   base::queue<base::OnceCallback<void(bool)>> stop_success_callbacks_;
-  base::OneShotTimer stopped_check_timer_;
 
   base::WeakPtrFactory<StudentScreenPresenterImpl> weak_ptr_factory_{this};
 };

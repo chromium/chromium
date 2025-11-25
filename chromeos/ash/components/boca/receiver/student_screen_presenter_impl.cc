@@ -193,10 +193,8 @@ void StudentScreenPresenterImpl::OnStartResponse(
 void StudentScreenPresenterImpl::OnCheckConnectionResponse(
     std::optional<::boca::KioskReceiver> receiver) {
   if (!receiver.has_value() ||
-      receiver->state() != ::boca::ReceiverConnectionState::DISCONNECTED) {
-    if (!stop_success_callbacks_.empty() && !stopped_check_timer_.IsRunning()) {
-      NotifyStopSuccess(false);
-    }
+      (receiver->state() != ::boca::ReceiverConnectionState::DISCONNECTED &&
+       receiver->state() != ::boca::ReceiverConnectionState::ERROR)) {
     return;
   }
   if (!stop_success_callbacks_.empty()) {
@@ -210,21 +208,10 @@ void StudentScreenPresenterImpl::OnCheckConnectionResponse(
 void StudentScreenPresenterImpl::OnStopResponse(
     std::optional<::boca::ReceiverConnectionState> connection_state) {
   stop_request_in_progress_ = false;
-  if (!connection_state.has_value()) {
-    NotifyStopSuccess(false);
-    return;
-  }
-  if (connection_state.value() ==
-      ::boca::ReceiverConnectionState::DISCONNECTED) {
-    NotifyStopSuccess(true);
+  NotifyStopSuccess(/*success=*/connection_state.has_value());
+  if (connection_state.has_value()) {
     Reset();
-    return;
   }
-  constexpr base::TimeDelta kStoppedCheckDelay = base::Seconds(5);
-  stopped_check_timer_.Start(
-      FROM_HERE, kStoppedCheckDelay,
-      base::BindOnce(&StudentScreenPresenterImpl::CheckConnection,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StudentScreenPresenterImpl::Reset() {
@@ -233,7 +220,6 @@ void StudentScreenPresenterImpl::Reset() {
   student_id_.reset();
   disconnected_cb_.Reset();
   stop_request_in_progress_ = false;
-  stopped_check_timer_.Stop();
 }
 
 void StudentScreenPresenterImpl::NotifyStopSuccess(bool success) {

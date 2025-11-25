@@ -40,6 +40,7 @@ constexpr std::string_view kConnectionId = "connection-id";
 constexpr std::string_view kConnectionIdPair =
     R"({"connectionId": "connection-id"})";
 constexpr std::string_view kDisconnectedState = "DISCONNECTED";
+constexpr std::string_view kErrorState = "ERROR";
 constexpr std::string_view kStopRequestedState = "STOP_REQUESTED";
 
 constexpr char kBocaPresentStudentScreenResultUmaPath[] =
@@ -255,7 +256,11 @@ TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
                                      /* failure */ 0, 1);
 }
 
-TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {
+class StudentScreenPresenterImplDisconnectTest
+    : public StudentScreenPresenterImplTest,
+      public testing::WithParamInterface<std::string_view> {};
+
+TEST_P(StudentScreenPresenterImplDisconnectTest, CheckConnection) {
   base::test::TestFuture<bool> start_future1;
   base::test::TestFuture<bool> start_future2;
   base::test::TestFuture<void> disconnected_future;
@@ -271,7 +276,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {
 
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      CheckConnectionStateJson(kDisconnectedState));
+      CheckConnectionStateJson(/*connection_state=*/GetParam()));
   presenter.CheckConnection();
   EXPECT_TRUE(disconnected_future.Wait());
 
@@ -282,6 +287,10 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {
   WaitAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
   EXPECT_TRUE(start_future2.Get());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StudentScreenPresenterImplDisconnectTest,
+                         testing::ValuesIn({kDisconnectedState, kErrorState}));
 
 TEST_F(StudentScreenPresenterImplTest, CheckConnectionNotDisconnected) {
   base::test::TestFuture<bool> start_future1;
@@ -401,64 +410,6 @@ TEST_F(StudentScreenPresenterImplTest, StopFailure) {
   EXPECT_FALSE(start_future2.Get());
 }
 
-TEST_F(StudentScreenPresenterImplTest, StopDisconnectedAfterDelay) {
-  base::test::TestFuture<bool> start_future;
-  base::test::TestFuture<bool> stop_future;
-  base::test::TestFuture<void> disconnected_future;
-  StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
-                                       kTeacherDeviceId,
-                                       url_loader_factory_.GetSafeWeakWrapper(),
-                                       identity_test_env_.identity_manager());
-  url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
-                                  kConnectionIdPair);
-  presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
-                  start_future.GetCallback(),
-                  disconnected_future.GetCallback());
-  EXPECT_TRUE(start_future.Get());
-
-  url_loader_factory_.AddResponse(
-      GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      UpdateConnectionStateJson(kStopRequestedState));
-  presenter.Stop(stop_future.GetCallback());
-  task_environment_.RunUntilIdle();
-
-  presenter.CheckConnection();
-  WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 CheckConnectionStateJson(kStopRequestedState));
-
-  task_environment_.FastForwardBy(base::Seconds(5));
-  WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 CheckConnectionStateJson(kDisconnectedState));
-  EXPECT_TRUE(stop_future.Get());
-  EXPECT_FALSE(disconnected_future.IsReady());
-}
-
-TEST_F(StudentScreenPresenterImplTest, StopStillConnectedAfterDelay) {
-  base::test::TestFuture<bool> start_future;
-  base::test::TestFuture<bool> stop_future;
-  StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
-                                       kTeacherDeviceId,
-                                       url_loader_factory_.GetSafeWeakWrapper(),
-                                       identity_test_env_.identity_manager());
-  url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
-                                  kConnectionIdPair);
-  presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
-                  start_future.GetCallback(), base::DoNothing());
-  EXPECT_TRUE(start_future.Get());
-
-  url_loader_factory_.AddResponse(
-      GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      UpdateConnectionStateJson(kStopRequestedState));
-  presenter.Stop(stop_future.GetCallback());
-  task_environment_.RunUntilIdle();
-
-  url_loader_factory_.AddResponse(
-      GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      CheckConnectionStateJson(kStopRequestedState));
-  task_environment_.FastForwardBy(base::Seconds(5));
-  EXPECT_FALSE(stop_future.Get());
-}
-
 TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStopRequest) {
   base::test::TestFuture<bool> start_future;
   base::test::TestFuture<bool> stop_future;
@@ -523,11 +474,9 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStopResponse) {
   EXPECT_FALSE(disconnected_future.IsReady());
 }
 
-TEST_F(StudentScreenPresenterImplTest,
-       CheckConnectionDisconnectedAfterStopResponse) {
+TEST_F(StudentScreenPresenterImplTest, CheckConnectionAfterStopResponse) {
   base::test::TestFuture<bool> start_future;
   base::test::TestFuture<bool> stop_future;
-  base::test::TestFuture<void> disconnected_future;
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
                                        kTeacherDeviceId,
                                        url_loader_factory_.GetSafeWeakWrapper(),
@@ -535,56 +484,17 @@ TEST_F(StudentScreenPresenterImplTest,
   url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
                                   kConnectionIdPair);
   presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
-                  start_future.GetCallback(),
-                  disconnected_future.GetCallback());
+                  start_future.GetCallback(), base::DoNothing());
   EXPECT_TRUE(start_future.Get());
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
       UpdateConnectionStateJson(kStopRequestedState));
   presenter.Stop(stop_future.GetCallback());
-  task_environment_.RunUntilIdle();
-
-  url_loader_factory_.AddResponse(
-      GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      CheckConnectionStateJson(kDisconnectedState));
-  presenter.CheckConnection();
   EXPECT_TRUE(stop_future.Get());
 
-  task_environment_.FastForwardBy(base::Seconds(5));
+  presenter.CheckConnection();
   EXPECT_EQ(url_loader_factory_.NumPending(), 0);
-}
-
-TEST_F(StudentScreenPresenterImplTest, CheckConnectionFailedAfterStopResponse) {
-  base::test::TestFuture<bool> start_future;
-  base::test::TestFuture<bool> stop_future;
-  base::test::TestFuture<void> disconnected_future;
-  StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
-                                       kTeacherDeviceId,
-                                       url_loader_factory_.GetSafeWeakWrapper(),
-                                       identity_test_env_.identity_manager());
-  url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
-                                  kConnectionIdPair);
-  presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
-                  start_future.GetCallback(),
-                  disconnected_future.GetCallback());
-  EXPECT_TRUE(start_future.Get());
-
-  url_loader_factory_.AddResponse(
-      GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      UpdateConnectionStateJson(kStopRequestedState));
-  presenter.Stop(stop_future.GetCallback());
-  task_environment_.RunUntilIdle();
-
-  presenter.CheckConnection();
-  WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId), "",
-                 net::HTTP_INTERNAL_SERVER_ERROR);
-
-  task_environment_.FastForwardBy(base::Seconds(5));
-  WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 CheckConnectionStateJson(kDisconnectedState));
-  EXPECT_TRUE(stop_future.Get());
-  EXPECT_FALSE(disconnected_future.IsReady());
 }
 
 TEST_F(StudentScreenPresenterImplTest, StopWithoutStart) {
