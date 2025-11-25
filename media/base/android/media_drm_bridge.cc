@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -324,6 +325,7 @@ std::string GetSecurityLevelString(
 int GetFirstApiLevel() {
   JNIEnv* env = AttachCurrentThread();
   int first_api_level = Java_MediaDrmBridge_getFirstApiLevel(env);
+  base::UmaHistogramSparse("Media.EME.MediaDrm.FirstApiLevel", first_api_level);
   return first_api_level;
 }
 
@@ -377,10 +379,17 @@ bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
     return true;
   }
 
-  // If "ro.product.first_api_level" does not match, then check build number.
-  DVLOG(1) << "api_level = " << base::android::android_info::sdk_int();
-  return base::android::android_info::sdk_int() >=
-         base::android::android_info::SDK_VERSION_OREO;
+  if (first_api_level == 0) {
+    // If "ro.product.first_api_level" is 0, that means it is unset, and does
+    // not exist. We should then verify against the build number, as that is
+    // what seems to communicate the first api level on devices that were
+    // released before "ro.product.first_api_level" was introduced.
+    DVLOG(1) << "api_level = " << base::android::android_info::sdk_int();
+    return base::android::android_info::sdk_int() >=
+           base::android::android_info::SDK_VERSION_OREO;
+  }
+
+  return false;
 }
 
 // static

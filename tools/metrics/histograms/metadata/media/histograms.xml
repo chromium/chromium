@@ -3597,6 +3597,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaDrm.FirstApiLevel" enum="AndroidApiLevel"
+    expires_after="2026-03-22">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The Android Api level the device was released with, retrieved by obtaining
+    |ro.product.first_api_level| from the OS. We record this once at time of
+    checking the FirstApiLevel during the pre-provisioning flow.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaDrm.GetOriginIdResult" enum="GetOriginIdResult"
     expires_after="2026-05-24">
   <owner>jrummell@chromium.org</owner>
