@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
@@ -16,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -36,13 +38,10 @@ bool IsOnTaskRunnerThread(storage::FileSystemOperationContext* context) {
   return context->task_runner()->RunsTasksInCurrentSequence();
 }
 
-base::File::Error IsMediaHeader(const char* buf, size_t length) {
-  if (length == 0)
-    return base::File::FILE_ERROR_SECURITY;
-
+base::File::Error IsMediaHeader(base::span<const uint8_t> data) {
   std::string mime_type;
-  if (!net::SniffMimeTypeFromLocalData(std::string_view(buf, length),
-                                       &mime_type)) {
+  if (data.empty() || !net::SniffMimeTypeFromLocalData(
+                          base::as_string_view(data), &mime_type)) {
     return base::File::FILE_ERROR_SECURITY;
   }
 
@@ -193,19 +192,21 @@ base::File::Error NativeMediaFileUtil::IsMediaFile(
     return file.error_details();
 
   char buffer[net::kMaxBytesToSniff];
+  base::span<uint8_t> buffer_span = base::as_writable_byte_span(buffer);
 
   // Read as much as net::SniffMimeTypeFromLocalData() will bother looking at.
-  int64_t len = UNSAFE_TODO(file.Read(0, buffer, net::kMaxBytesToSniff));
-  if (len < 0)
+  std::optional<size_t> len = file.Read(0, buffer_span);
+  if (!len) {
     return base::File::FILE_ERROR_FAILED;
+  }
 
-  return IsMediaHeader(buffer, len);
+  return IsMediaHeader(buffer_span);
 }
 
 // static
 base::File::Error NativeMediaFileUtil::BufferIsMediaHeader(
     net::IOBuffer* buf, size_t length) {
-  return IsMediaHeader(buf->data(), length);
+  return IsMediaHeader(buf->first(length));
 }
 
 // static
