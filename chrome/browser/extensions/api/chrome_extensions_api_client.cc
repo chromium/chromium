@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
@@ -410,6 +411,13 @@ ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(
 ManagementAPIDelegate* ChromeExtensionsAPIClient::CreateManagementAPIDelegate()
     const {
   return new ChromeManagementAPIDelegate;
+}
+
+std::unique_ptr<SupervisedUserExtensionsDelegate>
+ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
+    content::BrowserContext* browser_context) const {
+  return std::make_unique<SupervisedUserExtensionsDelegateImpl>(
+      browser_context);
 }
 
 MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
