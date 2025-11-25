@@ -2672,7 +2672,7 @@
         Your passwords will be visible to anyone who can see the exported file.
       </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS" desc="Button that the user can press to export passwords and passkeys. [iOS only]">
-        Export passwords and passkeys…
+        Export data
       </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT" desc="Text displaying the number of items currently selected. [iOS Only]">
         {count, plural,
