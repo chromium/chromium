@@ -47,15 +47,8 @@ class MediaKeyStatusMap::MapEntry final
       return b->KeyId();
 
     // Compare the bytes.
-    int result = UNSAFE_TODO(
-        memcmp(a->KeyId()->Data(), b->KeyId()->Data(),
-               std::min(a->KeyId()->ByteLength(), b->KeyId()->ByteLength())));
-    if (result != 0)
-      return result < 0;
-
-    // KeyIds are equal to the shared length, so the shorter string is <.
-    DCHECK_NE(a->KeyId()->ByteLength(), b->KeyId()->ByteLength());
-    return a->KeyId()->ByteLength() < b->KeyId()->ByteLength();
+    return std::ranges::lexicographical_compare(a->KeyId()->ByteSpan(),
+                                                b->KeyId()->ByteSpan());
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(key_id_); }
