@@ -254,6 +254,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.Headers.TimeSource" enum="VariationsTimeSource"
+    expires_after="2026-11-01">
+  <owner>rogerm@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The time source used by the variations service to get the current time.
+  </summary>
+</histogram>
+
 <histogram
     name="Variations.Headers.URLValidationResult{VariationsHeadersURLValidationResult}"
     enum="VariationsHeadersURLValidationResult" expires_after="2023-11-01">

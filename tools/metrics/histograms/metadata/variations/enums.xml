@@ -332,6 +332,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/variations/net/variations_command_line.h:VariationsStateEncryptionStatus) -->
 
+<enum name="VariationsTimeSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Network"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
