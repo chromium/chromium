@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -415,6 +417,12 @@ void Sanitizer::RemoveAttribute(const QualifiedName& name) {
 }
 
 void Sanitizer::SanitizeElement(Element* element) const {
+  // https://wicg.github.io/sanitizer-api/#sanitize-core, Step 1.5.8 + 1.5.9.1-4
+  //
+  // The sanitize-core algorithm is fairly long. This implements the steps to
+  // sanitize an element's attributes, once we know the element will be kept.
+  // Handling of javascript:-attributes (1.5.9.5) is found in
+  // SanitizeJavascriptNavigationAttributes.
   const auto allow_per_element_iter =
       allow_attrs_per_element_.find(element->TagQName());
   const SanitizerNameSet* allow_per_element =
@@ -429,13 +437,13 @@ void Sanitizer::SanitizeElement(Element* element) const {
           : &remove_per_element_iter->value;
   for (const QualifiedName& name : element->getAttributeQualifiedNames()) {
     bool keep = false;
-    if (allow_attrs_ && allow_attrs_->Contains(name)) {
-      keep = true;
-    } else if (remove_attrs_ && remove_attrs_->Contains(name)) {
+    if (remove_per_element && remove_per_element->Contains(name)) {
       keep = false;
+    } else if (allow_attrs_ && allow_attrs_->Contains(name)) {
+      keep = true;
     } else if (allow_per_element && allow_per_element->Contains(name)) {
       keep = true;
-    } else if (remove_per_element && remove_per_element->Contains(name)) {
+    } else if (remove_attrs_ && remove_attrs_->Contains(name)) {
       keep = false;
     } else if (allow_attrs_ && name.NamespaceURI().IsNull() &&
                name.LocalName().StartsWith("data-")) {
@@ -469,8 +477,7 @@ void RemoveAttributeIfValueIsHref(Element* element,
 void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
                                                        bool safe) const {
   // Special treatment of javascript: URLs when used for navigation.
-  // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 2.4.6.*
-
+  // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 1.5.9.5
   if (!safe) {
     return;
   }
@@ -502,14 +509,19 @@ void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
 }
 
 void Sanitizer::SanitizeTemplate(Node* node, bool safe) const {
-  // Recurse into template and (later) shadow root content.
-  // TODO(vogelheim): Also implement shadow root support, once that's settled
-  // down.
+  // https://wicg.github.io/sanitizer-api/#sanitize-core,
+  // Step 1.5.5: Recurse into template content.
   if (IsA<HTMLTemplateElement>(node)) {
     Node* content = To<HTMLTemplateElement>(node)->content();
     if (content) {
       Sanitize(content, safe);
     }
+  }
+  // Step 1.5.6: Recurse into shadow.
+  if (node->GetShadowRoot()) {
+    Node* shadow_root = &node->GetShadowRoot()->RootNode();
+    CHECK(shadow_root);
+    Sanitize(shadow_root, safe);
   }
 }
 
@@ -528,45 +540,61 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
 }
 
 void Sanitizer::Sanitize(Node* root, bool safe) const {
-  SanitizeTemplate(root, safe);
+  // https://wicg.github.io/sanitizer-api/#sanitize-core
+  // This is structured a little differently than the spec, for better
+  // readability. For step 1.5, we may call into helper methods.
 
-  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
+  SanitizeTemplate(root, safe);
   Node* node = NodeTraversal::Next(*root);
   while (node) {
+    enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kDrop;
     switch (node->getNodeType()) {
       case Node::NodeType::kElementNode: {
+        // Step 5: Child implements Element.
+        // Step 5.1: Let elementName [...]. Here: Get the element pointer.
         Element* element = To<Element>(node);
-        if (allow_elements_ && allow_elements_->Contains(element->TagQName())) {
-          action = kKeepElement;
-        } else if (replace_elements_ &&
-                   replace_elements_->Contains(element->TagQName())) {
+        if (replace_elements_ &&
+            replace_elements_->Contains(element->TagQName())) {
+          // Step 5.2: If [...configuration["replaceWithChildrenElements"]...]
           action = kReplaceWithChildren;
-        } else if (!allow_elements_ && remove_elements_ &&
-                   !remove_elements_->Contains(element->TagQName())) {
-          action = kKeepElement;
+        } else if (allow_elements_) {
+          // Step 5.3: If configuration["elements"] exists:
+          // 5.3.1: If configuration["elements"] does not contain elementName:
+          action = allow_elements_->Contains(element->TagQName()) ? kKeepElement
+                                                                  : kDrop;
         } else {
-          action = kDrop;
+          // Step 5.4: Otherwise.
+          // Step 5.4.1: If configuration["removeElements"] contains elementName
+          DCHECK(remove_elements_);
+          action = remove_elements_->Contains(element->TagQName())
+                       ? kDrop
+                       : kKeepElement;
         }
+        // Steps 5.5-5.9 are in the subsequent switch-case, based on |action|.
         break;
       }
-      case Node::NodeType::kTextNode:
-        action = kKeep;
-        break;
       case Node::NodeType::kCommentNode:
+        // Step 4: If child implement Comments & config["comments"] is not true:
         action = (comments_ == SanitizerBoolWithAbsence::kTrue) ? kKeep : kDrop;
         break;
+      case Node::NodeType::kTextNode:
+        // Step 3: If child implements Text, then continue.
+        action = kKeep;
+        break;
       case Node::NodeType::kDocumentTypeNode:
+        // Step 2: If child implement DocumentType, then continue.
         // Should only happen when parsing full documents w/ parseHTML.
         DCHECK(root->IsDocumentNode());
         action = kKeep;
         break;
-
       default:
+        // Step 1: Assert: child implements Text, Comment, Element, DocType.
         NOTREACHED();
     }
 
     switch (action) {
       case kKeepElement: {
+        // This performs Steps 5.5 - 5.9:
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
         SanitizeElement(To<Element>(node));
         SanitizeJavascriptNavigationAttributes(To<Element>(node), safe);
@@ -580,6 +608,7 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
         break;
       }
       case kReplaceWithChildren: {
+        // Steps 5.2.*:
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
         Node* next_node = node->firstChild();
         if (!next_node) {
