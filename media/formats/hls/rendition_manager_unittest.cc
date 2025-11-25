@@ -112,19 +112,26 @@ class HlsRenditionManagerTest : public testing::Test {
   MOCK_METHOD(void, VariantSelected, (std::string, std::string), ());
 
   void _VariantSelected(AdaptationReason,
-                        const VariantStream*,
+                        const VariantStream* variant,
                         std::optional<RenditionGroup::RenditionTrack> vr,
                         std::optional<RenditionGroup::RenditionTrack> ar) {
-    std::string variant_path = "NONE";
-    std::string rendition_path = "NONE";
+    std::string primary_rendition = "NONE";
+    std::string extra_rendition = "NONE";
     if (vr.has_value()) {
-      variant_path = std::get<1>(*vr)->GetUri().value().GetPath();
+      CHECK(variant);
+      primary_rendition = std::get<1>(*vr)
+                              ->GetUri()
+                              .value_or(variant->GetPrimaryRenditionUri())
+                              .GetPath();
     }
-    if (ar) {
-      CHECK(ar.has_value());
-      rendition_path = std::get<1>(*ar)->GetUri().value().GetPath();
+    if (ar.has_value()) {
+      CHECK(variant);
+      extra_rendition = std::get<1>(*ar)
+                            ->GetUri()
+                            .value_or(variant->GetPrimaryRenditionUri())
+                            .GetPath();
     }
-    VariantSelected(variant_path, rendition_path);
+    VariantSelected(primary_rendition, extra_rendition);
   }
 
   decltype(auto) GetVariantCb() {
@@ -592,17 +599,17 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
 
   // Now lets check the available renditions for this selected variant. These
   // Should be in the same order as the manifest.
-  const auto renditions = rm.GetSelectableAudioRenditions();
+  const auto& sequence = rm.GetSelectableAudioRenditions();
+  std::vector<MediaTrack> renditions(sequence.begin(), sequence.end());
   ASSERT_EQ(renditions.size(), 3u);
   ASSERT_EQ(renditions[0].label().value(), "English");
   ASSERT_EQ(renditions[1].label().value(), "Dubbing");
   ASSERT_EQ(renditions[2].label().value(), "German");
 
   // Select the dubbing rendition, and get a change.
-  const auto dubbing_id = renditions[1].track_id();
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/none/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(dubbing_id);
+  rm.SetPreferredAudioRendition(MediaTrack::Id("Dubbing"));
 
   // Increase the network speed to full again. Because the user has selected
   // the dubbing track, we try to match the language.
@@ -616,10 +623,9 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   rm.UpdateNetworkSpeed(831280);
 
   // Select the german rendition, and get a change.
-  const auto german_id = renditions[2].track_id();
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/de/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(german_id);
+  rm.SetPreferredAudioRendition(MediaTrack::Id("German"));
 
   // Increase the network speed to full again. Because the user has selected
   // the german track, but the surround sound has no german audio, we switch
@@ -657,13 +663,12 @@ TEST_F(HlsRenditionManagerTest, CantSelectRenditionWithNoURI) {
     rm.Reselect(GetVariantCb());
 
     // The user has selected B explicitly, so we use B as the primary rendition.
-    const auto renditions = rm.GetSelectableAudioRenditions();
     EXPECT_CALL(*this, VariantSelected("/100.m3u8", "/B.m3u8"));
-    rm.SetPreferredAudioRendition(renditions[1].track_id());
+    rm.SetPreferredAudioRendition(MediaTrack::Id("B"));
 
     // The user has selected C explicitly, but too bad, it has no URI.
     EXPECT_CALL(*this, VariantSelected("/100.m3u8", "NONE"));
-    rm.SetPreferredAudioRendition(renditions[2].track_id());
+    rm.SetPreferredAudioRendition(MediaTrack::Id("C"));
   }
 }
 
@@ -683,9 +688,8 @@ TEST_F(HlsRenditionManagerTest, AudioOnlyRenditionSelectionOverrides) {
     rm.Reselect(GetVariantCb());
 
     // The user has selected B explicitly, so we use B as the primary rendition.
-    const auto renditions = rm.GetSelectableAudioRenditions();
     EXPECT_CALL(*this, VariantSelected("/B.m3u8", "NONE"));
-    rm.SetPreferredAudioRendition(renditions[1].track_id());
+    rm.SetPreferredAudioRendition(MediaTrack::Id("B"));
   }
   {
     auto rm = GetRenditionManager(
