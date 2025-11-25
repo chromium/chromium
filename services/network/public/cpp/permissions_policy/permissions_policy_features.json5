@@ -424,6 +424,11 @@
       permissions_policy_name: "magnetometer",
     },
     {
+      name: "ManualText",
+      permissions_policy_name: "manual-text",
+      depends_on: ["ManualText"],
+    },
+    {
       name: "MediaPlaybackWhileNotVisible",
       permissions_policy_name: "media-playback-while-not-visible",
       feature_default: "EnableForAll",

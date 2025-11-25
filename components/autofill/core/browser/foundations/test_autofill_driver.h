@@ -67,6 +67,9 @@ class TestAutofillDriverTemplate : public T {
   bool IsPolicyControlledFeatureAutofillEnabled() const override {
     return policy_controlled_feature_autofill_enabled_;
   }
+  bool IsPolicyControlledFeatureManualTextEnabled() const override {
+    return policy_controlled_feature_manual_text_enabled_;
+  }
   bool CanShowAutofillUi() const override { return true; }
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
@@ -162,6 +165,10 @@ class TestAutofillDriverTemplate : public T {
     policy_controlled_feature_autofill_enabled_ = enabled;
   }
 
+  void SetPolicyControlledFeatureManualTextEnabled(bool enabled) {
+    policy_controlled_feature_manual_text_enabled_ = enabled;
+  }
+
   void SetIsolationInfo(const net::IsolationInfo& isolation_info) {
     isolation_info_ = isolation_info;
   }
@@ -189,6 +196,7 @@ class TestAutofillDriverTemplate : public T {
   bool is_active_ = true;
   bool is_embedded_ = false;
   bool policy_controlled_feature_autofill_enabled_ = false;
+  bool policy_controlled_feature_manual_text_enabled_ = false;
   net::IsolationInfo isolation_info_;
   base::RepeatingCallback<bool(const url::Origin&, FieldGlobalId, FieldType)>
       field_type_map_filter_;

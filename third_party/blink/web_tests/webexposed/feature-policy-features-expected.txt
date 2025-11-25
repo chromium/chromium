@@ -63,6 +63,7 @@ language-model
 local-fonts
 local-network-access
 magnetometer
+manual-text
 media-playback-while-not-visible
 microphone
 midi

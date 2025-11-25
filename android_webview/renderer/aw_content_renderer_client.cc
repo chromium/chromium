@@ -227,6 +227,10 @@ void AwContentRendererClient::
           autofill::features::kAutofillPolicyControlledFeatureAutofill)) {
     blink::WebRuntimeFeatures::EnableAutofill(true);
   }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillPolicyControlledFeatureManualText)) {
+    blink::WebRuntimeFeatures::EnableManualText(true);
+  }
 
   // Enable the overall android.webview namespace.
   blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);

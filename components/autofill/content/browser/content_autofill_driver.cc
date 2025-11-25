@@ -443,6 +443,11 @@ bool ContentAutofillDriver::IsPolicyControlledFeatureAutofillEnabled() const {
       network::mojom::PermissionsPolicyFeature::kAutofill);
 }
 
+bool ContentAutofillDriver::IsPolicyControlledFeatureManualTextEnabled() const {
+  return render_frame_host_->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kManualText);
+}
+
 bool ContentAutofillDriver::CanShowAutofillUi() const {
   // Don't show AutofillUi for inactive RenderFrameHost. Here it is safe to
   // ignore the calls from inactive RFH as the renderer is not expecting a reply

@@ -342,6 +342,10 @@ enum PermissionsPolicyFeature {
   // See https://github.com/WICG/direct-sockets/blob/main/docs/multicast-explainer.md.
   kMulticastInDirectSockets = 142,
 
+  // Controls whether Autofill may fill fields in that frame when triggered on
+  // a field with the main frame's origin.
+  kManualText = 143,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

@@ -1445,6 +1445,10 @@ void ChromeContentRendererClient::
           autofill::features::kAutofillPolicyControlledFeatureAutofill)) {
     blink::WebRuntimeFeatures::EnableAutofill(true);
   }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillPolicyControlledFeatureManualText)) {
+    blink::WebRuntimeFeatures::EnableManualText(true);
+  }
 
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))
     blink::WebRuntimeFeatures::EnableAdTagging(true);

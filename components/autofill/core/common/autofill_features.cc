@@ -771,6 +771,14 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPolicyControlledFeatureAutofill,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether Autofill warns about manual text input in cross-origin
+// frames.
+// This feature lives in Autofill code because of its close relationship to
+// `kAutofillCrossOriginAutofill`.
+// TODO(crbug.com/40178859): Enable this feature.
+BASE_FEATURE(kAutofillPolicyControlledFeatureManualText,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, before triggering suggestion acceptance, the row
 // view checks that a substantial portion of its content was visible for some
 // minimum required period.

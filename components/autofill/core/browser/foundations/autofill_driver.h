@@ -188,6 +188,11 @@ class AutofillDriver {
   // frame may pass it on to its children.
   virtual bool IsPolicyControlledFeatureAutofillEnabled() const = 0;
 
+  // Returns true if the policy-controlled feature "manual-text" is enabled in
+  // the document. In the main frame the permission is enabled by default.
+  // Parent frames may pass it on to its children.
+  virtual bool IsPolicyControlledFeatureManualTextEnabled() const = 0;
+
   // Returns the IsolationInfo of the associated frame. May be nullopt if the
   // IsolationInfo is not used (for example, on iOS).
   virtual std::optional<net::IsolationInfo> GetIsolationInfo() = 0;

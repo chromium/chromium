@@ -238,6 +238,10 @@ bool AutofillDriverIOS::IsPolicyControlledFeatureAutofillEnabled() const {
   return false;
 }
 
+bool AutofillDriverIOS::IsPolicyControlledFeatureManualTextEnabled() const {
+  return true;
+}
+
 bool AutofillDriverIOS::CanShowAutofillUi() const {
   return true;
 }

@@ -3229,6 +3229,12 @@
       status: "stable",
     },
     {
+      name: "ManualText",
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "MaskDeserializationTimeForCrossOriginMessages",
       status: "stable",
     },
