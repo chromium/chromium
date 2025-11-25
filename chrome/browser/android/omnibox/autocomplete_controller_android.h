@@ -213,7 +213,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // The ComposeBoxQueryController instance related to the same input session.
   // This may and often will be unset.
-  raw_ptr<ComposeboxQueryControllerBridge> composebox_query_controller_bridge_;
+  base::WeakPtr<ComposeboxQueryControllerBridge>
+      composebox_query_controller_bridge_;
 
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.

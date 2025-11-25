@@ -181,9 +181,10 @@ void AutocompleteControllerAndroid::Start(
   input_.set_prefer_keyword(prefer_keyword);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
-  if (composebox_query_controller_bridge_) {
-    const auto& inputs =
-        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs();
+
+  auto* bridge = composebox_query_controller_bridge_.get();
+  if (bridge) {
+    const auto& inputs = bridge->GetLensOverlaySuggestInputs();
     if (AreLensSuggestInputsReady(inputs)) {
       input_.set_lens_overlay_suggest_inputs(inputs);
     }
@@ -304,9 +305,9 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   input_.set_focus_type(OFT::INTERACTION_FOCUS);
 
   // Apply any AI Modes and Tools.
-  if (composebox_query_controller_bridge_) {
-    const auto& inputs =
-        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs();
+  auto* bridge = composebox_query_controller_bridge_.get();
+  if (bridge) {
+    const auto& inputs = bridge->GetLensOverlaySuggestInputs();
     if (AreLensSuggestInputsReady(inputs)) {
       input_.set_lens_overlay_suggest_inputs(inputs);
     }
@@ -489,9 +490,15 @@ void AutocompleteControllerAndroid::EnsureFactoryBuilt() {
 void AutocompleteControllerAndroid::SetComposeboxQueryControllerBridge(
     JNIEnv* env,
     uintptr_t composebox_controller_ptr) {
+  if (!composebox_controller_ptr) {
+    composebox_query_controller_bridge_.reset();
+    return;
+  }
+
   composebox_query_controller_bridge_ =
       reinterpret_cast<ComposeboxQueryControllerBridge*>(
-          composebox_controller_ptr);
+          composebox_controller_ptr)
+          ->AsWeakPtr();
   if (composebox_query_controller_bridge_) {
     composebox_query_controller_bridge_->SetLensSignalsReadyObserver(
         base::BindRepeating(&AutocompleteControllerAndroid::OnLensSignalsReady,
@@ -570,6 +577,11 @@ void AutocompleteControllerAndroid::OnLensSignalsReady() {
   // This method may only be called once the ComposeboxQueryController is
   // notified that the Lens service is done processing inputs.
   if (input_.IsZeroSuggest()) {
+    auto* bridge = composebox_query_controller_bridge_.get();
+    if (!bridge) {
+      return;
+    }
+
     // Abort pending asynchronous suggestion updates.
     if (!autocomplete_controller_->done()) {
       autocomplete_controller_->Stop(AutocompleteStopReason::kClobbered);

@@ -78,6 +78,11 @@ void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
+base::WeakPtr<ComposeboxQueryControllerBridge>
+ComposeboxQueryControllerBridge::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ComposeboxQueryControllerBridge::NotifySessionStarted(JNIEnv* env) {
   query_controller_->InitializeIfNeeded();
 }

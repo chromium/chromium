@@ -69,6 +69,8 @@ class ComposeboxQueryControllerBridge
     lens_signals_ready_callback_ = std::move(callback);
   }
 
+  base::WeakPtr<ComposeboxQueryControllerBridge> AsWeakPtr();
+
  private:
   void OnGetTabPageContext(
       JNIEnv* env,
