@@ -63,7 +63,7 @@ void FlatlandSysmemBufferManager::Shutdown() {
 scoped_refptr<gfx::NativePixmap>
 FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
                                                 gfx::Size size,
-                                                gfx::BufferFormat buffer_format,
+                                                viz::SharedImageFormat format,
                                                 NativePixmapUsageSet usage) {
   gfx::NativePixmapHandle pixmap_handle;
   zx::eventpair service_handle;
@@ -73,7 +73,6 @@ FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
 
   auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   // Scanout images must be registered with flatland.
-  auto format = viz::GetSharedImageFormat(buffer_format);
   if (!collection->Initialize(
           sysmem_allocator_.get(), flatland_allocator_.get(),
           flatland_surface_factory_, std::move(service_handle),

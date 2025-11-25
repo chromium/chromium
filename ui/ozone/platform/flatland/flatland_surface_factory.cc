@@ -178,8 +178,7 @@ scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
   return flatland_sysmem_buffer_manager_.CreateNativePixmap(
-      vk_device, size, viz::SharedImageFormatToBufferFormat(format),
-      native_pixmap_usage);
+      vk_device, size, format, native_pixmap_usage);
 }
 
 scoped_refptr<gfx::NativePixmap>

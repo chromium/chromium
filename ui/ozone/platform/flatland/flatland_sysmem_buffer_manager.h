@@ -50,7 +50,7 @@ class FlatlandSysmemBufferManager {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       VkDevice vk_device,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       NativePixmapUsageSet usage);
 
   // TODO(crbug.com/42050538): Instead of an additional
