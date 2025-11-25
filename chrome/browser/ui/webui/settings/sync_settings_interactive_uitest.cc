@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -168,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
 // signing-in from the settings menu.
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                        ShowHistorySyncOptinDialogFromSettingsSignin) {
+  base::HistogramTester histogram_tester;
   // Handle the Gaia signin page.
   embedded_test_server()->StartAcceptingConnections();
 
@@ -215,7 +217,11 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                          UiElementHasAppeared(kHistoryOptinAcceptButton)),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
                          UiElementHasAppeared(kHistoryOptinRejectButton)));
-  // TODO(crbug.com/457428660): Add metrics checks once they are implemented.
+
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                      signin_metrics::AccessPoint::kSettings,
+                                      1);
+  histogram_tester.ExpectTotalCount("Signin.HistorySyncOptIn.Completed", 0);
 }
 
 // Tests that a signed in user on the web can trigger and see the History
