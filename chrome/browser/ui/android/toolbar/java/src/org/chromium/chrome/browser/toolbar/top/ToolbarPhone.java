@@ -2534,7 +2534,8 @@ public class ToolbarPhone extends ToolbarLayout
                                         .addTarget(mLocationBar.getContainerView())
                                         .addTarget(mActiveLocationBarBackgroundView))
                         .addTransition(new BackgroundDrawableTransition())
-                        .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
+                        .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS)
+                        .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         TransitionSet transition =
                 new TransitionSet()
