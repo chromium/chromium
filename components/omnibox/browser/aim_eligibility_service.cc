@@ -282,8 +282,7 @@ bool AimEligibilityService::IsAimLocallyEligible() const {
   }
 
   // Always check Google DSE and Policy requirements.
-  if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
-      !IsAimAllowedByPolicy(&pref_service_.get())) {
+  if (!IsAimAllowedByPolicyAndDse()) {
     return false;
   }
 
@@ -627,6 +626,11 @@ void AimEligibilityService::ProcessServerEligibilityResponse(
       request_source);
   UpdateMostRecentResponse(response_proto, was_fetched_via_cache);
   LogEligibilityResponse(request_source);
+}
+
+bool AimEligibilityService::IsAimAllowedByPolicyAndDse() const {
+  return search::DefaultSearchProviderIsGoogle(template_url_service_) &&
+         IsAimAllowedByPolicy(&pref_service_.get());
 }
 
 std::string AimEligibilityService::GetHistogramNameSlicedByRequestSource(

@@ -189,6 +189,9 @@ class AimEligibilityService
       int num_retries,
       std::unique_ptr<std::string> response_string);
 
+  // Returns true if AIM is allowed by policy and Google is the DSE.
+  bool IsAimAllowedByPolicyAndDse() const;
+
   // Returns the given histogram name sliced by the given request source.
   std::string GetHistogramNameSlicedByRequestSource(
       const std::string& name,

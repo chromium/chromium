@@ -174,7 +174,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private computeShowContextEntrypoint_(): boolean {
     const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
-    return isTallSearchbox && !this.isInKeywordMode_;
+    return loadTimeData.getBoolean('showContextMenuEntrypoint') &&
+        isTallSearchbox && !this.isInKeywordMode_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
