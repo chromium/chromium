@@ -1335,6 +1335,44 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   EXPECT_EQ(kNewAppUrl, future.Get());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AppBannerManagerNoFakeBrowserTest,
+    NoPromptForOverlapWithCraftedExtendedScopeStandaloneWhenInstalledInBrowser) {
+  const GURL kExistingAppUrl =
+      embedded_test_server()->GetURL("app1.com", "/web_apps/basic.html");
+  const GURL kNewAppUrl =
+      embedded_https_test_server().GetURL("/web_apps/simple/index.html");
+  const GURL kExtendedScope = kNewAppUrl.GetWithoutFilename();
+
+  // Install the existing app.
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kExistingAppUrl);
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info->validated_scope_extensions = web_app_info->scope_extensions = {
+      web_app::ScopeExtensionInfo::CreateForScope(kExtendedScope)};
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  // Install the new app.
+  web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kNewAppUrl);
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(
+      app_banner_manager, future.GetRepeatingCallback(),
+      InstallableWebAppCheckResult::kNo_AlreadyInstalled);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kNewAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kNewAppUrl, future.Get());
+}
+
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
                        PromptForOverlapWithCraftedExtendedScopeInBrowser) {
   const GURL kExistingAppUrl =
