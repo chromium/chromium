@@ -160,7 +160,7 @@ WebGLUnownedTexture* XRWebGLCubemapSwapChain::ProduceTexture() {
   client->DrawingBufferClientRestoreTextureCubeMapBinding();
 
   owned_texture_ = MakeGarbageCollected<WebGLUnownedTexture>(
-      context(), cubemap_texture, GL_TEXTURE_2D_ARRAY);
+      context(), cubemap_texture, GL_TEXTURE_CUBE_MAP);
 
   copy_program_ = gl->CreateProgram();
 
