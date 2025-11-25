@@ -41,6 +41,9 @@ extern const base::FeatureParam<double> kMinMultiSignalScore;
 // the side panel only affects the current tab.
 extern const base::FeatureParam<bool> kTaskScopedSidePanel;
 
+// The user agent suffix to use for requests from the contextual tasks UI.
+extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 
@@ -50,6 +53,9 @@ extern std::vector<std::string> GetContextualTasksSignInDomains();
 // Returns whether Lens is enabled in contextual tasks. When this is enabled,
 // Lens entry points will open results in the contextual tasks panels.
 extern bool GetEnableLensInContextualTasks();
+
+// Returns the user agent suffix to use for requests.
+extern std::string GetContextualTasksUserAgentSuffix();
 
 namespace flag_descriptions {
 

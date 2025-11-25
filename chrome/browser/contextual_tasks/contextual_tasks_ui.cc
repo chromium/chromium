@@ -148,6 +148,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kContextualTasks));
 
+  source->AddString("userAgentSuffix",
+                    contextual_tasks::GetContextualTasksUserAgentSuffix());
+
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
       "internals",

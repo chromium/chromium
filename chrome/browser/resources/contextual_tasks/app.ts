@@ -6,6 +6,7 @@ import './composebox.js';
 import './top_toolbar.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -186,11 +187,11 @@ export class ContextualTasksAppElement extends CrLitElement {
         },
         ['blocking', 'requestHeaders', 'extraHeaders']);
 
-    // TODO(crbug.com/454388385): Remove "WGA/1.0" once our custom user agent
-    // is allowlisted. This is a temporary workaround to unblock the
-    // authentication flow.
+    // Sets the user agent to the default user agent + the contextual tasks
+    // custom suffix.
     const userAgent = this.$.threadFrame.getUserAgent();
-    this.$.threadFrame.setUserAgentOverride(userAgent + ' WGA/1.0');
+    const userAgentSuffix = loadTimeData.getString('userAgentSuffix');
+    this.$.threadFrame.setUserAgentOverride(`${userAgent} ${userAgentSuffix}`);
   }
 
   private onBeforeSendHeaders:

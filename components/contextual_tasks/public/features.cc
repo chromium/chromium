@@ -61,6 +61,13 @@ const base::FeatureParam<bool> kEnableLensInContextualTasks(
     "EnableLensInContextualTasks",
     true);
 
+// The user agent suffix to use for requests from the contextual tasks UI.
+// TODO(crbug.com/454388385): Remove "WGA/1.0" once our custom user agent
+// is allowlisted. This is a temporary workaround to unblock the
+// authentication flow.
+const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
+    &kContextualTasks, "user-agent-suffix", "WGA/1.0"};
+
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }
@@ -73,6 +80,10 @@ std::vector<std::string> GetContextualTasksSignInDomains() {
 bool GetEnableLensInContextualTasks() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
          kEnableLensInContextualTasks.Get();
+}
+
+std::string GetContextualTasksUserAgentSuffix() {
+  return kContextualTasksUserAgentSuffix.Get();
 }
 
 namespace flag_descriptions {
