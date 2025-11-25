@@ -7,6 +7,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -28,6 +30,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "google_apis/gaia/gaia_switches.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -42,16 +46,36 @@ const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSignoutDialogWebContentsId);
 
+std::unique_ptr<net::test_server::HttpResponse> HandleSigninPageResponse(
+    const net::test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content_type("text/html");
+  http_response->set_content("Gaia signin page: " + request.relative_url);
+  return http_response;
+}
+
 }  // namespace
 
 class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  SyncSettingsInteractiveTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
+  SyncSettingsInteractiveTest()
+      : gaia_signin_page_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SigninBrowserTestBaseT<WebUiInteractiveTestMixin<InteractiveBrowserTest>>::
+        SetUpCommandLine(command_line);
+    ASSERT_TRUE(gaia_signin_page_test_server_.InitializeAndListen());
+    const GURL& base_url = gaia_signin_page_test_server_.base_url();
+
+    // Placeholder response to Gaia urls, so that the signin page can load with
+    // no error.
+    command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    gaia_signin_page_test_server_.RegisterDefaultHandler(
+        base::BindRepeating(&net::test_server::HandlePrefixedRequest,
+                            signin::GetChromeSyncURLForDice({}).GetPath(),
+                            base::BindRepeating(HandleSigninPageResponse)));
   }
 
   // Checks if a page title matches the given regexp in ecma script dialect.
@@ -61,9 +85,10 @@ class SyncSettingsInteractiveTest
     state_change.type = StateChange::Type::kConditionTrue;
     state_change.event = kStateChange;
     state_change.test_function = base::StringPrintf(
-      R"js(
-        () => /%s/.test(document.title)
-      )js", title_regexp.data());
+        R"js(
+          () => /%s/.test(document.title)
+        )js",
+        title_regexp.data());
     state_change.continue_across_navigation = true;
     return state_change;
   }
@@ -78,8 +103,14 @@ class SyncSettingsInteractiveTest
     return state_change;
   }
 
+  net::EmbeddedTestServer* embedded_test_server() {
+    return &gaia_signin_page_test_server_;
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+  net::EmbeddedTestServer gaia_signin_page_test_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
@@ -137,6 +168,9 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
 // signing-in from the settings menu.
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                        ShowHistorySyncOptinDialogFromSettingsSignin) {
+  // Handle the Gaia signin page.
+  embedded_test_server()->StartAcceptingConnections();
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDiceSignInTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
@@ -160,16 +194,18 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       ClickElement(kTabId, kSignInButton), WaitForState(kTabCountState, true),
       StopObservingState(kTabCountState),
       InstrumentTab(kDiceSignInTabId, 1, browser()), Do([&]() {
+        // Simulate adding the account from the web.
         CoreAccountInfo account_info =
             identity_test_env()->MakeAccountAvailable(kTestEmail);
-        // TODO(crbug.com/457428660): Investigate why using the more suitable
-        // `GetSignInTabWithAccessPoint` returns null.
-        content::WebContents* contents =
-            browser()->tab_strip_model()->GetWebContentsAt(1);
+        content::WebContents* signin_tab =
+            signin_ui_util::GetSignInTabWithAccessPoint(
+                browser(), signin_metrics::AccessPoint::kSettings);
+        EXPECT_EQ(signin_tab,
+                  browser()->tab_strip_model()->GetWebContentsAt(1));
         // Mock processing the ENABLE_SYNC signal from Gaia.
         std::unique_ptr<ProcessDiceHeaderDelegateImpl>
             process_dice_header_delegate_impl =
-                ProcessDiceHeaderDelegateImpl::Create(contents);
+                ProcessDiceHeaderDelegateImpl::Create(signin_tab);
         process_dice_header_delegate_impl->EnableSync(account_info);
       }),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
