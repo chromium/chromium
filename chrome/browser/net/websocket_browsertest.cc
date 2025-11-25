@@ -293,8 +293,6 @@ class WebSocketBrowserHTTPSConnectToTest
   net::EmbeddedTestServer https_server_;
 };
 
-// TODO(crbug.com/434744665): add tests for websockets opened from shared
-// workers.
 class LocalNetworkAccessWebSocketsBrowserTest
     : public WebSocketBrowserHTTPSConnectToTest {
  public:
