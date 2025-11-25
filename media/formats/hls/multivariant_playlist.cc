@@ -224,6 +224,9 @@ MultivariantPlaylist::Parse(std::string_view source,
     if (inf_tag->audio.has_value()) {
       audio_renditions = GetOrCreateRenditionGroup({}, audio_rendition_groups,
                                                    inf_tag->audio->Str());
+    } else {
+      audio_renditions =
+          GetOrCreateRenditionGroup({}, audio_rendition_groups, std::nullopt);
     }
 
     // TODO(crbug.com/402566477): Support multiple video renditions - for now

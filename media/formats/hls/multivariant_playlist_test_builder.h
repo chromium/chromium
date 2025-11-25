@@ -222,12 +222,9 @@ inline void HasFrameRate(std::optional<types::DecimalFloatingPoint> frame_rate,
 inline void HasAudioRenditionGroup(std::optional<std::string> group_id,
                                    const base::Location& from,
                                    const VariantStream& variant) {
-  if (variant.GetAudioRenditionGroup()) {
-    EXPECT_EQ(variant.GetAudioRenditionGroup()->GetIdForTesting(), group_id)
-        << from.ToString();
-  } else {
-    EXPECT_EQ(std::nullopt, group_id) << from.ToString();
-  }
+  CHECK(variant.GetAudioRenditionGroup());
+  EXPECT_EQ(variant.GetAudioRenditionGroup()->GetIdForTesting(), group_id)
+      << from.ToString();
 }
 
 // Checks that the audio rendition has the given URI.

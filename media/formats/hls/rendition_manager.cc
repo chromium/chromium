@@ -177,22 +177,20 @@ void RenditionManager::Reselect(SelectedCallonce cb) {
   // 3. Declaration order in manifest
   // It's possible that none of the renditions are marked for auto-selection
   // though, so we may get back nothing.
-  if (auto audio_renditions = variant->GetAudioRenditionGroup()) {
-    if (preferred_extra_rendition_.has_value()) {
-      extra_rendition =
-          audio_renditions->MostSimilar(preferred_extra_rendition_);
-    }
-    if (!extra_rendition.has_value()) {
-      extra_rendition = audio_renditions->MostSimilar(selected_extra_);
-    }
-    if (extra_rendition.has_value() &&
-        !std::get<1>(extra_rendition.value())->GetUri().has_value()) {
-      // An audio rendition with no uri just plays the content from the
-      // selected variant. See section 4.4.6.2.1 of the HLS spec for details.
-      // The URI attribute is OPTIONAL unless the TYPE is CLOSED-CAPTIONS, in
-      // which case the URI attribute must not be present.
-      extra_rendition = std::nullopt;
-    }
+  auto audio_renditions = variant->GetAudioRenditionGroup();
+  if (preferred_extra_rendition_.has_value()) {
+    extra_rendition = audio_renditions->MostSimilar(preferred_extra_rendition_);
+  }
+  if (!extra_rendition.has_value()) {
+    extra_rendition = audio_renditions->MostSimilar(selected_extra_);
+  }
+  if (extra_rendition.has_value() &&
+      !std::get<1>(extra_rendition.value())->GetUri().has_value()) {
+    // An audio rendition with no uri just plays the content from the
+    // selected variant. See section 4.4.6.2.1 of the HLS spec for details.
+    // The URI attribute is OPTIONAL unless the TYPE is CLOSED-CAPTIONS, in
+    // which case the URI attribute must not be present.
+    extra_rendition = std::nullopt;
   }
 
   if (!IsSameRendition(extra_rendition, selected_extra_)) {
