@@ -100,11 +100,11 @@ suite('<crostini-installer-app>', () => {
   };
 
   const getInstallButton = () => {
-    return app.$$('#install');
+    return app.shadowRoot.querySelector('#install');
   };
 
   const getCancelButton = () => {
-    return app.$$('.cancel-button');
+    return app.shadowRoot.querySelector('.cancel-button');
   };
 
   const clickNext = async () => {
@@ -120,7 +120,7 @@ suite('<crostini-installer-app>', () => {
   };
 
   const clickCustomSize = async () => {
-    await clickButton(app.$$('#custom-size'));
+    await clickButton(app.shadowRoot.querySelector('#custom-size'));
   };
 
   /**
@@ -140,29 +140,29 @@ suite('<crostini-installer-app>', () => {
   ];
 
   test('installFlow', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
 
     // It should wait for disk info to be available.
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
     await clickCancel();  // Back to the prompt page.
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
     await clickInstall();
     const [diskSize, username] =
         await fakeBrowserProxy.handler.whenCalled('install');
     assertEquals(username, loadTimeData.getString('defaultContainerUsername'));
-    assertFalse(app.$$('#installing-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#installing-message').hidden);
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     assertTrue(getInstallButton().hidden);
 
@@ -170,10 +170,12 @@ suite('<crostini-installer-app>', () => {
         InstallerState.kCreateDiskImage, 0.5);
     await flushTasks();
     assertTrue(
-        !!app.$$('#installing-message > div').textContent.trim(),
+        !!app.shadowRoot.querySelector('#installing-message > div')
+              .textContent.trim(),
         'progress message should be set');
     assertEquals(
-        app.$$('#installing-message > paper-progress').getAttribute('value'),
+        app.shadowRoot.querySelector('#installing-message > paper-progress')
+            .getAttribute('value'),
         '50');
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
@@ -186,61 +188,63 @@ suite('<crostini-installer-app>', () => {
   // sure if the user click the next button multiple time very soon it dose not
   // blow up.
   test('multipleClickNextBeforeDiskAvailable', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     // It should wait for disk info to be available.
     await clickNext();
     await clickNext();
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
     await flushTasks();
     // Enter configure page as usual
-    assertFalse(app.$$('#configure-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
 
     // Can back to prompt page as usual.
     await clickCancel();
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     await clickNext();
     await flushTasks();
     // Re-enter configure page as usual
-    assertFalse(app.$$('#configure-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
   });
 
   test('straightToErrorPageIfMinDiskUnmet', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace([], 0, false);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#error-message').hidden);
     assertTrue(
-        !!app.$$('#error-message > div').textContent.trim(),
+        !!app.shadowRoot.querySelector('#error-message > div')
+              .textContent.trim(),
         'error message should be set');
     // We do not show retry button in this case.
     assertTrue(getInstallButton().hidden);
   });
 
   test('showWarningIfLowFreeSpace', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, true);
 
     await clickNext();
     await flushTasks();
-    assertFalse(app.$$('#configure-message').hidden);
-    assertFalse(isHidden(app.$$('#low-free-space-warning')));
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
+    assertFalse(
+        isHidden(app.shadowRoot.querySelector('#low-free-space-warning')));
   });
 
   diskTicks.forEach(async (_, defaultIndex) => {
     test(`configDiskSpaceWithDefault-${defaultIndex}`, async () => {
-      assertFalse(app.$$('#prompt-message').hidden);
+      assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
       fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
           diskTicks, defaultIndex, false);
@@ -248,9 +252,10 @@ suite('<crostini-installer-app>', () => {
       await clickNext();
       await flushTasks();
 
-      assertFalse(app.$$('#configure-message').hidden);
-      assertTrue(isHidden(app.$$('#low-free-space-warning')));
-      assertTrue(isHidden(app.$$('#diskSlider')));
+      assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
+      assertTrue(
+          isHidden(app.shadowRoot.querySelector('#low-free-space-warning')));
+      assertTrue(isHidden(app.shadowRoot.querySelector('#diskSlider')));
 
       await clickInstall();
       const [diskSize, username] =
@@ -261,7 +266,7 @@ suite('<crostini-installer-app>', () => {
   });
 
   test('configDiskSpaceWithUserSelection', async () => {
-    assertFalse(app.$$('#prompt-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#prompt-message').hidden);
 
     fakeBrowserProxy.handler.resolveRequestAmountOfFreeDiskSpace(
         diskTicks, 0, false);
@@ -271,11 +276,12 @@ suite('<crostini-installer-app>', () => {
     await clickCustomSize();
     await flushTasks();
 
-    assertFalse(app.$$('#configure-message').hidden);
-    assertTrue(isHidden(app.$$('#low-free-space-warning')));
-    assertFalse(isHidden(app.$$('#diskSlider')));
+    assertFalse(app.shadowRoot.querySelector('#configure-message').hidden);
+    assertTrue(
+        isHidden(app.shadowRoot.querySelector('#low-free-space-warning')));
+    assertFalse(isHidden(app.shadowRoot.querySelector('#diskSlider')));
 
-    app.$$('#diskSlider').value = 1;
+    app.shadowRoot.querySelector('#diskSlider').value = 1;
 
     await clickInstall();
     const [diskSize, username] =
@@ -346,9 +352,10 @@ suite('<crostini-installer-app>', () => {
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#error-message').hidden);
     assertTrue(
-        !!app.$$('#error-message > div').textContent.trim(),
+        !!app.shadowRoot.querySelector('#error-message > div')
+              .textContent.trim(),
         'error message should be set');
 
     await clickCancel();
@@ -364,9 +371,10 @@ suite('<crostini-installer-app>', () => {
     await clickInstall();
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kErrorOffline);
     await flushTasks();
-    assertFalse(app.$$('#error-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#error-message').hidden);
     assertTrue(
-        !!app.$$('#error-message > div').textContent.trim(),
+        !!app.shadowRoot.querySelector('#error-message > div')
+              .textContent.trim(),
         'error message should be set');
 
     await clickInstall();
@@ -381,13 +389,16 @@ suite('<crostini-installer-app>', () => {
     fakeBrowserProxy.page.onInstallFinished(InstallerError.kNeedUpdate);
     await flushTasks();
 
-    assertEquals(app.$$('#title').innerText, 'ChromeOS update required');
-    assertFalse(app.$$('#error-message').hidden);
     assertEquals(
-        app.$$('#error-message').innerText,
+        app.shadowRoot.querySelector('#title').innerText,
+        'ChromeOS update required');
+    assertFalse(app.shadowRoot.querySelector('#error-message').hidden);
+    assertEquals(
+        app.shadowRoot.querySelector('#error-message').innerText,
         'To finish setting up Linux, update ChromeOS and try again.');
-    assertFalse(app.$$('#settings').hidden);
-    assertEquals(app.$$('#settings').innerText, 'Open Settings');
+    assertFalse(app.shadowRoot.querySelector('#settings').hidden);
+    assertEquals(
+        app.shadowRoot.querySelector('#settings').innerText, 'Open Settings');
   });
 
   [clickCancel,

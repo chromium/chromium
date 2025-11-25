@@ -3,30 +3,29 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './crostini_installer.mojom-webui.js';
+import type {PageHandlerInterface} from './crostini_installer.mojom-webui.js';
 
 export class BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
+
   constructor() {
-    /** @type {PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
-    /** @type {PageHandlerRemote} */
     this.handler = new PageHandlerRemote();
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        this.handler.$.bindNewPipeAndPassReceiver());
+        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
-  /** @return {!BrowserProxy} */
-  static getInstance() {
+  static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
 
-  /** @param {!BrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: BrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?BrowserProxy} */
-let instance = null;
+let instance: BrowserProxy|null = null;

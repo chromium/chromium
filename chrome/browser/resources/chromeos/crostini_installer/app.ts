@@ -14,30 +14,31 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '/strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {InstallerError, InstallerState} from './crostini_types.mojom-webui.js';
+import {DiskSliderTick, InstallerError, InstallerState} from './crostini_types.mojom-webui.js';
 
 /**
  * Enum for the state of `crostini-installer-app`. Not to confused with
  * `installerState`.
- * @enum {string}
  */
-const State = {
-  PROMPT: 'prompt',
-  CONFIGURE: 'configure',
-  INSTALLING: 'installing',
-  ERROR: 'error',
-  CANCELING: 'canceling',
-};
+enum State {
+  PROMPT = 'prompt',
+  CONFIGURE = 'configure',
+  INSTALLING = 'installing',
+  ERROR = 'error',
+  CANCELING = 'canceling',
+}
 
-const MAX_USERNAME_LENGTH = 32;
-const NoDiskSpaceError = 'no_disk_space';
+const MAX_USERNAME_LENGTH: number = 32;
+const NoDiskSpaceError: string = 'no_disk_space';
 
-const UNAVAILABLE_USERNAMES = [
+const UNAVAILABLE_USERNAMES: string[] = [
   'root',
   'daemon',
   'bin',
@@ -70,112 +71,134 @@ const UNAVAILABLE_USERNAMES = [
   'android-everybody',
 ];
 
-Polymer({
-  is: 'crostini-installer-app',
+interface CrostiniInstallerAppElement {
+  $: {
+    username: CrInputElement,
+  };
+}
 
-  _template: getTemplate(),
+class CrostiniInstallerAppElement extends PolymerElement {
+  static get is() {
+    return 'crostini-installer-app';
+  }
 
-  properties: {
-    /** @private {!State} */
-    state_: {
-      type: String,
-      value: State.PROMPT,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @private */
-    error_: {
-      type: String,
-      value: InstallerError.kNone,
-    },
+  static get properties() {
+    return {
+      state_: {
+        type: String,
+        value: State.PROMPT,
+      },
 
-    /** @private */
-    installerState_: {
-      type: Number,
-    },
+      error_: {
+        type: String,
+        value: InstallerError.kNone,
+      },
 
-    /** @private */
-    installerProgress_: {
-      type: Number,
-    },
+      installerState_: {
+        type: Number,
+      },
 
-    /** @private */
-    errorMessage_: {
-      type: String,
-    },
+      installerProgress_: {
+        type: Number,
+      },
 
-    /**
-     * Enable the html template to use State.
-     * @private
-     */
-    State: {
-      type: Object,
-      value: State,
-    },
+      errorMessage_: {
+        type: String,
+      },
 
-    /**
-     * @private
-     */
-    minDisk_: {
-      type: String,
-    },
+      /* Enable the html template to use State. */
+      stateEnum_: {
+        type: Object,
+        value: State,
+      },
 
-    /**
-     * @private
-     */
-    maxDisk_: {
-      type: String,
-    },
+      minDisk_: {
+        type: String,
+      },
 
-    /**
-     * @private
-     */
-    defaultDiskSizeTick_: {
-      type: Number,
-    },
+      maxDisk_: {
+        type: String,
+      },
 
-    diskSizeTicks_: {
-      type: Array,
-    },
+      defaultDiskSizeTick_: {
+        type: Number,
+      },
 
-    chosenDiskSize_: {
-      type: Number,
-    },
+      diskSizeTicks_: {
+        type: Array,
+      },
 
-    isLowSpaceAvailable_: {
-      type: Boolean,
-    },
+      chosenDiskSize_: {
+        type: Number,
+      },
 
-    showDiskSlider_: {
-      type: Boolean,
-      value: false,
-    },
+      isLowSpaceAvailable_: {
+        type: Boolean,
+      },
 
-    username_: {
-      type: String,
-      value: loadTimeData.getString('defaultContainerUsername')
-                 .substring(0, MAX_USERNAME_LENGTH),
-      observer: 'onUsernameChanged_',
-    },
+      showDiskSlider_: {
+        type: Boolean,
+        value: false,
+      },
 
-    usernameError_: {
-      type: String,
-    },
+      username_: {
+        type: String,
+        value: loadTimeData.getString('defaultContainerUsername')
+                   .substring(0, MAX_USERNAME_LENGTH),
+        observer: 'onUsernameChanged_',
+      },
 
-    /* Enable the html template to access the length */
-    MAX_USERNAME_LENGTH: {type: Number, value: MAX_USERNAME_LENGTH},
-  },
+      usernameError_: {
+        type: String,
+      },
 
-  /** @override */
-  attached() {
+      /* Enable the html template to access the length */
+      MAX_USERNAME_LENGTH: {
+        type: Number,
+        value: MAX_USERNAME_LENGTH,
+      },
+    };
+  }
+
+  private state_: State;
+  private error_: InstallerError|string;
+  private installerState_: InstallerState;
+  private installerProgress_: number;
+  private errorMessage_: string;
+  private minDisk_: string;
+  private maxDisk_: string;
+  private defaultDiskSizeTick_: number;
+  private diskSizeTicks_: DiskSliderTick[];
+  private chosenDiskSize_: number;
+  private isLowSpaceAvailable_: boolean;
+  private showDiskSlider_: boolean;
+  private username_: string;
+  private usernameError_: string;
+  private MAX_USERNAME_LENGTH: number;
+  private listenerIds_: number[];
+  private diskSpacePromise_: Promise<{
+    ticks: DiskSliderTick[],
+    defaultIndex: number,
+    isLowSpaceAvailable: boolean,
+  }>;
+  private onNextButtonClickIsRunning_: boolean = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
 
     this.listenerIds_ = [
       callbackRouter.onProgressUpdate.addListener(
-          (installerState, progressFraction) => {
+          (installerState: InstallerState, progressFraction: number) => {
             this.installerState_ = installerState;
             this.installerProgress_ = progressFraction * 100;
           }),
-      callbackRouter.onInstallFinished.addListener(error => {
+      callbackRouter.onInstallFinished.addListener((error: InstallerError) => {
         if (error === InstallerError.kNone) {
           // Install succeeded.
           this.closePage_();
@@ -201,17 +224,17 @@ Polymer({
       }
     });
 
-    this.$$('.action-button:not([hidden])').focus();
-  },
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '.action-button:not([hidden])')!.focus();
+  }
 
-  /** @override */
-  detached() {
+  override disconnectedCallback() {
+    super.disconnectedCallback();
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
     this.listenerIds_.forEach(id => callbackRouter.removeListener(id));
-  },
+  }
 
-  /** @private */
-  async onNextButtonClick_() {
+  private async onNextButtonClick_() {
     if (!this.onNextButtonClickIsRunning_) {
       assert(this.state_ === State.PROMPT);
       this.onNextButtonClickIsRunning_ = true;
@@ -249,40 +272,34 @@ Polymer({
 
       this.onNextButtonClickIsRunning_ = false;
     }
-  },
+  }
 
-  /** @private */
-  onInstallButtonClick_() {
-    assert(this.showInstallButton_(this.state_, this.error_));
-    let diskSize = 0;
+  private onInstallButtonClick_() {
+    assert(this.showInstallButton_());
+    let diskSize: bigint = 0n;
     if (this.showDiskSlider_) {
-      diskSize = this.diskSizeTicks_[this.$$('#diskSlider').value].value;
+      const slider =
+          this.shadowRoot!.querySelector<CrSliderElement>('#diskSlider')!;
+      diskSize = this.diskSizeTicks_[slider.value].value;
     } else {
       diskSize = this.diskSizeTicks_[this.defaultDiskSizeTick_].value;
     }
     this.installerState_ = InstallerState.kStart;
     this.installerProgress_ = 0;
     this.state_ = State.INSTALLING;
-    BrowserProxy.getInstance().handler.install(diskSize, this.username_);
-  },
+    BrowserProxy.getInstance().handler.install(
+        BigInt(diskSize), this.username_);
+  }
 
-  /** @private */
-  onSettingsButtonClick_() {
+  private onSettingsButtonClick_() {
     window.open('chrome://os-settings/help');
-  },
+  }
 
-  /**
-   * This is used in app.html so that the event argument is not passed to
-   * cancelOrBack_().
-   *
-   * @private
-   */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.cancelOrBack_();
-  },
+  }
 
-  /** @private */
-  cancelOrBack_(forceCancel = false) {
+  private cancelOrBack_(forceCancel: boolean = false) {
     switch (this.state_) {
       case State.PROMPT:
         BrowserProxy.getInstance().handler.cancelBeforeStart();
@@ -309,21 +326,14 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
-  /** @private */
-  closePage_() {
+  private closePage_() {
     BrowserProxy.getInstance().handler.onPageClosed();
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @param {String} error
-   * @returns {string}
-   * @private
-   */
-  getTitle_(state, error) {
-    let titleId;
+  private getTitle_(state: State, error: InstallerError): string {
+    let titleId: string = '';
     switch (state) {
       case State.PROMPT:
       case State.CONFIGURE:
@@ -346,73 +356,39 @@ Polymer({
       default:
         assertNotReached();
     }
-    return loadTimeData.getString(/** @type {string} */ (titleId));
-  },
+    return loadTimeData.getString(titleId);
+  }
 
-  /**
-   * @param {*} value1
-   * @param {*} value2
-   * @returns {boolean}
-   * @private
-   */
-  eq_(value1, value2) {
+  private eq_(value1: any, value2: any): boolean {
     return value1 === value2;
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @param {string} error
-   * @returns {boolean}
-   * @private
-   */
-  showInstallButton_(state, error) {
-    return state === State.CONFIGURE ||
-        (state === State.ERROR && error !== NoDiskSpaceError &&
+  private showInstallButton_(): boolean {
+    return this.state_ === State.CONFIGURE ||
+        (this.state_ === State.ERROR && this.error_ !== NoDiskSpaceError &&
          // eslint-disable-next-line eqeqeq
-         error != InstallerError.kNeedUpdate);
-  },
+         this.error_ != InstallerError.kNeedUpdate);
+  }
 
-  /**
-   * @param {State} state
-   * @param {string} username
-   * @param {string} usernameError
-   * @returns {boolean}
-   * @private
-   */
-  disableInstallButton_(state, username, usernameError) {
-    if (state === State.CONFIGURE) {
-      return !username || !!usernameError;
+  private disableInstallButton_(): boolean {
+    if (this.state_ === State.CONFIGURE) {
+      return !this.username_ || !!this.usernameError_;
     }
     return false;
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @returns {boolean}
-   * @private
-   */
-  showNextButton_(state) {
-    return state === State.PROMPT;
-  },
+  private showNextButton_(): boolean {
+    return this.state_ === State.PROMPT;
+  }
 
-  /**
-   * @param {State} state
-   * @param {string} error
-   * @returns {boolean}
-   * @private
-   */
-  showSettingsButton_(state, error) {
+  private showSettingsButton_(): boolean {
     // eslint-disable-next-line eqeqeq
-    return state === State.ERROR && error == InstallerError.kNeedUpdate;
-  },
+    return this.state_ === State.ERROR &&
+        this.error_ == InstallerError.kNeedUpdate;
+  }
 
-  /**
-   * @param {State} state
-   * @returns {string}
-   * @private
-   */
-  getInstallButtonLabel_(state) {
-    switch (state) {
+  private getInstallButtonLabel_(): string {
+    switch (this.state_) {
       case State.CONFIGURE:
         return loadTimeData.getString('install');
       case State.ERROR:
@@ -420,16 +396,11 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
-  /**
-   * @param {InstallerState} installerState
-   * @returns {string}
-   * @private
-   */
-  getProgressMessage_(installerState) {
-    let messageId = null;
-    switch (installerState) {
+  private getProgressMessage_(): string {
+    let messageId: string = '';
+    switch (this.installerState_) {
       case InstallerState.kStart:
         break;
       case InstallerState.kInstallImageLoader:
@@ -459,15 +430,10 @@ Polymer({
     }
 
     return messageId ? loadTimeData.getString(messageId) : '';
-  },
+  }
 
-  /**
-   * @param {InstallerError} error
-   * @returns {string}
-   * @private
-   */
-  getErrorMessage_(error) {
-    let messageId = null;
+  private getErrorMessage_(error: InstallerError): string {
+    let messageId: string = '';
     switch (error) {
       case InstallerError.kErrorLoadingTermina:
         messageId = 'loadTerminaError';
@@ -510,40 +476,45 @@ Polymer({
     }
 
     return messageId ? loadTimeData.getString(messageId) : '';
-  },
+  }
 
-  /** @private */
-  onUsernameChanged_(username, oldUsername) {
-    if (!username) {
+  private onUsernameChanged_() {
+    if (!this.username_) {
       this.usernameError_ = '';
-    } else if (UNAVAILABLE_USERNAMES.includes(username)) {
+    } else if (UNAVAILABLE_USERNAMES.includes(this.username_)) {
       this.usernameError_ =
-          loadTimeData.getStringF('usernameNotAvailableError', username);
-    } else if (!/^[a-z_]/.test(username)) {
+          loadTimeData.getStringF('usernameNotAvailableError', this.username_);
+    } else if (!/^[a-z_]/.test(this.username_)) {
       this.usernameError_ =
           loadTimeData.getString('usernameInvalidFirstCharacterError');
-    } else if (!/^[a-z0-9_-]*$/.test(username)) {
+    } else if (!/^[a-z0-9_-]*$/.test(this.username_)) {
       this.usernameError_ =
           loadTimeData.getString('usernameInvalidCharactersError');
     } else {
       this.usernameError_ = '';
     }
-  },
+  }
 
-  /** @private */
-  getCancelButtonLabel_(state) {
+  private getCancelButtonLabel_(): string {
     return loadTimeData.getString(
-        state === State.CONFIGURE ? 'back' : 'cancel');
-  },
+        this.state_ === State.CONFIGURE ? 'back' : 'cancel');
+  }
 
-  /** @private */
-  showErrorMessage_(state) {
-    return state === State.ERROR;
-  },
+  private showErrorMessage_(): boolean {
+    return this.state_ === State.ERROR;
+  }
 
-  /** @private */
-  onDiskSizeRadioChanged_(event) {
+  private onDiskSizeRadioChanged_(event: CustomEvent<{value: string}>) {
     this.showDiskSlider_ =
         (event.detail.value !== 'recommended' || !!this.isLowSpaceAvailable_);
-  },
-});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'crostini-installer-app': CrostiniInstallerAppElement;
+  }
+}
+
+customElements.define(
+    CrostiniInstallerAppElement.is, CrostiniInstallerAppElement);
