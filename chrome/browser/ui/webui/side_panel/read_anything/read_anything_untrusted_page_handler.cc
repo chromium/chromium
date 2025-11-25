@@ -926,7 +926,11 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   is_pdf_ = false;
-  if (!active_) {
+  // If the side panel is not active, we should not send the active tree id.
+  // This check is skipped when immersive read anything is enabled because
+  // there are times when the side panel is inactive but the Reading Mode
+  // application is still running, so we do need to send the active tree id.
+  if (!active_ && !features::IsImmersiveReadAnythingEnabled()) {
     VLOG(1) << "Sending unknown tree because not active";
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
                                    /*is_pdf=*/false);
