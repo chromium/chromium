@@ -77,14 +77,6 @@ enum class BWGPageContextAttachmentState {
   kEnterpriseDisabled,
 };
 
-// Creates request body data using a prompt and page context.
-std::string CreateRequestBody(
-    std::string prompt,
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context);
-
-// Creates resource request for loading glic.
-std::unique_ptr<network::ResourceRequest> CreateResourceRequest();
-
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(BWGConfiguration* bwg_configuration);
 

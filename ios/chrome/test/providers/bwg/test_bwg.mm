@@ -6,16 +6,6 @@
 
 namespace ios::provider {
 
-std::string CreateRequestBody(
-    std::string prompt,
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context) {
-  return std::string();
-}
-
-std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
-  return nullptr;
-}
-
 void StartBwgOverlay(BWGConfiguration* bwg_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
