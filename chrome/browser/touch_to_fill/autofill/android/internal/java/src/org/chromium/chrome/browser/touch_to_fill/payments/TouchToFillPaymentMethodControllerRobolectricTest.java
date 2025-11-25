@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.AFFIRM_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ERROR_SCREEN_DISMISSED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ERROR_SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED;
@@ -33,8 +34,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.KLARNA_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.PROGRESS_SCREEN_DISMISSED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.PROGRESS_SCREEN_SHOWN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN;
@@ -48,6 +51,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.ZIP_TOS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.APPLY_ISSUER_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_ICON_ID;
@@ -470,13 +474,40 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isLinked= */ false,
                     /* isEligible= */ false);
     private static final String LEGAL_MESSAGE_LINE = "legal message line";
-    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
+    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL_AFFIRM =
             new BnplIssuerTosDetail(
                     /* issuerId= */ "affirm",
                     /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* isLinkedIssuer= */ false,
                     /* issuerName= */ "Affirm",
+                    /* legalMessageLines= */ Arrays.asList(
+                            new LegalMessageLine(LEGAL_MESSAGE_LINE)));
+    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL_ZIP =
+            new BnplIssuerTosDetail(
+                    /* issuerId= */ "zip",
+                    /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* isLinkedIssuer= */ false,
+                    /* issuerName= */ "Zip",
+                    /* legalMessageLines= */ Arrays.asList(
+                            new LegalMessageLine(LEGAL_MESSAGE_LINE)));
+    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL_KLARNA =
+            new BnplIssuerTosDetail(
+                    /* issuerId= */ "klarna",
+                    /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* isLinkedIssuer= */ false,
+                    /* issuerName= */ "Klarna",
+                    /* legalMessageLines= */ Arrays.asList(
+                            new LegalMessageLine(LEGAL_MESSAGE_LINE)));
+    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL_UNKNOWN =
+            new BnplIssuerTosDetail(
+                    /* issuerId= */ "test",
+                    /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* isLinkedIssuer= */ false,
+                    /* issuerName= */ "Test",
                     /* legalMessageLines= */ Arrays.asList(
                             new LegalMessageLine(LEGAL_MESSAGE_LINE)));
     private static final BnplIssuerContext UNKNOWN_BNPL_ISSUER_CONTEXT =
@@ -1665,7 +1696,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowBnplIssuerTos() throws TimeoutException {
-        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL);
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -1686,7 +1717,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(
                         mActivity.getString(
                                 R.string.autofill_bnpl_tos_unlinked_title,
-                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
+                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
         assertThat(headerModel.get(0).get(IMAGE_DRAWABLE_ID), is(R.drawable.bnpl_icon_generic));
 
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
@@ -1696,21 +1727,22 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(
                         mActivity.getString(
                                 R.string.autofill_bnpl_tos_review_text,
-                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
+                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
         assertThat(bnplTosItemModel.get(0).get(BNPL_TOS_ICON_ID), is(R.drawable.checklist));
         assertThat(
                 bnplTosItemModel.get(1).get(DESCRIPTION_TEXT),
                 is(
                         mActivity.getString(
                                 R.string.autofill_bnpl_tos_approve_text,
-                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
+                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
         assertThat(bnplTosItemModel.get(1).get(BNPL_TOS_ICON_ID), is(R.drawable.receipt_long));
         assertThat(
                 bnplTosItemModel.get(2).get(DESCRIPTION_TEXT).toString(),
                 is(
                         mCoordinator
                                 .getMediatorForTesting()
-                                .getLinkTextForBnplTosScreen(BNPL_ISSUER_TOS_DETAIL.getIssuerName())
+                                .getLinkTextForBnplTosScreen(
+                                        BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())
                                 .toString()));
         assertThat(bnplTosItemModel.get(2).get(BNPL_TOS_ICON_ID), is(R.drawable.add_link));
 
@@ -1722,8 +1754,49 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testAffirmBnplTosShownLogged() throws TimeoutException {
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+        assertEquals(
+                1,
+                mActionTester.getActionCount(
+                        TOUCH_TO_FILL_BNPL_USER_ACTION + AFFIRM_TOS_SCREEN + SCREEN_SHOWN));
+    }
+
+    @Test
+    public void testKlarnaBnplTosShownLogged() throws TimeoutException {
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_KLARNA);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+        assertEquals(
+                1,
+                mActionTester.getActionCount(
+                        TOUCH_TO_FILL_BNPL_USER_ACTION + KLARNA_TOS_SCREEN + SCREEN_SHOWN));
+    }
+
+    @Test
+    public void testZipBnplTosShownLogged() throws TimeoutException {
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_ZIP);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+        assertEquals(
+                1,
+                mActionTester.getActionCount(
+                        TOUCH_TO_FILL_BNPL_USER_ACTION + ZIP_TOS_SCREEN + SCREEN_SHOWN));
+    }
+
+    @Test
+    public void testUnknownBnplIssuerTosShownNotLogged() throws TimeoutException {
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_UNKNOWN);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+        assertFalse(mActionTester.getActions().contains(TOUCH_TO_FILL_BNPL_USER_ACTION));
+    }
+
+    @Test
     public void testProgressScreenShownAfterBnplTosAcceptance() throws TimeoutException {
-        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL);
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
 
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);

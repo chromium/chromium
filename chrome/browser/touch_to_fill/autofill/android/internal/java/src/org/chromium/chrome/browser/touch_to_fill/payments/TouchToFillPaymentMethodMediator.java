@@ -314,6 +314,14 @@ class TouchToFillPaymentMethodMediator {
 
     @VisibleForTesting static final String ERROR_SCREEN_DISMISSED = ".ErrorScreen.Dismissed";
 
+    @VisibleForTesting static final String AFFIRM_TOS_SCREEN = ".AffirmTosScreen";
+
+    @VisibleForTesting static final String KLARNA_TOS_SCREEN = ".KlarnaTosScreen";
+
+    @VisibleForTesting static final String ZIP_TOS_SCREEN = ".ZipTosScreen";
+
+    @VisibleForTesting static final String SCREEN_SHOWN = ".Shown";
+
     // LINT.ThenChange(/tools/metrics/actions/actions.xml)
 
     // LINT.IfChange
@@ -330,6 +338,7 @@ class TouchToFillPaymentMethodMediator {
     private List<LoyaltyCard> mAffiliatedLoyaltyCards;
     private List<LoyaltyCard> mAllLoyaltyCards;
     private List<BnplIssuerContext> mBnplIssuerContexts;
+    private String mBnplIssuerIdWithTosShown;
     private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private boolean mShouldShowScanCreditCard;
@@ -789,6 +798,9 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
+
+        mBnplIssuerIdWithTosShown = bnplIssuerTosDetail.getIssuerId();
+        recordTouchToFillBnplTosUserAction();
     }
 
     void hideSheet() {
@@ -1358,6 +1370,28 @@ class TouchToFillPaymentMethodMediator {
                 // Nothing is recorded for all other issuerId's.
                 break;
         }
+    }
+
+    private void recordTouchToFillBnplTosUserAction() {
+        String tosUserAction;
+        switch (mBnplIssuerIdWithTosShown) {
+            case "affirm":
+                tosUserAction = AFFIRM_TOS_SCREEN;
+                break;
+            case "klarna":
+                tosUserAction = KLARNA_TOS_SCREEN;
+                break;
+            case "zip":
+                tosUserAction = ZIP_TOS_SCREEN;
+                break;
+            default:
+                // Nothing is recorded for all other issuerId's.
+                return;
+        }
+
+        tosUserAction += SCREEN_SHOWN;
+
+        recordTouchToFillBnplUserAction(tosUserAction);
     }
 
     private static void recordTouchToFillBnplUserAction(String userAction) {

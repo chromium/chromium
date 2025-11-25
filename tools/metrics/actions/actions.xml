@@ -5591,6 +5591,8 @@ should be able to be added at any place in this file.
   </description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
+    <variant name=".AffirmTosScreen.Shown"
+        summary="BNPL ToS screen shown for Affirm."/>
     <variant name=".ErrorScreen.Dismissed" summary="Error screen dismissed."/>
     <variant name=".ErrorScreen.Shown" summary="Error screen shown."/>
     <variant name=".IssuerSelectionScreen.AffirmLinkedSelected"
@@ -5613,9 +5615,13 @@ should be able to be added at any place in this file.
         summary="Linked Zip issuer selected."/>
     <variant name=".IssuerSelectionScreen.ZipUnlinkedSelected"
         summary="Unlinked Zip issuer selected."/>
+    <variant name=".KlarnaTosScreen.Shown"
+        summary="BNPL ToS screen shown for Klarna."/>
     <variant name=".ProgressScreen.Dismissed"
         summary="Progress screen dismissed."/>
     <variant name=".ProgressScreen.Shown" summary="Progress screen shown."/>
+    <variant name=".ZipTosScreen.Shown"
+        summary="BNPL ToS screen shown for Zip."/>
   </token>
 </action>
 
