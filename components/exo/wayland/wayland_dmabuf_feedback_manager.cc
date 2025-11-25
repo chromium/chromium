@@ -385,13 +385,7 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4)) {
-    version_ = ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION;
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4) ||
-      !caps.drm_device_id) {
+  if (!caps.drm_device_id) {
     version_ = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
     return;
   }
