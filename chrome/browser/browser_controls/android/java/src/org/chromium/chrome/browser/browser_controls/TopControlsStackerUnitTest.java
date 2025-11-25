@@ -57,6 +57,7 @@ public class TopControlsStackerUnitTest {
         private @TopControlVisibility int mVisibility;
         private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
         private int mLatestYOffset = OFFSET_NOT_OBSERVED;
+        private int mPrepForAnimationYOffset = OFFSET_NOT_OBSERVED;
         private boolean mAtRestingPosition;
 
         TestLayer(
@@ -110,6 +111,11 @@ public class TopControlsStackerUnitTest {
             mAtRestingPosition = reachRestingPosition;
         }
 
+        @Override
+        public void prepForHeightAdjustmentAnimation(int latestYOffset) {
+            mPrepForAnimationYOffset = latestYOffset;
+        }
+
         // Assert methods
 
         void assertHasOffsetTags(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
@@ -135,6 +141,13 @@ public class TopControlsStackerUnitTest {
                     expectedAtResting,
                     mAtRestingPosition);
             return this;
+        }
+
+        void assertPrepForAnimation(int expectedYOffset) {
+            assertEquals(
+                    mName + " should have prepForHeightAdjustmentAnimation called.",
+                    expectedYOffset,
+                    mPrepForAnimationYOffset);
         }
 
         // Factory methods
@@ -835,6 +848,78 @@ public class TopControlsStackerUnitTest {
         tabStrip.assertOffset(0);
         toolbar.assertOffset(50);
         bookmark.assertOffset(150);
+    }
+
+    @Test
+    public void testPrepForAnimation() {
+        doReturn(false).when(mBrowserControlsSizer).offsetOverridden();
+
+        var simulator = new TestBrowserControlsOffsetHelper();
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+        simulator.commitCurrentOffset();
+
+        // Animate hiding tab strip. The call to prepForAnimation should happen here.
+        tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
+        mTopControlsStacker.requestLayerUpdate(true);
+
+        // Both layers should have their prepForHeightAdjustmentAnimation called.
+        tabStrip.assertPrepForAnimation(0);
+        toolbar.assertPrepForAnimation(50);
+    }
+
+    @Test
+    public void testPrepForAnimation_ControlsScrolledOff() {
+        doReturn(false).when(mBrowserControlsSizer).offsetOverridden();
+
+        var simulator = new TestBrowserControlsOffsetHelper();
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+        simulator.commitCurrentOffset();
+
+        // Scroll when toolbar and tab strip all hidden.
+        simulator.scrollBy(-150);
+
+        tabStrip.assertOffset(-50).assertAtResting(true);
+        toolbar.assertOffset(-100).assertAtResting(true);
+
+        // Animate hiding tab strip. The call to prepForAnimation should happen here.
+        tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
+        mTopControlsStacker.requestLayerUpdate(true);
+
+        // Both layers should have their prepForHeightAdjustmentAnimation called.
+        tabStrip.assertPrepForAnimation(-50);
+        toolbar.assertPrepForAnimation(-100);
+    }
+
+    @Test
+    public void testPrepForAnimation_NoAnimation() {
+        doReturn(false).when(mBrowserControlsSizer).offsetOverridden();
+
+        var simulator = new TestBrowserControlsOffsetHelper();
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+        simulator.commitCurrentOffset();
+
+        // Animate hiding tab strip. The call to prepForAnimation should not happen here.
+        tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        // Both layers should not have their prepForHeightAdjustmentAnimation called.
+        tabStrip.assertPrepForAnimation(OFFSET_NOT_OBSERVED);
+        toolbar.assertPrepForAnimation(OFFSET_NOT_OBSERVED);
     }
 
     @Test
