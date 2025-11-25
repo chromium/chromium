@@ -392,6 +392,10 @@ const CGFloat kSnackbarBottomMargin = 10;
   [_omniboxCoordinator clearSuggestionsAndRestartAutocomplete];
 }
 
+- (void)showAttachmentLimitError {
+  [self showMaxAttachmentSnackbarError];
+}
+
 #pragma mark - LocationBarURLLoader
 
 - (void)loadGURLFromLocationBar:(const GURL&)url

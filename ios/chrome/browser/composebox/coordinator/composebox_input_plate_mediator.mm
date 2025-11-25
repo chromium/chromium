@@ -597,6 +597,10 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (![self canAddMoreAttachments]) {
+    [self.delegate showAttachmentLimitError];
+    return;
+  }
   web::WebState* webState = _webStateList->GetActiveWebState();
   if (!webState) {
     return;

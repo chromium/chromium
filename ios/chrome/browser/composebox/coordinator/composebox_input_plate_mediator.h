@@ -29,6 +29,8 @@ class WebStateList;
 @protocol ComposeboxInputPlateMediatorDelegate
 // Reloads the composebox autocomplete suggestions.
 - (void)reloadAutocompleteSuggestions;
+// Informs the delegate that adding an attachment failed due to limit.
+- (void)showAttachmentLimitError;
 @end
 
 // Mediator for the composebox composebox.
