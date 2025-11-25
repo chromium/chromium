@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 
 // A delegate for the contextual entry point visibility.
-@protocol ContextualPanelEntrypointVisibilityDelegate
+@protocol ContextualPanelEntrypointVisibilityDelegate <NSObject>
 
 // Show/hide the contextual panel entrypoint.
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden;
@@ -21,6 +21,11 @@
 
 // Sets whether the contextual panel entrypoint is currently animating.
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating;
+
+@optional
+
+// TODO(crbug.com/458307626): Remove when migration is complete.
+- (void)disableProactiveSuggestionOverlay:(BOOL)disabled;
 
 @end
 

@@ -48,6 +48,9 @@ void HideViewIfNecessary(UIView* view, BOOL hidden) {
 // Height of `unreadIndicatorView`.
 const CGFloat kUnreadIndicatorViewHeight = 6.0;
 
+// Leading space for the separator that displays after the badge.
+const CGFloat kLeadingSeparatorSpace = 5.0;
+
 }  // anonymous namespace
 
 @implementation LocationBarBadgeViewController {
@@ -134,6 +137,8 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   [_badgeContentView addSubview:_badgeIcon];
   [_badgeContentView addSubview:_label];
   [_badgeStackView addArrangedSubview:_buttonContainer];
+  [_badgeStackView setCustomSpacing:kLeadingSeparatorSpace
+                          afterView:_buttonContainer];
   [_badgeStackView addArrangedSubview:_separator];
 
   [self updateAccessibilityStatus];
@@ -299,7 +304,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     (UIColor*)backgroundColor {
   UIButtonConfiguration* configuration;
 
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if ([self useMultiBadge]) {
     configuration = [UIButtonConfiguration plainButtonConfiguration];
   } else {
     configuration = [UIButtonConfiguration filledButtonConfiguration];
@@ -315,7 +320,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIColor* defaultBackgroundColor = IsProactiveSuggestionsFrameworkEnabled()
+  UIColor* defaultBackgroundColor = [self useMultiBadge]
                                         ? [UIColor clearColor]
                                         : [UIColor colorNamed:kBackgroundColor];
   button.configuration =
@@ -361,9 +366,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
-                                ? kUnifiedBadgeSymbolPointSize
-                                : kBadgeSymbolPointSize;
+  CGFloat symbolPointSize = kBadgeSymbolPointSize;
 
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
       configurationWithPointSize:symbolPointSize
@@ -437,8 +440,6 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     [_badgeStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [_badgeStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
-    [_separator.centerXAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-    [_separator.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
     [_separator.widthAnchor constraintEqualToConstant:kSeparatorWidthConstant],
     [_separator.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
@@ -528,8 +529,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
       _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
   BOOL shouldShowMutedColors =
       shouldAccountForVisibleInfobarBadges || _badgeTapped;
-  BOOL isInUnifiedContainer =
-      IsProactiveSuggestionsFrameworkEnabled() && [self isBadgeVisible];
+  BOOL isInUnifiedContainer = [self useMultiBadge] && [self isBadgeVisible];
 
   // Badge icon tint color.
   if (isInUnifiedContainer) {
@@ -641,6 +641,12 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   }
 }
 
+- (BOOL)useMultiBadge {
+  return IsProactiveSuggestionsFrameworkEnabled() &&
+         _badgeConfig.badgeType !=
+             LocationBarBadgeType::kGeminiContextualCueChip;
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
@@ -669,9 +675,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
         base::SysUTF8ToNSString(config->accessibility_label);
 
     UIImage* image;
-    CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
-                                  ? kUnifiedBadgeSymbolPointSize
-                                  : kBadgeSymbolPointSize;
+    CGFloat symbolPointSize = kBadgeSymbolPointSize;
     switch (config->image_type) {
       case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
         image = DefaultSymbolWithPointSize(
@@ -713,9 +717,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 
     UIImage* image;
-    CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
-                                  ? kUnifiedBadgeSymbolPointSize
-                                  : kBadgeSymbolPointSize;
+    CGFloat symbolPointSize = kBadgeSymbolPointSize;
     switch (config->image_type) {
       case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
         image = DefaultSymbolWithPointSize(
@@ -795,6 +797,14 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     return;
   }
 
+  if (_badgeConfig.badgeType ==
+      LocationBarBadgeType::kGeminiContextualCueChip) {
+    if ([self.visibilityDelegate
+            respondsToSelector:@selector(disableProactiveSuggestionOverlay:)]) {
+      [self.visibilityDelegate disableProactiveSuggestionOverlay:YES];
+    }
+  }
+
   [self refreshEntrypointVisualElements];
 
   _locationBarBadgeShouldBeVisible = YES;
@@ -831,6 +841,13 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   [self transitionToContextualPanelOpenedState:NO];
 
   [self setLocationBarBadgeHidden:YES];
+  if (_badgeConfig.badgeType ==
+      LocationBarBadgeType::kGeminiContextualCueChip) {
+    if ([self.visibilityDelegate
+            respondsToSelector:@selector(disableProactiveSuggestionOverlay:)]) {
+      [self.visibilityDelegate disableProactiveSuggestionOverlay:NO];
+    }
+  }
 
   [self updateAccessibilityStatus];
   [self setLocationBarLabelCenteredBetweenContent:NO];

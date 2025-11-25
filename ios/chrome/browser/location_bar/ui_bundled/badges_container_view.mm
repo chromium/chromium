@@ -38,6 +38,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   UIStackView* _containerStackView;
   UIButton* _tapOverlayButton;
   UIView* _badgeBackgroundView;
+  BOOL _disableProactiveOverlay;
 
   /// Whether the contextual panel entrypoint should be visible. The placeholder
   /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
@@ -130,6 +131,10 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
   _contextualPanelCurrentlyAnimating = animating;
   [self updateViewsVisibility];
+}
+
+- (void)disableProactiveSuggestionOverlay:(BOOL)disabled {
+  _disableProactiveOverlay = disabled;
 }
 
 #pragma mark - ReaderModeChipVisibilityDelegate
@@ -441,7 +446,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 - (BOOL)hasVisibleBadges {
   for (UIView* subview in _containerStackView.arrangedSubviews) {
     if (!subview.hidden && subview != _placeholderView) {
-      return YES;
+      return !_disableProactiveOverlay;
     }
   }
   return NO;
