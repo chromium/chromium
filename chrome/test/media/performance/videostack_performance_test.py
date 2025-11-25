@@ -119,12 +119,15 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
     # force video output to mp4
     output_file = os.path.join(common.RECORDINGS_DIR,
                                video_file.replace('.webm', '.mp4'))
+
+    width, height, fps = common._query_v4l2_device('/dev/video1')
+
     host_recording_cmd = [
         'ffmpeg',
         '-y',
         '-f', 'video4linux2',
-        '-framerate', str(framerate),
-        '-video_size', '3840x2160',
+        '-framerate', str(fps),
+        '-video_size', f'{width}x{height}',
         '-input_format', 'yuyv422',
         '-i', '/dev/video1',
         '-thread_queue_size', '1024',
@@ -138,7 +141,7 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
     ]
 
     wait = WebDriverWait(driver, 30)
-    driver.get(f'http://{socket.gethostbyname(socket.gethostname())}:'
+    driver.get(f'http://{common.LOCAL_HOST_IP}:'
                f'{common.SERVER_PORT}/video.html?file={video_file}')
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 

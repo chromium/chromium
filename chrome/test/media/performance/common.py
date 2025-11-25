@@ -42,6 +42,7 @@ SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 RECORDINGS_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
                               'recordings')
 REMOTE_URL = f'http://127.0.0.1:{CHROMEDRIVER_PORT}'
+LOCAL_HOST_IP = '127.0.0.1'
 
 # This code is used as the default failure value for recordings in the case that
 # `results.get()` throws an unexpected error. -128 is chosen as a clear fail
@@ -127,6 +128,42 @@ class StartProcess(AbstractContextManager):
     self._proc.join()
     if not self._terminate:
       assert self._proc.exitcode == 0
+
+
+# TODO: b/463482240
+# Currently we rely on brittle string-matching to properly set v4l2 device
+# dimensions. This should be removed as soon as we have a more robust option.
+def _query_v4l2_device(device_path) -> tuple[int, int, int]:
+  """Queries a video device using v4l2-ctl and returns its metrics."""
+  logging.info('Querying video device status with v4l2-ctl for %s...',
+               device_path)
+  device_status_cmd = [
+      'v4l2-ctl',
+      f'--device={device_path}',
+      '--all'
+  ]
+  try:
+    result = subprocess.run(device_status_cmd, check=True,
+                            capture_output=True, text=True)
+    logging.info('v4l2-ctl output:\n%s', result.stdout)
+
+    width, height, fps = 0, 0, 0
+    for line in result.stdout.splitlines():
+      if 'Width/Height' in line:
+        parts = line.split(':')[-1].strip().split('/')
+        width = int(parts[0])
+        height = int(parts[1])
+      elif 'Frames per second' in line:
+        fps = int(float(line.split(':')[1].strip().split(' ')[0]))
+    if not (width and height and fps):
+      raise RuntimeError(f'Could not parse width, height, or fps from '
+                         f'v4l2-ctl output:\n{result.stdout}')
+    return width, height, fps
+  except (subprocess.CalledProcessError, FileNotFoundError) as e:
+    stderr = e.stderr if hasattr(e, 'stderr') else '(no stderr)'
+    stdout = e.stdout if hasattr(e, 'stdout') else '(no stdout)'
+    raise RuntimeError(f'Could not query device status for {device_path}. '
+                       f'Stdout: {stdout}\nStderr: {stderr}') from e
 
 
 def send_ssh_command(hostname, username, command, blocking=False):
@@ -246,7 +283,6 @@ def install_and_setup_chrome(args, chrome_version):
         f'{remote_tmp_dir}/{driver_unzip_dir}/chromedriver')
     remote_chromedriver_dir = f'{remote_tmp_dir}/{driver_unzip_dir}'
 
-    # --- Start Chromedriver ---
     chmod_command = f'chmod +x {remote_chromedriver_path}'
     send_ssh_command(args.sender, args.username, chmod_command, blocking=True)
 
@@ -286,8 +322,7 @@ def install_and_setup_chrome(args, chrome_version):
     remote_chromedriver_path = (
         f'{remote_chromedriver_dir}\\chromedriver.exe')
 
-    # --- Start Chromedriver ---
-
+  # --- Start Chromedriver ---
   start_driver_cmd = {
       'mac': (
           f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
