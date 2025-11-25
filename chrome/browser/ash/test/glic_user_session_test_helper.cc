@@ -9,9 +9,13 @@
 
 #include "base/check.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/test/glic_user_session_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
@@ -40,6 +44,13 @@ void GlicUserSessionTestHelper::PreProfileSetUp(
   CHECK(profile_manager->GetLoadedProfiles().empty())
       << "PreProfileSetUp must be called before profile is created";
   profile_manager_observation_.Observe(profile_manager);
+
+  network_handler_test_helper_ =
+      std::make_unique<ash::NetworkHandlerTestHelper>();
+  fake_cros_network_config_ =
+      std::make_unique<chromeos::network_config::FakeCrosNetworkConfig>();
+  ash::network_config::OverrideInProcessInstanceForTesting(
+      fake_cros_network_config_.get());
 
   session_manager_ = std::make_unique<session_manager::SessionManager>(
       std::make_unique<session_manager::FakeSessionManagerDelegate>());
@@ -77,6 +88,10 @@ void GlicUserSessionTestHelper::PostProfileTearDown() {
 
   session_manager_.reset();
   user_manager_.Reset();
+
+  ash::network_config::OverrideInProcessInstanceForTesting(nullptr);
+  fake_cros_network_config_.reset();
+  network_handler_test_helper_.reset();
 }
 
 void GlicUserSessionTestHelper::OnProfileManagerDestroying() {

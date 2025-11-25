@@ -14,12 +14,17 @@
 class ProfileManager;
 class ProfileManagerObserver;
 
+namespace chromeos::network_config {
+class FakeCrosNetworkConfig;
+}  // namespace chromeos::network_config
+
 namespace session_manager {
 class SessionManager;
 }  // namespace session_manager
 
 namespace ash {
 
+class NetworkHandlerTestHelper;
 class ScopedAccountIdAnnotator;
 
 // Sets up user session for GLIC.
@@ -54,6 +59,10 @@ class GlicUserSessionTestHelper : public ProfileManagerObserver {
 
   std::unique_ptr<ScopedAccountIdAnnotator> scoped_account_id_annotator_;
   bool need_post_profile_teardown_ = false;
+
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
+  std::unique_ptr<chromeos::network_config::FakeCrosNetworkConfig>
+      fake_cros_network_config_;
 };
 
 }  // namespace ash

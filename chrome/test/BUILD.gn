@@ -10630,6 +10630,9 @@ test("unit_tests") {
           [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
 
       deps += [ "//chrome/browser/ui/tabs:glic" ]
+      if (is_chromeos) {
+        deps += [ "//chrome/browser/ash/test:test_support" ]
+      }
     }
     if (is_linux) {
       sources += [

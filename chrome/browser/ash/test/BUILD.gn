@@ -32,6 +32,8 @@ static_library("test_support") {
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/settings:test_support",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
     "//components/account_id",
     "//components/policy/proto",
     "//components/prefs",
