@@ -3158,7 +3158,6 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   // For metrics.
   all_cancelled_share_target_ids_.clear();
 
-  // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
       std::move(endpoint_info), *info->endpoint_id(),
       std::move(bluetooth_mac_address), settings_.GetDataUsage(),
