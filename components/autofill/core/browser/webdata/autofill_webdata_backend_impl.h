@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_IMPL_H_
 
-#include <atomic>
 #include <memory>
 #include <optional>
 #include <string>
@@ -324,10 +323,6 @@ class AutofillWebDataBackendImpl
   // WebDatabaseBackend allows direct access to DB.
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
-
-#if DCHECK_IS_ON()
-  std::atomic<bool> has_been_shut_down_ = false;
-#endif
 
   // This factory is used on the UI sequence. All vended weak pointers are
   // invalidated in ShutdownOnUISequence().
