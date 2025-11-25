@@ -60,9 +60,10 @@ class AutoPictureInPictureSafeBrowsingCheckerClientTest
 #if DCHECK_IS_ON()
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest, InvalidDelay) {
   EXPECT_DEATH_IF_SUPPORTED(
-      std::make_unique<AutoPictureInPictureSafeBrowsingCheckerClient>(
-          mock_database_manager(), base::Milliseconds(1),
-          report_url_safety_cb().Get()),
+      std::ignore =
+          std::make_unique<AutoPictureInPictureSafeBrowsingCheckerClient>(
+              mock_database_manager(), base::Milliseconds(1),
+              report_url_safety_cb().Get()),
       "");
 }
 #endif  // DCHECK_IS_ON()

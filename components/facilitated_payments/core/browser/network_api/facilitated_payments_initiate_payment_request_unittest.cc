@@ -103,7 +103,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   request_details_full->instrument_id_ = 13;
 
   EXPECT_DEATH_IF_SUPPORTED(
-      std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::ignore = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
           std::move(request_details_full),
           /*response_callback=*/base::DoNothing(),
           /*app_locale=*/"US", /*full_sync_enabled=*/true),
