@@ -150,7 +150,7 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       std::vector<AutofillProfile>& profiles_to_suggest,
-      const std::string& plus_address_email_override);
+      const std::optional<std::string>& plus_address_email_override);
 
   // Used to change the emails matching the GAIA email in suggestions with
   // the `plus_address_email_override_`.

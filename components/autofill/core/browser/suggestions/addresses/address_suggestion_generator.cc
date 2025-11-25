@@ -579,8 +579,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     // email.
     // Then the profile's email address will be replaced with the plus
     // address in order to show the updated email on the suggestion label.
-    if (plus_address_email_override && !plus_address_email_override->empty() &&
-        profile.HasInfo(EMAIL_ADDRESS) &&
+    if (plus_address_email_override && profile.HasInfo(EMAIL_ADDRESS) &&
         base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
       email_override = base::UTF8ToUTF16(*plus_address_email_override);
       profile.SetRawInfo(EMAIL_ADDRESS, email_override);
@@ -822,9 +821,9 @@ std::vector<Suggestion> GenerateAddressOnTypingSuggestions(
 
 // If `plus_address_email_override` exits it is returned. Otherwise tries to
 // find plus addresses in the `all_suggestion_data` and returns the first of
-// them. If `all_suggestion_data` doesn't contain any plus addresses, an empty
-// string is returned.
-std::string GetPlusAddressEmailOverride(
+// them. If `all_suggestion_data` doesn't contain any plus addresses, a
+// `std::nullopt` is returned.
+std::optional<std::string> GetPlusAddressEmailOverride(
     const std::optional<std::string>& plus_address_email_override,
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&
@@ -843,9 +842,14 @@ std::string GetPlusAddressEmailOverride(
         all_suggestion_data,
         SuggestionGenerator::SuggestionDataSource::kPlusAddressForAddress);
   }
-  return (plus_address_data && !plus_address_data->empty())
-             ? std::get<PlusAddress>(plus_address_data->front()).value()
-             : std::string();
+  if (!plus_address_data || plus_address_data->empty()) {
+    return std::nullopt;
+  }
+
+  const std::string& plus_address =
+      std::get<PlusAddress>(plus_address_data->front()).value();
+  return !plus_address.empty() ? std::make_optional(plus_address)
+                               : std::nullopt;
 }
 
 }  // namespace
@@ -1145,7 +1149,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     std::vector<AutofillProfile>& profiles_to_suggest,
-    const std::string& plus_address_email_override) {
+    const std::optional<std::string>& plus_address_email_override) {
   if (!form_structure || !trigger_autofill_field ||
       !client.GetIdentityManager()) {
     return {};
