@@ -25,6 +25,8 @@
 
 namespace glic {
 
+BASE_FEATURE(kGlicGuestUrlMultiInstanceParam, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // LINT.IfChange(WebViewAutoPlayProgress)
@@ -74,6 +76,9 @@ GURL GetGuestURL() {
     LOG(ERROR) << "No glic guest url";
     return GURL();
   }
+
+  url = MaybeAddMultiInstanceParameter(url);
+
   return GetLocalizedGuestURL(url);
 }
 
@@ -89,6 +94,14 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
   std::string locale = g_browser_process->GetApplicationLocale();
   language::ToTranslateLanguageSynonym(&locale);
   return net::AppendQueryParameter(guest_url, "hl", locale);
+}
+
+GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
+  if (GlicEnabling::IsMultiInstanceEnabled() &&
+      base::FeatureList::IsEnabled(kGlicGuestUrlMultiInstanceParam)) {
+    return net::AppendOrReplaceQueryParameter(guest_url, "mode", "mi");
+  }
+  return guest_url;
 }
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {

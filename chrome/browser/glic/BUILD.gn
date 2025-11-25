@@ -362,6 +362,7 @@ source_set("unit_tests") {
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing:test_support",
     "//chrome/browser/glic/browser_ui:unit_tests",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/fre:unit_tests",
     "//chrome/browser/glic/media:unit_tests",
     "//chrome/browser/glic/test_support",
