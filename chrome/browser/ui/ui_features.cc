@@ -534,7 +534,7 @@ BASE_FEATURE(kEnablePolicyPromotionBanner, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInlineFullscreenPerfExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageActionsMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageActionsMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationEnableAll,
@@ -546,67 +546,67 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationLensOverlay,
                    &kPageActionsMigration,
                    "lens_overlay",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationMemorySaver,
                    &kPageActionsMigration,
                    "memory_saver",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationTranslate,
                    &kPageActionsMigration,
                    "translate",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationIntentPicker,
                    &kPageActionsMigration,
                    "intent_picker",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationZoom,
                    &kPageActionsMigration,
                    "zoom",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationOfferNotification,
                    &kPageActionsMigration,
                    "offer_notification",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationFileSystemAccess,
                    &kPageActionsMigration,
                    "file_system_access",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationPwaInstall,
                    &kPageActionsMigration,
                    "pwa_install",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationPriceInsights,
                    &kPageActionsMigration,
                    "price_insights",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationDiscounts,
                    &kPageActionsMigration,
                    "discounts",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationManagePasswords,
                    &kPageActionsMigration,
                    "manage_passwords",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationCookieControls,
@@ -618,25 +618,25 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAutofillAddress,
                    &kPageActionsMigration,
                    "autofill_address",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationFind,
                    &kPageActionsMigration,
                    "find",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationCollaborationMessaging,
                    &kPageActionsMigration,
                    "collaboration_messaging",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationPriceTracking,
                    &kPageActionsMigration,
                    "price_tracking",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAutofillMandatoryReauth,
@@ -648,7 +648,7 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationClickToCall,
                    &kPageActionsMigration,
                    "click_to_call",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationSharingHub,

@@ -73,6 +73,12 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
 }  // namespace
 
 bool IsPageActionMigrated(PageActionIconType page_action) {
+  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return false;
+  }
+
+  // Page actions on the new framework that don't have an implementation on the legacy path
+  // and don't have a feature param.
   if (page_action == PageActionIconType::kContextualSidePanel ||
       page_action == PageActionIconType::kJsOptimizations) {
     return true;

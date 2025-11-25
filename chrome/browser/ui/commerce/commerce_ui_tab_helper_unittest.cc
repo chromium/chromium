@@ -12,6 +12,11 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
+#include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
+#include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -100,16 +105,32 @@ class CommerceUiTabHelperTest : public testing::Test {
         .WillByDefault(testing::Return(web_contents_));
     ON_CALL(tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(data_host_));
+    ON_CALL(tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&browser_window_interface_));
+    ON_CALL(browser_window_interface_, CanShowCallToAction())
+        .WillByDefault(testing::Return(false));
+    ON_CALL(browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(data_host_));
 
     side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
         tab_interface_, shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get(), side_panel_registry_.get());
+
+    discounts_page_action_controller_ =
+        std::make_unique<DiscountsPageActionViewController>(
+            tab_interface_, page_action_controller_, *tab_helper_.get());
+
+    price_insights_page_action_controller_ =
+        std::make_unique<PriceInsightsPageActionViewController>(
+            tab_interface_, page_action_controller_);
   }
 
   void TestBody() override {}
 
   void TearDown() override {
+    price_insights_page_action_controller_.reset();
+    discounts_page_action_controller_.reset();
     // Make sure the tab helper id destroyed before any of its dependencies are.
     tab_helper_.reset();
   }
@@ -159,6 +180,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   content::TestWebContentsFactory test_web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
   ui::UnownedUserDataHost data_host_;
+  MockBrowserWindowInterface browser_window_interface_;
   tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
@@ -166,6 +188,11 @@ class CommerceUiTabHelperTest : public testing::Test {
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   std::unique_ptr<MockAccountChecker> account_checker_;
+  page_actions::MockPageActionController page_action_controller_;
+  std::unique_ptr<DiscountsPageActionViewController>
+      discounts_page_action_controller_;
+  std::unique_ptr<PriceInsightsPageActionViewController>
+      price_insights_page_action_controller_;
   base::test::ScopedFeatureList features_;
 };
 

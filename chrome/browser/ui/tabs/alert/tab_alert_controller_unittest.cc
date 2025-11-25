@@ -76,6 +76,8 @@ class TabAlertControllerTest : public testing::Test {
         tab_strip_model_delegate_.get(), profile_);
     EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
         .WillRepeatedly(testing::Return(tab_strip_model_.get()));
+    EXPECT_CALL(*browser_window_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(user_data_host_));
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
@@ -114,6 +116,7 @@ class TabAlertControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler test_enabler_;
+  ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<FakeBrowserWindowInterface> browser_window_interface_;
