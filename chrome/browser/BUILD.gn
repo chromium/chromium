@@ -7574,6 +7574,13 @@ static_library("browser") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    deps += [
+      "//components/unexportable_keys/mojom",
+      "//components/unexportable_keys/mojom:mojo_service",
+    ]
+  }
+
   if (enable_media_remoting) {
     sources += [
       "media/cast_remoting_connector.cc",

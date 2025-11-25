@@ -40,6 +40,10 @@ source_set("profiles") {
     ]
   }
 
+  if (enable_bound_session_credentials) {
+    deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+  }
+
   public_deps = [
     ":profile",
     "//build:chromeos_buildflags",

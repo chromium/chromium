@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 #include "crypto/unexportable_key.h"
 
 class Profile;
@@ -41,6 +42,19 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
   static unexportable_keys::UnexportableKeyService* GetForProfileAndPurpose(
       Profile* profile,
       KeyPurpose purpose);
+
+  // Returns nullptr if unexportable key provider is not supported by the
+  // platform.
+  //
+  // If called multiple times, it will replace the existing receiver with the
+  // new instance passed. This will result in previous connections being
+  // dropped.
+  static unexportable_keys::UnexportableKeyServiceProxyImpl*
+  RecreateMojoProxyForProfileAndPurposeWithReceiver(
+      Profile* profile,
+      KeyPurpose purpose,
+      mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
+          receiver);
 
   static UnexportableKeyServiceFactory* GetInstance();
 

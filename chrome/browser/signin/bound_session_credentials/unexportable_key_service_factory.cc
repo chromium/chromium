@@ -20,11 +20,13 @@
 #include "chrome/common/chrome_version.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/hash.h"
 #include "crypto/unexportable_key.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
@@ -158,6 +160,25 @@ class UnexportableKeyServiceManager : public KeyedService {
     return service.get();
   }
 
+  unexportable_keys::UnexportableKeyServiceProxyImpl*
+  GetOrCreateMojoProxyServiceWithReceiver(
+      UnexportableKeyServiceFactory::KeyPurpose purpose,
+      mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
+          receiver) {
+    unexportable_keys::UnexportableKeyService* uks =
+        GetOrCreateService(purpose);
+    CHECK(uks);
+
+    auto new_service =
+        std::make_unique<unexportable_keys::UnexportableKeyServiceProxyImpl>(
+            uks, std::move(receiver));
+
+    auto [it, inserted] =
+        proxy_services_.insert_or_assign(purpose, std::move(new_service));
+
+    return it->second.get();
+  }
+
  private:
   std::unique_ptr<unexportable_keys::UnexportableKeyService>
   CreateServiceForPurpose(UnexportableKeyServiceFactory::KeyPurpose purpose) {
@@ -179,6 +200,13 @@ class UnexportableKeyServiceManager : public KeyedService {
       UnexportableKeyServiceFactory::KeyPurpose,
       std::unique_ptr<unexportable_keys::UnexportableKeyService>>
       services_;
+
+  // Map to hold individual `UnexportableKeyServiceProxyImpl` instances, keyed
+  // by `KeyPurpose`.
+  absl::flat_hash_map<
+      UnexportableKeyServiceFactory::KeyPurpose,
+      std::unique_ptr<unexportable_keys::UnexportableKeyServiceProxyImpl>>
+      proxy_services_;
 };
 
 }  // namespace
@@ -190,6 +218,21 @@ UnexportableKeyServiceFactory::GetForProfileAndPurpose(Profile* profile,
   auto* manager = static_cast<UnexportableKeyServiceManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
   return manager != nullptr ? manager->GetOrCreateService(purpose) : nullptr;
+}
+
+// static
+unexportable_keys::UnexportableKeyServiceProxyImpl*
+UnexportableKeyServiceFactory::
+    RecreateMojoProxyForProfileAndPurposeWithReceiver(
+        Profile* profile,
+        KeyPurpose purpose,
+        mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
+            receiver) {
+  auto* manager = static_cast<UnexportableKeyServiceManager*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+  return manager != nullptr ? manager->GetOrCreateMojoProxyServiceWithReceiver(
+                                  purpose, std::move(receiver))
+                            : nullptr;
 }
 
 // static

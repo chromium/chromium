@@ -7,10 +7,13 @@
 
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
-#include "components/unexportable_keys/unexportable_key_service_impl.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,15 +25,9 @@ inline constexpr size_t kMaxWrappedKeySize =
 
 // An implementation of the `mojom::UnexportableKeyService` Mojo interface.
 //
-// This class acts as a proxy, receiving IPC requests via its Mojo receiver
-// and delegating the calls to an underlying
-// `::unexportable_keys::UnexportableKeyService` instance. It is responsible
-// for converting Mojo-defined types to their native C++ equivalents
-// before calling the underlying service, and converting results back
-// to Mojo types for the callback.
-//
-// The `unexportable_key_service` instance provided during construction must
-// outlive this proxy.
+// This class receives IPC requests via its Mojo receiver and delegates calls
+// to an underlying `::unexportable_keys::UnexportableKeyService` instance.
+// The underlying service must outlive this proxy.
 class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
  public:
   // Constructs a proxy. `unexportable_key_service` must be a non-null pointer
@@ -61,8 +58,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
             SignCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::UnexportableKeyService> receiver_;
-
+  mojo::Receiver<mojom::UnexportableKeyService> receiver_{this};
   // The underlying UnexportableKeyService instance. Not owned.
   // This pointer must remain valid for the entire lifetime of the
   // UnexportableKeyServiceProxyImpl object.

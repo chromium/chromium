@@ -7,6 +7,7 @@ module network.mojom;
 import "components/content_settings/core/common/content_settings.mojom";
 import "components/ip_protection/mojom/core.mojom";
 import "components/ip_protection/mojom/data_types.mojom";
+import "components/unexportable_keys/mojom/unexportable_key_service.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -87,7 +88,6 @@ import "services/network/public/mojom/p2p.mojom";
 
 [EnableIf=is_p2p_enabled]
 import "services/network/public/mojom/p2p_trusted.mojom";
-
 
 const uint32 kWebSocketOptionNone = 0;
 
@@ -628,6 +628,13 @@ struct NetworkContextParams {
   // If true, the HTTP cache will be encrypted on disk. For now, this only
   // switches the backend on Windows.
   bool enable_encrypted_http_cache = false;
+
+  // If set, the network process will use the remote to reach the unexportable
+  // key service in the browser process, and delegate all unexportable keys
+  // operations to it. This remote should only be used for Device Bound
+  // Sessions and nothing else.
+  pending_remote<unexportable_keys.mojom.UnexportableKeyService>?
+      bound_sessions_unexportable_key_service;
 };
 
 struct NetworkConditions {
@@ -1518,7 +1525,8 @@ interface NetworkContext {
       array<WebTransportCertificateFingerprint> fingerprints,
       array<string> application_protocols,
       pending_remote<WebTransportHandshakeClient> handshake_client,
-      pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer,
+      pending_remote<URLLoaderNetworkServiceObserver>?
+          url_loader_network_observer,
       ClientSecurityState client_security_state);
 
   // Create a NetLogExporter, which helps export NetLog to an existing file.
@@ -1840,5 +1848,5 @@ interface NetworkContext {
   // Request that the network service prioritizes QUIC connections to the given
   // origins.
   AddQuicHints(array<url.mojom.SchemeHostPort> origins,
-              NetworkAnonymizationKey network_anonymization_key);
+               NetworkAnonymizationKey network_anonymization_key);
 };

@@ -167,6 +167,12 @@
 #include "components/enterprise/encryption/cache/utils.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"  // nogncheck
+#include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"  // nogncheck
+#include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"  // nogncheck
+#endif
+
 namespace {
 
 bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
@@ -1622,6 +1628,28 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   network_context_params->device_bound_sessions_enabled =
       base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions);
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions) &&
+      base::FeatureList::IsEnabled(
+          network::features::kUseUnexportableKeyServiceInBrowserProcess)) {
+    mojo::PendingRemote<unexportable_keys::mojom::UnexportableKeyService>
+        uks_remote;
+    mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
+        receiver = uks_remote.InitWithNewPipeAndPassReceiver();
+    unexportable_keys::UnexportableKeyServiceProxyImpl* uks =
+        UnexportableKeyServiceFactory::
+            RecreateMojoProxyForProfileAndPurposeWithReceiver(
+                profile_,
+                UnexportableKeyServiceFactory::KeyPurpose::
+                    kDeviceBoundSessionCredentials,
+                std::move(receiver));
+    if (uks) {
+      network_context_params->bound_sessions_unexportable_key_service =
+          std::move(uks_remote);
+    }
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::IsSigninBrowserContext(profile_)) {

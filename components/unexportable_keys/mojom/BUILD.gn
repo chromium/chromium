@@ -9,7 +9,7 @@ mojom("mojom") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  disable_variants = true
+  generate_java = true
 
   cpp_typemaps = [
     {
