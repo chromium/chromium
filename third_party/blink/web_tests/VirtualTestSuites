@@ -5291,7 +5291,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5559,7 +5560,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5829,7 +5831,8 @@
     "exclusive_tests": "ALL",
     "args": [
       "--use-gpu-in-tests",
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [

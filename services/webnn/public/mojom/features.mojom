@@ -46,12 +46,12 @@ feature kWebNNCoreMLExplicitGPUOrNPU {
 [EnableIf=is_win]
 feature kWebNNDirectML {
   const string name = "WebNNDirectML";
-  const bool default_state = true;
+  const bool default_state = false;
 };
 
 // Enables the ONNX Runtime backend for WebNN.
 [EnableIf=is_win]
 feature kWebNNOnnxRuntime {
   const string name = "WebNNOnnxRuntime";
-  const bool default_state = false;
+  const bool default_state = true;
 };
