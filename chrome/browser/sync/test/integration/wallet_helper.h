@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,8 +87,13 @@ void UpdateServerCardMetadata(int profile,
 std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
-sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType type,
-                                              int profile);
+// TODO(crbug.com/353425612): The default value for setup_sync_mode should be
+// removed once all callers are updated.
+sync_pb::DataTypeState GetWalletDataTypeState(
+    syncer::DataType type,
+    int profile,
+    SyncTest::SetupSyncMode setup_sync_mode =
+        SyncTest::SetupSyncMode::kSyncTheFeature);
 
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 

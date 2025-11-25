@@ -336,12 +336,19 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile) {
   return cards_metadata;
 }
 
-sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
-                                              int profile) {
+sync_pb::DataTypeState GetWalletDataTypeState(
+    syncer::DataType data_type,
+    int profile,
+    SyncTest::SetupSyncMode setup_sync_mode) {
   DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_OFFER);
   sync_pb::DataTypeState result;
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  scoped_refptr<AutofillWebDataService> wds;
+  if (setup_sync_mode == SyncTest::SetupSyncMode::kSyncTransportOnly) {
+    wds = GetAccountWebDataService(profile);
+  } else {
+    wds = GetProfileWebDataService(profile);
+  }
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetDataTypeStateOnDBSequence, data_type,
                                 base::Unretained(wds.get()), &result));
