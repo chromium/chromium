@@ -2120,9 +2120,17 @@ Google Chrome is unable to recover your settings.
           desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
           Learn more
         </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_ABOUT_GOOGLE_LENS_LINK"
+          desc="Accessibility label for text link that is shown to users to learn more about privacy in relation to Google Lens.">
+          Learn more about searching with Google Lens in Chrome
+        </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
           desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
           Search anything on this page with Google Lens
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE"
+          desc="Instructs the user to press Tab to begin using the feature.">
+          Tab to continue
         </message>
 
         <!-- Title Case Dependent -->

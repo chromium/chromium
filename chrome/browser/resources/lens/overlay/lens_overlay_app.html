@@ -459,6 +459,16 @@
     top: 0;
   }
 
+  /* Used for text that should only be visible to screen readers. */
+  .sr-only {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+  }
+
   /**
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available).
@@ -549,10 +559,11 @@
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
-    <div id="privacyNotice">
+    <div id="privacyNotice" aria-live="polite" tabindex="-1">
       <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
       </div>
       <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
+      <div class="sr-only" tabindex="0">$i18n{tabToContinue}</div>
     </div>
   </template>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"

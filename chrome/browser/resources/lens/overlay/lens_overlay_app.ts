@@ -54,6 +54,7 @@ export interface LensOverlayAppElement {
     initialGradient: InitialGradientElement,
     moreOptionsButton: CrIconButtonElement,
     moreOptionsMenu: HTMLElement,
+    privacyNotice: HTMLElement,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
@@ -726,6 +727,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isLensOverlayContextualSearchboxVisible &&
         !this.enableCsbMotionTweaks) {
       this.focusSearchbox();
+    }
+    if (loadTimeData.getValue('enablePrivacyNotice')) {
+      // Focus the privacy notice to ensure all its elements are read by screen
+      // readers.
+      this.$.privacyNotice.focus();
     }
   }
 

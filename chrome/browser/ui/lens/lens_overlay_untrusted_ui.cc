@@ -160,10 +160,15 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "privacyNoticeBody",
       l10n_util::GetStringFUTF16(
           IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION,
-          base::StrCat({u"<a href=\"#\" on-click=\"onLearnMoreClick\" "
-                        u"on-keydown=\"onLearnMoreClick\">",
-                        l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
-                        u"</a>"})));
+          base::StrCat(
+              {u"<a href=\"#\" on-click=\"onLearnMoreClick\" "
+               u"on-keydown=\"onLearnMoreClick\" aria-label=\"",
+               l10n_util::GetStringUTF16(
+                   IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_ABOUT_GOOGLE_LENS_LINK),
+               u"\">", l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
+               u"</a>"})));
+  html_source->AddLocalizedString(
+      "tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
