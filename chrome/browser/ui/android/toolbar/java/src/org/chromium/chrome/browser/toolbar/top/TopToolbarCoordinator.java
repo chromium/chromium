@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
@@ -904,9 +903,20 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Skip the layout params in non-resting position to avoid trigger layout during browser
         // controls reposition.
         if (reachRestingPosition) {
-            MarginLayoutParams lp = (MarginLayoutParams) mToolbarLayout.getLayoutParams();
-            lp.topMargin = getTabStripHeight();
-            mToolbarLayout.setLayoutParams(lp);
+            mControlContainer.mutateToolbarLayoutParams().topMargin = getTabStripHeight();
         }
+    }
+
+    @Override
+    public void prepForHeightAdjustmentAnimation(int latestYOffset) {
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP
+                || !BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                || mOverlayCoordinator == null) {
+            return;
+        }
+
+        // Remove the offset tag on animation starts, so the toolbar does not set the yOffset
+        // while the compositor moves the layer with offset tags.
+        mOverlayCoordinator.setOffsetTagInfo(null);
     }
 }

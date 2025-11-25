@@ -185,6 +185,15 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         }
     }
 
+    @Override
+    public void prepForHeightAdjustmentAnimation(int latestYOffset) {
+        if (mTabStrip == null) return;
+        // This is called after onTransitionRequested, which triggers the change in visibility.
+        // The offset tags needs to be set here, since the tab strip do not want to drive the
+        // animation using the offset tags.
+        mTabStrip.updateOffsetTagsInfo(null);
+    }
+
     // Implements TabStripTransitionHandler
 
     @Override
@@ -210,7 +219,6 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
                         newHeight,
                         applyScrimOverlay,
                         onHeightTransitionStartCallback);
-        mTabStrip.updateOffsetTagsInfo(null);
     }
 
     @EnsuresNonNullIf("mTransitionState")
