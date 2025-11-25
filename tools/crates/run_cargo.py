@@ -78,12 +78,12 @@ def _GetWindowsToolchainFlags():
     return chr(0x1f).join(flags)
 
 
-def _AppendOrInsert(dict, key, sep, value):
+def _PrependOrInsert(dict, key, sep, value):
     """Insert `value` into `dict[key]` if it doesn't already exist,
-       otherwise append `sep + value` to the existing entry
+       otherwise prepend `sep + value` to the existing entry
     """
     if key in dict:
-        dict[key] += sep + value
+        dict[key] = value + sep + dict[key]
     else:
         dict[key] = value
 
@@ -99,9 +99,9 @@ def RunCargo(rust_sysroot, home_dir, cargo_args):
     if home_dir:
         cargo_env['CARGO_HOME'] = home_dir
 
-    _AppendOrInsert(cargo_env, 'PATH', os.pathsep, str(bin_dir))
-    _AppendOrInsert(cargo_env, 'CARGO_ENCODED_RUSTFLAGS', chr(0x1f),
-                    _GetWindowsToolchainFlags())
+    _PrependOrInsert(cargo_env, 'PATH', os.pathsep, str(bin_dir))
+    _PrependOrInsert(cargo_env, 'CARGO_ENCODED_RUSTFLAGS', chr(0x1f),
+                     _GetWindowsToolchainFlags())
 
     # https://docs.python.org/3/library/subprocess.html#subprocess.Popen:
     #     **Warning**: For maximum reliability, use a fully qualified path for
