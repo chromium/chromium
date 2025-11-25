@@ -3901,7 +3901,7 @@ TEST_F(TextfieldTest, TwoFingerScroll) {
   const gfx::Point kStart2 = kStart1 + gfx::Vector2d(20, 0);
   const gfx::Point kStart[] = {kStart1, kStart2};
   event_generator_->GestureMultiFingerScroll(
-      /*count=*/2, kStart,
+      kStart,
       /*event_separation_time_ms=*/50,
       /*steps=*/5, /*move_x=*/kDisplayOffsetXAdjustment,
       /*move_y=*/0);
@@ -4012,8 +4012,8 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   constexpr int kDelayAddingFingerMs[] = {0, 40};
   constexpr int kDelayReleasingFingerMs[] = {150, 150};
   event_generator_->GestureMultiFingerScrollWithDelays(
-      /*count=*/2, kStart, kDelta, kDelayAddingFingerMs,
-      kDelayReleasingFingerMs, /*event_separation_time_ms=*/20, /*steps=*/5);
+      kStart, kDelta, kDelayAddingFingerMs, kDelayReleasingFingerMs,
+      /*event_separation_time_ms=*/20, /*steps=*/5);
 
   // Since the scroll started with one finger, the cursor should have moved.
   gfx::Range range;

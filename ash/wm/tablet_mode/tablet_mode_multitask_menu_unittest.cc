@@ -327,8 +327,7 @@ TEST_F(TabletModeMultitaskMenuTest, MultiFingerSroll) {
       gfx::Point(center_x + 10, 0),
   };
   const int kSteps = 15;
-  GetEventGenerator()->GestureMultiFingerScroll(kTouchPoints, points, 15,
-                                                kSteps, 0, 150);
+  GetEventGenerator()->GestureMultiFingerScroll(points, 15, kSteps, 0, 150);
   EXPECT_TRUE(GetMultitaskMenu());
 }
 

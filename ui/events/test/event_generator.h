@@ -425,7 +425,6 @@ class EventGenerator {
   // |event_separation_time_ms| are relevant when testing velocity/fling/swipe,
   // otherwise these can be any non-zero value.
   void GestureMultiFingerScrollWithDelays(
-      int spanification_suspected_redundant_count,
       base::span<const gfx::Point> start,
       base::span<const gfx::Vector2d> delta,
       base::span<const int> delay_adding_finger_ms,
@@ -438,7 +437,6 @@ class EventGenerator {
   // events. All fingers are released at the end of scrolling together. All
   // fingers move the same amount specified by |move_x| and |move_y|.
   void GestureMultiFingerScrollWithDelays(
-      int spanification_suspected_redundant_count,
       base::span<const gfx::Point> start,
       base::span<const int> delay_adding_finger_ms,
       int event_separation_time_ms,
@@ -451,8 +449,7 @@ class EventGenerator {
   // All fingers are pressed at the beginning together and are released at the
   // end of scrolling together. All fingers move move the same amount specified
   // by |move_x| and |move_y|.
-  void GestureMultiFingerScroll(int spanification_suspected_redundant_count,
-                                base::span<const gfx::Point> start,
+  void GestureMultiFingerScroll(base::span<const gfx::Point> start,
                                 int event_separation_time_ms,
                                 int steps,
                                 int move_x,

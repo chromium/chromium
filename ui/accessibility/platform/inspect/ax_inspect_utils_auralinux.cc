@@ -29,14 +29,8 @@ struct PlatformConstantToNameEntry {
 
 const char* GetNameForPlatformConstant(
     base::span<const PlatformConstantToNameEntry> table,
-    size_t spanification_suspected_redundant_table_size,
     int32_t value) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_table_size == table.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_table_size; ++i) {
-    auto& entry = table[i];
+  for (const auto& entry : table) {
     if (entry.value == value)
       return entry.name;
   }
@@ -115,7 +109,7 @@ const char* ATSPIStateToString(AtspiStateType state) {
 #endif
   };
 
-  return GetNameForPlatformConstant(state_table, std::size(state_table), state);
+  return GetNameForPlatformConstant(state_table, state);
 }
 
 const char* ATSPIRelationToString(AtspiRelationType relation) {
@@ -145,8 +139,7 @@ const char* ATSPIRelationToString(AtspiRelationType relation) {
       QUOTE(ATSPI_RELATION_LAST_DEFINED),
   };
 
-  return GetNameForPlatformConstant(relation_table, std::size(relation_table),
-                                    relation);
+  return GetNameForPlatformConstant(relation_table, relation);
 }
 
 const char* ATSPIRoleToString(AtspiRole role) {
@@ -287,7 +280,7 @@ const char* ATSPIRoleToString(AtspiRole role) {
 #endif
   };
 
-  return GetNameForPlatformConstant(role_table, std::size(role_table), role);
+  return GetNameForPlatformConstant(role_table, role);
 }
 
 // This is used to ensure a standard set of AtkRole name conversions between

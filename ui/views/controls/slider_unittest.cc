@@ -472,8 +472,8 @@ TEST_P(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
   gfx::Point points[] = {gfx::Point(0, 0.1 * max_y()),
                          gfx::Point(0, 0.2 * max_y())};
   event_generator()->GestureMultiFingerScroll(
-      2 /* count */, points, 0 /* event_separation_time_ms */, 5 /* steps */,
-      2 /* move_x */, 0 /* move_y */);
+      points, 0 /* event_separation_time_ms */, 5 /* steps */, 2 /* move_x */,
+      0 /* move_y */);
 
   EXPECT_EQ(1, slider_listener.last_drag_started_epoch());
   EXPECT_GT(slider_listener.last_drag_ended_epoch(),

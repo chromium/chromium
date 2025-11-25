@@ -1165,8 +1165,8 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
         distance / gesture_detector_config_.maximum_fling_velocity;
     // delta_time is in seconds, so we convert to ms.
     int delta_time_ms = floor(delta_time * 1000);
-    generator_->GestureMultiFingerScroll(num_fingers, start_points,
-                                         delta_time_ms, kSteps, move_x, move_y);
+    generator_->GestureMultiFingerScroll(start_points, delta_time_ms, kSteps,
+                                         move_x, move_y);
     EXPECT_EQ(expected_gesture, delegate_.GetLastGesture());
     EXPECT_TRUE(IsInNoFingersDownState());
     EXPECT_FALSE(IsInTouchToMouseMode());
@@ -1226,8 +1226,8 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
         distance / gesture_detector_config_.maximum_fling_velocity;
     // delta_time is in seconds, so we convert to ms.
     int delta_time_ms = floor(delta_time * 1000);
-    generator_->GestureMultiFingerScroll(num_fingers, start_points,
-                                         delta_time_ms, kSteps, move_x, move_y);
+    generator_->GestureMultiFingerScroll(start_points, delta_time_ms, kSteps,
+                                         move_x, move_y);
     EXPECT_EQ(expected_gesture, delegate_.GetLastGesture());
     EXPECT_TRUE(IsInNoFingersDownState());
     EXPECT_FALSE(IsInTouchToMouseMode());

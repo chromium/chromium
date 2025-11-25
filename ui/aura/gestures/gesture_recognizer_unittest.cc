@@ -3183,38 +3183,38 @@ TEST_F(GestureRecognizerTest, MultiFingerSwipe) {
   // moved for too long. See ui/events/velocity_tracker/velocity_tracker.cc's
   // kAssumePointerStoppedTimeMs.
   for (size_t count = 2; count <= kTouchPoints; ++count) {
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 0, -11 * kSteps);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 0, -11 * kSteps);
     EXPECT_TRUE(delegate->swipe_up());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 0, 11 * kSteps);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 0, 11 * kSteps);
     EXPECT_TRUE(delegate->swipe_down());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, -11 * kSteps, 0);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, -11 * kSteps, 0);
     EXPECT_TRUE(delegate->swipe_left());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 11 * kSteps, 0);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 11 * kSteps, 0);
     EXPECT_TRUE(delegate->swipe_right());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 5 * kSteps, 12 * kSteps);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 5 * kSteps, 12 * kSteps);
     EXPECT_FALSE(delegate->swipe_down());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 4 * kSteps, 12 * kSteps);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 4 * kSteps, 12 * kSteps);
     EXPECT_TRUE(delegate->swipe_down());
     delegate->Reset();
 
-    generator.GestureMultiFingerScroll(count, base::span(points).first(count),
-                                       10, kSteps, 3 * kSteps, 12 * kSteps);
+    generator.GestureMultiFingerScroll(base::span(points).first(count), 10,
+                                       kSteps, 3 * kSteps, 12 * kSteps);
     EXPECT_TRUE(delegate->swipe_down());
     delegate->Reset();
   }

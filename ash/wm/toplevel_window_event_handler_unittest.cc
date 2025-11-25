@@ -656,8 +656,8 @@ TEST_F(ToplevelWindowEventHandlerTest, TwoFingerDragDifferentDelta) {
   // moving deltas. The window position should move along the average vector of
   // these two fingers.
   generator.GestureMultiFingerScrollWithDelays(
-      kTouchPoints, points, delta, delay_adding_finger_ms,
-      delay_releasing_finger_ms, 15, kSteps);
+      points, delta, delay_adding_finger_ms, delay_releasing_finger_ms, 15,
+      kSteps);
   bounds += gfx::Vector2d(50, 50);
   EXPECT_EQ(bounds.ToString(), target->bounds().ToString());
 }
@@ -684,8 +684,8 @@ TEST_F(ToplevelWindowEventHandlerTest, TwoFingerDragDelayAddFinger) {
   // Swipe right and down starting with one fingers. Add another finger at 90ms
   // and continue dragging. The drag should continue without interrupt.
   generator.GestureMultiFingerScrollWithDelays(
-      kTouchPoints, points, delta, delay_adding_finger_ms,
-      delay_releasing_finger_ms, 15, kSteps);
+      points, delta, delay_adding_finger_ms, delay_releasing_finger_ms, 15,
+      kSteps);
   bounds += gfx::Vector2d(50, 50);
   EXPECT_EQ(bounds.ToString(), target->bounds().ToString());
 }
@@ -712,8 +712,8 @@ TEST_F(ToplevelWindowEventHandlerTest, TwoFingerDragDelayReleaseFinger) {
   // Swipe right and down starting with two fingers. Remove one finger at 90ms
   // and continue dragging. The drag should continue without interrupt.
   generator.GestureMultiFingerScrollWithDelays(
-      kTouchPoints, points, delta, delay_adding_finger_ms,
-      delay_releasing_finger_ms, 15, kSteps);
+      points, delta, delay_adding_finger_ms, delay_releasing_finger_ms, 15,
+      kSteps);
   bounds += gfx::Vector2d(50, 50);
   EXPECT_EQ(bounds.ToString(), target->bounds().ToString());
 }
@@ -742,8 +742,8 @@ TEST_F(ToplevelWindowEventHandlerTest,
   // continue dragging, release second finger at 120ms and continue dragging.
   // The drag should continue without interrupt.
   generator.GestureMultiFingerScrollWithDelays(
-      kTouchPoints, points, delta, delay_adding_finger_ms,
-      delay_releasing_finger_ms, 15, kSteps);
+      points, delta, delay_adding_finger_ms, delay_releasing_finger_ms, 15,
+      kSteps);
   bounds += gfx::Vector2d(50, 50);
   EXPECT_EQ(bounds.ToString(), target->bounds().ToString());
 }
@@ -772,8 +772,8 @@ TEST_F(ToplevelWindowEventHandlerTest,
   // continue dragging, release first finger at 120ms and continue dragging.
   // The drag should continue without interrupt.
   generator.GestureMultiFingerScrollWithDelays(
-      kTouchPoints, points, delta, delay_adding_finger_ms,
-      delay_releasing_finger_ms, 15, kSteps);
+      points, delta, delay_adding_finger_ms, delay_releasing_finger_ms, 15,
+      kSteps);
   bounds += gfx::Vector2d(50, 50);
   EXPECT_EQ(bounds.ToString(), target->bounds().ToString());
 }
@@ -1438,7 +1438,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(100, 100),
                                          gfx::Vector2d(200, 200)};
 
-    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+    gen->GestureMultiFingerScrollWithDelays(start, delta,
                                             delay_adding_finger_ms,
                                             delay_releasing_finger_ms, 15, 100);
     base::RunLoop().RunUntilIdle();
@@ -1454,7 +1454,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(-100, -100),
                                          gfx::Vector2d(-200, -200)};
 
-    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+    gen->GestureMultiFingerScrollWithDelays(start, delta,
                                             delay_adding_finger_ms,
                                             delay_releasing_finger_ms, 15, 100);
     base::RunLoop().RunUntilIdle();
@@ -1486,7 +1486,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(100, 100),
                                          gfx::Vector2d(400, 400)};
 
-    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+    gen->GestureMultiFingerScrollWithDelays(start, delta,
                                             delay_adding_finger_ms,
                                             delay_releasing_finger_ms, 15, 100);
     base::RunLoop().RunUntilIdle();
@@ -1507,7 +1507,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(0, 0),
                                          gfx::Vector2d(-100, 0)};
 
-    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+    gen->GestureMultiFingerScrollWithDelays(start, delta,
                                             delay_adding_finger_ms,
                                             delay_releasing_finger_ms, 15, 100);
     base::RunLoop().RunUntilIdle();

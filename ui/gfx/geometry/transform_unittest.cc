@@ -3942,16 +3942,11 @@ TEST(XFormTest, ClampOutput) {
       return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
              std::isfinite(r.height());
     };
-    auto is_valid_array =
-        [&](base::span<const float> a,
-            size_t spanification_suspected_redundant_size) -> bool {
-      // TODO(crbug.com/431824301): Remove unneeded parameter once validated to
-      // be redundant in M143.
-      CHECK(spanification_suspected_redundant_size == a.size(),
-            base::NotFatalUntil::M143);
-      for (size_t i = 0; i < spanification_suspected_redundant_size; i++) {
-        if (!std::isfinite(a[i]))
+    auto is_valid_array = [&](base::span<const float> a) -> bool {
+      for (const float& val : a) {
+        if (!std::isfinite(val)) {
           return false;
+        }
       }
       return true;
     };
@@ -3973,7 +3968,7 @@ TEST(XFormTest, ClampOutput) {
 
       float v4[4] = {factor, factor, factor, factor};
       m.TransformVector4(v4);
-      EXPECT_TRUE(is_valid_array(v4, 4));
+      EXPECT_TRUE(is_valid_array(v4));
 
       auto v2 = m.To2dTranslation();
       EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();
