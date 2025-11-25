@@ -1267,8 +1267,8 @@ class CONTENT_EXPORT WebContentsImpl
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
-  FrameTree* GetOwnedPictureInPictureFrameTree() override;
-  FrameTree* GetPictureInPictureOpenerFrameTree() override;
+  FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
+  FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 
@@ -1598,6 +1598,8 @@ class CONTENT_EXPORT WebContentsImpl
   }
 
   bool IsPopup() const override;
+
+  WebContents* GetDocumentPictureInPictureOpener();
 
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;

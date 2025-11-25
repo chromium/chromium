@@ -275,6 +275,9 @@ class CONTENT_EXPORT WebContentsAndroid {
   static void ReportDanglingPtrToBrowserContext(JNIEnv* env,
                                                 WebContents* web_contents);
 
+  base::android::ScopedJavaLocalRef<jobject> GetDocumentPictureInPictureOpener(
+      JNIEnv* env);
+
  private:
   void OnFinishDownloadImage(const base::android::JavaRef<jobject>& obj,
                              const base::android::JavaRef<jobject>& callback,

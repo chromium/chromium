@@ -478,8 +478,8 @@ class CONTENT_EXPORT PrerenderHost {
     RenderFrameHostImpl* GetProspectiveOuterDocument() override;
     void SetFocusedFrame(FrameTreeNode* node,
                          SiteInstanceGroup* source) override;
-    FrameTree* GetOwnedPictureInPictureFrameTree() override;
-    FrameTree* GetPictureInPictureOpenerFrameTree() override;
+    FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
+    FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
     bool OnRenderFrameProxyVisibilityChanged(
         RenderFrameProxyHost* render_frame_proxy_host,
         blink::mojom::FrameVisibility visibility) override;

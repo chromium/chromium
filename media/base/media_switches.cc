@@ -607,12 +607,10 @@ BASE_FEATURE(kDeferAudioFocusUntilAudible,
 #endif
 );
 
-#if !BUILDFLAG(IS_ANDROID)
 // Allow document picture-in-picture to navigate.  This should be disabled
 // except for testing.
 BASE_FEATURE(kDocumentPictureInPictureNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Adds an animation to document picture-in-picture resizes.
 BASE_FEATURE(kDocumentPictureInPictureAnimateResize,

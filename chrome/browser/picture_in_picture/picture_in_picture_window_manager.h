@@ -76,7 +76,6 @@ class PictureInPictureWindowManager {
   content::PictureInPictureResult EnterVideoPictureInPicture(
       content::WebContents*);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Shows a PIP window using the window controller for document picture in
   // picture.
   //
@@ -87,7 +86,6 @@ class PictureInPictureWindowManager {
   // it doesn't have a failure state.
   void EnterDocumentPictureInPicture(content::WebContents* parent_web_contents,
                                      content::WebContents* child_web_contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Shows a PIP window with an explicitly provided window controller. This is
   // used by ChromeOS ARC windows which do not have a WebContents as the source.
@@ -274,7 +272,6 @@ class PictureInPictureWindowManager {
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
-#if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -294,6 +291,7 @@ class PictureInPictureWindowManager {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:PictureInPictureDisallowedTypeEnum)
 
+#if !BUILDFLAG(IS_ANDROID)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -323,10 +321,8 @@ class PictureInPictureWindowManager {
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Called when the document PiP parent web contents is being destroyed.
   void DocumentWebContentsDestroyed();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Exits picture in picture soon, but not before this call returns.  If
   // picture in picture closes between now and then, that's okay.  Intended as a
@@ -370,9 +366,9 @@ class PictureInPictureWindowManager {
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
+  std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
 
   // The number of `ScopedDisallowPictureInPicture` objects currently in

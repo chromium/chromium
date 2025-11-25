@@ -805,7 +805,7 @@ bool FrameTreeNode::NotifyUserActivation(
   // If we're in a picture-in-picture frame tree, then also activate the opener
   // frame of the picture-in-picture root.
   FrameTree* pip_opener =
-      frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+      frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
   if (base::FeatureList::IsEnabled(
           blink::features::kDocumentPictureInPictureUserActivation) &&
       pip_opener) {
@@ -836,7 +836,7 @@ bool FrameTreeNode::NotifyUserActivation(
     // If we own a picture-in-picture window, then also activate same-origin
     // frames within the picture-in-picture window.
     FrameTree* picture_in_picture_frame_tree =
-        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
         if (node->current_frame_host()
@@ -878,7 +878,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we're consuming user activation in a picture-in-picture window, ensure
     // that its opener's frames also consume activation.
     FrameTree* pip_opener =
-        frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+        frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
     if (pip_opener) {
       for (FrameTreeNode* node : pip_opener->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();
@@ -888,7 +888,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we own a picture-in-picture window, ensure that its frames also
     // consume activation.
     FrameTree* picture_in_picture_frame_tree =
-        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();

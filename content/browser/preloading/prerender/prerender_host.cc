@@ -204,13 +204,13 @@ void PrerenderHost::PrerenderFrameTreeDelegate::SetFocusedFrame(
   NOTREACHED();
 }
 
-FrameTree*
-PrerenderHost::PrerenderFrameTreeDelegate::GetOwnedPictureInPictureFrameTree() {
+FrameTree* PrerenderHost::PrerenderFrameTreeDelegate::
+    GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }
 
 FrameTree* PrerenderHost::PrerenderFrameTreeDelegate::
-    GetPictureInPictureOpenerFrameTree() {
+    GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 

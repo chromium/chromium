@@ -1045,4 +1045,15 @@ void WebContentsAndroid::BrowserControlsOffsetTagMediator::
   rwhva_ = new_rwhva;
 }
 
+ScopedJavaLocalRef<jobject>
+WebContentsAndroid::GetDocumentPictureInPictureOpener(JNIEnv* env) {
+  WebContents* web_contents =
+      web_contents_->GetDocumentPictureInPictureOpener();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  return web_contents->GetJavaWebContents();
+}
+
 }  // namespace content

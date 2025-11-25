@@ -149,6 +149,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
@@ -160,6 +161,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -271,11 +273,6 @@
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "content/public/browser/document_picture_in_picture_window_controller.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "content/browser/ios/nfc_host.h"
@@ -10097,8 +10094,7 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   CloseListenerManager::DidChangeFocusedFrame(this);
 }
 
-FrameTree* WebContentsImpl::GetOwnedPictureInPictureFrameTree() {
-#if !BUILDFLAG(IS_ANDROID)
+FrameTree* WebContentsImpl::GetOwnedDocumentPictureInPictureFrameTree() {
   if (has_picture_in_picture_document_) {
     WebContents* picture_in_picture_web_contents =
         PictureInPictureWindowController::
@@ -10109,20 +10105,21 @@ FrameTree* WebContentsImpl::GetOwnedPictureInPictureFrameTree() {
                    ->GetPrimaryFrameTree());
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return nullptr;
 }
 
-FrameTree* WebContentsImpl::GetPictureInPictureOpenerFrameTree() {
-#if !BUILDFLAG(IS_ANDROID)
+FrameTree* WebContentsImpl::GetDocumentPictureInPictureOpenerFrameTree() {
   if (picture_in_picture_opener_) {
     return &(static_cast<WebContentsImpl*>(picture_in_picture_opener_.get())
                  ->GetPrimaryFrameTree());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return nullptr;
+}
+
+WebContents* WebContentsImpl::GetDocumentPictureInPictureOpener() {
+  return picture_in_picture_opener_.get();
 }
 
 void WebContentsImpl::DidCallFocus() {

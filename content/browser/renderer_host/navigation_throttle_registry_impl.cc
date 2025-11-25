@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
 #include "content/browser/preloading/prefetch/contamination_delay_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
@@ -33,8 +34,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/android_spare_renderer_navigation_throttle.h"
-#else
-#include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -94,11 +93,11 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
       features::kAndroidSpareRendererAddNavigationThrottle.Get()) {
     AndroidSpareRendererNavigationThrottle::CreateAndAdd(*this);
   }
-#else
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Prevent cross-document navigations from document picture-in-picture
   // windows.
   DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(*this);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   AncestorThrottle::CreateAndAdd(*this);
 

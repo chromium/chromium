@@ -2806,6 +2806,7 @@ static_library("browser") {
       "android/httpclient/http_client_bridge.cc",
       "android/httpclient/http_client_bridge.h",
       "android/intent_handler.cc",
+      "android/media/document_picture_in_picture_bridge_android.cc",
       "android/media/media_capture_devices_dispatcher_android.cc",
       "android/media_state_observer.cc",
       "android/media_state_observer.h",

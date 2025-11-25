@@ -652,6 +652,12 @@ public interface WebContents extends Parcelable {
     boolean hasOpener();
 
     /**
+     * @return The opener WebContents if this WebContents is in Document Picture-in-Picture mode, or
+     *     {@code null} otherwise.
+     */
+    @Nullable WebContents getDocumentPictureInPictureOpener();
+
+    /**
      * Returns the window open disposition that was originally requested when this WebContents was
      * created or navigated to. This method provides the disposition specified by the opener of this
      * WebContents, indicating how the content was initially intended to be displayed (e.g., as a

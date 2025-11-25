@@ -219,7 +219,7 @@ void FencedFrame::SetFocusedFrame(FrameTreeNode* node,
   web_contents_->SetFocusedFrame(node, source);
 }
 
-FrameTree* FencedFrame::GetOwnedPictureInPictureFrameTree() {
+FrameTree* FencedFrame::GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }
 
@@ -229,7 +229,7 @@ bool FencedFrame::OnRenderFrameProxyVisibilityChanged(
   return false;
 }
 
-FrameTree* FencedFrame::GetPictureInPictureOpenerFrameTree() {
+FrameTree* FencedFrame::GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 

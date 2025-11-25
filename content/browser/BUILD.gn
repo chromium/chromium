@@ -1566,6 +1566,10 @@ source_set("browser") {
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
+    "picture_in_picture/document_picture_in_picture_navigation_throttle.cc",
+    "picture_in_picture/document_picture_in_picture_navigation_throttle.h",
+    "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",
+    "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
     "picture_in_picture/picture_in_picture_service_impl.cc",
     "picture_in_picture/picture_in_picture_service_impl.h",
     "picture_in_picture/picture_in_picture_session.cc",
@@ -3499,12 +3503,6 @@ source_set("browser") {
       "webauth/virtual_discovery.h",
       "webauth/virtual_fido_discovery_factory.cc",
       "webauth/virtual_fido_discovery_factory.h",
-
-      # The Document Picture-in-Picture API is not implemented on Android.
-      "picture_in_picture/document_picture_in_picture_navigation_throttle.cc",
-      "picture_in_picture/document_picture_in_picture_navigation_throttle.h",
-      "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",
-      "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
 
       # Cross-device digital credentials flows are handled by Play Services on
       # Android, not the browser.

@@ -193,12 +193,13 @@ class CONTENT_EXPORT FrameTree {
     virtual void SetFocusedFrame(FrameTreeNode* node,
                                  SiteInstanceGroup* source) = 0;
 
-    // Returns this FrameTree's picture-in-picture FrameTree if it has one.
-    virtual FrameTree* GetOwnedPictureInPictureFrameTree() = 0;
+    // Returns this FrameTree's document picture-in-picture FrameTree if it has
+    // one.
+    virtual FrameTree* GetOwnedDocumentPictureInPictureFrameTree() = 0;
 
     // Returns this FrameTree's opener if this FrameTree represents a
-    // picture-in-picture window.
-    virtual FrameTree* GetPictureInPictureOpenerFrameTree() = 0;
+    // document picture-in-picture window.
+    virtual FrameTree* GetDocumentPictureInPictureOpenerFrameTree() = 0;
 
     // Called when the visibility of the RenderFrameProxyHost changes.
     // This method should only handle visibility for inner WebContents and
