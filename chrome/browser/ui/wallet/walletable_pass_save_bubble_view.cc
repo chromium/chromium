@@ -83,6 +83,7 @@ WalletablePassSaveBubbleView::GetAttributesView() {
     case kEventPass:
       return GetEventPassAttributesView();
     case PASS_NOT_SET:
+    default:
       NOTREACHED() << "Not supported walletable pass type: "
                    << controller_->pass().pass_case();
   }
@@ -188,6 +189,7 @@ int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
     case kEventPass:
       return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
     case PASS_NOT_SET:
+    default:
       NOTREACHED() << "Not supported walletable pass type: "
                    << controller_->pass().pass_case();
   }
@@ -200,6 +202,7 @@ int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
     case kEventPass:
       return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
     case PASS_NOT_SET:
+    default:
       NOTREACHED() << "Not supported walletable pass type: "
                    << controller_->pass().pass_case();
   }

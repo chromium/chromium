@@ -137,8 +137,7 @@ int WalletablePassConsentBubbleView::GetHeaderImageResourceId() const {
     case PASS_CATEGORY_EVENT_PASS:
       return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
     case PASS_CATEGORY_UNSPECIFIED:
-    case PassCategory_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case PassCategory_INT_MAX_SENTINEL_DO_NOT_USE_:
+    default:
       NOTREACHED() << "Not supported walletable pass category: "
                    << pass_category_;
   }

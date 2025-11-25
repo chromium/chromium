@@ -27,6 +27,7 @@ std::string GetWalletablePassCategory(const WalletablePass& walletable_pass) {
     case WalletablePass::kEventPass:
       return "EventPass";
     case WalletablePass::PASS_NOT_SET:
+    default:
       // Should be handled by the caller before this function is invoked.
       NOTREACHED();
   }
