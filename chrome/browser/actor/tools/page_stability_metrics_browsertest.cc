@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -22,7 +21,6 @@
 #include "chrome/common/actor/page_stability_metrics_common.h"
 #include "chrome/common/chrome_features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -94,36 +92,7 @@ using ::content::ExecJs;
 
 }  // namespace
 
-class PageStabilityMetricsTestBase : public PageStabilityTest {
- public:
-  PageStabilityMetricsTestBase() = default;
-
-  PageStabilityMetricsTestBase(const PageStabilityMetricsTestBase&) = delete;
-  PageStabilityMetricsTestBase& operator=(const PageStabilityMetricsTestBase&) =
-      delete;
-
-  ~PageStabilityMetricsTestBase() override = default;
-
-  void SetUpOnMainThread() override {
-    PageStabilityTest::SetUpOnMainThread();
-
-    page_load_metrics_waiter_ =
-        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-            web_contents());
-  }
-
-  void ClickAndWaitForInteraction(std::string_view element_id) {
-    page_load_metrics_waiter_->AddNumInteractionsExpectation(1);
-    content::SimulateMouseClickOrTapElementWithId(web_contents(), element_id);
-    page_load_metrics_waiter_->Wait();
-  }
-
- private:
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
-      page_load_metrics_waiter_;
-};
-
-class PageStabilityMetricsTest : public PageStabilityMetricsTestBase {
+class PageStabilityMetricsTest : public PageStabilityTest {
  public:
   PageStabilityMetricsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -192,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
       0);
 
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
       {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
@@ -205,7 +174,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
+// TODO(crbug.com/462631893): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Paint DISABLED_Paint
+#else
+#define MAYBE_Paint Paint
+#endif
+IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MAYBE_Paint) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(
@@ -226,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
   ASSERT_EQ(GetOutputText(), "INITIAL");
   EXPECT_FALSE(result.IsReady());
 
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
 
   ASSERT_TRUE(result.Wait());
   ASSERT_EQ(GetOutputText(), "PAINT");
@@ -270,8 +245,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
 
   // Verify that the metrics for subsequent interaction contentful paints were
   // still recorded after paint stability.
-  ClickAndWaitForInteraction("btnPaint");
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
 
   // Navigate to a different page to cause the RenderFrame to be destroyed.
   ASSERT_TRUE(content::NavigateToURL(
@@ -331,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
   // Verify that paint stability and network/main thread metrics were not
   // recorded when the stabilicy check completed after callback invocation due
   // to timeout.
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
@@ -447,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
 
   // Verify that paint stability and network/main thread metrics were still
   // recorded when the stabilicy check completed after mojo disconnection.
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
@@ -509,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
 
   // Verify that paint stability and network/main thread metrics were not
   // recorded after timeout.
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
   Respond("NETWORK DONE");
 
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
@@ -528,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
       0);
 }
 
-class PageStabilityMetricsMinWaitTest : public PageStabilityMetricsTestBase {
+class PageStabilityMetricsMinWaitTest : public PageStabilityTest {
  public:
   PageStabilityMetricsMinWaitTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -580,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
 
   // Verify that paint stability metric was still recorded when paint stability
   // was reached while waiting for minimum wait.
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
 
   ASSERT_TRUE(result.Wait());
 
@@ -623,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
   ASSERT_EQ(GetOutputText(), "INITIAL");
   EXPECT_FALSE(result.IsReady());
 
-  ClickAndWaitForInteraction("btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
