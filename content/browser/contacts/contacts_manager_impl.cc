@@ -25,7 +25,7 @@ namespace content {
 namespace {
 
 std::unique_ptr<ContactsProvider> CreateProvider(
-    RenderFrameHostImpl& render_frame_host) {
+    RenderFrameHost& render_frame_host) {
   if (render_frame_host.GetParentOrOuterDocument())
     return nullptr;  // This API is only supported on the main frame.
 #if BUILDFLAG(IS_ANDROID)
@@ -55,7 +55,7 @@ void OnContactsSelected(
 }  // namespace
 
 ContactsManagerImpl::ContactsManagerImpl(
-    RenderFrameHostImpl& render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ContactsManager> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
       contacts_provider_(CreateProvider(render_frame_host)) {

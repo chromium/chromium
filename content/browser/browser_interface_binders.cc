@@ -635,7 +635,7 @@ void BindBatteryMonitor(
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void BindPressureManager(
-    RenderFrameHostImpl* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   if (!network::IsOriginPotentiallyTrustworthy(
           host->GetLastCommittedOrigin())) {
@@ -709,48 +709,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<blink::mojom::AudioContextManager>(base::BindRepeating(
-      &RenderFrameHostImpl::GetAudioContextManager, base::Unretained(host)));
-
-  map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
-      &RenderFrameHostImpl::BindCacheStorage, base::Unretained(host)));
-
-  map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateCodeCacheHost, base::Unretained(host)));
-
-  map->Add<blink::mojom::BlobURLStore>(base::BindRepeating(
-      &RenderFrameHostImpl::BindBlobUrlStoreReceiver, base::Unretained(host)));
-
-#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<blink::mojom::WebPressureManager>(
-        base::BindRepeating(&BindPressureManager, base::Unretained(host)));
-  }
-#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-
-  map->Add<blink::mojom::ContactsManager>(
-      base::BindRepeating(ContactsManagerImpl::Create, base::Unretained(host)));
-
-  map->Add<blink::mojom::ContentSecurityNotifier>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier>
-             receiver) {
-        mojo::MakeSelfOwnedReceiver(
-            std::make_unique<ContentSecurityNotifier>(host->GetGlobalId()),
-            std::move(receiver));
-      },
-      base::Unretained(host)));
-
-  map->Add<blink::mojom::DedicatedWorkerHostFactory>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateDedicatedWorkerHostFactory,
-      base::Unretained(host)));
-
-  map->Add<blink::mojom::DevicePostureProvider>(
-      base::BindRepeating(&BindDevicePostureProvider, base::Unretained(host)));
-
-  map->Add<blink::mojom::FeatureObserver>(base::BindRepeating(
-      &RenderFrameHostImpl::GetFeatureObserver, base::Unretained(host)));
-
   map->Add<blink::mojom::FileSystemAccessManager>(
       base::BindRepeating(&RenderFrameHostImpl::GetFileSystemAccessManager,
                           base::Unretained(host)));
@@ -1136,6 +1094,44 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::UnhandledTapNotifier>(
       &EmptyBinderForFrame<blink::mojom::UnhandledTapNotifier>);
 #endif
+
+  map->Add<blink::mojom::AudioContextManager>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetAudioContextManager>);
+
+  map->Add<blink::mojom::CacheStorage>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindCacheStorage>);
+
+  map->Add<blink::mojom::CodeCacheHost>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateCodeCacheHost>);
+
+  map->Add<blink::mojom::BlobURLStore>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindBlobUrlStoreReceiver>);
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<blink::mojom::WebPressureManager>(&BindPressureManager);
+  }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+
+  map->Add<blink::mojom::ContactsManager>(&ContactsManagerImpl::Create);
+
+  map->Add<blink::mojom::ContentSecurityNotifier>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier>
+             receiver) {
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<ContentSecurityNotifier>(host->GetGlobalId()),
+            std::move(receiver));
+      }));
+
+  map->Add<blink::mojom::DedicatedWorkerHostFactory>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateDedicatedWorkerHostFactory>);
+
+  map->Add<blink::mojom::DevicePostureProvider>(&BindDevicePostureProvider);
+
+  map->Add<blink::mojom::FeatureObserver>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetFeatureObserver>);
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);

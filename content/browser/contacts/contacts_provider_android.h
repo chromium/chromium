@@ -14,11 +14,11 @@
 
 namespace content {
 
-class RenderFrameHostImpl;
+class RenderFrameHost;
 
 class ContactsProviderAndroid : public ContactsProvider {
  public:
-  explicit ContactsProviderAndroid(RenderFrameHostImpl* render_frame_host);
+  explicit ContactsProviderAndroid(RenderFrameHost* render_frame_host);
 
   ContactsProviderAndroid(const ContactsProviderAndroid&) = delete;
   ContactsProviderAndroid& operator=(const ContactsProviderAndroid&) = delete;
