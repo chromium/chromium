@@ -19,7 +19,7 @@ key_rotation_data {
 }
 
 special_app_permissions_data {
-  # crbug.com/447157667:
+  # crbug.com/447157667
   special_app_permissions {
     key: "ajbye5keylrcyakugr3zttu6f524eoamjc7mc6ubw3x3547xu3hxqaacai"
     value: {
@@ -28,7 +28,7 @@ special_app_permissions_data {
       }
     }
   }
-  # crbug.com/447158840:
+  # crbug.com/447158840
   special_app_permissions {
     key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
     value: {
@@ -63,18 +63,37 @@ iwa_access_control {
     key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic"
     value: {}
   }
+  # crbug.com/457325169
+  managed_allowlist {
+    key: "aicmibhbmnxp2r7ai552eyuxjls5ksceyen5aj37f35cdr5wihvyyaacai"
+    value: {}
+  }
+  # crbug.com/461787022
   managed_allowlist {
     key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
     value: {}
   }
+  # crbug.com/456113547
+  managed_allowlist {
+    key: "akdvjzgbaif24gkubpeadbdyh5w3iphbv3ea5elpckk3cx72mnd4caacai"
+    value: {}
+  }
+  # crbug.com/454521558
   managed_allowlist {
     key: "alxuw6tyvg7ri6eekczt3magynxwwqeoyndxjmiwuz33dlz6jnjr2aacai"
     value: {}
   }
+  # crbug.com/453958646
+  managed_allowlist {
+    key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
+    value: {}
+  }
+  # crbug.com/452607018
   managed_allowlist {
     key: "buhw6nnxnvtbkomwrl6tx4l5soue23i6latmsu7gsdnq4lyso7faaaic"
     value: {}
   }
+  # crbug.com/453632844
   managed_allowlist {
     key: "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic"
     value: {}
@@ -87,8 +106,33 @@ iwa_access_control {
     key: "hbsokgnyjp3cuyuhikquupayzrvbu72ymm7k7lobxq7f5pwbkvwqaaic"
     value: {}
   }
+  # crbug.com/458266630
+  managed_allowlist {
+    key: "jr6zbzn3ueqgjogmvzzvfqb56ue7tnjv5ummqiyn5itn35fduzgaaaic"
+    value: {}
+  }
+  # crbug.com/456723422
+  managed_allowlist {
+    key: "lyn2suo6yezy4uv2xnv3o4fga7kxirtm6o22qlgwy3vrkvyfjpoaaaic"
+    value: {}
+  }
+  # crbug.com/459181367
+  managed_allowlist {
+    key: "pqiwyfhyi45e26be5qonaqldtziczb5b42yaendw4k3lkjppcwhqaaic"
+    value: {}
+  }
+  # crbug.com/458285328
+  managed_allowlist {
+    key: "s3hbml4x5zgsz7fx3l53zbliq55b6tovsfeut52mn2zvbw4somiaaaic"
+    value: {}
+  }
   managed_allowlist {
     key: "t5y5u5ypkkszc6gproxry53r6itx72lzow6tbpxryk5xtjus6ieqaaic"
+    value: {}
+  }
+  # crbug.com/459313816
+  managed_allowlist {
+    key: "xg7j4jhurxb7v5kpnt6asdfdap4lgygu7rxw6wwmpg4p3zs3rffaaaic"
     value: {}
   }
 
@@ -102,23 +146,11 @@ iwa_access_control {
     value: {}
   }
   managed_allowlist {
-    key: "aicmibhbmnxp2r7ai552eyuxjls5ksceyen5aj37f35cdr5wihvyyaacai"
-    value: {}
-  }
-  managed_allowlist {
     key: "ajbye5keylrcyakugr3zttu6f524eoamjc7mc6ubw3x3547xu3hxqaacai"
     value: {}
   }
   managed_allowlist {
-    key: "akdvjzgbaif24gkubpeadbdyh5w3iphbv3ea5elpckk3cx72mnd4caacai"
-    value: {}
-  }
-  managed_allowlist {
     key: "al6gv7mxqtp655ivt7ywfr3tcfyb5pgppdrrs6gmlrc6gi2tiauukaacai"
-    value: {}
-  }
-  managed_allowlist {
-    key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
     value: {}
   }
   managed_allowlist {
@@ -134,23 +166,11 @@ iwa_access_control {
     value: {}
   }
   managed_allowlist {
-    key: "lyn2suo6yezy4uv2xnv3o4fga7kxirtm6o22qlgwy3vrkvyfjpoaaaic"
-    value: {}
-  }
-  managed_allowlist {
     key: "ov6jyjge37xqptadeo5e2n6ayoxdjqw62pgm4afavkqbnqfpesraaaic"
     value: {}
   }
   managed_allowlist {
-    key: "pqiwyfhyi45e26be5qonaqldtziczb5b42yaendw4k3lkjppcwhqaaic"
-    value: {}
-  }
-  managed_allowlist {
     key: "q2oy25prsvhmxocjxs2badhyi3uw7vqhrupfn66iflserug4st6qaaic"
-    value: {}
-  }
-  managed_allowlist {
-    key: "s3hbml4x5zgsz7fx3l53zbliq55b6tovsfeut52mn2zvbw4somiaaaic"
     value: {}
   }
   managed_allowlist {
@@ -163,14 +183,6 @@ iwa_access_control {
   }
   managed_allowlist {
     key: "vmfvgqvflhnyyqx27tkryrz5kvursxoop2ux4fyizox4nkph2sqaaaic"
-    value: {}
-  }
-  managed_allowlist {
-    key: "xg7j4jhurxb7v5kpnt6asdfdap4lgygu7rxw6wwmpg4p3zs3rffaaaic"
-    value: {}
-  }
-  managed_allowlist {
-    key: "yf2q3xpngcsyc4qtr2t3nensdqgobzcevecpfyqm6exjsoo7nx2aaaic"
     value: {}
   }
   managed_allowlist {
