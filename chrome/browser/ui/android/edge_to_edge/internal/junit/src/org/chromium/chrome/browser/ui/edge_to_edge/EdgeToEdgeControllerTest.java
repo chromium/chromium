@@ -1000,6 +1000,37 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    public void handleBrowserControlsInTabSwitcher_properlyPadAdjusters() {
+        int unused = -1;
+        int browserControlsHeight = BOTTOM_INSET * 2;
+
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
+
+        // Register a new pad adjuster. Without the keyboard or browser controls visible, the insets
+        // should just match the system bottom inset.
+        MockPadAdjuster mockPadAdjuster = new MockPadAdjuster();
+        mEdgeToEdgeControllerImpl.registerAdjuster(mockPadAdjuster);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+
+        // Case 1: Tab Switcher active, Bottom Controls visible. Skip browser control check.
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.TAB_SWITCHER);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(browserControlsHeight, unused);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+
+        // Case 2: Browsing active, Bottom Controls visible. Should check browser control.
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        // Hide browser controls.
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, unused);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+        // Show browser controls.
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(browserControlsHeight, unused);
+        mockPadAdjuster.checkInsets(0);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void drawToEdge_EdgeToEdgeEverywhereEnabled() {
         Mockito.clearInvocations(mEdgeToEdgeManager);

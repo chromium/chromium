@@ -690,8 +690,11 @@ public class EdgeToEdgeControllerImpl
         // Never pad the adjusters if the keyboard is visible.
         if (mKeyboardInsets != null && mKeyboardInsets.bottom > 0) return false;
 
-        // Never pad the adjusters if the bottom controls are visible.
-        if (mBottomControlsAreVisible) return false;
+        // Never pad the adjusters if the bottom controls are visible. Except in the tab switcher.
+        @LayoutType
+        int currentLayoutType =
+                mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
+        if (mBottomControlsAreVisible && currentLayoutType != LayoutType.TAB_SWITCHER) return false;
 
         // Pad the adjusters if drawing to edge.
         return isDrawingToEdge();
