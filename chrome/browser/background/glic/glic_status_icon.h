@@ -60,13 +60,9 @@ class GlicStatusIcon : public StatusIconObserver,
   void OnBrowserRemoved(Browser* browser) override;
 
   // GlicProfileManager::Observer
-  // TODO(crbug.com/404311796): would ideally observe window show/hide via the
-  // profile manager, directly.
   void OnLastActiveGlicProfileChanged(Profile* profile) override;
 
   // GlicWindowController::StateObserver
-  // TODO(crbug.com/404311796): would ideally observe window show/hide via the
-  // profile manager, directly.
   void PanelStateChanged(
       const mojom::PanelState& panel_state,
       const GlicWindowController::PanelStateContext& context) override;
