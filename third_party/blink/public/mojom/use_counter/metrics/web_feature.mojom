@@ -5043,7 +5043,7 @@ enum WebFeature {
   kV8Origin_FromURL_Method = 5727,
   kV8Origin_Parse_Method = 5728,
   kExtendedTextMetrics = 5729,
-
+  kUseCssSizingProperties = 5730,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
   // spaces or comments in this file. Comments belong next to the usage of

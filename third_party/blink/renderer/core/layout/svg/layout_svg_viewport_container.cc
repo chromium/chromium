@@ -72,10 +72,17 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
 
     const SVGViewportResolver viewport_resolver(*this);
     const ComputedStyle& style = StyleRef();
+    const ComputedStyle& parent_style = Parent()->StyleRef();
     float resolved_width_from_style = ResolveViewportDimension(
         style.Width(), viewport_resolver, style, SVGLengthMode::kWidth);
     float resolved_height_from_style = ResolveViewportDimension(
         style.Height(), viewport_resolver, style, SVGLengthMode::kHeight);
+    float resolved_width_from_parent_style =
+        ValueForLength(parent_style.Width(), viewport_resolver, parent_style,
+                       SVGLengthMode::kWidth);
+    float resolved_height_from_parent_style =
+        ValueForLength(parent_style.Height(), viewport_resolver, parent_style,
+                       SVGLengthMode::kHeight);
 
     if (RuntimeEnabledFeatures::
             WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
@@ -85,18 +92,13 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
       if (RuntimeEnabledFeatures::
               WidthAndHeightStylePropertiesOnUseAndSymbolEnabled() &&
           svg->InUseShadowTree() && IsAtShadowBoundary(svg)) {
-        const ComputedStyle& parent_style = Parent()->StyleRef();
 
         if (!parent_style.Width().IsAuto()) {
-          resolved_width =
-              ValueForLength(parent_style.Width(), viewport_resolver,
-                             parent_style, SVGLengthMode::kWidth);
+          resolved_width = resolved_width_from_parent_style;
         }
 
         if (!parent_style.Height().IsAuto()) {
-          resolved_height =
-              ValueForLength(parent_style.Height(), viewport_resolver,
-                             parent_style, SVGLengthMode::kHeight);
+          resolved_height = resolved_height_from_parent_style;
         }
       }
 
@@ -109,6 +111,15 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
         resolved_width_from_style != resolved_width) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kNestedSvgCssSizingProperties);
+    }
+
+    if (svg->InUseShadowTree() && IsAtShadowBoundary(svg)) {
+      if ((resolved_height_from_parent_style != resolved_height &&
+           !parent_style.Height().IsAuto()) ||
+          (resolved_width_from_parent_style != resolved_width &&
+           !parent_style.Width().IsAuto())) {
+        UseCounter::Count(GetDocument(), WebFeature::kUseCssSizingProperties);
+      }
     }
 
     viewport_.SetRect(resolved_x, resolved_y, resolved_width, resolved_height);

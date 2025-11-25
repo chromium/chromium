@@ -155,4 +155,73 @@ TEST_F(LayoutSVGViewportContainerTest,
       WebFeature::kGetBBoxForNestedSVGElementWithZeroWidthOrHeight));
 }
 
+TEST_F(LayoutSVGViewportContainerTest,
+       UseCssSizingPropertiesUseCounterTriggered) {
+  // Test when the feature is DISABLED and the use counter triggers when use
+  // properties overrides
+  ScopedWidthAndHeightStylePropertiesOnUseAndSymbolForTest scoped_feature(
+      false);
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <defs>
+        <symbol id="s" width="500px" height="500px">
+          <rect width="200px" height="200px"/>
+        </symbol>
+      </defs>
+      <use href="#s" style="width:100px;height:100px;"></use>
+    </svg>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+}
+
+TEST_F(LayoutSVGViewportContainerTest,
+       UseCssSizingPropertiesSameValuesAsSymbolUseCounterNotTriggered) {
+  // Test when the feature is DISABLED and the use counter does not trigger when
+  // width/height is same
+  ScopedWidthAndHeightStylePropertiesOnUseAndSymbolForTest scoped_feature(
+      false);
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <defs>
+        <symbol id="s" width="100px" height="100px">
+          <rect width="200px" height="200px"/>
+        </symbol>
+      </defs>
+      <use href="#s" style="width:100px;height:100px;"></use>
+    </svg>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+}
+
+TEST_F(LayoutSVGViewportContainerTest,
+       UseCssSizingPropertiesUseCounterNotTriggered) {
+  // Test when the feature is DISABLED but the use counter does not trigger when
+  // no width/height specified on use
+  ScopedWidthAndHeightStylePropertiesOnUseAndSymbolForTest scoped_feature(
+      false);
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <defs>
+        <symbol id="s" width="500px" height="500px">
+          <rect width="200px" height="200px"/>
+        </symbol>
+      </defs>
+      <use href="#s"></use>
+    </svg>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kUseCssSizingProperties));
+}
+
 }  // namespace blink

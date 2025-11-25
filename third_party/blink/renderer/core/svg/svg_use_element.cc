@@ -260,7 +260,7 @@ void SVGUseElement::SvgAttributeChanged(
       attr_name == svg_names::kHeightAttr) {
     if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
         RuntimeEnabledFeatures::
-            WidthAndHeightStylePropertiesOnUseAndSymbolEnabled()) {
+            CollectWidthAndHeightAsPresentationAttributesForUseEnabled()) {
       UpdatePresentationAttributeStyle(params.property);
     }
 

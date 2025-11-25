@@ -1061,6 +1061,10 @@
       status: "stable",
     },
     {
+      name: "CollectWidthAndHeightAsPresentationAttributesForUse",
+      status: "stable",
+    },
+    {
       name: "CollectWidthAndHeightAsStylesForNestedSvg",
       status: "stable",
     },
