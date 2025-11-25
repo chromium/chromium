@@ -1633,9 +1633,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
   EXPECT_EQ(base::UTF16ToUTF8(view->GetSelectedText()), kExpectedText);
 }
 
-// TODO(crbug.com/40793934): Add tests for using space and shift+space shortcuts
-// for scrolling PDFs.
-
 // Test that even if a different tab is selected when a navigation occurs,
 // the correct tab still gets navigated (see crbug.com/672563).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
