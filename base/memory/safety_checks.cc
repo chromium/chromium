@@ -4,6 +4,10 @@
 
 #include "base/memory/safety_checks.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_alloc_support.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 namespace base {
 
 void CheckHeapIntegrity(const void* ptr) {

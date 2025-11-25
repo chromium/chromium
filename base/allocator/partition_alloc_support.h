@@ -22,7 +22,6 @@
 #include "base/thread_annotations.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/thread_cache.h"
 
 namespace base::allocator {
@@ -177,10 +176,6 @@ BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 // `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
 // to the function, and it may use that for debugging purpose.
 BASE_EXPORT void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
-
-using partition_alloc::SchedulerLoopQuarantineScanPolicyUpdater;
-using partition_alloc::ScopedSchedulerLoopQuarantineDisallowScanlessPurge;
-using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 
 }  // namespace base::allocator
 

@@ -9,11 +9,10 @@
 
 #include "base/memory/safety_checks.h"
 
-#include <new>
-
 #include "base/allocator/partition_alloc_features.h"
 #include "base/feature_list.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -183,8 +182,7 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
       is_memory_safety_checked<AdvancedChecks,
                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
 
-  auto* root =
-      base::internal::GetPartitionRootForMemorySafetyCheckedAllocation();
+  auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
   partition_alloc::internal::
       ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
 

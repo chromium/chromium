@@ -359,6 +359,8 @@ component("base") {
     "macros/is_empty.h",
     "macros/remove_parens.h",
     "macros/uniquify.h",
+    "memory/advanced_memory_safety_checks.cc",
+    "memory/advanced_memory_safety_checks.h",
     "memory/aligned_memory.cc",
     "memory/aligned_memory.h",
     "memory/asan_interface.h",
@@ -1740,6 +1742,7 @@ component("base") {
       "allocator/partition_alloc_support.h",
       "allocator/scheduler_loop_quarantine_config.cc",
       "allocator/scheduler_loop_quarantine_config.h",
+      "allocator/scheduler_loop_quarantine_support.h",
     ]
   }
   if (use_allocator_shim) {
