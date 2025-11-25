@@ -222,7 +222,8 @@ void AdTracker::Will(const probe::ExecuteScript& probe) {
   bool is_ad = IsKnownAdScript(probe.context, url);
 
   // For inline scripts, this is our opportunity to check the stack to see if
-  // an ad created it since inline scripts are run immediately.
+  // an ad created it. Scripts that are loaded asynchronously will create
+  // probe::AsyncTasks.
   std::optional<AdScriptIdentifier> ancestor_ad_script;
   if (!is_ad && is_inline_script &&
       IsAdScriptInStackHelper(StackType::kBottomAndTop,
@@ -405,15 +406,6 @@ bool AdTracker::IsAdScriptInStackHelper(
     StackType stack_type,
     MonkeyPatchableApi ignore_monkey_patch,
     std::optional<AdScriptIdentifier>* out_ad_script) {
-  // First check if async tasks are running, as `bottom_most_async_ad_script_`
-  // is more likely to be what the caller is looking for than
-  // the bottom `ad_script_in_stack_`.
-  if (running_ad_async_tasks_ > 0) {
-    if (out_ad_script)
-      *out_ad_script = bottom_most_async_ad_script_;
-    return true;
-  }
-
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   ExecutionContext* execution_context = GetCurrentExecutionContext(isolate);
   if (!execution_context)
@@ -443,6 +435,15 @@ bool AdTracker::IsAdScriptInStackHelper(
       if (it != ad_script_data_.end()) {
         *out_ad_script = it->value.id;
       }
+    }
+    return true;
+  }
+
+  // We check if async is on stack after sync, because sync is likely easier to
+  // reason about.
+  if (running_ad_async_tasks_ > 0) {
+    if (out_ad_script) {
+      *out_ad_script = bottom_most_async_ad_script_;
     }
     return true;
   }

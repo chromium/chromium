@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
@@ -73,7 +75,9 @@ PendingScript::PendingScript(ScriptElementBase* element,
       original_execution_context_(element->GetExecutionContext()),
       created_during_document_write_(
           element->GetDocument().IsInDocumentWrite()),
-      task_state_(task_state) {}
+      task_state_(task_state) {
+  async_task_context_.Schedule(original_execution_context_, "PendingScript");
+}
 
 PendingScript::~PendingScript() {}
 
@@ -139,6 +143,9 @@ void PendingScript::MarkParserBlockingLoadStartTime() {
 // <specdef href="https://html.spec.whatwg.org/C/#execute-the-script-block">
 void PendingScript::ExecuteScriptBlock() {
   TRACE_EVENT0("blink", "PendingScript::ExecuteScriptBlock");
+  probe::AsyncTask async_task(original_execution_context_,
+                              &async_task_context_);
+
   ExecutionContext* context = element_->GetExecutionContext();
   if (!context) {
     Dispose();

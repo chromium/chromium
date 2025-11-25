@@ -2159,6 +2159,47 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_TransitiveInlineScript) {
   ad_document2.Complete("<body></body>");
 }
 
+// Tests that an inlined module script created by an ad script is correctly
+// identified as ad related.
+TEST_F(AdTrackerSimTest, AsyncInlineScript) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script creates a inline module script.
+  // 3. The inline module script loads asynchronously, but should still
+  //    be detected as an ad.
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const script = document.createElement('script');
+    script.type = "module";
+    script.innerText =  `
+          const iframe = document.createElement('iframe');
+          iframe.src = 'ad_document.html';
+          document.body.appendChild(iframe);
+    `;
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  // Wait for the document load.
+  ad_document.Complete("<html>Hello world!</html>");
+
+  // The frame should be ad-tagged.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
 // Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
 // the final ad frame is created through multiple levels of asynchronous script
 // execution originating from an initial subresource-filter-flagged ad script.
