@@ -17,6 +17,7 @@ build_webui("build") {
   ts_files = [
     "aim_app.html.ts",
     "aim_app.ts",
+    "aim_browser_proxy.ts",
     "app.html.ts",
     "app.ts",
     "full_app.html.ts",
