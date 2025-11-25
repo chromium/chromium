@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -73,17 +72,10 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
         std::make_unique<CaptivePortalWindowProxy>(web_contents);
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    network_portal_detector_ = new NetworkPortalDetectorTestImpl();
-    network_portal_detector::InitializeForTesting(network_portal_detector_);
-  }
-
   void TearDownOnMainThread() override { captive_portal_window_proxy_.reset(); }
 
  private:
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;
-  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged>
-      network_portal_detector_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {

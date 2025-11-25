@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"

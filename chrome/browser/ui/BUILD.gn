@@ -2421,7 +2421,6 @@ static_library("ui") {
       "//chromeos/ash/components/nearby/presence",
       "//chromeos/ash/components/nearby/presence/credentials",
       "//chromeos/ash/components/network",
-      "//chromeos/ash/components/network/portal_detector",
       "//chromeos/ash/components/nonclosable_app_ui",
       "//chromeos/ash/components/peripheral_notification",
       "//chromeos/ash/components/phonehub",
