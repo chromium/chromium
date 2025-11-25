@@ -158,7 +158,8 @@ class ResumableUploadRequestTest : public testing::Test {
 
   void VerifyMetadataRequestHeaders(
       const network::ResourceRequest& resource_request,
-      std::string expected_size) {
+      std::string expected_size,
+      const std::string& expected_content_type = "application/octet-stream") {
     ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
     ASSERT_THAT(resource_request.headers.GetHeader("X-Goog-Upload-Protocol"),
                 testing::Optional(std::string("resumable")));
@@ -171,7 +172,7 @@ class ResumableUploadRequestTest : public testing::Test {
         "X-Goog-Upload-Header-Content-Type"));
     ASSERT_THAT(
         resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Type"),
-        testing::Optional(std::string("application/octet-stream")));
+        testing::Optional(expected_content_type));
 
     ASSERT_TRUE(resource_request.headers.HasHeader(
         "X-Goog-Upload-Header-Content-Length"));
@@ -262,7 +263,7 @@ TEST_F(ResumableUploadStringRequestTest,
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "11");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "11", "image/png");
 }
 
 class ResumableUploadSendMetadataRequestTest
