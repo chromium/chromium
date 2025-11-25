@@ -97,7 +97,7 @@ class MetricsServiceUserDemographicsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40103988): Add the remaining test cases.
+
 // LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoData)
 IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
                        AddSyncedUserBirthYearAndGenderToProtoData) {
