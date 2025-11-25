@@ -503,7 +503,7 @@ SiteInstanceGroupId SiteInstanceImpl::GetSiteInstanceGroupId() {
 }
 
 bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
-  BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
+  BrowserContext* browser_context = browsing_instance_->browser_context();
   return has_site_ && site_info_.ShouldUseProcessPerSite(browser_context);
 }
 
@@ -1017,7 +1017,7 @@ void SiteInstanceImpl::DecrementRelatedActiveContentsCount() {
 }
 
 BrowserContext* SiteInstanceImpl::GetBrowserContext() {
-  return browsing_instance_->GetBrowserContext();
+  return browsing_instance_->browser_context();
 }
 
 // static

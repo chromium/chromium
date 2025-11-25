@@ -117,7 +117,9 @@ class CONTENT_EXPORT BrowsingInstance final
   ~BrowsingInstance();
 
   // Get the browser context to which this BrowsingInstance belongs.
-  BrowserContext* GetBrowserContext() const;
+  BrowserContext* browser_context() const {
+    return isolation_context_.browser_context();
+  }
 
   // Get the IsolationContext associated with this BrowsingInstance.  This can
   // be used to track this BrowsingInstance in other areas of the code, along

@@ -49,10 +49,6 @@ BrowsingInstance::BrowsingInstance(
   }
 }
 
-BrowserContext* BrowsingInstance::GetBrowserContext() const {
-  return isolation_context_.browser_context();
-}
-
 bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {
   return base::Contains(site_instance_map_, site_info);
 }
