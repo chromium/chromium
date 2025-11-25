@@ -1089,28 +1089,6 @@ chromium-metrics-reviews@google.com.
   <token key="ScrollEventType" variants="ScrollEventType"/>
 </histogram>
 
-<histogram name="EventLatency.{ScrollEventType}.{DispatchStage}.{RatioType}"
-    units="%" expires_after="2026-05-03">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Tracks the latency of {ScrollEventType}, as a ratio from {DispatchStage} to
-    the VSync time. This is normalized by the frame interval. This is reported
-    when the stage occurs {RatioType}.
-  </summary>
-  <token key="ScrollEventType" variants="ScrollEventType"/>
-  <token key="DispatchStage">
-    <variant name="ArrivedInRendererVsVSyncRatio"
-        summary="when the event arrived in the Renderer"/>
-    <variant name="GenerationVsVsyncRatio"
-        summary="when the event was generated"/>
-  </token>
-  <token key="RatioType">
-    <variant name="AfterVSync" summary="after the VSync timestamp"/>
-    <variant name="BeforeVSync" summary="before the VSync timestamp"/>
-  </token>
-</histogram>
-
 <histogram name="EventLatency.{ScrollEventType}.{TopControls}"
     units="microseconds" expires_after="2026-05-17">
   <owner>jonross@chromium.org</owner>
