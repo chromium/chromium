@@ -413,6 +413,7 @@ config("delayloads_except_dbghelp") {
     "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:d3d12.dll",
     "/DELAYLOAD:d3d9.dll",
+    "/DELAYLOAD:dhcpcsvc.dll",
     "/DELAYLOAD:dcomp.dll",
     "/DELAYLOAD:dwmapi.dll",
     "/DELAYLOAD:dxgi.dll",
@@ -423,6 +424,7 @@ config("delayloads_except_dbghelp") {
     "/DELAYLOAD:hid.dll",
     "/DELAYLOAD:imagehlp.dll",
     "/DELAYLOAD:imm32.dll",
+    "/DELAYLOAD:iphlpapi.dll",
     "/DELAYLOAD:mmdevapi.dll",
     "/DELAYLOAD:msi.dll",
     "/DELAYLOAD:netapi32.dll",
@@ -469,9 +471,7 @@ config("delayloads_for_tests") {
 config("delayloads_not_for_child_dll") {
   ldflags = [
     "/DELAYLOAD:crypt32.dll",
-    "/DELAYLOAD:dhcpcsvc.dll",
     "/DELAYLOAD:dwrite.dll",
-    "/DELAYLOAD:iphlpapi.dll",
     "/DELAYLOAD:secur32.dll",
     "/DELAYLOAD:userenv.dll",
     "/DELAYLOAD:winhttp.dll",

@@ -35,6 +35,15 @@ namespace {
 // Time between NotifyAddrChange retries, on failure.
 const int kWatchForAddressChangeRetryIntervalMs = 500;
 
+decltype(&GetNetworkConnectivityHint) GetGetNetworkConnectivityHint() {
+  HMODULE hmod = LoadLibraryW(L"IPHLPAPI.DLL");
+  CHECK(hmod);
+  // GetNetworkConnectivityHint is not present on Windows < 19041 so allow
+  // this to return nullptr on failure to lookup.
+  return reinterpret_cast<decltype(&GetNetworkConnectivityHint)>(
+      GetProcAddress(hmod, "GetNetworkConnectivityHint"));
+}
+
 }  // namespace
 
 NetworkChangeNotifierWin::NetworkChangeNotifierWin()
@@ -80,20 +89,16 @@ NetworkChangeNotifierWin::NetworkChangeCalculatorParamsWin() {
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierWin::RecomputeCurrentConnectionTypeModern() {
-  using GetNetworkConnectivityHintType =
-      decltype(&::GetNetworkConnectivityHint);
-
   // This API is only available on Windows 10 Build 19041. However, it works
-  // inside the Network Service Sandbox, so is preferred. See
-  GetNetworkConnectivityHintType get_network_connectivity_hint =
-      reinterpret_cast<GetNetworkConnectivityHintType>(::GetProcAddress(
-          ::GetModuleHandleA("iphlpapi.dll"), "GetNetworkConnectivityHint"));
-  if (!get_network_connectivity_hint) {
+  // inside the Network Service Sandbox, so is preferred.
+  static decltype(&GetNetworkConnectivityHint)
+      get_network_connectivity_hint_fn = GetGetNetworkConnectivityHint();
+  if (!get_network_connectivity_hint_fn) {
     return NetworkChangeNotifier::CONNECTION_UNKNOWN;
   }
   NL_NETWORK_CONNECTIVITY_HINT hint;
   // https://learn.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getnetworkconnectivityhint.
-  auto ret = get_network_connectivity_hint(&hint);
+  auto ret = get_network_connectivity_hint_fn(&hint);
   if (ret != NO_ERROR) {
     return NetworkChangeNotifier::CONNECTION_UNKNOWN;
   }
