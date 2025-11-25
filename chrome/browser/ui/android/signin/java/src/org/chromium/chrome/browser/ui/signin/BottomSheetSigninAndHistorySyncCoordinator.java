@@ -506,7 +506,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             SigninSnackbarController.showUndoSnackbarIfNeeded(
                     mActivity,
                     assertNonNull(mProfileSupplier.get()),
-                    assertNonNull(mSnackbarManager),
+                    mSnackbarManager,
                     this,
                     result);
         }

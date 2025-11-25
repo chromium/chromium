@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.activity.ComponentActivity;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,6 +28,8 @@ import org.chromium.components.signin.metrics.SignoutReason;
  */
 @NullMarked
 class SigninSnackbarController implements SnackbarManager.SnackbarController {
+
+    private static final String TAG = "SigninSnackbar";
 
     /**
      * Listener interface used to notify the embedding component (such as the SigninPromo MVC) of
@@ -97,9 +100,15 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
     public static void showUndoSnackbarIfNeeded(
             ComponentActivity activity,
             Profile profile,
-            SnackbarManager snackbarManager,
+            @Nullable SnackbarManager snackbarManager,
             Listener listener,
             SigninAndHistorySyncCoordinator.Result result) {
+        if (snackbarManager == null) {
+            // TODO(crbug.com/437038737): Once SnackbarManager configuration is hardened and always
+            // non-null, remove @Nullable and null check.
+            Log.e(TAG, "SnackbarManager for displaying sign-in confirmation snackbar is null");
+            return;
+        }
         if (result.hasSignedIn) {
             // TODO(crbug.com/437039311): No snackbar shown if the sign-in is cancelled by the user
             // with the X button.
