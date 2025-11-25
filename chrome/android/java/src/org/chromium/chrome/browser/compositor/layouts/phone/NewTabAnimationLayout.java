@@ -541,7 +541,7 @@ public class NewTabAnimationLayout extends Layout {
             updateCacheVisibleIds(new ArrayList<>(Arrays.asList(id, sourceId)));
         }
 
-        // TODO(crbug.com/40933120): Investigate why the old tab flickers when switching to the new
+        // TODO(crbug.com/463341238): Investigate why the old tab flickers when switching to the new
         // tab.
         requestUpdate();
 
