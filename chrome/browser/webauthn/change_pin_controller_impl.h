@@ -98,8 +98,6 @@ class ChangePinControllerImpl
 
   static void RecordHistogram(ChangePinEvent event);
 
-  AuthenticatorRequestDialogModel* model_for_testing() { return model_.get(); }
-
  private:
   explicit ChangePinControllerImpl(content::RenderFrameHost* render_frame_host);
   friend class content::DocumentUserData<ChangePinControllerImpl>;
