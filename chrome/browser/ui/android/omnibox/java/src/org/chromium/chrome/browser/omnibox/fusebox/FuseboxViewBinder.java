@@ -33,6 +33,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.ChromeImageView;
 
 /** Binds the Fusebox properties to the view and component. */
 @NullMarked
@@ -178,7 +179,12 @@ class FuseboxViewBinder {
         Context context = views.parentView.getContext();
         Resources res = context.getResources();
 
-        views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
+        ChromeImageView addButton = views.addButton;
+        addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
+        addButton.setBackground(
+                OmniboxResourceProvider.getSearchBoxIconBackground(context, brandedColorScheme));
+        addButton.setImageTintList(
+                OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
 
         ButtonCompat typeButton = views.requestType;
         if (showFuseboxToolbar

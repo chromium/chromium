@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -709,6 +711,14 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getColorOnSurfaceWithAlpha16(context, isIncognito);
     }
 
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
+    public static ColorStateList getPrimaryIconTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return ChromeColors.getPrimaryIconTint(context, isIncognito);
+    }
+
     /** Resolves the text appearance for the image gen chip. */
     public static @StyleRes int getImageGenButtonTextRes(
             @BrandedColorScheme int brandedColorScheme) {
@@ -729,6 +739,19 @@ public class OmniboxResourceProvider {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         return IncognitoColors.getTextSmallSecondary(isIncognito);
+    }
+
+    /** Returns the drawable that is to go behind the + button in the search box. */
+    public static Drawable getSearchBoxIconBackground(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId =
+                isIncognito
+                        ? R.drawable.search_box_icon_background_opaque_incognito
+                        : R.drawable.search_box_icon_background_opaque;
+        return getDrawable(context, resId);
     }
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
