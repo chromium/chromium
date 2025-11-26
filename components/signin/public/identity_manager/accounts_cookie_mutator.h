@@ -40,12 +40,11 @@ class AccountsCookieMutator {
     // Returns the CookieManager for the partition.
     virtual network::mojom::CookieManager* GetCookieManagerForPartition() = 0;
 
-    // Creates a new BoundSessionOAuthMultiLoginDelegate for the partition.
+    // Creates a new BoundSessionOAuthMultiLoginDelegate for the partition. If
+    // prototype cookie binding is not supported for the partition, returns
+    // nullptr.
     virtual std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
     CreateBoundSessionOAuthMultiLoginDelegateForPartition();
-
-    // Returns `true` if the cookies set for this partition should be bound.
-    virtual bool CanBindCookiesForPartition();
   };
 
   // Task handle for SetAccountsInCookieForPartition. Deleting this object

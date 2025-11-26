@@ -16,13 +16,4 @@ std::unique_ptr<BoundSessionOAuthMultiLoginDelegate> AccountsCookieMutator::
   return nullptr;
 }
 
-bool AccountsCookieMutator::PartitionDelegate::CanBindCookiesForPartition() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  return base::FeatureList::IsEnabled(
-      switches::kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-}
-
 }  // namespace signin

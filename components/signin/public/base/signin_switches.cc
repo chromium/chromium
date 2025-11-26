@@ -207,14 +207,6 @@ BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Enables binding the OAuthMultilogin cookies to a device for non-default
-// storage partitions. This flag is a safety net for partitions that might not
-// be ready to have bound cookies (e.g. Glic).
-BASE_FEATURE(kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // When enabled, Chrome will send a specific URL parameter to Gaia to trigger
 // the server-side experiment for binding the OAuthMultilogin cookies to
 // cryptographic keys.

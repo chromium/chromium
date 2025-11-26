@@ -323,7 +323,6 @@ class GaiaCookieManagerService
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiLoginDelegateForPartition() override;
-  bool CanBindCookiesForPartition() override;
 
   // Helper method to initialize listed accounts ids.
   void InitializeListedAccountsIds();

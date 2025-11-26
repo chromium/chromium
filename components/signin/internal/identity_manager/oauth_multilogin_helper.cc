@@ -188,7 +188,7 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
           switches::kEnableOAuthMultiloginCookiesBinding) &&
       base::FeatureList::IsEnabled(
           switches::kEnableOAuthMultiloginCookiesBindingServerExperiment) &&
-      partition_delegate_->CanBindCookiesForPartition()) {
+      bound_session_delegate_) {
     cookie_binding_params.mode =
         switches::kOAuthMultiloginCookieBindingEnforced.Get()
             ? gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced
@@ -216,8 +216,7 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
       VLOG(1) << "Multilogin successful accounts="
               << base::JoinString(account_ids, " ");
     }
-    if (bound_session_delegate_ &&
-        partition_delegate_->CanBindCookiesForPartition()) {
+    if (bound_session_delegate_) {
       bound_session_delegate_->BeforeSetCookies(result);
     }
 
@@ -320,8 +319,7 @@ void OAuthMultiloginHelper::OnCookiesSet(
                               result.status.IsInclude());
   }
 
-  if (bound_session_delegate_ &&
-      partition_delegate_->CanBindCookiesForPartition()) {
+  if (bound_session_delegate_) {
     bound_session_delegate_->OnCookiesSet();
   }
   std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
