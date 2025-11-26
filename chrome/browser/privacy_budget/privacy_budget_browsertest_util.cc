@@ -10,6 +10,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 PrivacyBudgetBrowserTestBaseWithTestRecorder::
     PrivacyBudgetBrowserTestBaseWithTestRecorder() = default;

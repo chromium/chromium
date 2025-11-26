@@ -14,12 +14,7 @@ component("privacy_budget") {
   configs += [ "//third_party/blink/common:blink_common_implementation" ]
 
   sources = [
-    "aggregating_sample_collector.cc",
-    "aggregating_sample_collector.h",
-    "identifiability_metric_builder.cc",
     "identifiability_metrics.cc",
-    "identifiability_sample_collector.cc",
-    "identifiability_sample_collector_test_utils.h",
     "identifiability_study_settings.cc",
     "identifiable_token_builder.cc",
   ]
@@ -40,9 +35,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "aggregating_sample_collector_unittest.cc",
     "identifiability_internal_templates_unittest.cc",
-    "identifiability_metric_builder_unittest.cc",
     "identifiability_metrics_unittest.cc",
     "identifiability_study_settings_unittest.cc",
     "identifiable_surface_unittest.cc",
@@ -73,11 +66,7 @@ component("test_support") {
 
   defines = [ "IS_PRIVACY_BUDGET_TEST_SUPPORT_IMPL" ]
 
-  sources = [
-    "identifiability_sample_test_utils.cc",
-    "scoped_identifiability_test_sample_collector.cc",
-    "scoped_switch_sample_collector.cc",
-  ]
+  sources = [ "identifiability_sample_test_utils.cc" ]
 
   deps = [
     ":privacy_budget",

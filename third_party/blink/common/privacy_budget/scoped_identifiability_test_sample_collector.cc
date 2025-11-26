@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
 
 #include <memory>
 
@@ -10,8 +9,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/common/privacy_budget/aggregating_sample_collector.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
-#include "third_party/blink/public/common/privacy_budget/scoped_switch_sample_collector.h"
 
 namespace blink {
 namespace test {

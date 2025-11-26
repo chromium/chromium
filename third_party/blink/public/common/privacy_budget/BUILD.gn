@@ -15,9 +15,7 @@ source_set("internal") {
 
 source_set("privacy_budget") {
   sources = [
-    "identifiability_metric_builder.h",
     "identifiability_metrics.h",
-    "identifiability_sample_collector.h",
     "identifiability_study_settings.h",
     "identifiability_study_settings_provider.h",
     "identifiable_sample.h",
@@ -40,11 +38,7 @@ source_set("privacy_budget") {
 source_set("test_support") {
   testonly = true
 
-  sources = [
-    "identifiability_sample_test_utils.h",
-    "scoped_identifiability_test_sample_collector.h",
-    "scoped_switch_sample_collector.h",
-  ]
+  sources = [ "identifiability_sample_test_utils.h" ]
 
   public_deps = [ "//third_party/blink/public/common:headers" ]
 

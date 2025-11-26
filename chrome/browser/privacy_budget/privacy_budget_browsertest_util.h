@@ -17,8 +17,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/ukm/ukm_test_helper.h"
 #include "components/unified_consent/unified_consent_service.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
 
 namespace content {
 class WebContents;
