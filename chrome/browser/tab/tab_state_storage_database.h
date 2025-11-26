@@ -112,11 +112,14 @@ class TabStateStorageDatabase {
   bool CloseTransaction(OpenTransaction* transaction);
 
   // Loads all nodes from the database.
-  std::vector<NodeState> LoadAllNodes(std::string window_tag,
+  std::vector<NodeState> LoadAllNodes(const std::string& window_tag,
                                       bool is_off_the_record);
 
   // Clears all nodes from the database.
   void ClearAllNodes();
+
+  // Clears all nodes for a given window from the database.
+  void ClearWindow(const std::string& window_tag);
 
  private:
   base::FilePath profile_path_;

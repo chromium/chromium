@@ -61,18 +61,23 @@ void TabStateStorageServiceAndroid::Save(JNIEnv* env, TabAndroid* tab) {
 
 void TabStateStorageServiceAndroid::LoadAllData(
     JNIEnv* env,
-    std::string window_tag,
+    const std::string& window_tag,
     bool is_off_the_record,
     const jni_zero::JavaParamRef<jobject>& j_loaded_data_callback) {
   auto load_data_callback = base::BindOnce(
       &RunJavaCallbackLoadAll, env,
       jni_zero::ScopedJavaGlobalRef<jobject>(j_loaded_data_callback));
-  tab_state_storage_service_->LoadAllNodes(
-      std::move(window_tag), is_off_the_record, std::move(load_data_callback));
+  tab_state_storage_service_->LoadAllNodes(window_tag, is_off_the_record,
+                                           std::move(load_data_callback));
 }
 
 void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
   tab_state_storage_service_->ClearState();
+}
+
+void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
+                                                const std::string& window_tag) {
+  tab_state_storage_service_->ClearWindow(window_tag);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

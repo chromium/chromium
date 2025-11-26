@@ -33,11 +33,13 @@ class TabStateStorageBackend {
   // Performs an atomic database update.
   void Update(std::unique_ptr<TabStateStorageUpdater> updater);
 
-  void LoadAllNodes(std::string window_tag,
+  void LoadAllNodes(const std::string& window_tag,
                     bool is_off_the_record,
                     base::OnceCallback<void(std::vector<NodeState>)> callback);
 
   void ClearAllNodes();
+
+  void ClearWindow(const std::string& window_tag);
 
  private:
   void OnDBReady(bool success);

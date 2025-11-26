@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
@@ -281,7 +282,10 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void cleanupStateFile(int windowId) {
-        // TODO(https://crbug.com/451624258): Delete all entries with the given window tag.
+        // The archived tab state file does not support this operation.
+        assert windowId != TabWindowManager.INVALID_WINDOW_ID;
+        String windowTag = Integer.toString(windowId);
+        mTabStateStorageService.clearWindow(windowTag);
     }
 
     @Override
