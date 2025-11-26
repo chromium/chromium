@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -37,11 +39,14 @@ namespace {
 
 using password_manager::UiCredential;
 
-// Returns whether there is at least one credential with a non-empty username.
-bool ContainsNonEmptyUsername(
-    const base::span<const UiCredential>& credentials) {
-  return std::ranges::any_of(credentials, [](const UiCredential& credential) {
-    return !credential.username().empty();
+using Credential = TouchToFillView::Credential;
+
+// Returns whether there is at least one password credential with a non-empty
+// username.
+bool ContainsNonEmptyUsername(const base::span<const Credential>& credentials) {
+  return std::ranges::any_of(credentials, [](const Credential& credential) {
+    const UiCredential* ui_credential = std::get_if<UiCredential>(&credential);
+    return ui_credential && !ui_credential->username().empty();
   });
 }
 
@@ -102,8 +107,7 @@ TouchToFillControllerAutofillDelegate::
 }
 
 void TouchToFillControllerAutofillDelegate::OnShow(
-    base::span<const password_manager::UiCredential> credentials,
-    base::span<password_manager::PasskeyCredential> passkey_credentials) {
+    base::span<const Credential> credentials) {
   CHECK(filler_);
 
   filler_->UpdateTriggerSubmission(ShouldTriggerSubmission() &&
@@ -265,6 +269,12 @@ bool TouchToFillControllerAutofillDelegate::ShouldShowHybridOption() {
 bool TouchToFillControllerAutofillDelegate::
     ShouldShowNoPasskeysSheetIfRequired() {
   return false;
+}
+
+std::optional<std::vector<Credential>>
+TouchToFillControllerAutofillDelegate::SortCredentials(
+    base::span<const Credential> credentials) {
+  return std::nullopt;
 }
 
 gfx::NativeView TouchToFillControllerAutofillDelegate::GetNativeView() {

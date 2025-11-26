@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -159,6 +160,7 @@
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
@@ -641,11 +643,13 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
   }
 
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
-  std::vector<password_manager::PasskeyCredential> passkeys;
+  base::span<const password_manager::PasskeyCredential> passkeys;
   bool should_show_hybrid_option = false;
   if (webauthn_delegate) {
     webauthn_delegate->NotifyForPasskeysDisplay();
-    auto maybe_passkeys = webauthn_delegate->GetPasskeys();
+    base::expected<const std::vector<password_manager::PasskeyCredential>*,
+                   ChromeWebAuthnCredentialsDelegate::PasskeysUnavailableReason>
+        maybe_passkeys = webauthn_delegate->GetPasskeys();
     if (maybe_passkeys.has_value()) {
       passkeys = *maybe_passkeys.value();
       should_show_hybrid_option =
@@ -675,12 +679,18 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
 
-  TouchToFillController* ttf_controller = GetOrCreateTouchToFillController();
-  ttf_controller->InitData(
+  base::span<const password_manager::UiCredential> password_credentials =
       credential_cache_
           .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
-          .GetCredentials(),
-      std::move(passkeys), driver->AsWeakPtrImpl());
+          .GetCredentials();
+  std::vector<TouchToFillView::Credential> credentials;
+  credentials.reserve(password_credentials.size() + passkeys.size());
+  credentials.insert(credentials.end(), passkeys.begin(), passkeys.end());
+  credentials.insert(credentials.end(), password_credentials.begin(),
+                     password_credentials.end());
+
+  TouchToFillController* ttf_controller = GetOrCreateTouchToFillController();
+  ttf_controller->InitData(std::move(credentials), driver->AsWeakPtrImpl());
   if (!ttf_controller->Show(std::move(ttf_controller_autofill_delegate),
                             GetWebAuthnCredManDelegateForDriver(driver))) {
     driver->GetPasswordAutofillManager()->ShowSuggestions(request.field);

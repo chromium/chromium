@@ -404,8 +404,7 @@ class MockTouchToFillController : public TouchToFillController {
 
   MOCK_METHOD(void,
               InitData,
-              (base::span<const password_manager::UiCredential>,
-               std::vector<password_manager::PasskeyCredential>,
+              (std::vector<TouchToFillView::Credential>,
                base::WeakPtr<password_manager::ContentPasswordManagerDriver>),
               (override));
 
@@ -2117,15 +2116,15 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   base::RunLoop().RunUntilIdle();
 
-  std::vector<password_manager::PasskeyCredential> credentials{};
-  EXPECT_CALL(*ttf_controller, InitData(_, Eq(credentials), _));
+  std::vector<TouchToFillView::Credential> credentials{};
+  EXPECT_CALL(*ttf_controller, InitData(Eq(credentials), _));
   EXPECT_CALL(*ttf_controller, Show).WillOnce(Return(true));
 
   // Simulate an empty passkey list being provided.
   ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
       ->GetDelegateForFrame(main_rfh())
       ->OnCredentialsReceived(
-          credentials,
+          std::vector<password_manager::PasskeyCredential>(),
           ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
               true));
 }
@@ -2169,8 +2168,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop waiter;
-  std::vector<password_manager::PasskeyCredential> credentials{};
-  EXPECT_CALL(*ttf_controller, InitData(_, Eq(credentials), _));
+  std::vector<TouchToFillView::Credential> credentials{};
+  EXPECT_CALL(*ttf_controller, InitData(Eq(credentials), _));
   EXPECT_CALL(*ttf_controller, Show)
       .WillOnce([&waiter](std::unique_ptr<TouchToFillControllerDelegate>,
                           webauthn::WebAuthnCredManDelegate*) {
@@ -2190,7 +2189,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
       ->GetDelegateForFrame(main_rfh())
       ->OnCredentialsReceived(
-          credentials,
+          std::vector<password_manager::PasskeyCredential>(),
           ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
               true));
 }

@@ -48,12 +48,10 @@ class TouchToFillView {
   // `flags` is a combination of bits that affect the behaviors listed in the
   // `ShowFlags` enum. After user interaction either OnCredentialSelected() or
   // OnDismiss() gets invoked.
-  virtual bool Show(
-      const GURL& url,
-      IsOriginSecure is_origin_secure,
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<const password_manager::PasskeyCredential> passkey_credentials,
-      int flags) = 0;
+  virtual bool Show(const GURL& url,
+                    IsOriginSecure is_origin_secure,
+                    base::span<const Credential> credentials,
+                    int flags) = 0;
 
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.
