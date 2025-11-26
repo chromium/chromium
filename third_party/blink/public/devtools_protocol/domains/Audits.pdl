@@ -632,6 +632,51 @@ experimental domain Audits
       # Applies to NoisedCanvasReadback issue type.
       optional SourceCodeLocation sourceCodeLocation
 
+  type PermissionElementIssueType extends string
+    enum
+      InvalidType
+      FencedFrameDisallowed
+      CspFrameAncestorsMissing
+      PermissionsPolicyBlocked
+      PaddingRightUnsupported
+      PaddingBottomUnsupported
+      InsetBoxShadowUnsupported
+      RequestInProgress
+      UntrustedEvent
+      RegistrationFailed
+      TypeNotSupported
+      InvalidTypeActivation
+      SecurityChecksFailed
+      ActivationDisabled
+      GeolocationDeprecated
+      InvalidDisplayStyle
+      NonOpaqueColor
+      LowContrast
+      FontSizeTooSmall
+      FontSizeTooLarge
+      InvalidSizeValue
+
+  # This issue warns about improper usage of the <permission> element.
+  type PermissionElementIssueDetails extends object
+    properties
+      PermissionElementIssueType issueType
+      # The value of the type attribute.
+      optional string type
+      # The node ID of the <permission> element.
+      optional DOM.BackendNodeId nodeId
+      # True if the issue is a warning, false if it is an error.
+      optional boolean isWarning
+
+      # Fields for message construction:
+      # Used for messages that reference a specific permission name
+      optional string permissionName
+      # Used for messages about occlusion
+      optional string occluderNodeInfo
+      # Used for messages about occluder's parent
+      optional string occluderParentNodeInfo
+      # Used for messages about activation disabled reason
+      optional string disableReason
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -664,6 +709,7 @@ experimental domain Audits
       SRIMessageSignatureIssue
       UnencodedDigestIssue
       UserReidentificationIssue
+      PermissionElementIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -696,6 +742,7 @@ experimental domain Audits
       optional SRIMessageSignatureIssueDetails sriMessageSignatureIssueDetails
       optional UnencodedDigestIssueDetails unencodedDigestIssueDetails
       optional UserReidentificationIssueDetails userReidentificationIssueDetails
+      optional PermissionElementIssueDetails permissionElementIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

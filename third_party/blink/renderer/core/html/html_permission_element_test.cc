@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -26,6 +27,8 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -140,6 +143,44 @@ V8PermissionState::Enum PermissionStatusV8Enum(MojoPermissionStatus status) {
     case MojoPermissionStatus::DENIED:
       return V8PermissionState::Enum::kDenied;
   }
+}
+
+protocol::Audits::PermissionElementIssueDetails* GetPermissionElementIssue(
+    Document& document,
+    protocol::Audits::PermissionElementIssueType issue_type,
+    base::RepeatingCallback<
+        bool(protocol::Audits::PermissionElementIssueDetails&)> matcher =
+        base::NullCallback()) {
+  auto& storage = document.GetPage()->GetInspectorIssueStorage();
+  for (size_t i = 0; i < storage.size(); ++i) {
+    auto* issue = storage.at(i);
+    if (issue->getCode() ==
+            protocol::Audits::InspectorIssueCodeEnum::PermissionElementIssue &&
+        issue->getDetails()->hasPermissionElementIssueDetails()) {
+      const auto& details =
+          issue->getDetails()->getPermissionElementIssueDetails();
+      if (details->getIssueType() == issue_type) {
+        if (!matcher || matcher.Run(*details)) {
+          return details.get();
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+size_t CountPermissionElementIssues(Document& document) {
+  auto& storage = document.GetPage()->GetInspectorIssueStorage();
+  size_t count = 0;
+  for (size_t i = 0; i < storage.size(); ++i) {
+    auto* issue = const_cast<protocol::Audits::InspectorIssue*>(storage.at(i));
+    if (issue->getCode() ==
+        protocol::Audits::InspectorIssueCodeEnum::PermissionElementIssue) {
+      count++;
+    }
+  }
+
+  return count;
 }
 
 }  // namespace
@@ -841,15 +882,11 @@ TEST_F(HTMLPermissionElementSimTest, GeolocationTypeDeprecationWarning) {
                                    AtomicString("geolocation"));
   GetDocument().body()->AppendChild(permission_element);
 
-  auto& console_messages =
-      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
-          ->ConsoleMessages();
-  EXPECT_EQ(console_messages.size(), 1u);
-  EXPECT_TRUE(console_messages.front().Contains(
-      "Warning: <permission type=\"geolocation\"> is deprecated. Please use "
-      "the <geolocation> element instead. See: "
-      "https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md"));
-  console_messages.clear();
+  EXPECT_TRUE(GetPermissionElementIssue(
+      GetDocument(),
+      protocol::Audits::PermissionElementIssueTypeEnum::GeolocationDeprecated));
+  EXPECT_EQ(CountPermissionElementIssues(GetDocument()), 1u);
+  GetDocument().GetPage()->GetInspectorIssueStorage().Clear();
 
   // Check <geolocation>
   auto* geolocation_element =
@@ -857,7 +894,7 @@ TEST_F(HTMLPermissionElementSimTest, GeolocationTypeDeprecationWarning) {
   GetDocument().body()->AppendChild(geolocation_element);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(console_messages.size(), 0u);
+  EXPECT_EQ(CountPermissionElementIssues(GetDocument()), 0u);
 }
 
 TEST_F(HTMLPermissionElementSimTest, InitializeGrantedText) {
@@ -925,36 +962,54 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByPermissionsPolicy) {
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
   struct {
     const char* permission;
-    unsigned console_message_count;
+    const char* permissionName;
   } kTests[] = {
-      {"camera", 0u},
-      {"microphone", 0u},
-      {"geolocation", 1u},
+      {"camera", "video_capture"},
+      {"microphone", "audio_capture"},
+      {"geolocation", "geolocation"},
   };
   for (const auto& test : kTests) {
-    auto* permission_element = CreatePermissionElement(
-        *last_child_frame->GetFrame()->GetDocument(), test.permission);
-    WaitForPermissionElementRegistration(permission_element);
-    // PermissionsPolicy passed with no console log.
-    auto& last_console_messages =
-        static_cast<frame_test_helpers::TestWebFrameClient*>(
-            last_child_frame->Client())
-            ->ConsoleMessages();
-    EXPECT_EQ(last_console_messages.size(), test.console_message_count);
+    SCOPED_TRACE(test.permission);
+    auto* last_doc = last_child_frame->GetFrame()->GetDocument();
+    auto* first_doc = first_child_frame->GetFrame()->GetDocument();
 
-    CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
-                            test.permission);
+    // Test the frame in which the the policy allows the element
+    EXPECT_FALSE(GetPermissionElementIssue(
+        GetDocument(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            PermissionsPolicyBlocked,
+        base::BindLambdaForTesting(
+            [&](protocol::Audits::PermissionElementIssueDetails& details) {
+              return details.getPermissionName("") == test.permissionName;
+            })));
+    auto* permission_element =
+        CreatePermissionElement(*last_doc, test.permission);
+    WaitForPermissionElementRegistration(permission_element);
+    EXPECT_FALSE(GetPermissionElementIssue(
+        GetDocument(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            PermissionsPolicyBlocked,
+        base::BindLambdaForTesting(
+            [&](protocol::Audits::PermissionElementIssueDetails& details) {
+              return details.getPermissionName("") == test.permissionName;
+            })));
+
+    // Test the frame in which the policy denies the element
+    first_doc->GetPage()->GetInspectorIssueStorage().Clear();
+    EXPECT_EQ(CountPermissionElementIssues(*first_doc), 0u);
+    CreatePermissionElement(*first_doc, test.permission);
     permission_service()->set_pepc_registered_callback(
         BindOnce(&NotReachedForPEPCRegistered));
     base::RunLoop().RunUntilIdle();
-    // Should console log a error message due to PermissionsPolicy
-    auto& first_console_messages =
-        static_cast<frame_test_helpers::TestWebFrameClient*>(
-            first_child_frame->Client())
-            ->ConsoleMessages();
-    EXPECT_TRUE(first_console_messages.front().Contains(
-        "is not allowed in the current context due to PermissionsPolicy"));
-    first_console_messages.clear();
+    EXPECT_TRUE(GetPermissionElementIssue(
+        GetDocument(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            PermissionsPolicyBlocked,
+        base::BindLambdaForTesting(
+            [&](protocol::Audits::PermissionElementIssueDetails& details) {
+              return details.getPermissionName("") == test.permissionName;
+            })));
+
     permission_service()->set_pepc_registered_callback(base::NullCallback());
   }
 }
@@ -1390,35 +1445,42 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
   struct {
     const char* permission;
-    unsigned console_message_count;
+    const char* type;
   } kTests[] = {
-      {"camera", 0u},
-      {"microphone", 0u},
-      {"geolocation", 1u},
+      {"camera", "video_capture"},
+      {"microphone", "audio_capture"},
+      {"geolocation", "geolocation"},
   };
   for (const auto& test : kTests) {
     auto* permission_element = CreatePermissionElement(
         *last_child_frame->GetFrame()->GetDocument(), test.permission);
     WaitForPermissionElementRegistration(permission_element);
-    auto& last_console_messages =
-        static_cast<frame_test_helpers::TestWebFrameClient*>(
-            last_child_frame->Client())
-            ->ConsoleMessages();
-    EXPECT_EQ(last_console_messages.size(), test.console_message_count);
+
+    EXPECT_FALSE(GetPermissionElementIssue(
+        GetDocument(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            CspFrameAncestorsMissing,
+        base::BindLambdaForTesting(
+            [&](protocol::Audits::PermissionElementIssueDetails& details) {
+              return details.getType("") == test.permission;
+            })));
 
     CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
                             test.permission);
     permission_service()->set_pepc_registered_callback(
         BindOnce(&NotReachedForPEPCRegistered));
     base::RunLoop().RunUntilIdle();
-    // Should console log a error message due to missing 'frame-ancestors' CSP
-    auto& first_console_messages =
-        static_cast<frame_test_helpers::TestWebFrameClient*>(
-            first_child_frame->Client())
-            ->ConsoleMessages();
-    EXPECT_TRUE(first_console_messages.front().Contains(
-        "is not allowed without the CSP 'frame-ancestors' directive present."));
-    first_console_messages.clear();
+
+    // Should raise an issue with an error message due to missing
+    // 'frame-ancestors' CSP
+    EXPECT_TRUE(GetPermissionElementIssue(
+        GetDocument(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            CspFrameAncestorsMissing,
+        base::BindLambdaForTesting(
+            [&](protocol::Audits::PermissionElementIssueDetails& details) {
+              return details.getType("") == test.permission;
+            })));
     permission_service()->set_pepc_registered_callback(base::NullCallback());
   }
 }
@@ -1683,21 +1745,16 @@ TEST_F(HTMLPermissionElementIntersectionTest,
       permission_element,
       HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled*/ false);
-  auto& console_messages =
-      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
-          ->ConsoleMessages();
-  EXPECT_EQ(console_messages.size(), 2u);
-  EXPECT_EQ(
-      console_messages.front(),
-      String::Format("The permission element 'camera' cannot be activated due "
-                     "to intersection occluded or distorted."));
-  EXPECT_EQ(console_messages.back(),
-            String::Format("The permission element is occluded by node %s",
-                           div->ToString().Utf8().c_str()));
+                                         /*expected_enabled=*/false);
+  auto* issue = GetPermissionElementIssue(
+      GetDocument(),
+      protocol::Audits::PermissionElementIssueTypeEnum::ActivationDisabled);
+  EXPECT_TRUE(issue);
+  EXPECT_EQ(issue->getDisableReason(), "intersection occluded or distorted");
+  EXPECT_TRUE(issue->getOccluderNodeInfo().value().Contains(div->ToString()));
 }
 
-TEST_F(HTMLPermissionElementIntersectionTest, IntersectionOclluderLogging) {
+TEST_F(HTMLPermissionElementIntersectionTest, IntersectionOccluderLogging) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
   SimRequest main_resource("https://example.test/", "text/html");
   LoadURL("https://example.test/");
@@ -1739,27 +1796,32 @@ TEST_F(HTMLPermissionElementIntersectionTest, IntersectionOclluderLogging) {
       permission_element,
       HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled*/ false);
-  auto& console_messages =
-      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
-          ->ConsoleMessages();
-  EXPECT_EQ(console_messages.size(), 5u);
-  EXPECT_EQ(console_messages[0],
-            String::Format("Contrast between color and background color of the "
-                           "permission element 'camera' is too low"));
-  EXPECT_EQ(console_messages[1],
-            String::Format("The permission element 'camera' cannot be "
-                           "activated due to invalid style."));
-  EXPECT_EQ(
-      console_messages[2],
-      String::Format("The permission element 'camera' cannot be activated due "
-                     "to intersection occluded or distorted."));
-  EXPECT_EQ(console_messages[3],
-            String::Format("The permission element is occluded by node %s",
-                           div->ToString().Utf8().c_str()));
-  EXPECT_EQ(console_messages[4],
-            String::Format("The occluder's parent node is %s",
-                           parent_div->ToString().Utf8().c_str()));
+                                         /*expected_enabled=*/false);
+  EXPECT_TRUE(GetPermissionElementIssue(
+      GetDocument(),
+      protocol::Audits::PermissionElementIssueTypeEnum::LowContrast));
+  EXPECT_TRUE(GetPermissionElementIssue(
+      GetDocument(),
+      protocol::Audits::PermissionElementIssueTypeEnum::ActivationDisabled,
+      base::BindLambdaForTesting(
+          [&](protocol::Audits::PermissionElementIssueDetails& details) {
+            return details.getDisableReason("") == "invalid style";
+          })));
+  auto* issue = GetPermissionElementIssue(
+      GetDocument(),
+      protocol::Audits::PermissionElementIssueTypeEnum::ActivationDisabled,
+      base::BindLambdaForTesting(
+          [&](protocol::Audits::PermissionElementIssueDetails& details) {
+            return details.getDisableReason("") ==
+                   "intersection occluded or distorted";
+          }));
+  EXPECT_TRUE(issue);
+  EXPECT_TRUE(issue->hasOccluderNodeInfo());
+  EXPECT_TRUE(issue->getOccluderNodeInfo().value().Contains(div->ToString()));
+  EXPECT_TRUE(issue->hasOccluderParentNodeInfo());
+  EXPECT_TRUE(issue->getOccluderParentNodeInfo().value().Contains(
+      parent_div->ToString()));
+  EXPECT_EQ(CountPermissionElementIssues(GetDocument()), 3u);
 }
 
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
