@@ -28,7 +28,6 @@ constexpr char kFakeUnitPath[] = "/fake/unit/path";
 class RequestXdgDesktopPortalTest : public testing::Test {
  public:
   void SetUp() override {
-    ResetCachedStateForTesting();
     SetPortalStateForTesting(PortalRegistrarState::kIdle);
     bus_ = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
@@ -39,7 +38,6 @@ class RequestXdgDesktopPortalTest : public testing::Test {
 
   void TearDown() override {
     SetPortalStateForTesting(PortalRegistrarState::kIdle);
-    ResetCachedStateForTesting();
   }
 
  protected:

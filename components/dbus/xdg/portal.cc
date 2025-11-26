@@ -55,7 +55,7 @@ class PortalRegistrar {
     state_ = PortalRegistrarState::kInitializing;
     bus_ = bus;
 
-    SetSystemdScopeUnitNameForXdgPortal(
+    internal::SetSystemdScopeUnitNameForXdgPortal(
         bus, base::BindOnce(&PortalRegistrar::OnSystemdUnitNameSet,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -68,7 +68,7 @@ class PortalRegistrar {
   }
 
  private:
-  void OnSystemdUnitNameSet(SystemdUnitStatus status) {
+  void OnSystemdUnitNameSet(internal::SystemdUnitStatus status) {
     systemd_unit_status_ = status;
     dbus_utils::CheckForServiceAndStart(
         bus_.get(), kPortalServiceName,
@@ -84,8 +84,9 @@ class PortalRegistrar {
 
     // If running under Flatpak or Snap, or unit started successfully, then no
     // need to register.
-    if (systemd_unit_status_ == SystemdUnitStatus::kUnitNotNecessary ||
-        systemd_unit_status_ == SystemdUnitStatus::kUnitStarted) {
+    if (systemd_unit_status_ ==
+            internal::SystemdUnitStatus::kUnitNotNecessary ||
+        systemd_unit_status_ == internal::SystemdUnitStatus::kUnitStarted) {
       SetStateAndRunCallbacks(PortalRegistrarState::kSuccess);
       return;
     }
@@ -144,7 +145,7 @@ class PortalRegistrar {
 
   scoped_refptr<dbus::Bus> bus_;
   PortalRegistrarState state_ = PortalRegistrarState::kIdle;
-  std::optional<SystemdUnitStatus> systemd_unit_status_;
+  std::optional<internal::SystemdUnitStatus> systemd_unit_status_;
   std::vector<PortalSetupCallback> callbacks_;
   base::WeakPtrFactory<PortalRegistrar> weak_ptr_factory_{this};
 };
