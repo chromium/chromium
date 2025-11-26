@@ -104,8 +104,6 @@ class LogoServiceImpl : public LogoService,
     DOWNLOAD_OUTCOME_COUNT,
   };
 
-  const int kDownloadOutcomeNotTracked = -1;
-
   // signin::IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
                                  const GoogleServiceAuthError&) override;
@@ -116,8 +114,8 @@ class LogoServiceImpl : public LogoService,
 
   // Cancels the current asynchronous operation, if any, and resets all member
   // variables that change as the logo is fetched. This method also records UMA
-  // histograms for for the given LogoDownloadOutcome.
-  void ReturnToIdle(int outcome);
+  // histograms for for the given LogoDownloadOutcome, if set.
+  void ReturnToIdle(std::optional<LogoDownloadOutcome> outcome);
 
   // Called when the cached logo has been read from the cache. |cached_logo|
   // will be NULL if there wasn't a valid, up-to-date logo in the cache.
