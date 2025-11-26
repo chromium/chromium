@@ -16,11 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
@@ -56,10 +52,6 @@ constexpr char
 
 }  // namespace
 
-ManualFillingControllerImpl::~ManualFillingControllerImpl() {
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
-}
 // static
 base::WeakPtr<ManualFillingController> ManualFillingController::GetOrCreate(
     content::WebContents* contents) {
@@ -286,10 +278,6 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
   DCHECK(payment_method_controller_);
 
   InitializePlusProfilesCache();
-
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ManualFillingCache",
-      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
@@ -304,11 +292,9 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       payment_method_controller_(std::move(payment_method_controller)),
       view_(std::move(view)) {
   InitializePlusProfilesCache();
-
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ManualFillingCache",
-      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
+
+ManualFillingControllerImpl::~ManualFillingControllerImpl() = default;
 
 void ManualFillingControllerImpl::InitializePlusProfilesCache() {
   auto* client =
@@ -323,19 +309,6 @@ void ManualFillingControllerImpl::InitializePlusProfilesCache() {
     address_controller_->RegisterPlusProfilesProvider(
         plus_profiles_cache_->GetWeakPtr());
   }
-}
-
-bool ManualFillingControllerImpl::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* process_memory_dump) {
-  auto* dump = process_memory_dump->CreateAllocatorDump(
-      base::StringPrintf("passwords/manual_filling_controller/0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(this)));
-  // TODO: crbug.com/40165275 - Clean up memory usage logging.
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  /*value=*/0);
-  return true;
 }
 
 bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
