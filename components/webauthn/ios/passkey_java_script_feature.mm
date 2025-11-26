@@ -261,21 +261,18 @@ std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
 
 // Extracts all parameters required to build a PasskeyRequestParams object from
 // the provided dictionary.
-PasskeyRequestParams ExtractRequestParams(const base::Value::Dict* dict) {
-  if (!dict) {
-    return PasskeyRequestParams();
-  }
-
-  const std::string* frame_id = dict->FindString(kFrameId);
-  const std::string* request_id = dict->FindString(kRequestId);
-  if (!frame_id || !request_id) {
+PasskeyRequestParams ExtractRequestParams(const base::Value::Dict& dict) {
+  const std::string* frame_id = dict.FindString(kFrameId);
+  const std::string* request_id = dict.FindString(kRequestId);
+  const base::Value::Dict* request_dict = dict.FindDict(kRequest);
+  if (!frame_id || !request_id || !request_dict) {
     return PasskeyRequestParams();
   }
 
   return PasskeyRequestParams(
-      *frame_id, *request_id, ExtractRpEntity(dict->FindDict(kRpEntity)),
-      Base64Decode(dict->FindString(kChallenge)),
-      ExtractUserVerification(dict->FindString(kUserVerification)));
+      *frame_id, *request_id, ExtractRpEntity(dict.FindDict(kRpEntity)),
+      Base64Decode(request_dict->FindString(kChallenge)),
+      ExtractUserVerification(request_dict->FindString(kUserVerification)));
 }
 
 // Extracts all parameters required to build an ExtractAssertionRequestParams
@@ -283,7 +280,7 @@ PasskeyRequestParams ExtractRequestParams(const base::Value::Dict* dict) {
 AssertionRequestParams ExtractAssertionRequestParams(
     const base::Value::Dict& dict) {
   return AssertionRequestParams(
-      ExtractRequestParams(dict.FindDict(kRequest)),
+      ExtractRequestParams(dict),
       ExtractCredentials(dict.FindList(kAllowCredentials)));
 }
 
@@ -292,8 +289,7 @@ AssertionRequestParams ExtractAssertionRequestParams(
 RegistrationRequestParams ExtractRegistrationRequestParams(
     const base::Value::Dict& dict) {
   return RegistrationRequestParams(
-      ExtractRequestParams(dict.FindDict(kRequest)),
-      ExtractUserEntity(dict.FindDict(kUserEntity)),
+      ExtractRequestParams(dict), ExtractUserEntity(dict.FindDict(kUserEntity)),
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
