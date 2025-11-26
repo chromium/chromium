@@ -2067,6 +2067,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       prefs::kAndroidTipNotificationShownBottomOmnibox, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  registry->RegisterBooleanPref(prefs::kStaticStorageQuotaEnabled, false);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

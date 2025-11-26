@@ -2349,6 +2349,7 @@ chromium-metrics-reviews@google.com.
   <int value="1414" label="DeviceLoginScreenPreferSlowKexAlgorithms"/>
   <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
   <int value="1416" label="SearchContentSharingSettings"/>
+  <int value="1417" label="StaticStorageQuotaEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

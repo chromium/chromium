@@ -2017,6 +2017,10 @@ inline constexpr char kSkyVaultMigrationStartTime[] =
     "skyvault.migration_start_time";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Boolean that when set overrides the kStaticStorageQuota feature flag.
+inline constexpr char kStaticStorageQuotaEnabled[] =
+    "static_storage_quota_enabled";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

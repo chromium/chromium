@@ -48,7 +48,8 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
       bool is_incognito,
       const base::FilePath& profile_path,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      storage::GetQuotaSettingsFunc get_settings_function);
+      storage::GetQuotaSettingsFunc get_settings_function,
+      bool report_static_storage_quota = false);
 
   QuotaContext(const QuotaContext&) = delete;
   QuotaContext& operator=(const QuotaContext&) = delete;

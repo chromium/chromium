@@ -8953,3 +8953,15 @@ void ChromeContentBrowserClient::RecordAssistedLogin(
   }
   password_manager::metrics_util::RecordBrowserAssistedLogin(pwm_login_type);
 }
+
+std::optional<bool>
+ChromeContentBrowserClient::GetOverrideValueForStaticStorageQuota(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  if (profile->GetPrefs()->HasPrefPath(prefs::kStaticStorageQuotaEnabled)) {
+    return profile->GetPrefs()->GetBoolean(prefs::kStaticStorageQuotaEnabled);
+  } else {
+    return std::nullopt;
+  }
+}

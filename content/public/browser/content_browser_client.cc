@@ -2042,4 +2042,9 @@ blink::mojom::PerformanceTier ContentBrowserClient::GetCpuPerformanceTier() {
 
 void ContentBrowserClient::RecordAssistedLogin(AssistedLoginType login_type) {}
 
+std::optional<bool> ContentBrowserClient::GetOverrideValueForStaticStorageQuota(
+    BrowserContext* browser_context) {
+  return std::nullopt;
+}
+
 }  // namespace content

@@ -27,7 +27,8 @@ QuotaContext::QuotaContext(
     bool is_incognito,
     const base::FilePath& profile_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    storage::GetQuotaSettingsFunc get_settings_function)
+    storage::GetQuotaSettingsFunc get_settings_function,
+    bool report_static_storage_quota)
     : base::RefCountedDeleteOnSequence<QuotaContext>(GetIOThreadTaskRunner({})),
       io_thread_(GetIOThreadTaskRunner({})),
       quota_manager_(base::MakeRefCounted<storage::QuotaManager>(
@@ -35,7 +36,8 @@ QuotaContext::QuotaContext(
           profile_path,
           io_thread_,
           std::move(special_storage_policy),
-          std::move(get_settings_function))) {}
+          std::move(get_settings_function),
+          report_static_storage_quota)) {}
 
 void QuotaContext::BindQuotaManagerHost(
     const blink::StorageKey& storage_key,
