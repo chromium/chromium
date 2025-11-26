@@ -117,6 +117,7 @@ class KURL;
 class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
+class OverscrollAreaTracker;
 class Patch;
 class PointerLockOptions;
 class PopoverData;
@@ -1954,6 +1955,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns true if this element supports base appearance given a value for the
   // appearance property, such as `base` or `base-select`.
   bool SupportsBaseAppearance(AppearanceValue) const;
+
+  OverscrollAreaTracker& EnsureOverscrollAreaTracker();
+  OverscrollAreaTracker* OverscrollAreaTracker() const;
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }

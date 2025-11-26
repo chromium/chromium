@@ -57,6 +57,7 @@ import("//third_party/blink/renderer/core/mojo/build.gni")
 import("//third_party/blink/renderer/core/navigation_api/build.gni")
 import("//third_party/blink/renderer/core/offscreencanvas/build.gni")
 import("//third_party/blink/renderer/core/origin_trials/build.gni")
+import("//third_party/blink/renderer/core/overscroll/build.gni")
 import("//third_party/blink/renderer/core/page/build.gni")
 import("//third_party/blink/renderer/core/paint/build.gni")
 import("//third_party/blink/renderer/core/patching/build.gni")
@@ -331,6 +332,7 @@ component("core") {
   sources +=
       rebase_path(blink_core_sources_offscreencanvas, "", "offscreencanvas")
   sources += rebase_path(blink_core_sources_origin_trials, "", "origin_trials")
+  sources += rebase_path(blink_core_sources_overscroll, "", "overscroll")
   sources += rebase_path(blink_core_sources_page, "", "page")
   sources += rebase_path(blink_core_sources_paint, "", "paint")
   sources +=
@@ -1504,6 +1506,7 @@ source_set("unit_tests") {
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_overscroll, "", "overscroll")
   sources += rebase_path(blink_core_tests_route_matching, "", "route_matching")
   sources += rebase_path(blink_core_tests_sanitizer, "", "sanitizer")
   sources += rebase_path(blink_core_tests_scheduler, "", "scheduler")

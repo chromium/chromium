@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -629,6 +630,16 @@ Element* ElementRareDataVector::GetFocusgroupLastFocused() const {
     return value->Get();
   }
   return nullptr;
+}
+
+OverscrollAreaTracker& ElementRareDataVector::EnsureOverscrollAreaTracker(
+    Element* element) {
+  return EnsureField<class OverscrollAreaTracker>(
+      FieldId::kOverscrollAreaTracker, element);
+}
+OverscrollAreaTracker* ElementRareDataVector::OverscrollAreaTracker() const {
+  return static_cast<class OverscrollAreaTracker*>(
+      GetField(FieldId::kOverscrollAreaTracker));
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {

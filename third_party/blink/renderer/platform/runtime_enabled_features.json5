@@ -1536,6 +1536,8 @@
     },
     {
       // https://chromestatus.com/feature/5261280285949952
+      // TODO(vmpstr): Rename this flag to OversrollGestures when the CSS
+      // implementation is removed.
       name: "CSSOverscrollGestures",
       status: "test",
     },

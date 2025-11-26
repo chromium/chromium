@@ -53,6 +53,7 @@ class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
 class Element;
+class OverscrollAreaTracker;
 
 enum class ElementFlags;
 
@@ -101,8 +102,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kAnimationTriggerData = 38,
     kFocusgroupLastFocused = 39,
     kDisplayAdElementMonitor = 40,
+    kOverscrollAreaTracker = 41,
 
-    kNumFields = 41,
+    kNumFields = 42,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -474,6 +476,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetAffectedByMultipleHas() {
     fields_.has_invalidation_flags.affected_by_multiple_has = true;
   }
+
+  OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
+  OverscrollAreaTracker* OverscrollAreaTracker() const;
 
   void Trace(blink::Visitor*) const override;
 

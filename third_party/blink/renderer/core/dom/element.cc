@@ -206,6 +206,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -3665,6 +3666,15 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     // any.
     if (parentNode()) {
       UpdateFocusgroup(params.new_value);
+    }
+  } else if (RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled() &&
+             name == html_names::kOverscrollcontainerAttr) {
+    if (params.old_value.IsNull() && !params.new_value.IsNull()) {
+      EnsureOverscrollAreaTracker().TakeOverscrollFromAncestor();
+    } else if (!params.old_value.IsNull() && params.new_value.IsNull()) {
+      if (auto* area_tracker = OverscrollAreaTracker()) {
+        area_tracker->PropagateOverscrollToAncestor();
+      }
     }
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
@@ -13078,6 +13088,17 @@ bool Element::SupportsBaseAppearance(AppearanceValue appearance_value) const {
     return SupportsBaseAppearanceInternal(*base_appearance_value);
   }
   return false;
+}
+
+OverscrollAreaTracker& Element::EnsureOverscrollAreaTracker() {
+  return EnsureElementRareData().EnsureOverscrollAreaTracker(this);
+}
+
+OverscrollAreaTracker* Element::OverscrollAreaTracker() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->OverscrollAreaTracker();
+  }
+  return nullptr;
 }
 
 }  // namespace blink
