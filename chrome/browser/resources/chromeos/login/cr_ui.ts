@@ -47,8 +47,6 @@ export class Oobe extends DisplayManager {
 
   /**
    * Shows the given screen.
-   * TODO(b/322313099): Either update data type to use some base screen data
-   * class or make `showScreen` to have only screen id as a parameter.
    */
   static showScreen(screen: {id: string, data: any}): void {
     Oobe.getInstance().showScreen(screen);
