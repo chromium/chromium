@@ -1282,7 +1282,4 @@ INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                                            KioskType::kWebApp,
                                            KioskType::kIwa));
 
-// TODO(b/325648738): add KioskBrowserSessionDeathTest to check kiosk session
-// crash when unexpected browser is not closed.
-
 }  // namespace chromeos
