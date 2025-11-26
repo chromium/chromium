@@ -2167,6 +2167,31 @@ Chromium is unable to recover your settings.
           Ask a follow up
         </message>
 
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_ASK_ANYTHING"
+          desc="The hint text of the AI mode searchbox in the Lens tab. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a question.">
+          Ask anything
+        </message>
+
+        <message name="IDS_AI_MODE_ASK_ABOUT_THIS_TAB"
+          desc="Title for the AI Mode zero state welcome message in the Lens side panel. Prompts the user to ask questions about the current tab. Includes a line break to force desired line wrapping.">
+          Ask<ph name="LINE_BREAK">$1</ph>about this tab
+        </message>
+
+        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE"
+          desc="Title for the AI Mode zero state welcome message in the Lens tab. The first placeholder is the user's given name. Includes a line break to force desired line wrapping.">
+          Hi <ph name="USER_NAME">$1<ex>Josh</ex></ph>,<ph name="LINE_BREAK">$2</ph>what's on your mind today?
+        </message>
+
+        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME"
+          desc="Title for the AI Mode zero state welcome message in the Lens tab.">
+          What's on your mind today?
+        </message>
+
+        <message name="IDS_AI_MODE_NEW_SEARCH"
+          desc="Header in the Lens side panel indicating a new AI Mode search session.">
+          New search
+        </message>
+
         <if expr="use_titlecase">
           <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON"
             desc="In Title Case: The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
