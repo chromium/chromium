@@ -85,8 +85,6 @@ display::DisplayManager* GetDisplayManager() {
 // Lists the target display's id, if this touch device is mapped to one,
 // and the calibration data, if there is any.
 void DescribeDisplayInformation(ui::TouchscreenDevice* dev, std::ostream& str) {
-  // TODO(b/265986652): ensure there is enough info logged to make sense of
-  // display IDs.
   str << " target_display_id=";
   if (dev->target_display_id == display::kInvalidDisplayId) {
     str << "kInvalidDisplayId";
