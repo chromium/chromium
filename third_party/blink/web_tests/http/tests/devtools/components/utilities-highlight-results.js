@@ -44,8 +44,6 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     TestRunner.addResult('After highlight: ' + dumpTextNodesAsString(element));
     UIModule.UIUtils.revertDomChanges(changes);
     TestRunner.addResult('After revert: ' + dumpTextNodesAsString(element));
-    UIModule.UIUtils.applyDomChanges(changes);
-    TestRunner.addResult('After apply: ' + dumpTextNodesAsString(element));
   }
 
   function textElement(strings) {
