@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       const ::viz::LocalSurfaceId& local_surface_id) override;
   void FocusInEmbedder(
       content::SecureEmbedConnector::FocusOperation focus_op) override;
+  void ChildProcessGone() override;
   content::RenderFrameHost* ParentFrame() override;
 
  private:

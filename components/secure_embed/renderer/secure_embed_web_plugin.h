@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/layers/content_layer_client.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -14,6 +15,7 @@
 
 namespace cc {
 class SurfaceLayer;
+class PictureLayer;
 }  // namespace cc
 
 namespace blink {
@@ -28,7 +30,8 @@ class RenderFrame;
 namespace secure_embed {
 
 class SecureEmbedWebPlugin : public blink::WebPlugin,
-                             public mojom::SecureEmbed {
+                             public mojom::SecureEmbed,
+                             public cc::ContentLayerClient {
  public:
   static SecureEmbedWebPlugin* Create(content::RenderFrame* render_frame,
                                       const blink::WebPluginParams& params);
@@ -64,7 +67,12 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
+  void ChildProcessGone() override;
   void RequestFocus(mojom::FocusOperation focus_op) override;
+
+  // cc::ContentLayerClient, used only if we're painting a sad frame.
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
+  bool FillsBoundsCompletely() const override;
 
  private:
   explicit SecureEmbedWebPlugin(
@@ -80,6 +88,9 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;
+
+  // Only set if needed.
+  scoped_refptr<cc::PictureLayer> crashed_layer_;
 
   std::optional<blink::FrameVisualProperties> sent_visual_properties_;
 

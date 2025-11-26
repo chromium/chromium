@@ -101,7 +101,13 @@ void SecureEmbedHost::Attach(int64_t content_id) {
   guest_contents_ = web_contents_to_attach->GetWeakPtr();
   auto* connector = GetConnector();
   connector->SetDelegate(this);
-  secure_embed_->SetFrameSinkId(connector->GetFrameSinkId());
+  if (web_contents_to_attach->IsCrashed()) {
+    // The child process may have crashed before the renderer for embedder
+    // got chance to attach it.
+    secure_embed_->ChildProcessGone();
+  } else {
+    secure_embed_->SetFrameSinkId(connector->GetFrameSinkId());
+  }
 }
 
 void SecureEmbedHost::SynchronizeVisualProperties(
@@ -149,6 +155,12 @@ void SecureEmbedHost::UpdateLocalSurfaceIdFromChild(
     const ::viz::LocalSurfaceId& local_surface_id) {
   if (secure_embed_) {
     secure_embed_->UpdateLocalSurfaceIdFromChild(local_surface_id);
+  }
+}
+
+void SecureEmbedHost::ChildProcessGone() {
+  if (secure_embed_) {
+    secure_embed_->ChildProcessGone();
   }
 }
 

@@ -12,9 +12,11 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -232,6 +234,33 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   AttachGuestToEmbed(guest_contents.get());
 
   VerifyBoxRendering(SK_ColorRED);
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Crash) {
+  auto guest_contents =
+      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  AttachGuestToEmbed(guest_contents.get());
+
+  VerifyBoxRendering(SK_ColorRED);
+
+  // Simulate a crash.
+  content::ScopedAllowRendererCrashes testing_crashes_here(
+      guest_contents->GetPrimaryMainFrame());
+  guest_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_KILLED);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return guest_contents->IsCrashed(); }));
+  // The crashed frame gets drawn with a gray background, with an image
+  // in the middle (which doesn't seem configured for tests). The gray in
+  // question is a bit different than SK_ColorGRAY.
+  gfx::Rect capture_rect(0, 0, 10, 10);
+  std::vector<std::pair<gfx::Point, SkColor>> expected_colors = {
+      {gfx::Point(0, 0), SkColors::kGray.toSkColor()},
+      {gfx::Point(5, 5), SkColors::kGray.toSkColor()},
+  };
+  auto* rwhv = web_contents()->GetRenderWidgetHostView();
+  ASSERT_NE(rwhv, nullptr);
+  EXPECT_TRUE(VerifyPixelColors(rwhv, capture_rect, expected_colors));
 }
 
 // TODO(secure-embed): This test fails right now because attribute changes do

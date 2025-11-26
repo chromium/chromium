@@ -28,6 +28,12 @@ interface SecureEmbed {
   UpdateLocalSurfaceIdFromChild(viz.mojom.LocalSurfaceId local_surface_id);
 
   RequestFocus(FocusOperation focus_op);
+
+  // TODO(secure-embed): It may make sense to generalize this to cases where
+  // the inside is detached programmatically, e.g. due to being attached
+  // elsewhere. That should also stop drawing the embedded contents
+  // (but might not want to paint a sad frame).
+  ChildProcessGone();
 };
 
 // Implemented by Browser. Available on RenderFrameHost.

@@ -269,7 +269,14 @@ SecureEmbedConnectorImpl::GetRootRenderWidgetHostView() {
 }
 
 void SecureEmbedConnectorImpl::RenderProcessGone() {
-  NOTIMPLEMENTED();
+  if (delegate_) {
+    delegate_->ChildProcessGone();
+  }
+
+  // TODO(secure-embed): CrossProcessFrameConnector does a lot of logging
+  // and sometimes reloading here that's about child frames. We need to decide
+  // when that's even relevant here (it's not for the very basic Webium use),
+  // and replicate it.
 }
 
 void SecureEmbedConnectorImpl::FirstSurfaceActivation(

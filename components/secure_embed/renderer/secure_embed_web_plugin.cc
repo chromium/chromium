@@ -7,15 +7,18 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "cc/layers/picture_layer.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image_builder.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -90,10 +93,11 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
 }
 
 void SecureEmbedWebPlugin::Destroy() {
-  if (container_ && layer_) {
+  if (container_) {
     container_->SetCcLayer(nullptr);
   }
-  layer_ = nullptr;
+  layer_.reset();
+  crashed_layer_.reset();
 
   receiver_.reset();
   host_.reset();
@@ -305,6 +309,10 @@ bool SecureEmbedWebPlugin::SupportsKeyboardFocus() const {
 
 void SecureEmbedWebPlugin::SetFrameSinkId(
     const ::viz::FrameSinkId& frame_sink_id) {
+  // Make sure we use a normal layer, not crash one.
+  container_->SetCcLayer(layer_.get());
+  crashed_layer_.reset();
+
   // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
   // two different frame sinks, so recreate it here.
   if (frame_sink_id_ != frame_sink_id) {
@@ -331,6 +339,14 @@ void SecureEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
   SynchronizeVisualProperties();
 }
 
+void SecureEmbedWebPlugin::ChildProcessGone() {
+  crashed_layer_ = cc::PictureLayer::Create(this);
+  crashed_layer_->SetMasksToBounds(true);
+  crashed_layer_->SetIsDrawable(true);
+  container_->SetCcLayer(crashed_layer_.get());
+  container_->ScheduleAnimation();
+}
+
 void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
   if (container_) {
     container_->GetElement().Focus();
@@ -343,6 +359,56 @@ void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
       }
     }
   }
+}
+
+scoped_refptr<cc::DisplayItemList>
+SecureEmbedWebPlugin::PaintContentsToDisplayList() {
+  blink::WebFrameWidget* ancestor_widget =
+      container_->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
+  auto device_scale_factor =
+      ancestor_widget->GetOriginalScreenInfo().device_scale_factor;
+  // Adapted from ChildFrameCompositingHelper::PaintContentsToDisplayList().
+  auto layer_size = crashed_layer_->bounds();
+  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
+  display_list->StartPaint();
+  display_list->push<cc::DrawColorOp>(SkColors::kGray, SkBlendMode::kSrc);
+
+  SkBitmap* sad_bitmap = blink::Platform::Current()->GetSadPageBitmap();
+  if (sad_bitmap) {
+    float paint_width = sad_bitmap->width() * device_scale_factor;
+    float paint_height = sad_bitmap->height() * device_scale_factor;
+    if (layer_size.width() >= paint_width &&
+        layer_size.height() >= paint_height) {
+      float x = (layer_size.width() - paint_width) / 2.0f;
+      float y = (layer_size.height() - paint_height) / 2.0f;
+      if (device_scale_factor != 1.f) {
+        display_list->push<cc::SaveOp>();
+        display_list->push<cc::TranslateOp>(x, y);
+        display_list->push<cc::ScaleOp>(device_scale_factor,
+                                        device_scale_factor);
+        x = 0;
+        y = 0;
+      }
+
+      auto image = cc::PaintImageBuilder::WithDefault()
+                       .set_id(cc::PaintImage::GetNextId())
+                       .set_image(SkImages::RasterFromBitmap(*sad_bitmap),
+                                  cc::PaintImage::GetNextContentId())
+                       .TakePaintImage();
+      display_list->push<cc::DrawImageOp>(image, x, y);
+
+      if (device_scale_factor != 1.f) {
+        display_list->push<cc::RestoreOp>();
+      }
+    }
+  }
+  display_list->EndPaintOfUnpaired(gfx::Rect(layer_size));
+  display_list->Finalize();
+  return display_list;
+}
+
+bool SecureEmbedWebPlugin::FillsBoundsCompletely() const {
+  return true;
 }
 
 }  // namespace secure_embed

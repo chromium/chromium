@@ -44,6 +44,9 @@ class CONTENT_EXPORT SecureEmbedConnector {
     // or the elements before or after it in the tab order, based on `focus_op`.
     virtual void FocusInEmbedder(FocusOperation focus_op) = 0;
 
+    // Called when the process for the embedded frame crashed.
+    virtual void ChildProcessGone() = 0;
+
     // Returns the exact frame the contents is embedded in.
     virtual RenderFrameHost* ParentFrame() = 0;
   };
