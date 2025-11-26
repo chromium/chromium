@@ -360,13 +360,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSignOut) {
   // Signout, the data & metadata should be gone.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfCards(0, paydm);
+  WaitForNoPaymentsCustomerData(paydm);
 
   EXPECT_EQ(0uL, paydm->GetCreditCards().size());
-  // TODO(crbug.com/353425612): This expectation should hold true for
-  // kSyncTransportOnly too. Investigate and fix the underlying issue.
-  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
-    EXPECT_EQ(nullptr, paydm->GetPaymentsCustomerData());
-  }
+  EXPECT_EQ(nullptr, paydm->GetPaymentsCustomerData());
   EXPECT_EQ(0uL, paydm->GetCreditCardCloudTokenData().size());
   EXPECT_EQ(0U, GetServerCardsMetadata(0, GetStoreType()).size());
 }
