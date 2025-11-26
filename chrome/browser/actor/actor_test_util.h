@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"

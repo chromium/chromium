@@ -8,6 +8,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
+#import "base/feature_list.h"
 #import "base/memory/page_size.h"
 #import "base/memory/safety_checks.h"
 #import "base/strings/sys_string_conversions.h"

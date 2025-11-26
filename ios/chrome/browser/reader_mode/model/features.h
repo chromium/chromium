@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_FEATURES_H_
 
 #import "base/feature_list.h"
-#import "base/metrics/field_trial_params.h"
+#import "base/time/time.h"
 
 // Feature to enable Reader Mode UI and entry points.
 BASE_DECLARE_FEATURE(kEnableReaderMode);

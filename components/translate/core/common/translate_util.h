@@ -6,7 +6,6 @@
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_UTIL_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "url/gurl.h"
 
 namespace translate {

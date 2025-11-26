@@ -5,6 +5,7 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace metrics::structured {
 

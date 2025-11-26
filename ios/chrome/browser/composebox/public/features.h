@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 // Used to enable development tools for the composebox.
 BASE_DECLARE_FEATURE(kComposeboxDevTools);

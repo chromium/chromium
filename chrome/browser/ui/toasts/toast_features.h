@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TOASTS_TOAST_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
 namespace toast_features {
