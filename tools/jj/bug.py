@@ -182,7 +182,7 @@ if __name__ == '__main__':
       '-r',
       '--revision',
       help='The revisions to add the bug to',
-      nargs='+',
+      action='append',
       required=True,
   )
   parser_add.add_argument(
@@ -202,7 +202,7 @@ if __name__ == '__main__':
       '-b',
       '--bug',
       help='The bug to add to the revisions',
-      nargs='*',
+      action='append',
       default=[],
   )
   parser_add.add_argument(

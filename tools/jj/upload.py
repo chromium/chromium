@@ -218,7 +218,11 @@ if __name__ == '__main__':
   )
 
   # Alternative form so users can write `upload -r foo` as well as `upload foo``
-  parser.add_argument('-r', '--revision', help=None, nargs='*', default=[])
+  parser.add_argument('-r',
+                      '--revision',
+                      help=None,
+                      action='append',
+                      default=[])
   parser.add_argument('revisions', help='Revisions to upload', nargs='*')
   parser.add_argument(
       '--no-fix',
