@@ -103,6 +103,10 @@ export class TopToolbarElement extends CrLitElement {
   protected faviconUrl_(tab: Tab): string {
     return getFaviconForPageURL(tab.url.url, false);
   }
+
+  protected shouldHideSourcesButton_() {
+    return true;
+  }
 }
 
 declare global {
