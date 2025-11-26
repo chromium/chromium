@@ -173,6 +173,7 @@ public class FuseboxMediator {
 
     /** Activate AI Mode if no other custom mode is already active. */
     void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
+        mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.SEARCH) return;
         activateAiMode(activationReason);
     }
