@@ -178,7 +178,8 @@ public class TipsUtils {
                 (enabled) -> {
                     // If the notification channel is enabled, check if a notification was actually
                     // scheduled before scheduling a task to run the reschedule logic.
-                    if (enabled && TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox)) {
+                    if (enabled) {
+                        TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox);
                         // Run this current function again in 1 hour since the scheduler will
                         // schedule a notification 4 hours out, so if the user is still active on
                         // Chrome then reschedule it. The remove call earlier in this function will
