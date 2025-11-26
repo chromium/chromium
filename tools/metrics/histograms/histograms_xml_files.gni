@@ -143,6 +143,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/kiosk/histograms.xml",
   "//tools/metrics/histograms/metadata/language/enums.xml",
   "//tools/metrics/histograms/metadata/language/histograms.xml",
+  "//tools/metrics/histograms/metadata/legion/histograms.xml",
   "//tools/metrics/histograms/metadata/lens/enums.xml",
   "//tools/metrics/histograms/metadata/lens/histograms.xml",
   "//tools/metrics/histograms/metadata/leveldb_proto/histograms.xml",
