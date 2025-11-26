@@ -703,7 +703,7 @@ void AppBannerManagerAndroid::InvalidateWeakPtrsForThisNavigation() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerAndroid);
 
 // static
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
@@ -715,7 +715,7 @@ JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
 }
 
 // static
-base::android::ScopedJavaLocalRef<jstring>
+static base::android::ScopedJavaLocalRef<jstring>
 JNI_AppBannerManager_GetInstallableWebAppManifestId(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
@@ -725,7 +725,7 @@ JNI_AppBannerManager_GetInstallableWebAppManifestId(
 }
 
 // static
-jboolean JNI_AppBannerManager_IsProbablyPromotable(
+static jboolean JNI_AppBannerManager_IsProbablyPromotable(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   auto* manager =
@@ -738,12 +738,12 @@ jboolean JNI_AppBannerManager_IsProbablyPromotable(
 }
 
 // static
-void JNI_AppBannerManager_IgnoreChromeChannelForTesting(JNIEnv*) {
+static void JNI_AppBannerManager_IgnoreChromeChannelForTesting(JNIEnv*) {
   gIgnoreChromeChannelForTesting = true;
 }
 
 // static
-void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
+static void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
     JNIEnv* env,
     jint dismiss_days,
     jint ignore_days) {
@@ -752,12 +752,14 @@ void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
 }
 
 // static
-void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env, jint days) {
+static void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env,
+                                                        jint days) {
   AppBannerManager::SetTimeDeltaForTesting(days);
 }
 
 // static
-void JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
+static void
+JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
     JNIEnv* env,
     jboolean show) {
   AmbientBadgeManager::SetOverrideSegmentationResultForTesting(show);

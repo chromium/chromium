@@ -519,7 +519,7 @@ void OnUrlCheckDoneBySafeBrowsingApi(
 //
 // Careful note: this can be called on multiple threads, so make sure there is
 // nothing thread unsafe happening here.
-void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
+static void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
     JNIEnv* env,
     jlong callback_id,
     jint j_lookup_result,
@@ -558,9 +558,9 @@ void OnVerifyAppsEnabledDone(jlong callback_id, jint j_result) {
   std::move(callback).Run(static_cast<VerifyAppsEnabledResult>(j_result));
 }
 
-void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
-                                                       jlong callback_id,
-                                                       jint j_result) {
+static void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
+                                                              jlong callback_id,
+                                                              jint j_result) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OnVerifyAppsEnabledDone, callback_id, j_result));
@@ -587,11 +587,11 @@ void OnHasHarmfulAppsDone(jlong callback_id,
                           static_cast<int>(j_status_code));
 }
 
-void JNI_SafeBrowsingApiBridge_OnHasHarmfulAppsDone(JNIEnv* env,
-                                                    jlong callback_id,
-                                                    jint j_result,
-                                                    jint j_num_of_apps,
-                                                    jint j_status_code) {
+static void JNI_SafeBrowsingApiBridge_OnHasHarmfulAppsDone(JNIEnv* env,
+                                                           jlong callback_id,
+                                                           jint j_result,
+                                                           jint j_num_of_apps,
+                                                           jint j_status_code) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OnHasHarmfulAppsDone, callback_id, j_result,
                                 j_num_of_apps, j_status_code));
@@ -602,7 +602,7 @@ void OnGetSafetyNetIdDone(const std::string& result) {
   GetPendingGetSafetyNetIdCallbacks().Notify(result);
 }
 
-void JNI_SafeBrowsingApiBridge_OnGetSafetyNetIdDone(
+static void JNI_SafeBrowsingApiBridge_OnGetSafetyNetIdDone(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jstring>& result) {
   content::GetUIThreadTaskRunner({})->PostTask(

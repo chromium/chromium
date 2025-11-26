@@ -39,8 +39,9 @@ void OnExecuteJavaScriptResult(const base::android::JavaRef<jobject>& jcallback,
 
 }  // namespace
 
-jlong JNI_RenderFrameHostTestExt_Init(JNIEnv* env,
-                                      jlong render_frame_host_android_ptr) {
+static jlong JNI_RenderFrameHostTestExt_Init(
+    JNIEnv* env,
+    jlong render_frame_host_android_ptr) {
   RenderFrameHostAndroid* rfha =
       reinterpret_cast<RenderFrameHostAndroid*>(render_frame_host_android_ptr);
   auto* host = new RenderFrameHostTestExt(

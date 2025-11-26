@@ -93,7 +93,7 @@ WebContentsImpl& JavascriptInjector::GetWebContentsImpl() {
   return static_cast<WebContentsImpl&>(GetWebContents());
 }
 
-jlong JNI_JavascriptInjectorImpl_Init(
+static jlong JNI_JavascriptInjectorImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,

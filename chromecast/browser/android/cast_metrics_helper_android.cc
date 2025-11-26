@@ -10,11 +10,11 @@
 namespace chromecast {
 namespace shell {
 
-void JNI_CastMetricsHelper_LogMediaPlay(JNIEnv* env) {
+static void JNI_CastMetricsHelper_LogMediaPlay(JNIEnv* env) {
   metrics::CastMetricsHelper::GetInstance()->LogMediaPlay();
 }
 
-void JNI_CastMetricsHelper_LogMediaPause(JNIEnv* env) {
+static void JNI_CastMetricsHelper_LogMediaPause(JNIEnv* env) {
   metrics::CastMetricsHelper::GetInstance()->LogMediaPause();
 }
 

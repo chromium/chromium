@@ -96,10 +96,11 @@ std::vector<uint8_t> GetPngData(
 
 // Add a format:jstr pair to map, if jstr is null or is empty, then remove that
 // entry.
-void JNI_Clipboard_AddMapEntry(JNIEnv* env,
-                               std::map<ClipboardFormatType, std::string>* map,
-                               const ClipboardFormatType& format,
-                               const ScopedJavaLocalRef<jstring>& jstr) {
+static void JNI_Clipboard_AddMapEntry(
+    JNIEnv* env,
+    std::map<ClipboardFormatType, std::string>* map,
+    const ClipboardFormatType& format,
+    const ScopedJavaLocalRef<jstring>& jstr) {
   if (jstr.is_null()) {
     map->erase(format);
     return;
@@ -465,7 +466,7 @@ Clipboard* Clipboard::Create() {
 }
 
 // Static method for testing.
-void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
+static void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
   Clipboard::DestroyClipboardForCurrentThread();
 }
 

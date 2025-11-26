@@ -58,7 +58,8 @@ class TestJavaDelegate {
 };
 
 // Implements TestServiceObserver.onDelegateNotify static method.
-void JNI_TestServiceDelegate_OnDelegateNotify(JNIEnv* env, jlong delegate_ptr) {
+static void JNI_TestServiceDelegate_OnDelegateNotify(JNIEnv* env,
+                                                     jlong delegate_ptr) {
   reinterpret_cast<TestJavaDelegate*>(delegate_ptr)->OnDelegateNotify();
 }
 

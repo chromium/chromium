@@ -159,7 +159,7 @@ void PaymentManifestParserAndroid::DestroyPaymentManifestParserAndroid(
 }
 
 // Caller owns the result.
-jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
+static jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =

@@ -67,7 +67,7 @@ class AppDataFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
 
 namespace webapps {
 
-void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppData(
+static void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppData(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& java_web_contents) {

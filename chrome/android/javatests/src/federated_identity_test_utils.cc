@@ -15,7 +15,7 @@
 
 namespace federated_identity {
 
-void JNI_FederatedIdentityTestUtils_EmbargoFedCmForRelyingParty(
+static void JNI_FederatedIdentityTestUtils_EmbargoFedCmForRelyingParty(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url) {
   url::Origin origin =

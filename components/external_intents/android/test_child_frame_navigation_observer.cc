@@ -41,7 +41,8 @@ void TestChildFrameNavigationObserver::CreateForWebContents(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TestChildFrameNavigationObserver);
 
-void JNI_TestChildFrameNavigationObserver_CreateAndAttachToNativeWebContents(
+static void
+JNI_TestChildFrameNavigationObserver_CreateAndAttachToNativeWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_test_observer,
     const JavaParamRef<jobject>& java_web_contents) {

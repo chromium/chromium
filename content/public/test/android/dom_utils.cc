@@ -17,7 +17,7 @@ namespace content {
 
 // Returns the amount of the top controls height if controls are in the state
 // of shrinking Blink's view size, otherwise 0.
-jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
+static jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);

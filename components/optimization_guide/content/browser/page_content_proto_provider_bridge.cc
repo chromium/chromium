@@ -15,7 +15,7 @@ using ::jni_zero::JavaRef;
 
 namespace optimization_guide::android {
 
-void JNI_PageContentProtoProviderBridge_GetAiPageContent(
+static void JNI_PageContentProtoProviderBridge_GetAiPageContent(
     JNIEnv* env,
     content::WebContents* web_contents,
     const jni_zero::JavaParamRef<jobject>& j_callback) {

@@ -13,7 +13,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace net {
 
-ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
+static ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
     JNIEnv* env,
     const JavaParamRef<jstring>& url) {
   GURL host(base::android::ConvertJavaStringToUTF16(env, url));

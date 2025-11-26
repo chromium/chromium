@@ -109,7 +109,7 @@ void ModelDownloaderAndroid::OnUnavailableOnSequence(
       .Run(base::unexpected(failure_reason));
 }
 
-void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
+static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
     JNIEnv* env,
     jlong model_downloader_android,
     const jni_zero::JavaParamRef<jstring>& j_name,
@@ -119,7 +119,7 @@ void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
                     base::android::ConvertJavaStringToUTF8(env, j_version));
 }
 
-void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
+static void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
     JNIEnv* env,
     jlong model_downloader_android,
     jint j_reason) {

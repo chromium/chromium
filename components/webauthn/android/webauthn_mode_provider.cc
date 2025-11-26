@@ -40,7 +40,7 @@ class WebauthnModeWrapper : public base::SupportsUserData::Data {
 };
 
 // static
-void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
+static void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     jint mode) {
@@ -53,7 +53,7 @@ void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
 }
 
 // static
-jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
+static jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);

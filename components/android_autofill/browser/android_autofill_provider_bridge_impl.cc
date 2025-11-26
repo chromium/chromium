@@ -28,9 +28,10 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
-void JNI_AutofillProvider_Init(JNIEnv* env,
-                               const JavaParamRef<jobject>& jcaller,
-                               const JavaParamRef<jobject>& jweb_contents) {
+static void JNI_AutofillProvider_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 

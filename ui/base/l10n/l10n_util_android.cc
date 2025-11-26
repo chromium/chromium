@@ -23,7 +23,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace l10n_util {
 
-jint JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
+static jint JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
     JNIEnv* env,
     const JavaParamRef<jstring>& string) {
   return base::i18n::GetFirstStrongCharacterDirection(
@@ -75,7 +75,7 @@ std::string GetLocaleComponent(const std::string& locale,
   return result;
 }
 
-ScopedJavaLocalRef<jobject> JNI_LocalizationUtils_NewJavaLocale(
+static ScopedJavaLocalRef<jobject> JNI_LocalizationUtils_NewJavaLocale(
     JNIEnv* env,
     const std::string& locale) {
   // TODO(wangxianzhu): Use new Locale API once Android supports scripts.
@@ -107,7 +107,7 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
   return base::android::ConvertJavaStringToUTF16(java_result);
 }
 
-ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetNativeUiLocale(
+static ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetNativeUiLocale(
     JNIEnv* env) {
   ScopedJavaLocalRef<jstring> native_ui_locale_string =
       base::android::ConvertUTF8ToJavaString(env,

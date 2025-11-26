@@ -216,7 +216,7 @@ void ContentUiEventHandler::CancelFling(JNIEnv* env, jlong time_ms) {
       /*synthetic_scroll*/ false, true));
 }
 
-jlong JNI_ContentUiEventHandler_Init(
+static jlong JNI_ContentUiEventHandler_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents) {

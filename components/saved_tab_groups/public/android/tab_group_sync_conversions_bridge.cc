@@ -43,7 +43,7 @@ ScopedJavaLocalRef<jstring> ToJavaCollaborationId(
 
 // Helper method to create a Java SavedTabGroupTab, and optionally add it to
 // a group if a non-null |j_tab_group| is specified.
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_TabGroupSyncConversionsBridge_createTabAndMaybeAddToGroup(
     JNIEnv* env,
     const SavedTabGroupTab& tab,
@@ -67,9 +67,9 @@ JNI_TabGroupSyncConversionsBridge_createTabAndMaybeAddToGroup(
 }
 
 // Helper method to create a Java SavedTabGroup. This doesn't include the tabs.
-ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
-    JNIEnv* env,
-    const SavedTabGroup& group) {
+static ScopedJavaLocalRef<jobject>
+JNI_TabGroupSyncConversionsBridge_createGroup(JNIEnv* env,
+                                              const SavedTabGroup& group) {
   auto j_sync_id = UuidToJavaString(env, group.saved_guid());
   auto j_local_id = TabGroupSyncConversionsBridge::ToJavaTabGroupId(
       env, group.local_group_id());
@@ -97,7 +97,7 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
 // Java-to-native conversion helper methods.
 
 // static
-void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
+static void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
     JNIEnv* env,
     jlong j_group_ptr,
     const JavaParamRef<jobject>& j_group_id,
@@ -117,7 +117,7 @@ void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
 }
 
 // static
-void JNI_TabGroupSyncConversionsBridge_AddTab(
+static void JNI_TabGroupSyncConversionsBridge_AddTab(
     JNIEnv* env,
     jlong j_group_ptr,
     jint j_tab_id,

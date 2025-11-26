@@ -19,7 +19,7 @@ namespace payments {
 namespace android {
 
 // static
-base::android::ScopedJavaLocalRef<jstring>
+static base::android::ScopedJavaLocalRef<jstring>
 JNI_ErrorMessageUtil_GetNotSupportedErrorMessage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& jmethods) {

@@ -26,12 +26,12 @@ bool g_activity_teardown_complete = false;
 
 }  // namespace
 
-void JNI_NativeBrowserTest_JavaStartupTasksCompleteForBrowserTests(
+static void JNI_NativeBrowserTest_JavaStartupTasksCompleteForBrowserTests(
     JNIEnv* env) {
   g_java_startup_tasks_complete = true;
 }
 
-void JNI_NativeBrowserTest_ActivityTeardownCompleteForBrowserTests(
+static void JNI_NativeBrowserTest_ActivityTeardownCompleteForBrowserTests(
     JNIEnv* env) {
   g_activity_teardown_complete = true;
 }

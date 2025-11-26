@@ -17,15 +17,15 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-jint JNI_FencedFrameUtils_GetCount(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jrfh) {
+static jint JNI_FencedFrameUtils_GetCount(JNIEnv* env,
+                                          const JavaParamRef<jobject>& jrfh) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       content::RenderFrameHost::FromJavaRenderFrameHost(jrfh));
   DCHECK(rfh);
   return rfh->GetFencedFrames().size();
 }
 
-ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
+static ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jrfh,
     const JavaParamRef<jstring>& jurl) {

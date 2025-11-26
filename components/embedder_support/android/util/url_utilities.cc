@@ -26,7 +26,7 @@ namespace embedder_support {
 
 namespace {
 
-GURL JNI_UrlUtilities_ConvertJavaStringToGURL(
+static GURL JNI_UrlUtilities_ConvertJavaStringToGURL(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
@@ -197,7 +197,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
   return base::android::ConvertUTF8ToJavaString(env, out);
 }
 
-ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
+static ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_url);

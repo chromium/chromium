@@ -20,7 +20,7 @@ using ::base::android::JavaParamRef;
 }  // namespace
 
 // static
-jboolean JNI_OriginSecurityChecker_IsOriginSecure(
+static jboolean JNI_OriginSecurityChecker_IsOriginSecure(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -28,7 +28,7 @@ jboolean JNI_OriginSecurityChecker_IsOriginSecure(
 }
 
 // static
-jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
+static jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);

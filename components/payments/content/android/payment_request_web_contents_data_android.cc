@@ -14,7 +14,7 @@ namespace payments {
 namespace android {
 
 // static
-jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
+static jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
@@ -27,7 +27,7 @@ jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
 }
 
 // static
-void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
+static void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
@@ -39,7 +39,7 @@ void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
 }
 
 // static
-jint JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
+static jint JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =

@@ -49,7 +49,8 @@ namespace webapps {
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
 // static
-jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
+static jboolean
+JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     int install_trigger) {

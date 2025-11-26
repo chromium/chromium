@@ -70,9 +70,10 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
 
 }  // anonymous namespace
 
-jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
-                              const JavaParamRef<jobject>& obj,
-                              const JavaParamRef<jobject>& jweb_contents) {
+static jlong JNI_ImeAdapterImpl_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
   auto* ime_adapter = new ImeAdapterAndroid(env, obj, web_contents);
@@ -82,11 +83,12 @@ jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
 
 // Callback from Java to convert BackgroundColorSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
-void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(JNIEnv*,
-                                                  jlong ime_text_spans_ptr,
-                                                  jint start,
-                                                  jint end,
-                                                  jint background_color) {
+static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
+    JNIEnv*,
+    jlong ime_text_spans_ptr,
+    jint start,
+    jint end,
+    jint background_color) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   // Do not check |background_color|.
@@ -102,11 +104,12 @@ void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(JNIEnv*,
 
 // Callback from Java to convert ForegroundColorSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
-void JNI_ImeAdapterImpl_AppendForegroundColorSpan(JNIEnv*,
-                                                  jlong ime_text_spans_ptr,
-                                                  jint start,
-                                                  jint end,
-                                                  jint foreground_color) {
+static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
+    JNIEnv*,
+    jlong ime_text_spans_ptr,
+    jint start,
+    jint end,
+    jint foreground_color) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   // Do not check |foreground_color|.
@@ -122,7 +125,7 @@ void JNI_ImeAdapterImpl_AppendForegroundColorSpan(JNIEnv*,
 
 // Callback from Java to convert SuggestionSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
-void JNI_ImeAdapterImpl_AppendSuggestionSpan(
+static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     JNIEnv* env,
     jlong ime_text_spans_ptr,
     jint start,
@@ -155,10 +158,10 @@ void JNI_ImeAdapterImpl_AppendSuggestionSpan(
 
 // Callback from Java to convert UnderlineSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
-void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
-                                            jlong ime_text_spans_ptr,
-                                            jint start,
-                                            jint end) {
+static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
+                                                   jlong ime_text_spans_ptr,
+                                                   jint start,
+                                                   jint end) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
   std::vector<ui::ImeTextSpan>* ime_text_spans =

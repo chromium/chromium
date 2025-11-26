@@ -21,7 +21,7 @@
 namespace payments {
 
 // static
-jboolean JNI_HasEnrolledInstrumentQuery_CanQuery(
+static jboolean JNI_HasEnrolledInstrumentQuery_CanQuery(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jstring>& jtop_level_origin,
