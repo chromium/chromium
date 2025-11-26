@@ -353,13 +353,11 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     base::flat_map<size_t, uint64_t> modifier_entries;
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
 
-    if (base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufModifiers)) {
-      for (uint64_t modifier : modifiers) {
-        // Check for generic blocking first then format specific blocking.
-        if (!modifier_block_list.contains({DRM_FORMAT_INVALID, modifier}) &&
-            !modifier_block_list.contains({drm_format, modifier})) {
-          modifier_entries.emplace(format_table_index++, modifier);
-        }
+    for (uint64_t modifier : modifiers) {
+      // Check for generic blocking first then format specific blocking.
+      if (!modifier_block_list.contains({DRM_FORMAT_INVALID, modifier}) &&
+          !modifier_block_list.contains({drm_format, modifier})) {
+        modifier_entries.emplace(format_table_index++, modifier);
       }
     }
 
