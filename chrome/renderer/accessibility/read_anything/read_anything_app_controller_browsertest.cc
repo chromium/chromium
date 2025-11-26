@@ -135,7 +135,7 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, LogExtensionState, (), (override));
   MOCK_METHOD(void,
               OnDistillationStatus,
-              (read_anything::mojom::DistillationStatus),
+              (read_anything::mojom::DistillationStatus, int word_count),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
@@ -2875,6 +2875,20 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_SendsDistilledWordCount) {
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  const int word_count = 1234;
+
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, word_count))
+      .Times(1);
+
+  controller().OnDistilled(word_count);
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+  task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
+                                  base::Seconds(1));
 }
 
 class ReadAnythingAppControllerV8SegmentationTest

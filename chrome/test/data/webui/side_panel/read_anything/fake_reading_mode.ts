@@ -312,6 +312,9 @@ export class FakeReadingMode {
   // by clicking.
   onCollapseSelection() {}
 
+  // Called when distillation completes with the word count.
+  onDistilled(_wordCount: number) {}
+
   sendGetVoicePackInfoRequest(_: string) {}
 
   // Sends an async request to install a Natural voice pack for a

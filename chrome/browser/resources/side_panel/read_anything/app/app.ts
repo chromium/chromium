@@ -26,7 +26,7 @@ import {VoiceLanguageController} from '../read_aloud/voice_language_controller.j
 import type {VoiceLanguageListener} from '../read_aloud/voice_language_controller.js';
 import {VoiceNotificationManager} from '../read_aloud/voice_notification_manager.js';
 import type {SettingsPrefs} from '../shared/common.js';
-import {minOverflowLengthToScroll} from '../shared/common.js';
+import {getWordCount, minOverflowLengthToScroll} from '../shared/common.js';
 import {ReadAnythingLogger, TimeFrom} from '../shared/read_anything_logger.js';
 
 import {getCss} from './app.css.js';
@@ -307,6 +307,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     const newRoot = this.contentController_.updateContent();
     if (newRoot) {
       this.$.container.appendChild(newRoot);
+    }
+    if (!this.willDrawAgainSoon_) {
+      const wordCount = (newRoot && newRoot.textContent) ?
+          getWordCount(newRoot.textContent) :
+          0;
+      chrome.readingMode.onDistilled(wordCount);
     }
   }
 

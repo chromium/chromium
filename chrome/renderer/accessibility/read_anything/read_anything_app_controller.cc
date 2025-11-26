@@ -726,7 +726,8 @@ void ReadAnythingAppController::RecordDistillationSuccess() {
     distillationStatus = read_anything::mojom::DistillationStatus::kFailure;
   }
 
-  page_handler_->OnDistillationStatus(distillationStatus);
+  page_handler_->OnDistillationStatus(distillationStatus,
+                                      model_.words_distilled());
   ukm::builders::Accessibility_ReadAnything_Distillation(
       model_.GetUkmSourceId())
       .SetDistillationStatus(static_cast<int>(distillationStatus))
@@ -1210,6 +1211,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("onCollapseSelection",
                  &ReadAnythingAppController::OnCollapseSelection)
+      .SetMethod("onDistilled", &ReadAnythingAppController::OnDistilled)
       .SetProperty("supportedFonts",
                    &ReadAnythingAppController::GetSupportedFonts)
       .SetProperty("allFonts", &ReadAnythingAppController::GetAllFonts)
@@ -1820,6 +1822,10 @@ void ReadAnythingAppController::OnCopy() const {
 
 void ReadAnythingAppController::OnNoTextContent() {
   Distill();
+}
+
+void ReadAnythingAppController::OnDistilled(int word_count) {
+  model_.set_words_distilled(word_count);
 }
 
 void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {

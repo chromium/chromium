@@ -139,6 +139,9 @@ class ReadAnythingUntrustedPageHandler :
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
 
+  static const int kMaxWordsDistilled = 25000;
+  static const int kWordsDistilledBuckets = 100;
+
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void AccessibilityLocationChangesReceived(
       const ui::AXTreeID& tree_id,
@@ -172,8 +175,8 @@ class ReadAnythingUntrustedPageHandler :
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;
-  void OnDistillationStatus(
-      read_anything::mojom::DistillationStatus status) override;
+  void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
+                            int word_count) override;
 
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(

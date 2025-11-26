@@ -234,7 +234,8 @@ interface UntrustedPageHandler {
   OnScreenshotRequested();
 
   // Informs the browser of the status of the latest distillation attempt.
-  OnDistillationStatus(read_anything.mojom.DistillationStatus status);
+  OnDistillationStatus(read_anything.mojom.DistillationStatus status,
+                       int32 word_count);
 
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the

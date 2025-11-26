@@ -1506,13 +1506,16 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3001;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1521,13 +1524,16 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3002;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1537,14 +1543,18 @@ IN_PROC_BROWSER_TEST_F(
   handler_ = CreateHandler();
   auto status1 = read_anything::mojom::DistillationStatus::kSuccess;
   auto status2 = read_anything::mojom::DistillationStatus::kFailure;
+  int word_count1 = 3003;
+  int word_count2 = 3004;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status1);
-  handler_->OnDistillationStatus(status2);
+  handler_->OnDistillationStatus(status1, word_count1);
+  handler_->OnDistillationStatus(status2, word_count2);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1552,14 +1562,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3005;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
   Activate(false);
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1568,16 +1581,19 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3006;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   Activate(false);
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,

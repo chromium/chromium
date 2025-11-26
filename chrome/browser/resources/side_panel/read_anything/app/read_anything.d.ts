@@ -253,6 +253,9 @@ declare namespace chrome {
     // by clicking.
     function onCollapseSelection(): void;
 
+    // Called when distillation completes with the word count.
+    function onDistilled(wordCount: number): void;
+
     // Called when the number of words seen by a reading mode user changes.
     function updateWordsSeen(wordsSeen: number): void;
 

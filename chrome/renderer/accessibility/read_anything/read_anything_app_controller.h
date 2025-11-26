@@ -253,6 +253,7 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset);
   void OnCollapseSelection() const;
+  void OnDistilled(int word_count);
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
   bool IsTsTextSegmentationEnabled() const;

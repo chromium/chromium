@@ -3297,6 +3297,18 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.WordsDistilledAfterOmnibox"
+    units="words" expires_after="2026-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records an estimate of how many words were distilled in Reading mode for the
+    page opened via the omnibox entrypoint. Uses built-in web segmenter to count
+    words using the page language. (See
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
     expires_after="2026-08-01">
   <owner>kristislee@google.com</owner>

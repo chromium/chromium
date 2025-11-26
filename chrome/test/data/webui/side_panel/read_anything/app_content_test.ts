@@ -162,6 +162,34 @@ suite('AppContent', () => {
       assertStringContains(emptyState.darkImagePath, empty);
       assertStringContains(emptyState.imagePath, empty);
     });
+
+    test('sends distilled word count', async () => {
+      const text = 'Honey we can see right through ya';
+      readingMode.getTextContent = () => text;
+      const expectedWordCount = 7;
+      let sentWordCount = 0;
+      readingMode.onDistilled = (wordCount) => {
+        sentWordCount = wordCount;
+      };
+
+      app.updateContent();
+      await microtasksFinished();
+
+      assertEquals(expectedWordCount, sentWordCount);
+    });
+
+    test('sends 0 if no new content', async () => {
+      readingMode.getTextContent = () => '';
+      let sentWordCount = -1;
+      readingMode.onDistilled = (wordCount) => {
+        sentWordCount = wordCount;
+      };
+
+      app.updateContent();
+      await microtasksFinished();
+
+      assertEquals(0, sentWordCount);
+    });
   });
 
   suite('on links toggle', () => {
