@@ -934,8 +934,7 @@ export class SettingsInternetDetailPageElement extends
         !this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
       return;
     }
-    const config =
-        OncMojo.getDefaultConfigProperties(this.managedProperties_!.type);
+    const config = this.getDefaultConfigProperties_();
     config.typeConfig.cellular = {
       textMessageAllowState: {
         allowTextMessages: e.detail.value,
@@ -1105,7 +1104,7 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private getDefaultConfigProperties_(): ConfigProperties {
-    return OncMojo.getDefaultConfigProperties(this.managedProperties_!.type);
+    return OncMojo.getBaselineConfigProperties(this.managedProperties_);
   }
 
   private async setMojoNetworkProperties_(config: ConfigProperties):

@@ -97,8 +97,7 @@ export class CellularRoamingToggleButtonElement extends
         !this.managedProperties.typeProperties.cellular!.allowRoaming) {
       return;
     }
-    const config =
-        OncMojo.getDefaultConfigProperties(this.managedProperties.type);
+    const config = OncMojo.getBaselineConfigProperties(this.managedProperties);
     config.typeConfig.cellular = {
       roaming: {
         allowRoaming: this.isRoamingAllowedForNetwork_,

@@ -340,7 +340,7 @@ export class SettingsInternetKnownNetworksPageElement extends
 
   private onRemovePreferredClick_(): void {
     assertExists(this.networkType);
-    const config = OncMojo.getDefaultConfigProperties(this.networkType);
+    const config = OncMojo.getBaselineConfigProperties(this.networkType);
     config.priority = {value: 0};
     this.setProperties_(config);
     this.$.dotsMenu.close();
@@ -348,7 +348,7 @@ export class SettingsInternetKnownNetworksPageElement extends
 
   private onAddPreferredClick_(): void {
     assertExists(this.networkType);
-    const config = OncMojo.getDefaultConfigProperties(this.networkType);
+    const config = OncMojo.getBaselineConfigProperties(this.networkType);
     config.priority = {value: 1};
     this.setProperties_(config);
     this.$.dotsMenu.close();

@@ -1019,7 +1019,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
 
     const managedProperties = this.managedProperties_;
     const configProperties =
-        OncMojo.getDefaultConfigProperties(managedProperties.type);
+        OncMojo.getBaselineConfigProperties(managedProperties);
     configProperties.name = OncMojo.getActiveString(managedProperties.name);
 
     let autoConnect;

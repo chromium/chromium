@@ -379,7 +379,9 @@ suite('network-config', () => {
         password: string|undefined = undefined,
         eapConfig: EAPConfigProperties|undefined =
             undefined): ConfigProperties {
-      const properties = OncMojo.getDefaultConfigProperties(NetworkType.kWiFi);
+      const managedProperties =
+          OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, '', '');
+      const properties = OncMojo.getBaselineConfigProperties(managedProperties);
       assertTrue(!!properties.typeConfig.wifi);
       properties.typeConfig.wifi.ssid = ssid;
       properties.typeConfig.wifi.security = security;
