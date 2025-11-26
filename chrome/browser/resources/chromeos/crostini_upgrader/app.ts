@@ -11,7 +11,7 @@ import '/strings.m.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
@@ -19,138 +19,141 @@ import {UpgradePrecheckStatus} from './crostini_upgrader.mojom-webui.js';
 
 /**
  * Enum for the state of `crostini-upgrader-app`.
- * @enum {string}
  */
-const State = {
-  PROMPT: 'prompt',
-  BACKUP: 'backup',
-  BACKUP_ERROR: 'backupError',
-  BACKUP_SUCCEEDED: 'backupSucceeded',
-  PRECHECKS_FAILED: 'prechecksFailed',
-  UPGRADING: 'upgrading',
-  UPGRADE_ERROR: 'upgrade_error',
-  OFFER_RESTORE: 'offerRestore',
-  RESTORE: 'restore',
-  RESTORE_ERROR: 'restoreError',
-  RESTORE_SUCCEEDED: 'restoreSucceeded',
-  CANCELING: 'canceling',
-  SUCCEEDED: 'succeeded',
-};
+enum State {
+  PROMPT = 'prompt',
+  BACKUP = 'backup',
+  BACKUP_ERROR = 'backupError',
+  BACKUP_SUCCEEDED = 'backupSucceeded',
+  PRECHECKS_FAILED = 'prechecksFailed',
+  UPGRADING = 'upgrading',
+  UPGRADE_ERROR = 'upgrade_error',
+  OFFER_RESTORE = 'offerRestore',
+  RESTORE = 'restore',
+  RESTORE_ERROR = 'restoreError',
+  RESTORE_SUCCEEDED = 'restoreSucceeded',
+  CANCELING = 'canceling',
+  SUCCEEDED = 'succeeded',
+}
 
-const kMaxUpgradeAttempts = 3;
+const kMaxUpgradeAttempts: number = 3;
 
 
-Polymer({
-  is: 'crostini-upgrader-app',
+class CrostiniUpgraderAppElement extends PolymerElement {
+  static get is() {
+    return 'crostini-upgrader-app';
+  }
 
-  _template: getTemplate(),
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
-    /** @private {State} */
-    state_: {
-      type: String,
-      value: State.PROMPT,
-    },
+  static get properties() {
+    return {
+      state_: {
+        type: String,
+        value: State.PROMPT,
+      },
 
-    /** @private */
-    backupCheckboxChecked_: {
-      type: Boolean,
-      value: true,
-    },
+      backupCheckboxChecked_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    backupProgress_: {
-      type: Number,
-    },
+      backupProgress_: {
+        type: Number,
+      },
 
-    /** @private */
-    upgradeProgress_: {
-      type: Number,
-      value: 0,
-    },
+      upgradeProgress_: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private */
-    restoreProgress_: {
-      type: Number,
-    },
+      restoreProgress_: {
+        type: Number,
+      },
 
-    /** @private */
-    progressMessages_: {
-      type: Array,
-    },
+      progressMessages_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private */
-    progressLineNumber_: {
-      type: Number,
-      value: 0,
-    },
+      progressLineNumber_: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private */
-    lastProgressLine_: {
-      type: String,
-      value: '',
-    },
+      lastProgressLine_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    progressLineDisplayMs_: {
-      type: Number,
-      value: 300,
-    },
+      progressLineDisplayMs_: {
+        type: Number,
+        value: 300,
+      },
 
-    /** @private */
-    upgradeAttemptCount_: {
-      type: Number,
-      value: 0,
-    },
+      upgradeAttemptCount_: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private */
-    logFileName_: {
-      type: String,
-      value: '',
-    },
+      logFileName_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    precheckStatus_: {
-      type: Number,
-      value: UpgradePrecheckStatus.OK,
-    },
+      precheckStatus_: {
+        type: Number,
+        value: UpgradePrecheckStatus.OK,
+      },
 
-    /**
-     * Enable the html template to use State.
-     * @private
-     */
-    State: {
-      type: Object,
-      value: State,
-    },
-  },
+      /**
+       * Enable the html template to use State.
+       */
+      stateEnum_: {
+        type: Object,
+        value: State,
+      },
+    };
+  }
 
-  /** @override */
-  created() {
-    // Must be set here rather then in the defaults above because arrays are
-    // mutable objects and every instance of the element needs its own array.
-    this.progressMessages_ = [];
-  },
+  private state_: State;
+  private backupCheckboxChecked_: boolean;
+  private backupProgress_: number;
+  private upgradeProgress_: number;
+  private restoreProgress_: number;
+  private progressMessages_: string[];
+  private progressLineNumber_: number;
+  private lastProgressLine_: string;
+  private progressLineDisplayMs_: number;
+  private upgradeAttemptCount_: number;
+  private logFileName_: string;
+  private precheckStatus_: UpgradePrecheckStatus;
 
-  /** @override */
-  attached() {
+  private listenerIds_: number[] = [];
+  private precheckSuccessCallback_: () => void;
+  private precheckFailureCallback_: () => void;
+
+  override connectedCallback() {
+    super.connectedCallback();
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
 
     this.listenerIds_ = [
-      callbackRouter.onBackupProgress.addListener((percent) => {
+      callbackRouter.onBackupProgress.addListener((percent: number) => {
         this.state_ = State.BACKUP;
         this.backupProgress_ = percent;
       }),
-      callbackRouter.onBackupSucceeded.addListener((wasCancelled) => {
+      callbackRouter.onBackupSucceeded.addListener((wasCancelled: boolean) => {
         assert(this.state_ === State.BACKUP);
         this.state_ = State.BACKUP_SUCCEEDED;
         // We do a short (2 second) interstitial display of the backup success
         // message before continuing the upgrade.
-        const timeout = new Promise((resolve, reject) => {
+        const timeout = new Promise((resolve, _reject) => {
           setTimeout(resolve, wasCancelled ? 0 : 2000);
         });
         // We also want to wait for the prechecks to finish.
-        const callback = new Promise((resolve, reject) => {
+        const callback = new Promise<void>((resolve, reject) => {
           this.startPrechecks_(resolve, reject);
         });
         Promise.all([timeout, callback]).then(() => {
@@ -161,25 +164,27 @@ Polymer({
         assert(this.state_ === State.BACKUP);
         this.state_ = State.BACKUP_ERROR;
       }),
-      callbackRouter.precheckStatus.addListener((status) => {
-        if (status === UpgradePrecheckStatus.OK) {
-          this.precheckSuccessCallback_();
-          this.precheckStatus_ = status;
-        } else {
-          this.precheckStatus_ = status;
-          this.state_ = State.PRECHECKS_FAILED;
-          this.precheckFailureCallback_();
-        }
-      }),
-      callbackRouter.onUpgradeProgress.addListener((progressMessages) => {
-        assert(this.state_ === State.UPGRADING);
-        this.progressMessages_.push(...progressMessages);
-        this.upgradeProgress_ = this.progressMessages_.length;
+      callbackRouter.precheckStatus.addListener(
+          (status: UpgradePrecheckStatus) => {
+            if (status === UpgradePrecheckStatus.OK) {
+              this.precheckSuccessCallback_();
+              this.precheckStatus_ = status;
+            } else {
+              this.precheckStatus_ = status;
+              this.state_ = State.PRECHECKS_FAILED;
+              this.precheckFailureCallback_();
+            }
+          }),
+      callbackRouter.onUpgradeProgress.addListener(
+          (progressMessages: string[]) => {
+            assert(this.state_ === State.UPGRADING);
+            this.progressMessages_.push(...progressMessages);
+            this.upgradeProgress_ = this.progressMessages_.length;
 
-        if (this.progressLineNumber_ < this.upgradeProgress_) {
-          this.updateProgressLine_();
-        }
-      }),
+            if (this.progressLineNumber_ < this.upgradeProgress_) {
+              this.updateProgressLine_();
+            }
+          }),
       callbackRouter.onUpgradeSucceeded.addListener(() => {
         assert(this.state_ === State.UPGRADING);
         this.state_ = State.SUCCEEDED;
@@ -196,7 +201,7 @@ Polymer({
           this.state_ = State.UPGRADE_ERROR;
         }
       }),
-      callbackRouter.onRestoreProgress.addListener((percent) => {
+      callbackRouter.onRestoreProgress.addListener((percent: number) => {
         assert(this.state_ === State.RESTORE);
         this.restoreProgress_ = percent;
       }),
@@ -220,7 +225,7 @@ Polymer({
           this.onCancelButtonClick_();
         }
       }),
-      callbackRouter.onLogFileCreated.addListener((path) => {
+      callbackRouter.onLogFileCreated.addListener((path: string) => {
         this.logFileName_ = path;
       }),
     ];
@@ -232,24 +237,22 @@ Polymer({
       }
     });
 
-    this.$$('.action-button').focus();
-  },
+    this.shadowRoot!.querySelector<HTMLElement>('.action-button')!.focus();
+  }
 
-  /** @override */
-  detached() {
+  override disconnectedCallback() {
+    super.disconnectedCallback();
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
     this.listenerIds_.forEach(id => callbackRouter.removeListener(id));
-  },
+  }
 
-  /** @private */
-  precheckThenUpgrade_() {
+  private precheckThenUpgrade_() {
     this.startPrechecks_(() => {
       this.startUpgrade_();
     }, () => {});
-  },
+  }
 
-  /** @private */
-  onActionButtonClick_() {
+  private onActionButtonClick_() {
     switch (this.state_) {
       case State.SUCCEEDED:
         BrowserProxy.getInstance().handler.launch();
@@ -271,10 +274,9 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     switch (this.state_) {
       case State.PROMPT:
         BrowserProxy.getInstance().handler.cancelBeforeStart();
@@ -300,68 +302,48 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
-  /** @private */
-  onChangeLocationButtonClick_() {
+  private onChangeLocationButtonClick_() {
     this.startBackup_(/*showFileChooser=*/ true);
-  },
+  }
 
-  /**
-   * @param {boolean} showFileChooser
-   * @private
-   */
-  startBackup_(showFileChooser) {
+  private startBackup_(showFileChooser: boolean) {
     BrowserProxy.getInstance().handler.backup(showFileChooser);
-  },
+  }
 
-  /** @private */
-  startPrechecks_(success, failure) {
+  private startPrechecks_(success: () => void, failure: () => void) {
     this.precheckSuccessCallback_ = success;
     this.precheckFailureCallback_ = failure;
     BrowserProxy.getInstance().handler.startPrechecks();
-  },
+  }
 
-  /** @private */
-  startUpgrade_() {
+  private startUpgrade_() {
     this.state_ = State.UPGRADING;
     this.upgradeAttemptCount_++;
     BrowserProxy.getInstance().handler.upgrade();
-  },
+  }
 
-  /** @private */
-  startRestore_() {
+  private startRestore_() {
     this.state_ = State.RESTORE;
     BrowserProxy.getInstance().handler.restore();
-  },
+  }
 
-  /** @private */
-  closePage_() {
+  private closePage_() {
     BrowserProxy.getInstance().handler.onPageClosed();
-  },
+  }
 
-  /**
-   * @param {State} state1
-   * @param {State} state2
-   * @return {boolean}
-   * @private
-   */
-  isState_(state1, state2) {
+  private isState_(state1: State, state2: State): boolean {
     return state1 === state2;
-  },
+  }
 
-  isErrorLogsHidden_(state) {
+  private isErrorLogsHidden_(): boolean {
     return !(
         this.isState_(this.state_, State.UPGRADE_ERROR) ||
         this.isState_(this.state_, State.OFFER_RESTORE));
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {boolean}
-   * @private
-   */
-  canDoAction_(state) {
+  private canDoAction_(state: State): boolean {
     switch (state) {
       case State.PROMPT:
       case State.PRECHECKS_FAILED:
@@ -370,14 +352,9 @@ Polymer({
         return true;
     }
     return false;
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {boolean}
-   * @private
-   */
-  canCancel_(state) {
+  private canCancel_(state: State): boolean {
     switch (state) {
       case State.BACKUP:
       case State.RESTORE:
@@ -387,14 +364,11 @@ Polymer({
         return false;
     }
     return true;
-  },
+  }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getTitle_() {
-    let titleId;
+  private getTitle_(): string {
+    let titleId: string = '';
+
     switch (this.state_) {
       case State.PROMPT:
         titleId = 'promptTitle';
@@ -436,15 +410,10 @@ Polymer({
       default:
         assertNotReached();
     }
-    return loadTimeData.getString(/** @type {string} */ (titleId));
-  },
+    return loadTimeData.getString(titleId);
+  }
 
-  /**
-   * @param {State} state
-   * @return {string}
-   * @private
-   */
-  getActionButtonLabel_(state) {
+  private getActionButtonLabel_(state: State): string {
     switch (state) {
       case State.PROMPT:
         return loadTimeData.getString('upgrade');
@@ -456,14 +425,9 @@ Polymer({
         return loadTimeData.getString('restore');
     }
     return '';
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {string}
-   * @private
-   */
-  getCancelButtonLabel_(state) {
+  private getCancelButtonLabel_(state: State): string {
     switch (state) {
       case State.RESTORE_SUCCEEDED:
       case State.BACKUP_ERROR:
@@ -475,14 +439,11 @@ Polymer({
       default:
         return loadTimeData.getString('cancel');
     }
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {TrustedHTML}
-   * @private
-   */
-  getProgressMessage_(state, precheckStatus, file_name) {
+  private getProgressMessage_(
+      state: State, precheckStatus: UpgradePrecheckStatus,
+      fileName: string): TrustedHTML {
     let messageId = null;
     switch (state) {
       case State.PROMPT:
@@ -517,33 +478,21 @@ Polymer({
         break;
       case State.SUCCEEDED:
         return sanitizeInnerHtml(
-            loadTimeData.getStringF('logFileMessageSuccess', file_name));
-        break;
+            loadTimeData.getStringF('logFileMessageSuccess', fileName));
       case State.UPGRADE_ERROR:
       case State.OFFER_RESTORE:
         return sanitizeInnerHtml(
-            loadTimeData.getStringF('logFileMessageError', file_name));
-        break;
+            loadTimeData.getStringF('logFileMessageError', fileName));
     }
     return messageId ? sanitizeInnerHtml(loadTimeData.getString(messageId)) :
-                       trustedTypes.emptyHTML;
-  },
+                       window.trustedTypes!.emptyHTML;
+  }
 
-  /**
-   * @param {State} state
-   * @return {string}
-   * @private
-   */
-  getErrorLogs_(state) {
+  private getErrorLogs_(): string {
     return this.progressMessages_.join('\n');
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {string}
-   * @private
-   */
-  getIllustrationStyle_(state) {
+  private getIllustrationStyle_(state: State): string {
     switch (state) {
       case State.BACKUP_ERROR:
       case State.BACKUP_SUCCEEDED:
@@ -553,14 +502,9 @@ Polymer({
         return 'img-square-illustration';
     }
     return 'img-rect-illustration';
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {string}
-   * @private
-   */
-  getIllustrationURI_(state) {
+  private getIllustrationURI_(state: State): string {
     switch (state) {
       case State.BACKUP_SUCCEEDED:
       case State.RESTORE_SUCCEEDED:
@@ -571,29 +515,25 @@ Polymer({
         return 'images/error_illustration.png';
     }
     return 'images/linux_illustration.png';
-  },
+  }
 
-  /**
-   * @param {State} state
-   * @return {boolean}
-   * @private
-   */
-  hideIllustration_(state) {
+  private hideIllustration_(state: State): boolean {
     switch (state) {
       case State.OFFER_RESTORE:
       case State.UPGRADE_ERROR:
         return true;
     }
     return false;
-  },
+  }
 
-  /** @private */
-  updateProgressLine_() {
+  private updateProgressLine_() {
     if (this.progressLineNumber_ < this.upgradeProgress_) {
       this.lastProgressLine_ =
           this.progressMessages_[this.progressLineNumber_++];
       const t = setTimeout(
           this.updateProgressLine_.bind(this), this.progressLineDisplayMs_);
     }
-  },
-});
+  }
+}
+
+customElements.define('crostini-upgrader-app', CrostiniUpgraderAppElement);

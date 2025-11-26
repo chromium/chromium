@@ -102,11 +102,11 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   const getActionButton = () => {
-    return app.$$('.action-button');
+    return app.shadowRoot.querySelector('.action-button');
   };
 
   const getCancelButton = () => {
-    return app.$$('#cancel-button');
+    return app.shadowRoot.querySelector('#cancel-button');
   };
 
   const clickAction = async () => {
@@ -118,19 +118,19 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   const getBackupProgressBar = () => {
-    return app.$$('#backup-progress-bar');
+    return app.shadowRoot.querySelector('#backup-progress-bar');
   };
 
   const getUpgradeProgressBar = () => {
-    return app.$$('#upgrade-progress-bar');
+    return app.shadowRoot.querySelector('#upgrade-progress-bar');
   };
 
   const getRestoreProgressBar = () => {
-    return app.$$('#restore-progress-bar');
+    return app.shadowRoot.querySelector('#restore-progress-bar');
   };
 
   const getProgressMessage = () => {
-    return app.$$('#progress-message');
+    return app.shadowRoot.querySelector('#progress-message');
   };
 
   const waitMillis = (millis) => {
@@ -160,7 +160,10 @@ suite('<crostini-upgrader-app>', () => {
     assertTrue(
         !!getProgressMessage().textContent, 'progress message should be set');
     assertFalse(getBackupProgressBar().hidden);
-    assertEquals(app.$$('#backup-progress-bar > paper-progress').value, 50);
+    assertEquals(
+        app.shadowRoot.querySelector('#backup-progress-bar > paper-progress')
+            .value,
+        50);
 
     fakeBrowserProxy.page.onBackupSucceeded();
     await flushTasks();
@@ -186,7 +189,7 @@ suite('<crostini-upgrader-app>', () => {
 
   test('upgradeFlowFailureShowsLogs', async () => {
     // Uncheck backup box
-    app.$$('#backup-checkbox > cr-checkbox').click();
+    app.shadowRoot.querySelector('#backup-checkbox > cr-checkbox').click();
     await clickAction();
 
     const kMaxUpgradeAttempts = 3;
@@ -200,14 +203,15 @@ suite('<crostini-upgrader-app>', () => {
     }
 
     const single = 'foo\nbar';
-    assertFalse(app.$$('#upgrade-error-message').hidden);
+    assertFalse(app.shadowRoot.querySelector('#upgrade-error-message').hidden);
     assertEquals(
-        app.$$('#error-log').innerHTML, single + '\n' + single + '\n' + single);
+        app.shadowRoot.querySelector('#error-log').innerHTML,
+        single + '\n' + single + '\n' + single);
   });
 
   test('upgradeFlowPrecheckRetry', async () => {
     // Uncheck backup box
-    app.$$('#backup-checkbox > cr-checkbox').click();
+    app.shadowRoot.querySelector('#backup-checkbox > cr-checkbox').click();
     await clickAction();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
@@ -264,7 +268,10 @@ suite('<crostini-upgrader-app>', () => {
     assertTrue(
         !!getProgressMessage().textContent, 'progress message should be set');
     assertFalse(getRestoreProgressBar().hidden);
-    assertEquals(app.$$('#restore-progress-bar > paper-progress').value, 50);
+    assertEquals(
+        app.shadowRoot.querySelector('#restore-progress-bar > paper-progress')
+            .value,
+        50);
     fakeBrowserProxy.page.onRestoreSucceeded();
     await flushTasks();
 
