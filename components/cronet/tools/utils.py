@@ -57,7 +57,11 @@ def run(command, **kwargs):
   Args:
     command (list[str]): command to be executed
   """
-  print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
+  if kwargs.get("shell"):
+    quoted_cmd = command
+  else:
+    quoted_cmd = ' '.join(shlex.quote(arg) for arg in command)
+  print('Executing: ' + quoted_cmd)
   subprocess.check_call(command, **kwargs)
 
 
