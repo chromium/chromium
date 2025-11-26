@@ -51,6 +51,12 @@ class TwoClientWalletSyncTest : public SyncTest {
 
   ~TwoClientWalletSyncTest() override = default;
 
+  wallet_helper::StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? wallet_helper::StoreType::kAccountStore
+               : wallet_helper::StoreType::kProfileStore;
+  }
+
   // Needed for AwaitQuiescence().
   bool TestUsesSelfNotifications() override { return true; }
 
@@ -86,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
   ASSERT_EQ(1u, card.usage_history().use_count());
   card.usage_history().set_use_count(2);
   card.usage_history().set_use_date(kLaterTime);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
 
   // Wait for the change to propagate.
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
@@ -122,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   ASSERT_EQ(1u, card.usage_history().use_count());
   card.usage_history().set_use_count(2);
   card.usage_history().set_use_date(kLaterTime);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
 
   // Simulate going online again.
   fake_server::FakeServerHttpPostProvider::EnableNetwork();
@@ -162,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   ASSERT_EQ(1u, card.usage_history().use_count());
   card.usage_history().set_use_count(3);
   card.usage_history().set_use_date(kLaterTime);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
 
   credit_cards = GetServerCreditCards(1);
   ASSERT_EQ(1u, credit_cards.size());
@@ -170,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   ASSERT_EQ(1u, card.usage_history().use_count());
   card.usage_history().set_use_count(2);
   card.usage_history().set_use_date(kEvenLaterTime);
-  UpdateServerCardMetadata(1, card);
+  UpdateServerCardMetadata(1, card, GetStoreType());
 
   // Simulate going online again.
   fake_server::FakeServerHttpPostProvider::EnableNetwork();
@@ -207,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
 
   // Update the billing address.
   card.set_billing_address_id(kDefaultBillingAddressID);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
 
   // Make sure both clients have the updated billing_address_id.
@@ -236,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   // Update the billing address.
   ASSERT_EQ(kDefaultBillingAddressID, card.billing_address_id());
   card.set_billing_address_id(kDifferentBillingAddressId);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
 
   // Make sure both clients have the updated billing_address_id.
@@ -266,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Update the billing address (replace a remote profile by a local profile).
   card.set_billing_address_id(kLocalBillingAddressId);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
 
   // Make sure both clients have the updated billing_address_id (local profile
@@ -302,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(
   // We treat the corner-case of merging data after initial sync (with
   // use_count==1) differently, set use-count to a higher value.
   card.usage_history().set_use_count(2);
-  UpdateServerCardMetadata(0, card);
+  UpdateServerCardMetadata(0, card, GetStoreType());
 
   credit_cards = GetServerCreditCards(1);
   ASSERT_EQ(1u, credit_cards.size());
@@ -313,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(
   // We treat the corner-case of merging data after initial sync (with
   // use_count==1) differently, set use-count to a higher value.
   card.usage_history().set_use_count(2);
-  UpdateServerCardMetadata(1, card);
+  UpdateServerCardMetadata(1, card, GetStoreType());
 
   // Simulate going online again.
   fake_server::FakeServerHttpPostProvider::EnableNetwork();
