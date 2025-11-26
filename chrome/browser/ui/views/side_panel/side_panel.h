@@ -24,7 +24,7 @@ class BrowserView;
 
 class SidePanel : public views::AccessiblePaneView,
                   public views::ResizeAreaDelegate,
-                  public SidePanelAnimationCoordinator::Observer {
+                  public SidePanelAnimationCoordinator::AnimationIdObserver {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
  public:
@@ -118,7 +118,7 @@ class SidePanel : public views::AccessiblePaneView,
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // SidePanelAnimationCoordinator::AnimationObserver
+  // SidePanelAnimationCoordinator::AnimationIdObserver
   void OnAnimationSequenceProgressed(
       const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
       double animation_value) override;
