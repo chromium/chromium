@@ -3395,12 +3395,12 @@ bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
     return false;
   }
 
-  const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
+  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(document_, font_face_rule,
                                                true /* is_user_style */)) {
-      font_selector_->GetFontFaceCache()->Add(font_face_rule, font_face);
+      font_selector_->GetFontFaceCache()->Add(font_face_rule.value, font_face);
     }
   }
   if (resolver_ && font_face_rules.size()) {

@@ -515,7 +515,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRuleRoute>>& RouteRules() const {
     return route_rules_;
   }
-  const HeapVector<Member<StyleRuleFontFace>>& FontFaceRules() const {
+  const HeapVector<CascadeLayered<StyleRuleFontFace>>& FontFaceRules() const {
     return font_face_rules_;
   }
   const HeapVector<Member<StyleRuleKeyframes>>& KeyframesRules() const {
@@ -670,7 +670,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddToBucket(HeapVector<RuleData>&, const RuleData&);
   void AddPageRule(StyleRulePage*, const CascadeLayer*);
   void AddRouteRule(StyleRuleRoute*);
-  void AddFontFaceRule(StyleRuleFontFace*);
+  void AddFontFaceRule(StyleRuleFontFace*, const CascadeLayer*);
   void AddKeyframesRule(StyleRuleKeyframes*);
   void AddPropertyRule(StyleRuleProperty*);
   void AddCounterStyleRule(StyleRuleCounterStyle*);
@@ -798,7 +798,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   RuleFeatureSet features_;
   HeapVector<CascadeLayered<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleRoute>> route_rules_;
-  HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
+  HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules_;
   HeapVector<Member<StyleRuleFontPaletteValues>> font_palette_values_rules_;
   HeapVector<Member<StyleRuleFontFeatureValues>> font_feature_values_rules_;
   HeapVector<Member<StyleRuleViewTransition>> view_transition_rules_;

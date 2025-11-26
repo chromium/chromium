@@ -897,8 +897,7 @@ static void AddRuleToIntervals(const T* value,
 
 void RuleSet::AddPageRule(StyleRulePage* rule, const CascadeLayer* layer) {
   need_compaction_ = true;
-  page_rules_.push_back(
-      CascadeLayered<StyleRulePage>{.value = rule, .layer = layer});
+  page_rules_.push_back(CascadeLayered<StyleRulePage>(rule, layer));
 }
 
 void RuleSet::AddRouteRule(StyleRuleRoute* rule) {
@@ -906,9 +905,10 @@ void RuleSet::AddRouteRule(StyleRuleRoute* rule) {
   route_rules_.push_back(rule);
 }
 
-void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule) {
+void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule,
+                              const CascadeLayer* layer) {
   need_compaction_ = true;
-  font_face_rules_.push_back(rule);
+  font_face_rules_.push_back(CascadeLayered<StyleRuleFontFace>(rule, layer));
 }
 
 void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule) {
@@ -981,8 +981,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                       style_scope, apply_mixins_stack);
       }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
-      font_face_rule->SetCascadeLayer(cascade_layer);
-      AddFontFaceRule(font_face_rule);
+      AddFontFaceRule(font_face_rule, cascade_layer);
     } else if (auto* font_palette_values_rule =
                    DynamicTo<StyleRuleFontPaletteValues>(rule)) {
       // TODO(https://crbug.com/1170794): Handle cascade layers for

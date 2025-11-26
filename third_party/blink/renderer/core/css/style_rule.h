@@ -407,14 +407,10 @@ class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
   const CSSPropertyValueSet& Properties() const { return *properties_; }
   MutableCSSPropertyValueSet& MutableProperties();
 
-  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
-
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSPropertyValueSet> properties_;  // Cannot be null.
-  Member<const CascadeLayer> layer_;
 };
 
 class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {

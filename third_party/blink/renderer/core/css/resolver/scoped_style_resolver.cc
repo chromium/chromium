@@ -31,6 +31,7 @@
 #include "base/types/zip.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -89,12 +90,13 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   Document& document = GetTreeScope().GetDocument();
   CSSFontSelector* css_font_selector =
       document.GetStyleEngine().GetFontSelector();
-  const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
+  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(&document, font_face_rule,
                                                false /* is_user_style */)) {
-      css_font_selector->GetFontFaceCache()->Add(font_face_rule, font_face);
+      css_font_selector->GetFontFaceCache()->Add(font_face_rule.value,
+                                                 font_face);
     }
   }
   if (font_face_rules.size()) {

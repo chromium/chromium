@@ -33,6 +33,20 @@ class CascadeLayered {
   DISALLOW_NEW();
 
  public:
+  CascadeLayered() = default;
+
+  // Needed to allow CascadeLayered<T>(static_cast<T*>(...), layer).
+  template <typename U>
+    requires std::convertible_to<U, AddMemberIfNeeded<T>>
+  CascadeLayered(U value, const CascadeLayer* layer)
+      : value(std::move(value)), layer(layer) {}
+
+  // Needed to convert CascadeLayered<T> to CascadeLayered<const T>.
+  template <typename U>
+    requires std::convertible_to<U, T>
+  CascadeLayered(const CascadeLayered<U>& other)  // NOLINT
+      : value(other.value), layer(other.layer) {}
+
   void Trace(blink::Visitor* visitor) const {
     TraceIfNeeded<AddMemberIfNeeded<T>>::Trace(visitor, value);
     visitor->Trace(layer);

@@ -160,6 +160,13 @@ class StyleResolverTest : public PageTestBase {
       ASSERT_TRUE(unconnected_ruleset);
     }
   }
+
+  void SetInnerText(const char* selector, const char* text) {
+    HTMLElement* element = DynamicTo<HTMLElement>(
+        GetDocument().QuerySelector(AtomicString(selector)));
+    DCHECK(element);
+    element->setInnerText(text);
+  }
 };
 
 class StyleResolverTestCQ : public StyleResolverTest {
@@ -1571,15 +1578,38 @@ TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredPageRule) {
   CreateUnconnectedRuleSets(scoped_resolver->GetActiveStyleSheets());
 
   // Add a layer that should not matter.
-  auto* style = DynamicTo<HTMLElement>(
-      GetDocument().getElementById(AtomicString("style")));
-  ASSERT_TRUE(style);
-  style->setInnerText("@layer { div {} }");
+  SetInnerText("#style", "@layer { div {} }");
 
   // The result should be the same if we print again:
   GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   EXPECT_EQ(100, GetDocument().GetPageDescription(/*page_index=*/0).margin_top);
+}
+
+TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredFontFaceRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @layer foo, bar;
+    </style>
+    <style id=style></style>
+    <style>
+      @layer bar {
+        @font-face { font-family: foo; src: url('a.woff'); }
+      }
+      @layer foo {
+        @font-face { font-family: foo; src: url('b.woff'); }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+  // This should have no side effects:
+  CreateUnconnectedRuleSets(scoped_resolver->GetActiveStyleSheets());
+  // Add a layer that causes a rebuild of the CascadeLayer map:
+  SetInnerText("#style", "@layer { div {} }");
+  // Don't crash:
+  UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
