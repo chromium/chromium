@@ -38,17 +38,13 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
 
   ~SingleClientSecondaryAccountSyncTest() override = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    SyncTest::SetUpInProcessBrowserTestFixture();
-
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+    // explicitly pick Sync-the-feature or Sync-the-transport.
+    return SyncTest::SetupSyncMode::kSyncTransportOnly;
   }
 
   Profile* profile() { return GetProfile(0); }
-
- private:
-  base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -73,18 +69,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        SwitchesFromTransportToFeature) {
   ASSERT_TRUE(SetupClients());
 
-  // Set up Sync in transport mode for an unconsented account.
-  secondary_account_helper::SignInUnconsentedAccount(
-      profile(), &test_url_loader_factory_, "user@email.com");
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  // Set up Sync in transport mode.
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Simulate the user opting in to full Sync, and set first-time setup to
   // complete.
-  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
+  secondary_account_helper::GrantSyncConsent(
+      profile(),
+      GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount));
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
@@ -111,10 +105,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        PRE_ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients());
-  secondary_account_helper::SignInUnconsentedAccount(
-      profile(), &test_url_loader_factory_, "user@email.com");
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
