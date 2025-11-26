@@ -37,6 +37,12 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
   // Performs coalescing of continuous gesture events in the queue.
   void CoalesceEvents(base::TimeTicks sample_time);
 
+  bool IsNextEventReady(base::TimeTicks sample_time) const;
+
+  // Notifies the queue that the current frame's dispatch loop has finished.
+  // Snapshots the remaining events as backlog for the next frame.
+  void DidFinishDispatch();
+
   WebInputEvent::Type PeekType() const;
 
   // Returns the timestamp of the event at the head of the queue.
@@ -52,6 +58,8 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
   friend class test::InputHandlerProxyEventQueueTest;
   using EventQueue = base::circular_deque<std::unique_ptr<EventWithCallback>>;
   EventQueue queue_;
+  size_t events_to_always_dispatch_ = 0;
+  size_t backlog_count_ = 0;
 };
 
 }  // namespace blink

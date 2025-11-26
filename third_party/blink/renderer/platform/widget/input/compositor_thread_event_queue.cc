@@ -289,8 +289,15 @@ void CompositorThreadEventQueue::Queue(
 
 std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
   DCHECK(!queue_.empty());
+  // Pop should only be called during the event dispatch phase,
+  // not when a backlog is waiting to be coalesced.
+  DCHECK_EQ(backlog_count_, 0ul);
   std::unique_ptr<EventWithCallback> result = std::move(queue_.front());
   queue_.pop_front();
+
+  if (events_to_always_dispatch_ > 0) {
+    events_to_always_dispatch_--;
+  }
 
   if (result->first_original_event()) {
     TRACE_EVENT_END(
@@ -301,27 +308,55 @@ std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
   return result;
 }
 
+void CompositorThreadEventQueue::DidFinishDispatch() {
+  backlog_count_ = queue_.size();
+  if (backlog_count_) {
+    TRACE_EVENT_INSTANT1(
+        "input", "CompositorThreadEventQueue::DidFinishDispatch",
+        TRACE_EVENT_SCOPE_THREAD, "backlog_count", backlog_count_);
+  }
+}
+
 void CompositorThreadEventQueue::CoalesceEvents(base::TimeTicks sample_time) {
-  if (queue_.empty() || queue_.front()->event().TimeStamp() > sample_time) {
+  events_to_always_dispatch_ = 0;
+  if (queue_.empty()) {
     return;
   }
 
-  // 1. Find the boundary of the batch to process.
-  auto batch_end_it =
-      std::upper_bound(queue_.begin(), queue_.end(), sample_time,
+  auto backlog_end_it = queue_.begin();
+  if (backlog_count_ < queue_.size()) {
+    std::advance(backlog_end_it, backlog_count_);
+  } else {
+    backlog_end_it = queue_.end();
+  }
+  backlog_count_ = 0;  // Reset backlog for the next DidFinishDispatch call
+
+  // Find the time boundary only within the new events (after the backlog).
+  // Assumes new events are roughly time ordered.
+  auto time_boundary_it =
+      std::upper_bound(backlog_end_it, queue_.end(), sample_time,
                        [](base::TimeTicks time,
                           const std::unique_ptr<EventWithCallback>& event) {
                          return time < event->event().TimeStamp();
                        });
 
-  // 2. Move the events to be processed into a temporary queue.
+  // |batch_end_it| is |time_boundary_it| because this iterator marks the
+  // end of the combined range of backlogged events and the new events
+  // up to sample_time.
+  auto batch_end_it = time_boundary_it;
+
+  if (batch_end_it == queue_.begin()) {
+    return;
+  }
+
+  // Move the events to be processed into a temporary queue.
   EventQueue processing_queue;
   processing_queue.insert(processing_queue.end(),
                           std::make_move_iterator(queue_.begin()),
                           std::make_move_iterator(batch_end_it));
   queue_.erase(queue_.begin(), batch_end_it);
 
-  // 3. Coalesce the events from the processing queue into a new queue.
+  // Coalesce the events from the processing queue into a new queue.
   EventQueue coalesced_queue;
   while (!processing_queue.empty()) {
     std::unique_ptr<EventWithCallback> new_event =
@@ -386,10 +421,24 @@ void CompositorThreadEventQueue::CoalesceEvents(base::TimeTicks sample_time) {
     coalesced_queue.push_back(std::move(coalesced_pair.second));
   }
 
-  // 4. Insert the coalesced events back at the front of the main queue.
+  // Update State
+  events_to_always_dispatch_ = coalesced_queue.size();
+
+  // Insert the coalesced events back at the front of the main queue.
   queue_.insert(queue_.begin(),
                 std::make_move_iterator(coalesced_queue.begin()),
                 std::make_move_iterator(coalesced_queue.end()));
+}
+
+bool CompositorThreadEventQueue::IsNextEventReady(
+    base::TimeTicks sample_time) const {
+  if (queue_.empty()) {
+    return false;
+  }
+  if (events_to_always_dispatch_ > 0) {
+    return true;
+  }
+  return queue_.front()->event().TimeStamp() <= sample_time;
 }
 
 WebInputEvent::Type CompositorThreadEventQueue::PeekType() const {
