@@ -455,7 +455,7 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
   page_nodes_to_load_.clear();
   tabs_scored_ = 0;
 
-  // TODO(crbug.com/40126598): Interrupt all ongoing loads.
+  // Ideally we'd interrupt all ongoing loads (see crbug.com/40126598)
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
