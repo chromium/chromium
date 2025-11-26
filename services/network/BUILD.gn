@@ -352,6 +352,7 @@ component("network_service") {
     "//components/os_crypt/sync",
     "//components/prefs",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//components/unexportable_keys/mojom:mojo_service",
     "//components/url_matcher",
     "//components/url_pattern",
     "//components/web_package",

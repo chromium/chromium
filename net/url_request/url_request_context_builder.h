@@ -32,6 +32,7 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
 #include "net/base/network_handle.h"
@@ -406,6 +407,17 @@ class NET_EXPORT URLRequestContextBuilder {
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   }
 
+  // Must be called in conjunction with
+  // `set_has_device_bound_session_service(true)`.
+  void set_unexportable_key_service(
+      std::unique_ptr<unexportable_keys::UnexportableKeyService> uks) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    unexportable_key_service_ = std::move(uks);
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  }
+
   void set_device_bound_sessions_file_path(
       const base::FilePath& device_bound_sessions_file_path) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -525,6 +537,8 @@ class NET_EXPORT URLRequestContextBuilder {
       protocol_handlers_;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool has_device_bound_session_service_ = false;
+  std::unique_ptr<unexportable_keys::UnexportableKeyService>
+      unexportable_key_service_;
   std::unique_ptr<device_bound_sessions::SessionService>
       device_bound_session_service_;
   base::FilePath device_bound_sessions_file_path_;

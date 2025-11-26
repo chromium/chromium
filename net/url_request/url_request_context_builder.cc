@@ -513,6 +513,10 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (has_device_bound_session_service_) {
+    if (unexportable_key_service_) {
+      context->set_unexportable_key_service(
+          std::move(unexportable_key_service_));
+    }
     if (!device_bound_sessions_file_path_.empty()) {
       context->set_device_bound_session_store(
           device_bound_sessions::SessionStore::Create(
