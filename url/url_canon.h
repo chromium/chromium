@@ -852,21 +852,13 @@ struct URLComponentSource {
 
  public:
   // Constructor normally used by callers wishing to replace components. This
-  // will make them all NULL, which is no replacement. The caller would then
-  // override the components they want to replace.
-  URLComponentSource()
-      : scheme(nullptr),
-        username(nullptr),
-        password(nullptr),
-        host(nullptr),
-        port(nullptr),
-        path(nullptr),
-        query(nullptr),
-        ref(nullptr) {}
+  // will make them all null string_view, which is no replacement. The caller
+  // would then override the components they want to replace.
+  URLComponentSource() = default;
 
   // Constructor normally used internally to initialize all the components to
   // point to the same spec.
-  explicit URLComponentSource(const CHAR* default_value)
+  explicit URLComponentSource(std::basic_string_view<CHAR> default_value)
       : scheme(default_value),
         username(default_value),
         password(default_value),
@@ -876,14 +868,21 @@ struct URLComponentSource {
         query(default_value),
         ref(default_value) {}
 
-  const CHAR* scheme;
-  const CHAR* username;
-  const CHAR* password;
-  const CHAR* host;
-  const CHAR* port;
-  const CHAR* path;
-  const CHAR* query;
-  const CHAR* ref;
+  // The following data members distinguish between std::basic_string_view()
+  // and std::basic_string_view(""). The former's data() returns nullptr.
+  //
+  // This behavior is confusing, but Replacements::SetFooStr() has
+  // distinguished these two for a long time, and it is costly to eliminate
+  // the distinction.
+
+  std::basic_string_view<CHAR> scheme;
+  std::basic_string_view<CHAR> username;
+  std::basic_string_view<CHAR> password;
+  std::basic_string_view<CHAR> host;
+  std::basic_string_view<CHAR> port;
+  std::basic_string_view<CHAR> path;
+  std::basic_string_view<CHAR> query;
+  std::basic_string_view<CHAR> ref;
 };
 
 // This structure encapsulates information on modifying a URL. Each component
@@ -910,11 +909,11 @@ class Replacements {
   // components. This is used to indicate that all components of a URL should
   // be replaced.
   Replacements(StringViewT spec, const Parsed& parsed)
-      : sources_(spec.data()), components_(parsed) {}
+      : sources_(spec), components_(parsed) {}
 
   // Scheme
   void SetScheme(StringViewT s, const Component& comp) {
-    sources_.scheme = s.data();
+    sources_.scheme = s;
     components_.scheme = comp;
   }
   void SetSchemeStr(StringViewT str) { SetScheme(str, Component(str)); }
@@ -922,19 +921,19 @@ class Replacements {
 
   // Indicates the scheme part won't be replaced.
   void SetSchemeUnchanged() {
-    sources_.scheme = nullptr;
+    sources_.scheme = StringViewT();
     components_.scheme = Component();
   }
   // Return the scheme part of the source string if the scheme component is
   // valid.
   std::optional<StringViewT> MaybeScheme() const {
-    return components_.scheme.maybe_as_string_view_on(sources_.scheme);
+    return components_.scheme.MaybeAsViewOn(sources_.scheme);
   }
-  bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
+  bool IsSchemeOverridden() const { return sources_.scheme.data(); }
 
   // Username
   void SetUsername(StringViewT s, const Component& comp) {
-    sources_.username = s.data();
+    sources_.username = s;
     components_.username = comp;
   }
   void SetUsernameStr(StringViewT str) { SetUsername(str, Component(str)); }
@@ -945,13 +944,13 @@ class Replacements {
   // Return the username part of the source string if the username component is
   // valid.
   std::optional<StringViewT> MaybeUsername() const {
-    return components_.username.maybe_as_string_view_on(sources_.username);
+    return components_.username.MaybeAsViewOn(sources_.username);
   }
-  bool IsUsernameOverridden() const { return sources_.username != NULL; }
+  bool IsUsernameOverridden() const { return sources_.username.data(); }
 
   // Password
   void SetPassword(StringViewT s, const Component& comp) {
-    sources_.password = s.data();
+    sources_.password = s;
     components_.password = comp;
   }
   void SetPasswordStr(StringViewT str) { SetPassword(str, Component(str)); }
@@ -962,13 +961,13 @@ class Replacements {
   // Return the password part of the source string if the password component is
   // valid.
   std::optional<StringViewT> MaybePassword() const {
-    return components_.password.maybe_as_string_view_on(sources_.password);
+    return components_.password.MaybeAsViewOn(sources_.password);
   }
-  bool IsPasswordOverridden() const { return sources_.password != NULL; }
+  bool IsPasswordOverridden() const { return sources_.password.data(); }
 
   // Host
   void SetHost(StringViewT s, const Component& comp) {
-    sources_.host = s.data();
+    sources_.host = s;
     components_.host = comp;
   }
   void SetHostStr(StringViewT str) { SetHost(str, Component(str)); }
@@ -979,22 +978,21 @@ class Replacements {
   // Return the host part of the source string if the host component is
   // valid.
   std::optional<StringViewT> MaybeHost() const {
-    return components_.host.maybe_as_string_view_on(sources_.host);
+    return components_.host.MaybeAsViewOn(sources_.host);
   }
   // Return the string starting at the beginning of the source string and ending
   // at the end of the host part.  The beginning of the source string is
   // different from the beginning of the host part if components().host.begin()
   // is not 0.
   StringViewT SpecUntilHostOrEmpty() const {
-    return StringViewT(sources_.host, components_.host.is_valid()
-                                          ? components_.host.end()
-                                          : 0);
+    return sources_.host.substr(
+        0, components_.host.is_valid() ? components_.host.end() : 0);
   }
-  bool IsHostOverridden() const { return sources_.host != NULL; }
+  bool IsHostOverridden() const { return sources_.host.data(); }
 
   // Port
   void SetPort(StringViewT s, const Component& comp) {
-    sources_.port = s.data();
+    sources_.port = s;
     components_.port = comp;
   }
   void SetPortStr(StringViewT str) { SetPort(str, Component(str)); }
@@ -1004,13 +1002,13 @@ class Replacements {
   }
   // Return the port part of the source string if the port component is valid.
   std::optional<StringViewT> MaybePort() const {
-    return components_.port.maybe_as_string_view_on(sources_.port);
+    return components_.port.MaybeAsViewOn(sources_.port);
   }
-  bool IsPortOverridden() const { return sources_.port != NULL; }
+  bool IsPortOverridden() const { return sources_.port.data(); }
 
   // Path
   void SetPath(StringViewT s, const Component& comp) {
-    sources_.path = s.data();
+    sources_.path = s;
     components_.path = comp;
   }
   void SetPathStr(StringViewT str) { SetPath(str, Component(str)); }
@@ -1020,13 +1018,13 @@ class Replacements {
   }
   // Return the path part of the source string if the path component is alid.
   std::optional<StringViewT> MaybePath() const {
-    return components_.path.maybe_as_string_view_on(sources_.path);
+    return components_.path.MaybeAsViewOn(sources_.path);
   }
-  bool IsPathOverridden() const { return sources_.path != NULL; }
+  bool IsPathOverridden() const { return sources_.path.data(); }
 
   // Query
   void SetQuery(StringViewT s, const Component& comp) {
-    sources_.query = s.data();
+    sources_.query = s;
     components_.query = comp;
   }
   void SetQueryStr(StringViewT str) { SetQuery(str, Component(str)); }
@@ -1037,13 +1035,13 @@ class Replacements {
   // Return the query part of the source string if the query component is
   // valid.
   std::optional<StringViewT> MaybeQuery() const {
-    return components_.query.maybe_as_string_view_on(sources_.query);
+    return components_.query.MaybeAsViewOn(sources_.query);
   }
-  bool IsQueryOverridden() const { return sources_.query != NULL; }
+  bool IsQueryOverridden() const { return sources_.query.data(); }
 
   // Ref
   void SetRef(StringViewT s, const Component& comp) {
-    sources_.ref = s.data();
+    sources_.ref = s;
     components_.ref = comp;
   }
   void SetRefStr(StringViewT str) { SetRef(str, Component(str)); }
@@ -1053,9 +1051,9 @@ class Replacements {
   }
   // Return the ref part of the source string if the ref component is valid.
   std::optional<StringViewT> MaybeRef() const {
-    return components_.ref.maybe_as_string_view_on(sources_.ref);
+    return components_.ref.MaybeAsViewOn(sources_.ref);
   }
-  bool IsRefOverridden() const { return sources_.ref != NULL; }
+  bool IsRefOverridden() const { return sources_.ref.data(); }
 
   // Getters for the internal data. See the variables below for how the
   // information is encoded.
@@ -1069,23 +1067,21 @@ class Replacements {
                                            CanonOutput& utf8_buffer,
                                            Replacements<char>& overridden);
 
-  // Returns a pointer to a static empty string that is used as a placeholder
-  // to indicate a component should be deleted (see below).
-  const CHAR* Placeholder() {
+  // Returns a string_view on a static empty string that is used as a
+  // placeholder to indicate a component should be deleted (see below).
+  StringViewT Placeholder() {
     static const CHAR empty_cstr = 0;
-    return &empty_cstr;
+    // NOLINTNEXTLINE(bugprone-string-constructor)
+    return StringViewT(&empty_cstr, 0);
   }
 
   // We support three states:
   //
   // Action                 | Source                Component
   // -----------------------+--------------------------------------------------
-  // Don't change component | NULL                  (unused)
+  // Don't change component | null string_view      (unused)
   // Replace component      | (replacement string)  (replacement component)
-  // Delete component       | (non-NULL)            (invalid component: (0,-1))
-  //
-  // We use a pointer to the empty string for the source when the component
-  // should be deleted.
+  // Delete component       | empty string_view     (invalid component: (0,-1))
   URLComponentSource<CHAR> sources_;
   Parsed components_;
 };
