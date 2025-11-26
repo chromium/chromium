@@ -2711,7 +2711,7 @@
     {
       // Tracking bug for the implementation: https://crbug.com/430204832
       name: "GeolocationElement",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
