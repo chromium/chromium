@@ -156,6 +156,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.CaretBrowsing.Enabled"
+    enum="BooleanEnabled" expires_after="2026-11-01">
+  <owner>lokeric@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks whether caret browsing is enabled at startup.</summary>
+</histogram>
+
+<histogram name="Accessibility.Android.CaretBrowsing.SelectedAction"
+    enum="AccessibilityCaretBrowsingAction" expires_after="2026-11-01">
+  <owner>lokeric@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks users' actions for turning on/off caret browsing.</summary>
+</histogram>
+
 <histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
     enum="AccessibilityPredicateType" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>

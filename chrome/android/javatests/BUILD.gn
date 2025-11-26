@@ -1844,6 +1844,7 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/ExampleOnDeviceUnitTest.java",
     "src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
     "src/org/chromium/chrome/browser/IntentHandlerNativeTest.java",
+    "src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridgeTest.java",
     "src/org/chromium/chrome/browser/autofill/AutofillUnitTest.java",
     "src/org/chromium/chrome/browser/crash/LogcatExtractionRunnableTest.java",
     "src/org/chromium/chrome/browser/crash/MinidumpUploadServiceTest.java",

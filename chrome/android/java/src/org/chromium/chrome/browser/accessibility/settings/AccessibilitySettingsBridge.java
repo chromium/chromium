@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
+import androidx.annotation.IntDef;
+
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,6 +21,31 @@ import org.chromium.chrome.browser.profiles.Profile;
  */
 @NullMarked
 public class AccessibilitySettingsBridge {
+
+    public static final String ACCESSIBILITY_CARET_BROWING_HISTOGRAM =
+            "Accessibility.Android.CaretBrowsing.SelectedAction";
+    public static final String ACCESSIBILITY_CARET_BROWSING_ENABLED_HISTOGRAM =
+            "Accessibility.Android.CaretBrowsing.Enabled";
+
+    // AccessibilityCaretBrowsingAction defined in
+    // tools/metrics/histograms/metadata/accessibility/enums.xml.
+    //
+    // LINT.IfChange(AccessibilityCaretBrowsingAction)
+    @IntDef({
+        AccessibilityCaretBrowsingAction.ENABLED,
+        AccessibilityCaretBrowsingAction.DISABLED,
+        AccessibilityCaretBrowsingAction.DISMISSED,
+        AccessibilityCaretBrowsingAction.COUNT
+    })
+    public @interface AccessibilityCaretBrowsingAction {
+        int ENABLED = 0;
+        int DISABLED = 1;
+        int DISMISSED = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityCaretBrowsingAction)
+
     /**
      * Checks if the caret browsing feature is currently enabled for a given profile.
      *
@@ -42,6 +70,17 @@ public class AccessibilitySettingsBridge {
             return;
         }
         AccessibilitySettingsBridgeJni.get().setCaretBrowsingEnabled(profile, enabled);
+        if (enabled) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    ACCESSIBILITY_CARET_BROWING_HISTOGRAM,
+                    AccessibilityCaretBrowsingAction.ENABLED,
+                    AccessibilityCaretBrowsingAction.COUNT);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    ACCESSIBILITY_CARET_BROWING_HISTOGRAM,
+                    AccessibilityCaretBrowsingAction.DISABLED,
+                    AccessibilityCaretBrowsingAction.COUNT);
+        }
     }
 
     /**

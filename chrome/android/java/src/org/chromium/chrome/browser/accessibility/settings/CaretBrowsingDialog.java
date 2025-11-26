@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -88,6 +89,10 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            RecordHistogram.recordEnumeratedHistogram(
+                    AccessibilitySettingsBridge.ACCESSIBILITY_CARET_BROWING_HISTOGRAM,
+                    AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction.DISMISSED,
+                    AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction.COUNT);
         }
     }
 
@@ -98,7 +103,12 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
      * @param dismissalCause The reason for the dismissal.
      */
     @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {}
+    public void onDismiss(PropertyModel model, int dismissalCause) {
+        RecordHistogram.recordEnumeratedHistogram(
+                AccessibilitySettingsBridge.ACCESSIBILITY_CARET_BROWING_HISTOGRAM,
+                AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction.DISMISSED,
+                AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction.COUNT);
+    }
 
     /**
      * @return The {@link PropertyModel} for this dialog. @VisibleForTesting
