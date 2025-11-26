@@ -1079,8 +1079,8 @@ ContextResult RasterDecoderImpl::Initialize(
       return ContextResult::kFatalFailure;
     }
     use_gpu_raster_ = true;
-    paint_cache_ = std::make_unique<cc::ServicePaintCache>();
   }
+  paint_cache_ = std::make_unique<cc::ServicePaintCache>();
 
   return ContextResult::kSuccess;
 }
