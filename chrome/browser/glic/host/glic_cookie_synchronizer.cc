@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -286,6 +287,8 @@ void GlicCookieSynchronizer::OnAuthFinished(
 }
 
 void GlicCookieSynchronizer::OnTimeout() {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.CookieSynchronizer.Timeout"));
   CompleteAuth(/*is_success=*/false);
 }
 

@@ -13875,6 +13875,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.CookieSynchronizer.Timeout">
+  <owner>perrier@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <description>
+    Logged anytime the Glic CookieSyncronizer timeout is reached.
+  </description>
+</action>
+
 <action name="Glic.Disabled">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
