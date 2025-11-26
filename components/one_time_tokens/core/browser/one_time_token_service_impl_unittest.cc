@@ -351,4 +351,31 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
             OneTimeTokenRetrievalError::kUnknown);
 }
 
+// Test GetCachedOneTimeTokens returns cached tokens, including expired ones.
+TEST_F(OneTimeTokenServiceImplTest,
+       GetCachedOneTimeTokens_ReturnsCachedTokens) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+  OneTimeTokenServiceTestObserver subscriber_observer;
+
+  auto subscription = service.Subscribe(
+      base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&subscriber_observer)));
+
+  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("123456"));
+
+  // Verify that the token is returned by GetCachedOneTimeTokens.
+  std::vector<OneTimeToken> cached_tokens = service.GetCachedOneTimeTokens();
+  ASSERT_EQ(cached_tokens.size(), 1u);
+  EXPECT_EQ(cached_tokens[0].value(), "123456");
+
+  // Expire the token.
+  task_environment_.FastForwardBy(base::Minutes(6));
+
+  // Verify that the expired token is still returned by GetCachedOneTimeTokens.
+  cached_tokens = service.GetCachedOneTimeTokens();
+  ASSERT_EQ(cached_tokens.size(), 1u);
+  EXPECT_EQ(cached_tokens[0].value(), "123456");
+}
+
 }  // namespace one_time_tokens

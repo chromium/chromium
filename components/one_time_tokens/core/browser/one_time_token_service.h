@@ -46,6 +46,9 @@ class OneTimeTokenService {
   // cached.
   virtual void GetRecentOneTimeTokens(Callback callback) = 0;
 
+  // Returns the cached one-time tokens.
+  virtual std::vector<OneTimeToken> GetCachedOneTimeTokens() const = 0;
+
   // Creates a subscription for new incoming one time tokens. It's possible that
   // the same one time token is reported many times while a subscription is
   // active. It's the responsibility of the caller to deduplicate those.

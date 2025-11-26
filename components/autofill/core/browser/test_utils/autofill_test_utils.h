@@ -109,6 +109,9 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 [[nodiscard]] FormData CreateTestAddressFormData(
     const char* unique_id = nullptr);
 
+// Returns a `FormData` corresponding to a simple one-time-password form.
+[[nodiscard]] FormData CreateTestOtpFormData(const char* unique_id = nullptr);
+
 // Returns a `FormData` corresponding to a simple sign-up form that also
 // accepts a passkey.
 [[nodiscard]] FormData CreateTestHybridSignUpFormData(

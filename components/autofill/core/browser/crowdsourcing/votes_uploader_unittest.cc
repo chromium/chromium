@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
@@ -30,7 +32,24 @@ using testing::Return;
 using testing::Truly;
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
+using one_time_tokens::OneTimeTokenType;
+
 namespace {
+
+class MockOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
+ public:
+  MOCK_METHOD(void, GetRecentOneTimeTokens, (Callback callback), (override));
+  MOCK_METHOD(std::vector<OneTimeToken>,
+              GetCachedOneTimeTokens,
+              (),
+              (const override));
+  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
+              Subscribe,
+              (base::Time expiration, Callback callback),
+              (override));
+};
 
 class AutofillVotesUploaderTest : public testing::Test,
                                   public WithTestAutofillClientDriverManager<> {
@@ -42,6 +61,11 @@ class AutofillVotesUploaderTest : public testing::Test,
     InitAutofillClient();
     autofill_client().SetPrefs(test::PrefServiceForTesting());
     AddTestProfile();
+    feature_list_.InitAndEnableFeature(features::kAutofillSmsOtpCrowdsourcing);
+
+    std::unique_ptr<MockOneTimeTokenService> mock_service =
+        std::make_unique<MockOneTimeTokenService>();
+    autofill_client().set_one_time_token_service(std::move(mock_service));
   }
 
  protected:
@@ -54,6 +78,10 @@ class AutofillVotesUploaderTest : public testing::Test,
   std::unique_ptr<FormStructure> CreateCreditCardForm() {
     return std::make_unique<FormStructure>(test::CreateTestCreditCardFormData(
         /*is_https=*/true, /*use_month_type=*/false));
+  }
+
+  std::unique_ptr<FormStructure> CreateOtpForm() {
+    return std::make_unique<FormStructure>(test::CreateTestOtpFormData());
   }
 
   void AddTestProfile() {
@@ -73,6 +101,11 @@ class AutofillVotesUploaderTest : public testing::Test,
   MockAutofillCrowdsourcingManager& GetCrowdsourcingManager() {
     return static_cast<MockAutofillCrowdsourcingManager&>(
         autofill_client().GetCrowdsourcingManager());
+  }
+
+  MockOneTimeTokenService& GetMockOneTimeTokenService() {
+    return *static_cast<MockOneTimeTokenService*>(
+        autofill_client().GetOneTimeTokenService());
   }
 
   auto QuitRunLoopAndReturnTrue(base::RunLoop& run_loop) {
@@ -107,6 +140,7 @@ class AutofillVotesUploaderTest : public testing::Test,
 
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test basic vote upload process for form submission.
@@ -161,6 +195,22 @@ TEST_F(AutofillVotesUploaderTest, CreditCardFormUpload) {
       .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
 
   EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateCreditCardForm(),
+                                          /*observed_submission=*/true));
+  run_loop.Run();
+}
+
+// Test vote upload for OTP forms.
+TEST_F(AutofillVotesUploaderTest, OtpFormUpload) {
+  constexpr char kOtp[] = "123456";
+  EXPECT_CALL(GetMockOneTimeTokenService(), GetCachedOneTimeTokens())
+      .WillOnce(Return(std::vector<OneTimeToken>{
+          OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::Time::Now())}));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
+      .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
+
+  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateOtpForm(),
                                           /*observed_submission=*/true));
   run_loop.Run();
 }

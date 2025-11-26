@@ -841,6 +841,10 @@ BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, upload votes for sms otp.
+// TODO(crbug.com/453999673): Clean up when launched.
+BASE_FEATURE(kAutofillSmsOtpCrowdsourcing, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, select-option-change signals are throttled separately by
 // element. Previously, they were throttled together irrespective of the
 // element.

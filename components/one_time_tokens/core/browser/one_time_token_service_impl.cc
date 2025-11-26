@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -28,6 +29,11 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   for (const auto& token : base::Reversed(recent_tokens)) {
     callback.Run(OneTimeTokenSource::kOnDeviceSms, token);
   }
+}
+
+std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
+    const {
+  return base::ToVector(cache_.GetCache());
 }
 
 ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(base::Time expiration,
