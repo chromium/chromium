@@ -728,7 +728,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   changePasswordManagerPin() {
-    return chrome.passwordsPrivate.changePasswordManagerPin();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      return chrome.passwordsPrivate.changePasswordManagerPin();
+    }
+    return this.handler.changePasswordManagerPin().then(
+        result => result.success);
   }
 
   isPasswordManagerPinAvailable() {

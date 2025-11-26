@@ -253,6 +253,18 @@ TEST_F(PasswordManagerUIHandlerUnitTest, ShowAddShortcutDialog_CallsDelegate) {
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
+       ChangePasswordManagerPin_CallsDelegate) {
+  base::test::TestFuture<bool> future;
+  EXPECT_FALSE(test_delegate().get_change_password_manager_pin_called());
+
+  handler().ChangePasswordManagerPin(future.GetCallback());
+
+  // The TestPasswordsPrivateDelegate implementation hardcodes false for success
+  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(test_delegate().get_change_password_manager_pin_called());
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
        IsAccountStorageEnabled_ReturnsCorrectValue) {
   // Set the delegate to return true.
   test_delegate().SetAccountStorageEnabled(true);

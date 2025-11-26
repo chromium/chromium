@@ -76,6 +76,12 @@ void PasswordManagerUIHandler::RevokeActorLoginPermission(
           site->url->signon_realm, base::UTF8ToUTF16(site->username)});
 }
 
+void PasswordManagerUIHandler::ChangePasswordManagerPin(
+    ChangePasswordManagerPinCallback callback) {
+  passwords_private_delegate_->ChangePasswordManagerPin(web_contents_,
+                                                        std::move(callback));
+}
+
 void PasswordManagerUIHandler::ShowAddShortcutDialog() {
   passwords_private_delegate_->ShowAddShortcutDialog(web_contents_);
 }
