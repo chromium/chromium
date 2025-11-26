@@ -1638,6 +1638,32 @@ TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredFontFeatureValues) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredKeyframes) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @layer foo, bar;
+    </style>
+    <style id=style></style>
+    <style>
+      @layer bar {
+        @keyframes anim {}
+      }
+      @layer foo {
+        @keyframes anim {}
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+  // This should have no side effects:
+  CreateUnconnectedRuleSets(scoped_resolver->GetActiveStyleSheets());
+  // Add a layer that causes a rebuild of the CascadeLayer map:
+  SetInnerText("#style", "@layer { div {} }");
+  // Don't crash:
+  UpdateAllLifecyclePhasesForTest();
+}
+
 TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

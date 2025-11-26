@@ -66,7 +66,7 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 }
 
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
+  const HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (const auto& rule : keyframes_rules) {
     AddKeyframeStyle(rule);
@@ -196,11 +196,13 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     return nullptr;
   }
 
-  return it->value.Get();
+  const CascadeLayered<StyleRuleKeyframes>& layered_keyframes = it->value;
+  return layered_keyframes.value.Get();
 }
 
-void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
-  AtomicString name = rule->GetName();
+void ScopedStyleResolver::AddKeyframeStyle(
+    const CascadeLayered<StyleRuleKeyframes>& rule) {
+  AtomicString name = rule.value->GetName();
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(name);
   if (it == keyframes_rule_map_.end() ||
@@ -210,14 +212,14 @@ void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
 }
 
 bool ScopedStyleResolver::KeyframeStyleShouldOverride(
-    const StyleRuleKeyframes* new_rule,
-    const StyleRuleKeyframes* existing_rule) const {
-  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed()) {
-    return existing_rule->IsVendorPrefixed();
+    const CascadeLayered<StyleRuleKeyframes>& new_rule,
+    const CascadeLayered<StyleRuleKeyframes>& existing_rule) const {
+  if (new_rule.value->IsVendorPrefixed() !=
+      existing_rule.value->IsVendorPrefixed()) {
+    return existing_rule.value->IsVendorPrefixed();
   }
-  return !cascade_layer_map_ || cascade_layer_map_->CompareLayerOrder(
-                                    existing_rule->GetCascadeLayer(),
-                                    new_rule->GetCascadeLayer()) <= 0;
+  return CascadeLayerMap::CompareLayerOrder(cascade_layer_map_, existing_rule,
+                                            new_rule) <= 0;
 }
 
 Element& ScopedStyleResolver::InvalidationRootForTreeScope(

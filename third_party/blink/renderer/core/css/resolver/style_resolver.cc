@@ -2672,10 +2672,12 @@ StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
   StyleRuleKeyframes* matched_keyframes_rule = nullptr;
   auto func = [&matched_keyframes_rule, &animation_name](
                   RuleSet* rules, unsigned rule_set_index) {
-    auto keyframes_rules = rules->KeyframesRules();
-    for (auto& keyframes_rule : keyframes_rules) {
-      if (keyframes_rule->GetName() == animation_name) {
-        matched_keyframes_rule = keyframes_rule;
+    const HeapVector<CascadeLayered<StyleRuleKeyframes>>& keyframes_rules =
+        rules->KeyframesRules();
+    for (const CascadeLayered<StyleRuleKeyframes>& keyframes_rule :
+         keyframes_rules) {
+      if (keyframes_rule.value->GetName() == animation_name) {
+        matched_keyframes_rule = keyframes_rule.value;
       }
     }
   };

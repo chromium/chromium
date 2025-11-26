@@ -911,9 +911,10 @@ void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule,
   font_face_rules_.push_back(CascadeLayered<StyleRuleFontFace>(rule, layer));
 }
 
-void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule) {
+void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule,
+                               const CascadeLayer* layer) {
   need_compaction_ = true;
-  keyframes_rules_.push_back(rule);
+  keyframes_rules_.push_back(CascadeLayered<StyleRuleKeyframes>(rule, layer));
 }
 
 void RuleSet::AddPropertyRule(StyleRuleProperty* rule) {
@@ -993,8 +994,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    DynamicTo<StyleRuleFontFeatureValues>(rule)) {
       AddFontFeatureValuesRule(font_feature_values_rule, cascade_layer);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
-      keyframes_rule->SetCascadeLayer(cascade_layer);
-      AddKeyframesRule(keyframes_rule);
+      AddKeyframesRule(keyframes_rule, cascade_layer);
     } else if (auto* property_rule = DynamicTo<StyleRuleProperty>(rule)) {
       property_rule->SetCascadeLayer(cascade_layer);
       AddPropertyRule(property_rule);
