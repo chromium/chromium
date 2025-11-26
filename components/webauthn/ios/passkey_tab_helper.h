@@ -51,6 +51,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
    public:
     RequestParams();
     RequestParams(const std::string& frame_id,
+                  const std::string& request_id,
                   device::PublicKeyCredentialRpEntity rp_entity,
                   std::vector<uint8_t> challenge,
                   device::UserVerificationRequirement user_verification);
@@ -58,6 +59,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
     ~RequestParams();
 
     const std::string frame_id_;
+    const std::string request_id_;
     const device::PublicKeyCredentialRpEntity rp_entity_;
     const std::vector<uint8_t> challenge_;
     const device::UserVerificationRequirement user_verification_;
@@ -176,6 +178,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
   void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
+
+  // Utility function to defer the passkey request back to the renderer.
+  void DeferToRenderer(web::WebFrame* web_frame,
+                       const RequestParams& request_params) const;
 
   // Returns a web frame from a web frame id. May return null.
   web::WebFrame* GetWebFrame(const RequestParams& request_params) const;

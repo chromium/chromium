@@ -56,6 +56,9 @@ constexpr char kRpId[] = "rpId";
 // Parameter for the "logCreateResolved" event.
 constexpr char kIsGpm[] = "isGpm";
 
+// Request ID associated with deferred promises.
+constexpr char kRequestId[] = "requestId";
+
 // Frame ID for handle* events.
 constexpr char kFrameId[] = "frameId";
 
@@ -265,9 +268,13 @@ PasskeyTabHelper::RequestParams ExtractRequestParams(
   }
 
   const std::string* frame_id = dict->FindString(kFrameId);
+  const std::string* request_id = dict->FindString(kRequestId);
+  if (!frame_id || !request_id) {
+    return PasskeyTabHelper::RequestParams();
+  }
 
   return PasskeyTabHelper::RequestParams(
-      frame_id ? *frame_id : "", ExtractRpEntity(dict->FindDict(kRpEntity)),
+      *frame_id, *request_id, ExtractRpEntity(dict->FindDict(kRpEntity)),
       Base64Decode(dict->FindString(kChallenge)),
       ExtractUserVerification(dict->FindString(kUserVerification)));
 }
@@ -344,17 +351,21 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
-void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
-  CallJavaScriptFunction(web_frame, "passkey.deferToRenderer", {});
+void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame,
+                                               std::string_view request_id) {
+  CallJavaScriptFunction(web_frame, "passkey.deferToRenderer",
+                         base::Value::List().Append(request_id));
 }
 
 void PasskeyJavaScriptFeature::ResolveAttestationRequest(
     web::WebFrame* web_frame,
-    const std::string& credential_id,
+    std::string_view request_id,
+    std::string_view credential_id,
     AttestationData attestation_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAttestationRequest",
       base::Value::List()
+          .Append(request_id)
           .Append(base::Base64Encode(credential_id))
           .Append(base::Base64Encode(attestation_data.attestation_object))
           .Append(base::Base64Encode(attestation_data.authenticator_data))
@@ -364,11 +375,13 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
 
 void PasskeyJavaScriptFeature::ResolveAssertionRequest(
     web::WebFrame* web_frame,
-    const std::string& credential_id,
+    std::string_view request_id,
+    std::string_view credential_id,
     AssertionData assertion_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAssertionRequest",
       base::Value::List()
+          .Append(request_id)
           .Append(base::Base64Encode(credential_id))
           .Append(base::Base64Encode(assertion_data.authenticator_data))
           .Append(assertion_data.client_data_json)

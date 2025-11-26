@@ -39,6 +39,7 @@ namespace {
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kCredentialId2[] = "credential_id_2";
 constexpr char kRpId[] = "example.com";
+constexpr char kFakeRequestId[] = "1effd8f52a067c8d3a01762d3c41dfd9";
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
@@ -64,10 +65,11 @@ sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
 // Builds RequestParams using the default rp id.
 PasskeyTabHelper::RequestParams BuildRequestParams() {
   std::string frame_id = web::kMainFakeFrameId;
+  std::string request_id = kFakeRequestId;
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
   return PasskeyTabHelper::RequestParams(
-      frame_id, std::move(rp_entity), std::move(challenge),
+      frame_id, request_id, std::move(rp_entity), std::move(challenge),
       device::UserVerificationRequirement::kPreferred);
 }
 
