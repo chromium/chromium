@@ -58,6 +58,9 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
 
   void SetAccountStorageEnabled(bool enabled) override;
 
+  void ShouldShowAccountStorageSettingToggle(
+      ShouldShowAccountStorageSettingToggleCallback callback) override;
+
  private:
   password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
 

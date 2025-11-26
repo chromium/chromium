@@ -406,6 +406,11 @@ void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(bool enabled) {
   is_account_storage_enabled_ = enabled;
 }
 
+void TestPasswordsPrivateDelegate::SetShouldShowAccountStorageSettingToggle(
+    bool enabled) {
+  should_show_account_storage_setting_toggle_ = enabled;
+}
+
 void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {
   api::passwords_private::PasswordUiEntry cred;
   cred.id = id;

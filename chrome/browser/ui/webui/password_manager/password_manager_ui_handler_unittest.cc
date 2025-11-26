@@ -281,4 +281,21 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_TRUE(test_delegate().IsAccountStorageEnabled());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       ShouldShowAccountStorageSettingToggle_CallsDelegate) {
+  // Set the delegate to return true.
+  test_delegate().SetShouldShowAccountStorageSettingToggle(true);
+
+  base::test::TestFuture<bool> future_true;
+  handler().ShouldShowAccountStorageSettingToggle(future_true.GetCallback());
+  EXPECT_TRUE(future_true.Get());
+
+  // Set the delegate to return false.
+  test_delegate().SetShouldShowAccountStorageSettingToggle(false);
+
+  base::test::TestFuture<bool> future_false;
+  handler().ShouldShowAccountStorageSettingToggle(future_false.GetCallback());
+  EXPECT_FALSE(future_false.Get());
+}
+
 }  // namespace password_manager

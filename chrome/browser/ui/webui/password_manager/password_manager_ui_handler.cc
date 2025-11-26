@@ -94,3 +94,9 @@ void PasswordManagerUIHandler::IsAccountStorageEnabled(
 void PasswordManagerUIHandler::SetAccountStorageEnabled(bool enabled) {
   passwords_private_delegate_->SetAccountStorageEnabled(enabled, web_contents_);
 }
+
+void PasswordManagerUIHandler::ShouldShowAccountStorageSettingToggle(
+    ShouldShowAccountStorageSettingToggleCallback callback) {
+  std::move(callback).Run(
+      passwords_private_delegate_->ShouldShowAccountStorageSettingToggle());
+}

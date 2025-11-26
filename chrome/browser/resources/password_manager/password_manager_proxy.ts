@@ -712,7 +712,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   shouldShowAccountStorageSettingToggle() {
-    return chrome.passwordsPrivate.shouldShowAccountStorageSettingToggle();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      return chrome.passwordsPrivate.shouldShowAccountStorageSettingToggle();
+    }
+    return this.handler.shouldShowAccountStorageSettingToggle().then(
+        result => result.shouldShow);
   }
 
   movePasswordsToAccount(ids: number[]) {
