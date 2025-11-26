@@ -16,7 +16,6 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       --composebox-height: ${this.composeboxHeight_}px;
       --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
       >
-    <!-- TODO(crbug.com/454388827): isCollapsible should be false. -->
     <cr-composebox
       id="composebox"
       ?autofocus="${false}"
