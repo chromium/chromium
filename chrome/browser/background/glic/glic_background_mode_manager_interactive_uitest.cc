@@ -277,14 +277,10 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
                                      1);
 }
 
-// TODO(crbug.com/460829115): Evaluate whether this is relevant on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeleteEligibleProfile DISABLED_DeleteEligibleProfile
-#else
-#define MAYBE_DeleteEligibleProfile DeleteEligibleProfile
-#endif
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
-                       MAYBE_DeleteEligibleProfile) {
+// In ChromeOS, we do not expect removing a user Profile during the user
+// session.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   GlicBackgroundModeManager* const background_mode_manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
@@ -319,4 +315,6 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace glic
