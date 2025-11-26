@@ -165,8 +165,7 @@ void PasswordSelectionScreen::ProcessOptions() {
       if (!auth_factors_config_.HasConfiguredFactor(
               cryptohome::AuthFactorType::kPassword)) {
         // User may have a PIN-only setup. Reset their PIN.
-        if (features::IsAllowPasswordlessRecoveryEnabled() &&
-            auth_factors_config_.HasConfiguredFactor(
+        if (auth_factors_config_.HasConfiguredFactor(
                 cryptohome::AuthFactorType::kPin)) {
           exit_callback_.Run(Result::PIN_RESET);
           return;

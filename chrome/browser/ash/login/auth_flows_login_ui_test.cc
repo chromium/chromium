@@ -159,19 +159,10 @@ class AuthFlowsLoginReauthWithPinTest : public AuthFlowsLoginReauthTest {
 };
 
 // ----------------------------------------------------------
-// Parameterized on a boolean that represents whether the recovery flow password
-// reset order changes are enabled or not.
-class AuthFlowsLoginRecoverUserTest
-    : public AuthFlowsLoginTestBase,
-      public ::testing::WithParamInterface<bool> {
+class AuthFlowsLoginRecoverUserTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginRecoverUserTest()
-      : AuthFlowsLoginTestBase(/* require_reauth */ false) {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kAllowPasswordlessRecovery);
-    }
-  }
+      : AuthFlowsLoginTestBase(/* require_reauth */ false) {}
 
   ~AuthFlowsLoginRecoverUserTest() override = default;
 
@@ -201,9 +192,6 @@ class AuthFlowsLoginRecoverUserTest
     gaia->TypePassword(password);
     gaia->ContinueLogin();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // ----------------------------------------------------------
@@ -466,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, AuthenticateWithRecovery) {
 
 // ----------------------------------------------------------
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        LocalPasswordWithRecovery) {
   const auto& user = with_local_pw_recovery_;
 
@@ -484,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   test::RecoveryPasswordUpdatedProceedAction();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        LocalPasswordWithoutRecoveryCancelLAD) {
   const auto& user = with_local_pw_;
   // Start recovery flow without recovery auth factor.
@@ -494,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   test::LocalDataLossWarningPageWaiter()->Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        GaiaPasswordWithRecovery) {
   const auto& user = with_gaia_pw_recovery_;
 
@@ -509,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        GaiaPasswordWithoutRecovery) {
   const auto& user = with_gaia_pw_;
 
@@ -528,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        GaiaPasswordWithoutRecoveryInvalidPassword) {
   const auto& user = with_gaia_pw_;
 
@@ -544,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   pw_changed->InvalidPasswordFeedback()->Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
                        GaiaPasswordWithoutRecoveryForgotPasswordClick) {
   const auto& user = with_gaia_pw_;
 
@@ -559,18 +547,15 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTest,
   test::LocalDataLossWarningPageWaiter()->Wait();
 }
 
+// Parameterized on a boolean that represents whether the recovery flow password
+// reset order changes (kRecoveryFlowReorder) are enabled or not.
 class AuthFlowsLoginRecoverUserTestPasswordlessRecovery
-    : public AuthFlowsLoginRecoverUserTest {
+    : public AuthFlowsLoginRecoverUserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   AuthFlowsLoginRecoverUserTestPasswordlessRecovery() {
-    // Get Param comes from the parameterized parent class.
     if (GetParam()) {
-      feature_list_.InitWithFeatures({ash::features::kAllowPasswordlessRecovery,
-                                      ash::features::kRecoveryFlowReorder},
-                                     {});
-    } else {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kAllowPasswordlessRecovery);
+      feature_list_.InitAndEnableFeature(ash::features::kRecoveryFlowReorder);
     }
   }
 
@@ -626,9 +611,6 @@ IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
 
 INSTANTIATE_TEST_SUITE_P(AuthFlowsLoginRecoverUserTestPasswordlessRecoveryTests,
                          AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
-                         ::testing::ValuesIn({true, false}));
-INSTANTIATE_TEST_SUITE_P(AuthFlowsLoginRecoverUserTests,
-                         AuthFlowsLoginRecoverUserTest,
                          ::testing::ValuesIn({true, false}));
 
 }  // namespace ash

@@ -2506,7 +2506,6 @@ void WizardController::OnPasswordSelectionScreenExit(
       CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
                WizardContext::AuthChangeFlow::kRecovery)
           << "PasswordSelection exited with PIN_RESET result outside recovery.";
-      CHECK(features::IsAllowPasswordlessRecoveryEnabled());
       ShowPinSetupScreenForRecovery();
       return;
     }
@@ -2715,7 +2714,6 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
       case PinSetupScreen::Result::kDoneRecoveryReset:
         CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
                  WizardContext::AuthChangeFlow::kRecovery);
-        CHECK(features::IsAllowPasswordlessRecoveryEnabled());
 
         if (features::IsRecoveryFlowReorderEnabled()) {
           ObtainContextAndFinalizeAuth();
