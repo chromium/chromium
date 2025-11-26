@@ -18,7 +18,6 @@ from collections import OrderedDict
 from functools import cmp_to_key
 from functools import partial
 import ast
-import codecs
 import json
 import os
 import re
@@ -357,7 +356,7 @@ def main():
 
   def GenerateFile(path, writer, sorted=False, xml=False):
     if path:
-      with codecs.open(path, 'w', encoding='utf-8') as f:
+      with open(path, 'w', encoding='utf-8') as f:
         _OutputGeneratedWarningHeader(f, template_file_name, xml)
         writer(sorted and sorted_policy_details or policy_details,
                sorted and sorted_policy_atomic_groups or policy_atomic_groups,
@@ -421,7 +420,7 @@ def _OutputComment(f, comment):
 
 
 def _LoadJSONFile(json_file):
-  with codecs.open(json_file, 'r', encoding='utf-8') as f:
+  with open(json_file, 'r', encoding='utf-8') as f:
     return json.load(f)
 
 

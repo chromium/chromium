@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import codecs
 import unittest
 from unittest.mock import patch, mock_open, call
 from typing import NamedTuple
@@ -340,8 +339,8 @@ class PolicyGenerationTest(unittest.TestCase):
   def testWriteCloudPolicyProtobuf(self):
     output_path = 'mock_cloud_policy_proto'
 
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteCloudPolicyProtobuf(
             self.policies,
             self.policy_atomic_groups,
@@ -358,8 +357,8 @@ class PolicyGenerationTest(unittest.TestCase):
   def testWriteCloudPolicyProtobufNoChunking(self):
     output_path = 'mock_cloud_policy_proto'
 
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteCloudPolicyProtobuf(
             self.policies,
             self.policy_atomic_groups,
@@ -376,8 +375,8 @@ class PolicyGenerationTest(unittest.TestCase):
   def testWriteChromeSettingsProtobuf(self):
     output_path = 'mock_chrome_settings_proto'
 
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteChromeSettingsProtobuf(
             self.policies,
             self.policy_atomic_groups,
@@ -394,8 +393,8 @@ class PolicyGenerationTest(unittest.TestCase):
   def testWriteChromeSettingsProtobufNoChunking(self):
     output_path = 'mock_chrome_settings_proto'
 
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteChromeSettingsProtobuf(
             self.policies,
             self.policy_atomic_groups,
@@ -413,8 +412,8 @@ class PolicyGenerationTest(unittest.TestCase):
   def testWritePolicyProto(self):
     output_path = 'mock_write_policy_proto'
 
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WritePolicyProto(f, self.policies[0])
 
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
@@ -452,8 +451,8 @@ class PolicyGenerationTest(unittest.TestCase):
     output_path = 'mock_policy_constants_h'
 
     for target_platform in self.all_target_platforms:
-      with patch('codecs.open', mock_open()) as mocked_file:
-        with codecs.open(output_path, 'w', encoding='utf-8') as f:
+      with patch('builtins.open', mock_open()) as mocked_file:
+        with open(output_path, 'w', encoding='utf-8') as f:
           generate_policy_source._WritePolicyConstantHeader(
               self.policies,
               self.policy_atomic_groups,
@@ -481,8 +480,8 @@ class PolicyGenerationTest(unittest.TestCase):
     output_path = 'mock_policy_constants_cc'
 
     for target_platform in self.all_target_platforms:
-      with patch('codecs.open', mock_open()) as mocked_file:
-        with codecs.open(output_path, 'w', encoding='utf-8') as f:
+      with patch('builtins.open', mock_open()) as mocked_file:
+        with open(output_path, 'w', encoding='utf-8') as f:
           generate_policy_source._WritePolicyConstantSource(
               self.policies,
               self.policy_atomic_groups,
@@ -518,8 +517,8 @@ class PolicyGenerationTest(unittest.TestCase):
     ]
 
     output_path = 'app_restrictions_xml'
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with patch('builtins.open', mock_open()) as mocked_file:
+      with open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteAppRestrictions(
             android_policies,
             self.policy_atomic_groups,
