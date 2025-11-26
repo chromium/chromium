@@ -11,7 +11,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {Tab, Thread} from './contextual_tasks.mojom-webui.js';
+import type {Thread} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -70,12 +70,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.threadUrl_ = url.toString();
   }
 
-  protected onCloseButtonClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.CloseSidePanel');
-    this.browserProxy_.handler.closeSidePanel();
-  }
-
   protected async onNewThreadClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenNewThread');
@@ -89,31 +83,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     const {threads} = await this.browserProxy_.handler.showThreadHistory();
     this.historyThreads_ = threads;
     // TODO(crbug.com/445469925): Display the threads in a drawer.
-  }
-
-  protected onOpenInNewTabClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenInNewTab');
-    this.browserProxy_.handler.moveTaskUiToToNewTab();
-  }
-
-  protected onMyActivityClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenMyActivity');
-    this.browserProxy_.handler.openMyActivityUi();
-  }
-
-  protected onHelpClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenHelp');
-    this.browserProxy_.handler.openHelpUi();
-  }
-
-  protected onTabClick_(e: CustomEvent<Tab>) {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
-    this.browserProxy_.handler.onTabClickedFromSourcesMenu(
-        e.detail.tabId, e.detail.url);
   }
 
   override async connectedCallback() {
