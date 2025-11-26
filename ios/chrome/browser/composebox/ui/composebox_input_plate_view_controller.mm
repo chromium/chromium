@@ -722,7 +722,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 /// Returns the microphone button.
 - (UIButton*)createMicrophoneButton {
   UIButton* micButton = [self
-      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
+      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
                                                        kSymbolActionPointSize)];
   [micButton addTarget:self
                 action:@selector(micButtonTapped)
