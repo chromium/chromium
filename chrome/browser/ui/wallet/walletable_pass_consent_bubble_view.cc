@@ -44,7 +44,8 @@ WalletablePassConsentBubbleView::WalletablePassConsentBubbleView(
     content::WebContents* web_contents,
     WalletablePassConsentBubbleController* controller)
     : WalletablePassBubbleViewBase(anchor_view, web_contents, controller),
-      pass_category_(controller->pass_category()) {
+      pass_category_(controller->pass_category()),
+      controller_(controller->GetWeakPtr()) {
   set_fixed_width(kBubbleWidth);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -99,9 +100,10 @@ WalletablePassConsentBubbleView::GetSubtitleActionLabel() {
       {learn_more_text}, &offsets);
 
   gfx::Range learn_more_range(offsets[0], offsets[0] + learn_more_text.size());
-  auto learn_more = views::StyledLabel::RangeStyleInfo::CreateForLink(
-      base::BindRepeating(&WalletablePassConsentBubbleView::OnLearnMoreClicked,
-                          base::Unretained(this)));
+  auto learn_more =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &WalletablePassConsentBubbleController::OnLearnMoreClicked,
+          controller_));
 
   return views::Builder<views::StyledLabel>()
       .SetText(std::move(formatted_text))
@@ -143,10 +145,6 @@ int WalletablePassConsentBubbleView::GetHeaderImageResourceId() const {
       NOTREACHED() << "Not supported walletable pass category: "
                    << pass_category_;
   }
-}
-
-void WalletablePassConsentBubbleView::OnLearnMoreClicked() {
-  // TODO(crbug.com/445826875): Implement the learn more link action.
 }
 
 BEGIN_METADATA(WalletablePassConsentBubbleView)

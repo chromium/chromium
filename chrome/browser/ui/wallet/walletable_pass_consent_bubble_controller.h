@@ -42,6 +42,10 @@ class WalletablePassConsentBubbleController
 
   optimization_guide::proto::PassCategory pass_category() const;
 
+  base::WeakPtr<WalletablePassConsentBubbleController> GetWeakPtr();
+
+  void OnLearnMoreClicked();
+
  protected:
   void ShowBubble() override;
 
