@@ -298,7 +298,7 @@ class TouchToFillPaymentMethodMediator {
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED =
-            ".IssuerSelectionScreen.AffirmUninkedSelected";
+            ".IssuerSelectionScreen.AffirmUnlinkedSelected";
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED =
@@ -306,7 +306,7 @@ class TouchToFillPaymentMethodMediator {
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_KLARNA_UNLINKED_SELECTED =
-            ".IssuerSelectionScreen.KlarnaUninkedSelected";
+            ".IssuerSelectionScreen.KlarnaUnlinkedSelected";
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED =
@@ -314,7 +314,7 @@ class TouchToFillPaymentMethodMediator {
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED =
-            ".IssuerSelectionScreen.ZipUninkedSelected";
+            ".IssuerSelectionScreen.ZipUnlinkedSelected";
 
     @VisibleForTesting
     static final String ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED =
