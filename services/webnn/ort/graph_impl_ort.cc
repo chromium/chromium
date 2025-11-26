@@ -51,11 +51,10 @@ class GraphImplOrt::ComputeResources {
 
   ~ComputeResources() = default;
 
-  ScopedOrtStatus OrtRunSync(
-      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-          named_input_tensors,
-      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-          named_output_tensors) {
+  void OrtRunSync(base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                      named_input_tensors,
+                  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                      named_output_tensors) {
     SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.Inference");
 
     ScopedTrace scoped_trace("GraphImplOrt::ComputeResources::OrtRunSync");
@@ -82,10 +81,11 @@ class GraphImplOrt::ComputeResources {
     }
 
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-    return CALL_ORT_FUNC(ort_api->Run(
-        session_.get(), nullptr, input_names.data(), input_tensors.data(),
-        input_names.size(), output_names.data(), output_names.size(),
-        output_tensors.data()));
+    // TODO(crbug.com/433543131): Handle the inference error of MLGraph.
+    CALL_ORT_FUNC(ort_api->Run(session_.get(), nullptr, input_names.data(),
+                               input_tensors.data(), input_names.size(),
+                               output_names.data(), output_names.size(),
+                               output_tensors.data()));
   }
 
  private:
@@ -210,16 +210,10 @@ void GraphImplOrt::DispatchImpl(
         named_input_tensors,
     base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
         named_output_tensors) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   // Ort runs the graph on its own thread, so this call blocks until execution
   // completes.
-  ScopedOrtStatus status = compute_resources_->OrtRunSync(
-      std::move(named_input_tensors), std::move(named_output_tensors));
-  if (status.is_valid()) {
-    static_cast<ContextImplOrt*>(context_.get())
-        ->HandleContextLostOrCrash("Failed to run session.",
-                                   ort_api->GetErrorCode(status.get()));
-  }
+  compute_resources_->OrtRunSync(std::move(named_input_tensors),
+                                 std::move(named_output_tensors));
 }
 
 }  // namespace webnn::ort

@@ -71,16 +71,6 @@ WebNNContextImpl::WebNNContextImpl(
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
   CHECK_EQ(status, xnn_status_success);
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-
-  on_lost_callback_ = base::BindOnce(
-      [](base::WeakPtr<WebNNContextImpl> self, const std::string& reason) {
-        if (self) {
-          self->GetMojoReceiver().ResetWithReason(
-              /*custom_reason_code=*/0, reason);
-          self->OnDisconnect();
-        }
-      },
-      weak_factory_.GetWeakPtr());
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
@@ -379,10 +369,17 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  if (on_lost_callback_) {
-    owning_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(on_lost_callback_), reason));
-  }
+  // Safe to use base::Unretained because `this` is sequence-bound to
+  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
+  // pending tasks - including this one - before the object is destroyed.
+  scheduler_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](WebNNContextImpl* self, const std::string& reason) {
+                       self->GetMojoReceiver().ResetWithReason(
+                           /*custom_reason=*/0, reason);
+                       self->OnDisconnect();
+                     },
+                     base::Unretained(this), reason));
 }
 
 scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
