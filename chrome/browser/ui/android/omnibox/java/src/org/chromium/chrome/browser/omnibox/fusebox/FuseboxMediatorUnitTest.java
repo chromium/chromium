@@ -515,20 +515,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onToggleAttachmentsPopup_createImagesEligible_showsCreateImageButton() {
-        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
-        recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void onToggleAttachmentsPopup_createImagesNotEligible_hidesCreateImageButton() {
-        doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
-        recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
-    }
-
-    @Test
     public void onImagePickerClicked_setsMimeType() {
         mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());

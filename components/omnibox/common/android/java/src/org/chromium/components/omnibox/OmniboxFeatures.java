@@ -143,6 +143,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowTryAiModeHintInDedicatedModeButton =
             newBooleanParam(sOmniboxMultimodalInput, "show_try_aimode_hint_in_mode_button", false);
 
+    public static final BooleanCachedFeatureParam sShowImageGenerationButtonInIncognito =
+            newBooleanParam(sOmniboxMultimodalInput, "show_image_gen_button_in_incognito", true);
+
     public static final BooleanCachedFeatureParam sCompactFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
 

@@ -83,7 +83,7 @@ class FuseboxViewBinder {
             view.popup.mCreateImageButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
-            // TODO(https://crbug.com/457465693): Set create image tool visibility.
+            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED) {
             view.popup.mCreateImageButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run());

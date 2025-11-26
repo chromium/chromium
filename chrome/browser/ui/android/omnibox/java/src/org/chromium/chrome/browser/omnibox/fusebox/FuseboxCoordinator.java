@@ -142,6 +142,11 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         // Set the bridge for the model list to enable tight coupling
         mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
 
+        mModel.set(
+                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+                mComposeBoxQueryControllerBridge.isCreateImagesEligible()
+                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
+                                || !profile.isIncognitoBranded()));
         mMediator =
                 new FuseboxMediator(
                         mContext,

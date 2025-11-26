@@ -126,9 +126,6 @@ public class FuseboxMediator {
         mModel.set(
                 FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
                 mComposeBoxQueryControllerBridge.isPdfUploadEligible());
-        mModel.set(
-                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-                mComposeBoxQueryControllerBridge.isCreateImagesEligible());
 
         mModelList.addObserver(
                 new ListObservable.ListObserver<>() {
