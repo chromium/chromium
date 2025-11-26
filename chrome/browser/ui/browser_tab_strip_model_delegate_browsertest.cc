@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -374,6 +375,23 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
             group_id);
   ASSERT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(1).value(),
             group_id);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
+                       NewSplitTabFromIncognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+
+  std::unique_ptr<TabStripModelDelegate> delegate =
+      std::make_unique<BrowserTabStripModelDelegate>(incognito_browser);
+
+  GURL url1("chrome://about");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url1));
+
+  delegate->NewSplitTab({}, split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  ASSERT_EQ(incognito_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(incognito_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            chrome::kChromeUINewTabURL);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
