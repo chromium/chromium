@@ -11,6 +11,7 @@ chrome_stdlib_sql_files = [
   "graphics_pipeline.sql",
   "histograms.sql",
   "interactions.sql",
+  "loadline_2.sql",
   "metadata.sql",
   "input.sql",
   "page_loads.sql",
