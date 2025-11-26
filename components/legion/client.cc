@@ -86,9 +86,7 @@ std::unique_ptr<Client> Client::Create(
 std::unique_ptr<Client> Client::CreateWithUrl(
     const GURL& url,
     network::mojom::NetworkContext* network_context) {
-  if (!base::FeatureList::IsEnabled(kLegion)) {
-    return nullptr;
-  }
+  CHECK(base::FeatureList::IsEnabled(kLegion));
 
   auto factory = base::BindRepeating(
       [](const GURL& url, network::mojom::NetworkContext* context)

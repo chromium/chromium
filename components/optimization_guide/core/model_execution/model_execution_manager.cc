@@ -115,6 +115,7 @@ using ModelExecutionError =
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
+    std::unique_ptr<Delegate> delegate,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service)
@@ -124,6 +125,7 @@ ModelExecutionManager::ModelExecutionManager(
           switches::GetModelExecutionServiceURL(),
           "key",
           features::GetOptimizationGuideServiceAPIKey())),
+      delegate_(std::move(delegate)),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
 
@@ -149,6 +151,7 @@ void ModelExecutionManager::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     std::optional<base::TimeDelta> timeout,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
+    ModelExecutionServiceType service_type,
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -206,8 +209,13 @@ void ModelExecutionManager::ExecuteModel(
     fetchers_for_feature.erase(fetchers_for_feature.begin());
   }
   FetcherId fetcher_id = next_model_execution_fetcher_id++;
+  // Currently only ZSS is supported by legion. Update or remove this CHECK when
+  // other features are supported too.
+  CHECK(service_type != ModelExecutionServiceType::kLegion ||
+        feature == ModelBasedCapabilityKey::kZeroStateSuggestions)
+      << feature;
   auto fetcher_it = fetchers_for_feature.emplace(
-      fetcher_id, CreateModelExecutionFetcher(feature));
+      fetcher_id, CreateModelExecutionFetcher(service_type));
   fetcher_it.first->second->ExecuteModel(
       feature, identity_manager_, request_metadata, timeout,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
@@ -217,12 +225,16 @@ void ModelExecutionManager::ExecuteModel(
 
 std::unique_ptr<ModelExecutionFetcher>
 ModelExecutionManager::CreateModelExecutionFetcher(
-    ModelBasedCapabilityKey feature) {
-  // TODO(crbug.com/460052805): Add PI fetcher implementation depending on
-  // ModelBasedCapabilityKey and feature flags.
-  return std::make_unique<ModelExecutionFetcherImpl>(
-      url_loader_factory_, model_execution_service_url_,
-      optimization_guide_logger_);
+    ModelExecutionServiceType service_type) {
+  switch (service_type) {
+    case ModelExecutionServiceType::kDefault:
+      return std::make_unique<ModelExecutionFetcherImpl>(
+          url_loader_factory_, model_execution_service_url_,
+          optimization_guide_logger_);
+    case ModelExecutionServiceType::kLegion:
+      CHECK(delegate_);
+      return delegate_->CreateLegionFetcher();
+  }
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

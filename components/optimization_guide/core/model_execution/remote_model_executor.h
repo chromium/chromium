@@ -21,6 +21,16 @@
 
 namespace optimization_guide {
 
+// The model execution service.
+enum class ModelExecutionServiceType {
+  // Use the default backend for model executions.
+  kDefault = 0,
+  // Use the Private AI compute backend. Currently only supported for ZSS.
+  // Please reach out to chrome-browser-privacy-team@ if you'd like to use this
+  // backend.
+  kLegion = 1,
+};
+
 // The result type of model execution.
 struct OptimizationGuideModelExecutionResult {
   OptimizationGuideModelExecutionResult();
