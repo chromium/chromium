@@ -79,6 +79,9 @@
 
   // Whether to upload data to MQLS.
   BOOL _enableMQLSUpload;
+
+  // Whether to store page context locally.
+  BOOL _storePageContextLocally;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -137,11 +140,13 @@
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
                       uploadToMQLS:(BOOL)uploadToMQLS
+                  storePageContext:(BOOL)storePageContext
                        temperature:(float)temperature
                              model:
                                  (optimization_guide::proto::
                                       BlingPrototypingRequest_ModelEnum)model {
   _enableMQLSUpload = uploadToMQLS;
+  _storePageContextLocally = storePageContext;
 
   optimization_guide::proto::BlingPrototypingRequest request;
 
@@ -328,6 +333,10 @@
   _pageContextWrapper = nil;
   freeform_request.set_allocated_page_context(page_context.release());
 
+  if (_storePageContextLocally) {
+    [self serializePageContextToStorage:freeform_request.page_context()];
+  }
+
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const std::string&, ::mojo_base::ProtoWrapper)>
       handle_response_callback =
@@ -485,6 +494,70 @@
   *log_entry->log_ai_data_request()->mutable_bling_prototyping() =
       proto_logging_data;
   optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+}
+
+- (void)serializePageContextToStorage:
+    (const optimization_guide::proto::PageContext&)pageContext {
+  // Get the Documents directory path
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                       NSUserDomainMask, YES);
+  NSString* documentsDirectory = [paths objectAtIndex:0];
+
+  NSString* urlString = base::SysUTF8ToNSString(pageContext.url());
+  NSCharacterSet* illegalFileNameCharacters =
+      [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>:"];
+  NSString* fileName = [[[urlString
+      componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
+      componentsJoinedByString:@""] stringByAppendingString:@".txtpb"];
+
+  NSString* filePath =
+      [documentsDirectory stringByAppendingPathComponent:fileName];
+
+  NSLog(@"NICMAC Attempting to save proto to: %@", filePath);
+
+  // Convert NSString path to a C_style string for fopen
+  std::string UTF8FilePath = base::SysNSStringToUTF8(filePath);
+  const char* cFilePath = UTF8FilePath.c_str();
+  if (cFilePath == nullptr) {
+    NSLog(@"NICMAC Error: Could not convert file path to C_style string.");
+    return;
+  }
+
+  // Open the file for writing in binary mode and get the file descriptor
+  FILE* fp = fopen(cFilePath, "wb");
+  if (fp == nullptr) {
+    NSLog(@"NICMAC Error: Could not open file '%s' for writing. Error: %s",
+          cFilePath, strerror(errno));
+    return;
+  }
+
+  // Get the file descriptor from the FILE pointer
+  int fd = fileno(fp);
+  if (fd == -1) {
+    NSLog(@"NICMAC Error: Could not get file descriptor for '%s'. Error: %s",
+          cFilePath, strerror(errno));
+    fclose(fp);
+    return;
+  }
+
+  // Serialize and write the message to the file
+  bool success = pageContext.SerializeToFileDescriptor(fd);
+
+  // Close the file
+  if (fclose(fp) != 0) {
+    NSLog(@"NICMAC Error: Could not close file '%s' properly. Error: %s",
+          cFilePath, strerror(errno));
+  }
+
+  if (!success) {
+    NSLog(@"NICMAC Error: Failed to serialize protobuf message to file: %@",
+          filePath);
+    // Delete the file if serialization failed partway
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+    return;
+  }
+
+  NSLog(@"NICMAC Successfully saved protobuf message.");
 }
 
 @end

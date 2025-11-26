@@ -392,6 +392,9 @@
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_STORE_PAGE_CONTEXT_SWITCH" translateable="false" desc="Switch indicating whether PageContext is stored locally [Length: unlimited].">
+        Store page context locally
+      </message>
       <message name="IDS_IOS_AI_PROTOTYPING_SYSTEM_INSTRUCTIONS_PLACEHOLDER" translateable="false" desc="System instructions placeholder text for AI prototyping menu [Length: unlimited].">
         Insert system instructions... (Optional)
       </message>
