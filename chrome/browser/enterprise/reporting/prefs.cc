@@ -45,8 +45,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kLastSignalsUploadSucceededConfig,
                                std::string());
   registry->RegisterStringPref(kLastUploadVersion, std::string());
-  // TODO(crbug.com/40215470): We reuse the report frequency pref for profile
-  // reporting for now. This might need to be changed in the future.
   registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
                                   kDefaultReportFrequency);
   registry->RegisterBooleanPref(kUserSecuritySignalsReporting, false);
