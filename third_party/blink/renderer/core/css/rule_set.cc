@@ -917,9 +917,10 @@ void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule,
   keyframes_rules_.push_back(CascadeLayered<StyleRuleKeyframes>(rule, layer));
 }
 
-void RuleSet::AddPropertyRule(StyleRuleProperty* rule) {
+void RuleSet::AddPropertyRule(StyleRuleProperty* rule,
+                              const CascadeLayer* layer) {
   need_compaction_ = true;
-  property_rules_.push_back(rule);
+  property_rules_.push_back(CascadeLayered<StyleRuleProperty>(rule, layer));
 }
 
 void RuleSet::AddCounterStyleRule(StyleRuleCounterStyle* rule) {
@@ -996,8 +997,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       AddKeyframesRule(keyframes_rule, cascade_layer);
     } else if (auto* property_rule = DynamicTo<StyleRuleProperty>(rule)) {
-      property_rule->SetCascadeLayer(cascade_layer);
-      AddPropertyRule(property_rule);
+      AddPropertyRule(property_rule, cascade_layer);
     } else if (auto* counter_style_rule =
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
       counter_style_rule->SetCascadeLayer(cascade_layer);

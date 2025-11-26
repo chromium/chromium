@@ -803,7 +803,6 @@ bool StyleRuleProperty::SetNameText(const ExecutionContext* execution_context,
 
 void StyleRuleProperty::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
-  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

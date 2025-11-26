@@ -3480,21 +3480,18 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
 void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
                                    const RuleSet& rule_set,
                                    bool is_user_style) {
-  const HeapVector<Member<StyleRuleProperty>> property_rules =
-      rule_set.PropertyRules();
-  for (unsigned i = 0; i < property_rules.size(); ++i) {
-    StyleRuleProperty* rule = property_rules[i];
-    AtomicString name(rule->GetName());
+  for (const CascadeLayered<StyleRuleProperty>& rule :
+       rule_set.PropertyRules()) {
+    AtomicString name(rule.value->GetName());
 
     PropertyRegistration* registration =
         PropertyRegistration::MaybeCreateForDeclaredProperty(GetDocument(),
-                                                             name, *rule);
+                                                             name, *rule.value);
     if (!registration) {
       continue;
     }
 
-    auto priority =
-        cascade_map.GetPriority(is_user_style, rule->GetCascadeLayer());
+    auto priority = cascade_map.GetPriority(is_user_style, rule.layer);
     if (!cascade_map.AddAndCascade(name, priority)) {
       continue;
     }
