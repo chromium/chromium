@@ -579,8 +579,10 @@ void SidePanel::OnAnimationSequenceProgressed(
 
 void SidePanel::OnAnimationSequenceEnded(
     const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id) {
-  if (animation_coordinator_->GetAnimationValueFor(kSidePanelBoundsAnimation) !=
-      0) {
+  CHECK_EQ(kSidePanelBoundsAnimation, animation_id)
+      << "Observed animation id is not handled";
+
+  if (animation_coordinator_->GetAnimationValueFor(animation_id) != 0) {
     state_ = State::kOpen;
   } else {
     state_ = State::kClosed;
