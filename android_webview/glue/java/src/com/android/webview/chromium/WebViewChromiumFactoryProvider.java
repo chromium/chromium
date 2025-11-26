@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
@@ -49,7 +48,6 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
-import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
@@ -407,7 +405,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mIsAsyncStartupWithMultiProcessExperimentEnabled;
     }
 
-    @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
+    @SuppressWarnings({"NoContextGetApplicationContext"})
     private void initialize(WebViewDelegate webViewDelegate) {
         // Capture startup init time before anything else.
         mInitInfo.mStartTime = SystemClock.uptimeMillis();
@@ -476,30 +474,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 try (DualTraceEvent ignored =
                         DualTraceEvent.scoped(
                                 "WebViewChromiumFactoryProvider.enableContextExperiment")) {
-                    Context override =
-                            ctx.createPackageContext(
-                                    packageInfo.packageName,
-                                    Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-                    // Use standard Android theme for standalone WebView, use custom theme for
-                    // everything else. Check package id of the theme resource to determine.
-                    boolean isStandaloneWebView =
-                            (override.getResources()
-                                                    .getIdentifier(
-                                                            "WebViewBaseTheme",
-                                                            "style",
-                                                            packageInfo.packageName)
-                                            & 0xff000000)
-                                    != 0x7f000000;
                     ClassLoaderContextWrapperFactory.setOverrideInfo(
                             packageInfo.packageName,
-                            isStandaloneWebView || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                                    ? android.R.style.Theme_DeviceDefault_DayNight
-                                    : R.style.WebViewBaseTheme,
+                            android.R.style.Theme_DeviceDefault_DayNight,
                             Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
                     // Use this to report the actual state of the feature at runtime.
                     AwBrowserMainParts.setUseWebViewContext(true);
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, "Could not get resource override context.");
                 }
             }
 
