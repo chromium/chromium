@@ -27,6 +27,7 @@ namespace {
 using enum optimization_guide::proto::WalletablePass::PassCase;
 using optimization_guide::proto::EventPass;
 using optimization_guide::proto::LoyaltyCard;
+using optimization_guide::proto::TransitTicket;
 
 std::unique_ptr<views::BoxLayoutView> GetAttributesContainer() {
   return views::Builder<views::BoxLayoutView>()
@@ -83,6 +84,8 @@ WalletablePassSaveBubbleView::GetAttributesView() {
       return GetLoyaltyCardAttributesView();
     case kEventPass:
       return GetEventPassAttributesView();
+    case kTransitTicket:
+      return GetTransitTicketAttributesView();
     case PASS_NOT_SET:
     default:
       NOTREACHED() << "Not supported walletable pass type: "
@@ -142,6 +145,36 @@ WalletablePassSaveBubbleView::GetEventPassAttributesView() {
   return container;
 }
 
+std::unique_ptr<views::BoxLayoutView>
+WalletablePassSaveBubbleView::GetTransitTicketAttributesView() {
+  std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
+  TransitTicket transit_ticket = controller_->pass().transit_ticket();
+
+  if (transit_ticket.has_agency_name()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_OPERATOR_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(transit_ticket.agency_name())));
+  }
+  if (transit_ticket.has_origin() && transit_ticket.has_destination()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_TRIP_ATTRIBUTE_NAME),
+        l10n_util::GetStringFUTF16(
+            IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_TRIP_VALUE,
+            base::UTF8ToUTF16(transit_ticket.origin()),
+            base::UTF8ToUTF16(transit_ticket.destination()))));
+  }
+
+  if (transit_ticket.has_date_of_travel()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_DATE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(transit_ticket.date_of_travel())));
+  }
+  return container;
+}
+
 void WalletablePassSaveBubbleView::AddedToWidget() {
   // Set header view
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -189,6 +222,8 @@ int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
       return IDS_WALLET_WALLETABLE_PASS_SAVE_LOYALTY_CARD_DIALOG_TITLE;
     case kEventPass:
       return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
+    case kTransitTicket:
+      return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
     case PASS_NOT_SET:
     default:
       NOTREACHED() << "Not supported walletable pass type: "
@@ -202,6 +237,8 @@ int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
       return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
     case kEventPass:
       return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
+    case kTransitTicket:
+      return IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE;
     case PASS_NOT_SET:
     default:
       NOTREACHED() << "Not supported walletable pass type: "

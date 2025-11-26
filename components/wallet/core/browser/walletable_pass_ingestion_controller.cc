@@ -27,6 +27,8 @@ std::string GetWalletablePassCategory(const WalletablePass& walletable_pass) {
       return "LoyaltyCard";
     case WalletablePass::kEventPass:
       return "EventPass";
+    case WalletablePass::kTransitTicket:
+      return "TransitTicket";
     case WalletablePass::PASS_NOT_SET:
     default:
       // Should be handled by the caller before this function is invoked.
