@@ -1000,7 +1000,7 @@ function updateBubbleLockingCheckbox(enabled) {
   updateCheckbox('bubble-locking-checkbox', enabled);
 }
 
-function updateRemoteDebuggingEnabled(enabled, allowed, hide) {
+function updateRemoteDebuggingEnabled(enabled, allowed, hide, address) {
   const remoteDebugging = $('remote-debugging');
   const tab = $('tab-remote-debugging');
   if (hide) {
@@ -1018,6 +1018,16 @@ function updateRemoteDebuggingEnabled(enabled, allowed, hide) {
   const checkbox = $('remote-debugging-enabled');
   checkbox.checked = !!enabled;
   checkbox.disabled = !allowed;
+
+  const addressContainer = $('remote-debugging-address-container');
+  if (enabled) {
+    const addressInput =
+        /** @type {!HTMLElement} */ ($('remote-debugging-address'));
+    addressInput.textContent = address ? address : 'starting…';
+    addressContainer.hidden = false;
+  } else {
+    addressContainer.hidden = true;
+  }
 }
 
 function appendRow(list, lineFactory, key, value) {
