@@ -10,13 +10,15 @@ include_rules = [
   "+chrome/browser/notifications",
   "+chrome/browser/picture_in_picture",
   "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tab_contents",
-  "+chrome/browser/ui/tabs",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/test",
+  ],
+}

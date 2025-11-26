@@ -61,6 +61,7 @@ class BrowserControllerImpl : public BrowserController,
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
  private:

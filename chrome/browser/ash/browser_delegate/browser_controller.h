@@ -36,21 +36,27 @@ class BrowserController {
   // See AddObserver below.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the last browser is irrevocably being closed.
-    // TODO(crbug.com/369689187): Figure out if/how we want to allow inspection
-    // of the browser (the instance still exists but we shouldn't allow
-    // arbitrary operations).
-    virtual void OnLastBrowserClosed() {}
-
-    // Called when a browser is closed.
-    virtual void OnBrowserClosed(BrowserDelegate* browser) {}
-
     // Called when a browser is created.
+    // `browser` is never nullptr.
     // Note: When invoking BrowserController::ForEachBrowser in
     // OnBrowserCreated, the new browser will show up for
     // kAscendingCreationTime but not yet for kAscendingActivationTime.
     // TODO(crbug.com/369688254): Revisit this behavior.
     virtual void OnBrowserCreated(BrowserDelegate* browser) {}
+
+    // Called when a browser is activated.
+    // `browser` is never nullptr.
+    virtual void OnBrowserActivated(BrowserDelegate* browser) {}
+
+    // Called when a browser is closed.
+    // `browser` is never nullptr.
+    virtual void OnBrowserClosed(BrowserDelegate* browser) {}
+
+    // Called when the last browser is irrevocably being closed.
+    // TODO(crbug.com/369689187): Figure out if/how we want to allow inspection
+    // of the browser (the instance still exists but we shouldn't allow
+    // arbitrary operations).
+    virtual void OnLastBrowserClosed() {}
   };
 
   // See CreateWebApp below.

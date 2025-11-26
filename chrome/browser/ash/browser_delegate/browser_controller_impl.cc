@@ -276,6 +276,13 @@ void BrowserControllerImpl::OnBrowserAdded(Browser* browser) {
   }
 }
 
+void BrowserControllerImpl::OnBrowserSetLastActive(Browser* browser) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserActivated(browser_delegate);
+  }
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
   ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
   for (auto& observer : observers_) {

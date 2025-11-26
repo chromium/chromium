@@ -12,6 +12,7 @@
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -169,6 +170,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    browser_controller_.emplace();
 
     alt_browser_ = CreateBrowser(alt_profile(), Browser::TYPE_NORMAL, false);
 
@@ -199,6 +201,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
     alt_browser_.reset();
     alt_window_.reset();
 
+    browser_controller_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -215,12 +218,12 @@ class MediaClientTest : public BrowserWithTestWindowTest {
   TestMediaKeysDelegate* delegate() { return test_delegate_.get(); }
 
  private:
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<TestMediaKeysDelegate> test_delegate_;
   std::unique_ptr<ash::MediaController::ScopedResetterForTest>
       media_controller_resetter_;
   std::unique_ptr<TestMediaController> test_media_controller_;
   std::unique_ptr<MediaClientImpl> media_client_;
-
   std::unique_ptr<Browser> alt_browser_;
   std::unique_ptr<BrowserWindow> alt_window_;
 };
@@ -296,6 +299,7 @@ class MediaClientAppUsingCameraTest : public testing::Test {
   // constructors.
   content::BrowserTaskEnvironment task_environment_;
 
+  ash::BrowserControllerImpl browser_controller_;
   MediaClientImpl media_client_;
   SystemNotificationHelper system_notification_helper_;
   MockNewWindowDelegate new_window_delegate_;
