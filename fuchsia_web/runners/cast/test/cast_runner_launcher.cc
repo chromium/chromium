@@ -81,7 +81,7 @@ class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
     // it will be routed back to the calling process' outgoing directory.
     status = outgoing()->root_dir()->AddEntry(
         kDynamicComponentCapabilitiesName,
-        std::make_unique<vfs::RemoteDir>(std::move(services)));
+        std::make_unique<vfs::RemoteDir>(services.TakeChannel()));
     ZX_CHECK(status == ZX_OK, status) << "AddEntry";
   }
 };
