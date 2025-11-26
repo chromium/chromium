@@ -64,6 +64,7 @@ public class TabItemPickerCoordinator {
     private final OnBackPressedCallback mBackPressCallback;
     private final Callback<Boolean> mBackPressEnabledObserver;
     private final ArrayList<Integer> mPreselectedTabIds;
+    private final int mAllowedSelectionCount;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -75,7 +76,8 @@ public class TabItemPickerCoordinator {
             SnackbarManager snackbarManager,
             ViewGroup rootView,
             ViewGroup containerView,
-            ArrayList<Integer> preselectedTabIds) {
+            ArrayList<Integer> preselectedTabIds,
+            int allowedSelectionCount) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -84,6 +86,7 @@ public class TabItemPickerCoordinator {
         mRootView = rootView;
         mContainerView = containerView;
         mPreselectedTabIds = preselectedTabIds;
+        mAllowedSelectionCount = allowedSelectionCount;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -349,7 +352,8 @@ public class TabItemPickerCoordinator {
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.ITEM_PICKER,
                         /* undoBarExplicitTrigger= */ null,
-                        /* componentName= */ "TabItemPickerCoordinator");
+                        /* componentName= */ "TabItemPickerCoordinator",
+                        mAllowedSelectionCount);
 
         mNavigationProvider =
                 new ItemPickerNavigationProvider(

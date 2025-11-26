@@ -255,7 +255,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ true,
                             /* tabSwitcherDragHandler= */ null,
-                            /* undoBarExplicitTrigger= */ null);
+                            /* undoBarExplicitTrigger= */ null,
+                            mSnackbarManager,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.COLLABORATION_ACTIVITY_MESSAGE,
@@ -367,7 +369,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* edgeToEdgeSupplier= */ null,
                             CreationMode.DIALOG,
                             /* undoBarExplicitTrigger= */ null,
-                            /* componentName= */ null);
+                            /* componentName= */ null,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
         }
 
         return mTabListEditorCoordinator.getController();

@@ -63,10 +63,11 @@ public class FuseboxMediator {
     @VisibleForTesting
     /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-
-    public static final String EXTRA_PRESELECTED_TAB_IDS =
-            "org.chromium.chrome.browser.chrome_item_picker.EXTRA_PRESELECTED_TAB_IDS";
+    public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
+    public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
+    private static final int SELECTION_MAX = 10;
+
     private final Context mContext;
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
@@ -308,15 +309,19 @@ public class FuseboxMediator {
     void onTabPickerClicked() {
         mPopup.dismiss();
         Intent intent;
+        ArrayList<Integer> preselectedIds = getPreselectionTabIds();
         try {
             intent =
                     new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
                             .putIntegerArrayListExtra(
-                                    EXTRA_PRESELECTED_TAB_IDS, getPreselectionTabIds());
+                                    EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
         } catch (ClassNotFoundException e) {
             return;
         }
+
+        int nonTabSelectionCount = mModelList.size() - preselectedIds.size();
+        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, SELECTION_MAX - nonTabSelectionCount);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);

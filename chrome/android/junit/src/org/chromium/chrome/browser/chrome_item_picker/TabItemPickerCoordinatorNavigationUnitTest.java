@@ -68,7 +68,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
                         snackbarManager,
                         rootView,
                         containerView,
-                        new ArrayList<Integer>());
+                        new ArrayList<Integer>(),
+                        TabListEditorCoordinator.UNLIMITED_SELECTION);
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
     }
 

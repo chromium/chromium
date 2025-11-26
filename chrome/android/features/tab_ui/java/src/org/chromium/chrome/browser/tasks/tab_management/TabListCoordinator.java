@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCa
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -226,7 +227,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @Nullable Runnable onTabGroupCreation,
             boolean allowDragAndDrop,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
-            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
+            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
+            @Nullable SnackbarManager snackbarManager,
+            int allowedSelectionCount) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mActivity = activity;
@@ -382,7 +385,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         initialTabActionState,
                         dataSharingTabManager,
                         onTabGroupCreation,
-                        undoBarExplicitTrigger);
+                        undoBarExplicitTrigger,
+                        snackbarManager,
+                        allowedSelectionCount);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some activitys multiple TabListCoordinators are

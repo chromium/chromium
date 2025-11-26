@@ -61,6 +61,10 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
             preselectedIds = new ArrayList<Integer>();
         }
 
+        int allowedSelectionCount =
+                IntentUtils.safeGetIntExtra(
+                        getIntent(), FuseboxMediator.EXTRA_ALLOWED_SELECTION_COUNT, 0);
+
         mItemPickerCoordinator =
                 new TabItemPickerCoordinator(
                         getProfileSupplier(),
@@ -69,7 +73,8 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
                         this.getSnackbarManager(),
                         rootView,
                         containerView,
-                        preselectedIds);
+                        preselectedIds,
+                        allowedSelectionCount);
 
         mItemPickerCoordinator.showTabItemPicker(this::handleModelFailure);
     }
