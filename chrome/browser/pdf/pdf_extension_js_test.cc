@@ -289,6 +289,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachment) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
+#if BUILDFLAG(IS_MAC)
+  if (!UseOopif()) {
+      GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
+  }
+#endif
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
