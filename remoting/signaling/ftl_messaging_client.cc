@@ -27,7 +27,7 @@ namespace remoting {
 
 namespace {
 
-constexpr char kBatchAckMessagesPath[] = "/v1/message:batchAckMessages";
+constexpr char kBatchAckMessagesPath[] = "/v1/messages:batchAckMessages";
 constexpr char kReceiveMessagesPath[] = "/v1/messages:receive";
 constexpr char kSendMessagePath[] = "/v1/message:send";
 
@@ -300,7 +300,8 @@ void FtlMessagingClient::OnBatchAckMessagesResponse(
     DoneCallback on_done,
     const HttpStatus& status,
     std::unique_ptr<ftl::BatchAckMessagesResponse> response) {
-  // TODO(yuweih): Handle failure.
+  LOG_IF(WARNING, !status.ok())
+      << "Failed to ACK signaling message: " << status.error_message();
   std::move(on_done).Run(status);
 }
 
