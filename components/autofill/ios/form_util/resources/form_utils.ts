@@ -129,3 +129,14 @@ export function getFormControlElements(form: HTMLFormElement|null): Element[] {
   }
   return results;
 }
+
+/**
+ * Returns an array of iframe elements that are descendents of `root`.
+ *
+ * @param root The node under which to search for iframe elements.
+ * @return An array of iframe elements.
+ */
+export function getIframeElements(root: Element|null): HTMLIFrameElement[] {
+  return Array.from(root?.querySelectorAll('iframe') ?? []) as
+      HTMLIFrameElement[];
+}

@@ -171,17 +171,6 @@ class FormSubmissionReportManager {
 const gFormSubmissionReportManager = new FormSubmissionReportManager();
 
 /**
- * Returns an array of iframe elements that are descendents of `root`.
- *
- * @param root The node under which to search for iframe elements.
- * @return An array of iframe elements.
- */
-function getIframeElements(root: Element|null): HTMLIFrameElement[] {
-  return Array.from(root?.querySelectorAll('iframe') ?? []) as
-      HTMLIFrameElement[];
-}
-
-/**
  * Returns the field's `id` attribute if not space only; otherwise the
  * form's |name| attribute if the field is part of a form. Otherwise,
  * generate a technical identifier
@@ -457,7 +446,6 @@ function reportDetectedFormSubmission(
 
 gCrWebLegacy.form = {
   wasEditedByUser,
-  getIframeElements,
   getFieldIdentifier,
   getFieldName,
   getFormElementFromRendererId,
