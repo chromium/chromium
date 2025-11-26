@@ -27,27 +27,27 @@ versions = [
 ]
 
 for i in range(len(versions)):
-  for j in range(len(versions)):
-    version_i = deb_version.DebVersion(versions[i])
-    version_j = deb_version.DebVersion(versions[j])
-    if i < j:
-      assert version_i < version_j
-      assert version_i <= version_j
-      assert not version_i > version_j
-      assert not version_i >= version_j
-      assert not version_i == version_j
-      assert version_i != version_j
-    elif i > j:
-      assert not version_i < version_j
-      assert not version_i <= version_j
-      assert version_i > version_j
-      assert version_i >= version_j
-      assert not version_i == version_j
-      assert version_i != version_j
-    else:
-      assert not version_i < version_j
-      assert version_i <= version_j
-      assert not version_i > version_j
-      assert version_i >= version_j
-      assert version_i == version_j
-      assert not version_i != version_j
+    for j in range(len(versions)):
+        version_i = deb_version.DebVersion(versions[i])
+        version_j = deb_version.DebVersion(versions[j])
+        if i < j:
+            assert version_i < version_j
+            assert version_i <= version_j
+            assert not version_i > version_j
+            assert not version_i >= version_j
+            assert not version_i == version_j
+            assert version_i != version_j
+        elif i > j:
+            assert not version_i < version_j
+            assert not version_i <= version_j
+            assert version_i > version_j
+            assert version_i >= version_j
+            assert not version_i == version_j
+            assert version_i != version_j
+        else:
+            assert not version_i < version_j
+            assert version_i <= version_j
+            assert not version_i > version_j
+            assert version_i >= version_j
+            assert version_i == version_j
+            assert not version_i != version_j

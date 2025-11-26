@@ -100,8 +100,7 @@ for release in SUPPORTED_UBUNTU_RELEASES:
     codename = SUPPORTED_UBUNTU_RELEASES[release]
     repos = ["main", "universe"]
     deb_sources[release] = [{
-        "base_url":
-        url,
+        "base_url": url,
         "packages": ["%s/binary-amd64/Packages.xz" % repo for repo in repos],
     } for url in [
         "http://us.archive.ubuntu.com/ubuntu/dists/%s" % codename,
@@ -173,9 +172,10 @@ if missing_any_package:
     sys.exit(1)
 
 with open(os.path.join(SCRIPT_DIR, "dist_package_versions.json"), "w") as f:
-    json.dump(distro_package_versions,
-              f,
-              sort_keys=True,
-              indent=4,
-              separators=(",", ": "))
+    json.dump(
+        distro_package_versions,
+        f,
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "))
     f.write("\n")
