@@ -49,7 +49,7 @@ class Animation;
 class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
  public:
   using SidePanelAnimationId = ui::ElementIdentifier;
-  enum class AnimationType { kOpen, kClose };
+  enum class AnimationType { kOpen, kOpenWithContentTransition, kClose };
 
   // Represents a single animation sequence for a specific animation id.
   struct AnimationSequence {

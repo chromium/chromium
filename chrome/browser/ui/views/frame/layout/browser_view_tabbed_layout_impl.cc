@@ -319,6 +319,23 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
             : params.visual_client_area.right() - visible_width,
         top, target_width, params.visual_client_area.bottom() - top);
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
+
+    if (IsParentedToAndVisible(views().side_panel_animation_content,
+                               views().browser_view)) {
+      gfx::Rect toolbar_height_side_panel_final_bounds(
+          toolbar_height_side_panel_leading
+              ? params.visual_client_area.x()
+              : params.visual_client_area.right() - target_width,
+          toolbar_height_bounds.y(), target_width,
+          toolbar_height_bounds.height());
+      gfx::Rect side_panel_animation_content_bounds =
+          views().toolbar_height_side_panel->GetContentAnimationBounds(
+              toolbar_height_side_panel_final_bounds);
+
+      layout.AddChild(views().side_panel_animation_content,
+                      side_panel_animation_content_bounds);
+    }
+
     params.InsetHorizontal(visible_width, toolbar_height_side_panel_leading);
   }
 

@@ -29,6 +29,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "glic_side_panel_coordinator.h"
 #include "ui/actions/actions.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace glic {
@@ -164,6 +165,10 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
   // Provide the side panel with an empty container View so that different
   // `GlicUiEmbedder`s can update its contents as needed.
   auto glic_container = std::make_unique<views::View>();
+  if (base::FeatureList::IsEnabled(features::kGlicUseToolbarHeightSidePanel)) {
+    glic_container->SetPaintToLayer();
+    glic_container->layer()->SetFillsBoundsOpaquely(false);
+  }
   glic_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   glic_container_tracker_.SetView(glic_container.get());
 

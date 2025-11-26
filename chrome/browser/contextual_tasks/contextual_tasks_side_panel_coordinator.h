@@ -64,8 +64,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
-  // Show the side panel.
-  void Show();
+  // Show the side panel. If |transition_from_tab| is true, trigger the side
+  // panel content to animate from the active tab content's bounds.
+  void Show(bool transition_from_tab = false);
 
   // Close the side panel.
   void Close();

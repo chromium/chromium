@@ -29,7 +29,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
-                gfx::Rect starting_bounds) override;
+                gfx::Rect starting_bounds_in_browser_coordinates) override;
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;

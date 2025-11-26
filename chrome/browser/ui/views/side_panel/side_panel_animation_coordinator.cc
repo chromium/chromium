@@ -100,6 +100,38 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
          .duration = base::Milliseconds(100)});
   }
 
+  AnimationSpecification open_with_content_transition_animation_specifications =
+      AnimationSpecification(
+          /*tween_type=*/gfx::Tween::Type::ACCEL_45_DECEL_88,
+          /*sequences=*/{
+              {.animation_id = kSidePanelBoundsAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentTopBoundAnimation,
+               .start = base::Milliseconds(100),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentBottomBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentLeftBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentWidthBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentOpacityAnimation,
+               .start = base::Milliseconds(150),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentCornerRadiusAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)}});
+  if (!is_content_height_panel) {
+    open_with_content_transition_animation_specifications.sequences.push_back(
+        {.animation_id = kShadowOverlayOpacityAnimation,
+         .start = base::Milliseconds(150),
+         .duration = base::Milliseconds(100)});
+  }
+
   AnimationSpecification close_animation_specifications =
       AnimationSpecification(
           /*tween_type=*/is_content_height_panel
@@ -118,6 +150,8 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
 
   animation_spec_map_ = {
       {AnimationType::kOpen, open_animation_specifications},
+      {AnimationType::kOpenWithContentTransition,
+       open_with_content_transition_animation_specifications},
       {AnimationType::kClose, close_animation_specifications}};
 
   animation_type_to_observer_map_[AnimationType::kOpen] = {};

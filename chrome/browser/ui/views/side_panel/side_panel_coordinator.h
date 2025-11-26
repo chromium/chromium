@@ -53,7 +53,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
-                gfx::Rect starting_bounds) override;
+                gfx::Rect starting_bounds_in_browser_coordinates) override;
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;

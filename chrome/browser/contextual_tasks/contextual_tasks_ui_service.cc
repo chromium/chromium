@@ -192,10 +192,8 @@ void ContextualTasksUiService::OnThreadLinkClicked(
                                    std::move(contextual_task_contents));
 
   // Open the side panel.
-  // TODO: This currently should be passed the bounds of the
-  // contents_container_view from BrowserView, though the view is not accessible
-  // from here. This API could be changed to simply accept the web_contents.
-  ContextualTasksSidePanelCoordinator::From(browser.get())->Show();
+  ContextualTasksSidePanelCoordinator::From(browser.get())
+      ->Show(/*transition_from_tab=*/true);
 }
 
 bool ContextualTasksUiService::HandleNavigation(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
@@ -25,6 +26,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
@@ -149,7 +151,7 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::move(entry));
 }
 
-void ContextualTasksSidePanelCoordinator::Show() {
+void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
     // tab.
@@ -161,8 +163,19 @@ void ContextualTasksSidePanelCoordinator::Show() {
                                             task.GetTaskId());
   }
 
-  browser_window_->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  if (transition_from_tab) {
+    views::View* content =
+        BrowserElementsViews::From(browser_window_)
+            ->RetrieveView(kActiveContentsWebViewRetrievalId);
+    gfx::Rect content_bounds_in_browser_coordinates =
+        content->ConvertRectToWidget(content->GetContentsBounds());
+    browser_window_->GetFeatures().side_panel_ui()->ShowFrom(
+        SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks),
+        content_bounds_in_browser_coordinates);
+  } else {
+    browser_window_->GetFeatures().side_panel_ui()->Show(
+        SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  }
   UpdateOpenStateForCurrentTask(/*is_open=*/true);
   UpdateForActiveTab();
 }
@@ -417,6 +430,8 @@ ContextualTasksSidePanelCoordinator::CreateSidePanelView(
     SidePanelEntryScope& scope) {
   std::unique_ptr<ContextualTasksWebView> web_view =
       std::make_unique<ContextualTasksWebView>(browser_window_->GetProfile());
+  web_view->SetPaintToLayer();
+  web_view->layer()->SetFillsBoundsOpaquely(false);
   web_view_ = web_view->GetWeakPtr();
   UpdateWebContentsForActiveTab();
   return web_view;
