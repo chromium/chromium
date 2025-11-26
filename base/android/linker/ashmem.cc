@@ -53,21 +53,21 @@ namespace {
  */
 
 /* Callback used with __system_property_read_callback. */
-void prop_read_int(void* cookie,
-                   const char* name,
-                   const char* value,
-                   uint32_t serial) {
+void ReadIntProperty(void* cookie,
+                     const char* name,
+                     const char* value,
+                     uint32_t serial) {
   *reinterpret_cast<int*>(cookie) = atoi(value);
   (void)name;
   (void)serial;
 }
 
-int system_property_get_int(const char* name) {
+int SystemPropertyGetInt(const char* name) {
   int result = 0;
   if (__builtin_available(android 26, *)) {
     const prop_info* info = __system_property_find(name);
     if (info) {
-      __system_property_read_callback(info, &prop_read_int, &result);
+      __system_property_read_callback(info, &ReadIntProperty, &result);
     }
   } else {
     char value[PROP_VALUE_MAX] = {};
@@ -78,10 +78,10 @@ int system_property_get_int(const char* name) {
   return result;
 }
 
-int vendor_api_level() {
+int VendorApiLevel() {
   static int v_api_level = -1;
   if (v_api_level < 0) {
-    v_api_level = system_property_get_int("ro.vendor.api_level");
+    v_api_level = SystemPropertyGetInt("ro.vendor.api_level");
   }
   return v_api_level;
 }
@@ -96,7 +96,7 @@ AshmemStatus s_ashmem_status = ASHMEM_STATUS_INIT;
 dev_t s_ashmem_dev;
 
 /* Return the dev_t of a given file path, or 0 if not available, */
-dev_t ashmem_find_dev(const char* path) {
+dev_t FindAshmemDevice(const char* path) {
   struct stat st;
   dev_t result = 0;
   if (stat(path, &st) == 0 && S_ISCHR(st.st_mode)) {
@@ -105,14 +105,14 @@ dev_t ashmem_find_dev(const char* path) {
   return result;
 }
 
-AshmemStatus ashmem_get_status() {
+AshmemStatus GetAshmemSupportStatus() {
   /* NOTE: No need to make this thread-safe, assuming that
    * all threads will find the same value. */
   if (s_ashmem_status != ASHMEM_STATUS_INIT) {
     return s_ashmem_status;
   }
 
-  s_ashmem_dev = ashmem_find_dev(ASHMEM_DEVICE);
+  s_ashmem_dev = FindAshmemDevice(ASHMEM_DEVICE);
   s_ashmem_status = (s_ashmem_dev == 0) ? ASHMEM_STATUS_NOT_SUPPORTED
                                         : ASHMEM_STATUS_SUPPORTED;
   return s_ashmem_status;
@@ -120,31 +120,13 @@ AshmemStatus ashmem_get_status() {
 
 /* Returns true iff the ashmem device ioctl should be used for a given fd.
  * NOTE: Try not to use fstat() when possible to avoid performance issues. */
-bool is_ashmem_fd(int fd) {
-  if (ashmem_get_status() == ASHMEM_STATUS_SUPPORTED) {
+bool IsAshmemFd(int fd) {
+  if (GetAshmemSupportStatus() == ASHMEM_STATUS_SUPPORTED) {
     struct stat st;
     return (fstat(fd, &st) == 0 && S_ISCHR(st.st_mode) && st.st_dev != 0 &&
             st.st_dev == s_ashmem_dev);
   }
   return false;
-}
-
-int ashmem_dev_get_prot_region(int fd) {
-  return ioctl(fd, ASHMEM_GET_PROT_MASK);
-}
-
-int ashmem_dev_pin_region(int fd, size_t offset, size_t len) {
-  struct ashmem_pin pin = {static_cast<__u32>(offset), static_cast<__u32>(len)};
-  return ioctl(fd, ASHMEM_PIN, &pin);
-}
-
-int ashmem_dev_unpin_region(int fd, size_t offset, size_t len) {
-  struct ashmem_pin pin = {static_cast<__u32>(offset), static_cast<__u32>(len)};
-  return ioctl(fd, ASHMEM_UNPIN, &pin);
-}
-
-size_t ashmem_dev_get_size_region(int fd) {
-  return ioctl(fd, ASHMEM_GET_SIZE, NULL);
 }
 
 // Starting with API level 26, the following functions from
@@ -167,7 +149,7 @@ struct ASharedMemoryFuncs {
 ASharedMemoryFuncs s_ashmem_funcs = {};
 pthread_once_t s_ashmem_funcs_once = PTHREAD_ONCE_INIT;
 
-int memfd_create_region(const char* name, size_t size) {
+int MemfdCreateRegion(const char* name, size_t size) {
   int fd = syscall(__NR_memfd_create, name, MFD_CLOEXEC | MFD_ALLOW_SEALING);
   if (fd < 0) {
     LOG_E("memfd_create(%s, %zd) failed: %m", name, size);
@@ -226,18 +208,18 @@ int memfd_set_prot_region(int fd, int prot) {
   return 0;
 }
 
-int memfd_get_prot_region(int fd) {
+int MemfdGetProtRegion(int fd) {
   int prot = PROT_READ;
   int seals = fcntl(fd, F_GET_SEALS);
   if (seals == -1) {
-    LOG_E("memfd_get_prot_region(%d): F_GET_SEALS failed: %m", fd);
+    LOG_E("MemfdGetProtRegion(%d): F_GET_SEALS failed: %m", fd);
   } else if (!(seals & (F_SEAL_FUTURE_WRITE | F_SEAL_WRITE))) {
     prot |= PROT_WRITE;
   }
   return prot;
 }
 
-void ashmem_init_funcs() {
+void InitAshmemFuncs() {
   ASharedMemoryFuncs* funcs = &s_ashmem_funcs;
   /*
    * When a device conforms to the VSR for API level 202604 (Android 17),
@@ -249,8 +231,8 @@ void ashmem_init_funcs() {
    * the existing sepolicy for appdomain_tmpfs files, just allocate memfds
    * directly if the device conforms to the VSR for API level 202604.
    */
-  if (vendor_api_level() >= 202604) {
-    funcs->create = &memfd_create_region;
+  if (VendorApiLevel() >= 202604) {
+    funcs->create = &MemfdCreateRegion;
     funcs->setProt = &memfd_set_prot_region;
   } else {
     /* Leaked intentionally! */
@@ -262,12 +244,12 @@ void ashmem_init_funcs() {
   }
 }
 
-const ASharedMemoryFuncs* ashmem_get_funcs() {
-  pthread_once(&s_ashmem_funcs_once, &ashmem_init_funcs);
+const ASharedMemoryFuncs* GetAshmemFuncs() {
+  pthread_once(&s_ashmem_funcs_once, &InitAshmemFuncs);
   return &s_ashmem_funcs;
 }
 
-bool is_memfd_fd(int fd) {
+bool IsMemfdFd(int fd) {
   if (fcntl(fd, F_GET_SEALS, 0) == -1) {
     return false;
   }
@@ -276,36 +258,40 @@ bool is_memfd_fd(int fd) {
 
 }  // namespace
 
-int ashmem_create_region(const char* name, size_t size) {
-  return ashmem_get_funcs()->create(name, size);
+int SharedMemoryRegionCreate(const char* name, size_t size) {
+  return GetAshmemFuncs()->create(name, size);
 }
 
-int ashmem_set_prot_region(int fd, int prot) {
-  return ashmem_get_funcs()->setProt(fd, prot);
+int SharedMemoryRegionSetProtectionFlags(int fd, int prot) {
+  return GetAshmemFuncs()->setProt(fd, prot);
 }
 
-int ashmem_get_prot_region(int fd) {
-  if (is_memfd_fd(fd)) {
-    return memfd_get_prot_region(fd);
+int SharedMemoryRegionGetProtectionFlags(int fd) {
+  if (IsMemfdFd(fd)) {
+    return MemfdGetProtRegion(fd);
   }
 
-  if (is_ashmem_fd(fd)) {
-    return ashmem_dev_get_prot_region(fd);
+  if (IsAshmemFd(fd)) {
+    return ioctl(fd, ASHMEM_GET_PROT_MASK);
   }
 
   return -1;
 }
 
-int ashmem_pin_region(int fd, size_t offset, size_t len) {
-  if (is_ashmem_fd(fd)) {
-    return ashmem_dev_pin_region(fd, offset, len);
+int AshmemPinRegion(int fd, size_t offset, size_t len) {
+  if (IsAshmemFd(fd)) {
+    struct ashmem_pin pin = {static_cast<__u32>(offset),
+                             static_cast<__u32>(len)};
+    return ioctl(fd, ASHMEM_PIN, &pin);
   }
   return ASHMEM_NOT_PURGED;
 }
 
-int ashmem_unpin_region(int fd, size_t offset, size_t len) {
-  if (is_ashmem_fd(fd)) {
-    return ashmem_dev_unpin_region(fd, offset, len);
+int AshmemUnpinRegion(int fd, size_t offset, size_t len) {
+  if (IsAshmemFd(fd)) {
+    struct ashmem_pin pin = {static_cast<__u32>(offset),
+                             static_cast<__u32>(len)};
+    return ioctl(fd, ASHMEM_UNPIN, &pin);
   }
   /* NOTE: It is not possible to use madvise() here because it requires a
    * memory address. This could be done in the caller though, instead of
@@ -313,20 +299,6 @@ int ashmem_unpin_region(int fd, size_t offset, size_t len) {
   return 0;
 }
 
-int ashmem_get_size_region(int fd) {
-  if (is_ashmem_fd(fd)) {
-    return ashmem_dev_get_size_region(fd);
-  }
-
-  struct stat sb;
-  if (fstat(fd, &sb) == -1) {
-    LOG_E("fstat(%d) failed: %m", fd);
-    return -1;
-  }
-
-  return sb.st_size;
-}
-
-int ashmem_device_is_supported() {
-  return ashmem_get_status() == ASHMEM_STATUS_SUPPORTED;
+int AshmemDeviceIsSupported() {
+  return GetAshmemSupportStatus() == ASHMEM_STATUS_SUPPORTED;
 }
