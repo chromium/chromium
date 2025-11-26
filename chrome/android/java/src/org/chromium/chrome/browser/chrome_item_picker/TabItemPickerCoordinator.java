@@ -223,10 +223,8 @@ public class TabItemPickerCoordinator {
                 tabs,
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
-
-        if (mPreselectedTabIds.size() == 0) return;
+        if (mPreselectedTabIds.isEmpty()) return;
         Set<TabListEditorItemSelectionId> selectionSet = new HashSet<>();
-
         for (Integer id : mPreselectedTabIds) {
             if (id == null) continue;
             @Nullable Tab tab = mTabModelSelector.getTabById(id);
@@ -234,9 +232,7 @@ public class TabItemPickerCoordinator {
                 selectionSet.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
             }
         }
-        if (!selectionSet.isEmpty()) {
-            controller.selectTabs(selectionSet);
-        }
+        controller.preselectTabs(selectionSet);
     }
 
     public interface ItemPickerSelectionHandler {

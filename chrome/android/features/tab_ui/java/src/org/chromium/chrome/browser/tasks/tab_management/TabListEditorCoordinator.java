@@ -169,6 +169,14 @@ public class TabListEditorCoordinator {
          *     tabId for tabs or syncId for groups.
          */
         void selectTabs(Set<TabListEditorItemSelectionId> itemIds);
+
+        /**
+         * Preselects tabs through this TabListEditor.
+         *
+         * @param itemIds The item ids representing the tabs to be selected. This can either be a
+         *     tabId for tabs or syncId for groups.
+         */
+        void preselectTabs(Set<TabListEditorItemSelectionId> itemIds);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -292,6 +300,11 @@ public class TabListEditorCoordinator {
                 @Override
                 public void selectTabs(Set<TabListEditorItemSelectionId> itemIds) {
                     mTabListEditorMediator.selectTabs(itemIds);
+                }
+
+                @Override
+                public void preselectTabs(Set<TabListEditorItemSelectionId> itemIds) {
+                    mTabListEditorMediator.preselectTabs(itemIds);
                 }
             };
 
