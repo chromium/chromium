@@ -169,13 +169,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   // because disabled kHistory also disables user event sync, dropping all
   // uncommitted events.
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
 
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(test_event2));
   ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory));
+      GetClient(0)->EnableSelectableType(syncer::UserSelectableType::kHistory));
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(test_event3));
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
       CreateTestEvent(base::Time() + base::Microseconds(1));
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 

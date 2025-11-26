@@ -308,8 +308,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
   EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Turn off payments sync, the data & metadata should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfLoyaltyCards(0, vdm);
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
@@ -569,8 +569,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Turn off payments sync, the data & metadata should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfEntityInstancesCards(0, edm);
   EXPECT_EQ(0uL, edm->GetEntityInstances().size());

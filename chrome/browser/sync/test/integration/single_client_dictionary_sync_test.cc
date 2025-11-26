@@ -110,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithoutAccountStorageSyncTest,
   // DICTIONARY is not behind the history toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithoutAccountStorageSyncTest,
   // DICTIONARY is behind the settings toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 }
@@ -142,17 +142,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
   // DICTIONARY is not behind the settings toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
-  ASSERT_TRUE(GetClient(0)->EnableSyncForType(
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
       syncer::UserSelectableType::kPreferences));
   // DICTIONARY is behind the history toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 }
 
@@ -202,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
               UnorderedElementsAre(kLocalWord, kAccountWord));
 
   // Disable syncing dictionary, which is behind the preferences toggle.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   // Account words should be cleared.
@@ -263,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
   // Clear the error to allow sync to become active again.
   GetFakeServer()->ClearHttpError();
   // Disable syncing dictionary, which is behind the history toggle.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   // Account words should be cleared.

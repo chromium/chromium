@@ -258,8 +258,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   ASSERT_EQ(1uL, paydm->GetAutofillOffers().size());
 
   // Turn off payments sync, the data should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfOffers(0, paydm);
   EXPECT_EQ(0uL, paydm->GetAutofillOffers().size());
 }

@@ -260,8 +260,7 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
 
 class SingleClientSyncInvalidationsTest : public SyncTest {
  public:
-  SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
-  }
+  SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {}
 
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
@@ -618,8 +617,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                   .Wait());
 
   // Disable BOOKMARKS.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   // The local device should eventually be committed to the server. BOOKMARKS
   // should not be included in interested types, as it was disabled.
   EXPECT_TRUE(
@@ -630,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   // Create a bookmark on the server.
   InjectSyncedBookmark(GetFakeServer());
   // Enable BOOKMARKS again.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   // The local device should eventually be committed to the server. BOOKMARKS
   // should now be included in interested types.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(

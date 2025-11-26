@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable syncing of themes.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme is restored.
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_CHROMEOS)
   // Disable sync.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
 #else
   // Sign out. Account theme should stay because of the data type error.
   GetClient(0)->SignOutPrimaryAccount();

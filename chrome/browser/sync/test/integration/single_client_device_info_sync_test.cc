@@ -585,8 +585,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // Create a checker to catch a commit request before disabling the data type.
   DeviceInfoCommitChecker device_info_committer_checker(GetSyncService(0),
                                                         GetFakeServer());
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(device_info_committer_checker.Wait());
 
   GetFakeServer()->ClearHttpError();

@@ -836,12 +836,12 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleDisableExtensionsSyncCheck) {
   EXPECT_NE(0U, original_client_id);
 
   ASSERT_TRUE(
-      harness->DisableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness->DisableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(ukm_test_helper.IsExtensionRecordingEnabled());
 
   ASSERT_TRUE(
-      harness->EnableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness->EnableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   // Client ID should not be reset.
@@ -885,12 +885,12 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
 #endif
 
   ASSERT_TRUE(
-      harness2->DisableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness2->DisableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(ukm_test_helper.IsExtensionRecordingEnabled());
 
   ASSERT_TRUE(
-      harness2->EnableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness2->EnableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());

@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(
       "key1", GetFakeServer()));
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(
       search_engines_helper::FakeServerHasSearchEngineChecker("key1").Wait());
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(
       search_engines_helper::FakeServerHasSearchEngineChecker("key1").Wait());
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(
       "key2", GetFakeServer()));
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(
       "key1", GetFakeServer()));
 
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(
   GetSyncService(0)->ReportDataTypeErrorForTest(syncer::SEARCH_ENGINES);
 #if BUILDFLAG(IS_CHROMEOS)
   // Disable sync.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
 #else
   // Sign out.

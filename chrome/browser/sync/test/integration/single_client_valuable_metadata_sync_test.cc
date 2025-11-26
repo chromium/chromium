@@ -343,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   ASSERT_EQ(1u, GetEntityInstances().size());
 
   // Turn off payments sync, the data & metadata should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfEntityInstances(0, edm);
   EXPECT_THAT(GetMetadataEntries(), IsEmpty());
@@ -402,14 +402,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   ASSERT_EQ(1u, GetEntityInstances().size());
 
   // Turn off payments sync, the data & metadata should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfEntityInstances(0, edm);
   ASSERT_THAT(GetMetadataEntries(), IsEmpty());
 
   // Turn payments sync back on.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfEntityInstances(1, edm);
 
   // The data and metadata should be restored.

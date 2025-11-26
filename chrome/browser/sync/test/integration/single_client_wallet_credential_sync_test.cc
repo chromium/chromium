@@ -437,16 +437,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   // Disable sync for `kPayments`, the wallet and credential data should be
   // gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfCards(0, paydm);
 
   EXPECT_EQ(0uL, paydm->GetCreditCards().size());
 
   // Enable sync for `kPayments`, the wallet and credential data should come
   // back.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   // Wait until Sync restores the card and it arrives at paydm.
   WaitForNumberOfCards(1, paydm);
@@ -560,8 +560,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ExpectDefaultWalletCredentialValues(*paydm->GetCreditCards()[0]);
 
   // Turn off payments sync, the wallet and credential data should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfCards(0, paydm);
 

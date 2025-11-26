@@ -583,8 +583,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
 
   // Turn off payments sync, the data & metadata should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfCards(0, paydm);
   WaitForNoPaymentsCustomerData(paydm);

@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 
   EXPECT_NE(nullptr, service->GetOpenTabsUIDelegate());
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
   EXPECT_EQ(nullptr, service->GetOpenTabsUIDelegate());
 }
 
@@ -450,8 +450,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   // If the user disables history sync on settings, but still enables tab sync,
   // then sessions should be synced but the server should be able to tell the
   // difference based on active datatypes.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL url1 =
@@ -955,9 +955,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
 
   // Disable tabs and history toggles.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
 
   EXPECT_TRUE(FaviconForPageUrlAvailableChecker(GetProfile(0),
                                                 GURL("http://foo/1"),

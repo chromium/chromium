@@ -493,40 +493,17 @@ bool SyncServiceImplHarness::EnableHistorySyncNoWaitForCompletion() {
   return true;
 }
 
-bool SyncServiceImplHarness::EnableSyncForType(
-    syncer::UserSelectableType type) {
-  DVLOG(1) << GetClientInfoString(
-      "EnableSyncForType(" +
-      std::string(syncer::GetUserSelectableTypeName(type)) + ")");
-
-  if (!IsSyncEnabledByUser()) {
-    bool result = SetupSyncWithCustomSettings(base::BindLambdaForTesting(
-        [type](syncer::SyncUserSettings* user_settings) {
-          user_settings->SetSelectedTypes(false, {type});
-#if !BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-        }));
-    // If SetupSync() succeeded, then Sync must now be enabled.
-    DCHECK(!result || IsSyncEnabledByUser());
-    return result;
-  }
-
-  return EnableSelectableType(type);
-}
-
 bool SyncServiceImplHarness::EnableSelectableType(
     syncer::UserSelectableType type) {
   if (service() == nullptr) {
-    LOG(ERROR) << "EnableSyncForType(): service() is null.";
+    LOG(ERROR) << "EnableSelectableType(): service() is null.";
     return false;
   }
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
   if (selected_types.Has(type)) {
-    DVLOG(1) << "EnableSyncForType(): Sync already enabled for type "
+    DVLOG(1) << "EnableSelectableType(): Sync already enabled for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
@@ -535,19 +512,14 @@ bool SyncServiceImplHarness::EnableSelectableType(
   selected_types.Put(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
   if (AwaitSyncTransportActive()) {
-    DVLOG(1) << "EnableSyncForType(): Enabled sync for type "
+    DVLOG(1) << "EnableSelectableType(): Enabled sync for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("EnableSyncForType failed");
+  DVLOG(0) << GetClientInfoString("EnableSelectableType failed");
   return false;
-}
-
-bool SyncServiceImplHarness::DisableSyncForType(
-    syncer::UserSelectableType type) {
-  return DisableSelectableType(type);
 }
 
 bool SyncServiceImplHarness::DisableSelectableType(
