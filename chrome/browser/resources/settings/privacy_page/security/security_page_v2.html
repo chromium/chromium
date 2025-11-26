@@ -10,11 +10,7 @@
   }
 
   .card {
-    align-items: flex-start;
-    aspect-ratio: 1 / 1;
-    display: inline-flex;
-    justify-content: flex-start;
-    min-width: 44%;
+    flex: 1;
     padding: 20px;
   }
 
@@ -23,12 +19,18 @@
     cursor: pointer;
   }
 
-  .card-container {
-    align-items: stretch;
+  .card-start {
+    border-start-start-radius: var(--cr-card-border-radius);
+  }
+
+  .card-end {
+    border-start-end-radius: var(--cr-card-border-radius);
+  }
+
+  #bundlesRadioGroup controlled-radio-button::part(labelWrapper) {
+    align-items: center;
     display: flex;
-    gap: 0;
-    justify-content: center;
-    width: 100%;
+    justify-content: space-between;
   }
 
   .section-header {
@@ -47,21 +49,13 @@
     margin-top: 0px;
   }
 
-  #securitySettingsBundleStandard {
-    border-top-left-radius: var(--cr-card-border-radius);
-  }
-
-  #securitySettingsBundleEnhanced {
-    border-top-right-radius: var(--cr-card-border-radius);
-  }
-
   #safeBrowsingRadioGroup {
     padding-inline-start: 40px;
   }
 
   security-page-feature-row {
-    border-bottom-left-radius: var(--cr-card-border-radius);
-    border-bottom-right-radius: var(--cr-card-border-radius);
+    border-end-start-radius: var(--cr-card-border-radius);
+    border-end-end-radius: var(--cr-card-border-radius);
   }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
@@ -74,13 +68,21 @@
       class="card-container"
       pref="{{prefs.generated.security_settings_bundle}}"
       on-change="onSecurityBundleChanged_"
-      selectable-elements="controlled-radio-button">
-    <controlled-radio-button
-        id="securitySettingsBundleStandard"
-        name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
-        pref="{{prefs.generated.security_settings_bundle}}"
-        label="$i18n{securityStandardBundleTitle}"
-        class="card box">
+      selectable-elements="controlled-radio-button"
+      nested-selectable is-horizontal>
+    <div class="box card card-start">
+      <controlled-radio-button
+          id="securitySettingsBundleStandard"
+          name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
+          pref="{{prefs.generated.security_settings_bundle}}"
+          label="$i18n{securityStandardBundleTitle}">
+        <cr-button
+            id="resetStandardBundleToDefaultsButton"
+            on-click="onResetBundleToDefaultsButtonClick_"
+            hidden$="[[!isResetStandardBundleToDefaultsButtonVisible_]]">
+          $i18n{securityBundleResetToDefaultsButtonLabel}
+        </cr-button>
+      </controlled-radio-button>
       <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
       <ul class="icon-bulleted-list">
         <li>
@@ -102,18 +104,19 @@
           </div>
         </li>
       </ul>
-      <cr-button id="resetStandardBundleToDefaultsButton"
-          on-click="onResetBundleToDefaultsButtonClick_"
-          hidden$="[[!isResetStandardBundleToDefaultsButtonVisible_]]">
-        $i18n{securityBundleResetToDefaultsButtonLabel}
-      </cr-button>
-    </controlled-radio-button>
-    <controlled-radio-button
-        id="securitySettingsBundleEnhanced"
-        name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
-        pref="{{prefs.generated.security_settings_bundle}}"
-        label="$i18n{securityEnhancedBundleTitle}"
-        class="card box">
+    </div>
+    <div class="box card card-end">
+      <controlled-radio-button
+          id="securitySettingsBundleEnhanced"
+          name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
+          pref="{{prefs.generated.security_settings_bundle}}"
+          label="$i18n{securityEnhancedBundleTitle}">
+        <cr-button id="resetEnhancedBundleToDefaultsButton"
+            on-click="onResetBundleToDefaultsButtonClick_"
+            hidden$="[[!isResetEnhancedBundleToDefaultsButtonVisible_]]">
+          $i18n{securityBundleResetToDefaultsButtonLabel}
+        </cr-button>
+      </controlled-radio-button>
       <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
       <ul class="icon-bulleted-list">
         <li>
@@ -135,12 +138,7 @@
           </div>
         </li>
       </ul>
-      <cr-button id="resetEnhancedBundleToDefaultsButton"
-          on-click="onResetBundleToDefaultsButtonClick_"
-          hidden$="[[!isResetEnhancedBundleToDefaultsButtonVisible_]]">
-        $i18n{securityBundleResetToDefaultsButtonLabel}
-      </cr-button>
-    </controlled-radio-button>
+    </div>
   </settings-radio-group>
   <security-page-feature-row id="safeBrowsingRow"
       on-expanded-changed="onSafeBrowsingRowClick_"

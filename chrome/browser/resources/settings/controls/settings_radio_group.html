@@ -2,10 +2,16 @@
   cr-radio-group {
     width: 100%;
   }
+
+  :host([is-horizontal]) cr-radio-group {
+    display: flex;
+  }
+
 </style>
 <cr-radio-group selected="[[selected]]"
     on-selected-changed="onSelectedChanged_"
     aria-label$="[[groupAriaLabel]]"
-    selectable-elements="[[selectableElements]]">
+    selectable-elements="[[selectableElements]]"
+    nested-selectable="[[nestedSelectable]]">
   <slot></slot>
 </cr-radio-group>

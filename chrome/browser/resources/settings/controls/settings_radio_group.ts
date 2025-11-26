@@ -52,6 +52,11 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
         type: String,
         value: ['cr-radio-button', 'controlled-radio-button'].join(', '),
       },
+
+      nestedSelectable: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -65,6 +70,7 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   declare noSetPref: boolean;
   declare selected?: string;
   declare selectableElements: string;
+  declare nestedSelectable: boolean;
 
   override ready() {
     super.ready();
