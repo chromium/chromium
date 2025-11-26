@@ -6,6 +6,24 @@ source_set("local_state_delegate") {
   sources = [ "safe_browsing_local_state_delegate.h" ]
 }
 
+source_set("info_singleton") {
+  sources = [
+    "web_ui_info_singleton.cc",
+    "web_ui_info_singleton.h",
+  ]
+
+  deps = [
+    ":event_observer",
+    ":util",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+    "//components/sync/protocol",
+  ]
+}
+
 source_set("event_observer") {
   sources = [ "web_ui_info_singleton_event_observer.h" ]
 

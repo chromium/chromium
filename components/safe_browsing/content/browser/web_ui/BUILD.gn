@@ -35,6 +35,7 @@ static_library("web_ui") {
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/web_ui:event_observer",
     "//components/safe_browsing/core/browser/web_ui:event_observer_impl",
+    "//components/safe_browsing/core/browser/web_ui:info_singleton",
     "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
     "//components/safe_browsing/core/browser/web_ui:util",
     "//components/safe_browsing/core/common",
