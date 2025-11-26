@@ -20,6 +20,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
@@ -109,7 +110,7 @@ long WINAPI StackDumpExceptionFilter(EXCEPTION_POINTERS* info) {
       std::cerr << "EXCEPTION_STACK_OVERFLOW";
       break;
     default:
-      std::cerr << "0x" << std::hex << exc_code;
+      std::cerr << base::StringPrintf("0x%08x", exc_code);
       break;
   }
   std::cerr << "\n";
@@ -290,14 +291,15 @@ class SymbolContext {
       // Output the backtrace line.
       (*os) << prefix_string << "\t";
       if (has_symbol) {
-        (*os) << symbol->Name << " [0x" << traces[i] << "+" << sym_displacement
-              << "]";
+        (*os) << symbol->Name << " "
+              << base::StringPrintf("[%p+%x]", traces[i], sym_displacement);
       } else {
         // If there is no symbol information, add a spacer.
-        (*os) << "(No symbol) [0x" << traces[i] << "]";
+        (*os) << "(No symbol) " << base::StringPrintf("[%p]", traces[i]);
       }
       if (has_line) {
-        (*os) << " (" << line.FileName << ":" << line.LineNumber << ")";
+        (*os) << " (" << line.FileName << ":"
+              << base::StringPrintf("%lu", line.LineNumber) << ")";
       }
       (*os) << "\n";
     }
@@ -316,7 +318,7 @@ void OutputAddressesWithPrefix(std::ostream* os,
                                cstring_view prefix_string,
                                span<const void* const> addresses) {
   for (const void* const addr : addresses) {
-    (*os) << prefix_string << "\t" << addr << "\n";
+    (*os) << prefix_string << "\t" << base::StringPrintf("%p", addr) << "\n";
     if (!os->good()) {
       break;
     }
