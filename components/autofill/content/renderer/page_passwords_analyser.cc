@@ -256,20 +256,6 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
         text_input, form_util::GetFieldRendererId(input_element),
         skip_control_ids, &nodes_for_id);
   }
-  // Warn against elements sharing an id attribute. Duplicate id attributes both
-  // are against the HTML specification and can cause issues with password
-  // saving/filling, as the Password Manager makes the assumption that ids may
-  // be used as a unique identifier for nodes.
-  for (const auto& pair : nodes_for_id) {
-    const std::string& id_attr = pair.first;
-    const std::vector<WebNode>& nodes = pair.second;
-    if (nodes.size() <= 1)
-      continue;
-    logger->Send(LinkDocumentation(base::StringPrintf(
-                     "Found %zu elements with non-unique id #%s:", nodes.size(),
-                     id_attr.c_str())),
-                 PageFormAnalyserLogger::kWarning, nodes);
-  }
 
   return form_input_collections;
 }

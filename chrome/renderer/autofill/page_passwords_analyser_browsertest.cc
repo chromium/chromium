@@ -45,10 +45,6 @@ const char kPasswordFormWithoutUsernameField[] =
     "   <input type='password' autocomplete='new-password'>"
     "</form>";
 
-const char kElementsWithDuplicateIds[] =
-    "<input id='duplicate'>"
-    "<input id='duplicate'>";
-
 const char kPasswordFormTooComplex[] =
     "<form>"
     "   <input type='text' autocomplete='username'>"
@@ -182,15 +178,6 @@ TEST_F(PagePasswordsAnalyserTest, PasswordFormWithoutUsernameField) {
       "Password forms should have (optionally hidden) "
       "username fields for accessibility:",
       PageFormAnalyserLogger::kVerbose, {0});
-
-  RunTestCase();
-}
-
-TEST_F(PagePasswordsAnalyserTest, ElementsWithDuplicateIds) {
-  LoadTestCase(kElementsWithDuplicateIds);
-
-  Expect("Found 2 elements with non-unique id #duplicate:",
-         PageFormAnalyserLogger::kWarning, {0, 1});
 
   RunTestCase();
 }
