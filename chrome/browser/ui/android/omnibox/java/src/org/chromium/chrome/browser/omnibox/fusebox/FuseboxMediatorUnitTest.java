@@ -59,6 +59,9 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -85,6 +88,7 @@ public class FuseboxMediatorUnitTest {
 
     @Mock private FuseboxViewHolder mViewHolder;
     @Mock private FuseboxPopup mPopup;
+    @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     @Mock private Clipboard mClipboard;
@@ -93,6 +97,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -121,6 +126,8 @@ public class FuseboxMediatorUnitTest {
         activity.setContentView(viewGroup);
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+
         mContext = RuntimeEnvironment.application;
         mResources = mContext.getResources();
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
@@ -132,6 +139,7 @@ public class FuseboxMediatorUnitTest {
                 spy(
                         new FuseboxMediator(
                                 mContext,
+                                mProfile,
                                 mWindowAndroid,
                                 mModel,
                                 mViewHolder,
@@ -158,6 +166,7 @@ public class FuseboxMediatorUnitTest {
         mMediator =
                 new FuseboxMediator(
                         mContext,
+                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
@@ -432,6 +441,7 @@ public class FuseboxMediatorUnitTest {
         FuseboxMediator mediator =
                 new FuseboxMediator(
                         mContext,
+                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
@@ -701,5 +711,44 @@ public class FuseboxMediatorUnitTest {
         assertTrue(finalIds.contains(102));
         assertTrue(finalIds.contains(103));
         assertTrue(finalIds.contains(104));
+    }
+
+    @Test
+    public void onTabPickerClicked_launchesTabPickerActivity() throws ClassNotFoundException {
+        mMediator.onTabPickerClicked();
+
+        // Verify popup is dismissed
+        verify(mPopup).dismiss();
+
+        // Verify intent is shown
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+
+        assertEquals(
+                FuseboxMediator.CHROME_ITEM_PICKER_ACTIVITY_CLASS,
+                intent.getComponent().getClassName());
+        assertNotNull(intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS));
+    }
+
+    @Test
+    public void onTabPickerClicked_sendsPreselectedTabIds() throws ClassNotFoundException {
+        // Setup tabs and add them as attachments
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        addTabAttachment(tab1);
+        addTabAttachment(tab2);
+
+        mMediator.onTabPickerClicked();
+
+        // Capture the intent and verify its extras
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        ArrayList<Integer> preselectedIds =
+                intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
+
+        assertNotNull(preselectedIds);
+        assertEquals(2, preselectedIds.size());
+        assertTrue(preselectedIds.contains(101));
+        assertTrue(preselectedIds.contains(102));
     }
 }

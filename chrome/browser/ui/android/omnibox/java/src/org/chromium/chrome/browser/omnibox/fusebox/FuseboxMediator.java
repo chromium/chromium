@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -59,12 +60,15 @@ import java.util.Set;
 @NullMarked
 public class FuseboxMediator {
     // TODO(crbug.com/457825183): Supply this class name and extra string externally.
-    private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
+    @VisibleForTesting
+    /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
+
     public static final String EXTRA_PRESELECTED_TAB_IDS =
             "org.chromium.chrome.browser.chrome_item_picker.EXTRA_PRESELECTED_TAB_IDS";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     private final Context mContext;
+    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
@@ -81,6 +85,7 @@ public class FuseboxMediator {
 
     FuseboxMediator(
             Context context,
+            Profile profile,
             WindowAndroid windowAndroid,
             PropertyModel model,
             FuseboxViewHolder viewHolder,
@@ -91,6 +96,7 @@ public class FuseboxMediator {
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier) {
         mContext = context;
+        mProfile = profile;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
         mModel = model;
@@ -306,19 +312,14 @@ public class FuseboxMediator {
         mPopup.dismiss();
         Intent intent;
         try {
-            intent = new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS));
-            if (mTabModelSelectorSupplier.get() != null
-                    && mTabModelSelectorSupplier.get().getCurrentTab() != null) {
-                ProfileIntentUtils.addProfileToIntent(
-                        mTabModelSelectorSupplier.get().getCurrentTab().getProfile(), intent);
-            }
+            intent =
+                    new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
+                            .putIntegerArrayListExtra(
+                                    EXTRA_PRESELECTED_TAB_IDS, getPreselectionTabIds());
+            ProfileIntentUtils.addProfileToIntent(mProfile, intent);
         } catch (ClassNotFoundException e) {
             return;
         }
-
-        ArrayList<Integer> preselectedIds = getPreselectionTabIds();
-        // Send the IDs to the activity using the defined extra.
-        intent.putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);

@@ -145,6 +145,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         mMediator =
                 new FuseboxMediator(
                         mContext,
+                        profile,
                         mWindowAndroid,
                         mModel,
                         assumeNonNull(mViewHolder),
