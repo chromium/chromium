@@ -5,11 +5,10 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -88,12 +87,16 @@ public interface TabPersistentStore {
      */
     void onNativeLibraryReady();
 
-    /** Waits for the task that migrates all state files to their new location to finish. */
+    /**
+     * Waits for the task that migrates all state files to their new location to finish. For custom
+     * tabs this might also set up the state directory.
+     */
     void waitForMigrationToFinish();
 
     /**
-     * Saves the current tab state to disk. This is a blocking call and should not be called on the
-     * UI thread.
+     * Saves the current tab state to disk. This is a blocking call. It should not be called on the
+     * UI thread except during shutdown or in other scenarios where immediate persistence is
+     * required.
      */
     void saveState();
 
@@ -154,30 +157,8 @@ public interface TabPersistentStore {
      */
     void clearState();
 
-    /**
-     * Cancels loading of {@link Tab}s from disk from saved state. This is useful if the user does
-     * an action which impacts all {@link Tab}s, not just the ones currently loaded into the model.
-     * For example, if the user tries to close all {@link Tab}s, we need don't want to restore old
-     * {@link Tab}s anymore.
-     *
-     * @param incognito Whether or not to ignore incognito {@link Tab}s or normal {@link Tab}s as
-     *     they are being restored.
-     */
-    void cancelLoadingTabs(boolean incognito);
-
-    /**
-     * Removes a given tab from the save, restore, and migration queues. Also cancels any in-flight
-     * tasks for the given tab.
-     *
-     * @param tab The {@link Tab} to remove.
-     */
-    void removeTabFromQueues(Tab tab);
-
     /** Cleans up any resources used by the TabPersistentStore. */
     void destroy();
-
-    /** Kick off an AsyncTask to save the current list of Tabs. */
-    void saveTabListAsynchronously();
 
     /**
      * Pauses the async saving of the tab state. Used in cases where there are batch updates to
