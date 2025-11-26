@@ -82,7 +82,7 @@ std::optional<SkColor> OmniboxContextMenu::GetLabelColor(int command_id) const {
 }
 
 bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
-  return command_id != ui::MenuModel::kTitleId;
+  return controller_->IsCommandIdEnabled(command_id);
 }
 
 bool OmniboxContextMenu::IsCommandVisible(int command_id) const {

@@ -18,6 +18,7 @@
 
 class FaviconService;
 class OmniboxPopupFileSelector;
+class OmniboxPopupUI;
 class OmniboxEditModel;
 
 namespace favicon_base {
@@ -58,6 +59,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
 
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdVisible(int command_id) const override;
   void AddTabContext(const TabInfo& tab_info);
   void UpdateSearchboxContext(
@@ -98,8 +100,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
   raw_ptr<contextual_search::ContextualSearchContextController>
-  GetQueryController();
+  GetQueryController() const;
   raw_ptr<OmniboxEditModel> GetEditModel();
+  raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;

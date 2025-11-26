@@ -98,6 +98,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   OmniboxPopupAimHandler* popup_aim_handler() {
     return popup_aim_handler_.get();
   }
+  ComposeboxHandler* composebox_handler() { return composebox_handler_.get(); }
 
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
 

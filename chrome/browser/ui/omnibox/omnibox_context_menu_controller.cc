@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/searchbox/composebox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
@@ -301,13 +302,9 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   if (omnibox_controller &&
       omnibox_controller->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kAim) {
-    if (auto* webui = web_contents_->GetWebUI()) {
-      if (auto* webui_controller = webui->GetController()) {
-        auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-        if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-          omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
-        }
-      }
+    auto omnibox_popup_ui = GetOmniboxPopupUI();
+    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+      omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
     }
   } else {
     searchbox_context_data->SetPendingContext(std::move(context));
@@ -315,16 +312,33 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
 }
 
 raw_ptr<contextual_search::ContextualSearchContextController>
-OmniboxContextMenuController::GetQueryController() {
-  return ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get())
-      ->session_handle()
-      ->GetController();
+OmniboxContextMenuController::GetQueryController() const {
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get());
+  if (!helper) {
+    return nullptr;
+  }
+  return helper->session_handle()->GetController();
 }
 
 raw_ptr<OmniboxEditModel> OmniboxContextMenuController::GetEditModel() {
-  return OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())
-      ->get_omnibox_controller()
-      ->edit_model();
+  auto* helper =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get());
+  if (!helper) {
+    return nullptr;
+  }
+  return helper->get_omnibox_controller()->edit_model();
+}
+
+raw_ptr<OmniboxPopupUI> OmniboxContextMenuController::GetOmniboxPopupUI()
+    const {
+  if (auto* webui = web_contents_->GetWebUI()) {
+    auto* omnibox_popup_ui = webui->GetController()->GetAs<OmniboxPopupUI>();
+    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+      return omnibox_popup_ui;
+    }
+  }
+  return nullptr;
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
@@ -372,11 +386,59 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   }
 }
 
+bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
+  if (command_id == ui::MenuModel::kTitleId) {
+    return false;
+  }
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  if (!browser_window_interface) {
+    return false;
+  }
+
+  auto query_controller = GetQueryController();
+  if (!query_controller) {
+    return false;
+  }
+
+  auto omnibox_popup_ui = GetOmniboxPopupUI();
+  if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler()) {
+    return false;
+  }
+
+  const omnibox::ChromeAimToolsAndModels aim_tool_mode =
+      omnibox_popup_ui->composebox_handler()->GetAimToolMode();
+  if (aim_tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
+    return command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE;
+  }
+
+  auto file_upload_count =
+      static_cast<int>(query_controller->GetFileInfoList().size());
+  if (file_upload_count > 0) {
+    auto max_num_files =
+        omnibox::FeatureConfig::Get().config.composebox().max_num_files();
+    if (file_upload_count < max_num_files) {
+      return command_id != IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH;
+    } else {
+      // Note: If a file is added, create images should be disabled but this
+      // is handled in the WebUI by disabling the button. This will need to be
+      // updated when multifile upload is added.
+      return command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES;
+    }
+  }
+
+  return true;
+}
+
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH ||
       command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_.get());
+    if (!browser_window_interface) {
+      return false;
+    }
     Profile* profile = browser_window_interface->GetProfile();
 
     if (!profile) {

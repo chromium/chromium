@@ -409,7 +409,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.setInitialMode(ComposeboxMode.CREATE_IMAGE);
         break;
       default:
-        this.resetModes();
     }
   }
 
