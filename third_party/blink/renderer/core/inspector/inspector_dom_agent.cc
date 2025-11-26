@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -149,6 +150,7 @@ class InspectorRevalidateDOMTask final
  public:
   explicit InspectorRevalidateDOMTask(InspectorDOMAgent*);
   void ScheduleStyleAttrRevalidationFor(Element*);
+  void ScheduleAdoptedStyleSheetRevalidationFor(Node*);
   void Reset() { timer_.Stop(); }
   void OnTimer(TimerBase*);
   void Trace(Visitor*) const;
@@ -157,6 +159,7 @@ class InspectorRevalidateDOMTask final
   Member<InspectorDOMAgent> dom_agent_;
   HeapTaskRunnerTimer<InspectorRevalidateDOMTask> timer_;
   HeapHashSet<Member<Element>> style_attr_invalidated_elements_;
+  HeapHashSet<Member<Node>> adopted_style_sheet_invalidated_elements_;
 };
 
 InspectorRevalidateDOMTask::InspectorRevalidateDOMTask(
@@ -174,19 +177,35 @@ void InspectorRevalidateDOMTask::ScheduleStyleAttrRevalidationFor(
     timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
+void InspectorRevalidateDOMTask::ScheduleAdoptedStyleSheetRevalidationFor(
+    Node* node) {
+  adopted_style_sheet_invalidated_elements_.insert(node);
+  if (!timer_.IsActive()) {
+    timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
+}
+
 void InspectorRevalidateDOMTask::OnTimer(TimerBase*) {
   // The timer is stopped on m_domAgent destruction, so this method will never
   // be called after m_domAgent has been destroyed.
-  HeapVector<Member<Element>> elements;
-  for (auto& attribute : style_attr_invalidated_elements_)
-    elements.push_back(attribute.Get());
-  dom_agent_->StyleAttributeInvalidated(elements);
-  style_attr_invalidated_elements_.clear();
+  if (!style_attr_invalidated_elements_.empty()) {
+    HeapVector<Member<Element>> elements;
+    for (auto& attribute : style_attr_invalidated_elements_) {
+      elements.push_back(attribute.Get());
+    }
+    dom_agent_->StyleAttributeInvalidated(elements);
+    style_attr_invalidated_elements_.clear();
+  }
+  for (auto& node : adopted_style_sheet_invalidated_elements_) {
+    dom_agent_->AdoptedStyleSheetsInvalidated(node);
+  }
+  adopted_style_sheet_invalidated_elements_.clear();
 }
 
 void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(dom_agent_);
   visitor->Trace(style_attr_invalidated_elements_);
+  visitor->Trace(adopted_style_sheet_invalidated_elements_);
   visitor->Trace(timer_);
 }
 
@@ -2200,6 +2219,17 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
   if (node->IsSVGElement())
     value->setIsSVG(true);
 
+  if (node->IsTreeScope()) {
+    auto* sheets = node->GetTreeScope().AdoptedStyleSheets();
+    if (sheets) {
+      auto adopted_style_sheets = std::make_unique<protocol::Array<String>>();
+      for (auto& sheet : *sheets) {
+        adopted_style_sheets->push_back(
+            IdentifiersFactory::IdForCSSStyleSheet(sheet));
+      }
+      value->setAdoptedStyleSheets(std::move(adopted_style_sheets));
+    }
+  }
   bool force_push_children = false;
   if (auto* element = DynamicTo<Element>(node)) {
     value->setAttributes(BuildArrayForElementAttributes(element));
@@ -2660,6 +2690,31 @@ void InspectorDOMAgent::DidRemoveDOMAttr(Element* element,
   NotifyDidModifyDOMAttr(element);
 
   GetFrontend()->attributeRemoved(id, name.ToString());
+}
+
+void InspectorDOMAgent::DidModifyAdoptedStyleSheets(Node* node) {
+  RevalidateTask()->ScheduleAdoptedStyleSheetRevalidationFor(node);
+}
+
+void InspectorDOMAgent::AdoptedStyleSheetsInvalidated(Node* node) {
+  int id = BoundNodeId(node);
+  // If node is not mapped yet -> ignore the event.
+  if (!id) {
+    return;
+  }
+
+  if (node->IsTreeScope()) {
+    auto* sheets = node->GetTreeScope().AdoptedStyleSheets();
+    auto adopted_style_sheets = std::make_unique<protocol::Array<String>>();
+    if (sheets) {
+      for (auto& sheet : *sheets) {
+        adopted_style_sheets->push_back(
+            IdentifiersFactory::IdForCSSStyleSheet(sheet));
+      }
+    }
+    GetFrontend()->adoptedStyleSheetsModified(id,
+                                              std::move(adopted_style_sheets));
+  }
 }
 
 void InspectorDOMAgent::StyleAttributeInvalidated(

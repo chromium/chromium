@@ -90,9 +90,10 @@
       probes: [
         "CharacterDataModified",
         "DidCommitLoad",
-        'DidRestoreFromBackForwardCache',
+        "DidRestoreFromBackForwardCache",
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
+        "DidModifyAdoptedStyleSheets",
         "DidModifyDOMAttr",
         "DidPerformSlotDistribution",
         "DidPushShadowRoot",
