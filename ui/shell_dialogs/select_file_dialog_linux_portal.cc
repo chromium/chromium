@@ -19,9 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
-#include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/dbus/xdg/request.h"
-#include "components/dbus/xdg/systemd.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
@@ -96,8 +95,8 @@ void OnGetPropertyReply(dbus::Response* response) {
                                : ServiceAvailability::kNotAvailable;
 }
 
-void OnServiceStarted(std::optional<bool> service_started) {
-  if (!service_started.value_or(false)) {
+void OnServiceStarted(bool service_started) {
+  if (!service_started) {
     g_service_availability = ServiceAvailability::kNotAvailable;
     return;
   }
@@ -112,12 +111,6 @@ void OnServiceStarted(std::optional<bool> service_started) {
   get_property_writer.AppendString("version");
   portal->CallMethod(&get_property_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                      base::BindOnce(&OnGetPropertyReply));
-}
-
-void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
-  dbus_utils::CheckForServiceAndStart(dbus_thread_linux::GetSharedSessionBus(),
-                                      kXdgPortalService,
-                                      base::BindOnce(&OnServiceStarted));
 }
 
 std::vector<uint8_t> PathToByteArray(const base::FilePath& path) {
@@ -170,9 +163,9 @@ void SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground() {
 
   GetMainTaskRunner() = base::SequencedTaskRunner::GetCurrentDefault();
 
-  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
+  dbus_xdg::RequestXdgDesktopPortal(
       dbus_thread_linux::GetSharedSessionBus().get(),
-      base::BindOnce(&OnSystemdUnitStarted));
+      base::BindOnce(&OnServiceStarted));
 }
 
 // static
