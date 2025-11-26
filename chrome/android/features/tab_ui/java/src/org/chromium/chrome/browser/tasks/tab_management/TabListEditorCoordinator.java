@@ -8,11 +8,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -604,6 +605,14 @@ public class TabListEditorCoordinator {
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.initWithNative(regularProfile);
         }
+
+        @DrawableRes
+        int emptyImageResId =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                        ? R.drawable.tablet_tab_switcher_empty_state_illustration
+                        : R.drawable.phone_tab_switcher_empty_state_illustration_static;
+        ViewGroup emptyViewParent = mTabListEditorLayout.findViewById(R.id.list_content);
+        if (emptyViewParent == null) emptyViewParent = mTabListEditorLayout;
         mTabListCoordinator =
                 new TabListCoordinator(
                         mTabListMode,
@@ -623,10 +632,12 @@ public class TabListEditorCoordinator {
                         /* attachToParent= */ false,
                         mComponentName,
                         /* onModelTokenChange= */ null,
-                        /* hasEmptyView= */ false,
-                        /* emptyImageResId= */ Resources.ID_NULL,
-                        /* emptyHeadingStringResId= */ Resources.ID_NULL,
-                        /* emptySubheadingStringResId= */ Resources.ID_NULL,
+                        /* emptyViewParent= */ emptyViewParent,
+                        /* emptyImageResId= */ emptyImageResId,
+                        /* emptyHeadingStringResId= */ R.string
+                                .tabpicker_no_tabs_empty_state_header,
+                        /* emptySubheadingStringResId= */ R.string
+                                .tabpicker_no_tabs_empty_state_description,
                         /* onTabGroupCreation= */ null,
                         /* allowDragAndDrop= */ false,
                         /* tabSwitcherDragHandler= */ null,

@@ -192,6 +192,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *     file.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
+     * @param emptyViewParent {@link ViewGroup} The root view of the empty state view.
      * @param emptyImageResId Drawable resource for empty state.
      * @param emptyHeadingStringResId String resource for empty heading.
      * @param emptySubheadingStringResId String resource for empty subheading.
@@ -220,7 +221,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             boolean attachToParent,
             String componentName,
             @Nullable Callback<Object> onModelTokenChange,
-            boolean hasEmptyView,
+            @Nullable ViewGroup emptyViewParent,
             @DrawableRes int emptyImageResId,
             @StringRes int emptyHeadingStringResId,
             @StringRes int emptySubheadingStringResId,
@@ -457,11 +458,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mEmptyStateHeadingResId = emptyHeadingStringResId;
         mEmptyStateSubheadingResId = emptySubheadingStringResId;
         mEmptyStateImageResId = emptyImageResId;
-        if (hasEmptyView) {
-            assumeNonNull(mTabListEmptyCoordinator);
+        if (emptyViewParent != null) {
             mTabListEmptyCoordinator =
                     new TabListEmptyCoordinator(
-                            parentView, mModelList, this::runOnItemAnimatorFinished);
+                            emptyViewParent, mModelList, this::runOnItemAnimatorFinished);
         }
         mTabListHighlighter = new TabListHighlighter(mModelList);
         mTabListMergeAnimationManager = new TabListMergeAnimationManager(mRecyclerView);

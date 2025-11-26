@@ -248,7 +248,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* attachToParent= */ false,
                             mComponentName,
                             /* onModelTokenChange= */ null,
-                            /* hasEmptyView= */ false,
+                            /* emptyViewParent= */ null,
                             /* emptyImageResId= */ Resources.ID_NULL,
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,

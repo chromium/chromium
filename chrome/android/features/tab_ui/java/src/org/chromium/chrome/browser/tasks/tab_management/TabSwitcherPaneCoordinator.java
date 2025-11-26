@@ -432,7 +432,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* attachToParent= */ false,
                             COMPONENT_NAME,
                             /* onModelTokenChange= */ null,
-                            /* hasEmptyView= */ supportsEmptyState,
+                            /* emptyViewParent= */ supportsEmptyState ? parentView : null,
                             supportsEmptyState ? emptyImageResId : Resources.ID_NULL,
                             supportsEmptyState
                                     ? R.string.tabswitcher_no_tabs_empty_state
