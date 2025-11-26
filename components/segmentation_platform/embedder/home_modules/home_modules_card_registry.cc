@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/tips_notifications_promo.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #if BUILDFLAG(IS_IOS)
@@ -67,6 +68,10 @@ const char kHistorySyncPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.history_sync_promo_counter";
 const char kHistorySyncPromoInteractedPref[] =
     "ephemeral_pref_interacted.history_sync_promo_interacted";
+const char kTipsNotificationsPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.tips_notifications_promo_counter";
+const char kTipsNotificationsPromoInteractedPref[] =
+    "ephemeral_pref_interacted.tips_notifications_promo_interacted";
 #endif
 
 namespace {
@@ -239,6 +244,9 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kQuickDeletePromoInteractedPref, false);
   registry->RegisterIntegerPref(kHistorySyncPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kHistorySyncPromoInteractedPref, false);
+  registry->RegisterIntegerPref(kTipsNotificationsPromoImpressionCounterPref,
+                                0);
+  registry->RegisterBooleanPref(kTipsNotificationsPromoInteractedPref, false);
 #endif
 }
 
@@ -350,6 +358,11 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
           profile_prefs_->GetInteger(kHistorySyncPromoImpressionCounterPref);
       profile_prefs_->SetInteger(kHistorySyncPromoImpressionCounterPref,
                                  freshness_impression_count + 1);
+    } else if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
+      int freshness_impression_count = profile_prefs_->GetInteger(
+          kTipsNotificationsPromoImpressionCounterPref);
+      profile_prefs_->SetInteger(kTipsNotificationsPromoImpressionCounterPref,
+                                 freshness_impression_count + 1);
     }
   }
 #endif
@@ -409,6 +422,8 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
     profile_prefs_->SetBoolean(kAuxiliarySearchPromoInteractedPref, true);
   } else if (strcmp(card_name, kHistorySyncPromo) == 0) {
     profile_prefs_->SetBoolean(kHistorySyncPromoInteractedPref, true);
+  } else if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
+    profile_prefs_->SetBoolean(kTipsNotificationsPromoInteractedPref, true);
   }
 #endif
 }
@@ -527,6 +542,13 @@ void HomeModulesCardRegistry::CreateAllCards() {
   if (QuickDeletePromo::IsEnabled(quick_delete_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<QuickDeletePromo>(profile_prefs_));
+  }
+
+  int tips_notifications_promo_show_count =
+      profile_prefs_->GetInteger(kTipsNotificationsPromoImpressionCounterPref);
+  if (TipsNotificationsPromo::IsEnabled(tips_notifications_promo_show_count)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<TipsNotificationsPromo>(profile_prefs_));
   }
 
 #endif

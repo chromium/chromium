@@ -2812,6 +2812,14 @@ const FeatureEntry::FeatureParam kQuickDeletePromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kQuickDeletePromo},
 };
+const FeatureEntry::FeatureParam kTipsNotificationsPromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kTipsNotificationsPromo},
+};
+const FeatureEntry::FeatureParam kTipsNotificationsPromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kTipsNotificationsPromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2831,6 +2839,12 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          std::size(kQuickDeletePromoShowArm), nullptr},
         {"- Force hide quick delete promo", kQuickDeletePromoHideArm,
          std::size(kQuickDeletePromoHideArm), nullptr},
+        {"- Force show tips notifications promo",
+         kTipsNotificationsPromoShowArm,
+         std::size(kTipsNotificationsPromoShowArm), nullptr},
+        {"- Force hide tips notifications promo",
+         kTipsNotificationsPromoHideArm,
+         std::size(kTipsNotificationsPromoHideArm), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)

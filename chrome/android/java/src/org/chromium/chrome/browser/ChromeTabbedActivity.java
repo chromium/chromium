@@ -3077,6 +3077,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private void maybeRegisterHomeModules() {
         if (!HomeModulesMetricsUtils.useMagicStack()) return;
 
+        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+            TipsUtils.registerTipsNotificationsModuleEnabledSettingsPref();
+        }
+
         ModuleRegistry moduleRegistry =
                 new ModuleRegistry(
                         HomeModulesConfigManager.getInstance(), getLifecycleDispatcher());
