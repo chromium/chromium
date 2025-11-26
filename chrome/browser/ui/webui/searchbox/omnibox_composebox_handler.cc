@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
-#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "components/lens/lens_url_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"

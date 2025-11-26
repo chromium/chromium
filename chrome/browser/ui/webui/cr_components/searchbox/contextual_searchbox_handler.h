@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
 
 #include <memory>
 #include <optional>
@@ -15,9 +15,9 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/webui/searchbox/contextual_search_type_converters.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_search_type_converters.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -53,14 +53,13 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
   ContextualOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~ContextualOmniboxClient() override;
 
-protected:
-   std::optional<lens::proto::LensOverlaySuggestInputs>
-    GetLensOverlaySuggestInputs() const override;
+ protected:
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
 
  private:
   contextual_search::ContextualSearchContextController* GetQueryController()
       const;
-
 };
 
 // Abstract class that extends the SearchboxHandler and implements all methods
@@ -201,4 +200,4 @@ class ContextualSearchboxHandler
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_

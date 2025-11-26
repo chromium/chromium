@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"

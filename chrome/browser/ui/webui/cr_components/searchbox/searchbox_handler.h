@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_SEARCHBOX_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_SEARCHBOX_HANDLER_H_
 
 #include <optional>
 
@@ -57,8 +57,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   bool IsRemoteBound() const;
 
   // Adds file context to the searchbox from the browser.
-  void AddFileContextFromBrowser(base::UnguessableToken token,
-                      searchbox::mojom::SelectedFileInfoPtr file_info);
+  void AddFileContextFromBrowser(
+      base::UnguessableToken token,
+      searchbox::mojom::SelectedFileInfoPtr file_info);
 
   // Notifies the WebUI that the contextual input status has changed.
   void OnContextualInputStatusChanged(
@@ -190,4 +191,4 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                           const TemplateURLService* turl_service) const;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_SEARCHBOX_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/searchbox/contextual_search_type_converters.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_search_type_converters.h"
 
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 
