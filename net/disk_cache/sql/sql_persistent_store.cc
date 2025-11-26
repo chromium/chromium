@@ -469,6 +469,12 @@ SqlPersistentStore::IndexState SqlPersistentStore::GetIndexStateForHash(
   return GetShard(key_hash).GetIndexStateForHash(key_hash);
 }
 
+std::optional<SqlPersistentStore::ResId>
+SqlPersistentStore::TryGetSingleResIdFromInMemoryIndex(
+    CacheEntryKey::Hash key_hash) const {
+  return GetShard(key_hash).TryGetSingleResIdFromInMemoryIndex(key_hash);
+}
+
 SqlPersistentStore::ShardId SqlPersistentStore::GetShardIdForHash(
     CacheEntryKey::Hash key_hash) const {
   return ShardId(key_hash.value() % GetSizeOfShards());

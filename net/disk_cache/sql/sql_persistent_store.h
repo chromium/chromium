@@ -455,6 +455,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Synchronously checks the state of a key hash against the in-memory index.
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
 
+  // Attempts to retrieve a single resource ID associated with the given key
+  // hash from the in-memory index. Returns the resource ID if a unique entry
+  // exists for the hash; otherwise, returns std::nullopt.
+  std::optional<ResId> TryGetSingleResIdFromInMemoryIndex(
+      CacheEntryKey::Hash key_hash) const;
+
   // Returns the shard ID for a given cache key hash.
   ShardId GetShardIdForHash(CacheEntryKey::Hash key_hash) const;
 

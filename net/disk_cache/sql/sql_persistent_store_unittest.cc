@@ -4547,4 +4547,120 @@ TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
   EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
 }
 
+TEST_F(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("my-key1");
+  const CacheEntryKey kKey2("my-key2");
+  const CacheEntryKey kKey3("my-key3");
+
+  // 1. Create three entries.
+  SqlPersistentStore::ResId res_id1 = CreateEntryAndGetResId(kKey1);
+  SqlPersistentStore::ResId res_id2 = CreateEntryAndGetResId(kKey2);
+  SqlPersistentStore::ResId res_id3 = CreateEntryAndGetResId(kKey3);
+
+  // 2. Ensure index is not loaded.
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  // 3. Start loading the index.
+  base::test::TestFuture<SqlPersistentStore::Error> load_index_future;
+  ASSERT_TRUE(store_->MaybeLoadInMemoryIndex(load_index_future.GetCallback()));
+
+  // 4. Doom two entries while index loading is in flight.
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future1;
+  store_->DoomEntry(kKey1, res_id1, doom_future1.GetCallback());
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future3;
+  store_->DoomEntry(kKey3, res_id3, doom_future3.GetCallback());
+
+  // 5. Wait for index loading to complete.
+  EXPECT_EQ(load_index_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // 6. The index is now loaded. The doomed entries should not be in the index
+  //    because they were added to `pending_doomed_res_ids_` and removed after
+  //    the index was loaded.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // 7. Wait for the doom operations to complete.
+  EXPECT_EQ(doom_future1.Get(), SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(doom_future3.Get(), SqlPersistentStore::Error::kOk);
+
+  // 8. The index state should remain the same.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // 9. Verify that the doomed entries are gone and the other entry is still
+  //    accessible.
+  auto open_result1 = OpenEntry(kKey1);
+  ASSERT_TRUE(open_result1.has_value());
+  EXPECT_FALSE(open_result1->has_value());
+  auto open_result2 = OpenEntry(kKey2);
+  ASSERT_TRUE(open_result2.has_value());
+  ASSERT_TRUE(open_result2->has_value());
+  EXPECT_EQ((*open_result2)->res_id, res_id2);
+  auto open_result3 = OpenEntry(kKey3);
+  ASSERT_TRUE(open_result3.has_value());
+  EXPECT_FALSE(open_result3->has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
+  CreateAndInitStore();
+
+  // Load the in-memory index, which is necessary for the index recovery
+  // mechanism.
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  // The entry should be in the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Simulate a database failure.
+  store_->SetSimulateDbFailureForTesting(true);
+
+  // Try to doom the entry. The database operation will fail.
+  ASSERT_EQ(DoomEntry(kKey, res_id),
+            SqlPersistentStore::Error::kFailedForTesting);
+
+  // Because the DB operation failed, the entry should have been re-added to
+  // the in-memory index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Disable the failure simulation.
+  store_->SetSimulateDbFailureForTesting(false);
+
+  // The entry should still be openable.
+  auto open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  ASSERT_TRUE(open_result->has_value());
+  EXPECT_EQ(open_result.value()->res_id, res_id);
+
+  // Doom the entry again. This time it should succeed.
+  ASSERT_EQ(DoomEntry(kKey, res_id), SqlPersistentStore::Error::kOk);
+
+  // The entry should now be gone from the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // The entry should not be openable.
+  open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  EXPECT_FALSE(open_result->has_value());
+}
+
 }  // namespace disk_cache

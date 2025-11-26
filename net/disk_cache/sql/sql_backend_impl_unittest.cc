@@ -2157,5 +2157,43 @@ TEST_F(SqlBackendImplTest, DestructionWithPendingOperationOnEntry) {
   FlushQueueInTaskRunners(task_runners);
 }
 
+TEST_F(SqlBackendImplTest, DoomEntryWithInMemoryIndex) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+  const CacheEntryKey kEntryKey(kKey);
+
+  // 1. Create an entry and close it.
+  TestEntryResultCompletionCallback create_cb;
+  disk_cache::EntryResult create_result = create_cb.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, create_cb.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  create_result.ReleaseEntry()->Close();
+
+  // 2. Load in-memory index.
+  ASSERT_TRUE(LoadInMemoryIndex(*backend));
+
+  // 3. Verify that the entry is in the index.
+  EXPECT_EQ(
+      backend->GetSqlStoreForTest()->GetIndexStateForHash(kEntryKey.hash()),
+      SqlPersistentStore::IndexState::kHashFound);
+
+  // 4. Doom the entry.
+  net::TestCompletionCallback cb_doom;
+  int rv_doom = backend->DoomEntry(kKey, net::HIGHEST, cb_doom.callback());
+
+  // 5. Verify that the entry is removed from the in-memory index synchronously.
+  EXPECT_EQ(
+      backend->GetSqlStoreForTest()->GetIndexStateForHash(kEntryKey.hash()),
+      SqlPersistentStore::IndexState::kHashNotFound);
+
+  EXPECT_THAT(cb_doom.GetResult(rv_doom), IsOk());
+
+  // 6. Verify that the entry is gone.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
 }  // namespace
 }  // namespace disk_cache

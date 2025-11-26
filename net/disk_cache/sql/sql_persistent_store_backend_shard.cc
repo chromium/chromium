@@ -86,24 +86,41 @@ void SqlPersistentStore::BackendShard::CreateEntry(
 void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
                                                  ResId res_id,
                                                  ErrorCallback callback) {
+  bool need_recovery_on_failure = false;
+  if (index_.has_value()) {
+    // If the in-memory index is available, synchronously remove the entry from
+    // the index.
+    if (index_->Remove(key.hash(), res_id)) {
+      need_recovery_on_failure = true;
+    } else {
+      RecordIndexMismatch(IndexMismatchLocation::kDoomEntry);
+    }
+  } else if (loading_index_) {
+    // If the in-memory index is being loaded, add to `pending_doomed_res_ids_`
+    // to be removed from the index upon completion of the index loading.
+    pending_doomed_res_ids_.emplace_back(res_id);
+  }
   backend_.AsyncCall(&SqlPersistentStore::Backend::DoomEntry)
       .WithArgs(key, res_id, base::TimeTicks::Now())
       .Then(base::BindOnce(
-          [](base::WeakPtr<BackendShard> weak_ptr, CacheEntryKey::Hash key_hash,
+          [](base::WeakPtr<BackendShard> weak_ptr,
+             bool need_recovery_on_failure, CacheEntryKey::Hash hash,
              ResId res_id, ErrorCallback callback, ErrorAndStoreStatus result) {
             if (weak_ptr) {
-              if (result.result == Error::kOk && weak_ptr->index_.has_value()) {
-                if (!weak_ptr->index_->Remove(key_hash, res_id)) {
-                  weak_ptr->RecordIndexMismatch(
-                      IndexMismatchLocation::kDoomEntry);
-                }
+              // If the DoomEntry operation fails in the database, the entry
+              // needs to be re-inserted into the in-memory index to maintain
+              // consistency.
+              if (need_recovery_on_failure && result.result != Error::kOk &&
+                  result.result != Error::kNotFound) {
+                weak_ptr->index_->Insert(hash, res_id);
               }
               weak_ptr->store_status_ = result.store_status;
               // We should not run the callback when `this` was deleted.
               std::move(callback).Run(std::move(result.result));
             }
           },
-          weak_factory_.GetWeakPtr(), key.hash(), res_id, std::move(callback)));
+          weak_factory_.GetWeakPtr(), need_recovery_on_failure, key.hash(),
+          res_id, std::move(callback)));
 }
 
 void SqlPersistentStore::BackendShard::DeleteDoomedEntry(
@@ -287,6 +304,9 @@ int64_t SqlPersistentStore::BackendShard::GetSizeOfAllEntries() const {
 
 void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
     ErrorCallback callback) {
+  CHECK(!loading_index_);
+  CHECK(!index_.has_value());
+  loading_index_ = true;
   backend_.AsyncCall(&SqlPersistentStore::Backend::LoadInMemoryIndex)
       .Then(base::BindOnce(
           [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
@@ -296,6 +316,11 @@ void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
                 weak_ptr->index_ = std::move(result->index);
                 weak_ptr->to_be_deleted_res_ids_ =
                     std::move(result->doomed_entry_res_ids);
+                weak_ptr->loading_index_ = false;
+                for (auto doomed_res_id : weak_ptr->pending_doomed_res_ids_) {
+                  weak_ptr->index_->Remove(doomed_res_id);
+                }
+                weak_ptr->pending_doomed_res_ids_.clear();
               }
               std::move(callback).Run(result.has_value() ? Error::kOk
                                                          : result.error());
@@ -349,6 +374,13 @@ SqlPersistentStore::BackendShard::GetIndexStateForHash(
     return IndexState::kHashFound;
   }
   return IndexState::kHashNotFound;
+}
+
+std::optional<SqlPersistentStore::ResId>
+SqlPersistentStore::BackendShard::TryGetSingleResIdFromInMemoryIndex(
+    CacheEntryKey::Hash key_hash) const {
+  return index_.has_value() ? index_->TryGetSingleResId(key_hash)
+                            : std::nullopt;
 }
 
 // Like `WrapCallback`, but also updates the `store_status_`.
