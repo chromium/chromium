@@ -56,7 +56,6 @@ class StreamAlgorithm : public GarbageCollected<StreamAlgorithm> {
 
   virtual ScriptPromise<IDLUndefined> Run(
       ScriptState*,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) = 0;
 
   virtual void Trace(Visitor*) const {}

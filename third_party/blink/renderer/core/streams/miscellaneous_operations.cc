@@ -79,13 +79,7 @@ class TrivialStreamAlgorithm final : public StreamAlgorithm {
  public:
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
     return ToResolvedUndefinedPromise(script_state);
   }
 };
@@ -103,23 +97,17 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
   // created.
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
     // This method technically supports any number of arguments, but we only
     // call it with 0 or 1 in practice.
-    DCHECK_GE(spanification_suspected_redundant_argc, 0);
+    DCHECK_GE(argv.size(), 0u);
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
     // 6.b.i. Return ! PromiseCall(method, underlyingObject, extraArgs).
     // In this class extraArgs is always empty, but there may be other arguments
     // supplied to the method.
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
-                       spanification_suspected_redundant_argc, argv.data());
+                       argv.size(), argv.data());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -147,26 +135,20 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
   // CreateAlgorithmFromUnderlyingMethod() in the standard,
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_GE(spanification_suspected_redundant_argc, 0);
-    DCHECK_LE(spanification_suspected_redundant_argc, 1);
+    DCHECK_GE(argv.size(), 0u);
+    DCHECK_LE(argv.size(), 1u);
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
     // 6.c.
     //      i. Let fullArgs be a List consisting of arg followed by the
     //         elements of extraArgs in order.
     std::array<v8::Local<v8::Value>, 2> full_argv;
-    if (spanification_suspected_redundant_argc != 0) {
+    if (!argv.empty()) {
       full_argv[0] = argv[0];
     }
-    full_argv[spanification_suspected_redundant_argc] = extra_arg_.Get(isolate);
-    int full_argc = spanification_suspected_redundant_argc + 1;
+    full_argv[argv.size()] = extra_arg_.Get(isolate);
+    int full_argc = argv.size() + 1;
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
     return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),

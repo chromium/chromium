@@ -584,7 +584,7 @@ void ReadableByteStreamController::CallPullIfNeeded(
   controller->pulling_ = true;
   // 6. Let pullPromise be the result of performing
   // controller.[[pullAlgorithm]].
-  auto pull_promise = controller->pull_algorithm_->Run(script_state, 0, {});
+  auto pull_promise = controller->pull_algorithm_->Run(script_state, {});
 
   class ResolveFunction final
       : public ThenCallable<IDLUndefined, ResolveFunction> {
@@ -1680,7 +1680,7 @@ ScriptPromise<IDLUndefined> ReadableByteStreamController::CancelSteps(
   // 3. Let result be the result of performing this.[[cancelAlgorithm]], passing
   // in reason.
   auto result =
-      cancel_algorithm_->Run(script_state, 1, base::span_from_ref(reason));
+      cancel_algorithm_->Run(script_state, base::span_from_ref(reason));
   // 4. Perform ! ReadableByteStreamControllerClearAlgorithms(this).
   ClearAlgorithms(this);
   // 5. Return result.

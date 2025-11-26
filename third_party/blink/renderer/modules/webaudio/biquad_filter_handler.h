@@ -53,8 +53,7 @@ class BiquadFilterHandler final : public AudioHandler {
 
   // Expose HasConstantValues for unit testing
   MODULES_EXPORT static bool HasConstantValuesForTesting(
-      base::span<float> values,
-      int spanification_suspected_redundant_frames_to_process);
+      base::span<float> values);
 
  private:
   BiquadFilterHandler(AudioNode&,

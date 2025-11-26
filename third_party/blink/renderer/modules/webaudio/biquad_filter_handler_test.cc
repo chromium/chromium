@@ -11,18 +11,16 @@ namespace blink {
 
 TEST(HasConstantValuesTest, RegressionTest) {
   test::TaskEnvironment task_environment;
-  const int frames_to_process = 7;
-  float values[frames_to_process] = {};
+  float values[7] = {};
 
   // Test with all same elements
-  EXPECT_TRUE(blink::BiquadFilterHandler::HasConstantValuesForTesting(
-      values, frames_to_process));
+  EXPECT_TRUE(blink::BiquadFilterHandler::HasConstantValuesForTesting(values));
 
   // Test with a single different element at each position
   for (float& value : values) {
     value = 1.0;
-    EXPECT_FALSE(blink::BiquadFilterHandler::HasConstantValuesForTesting(
-        values, frames_to_process));
+    EXPECT_FALSE(
+        blink::BiquadFilterHandler::HasConstantValuesForTesting(values));
     value = 0;
   }
 }
