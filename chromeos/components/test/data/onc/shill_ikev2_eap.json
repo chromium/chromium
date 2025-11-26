@@ -10,5 +10,7 @@
   "EAP.EAP": "MSCHAPV2",
   "EAP.Identity": "my_identity",
   "EAP.Password": "my_password",
-  "SaveCredentials": true
+  "SaveCredentials": true,
+  "StaticIPConfig": {
+  }
 }

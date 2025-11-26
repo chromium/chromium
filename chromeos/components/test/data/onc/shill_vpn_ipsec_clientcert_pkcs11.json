@@ -10,5 +10,6 @@
    "Provider.Type": "l2tpipsec",
    "ProxyConfig": "{\"mode\":\"direct\"}",
    "SaveCredentials": true,
+   "StaticIPConfig": {},
    "Type": "vpn",
 }
