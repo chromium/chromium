@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -127,6 +128,11 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   if (!browser) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      base::StrCat({"ContextualTasks.AiResponse.UserAction.LinkClicked.",
+                    (tab ? "Panel" : "Tab")}),
+      true);
 
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
   std::unique_ptr<content::WebContents> new_contents =
