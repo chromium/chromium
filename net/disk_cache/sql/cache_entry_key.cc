@@ -9,9 +9,14 @@
 
 namespace disk_cache {
 
+// static
+CacheEntryKey::Hash CacheEntryKey::HashFromString(const std::string_view str) {
+  return Hash(static_cast<int32_t>(base::PersistentHash(str)));
+}
+
 CacheEntryKey::CacheEntryKey(std::string str)
     : data_(base::MakeRefCounted<base::RefCountedString>(std::move(str))),
-      hash_(static_cast<int32_t>(base::PersistentHash(string()))) {}
+      hash_(HashFromString(string())) {}
 
 CacheEntryKey::~CacheEntryKey() = default;
 

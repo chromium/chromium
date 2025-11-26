@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
@@ -39,6 +40,10 @@ namespace disk_cache {
 class NET_EXPORT_PRIVATE CacheEntryKey {
  public:
   using Hash = CacheEntryKeyHash;
+
+  // A utility to compute the hash of a string, without needing to create a
+  // CacheEntryKey object.
+  static Hash HashFromString(const std::string_view str);
 
   explicit CacheEntryKey(std::string str = "");
   ~CacheEntryKey();
