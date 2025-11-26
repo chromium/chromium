@@ -123,8 +123,6 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
 void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
-  // TODO(crbug.com/415272524): Record metrics on how often the retrieval
-  // succeeds or fails, in combination with the OTP source.
   // If token_or_error holds an error, run the callback with empty otp value.
   if (!token_or_error.has_value()) {
     if (!last_pending_get_suggestions_callback_.is_null()) {
