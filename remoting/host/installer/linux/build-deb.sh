@@ -16,7 +16,7 @@ REPOCONFIG="deb [arch=${ARCHITECTURE}] http://${BASEREPOCONFIG}"
 REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"
 REPOCONFIGREGEX+="[[:space:]]*) https?://${BASEREPOCONFIG}"
 
-source ${SCRIPTDIR}/../../../../chrome/installer/linux/common/installer.include
+source ${SCRIPTDIR}/installer.include
 
 guess_filename() {
   VERSION_FULL=$(get_version_full)
