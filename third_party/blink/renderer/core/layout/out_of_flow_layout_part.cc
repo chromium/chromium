@@ -670,34 +670,32 @@ void OutOfFlowLayoutPart::Run() {
   //  - Additions/removals may occur while processing normal out-of-flow
   //    positioned elements (e.g. via a container-query).
   //  - They correctly reference any anchor()s from preceding elements.
-  if (!container_builder_->IsRoot()) {
-    return;
-  }
+  if (container_builder_->IsRoot()) {
+    for (LayoutInputNode child = node.FirstChild(); child;
+         child = child.NextSibling()) {
+      if (!child.IsBlock()) {
+        continue;
+      }
+      BlockNode block_child = To<BlockNode>(child);
+      if (!block_child.IsInTopOrViewTransitionLayer() ||
+          !block_child.IsOutOfFlowPositioned()) {
+        continue;
+      }
 
-  for (LayoutInputNode child = node.FirstChild(); child;
-       child = child.NextSibling()) {
-    if (!child.IsBlock()) {
-      continue;
+      // https://drafts.csswg.org/css-position-4/#top-styling
+      // The static position for top-layer elements is just 0x0.
+      container_builder_->AddOutOfFlowChildCandidate(
+          block_child, LogicalStaticPosition(),
+          /*allow_top_layer_nodes=*/true);
+
+      // With one top-layer node added, run through the machinery again. Note
+      // that we need to do this separately for each node, as laying out a node
+      // may cause top-layer nodes to be added or removed.
+      HandleFragmentation();
+      candidates.Shrink(0);
+      container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+      LayoutCandidates(candidates);
     }
-    BlockNode block_child = To<BlockNode>(child);
-    if (!block_child.IsInTopOrViewTransitionLayer() ||
-        !block_child.IsOutOfFlowPositioned()) {
-      continue;
-    }
-
-    // https://drafts.csswg.org/css-position-4/#top-styling
-    // The static position for top-layer elements is just 0x0.
-    container_builder_->AddOutOfFlowChildCandidate(
-        block_child, LogicalStaticPosition(),
-        /*allow_top_layer_nodes=*/true);
-
-    // With one top-layer node added, run through the machinery again. Note that
-    // we need to do this separately for each node, as laying out a node may
-    // cause top-layer nodes to be added or removed.
-    HandleFragmentation();
-    candidates.Shrink(0);
-    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
-    LayoutCandidates(candidates);
   }
 }
 
