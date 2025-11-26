@@ -40,8 +40,8 @@ class TabStripInternalsPageHandler
 
   mojo::Receiver<tab_strip_internals::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip_internals::mojom::Page> page_;
-  raw_ptr<Profile> profile_;
 
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TabStripInternalsObserver> observer_;
 
   base::WeakPtrFactory<TabStripInternalsPageHandler> weak_ptr_factory_{this};

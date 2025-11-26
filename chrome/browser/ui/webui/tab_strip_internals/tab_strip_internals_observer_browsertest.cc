@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_observer.h"
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -37,7 +39,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest, BrowserAdded) {
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   // Local scope to isolate OnBrowserAdded and avoid capturing OnBrowserRemoved.
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
 
     extra_browser = CreateBrowser(browser()->profile());
@@ -55,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest, BrowserRemoved) {
   // `extra_browser`. Prevents capturing OnBrowserRemoved for the main test
   // browser.
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
 
     CloseBrowserSynchronously(extra_browser);
@@ -69,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
 
     ASSERT_TRUE(
@@ -89,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   TabStripModel* model = browser()->tab_strip_model();
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(4);
 
     model->AddToNewGroup({0, 1});
@@ -110,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(4));
 
     model->CloseAllTabsInGroup(group_id);
@@ -140,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
       old_visuals->title(), old_visuals->color(), !old_visuals->is_collapsed());
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(1);
 
     model->ChangeTabGroupVisuals(group_id, new_visuals);
@@ -167,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   ASSERT_EQ(3, model->count());
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(2);
 
     split_tabs::SplitTabId split_id =
@@ -201,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
             model->GetTabAtIndex(1)->GetSplit().value());
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(2);
 
     model->RemoveSplit(split_id);
@@ -217,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest, TabChangedAt) {
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
 
     ASSERT_TRUE(
@@ -232,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(1);
 
     browser()->tab_strip_model()->SetTabPinned(0, true);
@@ -246,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(1);
 
     browser()->tab_strip_model()->SetTabBlocked(0, true);
@@ -266,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(1);
 
     model->AddToExistingGroup({1}, group_id);
@@ -287,7 +301,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(1);
 
     model->RemoveFromGroup({1});
@@ -314,7 +329,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_b));
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
-    TabStripInternalsObserver observer(mock_callback.Get());
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
     EXPECT_CALL(mock_callback, Run()).Times(2);
 
     // Move tab at index 1 from group A to group B.
@@ -322,4 +338,61 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
     model->AddToExistingGroup({1}, group_b);
   }
   EXPECT_EQ(model->GetTabGroupForTab(1), group_b);
+}
+
+// TabRestoreServiceChanged: Observe when a tab moves to TabRestoreService.
+IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
+                       TabRestoreServiceChanged_TabAdded) {
+  base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  {
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
+    EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
+
+    // Close an existing tab.
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        1, TabCloseTypes::CLOSE_USER_GESTURE);
+  }
+}
+
+// TabRestoreServiceDestroyed: Callback should not be invoked when service is
+// destroyed.
+IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
+                       TabRestoreServiceDestroyed_NoCallback) {
+  base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
+  {
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
+    EXPECT_CALL(mock_callback, Run()).Times(0);
+
+    sessions::TabRestoreService* service =
+        TabRestoreServiceFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(service);
+    // Invoke for code coverage.
+    observer.TabRestoreServiceDestroyed(service);
+  }
+}
+
+// TabRestoreService_OTR_Profile: Callback should not be invoked for an OTR
+// profile browser by the TabRestoreService.
+IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
+                       TabRestoreService_OTR_Profile_NoCallback) {
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(otr_browser);
+  Profile* otr_profile = otr_browser->profile();
+  ASSERT_TRUE(otr_profile->IsOffTheRecord());
+  base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
+  {
+    TabStripInternalsObserver observer(otr_profile, mock_callback.Get());
+    // Use the expected callback count triggered by the TabStripModel to confirm
+    // that the TabRestoreService did not trigger any additional callbacks.
+    EXPECT_CALL(mock_callback, Run()).Times(1);
+
+    // Close an incognito browser tab.
+    otr_browser->tab_strip_model()->CloseWebContentsAt(
+        0, TabCloseTypes::CLOSE_USER_GESTURE);
+  }
+  CloseBrowserSynchronously(otr_browser);
 }

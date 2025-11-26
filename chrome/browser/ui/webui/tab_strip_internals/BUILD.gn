@@ -20,6 +20,7 @@ source_set("tab_strip_internals") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
+    "//components/sessions",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -43,7 +44,6 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//components/sessions",
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//content/public/browser",
@@ -72,6 +72,8 @@ source_set("browser_tests") {
   deps = [
     ":tab_strip_internals",
     "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",

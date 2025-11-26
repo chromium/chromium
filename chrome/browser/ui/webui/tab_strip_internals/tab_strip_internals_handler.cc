@@ -24,6 +24,7 @@ TabStripInternalsPageHandler::TabStripInternalsPageHandler(
       page_(std::move(page)),
       profile_(profile) {
   observer_ = std::make_unique<TabStripInternalsObserver>(
+      profile_,
       base::BindRepeating(&TabStripInternalsPageHandler::NotifyTabStripUpdated,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -71,9 +72,6 @@ TabStripInternalsPageHandler::BuildSnapshot() {
     }
   }
 
-  // TODO (crbug.com/427204855): Inherit from TabRestoreServiceObserver and
-  // implement required methods to listen to and broadcast live-updates to the
-  // webui.
   return data;
 }
 
