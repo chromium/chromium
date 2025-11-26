@@ -764,6 +764,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
         /*disabled_features=*/{
             lens::features::kLensSearchZeroStateCsb,
+            lens::features::kLensAimSuggestions,
+            lens::features::kLensOverlaySuggestionsMigration,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
 

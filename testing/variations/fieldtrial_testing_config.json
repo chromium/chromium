@@ -6036,8 +6036,21 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "clear-vsint-when-no-region-selection": "true",
+                        "enable-typeahead-suggestions": "true",
+                        "lens-aim-suggestions-type": "Multimodal",
+                        "number-of-aim-suggestions": "8",
+                        "send-image-signals-for-lens-suggest": "false",
+                        "send-lens-visual-interaction-data-for-lens-suggest": "true"
+                    },
                     "enable_features": [
+                        "LensAimSuggestions",
+                        "LensOverlaySuggestionsMigration",
                         "LensSearchReinvocationAffordance"
+                    ],
+                    "disable_features": [
+                        "LensAimSuggestionsGradientBackground"
                     ]
                 }
             ]
