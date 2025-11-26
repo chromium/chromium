@@ -1561,10 +1561,11 @@ void PrerenderHost::OnAcceptClientHintChanged(
 void PrerenderHost::GetAllowedClientHintsOnPage(
     const url::Origin& origin,
     blink::EnabledClientHints* client_hints) const {
-  if (!client_hints_type_.contains(origin)) {
+  auto it = client_hints_type_.find(origin);
+  if (it == client_hints_type_.end()) {
     return;
   }
-  for (const auto& hint : client_hints_type_.at(origin)) {
+  for (const auto& hint : it->second) {
     client_hints->SetIsEnabled(hint, true);
   }
 }
