@@ -1002,7 +1002,9 @@ void BrowserTabStripController::OnSplitTabChanged(
 
 void BrowserTabStripController::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_group_id,
-    std::optional<tab_groups::TabGroupId> old_group_id) {}
+    std::optional<tab_groups::TabGroupId> old_group_id) {
+  tabstrip_->OnTabGroupFocusChanged(new_group_id);
+}
 
 BrowserFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->browser_widget()->GetFrameView();

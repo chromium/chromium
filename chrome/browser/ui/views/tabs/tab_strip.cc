@@ -1353,6 +1353,14 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupClosed(group);
 }
 
+void TabStrip::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group) {
+  // The TabStripLayoutHelper will query the controller for the focused group
+  // and update the visibility of tabs and group headers. Calling
+  // AnimateToIdealBounds() will trigger the animation to the new bounds.
+  tab_container_->AnimateToIdealBounds();
+}
+
 void TabStrip::OnSplitCreated(const std::vector<int>& split_indices,
                               split_tabs::SplitTabId split_id) {
   for (const int split_index : split_indices) {
@@ -1643,6 +1651,10 @@ void TabStrip::UpdateAnimationTarget(TabSlotView* tab_slot_view,
 
 bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {
   return controller_->IsGroupCollapsed(group);
+}
+
+std::optional<tab_groups::TabGroupId> TabStrip::GetFocusedGroup() const {
+  return controller_->GetFocusedGroup();
 }
 
 const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {

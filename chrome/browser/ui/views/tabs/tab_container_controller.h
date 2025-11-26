@@ -63,6 +63,10 @@ class TabContainerController {
   virtual gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the currently focused tab group, or `std::nullopt` if no group
+  // is focused.
+  virtual std::optional<tab_groups::TabGroupId> GetFocusedGroup() const = 0;
+
   // Whether the window drag handle area can be extended to include the top of
   // inactive tabs.
   virtual bool CanExtendDragHandle() const = 0;

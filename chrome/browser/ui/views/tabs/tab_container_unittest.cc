@@ -145,6 +145,10 @@ class FakeTabContainerController final : public TabContainerController {
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              gfx::Rect target_bounds) override {}
 
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override {
+    return std::nullopt;
+  }
+
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
   raw_ptr<const TabContainer, DanglingUntriaged> tab_container_;

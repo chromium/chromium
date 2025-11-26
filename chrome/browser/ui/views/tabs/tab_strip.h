@@ -174,6 +174,9 @@ class TabStrip : public views::View,
   // Destroys the views associated with a recently deleted tab group.
   void OnGroupClosed(const tab_groups::TabGroupId& group);
 
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group);
+
   // Updates the tab slot view split state and animates to bounds.
   void OnSplitCreated(const std::vector<int>& split_indices,
                       split_tabs::SplitTabId split_id);
@@ -257,6 +260,7 @@ class TabStrip : public views::View,
 
   // TabContainerController AND TabSlotController:
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
 
   // TabSlotController:
   const ui::ListSelectionModel& GetSelectionModel() const override;
