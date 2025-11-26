@@ -7,10 +7,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -122,7 +122,8 @@ bool LoginWebDialog::HandleOpenURLFromTab(
   // fire an auto-reload, which in turn leads to opening a new browser window,
   // so we must suppress it.
   // http://crbug.com/443096
-  return (source && !chrome::FindBrowserWithTab(source));
+  return source &&
+         !ash::BrowserController::GetInstance()->GetBrowserForTab(source);
 }
 
 bool LoginWebDialog::MaybeCloseWindow(WebDialogDelegate& delegate,
