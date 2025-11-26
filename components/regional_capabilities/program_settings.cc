@@ -36,6 +36,12 @@ constexpr ProgramSettings kWaffleSettings{
         },
 };
 
+constexpr ProgramSettings kWaffleWithLocationRestrictionSettings = []() {
+  ProgramSettings ret = kWaffleSettings;
+  ret.choice_screen_eligibility_config->restrict_to_associated_countries = true;
+  return ret;
+}();
+
 constexpr ProgramSettings kTaiyakiSettings{
     .program = Program::kTaiyaki,
     .associated_countries =
@@ -149,6 +155,10 @@ const ProgramSettings& GetSettingsForProgram(Program program) {
       return kNoOpTaiyakiSettings;
 #endif
     case Program::kWaffle:
+      if (base::FeatureList::IsEnabled(
+              switches::kWaffleRestrictToAssociatedCountries)) {
+        return kWaffleWithLocationRestrictionSettings;
+      }
       return kWaffleSettings;
     case Program::kDefault:
       return kDefaultSettings;

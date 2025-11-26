@@ -78,6 +78,14 @@ BASE_DECLARE_FEATURE(kDynamicProfileCountry);
 // determine whether to actually show it.
 BASE_DECLARE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport);
 
+// Whether to enable eligibility based on the current location for Waffle choice
+// screens (see ChoiceScreenEligibilityConfig.restrict_to_associated_countries).
+BASE_DECLARE_FEATURE(kWaffleRestrictToAssociatedCountries);
+
+// For programs with restrict_to_associated_countries, whether an exact country
+// match is required (in addition to a region match).
+BASE_DECLARE_FEATURE(kStrictAssociatedCountriesCheck);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_

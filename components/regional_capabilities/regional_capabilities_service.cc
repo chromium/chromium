@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/program_settings.h"
@@ -360,8 +361,17 @@ bool RegionalCapabilitiesService::
     return true;
   }
 
-  return base::Contains(GetActiveProgramSettings().associated_countries,
-                        client_->GetVariationsLatestCountryId());
+  if (!base::Contains(GetActiveProgramSettings().associated_countries,
+                      client_->GetVariationsLatestCountryId())) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(switches::kStrictAssociatedCountriesCheck) &&
+      GetCountryIdInternal() != client_->GetVariationsLatestCountryId()) {
+    return false;
+  }
+
+  return true;
 }
 
 bool RegionalCapabilitiesService::
