@@ -12499,6 +12499,8 @@ from previous Chrome versions.
   <int value="-604068396" label="disable-input-ime-api"/>
   <int value="-603649079" label="ContextualSearchRankerQuery:enabled"/>
   <int value="-602721511" label="NtpPhotosModuleCustomizedOptInTitle:disabled"/>
+  <int value="-601747822"
+      label="AutofillEnableTouchToFillReshowForBnpl:disabled"/>
   <int value="-601672508" label="ReaderModeUseReadability:disabled"/>
   <int value="-601427689" label="FloatingSnackbar:enabled"/>
   <int value="-601384286" label="disable-contextual-search"/>
@@ -15690,6 +15692,8 @@ from previous Chrome versions.
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="527010182"
       label="ComputePressureBreakCalibrationMitigation:disabled"/>
+  <int value="527119550"
+      label="AutofillEnableTouchToFillReshowForBnpl:enabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
   <int value="528614527" label="LeftClickOpensTabGroupBubble:disabled"/>

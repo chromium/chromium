@@ -13536,6 +13536,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kOverscrollEffectOnNonRootScrollers)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-touch-to-fill-reshow-for-bnpl",
+     flag_descriptions::kAutofillEnableTouchToFillReshowForBnplName,
+     flag_descriptions::kAutofillEnableTouchToFillReshowForBnplDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableTouchToFillReshowForBnpl)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

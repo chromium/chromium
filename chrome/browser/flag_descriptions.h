@@ -979,6 +979,12 @@ inline constexpr char kAutofillEnableSupportForNameAndEmailDescription[] =
     "When enabled, a name and email profile with data comming from the account "
     "will be created for autofilling.";
 
+inline constexpr char kAutofillEnableTouchToFillReshowForBnplName[] =
+    "Enable the Touch To Fill bottom sheet to be reshown on Android for BNPL.";
+inline constexpr char kAutofillEnableTouchToFillReshowForBnplDescription[] =
+    "When enabled, the Touch To Fill bottom sheet on Android can be reshown "
+    "after a BNPL flow is dismissed by a user.";
+
 inline constexpr char kAutofillEnableVcn3dsAuthenticationName[] =
     "Enable 3DS authentication for virtual cards";
 inline constexpr char kAutofillEnableVcn3dsAuthenticationDescription[] =

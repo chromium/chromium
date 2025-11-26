@@ -227,6 +227,13 @@ BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the Touch To Fill bottom sheet on Android can be reshown after
+// a BNPL flow is dismissed by a user.
+BASE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, Chrome will trigger 3DS authentication during a virtual card
 // retrieval if a challenge is required, 3DS authentication is available for
 // the card, and FIDO is not.
