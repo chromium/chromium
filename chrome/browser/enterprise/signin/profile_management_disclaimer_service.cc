@@ -112,6 +112,24 @@ ProfileManagementDisclaimerService::DisableManagementDisclaimerUntilReset() {
                      weak_ptr_factory_.GetWeakPtr(), true));
 }
 
+base::ScopedClosureRunner
+ProfileManagementDisclaimerService::AutoAcceptManagementDisclaimerUntilReset() {
+  active_auto_accept_count_++;
+  auto_accept_management_ = true;
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ProfileManagementDisclaimerService::MaybeResetAcceptManagementDisclaimer,
+      weak_ptr_factory_.GetWeakPtr(), /*auto_accept_management=*/false));
+}
+
+void ProfileManagementDisclaimerService::MaybeResetAcceptManagementDisclaimer(
+    bool auto_accept_management) {
+  active_auto_accept_count_--;
+  CHECK_GE(active_auto_accept_count_, 0);
+  if (active_auto_accept_count_ == 0) {
+    auto_accept_management_ = auto_accept_management;
+  }
+}
+
 ProfileManagementDisclaimerService::ResetableState::ResetableState() = default;
 
 ProfileManagementDisclaimerService::ResetableState::~ResetableState() {
@@ -310,6 +328,14 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     return;
   }
   signin_prefs_.ClearPolicyDisclaimerLastRegistrationFailureTime(gaia_id);
+
+  if (auto_accept_management_) {
+    enterprise_util::SetUserAcceptedAccountManagement(&profile_.get(), true);
+    OnManagedProfileCreationResult(
+        base::ok<Profile*>(&profile_.get()),
+        /*profile_creation_required_by_policy=*/false);
+    return;
+  }
 
   if (profile_separation_policies_for_testing_.has_value() ||
       user_choice_for_testing_.has_value()) {

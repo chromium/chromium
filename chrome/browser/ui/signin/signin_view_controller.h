@@ -236,7 +236,7 @@ class SigninViewController {
                            PressingSignOutButtonsSignsOutUser);
   friend class ChromeSignoutConfirmationPromptPixelTest;
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
-  friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
+  friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;
   friend class SyncConfirmationUIDialogPixelTest;
   friend class SigninViewControllerBrowserTestBase;
   friend class ProfileMenuViewSignoutTest;

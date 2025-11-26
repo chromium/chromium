@@ -8,9 +8,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -97,6 +101,7 @@ SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
   CHECK(!base::FeatureList::IsEnabled(
       syncer::kReplaceSyncPromosWithSignInPromos));
 }
+
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     ~InterceptTurnSyncOnHelperDelegate() = default;
 
@@ -239,7 +244,38 @@ SigninInterceptFirstRunExperienceDialog::
     : SigninModalDialog(std::move(on_close_callback)),
       browser_(browser),
       account_id_(account_id),
-      is_forced_intercept_(is_forced_intercept) {}
+      is_forced_intercept_(is_forced_intercept) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // This is a brand new profile. There should be enterprise confirmation
+    // screens offering the option to create another profile. This class handles
+    // management.
+    auto_accept_management_ = enterprise_util::
+        EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(
+            browser_->profile());
+    // If the disclaimer service is not enabled then we need to start it in
+    // order to auto-approve the management and fetch the applicable policies.
+    if (!base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
+      auto* profile_management_disclaimer_service =
+          ProfileManagementDisclaimerServiceFactory::GetForProfile(
+              browser_->profile());
+      CHECK(profile_management_disclaimer_service);
+      const CoreAccountId account_id_of_ongoing_management_flow =
+          profile_management_disclaimer_service
+              ->GetAccountBeingConsideredForManagementIfAny();
+      // If another account is being made managed then we cannot invoke
+      // `EnsureManagedProfileForAccount` for the present account. However for a
+      // newly created profile this case should not happen.
+      if (account_id_of_ongoing_management_flow.empty() ||
+          account_id_of_ongoing_management_flow == account_id_) {
+        profile_management_disclaimer_service->EnsureManagedProfileForAccount(
+            account_id_,
+            signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
+            base::DoNothing());
+      }
+    }
+  }
+}
 
 void SigninInterceptFirstRunExperienceDialog::Show() {
   RecordDialogEvent(DialogEvent::kStart);

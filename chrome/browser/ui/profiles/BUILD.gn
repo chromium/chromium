@@ -203,6 +203,7 @@ source_set("browser_tests") {
         # TODO(crbug.com/430804948): Not depend on it when `signin_intercept_first_run_experience_dialog.h`
         # gets built off of :profiles.
         ":impl",
+        "//chrome/browser/policy:test_support",
         "//chrome/browser/sync",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/signin",

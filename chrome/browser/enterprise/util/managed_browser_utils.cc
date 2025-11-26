@@ -606,6 +606,16 @@ base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
   }
   return disclaimer_service->DisableManagementDisclaimerUntilReset();
 }
+
+base::ScopedClosureRunner
+EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(Profile* profile) {
+  auto* disclaimer_service =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
+  if (!disclaimer_service) {
+    return base::ScopedClosureRunner();
+  }
+  return disclaimer_service->AutoAcceptManagementDisclaimerUntilReset();
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util
