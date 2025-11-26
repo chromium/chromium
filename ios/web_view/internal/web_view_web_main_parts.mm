@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
+#import "base/time/default_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
@@ -77,8 +78,11 @@ void WebViewWebMainParts::PreCreateThreads() {
 
   ApplicationContext::GetInstance()->PreCreateThreads();
 
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
   variations::VariationsIdsProvider::CreateInstance(
-      variations::VariationsIdsProvider::Mode::kUseSignedInState);
+      variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      std::make_unique<base::DefaultClock>());
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
 

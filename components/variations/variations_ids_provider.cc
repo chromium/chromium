@@ -64,10 +64,12 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 // function variations::CreateSimpleURLLoaderWithVariationsHeader().
 
 // static
-VariationsIdsProvider* VariationsIdsProvider::CreateInstance(Mode mode) {
+VariationsIdsProvider* VariationsIdsProvider::CreateInstance(
+    Mode mode,
+    std::unique_ptr<base::Clock> clock) {
   base::AutoLock lock(GetInstanceLock());
   DCHECK(!g_instance);
-  g_instance = new VariationsIdsProvider(mode);
+  g_instance = new VariationsIdsProvider(mode, std::move(clock));
   return g_instance;
 }
 
@@ -76,12 +78,6 @@ VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
   base::AutoLock lock(GetInstanceLock());
   DCHECK(g_instance);
   return g_instance;
-}
-
-void VariationsIdsProvider::SetClockFunc(
-    VariationsIdsProvider::ClockFunction clock_func) {
-  base::AutoLock lock(lock_);
-  clock_func_ = std::move(clock_func);
 }
 
 variations::mojom::VariationsHeadersPtr
@@ -250,10 +246,13 @@ void VariationsIdsProvider::ResetForTesting() {
   force_disabled_ids_set_.clear();
   variations_headers_map_.clear();
   observer_list_.clear();
-  clock_func_.Reset();
 }
 
-VariationsIdsProvider::VariationsIdsProvider(Mode mode) : mode_(mode) {}
+VariationsIdsProvider::VariationsIdsProvider(Mode mode,
+                                             std::unique_ptr<base::Clock> clock)
+    : mode_(mode), clock_(std::move(clock)) {
+  CHECK(clock_);
+}
 
 VariationsIdsProvider::~VariationsIdsProvider() {
   base::FieldTrialList::RemoveObserver(this);
@@ -261,15 +260,16 @@ VariationsIdsProvider::~VariationsIdsProvider() {
 
 // static
 VariationsIdsProvider* VariationsIdsProvider::CreateInstanceForTesting(
-    Mode mode) {
+    Mode mode,
+    std::unique_ptr<base::Clock> clock) {
   base::AutoLock lock(GetInstanceLock());
   VariationsIdsProvider* previous_instance = g_instance;
-  g_instance = new VariationsIdsProvider(mode);
+  g_instance = new VariationsIdsProvider(mode, std::move(clock));
   return previous_instance;
 }
 
 // static
-void VariationsIdsProvider::DestroyInstanceForTesting(
+void VariationsIdsProvider::ResetInstanceForTesting(
     VariationsIdsProvider* previous_instance) {
   base::AutoLock lock(GetInstanceLock());
   delete g_instance;
@@ -335,7 +335,7 @@ void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
   // Check if an update is needed. If not, return early (the currently cached
   // values are still valid), otherwise, update the cached values and notify
   // observers.  See `UpdateIsNeeded()` for more details.
-  const base::Time current_time = GetCurrentTime();
+  const base::Time current_time = clock_->Now();
   if (!UpdateIsNeeded(current_time)) {
     return;
   }
@@ -631,11 +631,6 @@ bool VariationsIdsProvider::IsDuplicateId(VariationID id) {
     }
   }
   return false;
-}
-
-base::Time VariationsIdsProvider::GetCurrentTime() const {
-  lock_.AssertAcquired();
-  return clock_func_ ? clock_func_.Run() : base::Time::Now();
 }
 
 void VariationsIdsProvider::SetLastUpdateTime(base::Time time) {

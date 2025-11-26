@@ -38,6 +38,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_clock.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -299,8 +300,11 @@ bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 variations::VariationsIdsProvider*
 AwMainDelegate::CreateVariationsIdsProvider() {
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
   return variations::VariationsIdsProvider::CreateInstance(
-      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations,
+      std::make_unique<base::DefaultClock>());
 }
 
 std::optional<int> AwMainDelegate::PostEarlyInitialization(

@@ -655,7 +655,8 @@ void BrowserTestBase::SetUp() {
     auto* provider = delegate->CreateVariationsIdsProvider();
     if (!provider) {
       variations::VariationsIdsProvider::CreateInstance(
-          variations::VariationsIdsProvider::Mode::kUseSignedInState);
+          variations::VariationsIdsProvider::Mode::kUseSignedInState,
+          std::make_unique<base::DefaultClock>());
     }
 
     std::optional<int> post_early_initialization_exit_code =

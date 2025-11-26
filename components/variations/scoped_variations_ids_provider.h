@@ -10,7 +10,6 @@
 
 namespace variations::test {
 
-
 // A helper class for tests that need to create a `VariationsIdsProvider`
 // instance for the duration of the test.
 class ScopedVariationsIdsProvider {
@@ -24,6 +23,11 @@ class ScopedVariationsIdsProvider {
 
   VariationsIdsProvider* operator->();
   VariationsIdsProvider& operator*();
+
+  // The time used by the provider will default to the current time (via
+  // `base::Time::Now()`). This can be overridden for testing by setting this
+  // field to some specific time.
+  std::optional<base::Time> time_for_testing = std::nullopt;
 
  private:
   // A pointer to the previous instance of `VariationsIdsProvider` that is
