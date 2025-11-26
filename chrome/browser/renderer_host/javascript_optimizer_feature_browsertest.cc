@@ -1280,4 +1280,82 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
   // There is no view initialized because the flag is disabled.
   ASSERT_EQ(icon_view, nullptr);
 }
+class JavascriptOptimizerBubbleBrowserTest
+    : public JavascriptOptimizerOmnibarIconBrowserTest {
+ public:
+  JavascriptOptimizerBubbleBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// JS optimizations disabled by enterprise policy.
+class JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy
+    : public JavascriptOptimizerBubbleBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy,
+                       BubbleShowsOnClick) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_TRUE(IsOmnibarIconVisible());
+
+  // TODO(crbug.com/462425975): Complete implementation of this test.
+  // Click on icon.
+  // Assert that bubble is visible.
+  // Assert that button is not visible.
+}
+
+// JS optimizations disabled not by enterprise policy.
+class JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy
+    : public JavascriptOptimizerBubbleBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy,
+    BubbleShowsOnClick) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_TRUE(IsOmnibarIconVisible());
+
+  // TODO(crbug.com/462425975): Complete implementation of this test.
+  // Click on icon.
+  // Assert that bubble is visible.
+  // Assert that button is visible.
+}
+
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy,
+    AfterEnablingOptimizationsIconIsHidden) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_TRUE(IsOmnibarIconVisible());
+
+  // TODO(crbug.com/462425975): Complete implementation of this test.
+  // Click on icon.
+  // Assert that bubble is visible.
+  // Assert that button is visible.
+  // Click on button.
+  // Open new tab and go to the same site.
+  // ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+  // ASSERT_FALSE(IsOmnibarIconVisible());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

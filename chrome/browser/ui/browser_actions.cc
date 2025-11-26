@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -404,7 +405,16 @@ void BrowserActions::InitializeBrowserActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  // TODO(crbug.com/458711797): Show bubble on click.
+                  views::View* anchor_view =
+                      bwi->GetBrowserForMigrationOnly()
+                          ->GetBrowserView()
+                          .toolbar_button_provider()
+                          ->GetAnchorView(kActionShowJsOptimizationsIcon);
+
+                  bwi->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->js_optimizations_page_action_controller()
+                      ->ShowBubble(anchor_view, item);
                 },
                 bwi))
             .SetActionId(kActionShowJsOptimizationsIcon)

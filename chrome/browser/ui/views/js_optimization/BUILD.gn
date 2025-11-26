@@ -18,9 +18,11 @@ source_set("impl") {
 
   public_deps = [
     ":js_optimization",
+    "//chrome/browser:primitives",
     "//chrome/browser/site_protection",
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/page_action",
   ]
 }
