@@ -191,7 +191,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
             &Image::SharedCCDecodeCache(kN32_SkColorType);
 
         canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cache_rgba8, cache_f16, color_space_, GetSharedImageFormat(),
             cc::PlaybackImageProvider::RasterMode::kSoftware);
       }
 
