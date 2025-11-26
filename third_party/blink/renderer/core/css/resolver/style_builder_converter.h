@@ -242,6 +242,8 @@ class StyleBuilderConverter {
   static TimelineInset ConvertSingleTimelineInset(StyleResolverState&,
                                                   const CSSValue&);
   static Length ConvertLengthOrAuto(const StyleResolverState&, const CSSValue&);
+  static std::optional<Length> ConvertLengthOrNone(const StyleResolverState&,
+                                                   const CSSValue&);
   static Length ConvertLengthSizing(StyleResolverState&, const CSSValue&);
   static Length ConvertLengthMaxSizing(StyleResolverState&, const CSSValue&);
   static TabSize ConvertLengthOrTabSpaces(StyleResolverState&, const CSSValue&);

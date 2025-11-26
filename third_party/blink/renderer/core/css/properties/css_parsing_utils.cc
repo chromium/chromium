@@ -3236,25 +3236,12 @@ CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
-    if (CSSValue* from_element =
-            css_parsing_utils::ConsumeIdent<CSSValueID::kFromElement>(stream)) {
-      // `from-element <length [0,∞]>?`
-      CSSValue* length = css_parsing_utils::ConsumeLength(
-          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-      if (!length) {
-        return from_element;
-      }
-      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      list->Append(*from_element);
-      list->Append(*length);
-      return list;
-    }
-  }
-
-  // `auto? [ none | <length [0,∞]> ]`
-  CSSValue* auto_or_null =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
+  // `[ auto | from-element ]? [ none | <length [0,∞]> ]`
+  CSSIdentifierValue* option =
+      RuntimeEnabledFeatures::ResponsiveIframesEnabled()
+          ? css_parsing_utils::ConsumeIdent<CSSValueID::kAuto,
+                                            CSSValueID::kFromElement>(stream)
+          : css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
   CSSValue* length_or_none = css_parsing_utils::ConsumeLength(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   if (!length_or_none) {
@@ -3263,11 +3250,11 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
       return nullptr;
     }
   }
-  if (!auto_or_null) {
+  if (!option) {
     return length_or_none;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*auto_or_null);
+  list->Append(*option);
   list->Append(*length_or_none);
   return list;
 }

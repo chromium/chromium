@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -2025,6 +2026,16 @@ Length StyleBuilderConverter::ConvertLengthOrAuto(
       state.CssToLengthConversionData());
 }
 
+std::optional<Length> StyleBuilderConverter::ConvertLengthOrNone(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return std::nullopt;
+  }
+  return ConvertLength(state, To<CSSPrimitiveValue>(value));
+}
+
 Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
                                                   const CSSValue& value) {
   const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -3670,57 +3681,28 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
     const StyleResolverState& state,
     const CSSValue& value) {
   // The valid grammar for this value is the following:
-  // `auto? [ none | <length [0,∞]> ] | from-element <length [0,∞]>?`.
-
-  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    if (identifier_value->GetValueID() == CSSValueID::kNone) {
-      return StyleIntrinsicLength(/*has_auto=*/false, /*matches_element=*/false,
-                                  std::nullopt);
-    } else {
-      DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
-      DCHECK(identifier_value->GetValueID() == CSSValueID::kFromElement);
-      return StyleIntrinsicLength(/*has_auto=*/false, /*matches_element=*/true,
-                                  std::nullopt);
-    }
-  }
-  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return StyleIntrinsicLength(
-        /*has_auto=*/false, /*matches_element=*/false,
-        ConvertLength(state, *primitive_value));
-  }
-
-  // Handle `auto [ none | <length [0,∞]> ]`, which will all come from a list.
-  const CSSValueList* list = DynamicTo<CSSValueList>(value);
-  DCHECK(list);
-  DCHECK_EQ(list->length(), 2u);
-  DCHECK(IsA<CSSIdentifierValue>(list->Item(0)));
-
-  // Handle `auto <length> | from-element <length>`
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(1))) {
+  // `[ auto | from-element ]? [ none | <length [0,∞]> ]`.
+  if (const CSSValueList* list = DynamicTo<CSSValueList>(value)) {
+    DCHECK_EQ(list->length(), 2u);
+    DCHECK(IsA<CSSIdentifierValue>(list->Item(0)));
     if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
       const auto& identifier = To<CSSIdentifierValue>(list->Item(0));
       if (identifier.GetValueID() == CSSValueID::kFromElement) {
         return StyleIntrinsicLength(
             /*has_auto=*/false, /*matches_element=*/true,
-            ConvertLength(state, *primitive_value));
+            ConvertLengthOrNone(state, list->Item(1)));
       }
     }
     DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
            CSSValueID::kAuto);
     return StyleIntrinsicLength(
         /*has_auto=*/true, /*matches_element=*/false,
-        ConvertLength(state, *primitive_value));
+        ConvertLengthOrNone(state, list->Item(1)));
   }
 
-  // The only grammar left is "auto none".
-  DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
-         CSSValueID::kAuto);
-  DCHECK(IsA<CSSIdentifierValue>(list->Item(1)));
-  DCHECK(To<CSSIdentifierValue>(list->Item(1)).GetValueID() ==
-         CSSValueID::kNone);
-
-  return StyleIntrinsicLength(/*has_auto=*/true, /*matches_element=*/false,
-                              std::nullopt);
+  return StyleIntrinsicLength(
+      /*has_auto=*/false, /*matches_element=*/false,
+      ConvertLengthOrNone(state, value));
 }
 
 ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
