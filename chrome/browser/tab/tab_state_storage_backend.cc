@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/tab/storage_package.h"
@@ -23,7 +24,7 @@ namespace {
 constexpr base::TaskTraits kDBTaskTraits = {
     base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
-} // namespace
+}  // namespace
 
 TabStateStorageBackend::TabStateStorageBackend(
     const base::FilePath& profile_path)
@@ -45,6 +46,12 @@ void TabStateStorageBackend::Initialize() {
                      base::Unretained(database_.get())),
       base::BindOnce(&TabStateStorageBackend::OnDBReady,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TabStateStorageBackend::WaitForAllPendingOperations(
+    base::OnceClosure on_idle) {
+  db_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                    std::move(on_idle));
 }
 
 void TabStateStorageBackend::Update(

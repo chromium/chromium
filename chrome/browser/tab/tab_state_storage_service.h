@@ -58,6 +58,12 @@ class TabStateStorageService : public KeyedService,
   StorageId GetStorageId(const TabCollection* collection) override;
   StorageId GetStorageId(const TabInterface* tab) override;
 
+  // Schedules a task to be run after all currently pending operations are
+  // complete. Primarily useful if you want to wait to ensure events prior to
+  // calling this method are flushed to the database. There is no guarantee
+  // that future operations will complete prior to the callback being invoked.
+  void WaitForAllPendingOperations(base::OnceClosure on_idle);
+
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
 

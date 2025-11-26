@@ -173,7 +173,9 @@ bool TabStateStorageDatabase::OpenTransaction::IsValid(
 
 TabStateStorageDatabase::TabStateStorageDatabase(
     const base::FilePath& profile_path)
-    : profile_path_(profile_path), db_(sql::Database::Tag("TabStateStorage")) {}
+    : profile_path_(profile_path),
+      db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
+          sql::Database::Tag("TabStateStorage")) {}
 
 TabStateStorageDatabase::~TabStateStorageDatabase() = default;
 

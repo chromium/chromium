@@ -147,6 +147,11 @@ StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
                                       tab_handle_to_storage_id_);
 }
 
+void TabStateStorageService::WaitForAllPendingOperations(
+    base::OnceClosure on_idle) {
+  tab_backend_.WaitForAllPendingOperations(std::move(on_idle));
+}
+
 void TabStateStorageService::Save(const TabInterface* tab) {
   DCHECK(packager_);
 

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
@@ -27,6 +27,8 @@ class TabStateStorageBackend {
   ~TabStateStorageBackend();
 
   void Initialize();
+
+  void WaitForAllPendingOperations(base::OnceClosure on_idle);
 
   // Performs an atomic database update.
   void Update(std::unique_ptr<TabStateStorageUpdater> updater);
