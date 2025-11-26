@@ -7,11 +7,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/security_signals_service.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+
+namespace policy {
+class PolicyMap;
+}  // namespace policy
 
 class PrefService;
 
@@ -20,7 +28,8 @@ namespace enterprise_reporting {
 // Service in charge of the scheduling, and triggering, generation and upload of
 // user security signals reports.
 class UserSecuritySignalsService : public SecuritySignalsService,
-                                   public network::mojom::CookieChangeListener {
+                                   public network::mojom::CookieChangeListener,
+                                   public policy::PolicyService::Observer {
  public:
   class Delegate {
    public:
@@ -32,7 +41,9 @@ class UserSecuritySignalsService : public SecuritySignalsService,
     virtual network::mojom::CookieManager* GetCookieManager() = 0;
   };
 
-  UserSecuritySignalsService(PrefService* profile_prefs, Delegate* delegate);
+  UserSecuritySignalsService(PrefService* profile_prefs,
+                             Delegate* delegate,
+                             policy::PolicyService* policy_service);
   ~UserSecuritySignalsService() override;
 
   UserSecuritySignalsService(const UserSecuritySignalsService&) = delete;
@@ -51,6 +62,11 @@ class UserSecuritySignalsService : public SecuritySignalsService,
 
   // mojom::CookieChangeListener:
   void OnCookieChange(const net::CookieChangeInfo& change) override;
+
+  // policy::PolicyService::Observer
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
 
  private:
   friend class UserSecuritySignalsServiceTest;
@@ -74,6 +90,7 @@ class UserSecuritySignalsService : public SecuritySignalsService,
 
   const raw_ptr<PrefService> profile_prefs_;
   const raw_ptr<Delegate> delegate_;
+  const raw_ptr<policy::PolicyService> policy_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WallClockTimer timer_;
   bool initialized_{false};
@@ -82,9 +99,32 @@ class UserSecuritySignalsService : public SecuritySignalsService,
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};
 
+  // Observers policy updates.
+  base::ScopedObservation<policy::PolicyService,
+                          policy::PolicyService::Observer>
+      policy_observation_{this};
+
   base::WeakPtrFactory<UserSecuritySignalsService> weak_factory_{this};
 };
 
 }  // namespace enterprise_reporting
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<policy::PolicyService,
+                               policy::PolicyService::Observer> {
+  static void AddObserver(policy::PolicyService* source,
+                          policy::PolicyService::Observer* observer) {
+    source->AddObserver(policy::POLICY_DOMAIN_CHROME, observer);
+  }
+
+  static void RemoveObserver(policy::PolicyService* source,
+                             policy::PolicyService::Observer* observer) {
+    source->RemoveObserver(policy::POLICY_DOMAIN_CHROME, observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_USER_SECURITY_SIGNALS_SERVICE_H_

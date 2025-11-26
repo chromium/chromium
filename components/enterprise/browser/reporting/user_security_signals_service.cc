@@ -11,6 +11,9 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -20,10 +23,20 @@ namespace enterprise_reporting {
 
 UserSecuritySignalsService::UserSecuritySignalsService(
     PrefService* profile_prefs,
-    Delegate* delegate)
-    : profile_prefs_(profile_prefs), delegate_(delegate) {
+    Delegate* delegate,
+    policy::PolicyService* policy_service)
+    : profile_prefs_(profile_prefs),
+      delegate_(delegate),
+      policy_service_(policy_service),
+      policy_observation_{this} {
   CHECK(profile_prefs_);
   CHECK(delegate_);
+  CHECK(policy_service_);
+
+  if (policy_service_ &&
+      enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+    policy_observation_.Observe(policy_service_);
+  }
 }
 
 UserSecuritySignalsService::~UserSecuritySignalsService() = default;
@@ -105,6 +118,17 @@ void UserSecuritySignalsService::OnCookieListenerConnectionError() {
   // service process has crashed. Try again to set up a listener.
   cookie_listener_receiver_.reset();
   InitCookieListener();
+}
+
+void UserSecuritySignalsService::OnPolicyUpdated(
+    const policy::PolicyNamespace& ns,
+    const policy::PolicyMap& previous,
+    const policy::PolicyMap& current) {
+  if (!enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+    return;
+  }
+
+  TriggerReport(SecurityReportTrigger::kPolicyChange);
 }
 
 void UserSecuritySignalsService::OnStatePolicyValueChanged() {

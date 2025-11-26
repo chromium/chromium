@@ -55,13 +55,13 @@ const base::FilePath::CharType kProfilePath[] =
 constexpr char kBrowserExePath[] = "browser-path";
 
 device_signals::SignalsAggregationRequest CreateExpectedRequest(
-    bool detected_agent_signal_collection_enabled) {
+    bool new_signal_collection_enabled) {
   device_signals::SignalsAggregationRequest request;
   request.signal_names.emplace(device_signals::SignalName::kOsSignals);
   request.signal_names.emplace(
       device_signals::SignalName::kBrowserContextSignals);
 
-  if (detected_agent_signal_collection_enabled) {
+  if (new_signal_collection_enabled) {
     request.signal_names.emplace(device_signals::SignalName::kAgent);
     request.agent_signal_parameters.emplace(
         device_signals::AgentSignalCollectionType::kDetectedAgents);
@@ -146,18 +146,29 @@ class ChromeProfileRequestGeneratorTest
         generator_(base::FilePath(kProfilePath),
                    &delegate_factory_,
                    &mock_aggregator_) {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kDetectedAgentSignalCollectionEnabled,
-        is_detected_agent_signal_collection_enabled());
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (is_new_signal_collection_enabled()) {
+      enabled_features.push_back(
+          enterprise_signals::features::kDetectedAgentSignalCollectionEnabled);
+      enabled_features.push_back(
+          enterprise_signals::features::kPolicyDataCollectionEnabled);
+    } else {
+      disabled_features.push_back(
+          enterprise_signals::features::kDetectedAgentSignalCollectionEnabled);
+      disabled_features.push_back(
+          enterprise_signals::features::kPolicyDataCollectionEnabled);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool is_detected_agent_signal_collection_enabled() { return GetParam(); }
+  bool is_new_signal_collection_enabled() { return GetParam(); }
 
   void VerifyReportContent(
       const ReportRequestQueue& requests,
       em::ChromeProfileReportRequest::ReportType expected_report_type,
       bool is_profile_id_null = false,
-      bool detected_agent_signal_collection_enabled = false) {
+      bool new_signal_collection_enabled = false) {
     // True if a status report-exclusive field is expected to be filled
     // correctly, status reports with signals also count.
     bool expect_status_report_only_value =
@@ -202,7 +213,7 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.mac_addresses(1), kFakeSignalMacAddr2);
       EXPECT_EQ(os_report.mac_addresses(2), kFakeSignalMacAddr3);
 
-      if (detected_agent_signal_collection_enabled) {
+      if (new_signal_collection_enabled) {
         EXPECT_EQ(os_report.detected_agents(0), em::Agent::CROWDSTRIKE_FALCON);
       }
 
@@ -260,11 +271,13 @@ class ChromeProfileRequestGeneratorTest
     auto chrome_user_profile_info = browser_report.chrome_user_profile_infos(0);
 
     // These fields are only filled if status report is enabled.
-    EXPECT_EQ(ObfuscateFilePath(base::FilePath(kProfilePath).AsUTF8Unsafe()) ==
-                  chrome_user_profile_info.id(),
-              expect_status_report_only_value);
-    EXPECT_EQ(chrome_user_profile_info.is_detail_available(),
-              expect_status_report_only_value);
+    EXPECT_EQ(
+        ObfuscateFilePath(base::FilePath(kProfilePath).AsUTF8Unsafe()) ==
+            chrome_user_profile_info.id(),
+        new_signal_collection_enabled ? true : expect_status_report_only_value);
+    EXPECT_EQ(
+        chrome_user_profile_info.is_detail_available(),
+        new_signal_collection_enabled ? true : expect_status_report_only_value);
 
     // `profile_signals_report` is a signals report only sub-proto.
     EXPECT_EQ(chrome_user_profile_info.has_profile_signals_report(),
@@ -310,20 +323,17 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateFullReportNoSecuritySignals) {
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
 
-  VerifyReportContent(test_future.Get(),
-                      em::ChromeProfileReportRequest::PROFILE_REPORT,
-                      /*is_profile_id_null=*/false,
-                      is_detected_agent_signal_collection_enabled());
+  VerifyReportContent(
+      test_future.Get(), em::ChromeProfileReportRequest::PROFILE_REPORT,
+      /*is_profile_id_null=*/false, is_new_signal_collection_enabled());
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest,
        GenerateFullReportWithSecuritySignals) {
-  bool detected_agent_signal_collection_enabled =
-      is_detected_agent_signal_collection_enabled();
+  bool new_signal_collection_enabled = is_new_signal_collection_enabled();
   EXPECT_CALL(
       mock_aggregator_,
-      GetSignals(
-          CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
+      GetSignals(CreateExpectedRequest(new_signal_collection_enabled), _))
       .WillOnce([](const device_signals::SignalsAggregationRequest& request,
                    base::OnceCallback<void(
                        device_signals::SignalsAggregationResponse)> callback) {
@@ -341,16 +351,14 @@ TEST_P(ChromeProfileRequestGeneratorTest,
   VerifyReportContent(
       test_future.Get(),
       em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SECURITY_SIGNALS,
-      /*is_profile_id_null=*/false, detected_agent_signal_collection_enabled);
+      /*is_profile_id_null=*/false, new_signal_collection_enabled);
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
-  bool detected_agent_signal_collection_enabled =
-      is_detected_agent_signal_collection_enabled();
+  bool new_signal_collection_enabled = is_new_signal_collection_enabled();
   EXPECT_CALL(
       mock_aggregator_,
-      GetSignals(
-          CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
+      GetSignals(CreateExpectedRequest(new_signal_collection_enabled), _))
       .WillOnce([](const device_signals::SignalsAggregationRequest& request,
                    base::OnceCallback<void(
                        device_signals::SignalsAggregationResponse)> callback) {
@@ -365,18 +373,16 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
   VerifyReportContent(test_future.Get(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
                       /*is_profile_id_null=*/false,
-                      detected_agent_signal_collection_enabled);
+                      new_signal_collection_enabled);
 }
 
 // Test that no issue is encountered when a nullopt value is collected, on an
 // optional field
 TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
-  bool detected_agent_signal_collection_enabled =
-      is_detected_agent_signal_collection_enabled();
+  bool new_signal_collection_enabled = is_new_signal_collection_enabled();
   EXPECT_CALL(
       mock_aggregator_,
-      GetSignals(
-          CreateExpectedRequest(detected_agent_signal_collection_enabled), _))
+      GetSignals(CreateExpectedRequest(new_signal_collection_enabled), _))
       .WillOnce([](const device_signals::SignalsAggregationRequest& request,
                    base::OnceCallback<void(
                        device_signals::SignalsAggregationResponse)> callback) {
@@ -392,7 +398,7 @@ TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
   VerifyReportContent(test_future.Get(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
                       /*is_profile_id_null=*/true,
-                      detected_agent_signal_collection_enabled);
+                      new_signal_collection_enabled);
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest, IncorrectReportType) {
