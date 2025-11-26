@@ -11031,8 +11031,7 @@ void RenderFrameHostImpl::SetCrashReportStorageKey(
     mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
   }
 
-  document_associated_data_->crash_storage_map().insert(
-      std::make_pair(key, value));
+  document_associated_data_->crash_storage_map().insert_or_assign(key, value);
   std::move(callback).Run();
 }
 
