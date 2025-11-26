@@ -3,6 +3,7 @@
 <link rel="help" href="https://crbug.com/1432710">
 <link rel="help" href="https://crbug.com/1433510">
 <link rel="help" href="https://crbug.com/1434198">
+<link rel="help" href="https://crbug.com/460146093">
 <body>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
@@ -59,6 +60,8 @@ for (let type of types) {
       if (type == 'checkbox' || type == 'radio') {
         // These types without appearance work as inline elements.
         assert_equals(rect.width, 0);
+        // As layout inline, should have height
+        assert_not_equals(rect.height, 0);
       } else {
         assert_equals(rect.width, originalRect.width);
         assert_equals(rect.height, originalRect.height);
