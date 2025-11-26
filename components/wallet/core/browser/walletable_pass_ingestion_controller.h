@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "components/wallet/core/browser/strike_databases/walletable_pass_consent_strike_database.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_host.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 
@@ -123,6 +124,8 @@ class WalletablePassIngestionController {
   const raw_ref<WalletablePassClient> client_;
 
   std::unique_ptr<WalletablePassSaveStrikeDatabaseByHost> save_strike_db_;
+
+  std::unique_ptr<WalletablePassConsentStrikeDatabase> consent_strike_db_;
 
   base::WeakPtrFactory<WalletablePassIngestionController> weak_ptr_factory_{
       this};

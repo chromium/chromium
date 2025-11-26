@@ -153,6 +153,17 @@ class WalletablePassIngestionControllerTest : public testing::Test {
                     callback) { *out_callback = std::move(callback); }));
   }
 
+  void ExpectConsentBubbleOnClient(
+      optimization_guide::proto::PassCategory expected_category,
+      WalletablePassClient::WalletablePassBubbleResultCallback* out_callback) {
+    EXPECT_CALL(mock_client(),
+                ShowWalletablePassConsentBubble(Eq(expected_category), _))
+        .WillOnce(WithArgs<1>(
+            [out_callback](
+                WalletablePassClient::WalletablePassBubbleResultCallback
+                    callback) { *out_callback = std::move(callback); }));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -251,12 +262,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
-                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
-      .WillOnce(WithArgs<1>(
-          [&consent_callback](
-              WalletablePassClient::WalletablePassBubbleResultCallback
-                  callback) { consent_callback = std::move(callback); }));
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
 
   test_api(controller()).StartWalletablePassDetectionFlow(url);
   ASSERT_TRUE(consent_callback);
@@ -359,12 +365,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
-                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
-      .WillOnce(WithArgs<1>(
-          [&consent_callback](
-              WalletablePassClient::WalletablePassBubbleResultCallback
-                  callback) { consent_callback = std::move(callback); }));
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
 
   test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
   ASSERT_TRUE(consent_callback);
@@ -378,17 +379,113 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_StrikesExceed_BubbleNotShown) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 2);
+
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_, _)).Times(0);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Accepted_ClearsStrikes) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 1);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  ASSERT_TRUE(consent_callback);
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_));
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kAccepted);
+
+  EXPECT_EQ(
+      test_strike_database().GetStrikes("WalletablePassConsent__shared_id"), 0);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Declined_AddsMaxStrikes) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  ASSERT_TRUE(consent_callback);
+
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kDeclined);
+
+  EXPECT_EQ(
+      test_strike_database().GetStrikes("WalletablePassConsent__shared_id"), 2);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Closed_AddsMaxStrikes) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  ASSERT_TRUE(consent_callback);
+
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kClosed);
+
+  EXPECT_EQ(
+      test_strike_database().GetStrikes("WalletablePassConsent__shared_id"), 2);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_LostFocus_AddsOneStrike) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  ASSERT_TRUE(consent_callback);
+
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kLostFocus);
+
+  EXPECT_EQ(
+      test_strike_database().GetStrikes("WalletablePassConsent__shared_id"), 1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Unknown_AddsOneStrike) {
+  GURL url("https://example.com");
+  test_strike_database().SetStrikeData("WalletablePassConsent__shared_id", 0);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
+
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
+  ASSERT_TRUE(consent_callback);
+
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kUnknown);
+
+  EXPECT_EQ(
+      test_strike_database().GetStrikes("WalletablePassConsent__shared_id"), 1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
        ShowConsentBubble_Declined_NoAction) {
   GURL url("https://example.com");
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
-                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
-      .WillOnce(WithArgs<1>(
-          [&consent_callback](
-              WalletablePassClient::WalletablePassBubbleResultCallback
-                  callback) { consent_callback = std::move(callback); }));
+  ExpectConsentBubbleOnClient(PASS_CATEGORY_LOYALTY_CARD, &consent_callback);
 
   test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
   ASSERT_TRUE(consent_callback);

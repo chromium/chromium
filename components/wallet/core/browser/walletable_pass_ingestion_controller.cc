@@ -40,6 +40,8 @@ WalletablePassIngestionController::WalletablePassIngestionController(
     WalletablePassClient* client)
     : client_(CHECK_DEREF(client)),
       save_strike_db_(std::make_unique<WalletablePassSaveStrikeDatabaseByHost>(
+          client->GetStrikeDatabase())),
+      consent_strike_db_(std::make_unique<WalletablePassConsentStrikeDatabase>(
           client->GetStrikeDatabase())) {
   RegisterOptimizationTypes();
 }
@@ -99,7 +101,9 @@ WalletablePassIngestionController::GetPassCategoryForURL(
 void WalletablePassIngestionController::ShowConsentBubble(
     const GURL& url,
     PassCategory pass_category) {
-  // TODO(crbug.com/444147446): Check strike before showing the consent bubble.
+  if (consent_strike_db_->ShouldBlockFeature()) {
+    return;
+  }
   client_->ShowWalletablePassConsentBubble(
       pass_category,
       base::BindOnce(
@@ -116,6 +120,7 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
       SetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
                                             client_->GetIdentityManager(),
                                             /*opt_in_status=*/true);
+      consent_strike_db_->ClearStrikes();
       GetAnnotatedPageContent(base::BindOnce(
           &WalletablePassIngestionController::OnGetAnnotatedPageContent,
           weak_ptr_factory_.GetWeakPtr(), url, pass_category));
@@ -123,10 +128,13 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
     case kDeclined:
     case kClosed:
       // Add strikes for cases where user rejects explicitly
+      consent_strike_db_->AddStrikes(
+          WalletablePassConsentStrikeDatabaseTraits::kMaxStrikeLimit);
       // TODO(crbug.com/452779539): Report user rejects explicitly to UMA.
       break;
     case kLostFocus:
     case kUnknown:
+      consent_strike_db_->AddStrike();
       // TODO(crbug.com/452779539): Report other outcomes to UMA.
       break;
   }
