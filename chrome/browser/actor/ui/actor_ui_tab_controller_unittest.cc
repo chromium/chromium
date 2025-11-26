@@ -4,8 +4,6 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
-#include <memory>
-
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller_factory.h"
 #include "chrome/browser/actor/ui/mocks/mock_handoff_button_controller.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -117,6 +116,9 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
     std::unique_ptr<MockActorUiStateManager> ausm =
         std::make_unique<MockActorUiStateManager>();
     actor_keyed_service_->SetActorUiStateManagerForTesting(std::move(ausm));
+    auto controller_factory =
+        std::make_unique<MockActorUiTabControllerFactory>();
+    actor_ui_tab_controller_factory_ = controller_factory.get();
 
     window_controller_ = std::make_unique<ActorUiWindowController>(
         &mock_browser_window_interface_,
@@ -135,15 +137,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
         .WillByDefault(ReturnNewScopedClosureRunner());
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
-        mock_tab_, actor_keyed_service(),
-        std::make_unique<ActorUiTabControllerFactory>());
-
-    mock_handoff_button_controller_ =
-        std::make_unique<MockHandoffButtonController>(
-            /*anchor_view=*/nullptr);
-    handoff_button_controller_registration_ =
-        actor_ui_tab_controller_->RegisterHandoffButtonController(
-            mock_handoff_button_controller_.get());
+        mock_tab_, actor_keyed_service(), std::move(controller_factory));
 
     // Creates task for testing.
     task_id_ = actor_keyed_service()->CreateTaskForTesting();
@@ -168,8 +162,8 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
     return actor_ui_tab_controller_.get();
   }
 
-  MockHandoffButtonController* handoff_button_controller() {
-    return mock_handoff_button_controller_.get();
+  MockActorUiTabControllerFactory* tab_controller_factory() {
+    return actor_ui_tab_controller_factory_;
   }
 
   ActorBorderViewController* actor_border_view_controller() {
@@ -182,8 +176,8 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override {
     border_view_controller_.reset();
+    actor_ui_tab_controller_factory_ = nullptr;
     actor_ui_tab_controller_.reset();
-    mock_handoff_button_controller_.reset();
     window_controller_.reset();
     immersive_mode_controller_.reset();
     actor_keyed_service_->Shutdown();
@@ -213,7 +207,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
   // This ensures that any test calling UpdateState will automatically run the
   // barrier closure, preventing timeouts.
   void SetUpDefaultHandoffButtonExpectations() {
-    ON_CALL(*handoff_button_controller(), UpdateState)
+    ON_CALL(*tab_controller_factory()->handoff_button_controller(), UpdateState)
         .WillByDefault(
             [](const HandoffButtonState&, bool, base::OnceClosure callback) {
               std::move(callback).Run();
@@ -258,10 +252,10 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
   raw_ptr<MockWebContents> mock_web_contents_ = nullptr;
   TaskId task_id_;
   std::unique_ptr<ActorUiTabController> actor_ui_tab_controller_;
-  std::unique_ptr<MockHandoffButtonController> mock_handoff_button_controller_;
+  raw_ptr<MockActorUiTabControllerFactory> actor_ui_tab_controller_factory_ =
+      nullptr;
   std::unique_ptr<ActorBorderViewController> border_view_controller_;
   base::ScopedClosureRunner overlay_subscription_;
-  base::ScopedClosureRunner handoff_button_controller_registration_;
   base::WeakPtrFactory<ActorUiTabControllerTest> weak_factory_{this};
 };
 
@@ -284,7 +278,7 @@ TEST_F(ActorUiTabControllerTest,
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   // Expect UpdateState to be called with is_visible set to true.
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(handoff_button_state, true, _));
 
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
@@ -298,7 +292,7 @@ TEST_F(
   local_list.InitAndDisableFeature(
       features::kGlicHandoffButtonHiddenClientControl);
 
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(_, /*is_visible=*/true, _));
 
   HandoffButtonState client_control_state(
@@ -316,7 +310,7 @@ TEST_F(ActorUiTabControllerTest,
   HandoffButtonState client_control_state(
       false, HandoffButtonState::ControlOwnership::kClient);
 
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(client_control_state, /*is_visible=*/false, _));
 
   UiTabState new_ui_tab_state(ActorOverlayState(), client_control_state);
@@ -361,7 +355,7 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
 }
 
 TEST_F(ActorUiTabControllerTest, HandoffButtonHidesWhenInImmersiveMode) {
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(_, /*is_visible=*/false, _));
 
   ON_CALL(*immersive_mode_controller(), IsEnabled())
@@ -382,7 +376,7 @@ TEST_F(ActorUiTabControllerTest,
       /*control_ownership=*/HandoffButtonState::ControlOwnership::kActor);
   UiTabState ui_tab_state(actor_overlay_state, handoff_button_state);
 
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(handoff_button_state, /*is_visible=*/true, _));
 
   base::test::TestFuture<bool> future1;
@@ -391,7 +385,7 @@ TEST_F(ActorUiTabControllerTest,
 
   // On second call, the callback should be run and the state shouldn't be
   // updated.
-  EXPECT_CALL(*handoff_button_controller(),
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(handoff_button_state, /*is_visible=*/true, _))
       .Times(0);
 
@@ -425,7 +419,8 @@ TEST_F(ActorUiTabControllerTest, OnUiTabStateChange_CallsCallbacks) {
 
 TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
   int callback_count = 0;
-  auto* mock_handoff_button_controller = handoff_button_controller();
+  auto* mock_handoff_button_controller =
+      tab_controller_factory()->handoff_button_controller();
 
   std::vector<base::ScopedClosureRunner> subscriptions;
   ON_CALL(*mock_handoff_button_controller, IsHovering())
@@ -479,7 +474,8 @@ TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
 
 TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnFocusChanges) {
   int callback_count = 0;
-  auto* mock_handoff_button_controller = handoff_button_controller();
+  auto* mock_handoff_button_controller =
+      tab_controller_factory()->handoff_button_controller();
 
   std::vector<base::ScopedClosureRunner> subscriptions;
 

@@ -14,10 +14,10 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -43,7 +43,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
-
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -207,12 +206,13 @@ void HandoffButtonWidget::OnMouseEvent(::ui::MouseEvent* event) {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HandoffButtonController,
                                       kHandoffButtonElementId);
 
-HandoffButtonController::HandoffButtonController(views::View* anchor_view)
-    : anchor_view_(anchor_view) {}
+HandoffButtonController::HandoffButtonController(
+    tabs::TabInterface& tab_interface)
+    : tab_interface_(tab_interface) {}
 
 HandoffButtonController::~HandoffButtonController() = default;
 
-void HandoffButtonController::UpdateState(HandoffButtonState state,
+void HandoffButtonController::UpdateState(const HandoffButtonState& state,
                                           bool is_visible,
                                           base::OnceClosure callback) {
   if (!state.is_active) {
@@ -256,11 +256,7 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
     UpdateBounds();
   }
 
-  if (is_visible_) {
-    widget_->ShowInactive();
-  } else {
-    widget_->Hide();
-  }
+  UpdateVisibility();
   std::move(callback).Run();
 }
 
@@ -269,6 +265,8 @@ void HandoffButtonController::CreateAndShowButton(
     const std::u16string& a11y_text,
     const ImageModel& icon) {
   CHECK(!widget_);
+
+  auto* tab_dialog_manager = GetTabDialogManager();
 
   // Create the button view.
   auto button_view = std::make_unique<HandoffLabelButton>(
@@ -299,10 +297,9 @@ void HandoffButtonController::CreateAndShowButton(
   // Create the Widget using the delegate.
   auto widget = std::make_unique<HandoffButtonWidget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_BUBBLE);
+      views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
   params.delegate = delegate_.get();
-  params.parent = anchor_view_->GetWidget()->GetNativeView();
+  params.parent = tab_dialog_manager->GetHostWidget()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.remove_standard_frame = true;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -310,6 +307,17 @@ void HandoffButtonController::CreateAndShowButton(
   params.name = "HandoffButtonWidget";
   widget->Init(std::move(params));
 
+  auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
+  tab_dialog_params->close_on_navigate = false;
+  tab_dialog_params->close_on_detach = true;
+  tab_dialog_params->disable_input = false;
+  tab_dialog_params->animated = false;
+  tab_dialog_params->should_show_inactive = true;
+  tab_dialog_params->should_show_callback = base::BindRepeating(
+      &HandoffButtonController::ShouldShowButton, base::Unretained(this));
+  tab_dialog_params->get_dialog_bounds =
+      base::BindRepeating(&HandoffButtonController::GetHandoffButtonBounds,
+                          base::Unretained(this), widget.get());
   widget_ = std::move(widget);
   widget_->SetHoveredCallback(
       base::BindRepeating(&HandoffButtonController::UpdateButtonHoverStatus,
@@ -317,31 +325,48 @@ void HandoffButtonController::CreateAndShowButton(
   widget_->MakeCloseSynchronous(
       base::BindOnce(&HandoffButtonController::OnWidgetDestroying,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  UpdateBounds();
+  tab_dialog_manager->ShowDialog(widget_.get(), std::move(tab_dialog_params));
 }
 
-gfx::Rect HandoffButtonController::GetHandoffButtonBounds() {
-  CHECK(widget_);
-  CHECK(anchor_view_);
-  gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
+void HandoffButtonController::ShouldShowButton(bool& show) {
+  show = is_visible_;
+}
+
+gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
+    views::Widget* widget) {
+  gfx::Size preferred_size = widget->GetContentsView()->GetPreferredSize();
   preferred_size.set_height(kHandoffButtonPreferredHeight);
 
-  const gfx::Rect anchor_bounds = anchor_view_->GetBoundsInScreen();
+  // TODO(crbug.com/447624564): After migrating the Handoff button off the TDM,
+  // explore parenting the bounds of the widget on the contents webview bounds
+  // instead.
+  auto* anchor_view =
+      BrowserElementsViews::From(tab_interface_->GetBrowserWindowInterface())
+          ->RetrieveView(kActiveContentsWebViewRetrievalId);
+  if (auto* window_controller = ActorUiWindowController::From(
+          tab_interface_->GetBrowserWindowInterface())) {
+    if (auto* contents_controller =
+            window_controller->GetControllerForWebContents(
+                tab_interface_->GetContents())) {
+      anchor_view = contents_controller->contents_container_view();
+    }
+  }
+  if (!anchor_view) {
+    return gfx::Rect(preferred_size);
+  }
+  const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
 
   const int x =
       anchor_bounds.x() + (anchor_bounds.width() - preferred_size.width()) / 2;
 
   // Calculate the Y coordinate based on tab strip visibility.
-  bool is_tab_strip_visible =
-      tab_interface_
-          ? tab_interface_->GetBrowserWindowInterface()->IsTabStripVisible()
-          : false;
+  const bool is_tab_strip_visible =
+      tab_interface_->GetBrowserWindowInterface()->IsTabStripVisible();
 
   const int y =
       is_tab_strip_visible
           // Vertically center the button on the top edge of the anchor.
-          ? anchor_bounds.y() - kHandoffButtonPreferredHeight
+          ? anchor_bounds.y() - preferred_size.height()
           // Position with a fixed offset from the top of the anchor.
           : anchor_bounds.y() - kHandoffButtonTopOffset;
 
@@ -392,28 +417,21 @@ void HandoffButtonController::OnButtonPressed() {
 }
 
 void HandoffButtonController::UpdateBounds() {
-  if (widget_) {
-    widget_->SetBounds(GetHandoffButtonBounds());
-  }
+  GetTabDialogManager()->UpdateModalDialogBounds();
 }
 
-base::ScopedClosureRunner HandoffButtonController::RegisterTabInterface(
-    tabs::TabInterface* tab_interface) {
-  tab_interface_ = tab_interface;
-  return base::ScopedClosureRunner(
-      base::BindOnce(&HandoffButtonController::UnregisterTabInterface,
-                     weak_ptr_factory_.GetWeakPtr()));
+void HandoffButtonController::UpdateVisibility() {
+  GetTabDialogManager()->UpdateDialogVisibility();
 }
 
-void HandoffButtonController::UnregisterTabInterface() {
-  tab_interface_ = nullptr;
-  UpdateState(HandoffButtonState(), /*is_visible=*/false, base::DoNothing());
+tabs::TabDialogManager* HandoffButtonController::GetTabDialogManager() {
+  auto* features = tab_interface_->GetTabFeatures();
+  CHECK(features);
+  return features->tab_dialog_manager();
 }
 
 ActorUiTabControllerInterface* HandoffButtonController::GetTabController() {
-  return tab_interface_
-             ? ActorUiTabControllerInterface::From(tab_interface_.get())
-             : nullptr;
+  return ActorUiTabControllerInterface::From(&tab_interface_.get());
 }
 
 bool HandoffButtonController::IsHovering() {
@@ -422,24 +440,16 @@ bool HandoffButtonController::IsHovering() {
 
 void HandoffButtonController::OnViewFocused(views::View* observed_view) {
   is_focused_ = true;
-  if (auto* tab_controller = GetTabController()) {
-    tab_controller->OnHandoffButtonFocusStatusChanged();
-  }
+  GetTabController()->OnHandoffButtonFocusStatusChanged();
 }
 
 void HandoffButtonController::OnViewBlurred(views::View* observed_view) {
   is_focused_ = false;
-  if (auto* tab_controller = GetTabController()) {
-    tab_controller->OnHandoffButtonFocusStatusChanged();
-  }
+  GetTabController()->OnHandoffButtonFocusStatusChanged();
 }
 
 bool HandoffButtonController::IsFocused() {
   return is_focused_;
-}
-
-base::WeakPtr<HandoffButtonController> HandoffButtonController::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace actor::ui

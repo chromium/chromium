@@ -6,19 +6,21 @@
 #define CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
-#include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace actor::ui {
 
+// A mock class for HandoffButtonController.
 class MockHandoffButtonController : public HandoffButtonController {
  public:
-  explicit MockHandoffButtonController(views::View* anchor_view);
+  explicit MockHandoffButtonController(tabs::TabInterface& tab_interface);
   ~MockHandoffButtonController() override;
 
   MOCK_METHOD(void,
               UpdateState,
-              (HandoffButtonState state, bool is_visible, base::OnceClosure),
+              (const HandoffButtonState& state,
+               bool is_visible,
+               base::OnceClosure callback),
               (override));
   MOCK_METHOD(bool, IsHovering, (), (override));
   MOCK_METHOD(bool, IsFocused, (), (override));

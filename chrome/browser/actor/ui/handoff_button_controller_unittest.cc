@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -43,8 +44,8 @@ constexpr char kActorUiHandoffButtonGiveControlClickedHistogram[] =
 
 class TestHandoffButtonController : public HandoffButtonController {
  public:
-  explicit TestHandoffButtonController(views::View* anchor_view)
-      : HandoffButtonController(anchor_view) {}
+  explicit TestHandoffButtonController(tabs::TabInterface& tab_interface)
+      : HandoffButtonController(tab_interface) {}
   ~TestHandoffButtonController() override = default;
 
   void SetWidgetAndButtonForTest(std::unique_ptr<HandoffButtonWidget> widget,
@@ -52,6 +53,8 @@ class TestHandoffButtonController : public HandoffButtonController {
     widget_ = std::move(widget);
     button_view_ = button;
   }
+  void TestShouldShowButton(bool& show) { ShouldShowButton(show); }
+
   void TestUpdateButtonHoverStatus(bool is_hovered) {
     UpdateButtonHoverStatus(is_hovered);
   }
@@ -66,11 +69,17 @@ class TestHandoffButtonController : public HandoffButtonController {
   void UpdateBounds() override { update_bounds_call_count_++; }
   int update_bounds_call_count() const { return update_bounds_call_count_; }
 
+  void UpdateVisibility() override { update_visibility_call_count_++; }
+  int update_visibility_call_count() const {
+    return update_visibility_call_count_;
+  }
+
   void PressButton() { OnButtonPressed(); }
 
  private:
   int close_button_call_count_ = 0;
   int update_bounds_call_count_ = 0;
+  int update_visibility_call_count_ = 0;
 };
 
 class HandoffButtonControllerTest : public ChromeViewsTestBase {
@@ -83,6 +92,7 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    controller_ = std::make_unique<TestHandoffButtonController>(mock_tab_);
     profile_ = TestingProfile::Builder().Build();
     ON_CALL(mock_browser_window_interface_, GetProfile())
         .WillByDefault(testing::Return(profile()));
@@ -91,11 +101,6 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     parent_widget_->Show();
-
-    controller_ = std::make_unique<TestHandoffButtonController>(
-        parent_widget_->GetContentsView());
-    tab_controller_registration_ =
-        controller_->RegisterTabInterface(&mock_tab_);
 
     auto widget = std::make_unique<HandoffButtonWidget>();
     auto delegate = std::make_unique<views::WidgetDelegate>();
@@ -146,7 +151,6 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
   tabs::MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<TestHandoffButtonController> controller_;
-  base::ScopedClosureRunner tab_controller_registration_;
   std::optional<MockActorUiTabController> mock_actor_ui_tab_controller_;
   base::UserActionTester user_action_tester_;
 };
@@ -155,28 +159,33 @@ TEST_F(HandoffButtonControllerTest,
        ButtonStateUpdatesShouldShowButtonVisibility) {
   HandoffButtonState state;
   state.is_active = true;
+  bool should_show = true;
 
   TestFuture<void> future1;
   controller_->UpdateState(state, /*is_visible=*/true, future1.GetCallback());
   EXPECT_TRUE(future1.Wait());
-  EXPECT_TRUE(widget_->IsVisible());
+  controller_->TestShouldShowButton(should_show);
+  EXPECT_TRUE(should_show);
 
   TestFuture<void> future2;
   controller_->UpdateState(state, /*is_visible=*/false, future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
-  EXPECT_FALSE(widget_->IsVisible());
+  controller_->TestShouldShowButton(should_show);
+  EXPECT_FALSE(should_show);
 
   state.is_active = false;
   TestFuture<void> future3;
   controller_->UpdateState(state, /*is_visible=*/true, future3.GetCallback());
   EXPECT_TRUE(future3.Wait());
-  EXPECT_FALSE(widget_->IsVisible());
+  controller_->TestShouldShowButton(should_show);
+  EXPECT_FALSE(should_show);
   EXPECT_EQ(1, controller_->close_button_call_count());
 
   TestFuture<void> future4;
   controller_->UpdateState(state, /*is_visible=*/false, future4.GetCallback());
   EXPECT_TRUE(future4.Wait());
-  EXPECT_FALSE(widget_->IsVisible());
+  controller_->TestShouldShowButton(should_show);
+  EXPECT_FALSE(should_show);
   EXPECT_EQ(2, controller_->close_button_call_count());
 }
 
@@ -192,6 +201,7 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
             l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_A11Y_LABEL));
   EXPECT_EQ(1, controller_->update_bounds_call_count());
+  EXPECT_EQ(1, controller_->update_visibility_call_count());
 
   state.controller = kClient;
   TestFuture<void> future2;
@@ -202,6 +212,7 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
             l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_A11Y_LABEL));
   EXPECT_EQ(2, controller_->update_bounds_call_count());
+  EXPECT_EQ(2, controller_->update_visibility_call_count());
 }
 
 TEST_F(HandoffButtonControllerTest,
@@ -284,22 +295,25 @@ TEST_F(HandoffButtonControllerTest,
 }
 
 TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnPress) {
-  HandoffButtonState actor_state{
-      .is_active = true,
-      .controller = HandoffButtonState::ControlOwnership::kActor,
-  };
+  HandoffButtonState actor_state;
+  actor_state.is_active = true;
+  actor_state.controller = kActor;
   TestFuture<void> future;
   controller_->UpdateState(actor_state, /*is_visible=*/true,
                            future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  tab_controller_registration_.RunAndReset();
+  mock_actor_ui_tab_controller_.reset();
   // Verify that pressing the button does not crash even with a null tab
   // controller.
   controller_->PressButton();
+  // The metric is logged outside the null check, so it should still be
+  // recorded.
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonTakeControlClickedHistogram));
 }
 
 TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnHover) {
-  tab_controller_registration_.RunAndReset();
+  mock_actor_ui_tab_controller_.reset();
   // Verify that when the hover status changes to true or false, it does not
   // crash even with a null tab controller.
   controller_->TestUpdateButtonHoverStatus(true);

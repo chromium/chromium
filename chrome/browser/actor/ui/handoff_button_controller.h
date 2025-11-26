@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -24,6 +23,7 @@ class WidgetDelegate;
 
 namespace tabs {
 class TabInterface;
+class TabDialogManager;
 }  // namespace tabs
 
 namespace ui {
@@ -55,7 +55,7 @@ class HandoffButtonWidget : public views::Widget {
 
 class HandoffButtonController : public views::ViewObserver {
  public:
-  explicit HandoffButtonController(views::View* anchor_view);
+  explicit HandoffButtonController(tabs::TabInterface& tab_interface);
   ~HandoffButtonController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHandoffButtonElementId);
@@ -63,7 +63,7 @@ class HandoffButtonController : public views::ViewObserver {
   HandoffButtonController(const HandoffButtonController&) = delete;
   HandoffButtonController& operator=(const HandoffButtonController&) = delete;
 
-  virtual void UpdateState(HandoffButtonState state,
+  virtual void UpdateState(const HandoffButtonState& state,
                            bool is_visible,
                            base::OnceClosure callback);
   // Returns true if the mouse is currently hovering over the handoff button.
@@ -71,16 +71,10 @@ class HandoffButtonController : public views::ViewObserver {
   // Returns true if the Handoff Button View is focused.
   virtual bool IsFocused();
 
-  base::WeakPtr<HandoffButtonController> GetWeakPtr();
-
-  // Registers the current tab interface.
-  [[nodiscard]] base::ScopedClosureRunner RegisterTabInterface(
-      tabs::TabInterface* tab_interface);
-
  protected:
-  void UnregisterTabInterface();
   void OnButtonPressed();
-  gfx::Rect GetHandoffButtonBounds();
+  void ShouldShowButton(bool& show);
+  gfx::Rect GetHandoffButtonBounds(views::Widget* widget);
   void UpdateButtonHoverStatus(bool is_hovered);
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
@@ -97,7 +91,10 @@ class HandoffButtonController : public views::ViewObserver {
   virtual void CloseButton(views::Widget::ClosedReason reason);
   virtual ActorUiTabControllerInterface* GetTabController();
   virtual void UpdateBounds();
+  virtual void UpdateVisibility();
   void OnWidgetDestroying(views::Widget::ClosedReason reason);
+
+  tabs::TabDialogManager* GetTabDialogManager();
 
   bool is_visible_ = false;
   bool is_hovering_ = false;
@@ -106,9 +103,7 @@ class HandoffButtonController : public views::ViewObserver {
       this};
   HandoffButtonState::ControlOwnership ownership_ =
       HandoffButtonState::ControlOwnership::kActor;
-
-  raw_ptr<views::View> anchor_view_ = nullptr;
-  raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
+  const raw_ref<tabs::TabInterface> tab_interface_;
 
   base::WeakPtrFactory<HandoffButtonController> weak_ptr_factory_{this};
 };

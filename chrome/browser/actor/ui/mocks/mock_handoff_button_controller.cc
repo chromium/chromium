@@ -7,8 +7,8 @@
 namespace actor::ui {
 
 MockHandoffButtonController::MockHandoffButtonController(
-    views::View* anchor_view)
-    : HandoffButtonController(anchor_view) {}
+    tabs::TabInterface& tab_interface)
+    : HandoffButtonController(tab_interface) {}
 MockHandoffButtonController::~MockHandoffButtonController() = default;
 
 }  // namespace actor::ui

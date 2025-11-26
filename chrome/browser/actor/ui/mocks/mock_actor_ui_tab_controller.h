@@ -51,29 +51,17 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(void, OnHandoffButtonHoverStatusChanged, (), (override));
   MOCK_METHOD(void, OnHandoffButtonFocusStatusChanged, (), (override));
 
-  MOCK_METHOD(base::ScopedClosureRunner,
-              RegisterHandoffButtonController,
-              (HandoffButtonController * controller),
-              (override));
-
-  MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
-
-  using ActorOverlayStateChangeCallback =
-      base::RepeatingCallback<void(bool, ActorOverlayState, base::OnceClosure)>;
-  MOCK_METHOD(base::ScopedClosureRunner,
-              RegisterActorOverlayStateChange,
-              (ActorOverlayStateChangeCallback callback),
-              (override));
-
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(TabIndicatorStatus)>;
   MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorTabIndicatorStateChangedCallback,
               (ActorTabIndicatorStateChangedCallback callback),
               (override));
-
-  using ActorOverlayBackgroundChangeCallback =
-      base::RepeatingCallback<void(bool)>;
+  MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
+  MOCK_METHOD(base::ScopedClosureRunner,
+              RegisterActorOverlayStateChange,
+              (ActorOverlayStateChangeCallback callback),
+              (override));
   MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorOverlayBackgroundChange,
               (ActorOverlayBackgroundChangeCallback callback),
