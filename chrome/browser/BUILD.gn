@@ -1902,6 +1902,7 @@ static_library("browser") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",
+    "//chrome/browser/media:audio_process_ml_model_forwarder",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",

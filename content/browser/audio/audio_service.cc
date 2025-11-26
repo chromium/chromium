@@ -6,8 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +27,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/audio_system_to_service_adapter.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
-#include "services/audio/public/mojom/ml_model_manager.mojom.h"
 #include "services/audio/service.h"
 #include "services/audio/service_factory.h"
 
@@ -50,42 +47,6 @@ namespace content {
 namespace {
 
 audio::mojom::AudioService* g_service_override = nullptr;
-
-base::File GetNeuralResidualEchoEstimatorModelFile(base::FilePath model_path) {
-  base::File model_file(model_path,
-                        base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!model_file.IsValid()) {
-    LOG(ERROR) << "Failed to open model file: " << model_path;
-  }
-  return model_file;
-}
-
-void OnModelFileOpened(base::File model_file) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!model_file.IsValid()) {
-    return;
-  }
-  mojo::Remote<audio::mojom::MlModelManager> ml_model_manager;
-  GetAudioService().BindMlModelManager(
-      ml_model_manager.BindNewPipeAndPassReceiver());
-  ml_model_manager->SetResidualEchoEstimationModel(std::move(model_file));
-}
-
-// Checks if the command line switch for the neural echo estimator model is
-// present. If so, it posts a task to open the file on a background thread and
-// sends the file handle to the audio service via Mojo on the UI thread.
-void MaybeOpenMlModel() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::FilePath model_path = command_line->GetSwitchValuePath(
-      switches::kUseFileForNeuralResidualEchoEstimatorModel);
-  if (model_path.empty()) {
-    return;
-  }
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetNeuralResidualEchoEstimatorModelFile, model_path),
-      base::BindOnce(&OnModelFileOpened));
-}
 
 bool IsAudioServiceOutOfProcess() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -248,7 +209,6 @@ audio::mojom::AudioService& GetAudioService() {
     LaunchAudioService(std::move(receiver), 0);
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && BUILDFLAG(IS_WIN)
     remote.reset_on_disconnect();
-    MaybeOpenMlModel();
   }
   return *remote.get();
 }

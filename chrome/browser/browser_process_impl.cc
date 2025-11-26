@@ -60,6 +60,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
+#include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/media/chrome_media_session_client.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -1495,6 +1497,13 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
             }));
   } else {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
+  }
+
+  if (features_->audio_process_ml_model_forwarder()) {
+    // TODO(crbug.com/454930933): Once the model provider is available from
+    // PreCreateThreads, move this init to GlobalFeatures initialization.
+    features_->audio_process_ml_model_forwarder()->Initialize(
+        features_->optimization_guide_global_feature()->GetModelProvider());
   }
 }
 
