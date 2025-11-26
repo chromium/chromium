@@ -56,7 +56,6 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/chromeos/app_mode",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/borealis",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
