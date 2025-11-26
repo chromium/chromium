@@ -516,7 +516,11 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
                                     int32_t transport_sequence_number,
                                     int64_t send_time_ms,
                                     int result) {
+  // End the in-process "UdpAsyncSendTo" event.
   TRACE_EVENT_END("p2p", perfetto::Track(packet_id), "result", result);
+  // End the "Send" event in the Global parent track - the corresponding
+  // BEGIN is called in |P2PSocketClientImpl| in the renderer process.
+  TRACE_EVENT_END("p2p", perfetto::Track::Global(packet_id), "result", result);
   if (result < 0) {
     if (!IsTransientError(result)) {
       LOG(ERROR) << "Error when sending data in UDP socket: " << result;
