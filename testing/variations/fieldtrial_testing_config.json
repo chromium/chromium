@@ -19833,26 +19833,6 @@
             ]
         }
     ],
-    "PrivacySandboxAllowPromptForBlocked3PCookies": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxAllowPromptForBlocked3PCookies"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxDisableNotices": [
         {
             "platforms": [
