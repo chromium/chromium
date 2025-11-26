@@ -179,7 +179,15 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height</item>
         <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal</item>
-        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical</item>
+        <!-- We need to set the location bar action button’s constraints differently for desktop
+        and mobile because mobile introduced Fusebox, which positions the button below
+        location_bar_attachments (anchored to the bottom of the location bar). On desktop,
+        however, the button must remain vertically centered inside location bar, so its Top and
+        Bottom constraints are applied separately via
+        ThemeOverlay.BrowserUI.DesktopDensity.TabStrip. Resetting to null here to allow the
+        buttons to fallback to the expected bottom-anchored position on mobile.-->
+        <item name="locationBarActionButtonConstraintTopToTopOf">@null</item>
+        <item name="locationBarActionButtonConstraintBottomToBottomOf">@null</item>
 
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width</item>
@@ -371,7 +379,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width_desktop</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height_desktop</item>
         <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal_desktop</item>
-        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical_desktop</item>
+        <item name="locationBarActionButtonConstraintTopToTopOf">@id/location_bar</item>
+        <item name="locationBarActionButtonConstraintBottomToBottomOf">@id/location_bar</item>
 
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>

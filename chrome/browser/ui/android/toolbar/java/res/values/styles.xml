@@ -17,11 +17,14 @@ found in the LICENSE file.
         <item name="tint">@color/default_icon_color_tint_list</item>
         <item name="android:background">@drawable/search_box_icon_background</item>
     </style>
+    <!-- This style is intended for use within a ConstraintLayout, specifically in
+    chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml. -->
     <style name="LocationBarActionButton.AdaptiveDensity" parent="LocationBarActionButton">
         <item name="android:layout_width">?attr/locationBarActionButtonWidth</item>
         <item name="android:layout_height">?attr/locationBarActionButtonHeight</item>
+        <item name="layout_constraintTop_toTopOf">?attr/locationBarActionButtonConstraintTopToTopOf</item>
+        <item name="layout_constraintBottom_toBottomOf">?attr/locationBarActionButtonConstraintBottomToBottomOf</item>
         <item name="android:layout_marginHorizontal">?attr/locationBarActionButtonMarginHorizontal</item>
-        <item name="android:layout_marginVertical">?attr/locationBarActionButtonMarginVertical</item>
     </style>
     <style name="LocationBarActionButtonForFakeSearchBox" parent="LocationBarActionButton">
         <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
