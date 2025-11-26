@@ -1,6 +1,5 @@
 // META: title=Summarizer Create User Activation
 // META: script=/resources/testdriver.js
-// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
@@ -14,12 +13,9 @@ promise_test(async t => {
   assert_false(navigator.userActivation.isActive);
   await promise_rejects_dom(t, 'NotAllowedError', Summarizer.create());
   await test_driver.bless('Summarizer.create', Summarizer.create);
-  // User activation is not consumed by the create call.
-  assert_true(navigator.userActivation.isActive);
-  consumeTransientUserActivation();
 
-  // Create does not require transient user activation.
+  // Create does not require user activation when availability is 'available'.
   assert_equals(await Summarizer.availability(), 'available');
   assert_false(navigator.userActivation.isActive);
   await Summarizer.create();
-}, 'Create requires sticky user activation when availability is "downloadable"');
+}, 'Create requires user activation when availability is "downloadable"');
