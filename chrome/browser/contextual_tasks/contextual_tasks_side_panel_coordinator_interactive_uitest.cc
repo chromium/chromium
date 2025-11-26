@@ -479,4 +479,31 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       OpenNewTabInheritsOpenerTask) {
+  SetUpTasks();
+  // Set tab1 as active tab and create a new tab. The opener of tab4 is set to
+  // tab1.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+  EXPECT_EQ(5, browser()->tab_strip_model()->count());
+
+  // Since tab1 is associated with task1, verify tab 4 is associated with the
+  // same task.
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  std::optional<ContextualTask> task1 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              browser()->tab_strip_model()->GetWebContentsAt(1)));
+  std::optional<ContextualTask> task1_2 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              browser()->tab_strip_model()->GetWebContentsAt(4)));
+  ASSERT_TRUE(task1);
+  ASSERT_TRUE(task1_2);
+  ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
+}
+
 }  // namespace contextual_tasks

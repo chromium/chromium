@@ -374,7 +374,30 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kRemoved) {
+  if (change.type() == TabStripModelChange::kInserted) {
+    for (const auto& content : change.GetInsert()->contents) {
+      // If the new tab is already associated with a task, do nothing.
+      if (context_controller_->GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(content.contents))) {
+        continue;
+      }
+
+      // If the new tab has an opener and it's associated to a task, associate
+      // the new tab to the same task.
+      tabs::TabInterface* opener =
+          tab_strip_model->GetOpenerOfTabAt(content.index);
+      if (!opener) {
+        continue;
+      }
+      std::optional<ContextualTask> task =
+          context_controller_->GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(opener->GetContents()));
+      if (task) {
+        ui_service_->AssociateWebContentsToTask(content.contents,
+                                                task->GetTaskId());
+      }
+    }
+  } else if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& content : change.GetRemove()->contents) {
       // Do not disassociate the tab from the task if insert into side panel.
       if (content.remove_reason !=
