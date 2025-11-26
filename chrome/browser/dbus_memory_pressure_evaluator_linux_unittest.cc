@@ -179,21 +179,25 @@ TEST_F(DbusMemoryPressureEvaluatorLinuxTest, Basic) {
 }
 
 TEST_F(DbusMemoryPressureEvaluatorLinuxTest, PeriodicReset) {
-  // Verify that the level will be reset after the time delta.
+  // Set the initial level.
   EmitLowMemoryWarning(100);
   EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
-  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, false))
-      .WillOnce(Return());
-
+  // Verify that the level will be reset after the time delta.
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE,
+                                     /*notify_listeners=*/true));
   task_environment().FastForwardBy(kResetVotePeriod);
   EXPECT_EQ(evaluator()->current_vote(), base::MEMORY_PRESSURE_LEVEL_NONE);
 
-  // Verify that no reset is sent for already-none levels.
-  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, false))
-      .WillOnce(Return());
-
+  // Setting the level to NONE, while it is already NONE, will not notify
+  // listeners.
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE,
+                                     /*notify_listeners=*/false));
   EmitLowMemoryWarning(0);
+
+  // Verify that the level will not be reset after the time delta when NONE.
+  EXPECT_CALL(*mock_voter(), SetVote(base::MEMORY_PRESSURE_LEVEL_NONE, _))
+      .Times(0);
   task_environment().FastForwardBy(kResetVotePeriod);
 }
 

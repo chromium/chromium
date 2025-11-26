@@ -204,11 +204,13 @@ void DbusMemoryPressureEvaluatorLinux::UpdateLevel(
 
   reset_vote_timer_.Stop();
 
+  base::MemoryPressureLevel old_vote = current_vote();
+
   SetCurrentVote(new_level);
   switch (new_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
-      // By convention no notifications are sent when returning to NONE level.
-      SendCurrentVote(false);
+      // Only notify when transitioning to no pressure.
+      SendCurrentVote(old_vote != base::MEMORY_PRESSURE_LEVEL_NONE);
       break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:

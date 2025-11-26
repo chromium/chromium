@@ -200,21 +200,22 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
 }
 
 void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
+  base::MemoryPressureLevel old_vote = current_vote();
+
   // The OS has sent a notification that the memory pressure level has changed.
   // Go through the normal memory pressure level checking mechanism so that
   // |current_vote_| and UMA get updated to the current value.
   UpdatePressureLevel();
 
   // Run the callback that's waiting on memory pressure change notifications.
-  // The convention is to not send notifications on memory pressure returning to
-  // normal.
-  bool notify = current_vote() != base::MEMORY_PRESSURE_LEVEL_NONE;
-  SendCurrentVote(notify);
+  if (current_vote() != old_vote) {
+    SendCurrentVote(true);
 
-  if (notify) {
-    renotify_current_vote_timer_.Reset();
-  } else {
-    renotify_current_vote_timer_.Stop();
+    if (current_vote() != base::MEMORY_PRESSURE_LEVEL_NONE) {
+      renotify_current_vote_timer_.Reset();
+    } else {
+      renotify_current_vote_timer_.Stop();
+    }
   }
 }
 

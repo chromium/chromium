@@ -90,8 +90,16 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
-  // No pressure, note: this will not cause any event.
-  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
+  // No pressure.
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  evaluator->OnMemoryPressure(
+      PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteCount(0)));
+  ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
+  Mock::VerifyAndClearExpectations(&listener);
+
+  // No pressure again, no notification.
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE))
+      .Times(0);
   evaluator->OnMemoryPressure(
       PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteCount(0)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
