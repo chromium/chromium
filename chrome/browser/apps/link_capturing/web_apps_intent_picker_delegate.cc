@@ -88,7 +88,15 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
   CHECK(provider_);
   std::vector<apps::IntentPickerAppInfo> apps;
   base::flat_map<webapps::AppId, std::string> all_controlling_apps =
-      provider_->registrar_unsafe().GetAllAppsControllingUrl(url);
+      provider_->registrar_unsafe().GetAllAppsControllingUrl(
+          url, {.exclude_scope_extensions = true});
+  // Only consider the extended scope of apps if there are no matching apps with
+  // this URL in the primary scope.
+  if (all_controlling_apps.empty()) {
+    all_controlling_apps =
+        provider_->registrar_unsafe().GetAllAppsControllingUrl(
+            url, {.exclude_scope_extensions = false});
+  }
   for (const auto& [app_id, name] : all_controlling_apps) {
     apps.emplace_back(PickerEntryType::kWeb, ui::ImageModel(), app_id, name);
   }

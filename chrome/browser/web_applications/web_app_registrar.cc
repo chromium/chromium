@@ -1568,7 +1568,9 @@ bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
 #endif
 
 base::flat_map<webapps::AppId, std::string>
-WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
+WebAppRegistrar::GetAllAppsControllingUrl(
+    const GURL& url,
+    WebAppScopeScoreOptions scope_score_options) const {
   base::flat_map<webapps::AppId, std::string> all_controlling_apps;
   for (const webapps::AppId& app_id : GetAppIds()) {
     if (!IsInstallState(app_id,
@@ -1581,17 +1583,9 @@ WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
       continue;
     }
 
-    bool in_scope = false;
-    if (base::FeatureList::IsEnabled(
-            features::kPwaNavigationCapturingWithScopeExtensions)) {
-      in_scope = IsUrlInAppExtendedScope(url, app_id);
-    } else {
-      const GURL scope = GetAppScope(app_id);
-      in_scope = base::StartsWith(url.spec(), scope.spec(),
-                                  base::CompareCase::SENSITIVE);
-    }
-
-    if (in_scope) {
+    std::optional<WebAppScope> scope = GetEffectiveScope(app_id);
+    if (scope.has_value() &&
+        scope->GetScopeScore(url, scope_score_options) > 0) {
       all_controlling_apps.insert_or_assign(app_id, GetAppShortName(app_id));
     }
   }

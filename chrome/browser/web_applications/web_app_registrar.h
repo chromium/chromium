@@ -525,8 +525,11 @@ class WebAppRegistrar {
 
   // Returns information about apps that controls the input url, i.e. the app's
   // scope is a substring of the url passed to the API.
+  // TODO(https://crbug.com/463757344): Add a WebAppFilter param, and maybe
+  // rename to GetAllAppsWithUrlInScope.
   base::flat_map<webapps::AppId, std::string> GetAllAppsControllingUrl(
-      const GURL& url) const;
+      const GURL& url,
+      WebAppScopeScoreOptions scope_score_options = {}) const;
 
   bool IsDiyApp(const webapps::AppId& app_id) const;
 
