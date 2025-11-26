@@ -71,6 +71,8 @@ class LoginDatabase : public EncryptDecryptInterface {
   //        syncing users.
   bool is_account_store() const { return is_account_store_.value(); }
 
+  const base::FilePath& db_path() const { return db_path_; }
+
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
   virtual bool Init(
