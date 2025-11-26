@@ -2052,7 +2052,7 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
       PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
           *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
 
-      if (!IsBreakInside(oof_node_to_layout.break_token)) {
+      if (!IsBreakInside(node_info.break_token)) {
         // The offset itself does not need to be recalculated. However, the
         // |node_dimensions| and |initial_layout_result| may need to be updated,
         // so recompute the OffsetInfo.
@@ -2792,7 +2792,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
     bool is_last_fragmentainer_so_far) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
-  const BlockBreakToken* break_token = oof_node_to_layout.break_token;
+  const BlockBreakToken* break_token = node_info.break_token;
   const BlockNode& node = node_info.node;
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
@@ -3051,9 +3051,8 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     // includes the block contribution of |descendant| from previous
     // fragmentainers. This ensures that any fixedpos descendants in the current
     // fragmentainer have the correct static position.
-    if (descendant.break_token) {
-      additional_fixedpos_offset.block_offset +=
-          descendant.break_token->ConsumedBlockSize();
+    if (const BlockBreakToken* token = descendant.node_info.break_token) {
+      additional_fixedpos_offset.block_offset += token->ConsumedBlockSize();
     }
   } else if (outer_context_has_fixedpos_container_) {
     // If the fixedpos containing block is in an outer fragmentation context,
@@ -3081,7 +3080,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.
     NodeToLayout fragmented_descendant = descendant;
-    fragmented_descendant.break_token = break_token;
+    fragmented_descendant.node_info.break_token = break_token;
     if (!break_token->IsRepeated()) {
       // Fragmented nodes usually resume at the block-start of the next
       // fragmentainer. One exception is if there's fragmentainer overflow
@@ -3285,6 +3284,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
   visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
   visitor->Trace(fixedpos_inline_container);
+  visitor->Trace(break_token);
 }
 
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
@@ -3297,7 +3297,6 @@ void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
 void OutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
   visitor->Trace(node_info);
   visitor->Trace(offset_info);
-  visitor->Trace(break_token);
   visitor->Trace(containing_block_fragment);
 }
 
