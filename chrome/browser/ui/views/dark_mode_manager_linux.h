@@ -25,10 +25,6 @@ class Bus;
 class ObjectProxy;
 }  // namespace dbus
 
-namespace dbus_xdg {
-enum class SystemdUnitStatus;
-}  // namespace dbus_xdg
-
 namespace ui {
 
 class LinuxUiTheme;
@@ -85,7 +81,7 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // D-Bus async handlers
-  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
+  void OnPortalRequestResult(bool success);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool connected);

@@ -14,7 +14,7 @@
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/utils/variant.h"
-#include "components/dbus/xdg/systemd.h"
+#include "components/dbus/xdg/portal.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -39,8 +39,8 @@ DarkModeManagerLinux::DarkModeManagerLinux(
       settings_proxy_(bus_->GetObjectProxy(
           kFreedesktopSettingsService,
           dbus::ObjectPath(kFreedesktopSettingsObjectPath))) {
-  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
-      bus_.get(), base::BindOnce(&DarkModeManagerLinux::OnSystemdUnitStarted,
+  dbus_xdg::RequestXdgDesktopPortal(
+      bus_.get(), base::BindOnce(&DarkModeManagerLinux::OnPortalRequestResult,
                                  weak_ptr_factory_.GetWeakPtr()));
 
   // Read the toolkit preference while asynchronously fetching the
@@ -74,7 +74,10 @@ void DarkModeManagerLinux::OnNativeThemeUpdated(
   SetColorScheme(observed_theme->preferred_color_scheme(), true);
 }
 
-void DarkModeManagerLinux::OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
+void DarkModeManagerLinux::OnPortalRequestResult(bool success) {
+  if (!success) {
+    return;
+  }
   // Subscribe to changes in the color scheme preference.
   dbus_utils::ConnectToSignal<"ssv">(
       settings_proxy_, kFreedesktopSettingsInterface, kSettingChangedSignal,
