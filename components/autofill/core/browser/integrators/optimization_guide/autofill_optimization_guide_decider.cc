@@ -516,4 +516,13 @@ bool AutofillOptimizationGuideDecider::IsUrlEligibleForBnplIssuer(
   NOTREACHED();
 }
 
+bool AutofillOptimizationGuideDecider::IsIframeUrlAllowlistedForActor(
+    const GURL& url) const {
+  return decider_->CanApplyOptimization(
+             url,
+             optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
 }  // namespace autofill

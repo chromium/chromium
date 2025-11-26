@@ -50,6 +50,7 @@ using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArg;
 
 }  // namespace
 
@@ -1250,6 +1251,27 @@ TEST_F(AutofillOptimizationGuideDeciderTest, AutofillAblation) {
   EXPECT_FALSE(guide().IsEligibleForAblation(
       GURL("https://www.example.com"),
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2));
+}
+
+// Tests that the optimization guide decision on whether a URL is allowlisted
+// for iframe filling by the actor filling service is queried correctly.
+TEST_F(AutofillOptimizationGuideDeciderTest, IsIframeUrlAllowlistedForActor) {
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          _,
+          Eq(optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(WithArg<0>([](const GURL& url) {
+        return url == GURL("https://www.example.com")
+                   ? optimization_guide::OptimizationGuideDecision::kTrue
+                   : optimization_guide::OptimizationGuideDecision::kFalse;
+      }));
+
+  EXPECT_TRUE(
+      guide().IsIframeUrlAllowlistedForActor(GURL("https://www.example.com")));
+  EXPECT_FALSE(guide().IsIframeUrlAllowlistedForActor(
+      GURL("https://www.othersite.com")));
 }
 
 struct BenefitOptimizationToBenefitCategoryTestCase {
