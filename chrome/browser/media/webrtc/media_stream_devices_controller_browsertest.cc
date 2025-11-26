@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/common/constants.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -231,8 +232,9 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
 
   void SetUpOnMainThread() override {
     WebRtcTestBase::SetUpOnMainThread();
-
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
 
     permission_bubble_media_access_handler_ =
         std::make_unique<PermissionBubbleMediaAccessHandler>();
@@ -938,12 +940,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RequestCamAndMicBlockedByPermissionsPolicy) {
   InitWithUrl(embedded_test_server()->GetURL("/iframe_blank.html"));
 
-  // Create a cross-origin request by using localhost as the iframe origin.
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
-  GURL cross_origin_url = embedded_test_server()
-                              ->GetURL("/simple.html")
-                              .ReplaceComponents(replace_host);
+  // Create a cross-origin request by using a.com as the iframe origin.
+  GURL cross_origin_url =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =
@@ -968,12 +967,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RequestCamBlockedByPermissionsPolicy) {
   InitWithUrl(embedded_test_server()->GetURL("/iframe_blank.html"));
 
-  // Create a cross-origin request by using localhost as the iframe origin.
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
-  GURL cross_origin_url = embedded_test_server()
-                              ->GetURL("/simple.html")
-                              .ReplaceComponents(replace_host);
+  // Create a cross-origin request by using a.com as the iframe origin.
+  GURL cross_origin_url =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =

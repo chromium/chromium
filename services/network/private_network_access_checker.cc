@@ -68,7 +68,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
-  auto result = CheckInternal(resource_address_space);
+  auto result = CheckAddressSpace(resource_address_space);
 
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
                                 result);
@@ -82,7 +82,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   mojom::IPAddressSpace resource_address_space =
       IPEndPointToIPAddressSpace(server_address);
 
-  auto result = CheckInternal(resource_address_space);
+  auto result = CheckAddressSpace(resource_address_space);
 
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
                                 result);
@@ -91,44 +91,8 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   return result;
 }
 
-void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
-  SetRequestUrl(new_url);
-  ResetForRetry();
-}
-
-void PrivateNetworkAccessChecker::ResetForRetry() {
-  response_address_space_ = std::nullopt;
-}
-
-mojom::ClientSecurityStatePtr
-PrivateNetworkAccessChecker::CloneClientSecurityState() const {
-  if (!client_security_state_) {
-    return nullptr;
-  }
-
-  return client_security_state_->Clone();
-}
-
-mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
-  if (!client_security_state_) {
-    return mojom::IPAddressSpace::kUnknown;
-  }
-
-  return client_security_state_->ip_address_space;
-}
-
-Result PrivateNetworkAccessChecker::CheckInternal(
+Result PrivateNetworkAccessChecker::CheckAddressSpace(
     mojom::IPAddressSpace resource_address_space) {
-  // If we are connecting to a local IP endpoint over HTTP, record whether we
-  // could have successfully inferred the target IP address space from the
-  // request URL.
-  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
-      is_request_url_scheme_http_) {
-    base::UmaHistogramBoolean(
-        "Security.PrivateNetworkAccess.PrivateIpInferrable",
-        request_url_private_ip_.has_value());
-  }
-
   if (should_block_local_request_ &&
       IsLessPublicAddressSpace(resource_address_space,
                                mojom::IPAddressSpace::kPublic)) {
@@ -205,6 +169,32 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     case Policy::kPermissionWarn:
       return Result::kLNAAllowedByPolicyWarn;
   }
+}
+
+void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
+  SetRequestUrl(new_url);
+  ResetForRetry();
+}
+
+void PrivateNetworkAccessChecker::ResetForRetry() {
+  response_address_space_ = std::nullopt;
+}
+
+mojom::ClientSecurityStatePtr
+PrivateNetworkAccessChecker::CloneClientSecurityState() const {
+  if (!client_security_state_) {
+    return nullptr;
+  }
+
+  return client_security_state_->Clone();
+}
+
+mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
+  if (!client_security_state_) {
+    return mojom::IPAddressSpace::kUnknown;
+  }
+
+  return client_security_state_->ip_address_space;
 }
 
 void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {

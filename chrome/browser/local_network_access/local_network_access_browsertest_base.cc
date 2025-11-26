@@ -25,8 +25,10 @@
 
 namespace local_network_access {
 
-LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase()
-    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase(
+    bool map_all_hosts_to_localhost)
+    : map_all_hosts_to_localhost_(map_all_hosts_to_localhost),
+      https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
   // Some builders run with field_trial disabled, need to enable this
   // manually.
   base::FieldTrialParams params;
@@ -85,7 +87,9 @@ void LocalNetworkAccessBrowserTestBase::SetUpOnMainThread() {
       GetPermissionRequestManager();
   mock_permission_prompt_factory_ =
       std::make_unique<permissions::MockPermissionPromptFactory>(manager);
-  host_resolver()->AddRule("*", "127.0.0.1");
+  if (map_all_hosts_to_localhost_) {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
 }
 

@@ -472,6 +472,35 @@ URLLoader::URLLoader(
   }
   receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
+
+  // If the request is to a URL that we can determine is an LNA request from
+  // just the URL, then trigger the LNA prompt. We only trigger this for request
+  // where GetAddressSpaceFromUrl() returns a value as those would also trigger
+  // if and when we move the LNA check to after hostname resolution but before
+  // connection.
+  const mojom::ClientSecurityState* client_security_state =
+      GetClientSecurityState();
+  if (client_security_state &&
+      client_security_state->private_network_request_policy ==
+          mojom::PrivateNetworkRequestPolicy::kPermissionBlock &&
+      url_loader_network_observer_) {
+    std::optional<mojom::IPAddressSpace> url_address_space =
+        GetAddressSpaceFromUrl(request.url);
+    if (url_address_space) {
+      PrivateNetworkAccessChecker lna_checker(request, client_security_state,
+                                              options_);
+      if (lna_checker.CheckAddressSpace(*url_address_space) ==
+          PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+        // Ignoring the result of the permission here because the point of this
+        // call is to get the permission prompt shown if the permission is
+        // "prompt". Later LNA checks will check the permission and use the
+        // the result.
+        url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+            base::BindOnce([](bool permission_granted) {}));
+      }
+    }
+  }
+
   url_request_ = url_request_context_->CreateRequest(
       request.url, request.priority, this, traffic_annotation,
       /*is_for_websockets=*/false, request.net_log_create_info);
