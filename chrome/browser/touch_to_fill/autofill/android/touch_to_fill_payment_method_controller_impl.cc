@@ -367,14 +367,6 @@ void TouchToFillPaymentMethodControllerImpl::LoyaltyCardSuggestionSelected(
   }
 }
 
-void TouchToFillPaymentMethodControllerImpl::OnErrorOkPressed(JNIEnv* env) {
-  if (delegate_) {
-    delegate_->OnErrorOkPressed();
-  } else {
-    Hide();
-  }
-}
-
 void TouchToFillPaymentMethodControllerImpl::OnBnplIssuerSuggestionSelected(
     JNIEnv* env,
     const std::string& issuer_id) {

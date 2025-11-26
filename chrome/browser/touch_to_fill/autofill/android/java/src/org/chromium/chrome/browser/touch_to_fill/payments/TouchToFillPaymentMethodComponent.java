@@ -85,9 +85,6 @@ interface TouchToFillPaymentMethodComponent {
         /** Called when the user clicks the "Manage loyalty cards" button. */
         void openPassesManagementUi();
 
-        /** Called when the user clicks the "OK" button on the error screen. */
-        void onErrorOkPressed();
-
         /**
          * Called when the user selects a BNPL issuer.
          *

@@ -114,7 +114,6 @@ class MockTouchToFillPaymentMethodController
               LoyaltyCardSuggestionSelected,
               (JNIEnv*, const LoyaltyCard&),
               (override));
-  MOCK_METHOD(void, OnErrorOkPressed, (JNIEnv*), (override));
   MOCK_METHOD(void,
               OnBnplIssuerSuggestionSelected,
               (JNIEnv*, const std::string&),

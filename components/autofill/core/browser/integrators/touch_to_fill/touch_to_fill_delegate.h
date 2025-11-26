@@ -65,7 +65,6 @@ class TouchToFillDelegate {
   virtual void LoyaltyCardSuggestionSelected(
       const LoyaltyCard& loyalty_card) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
-  virtual void OnErrorOkPressed() = 0;
   virtual void OnBnplIssuerSuggestionSelected(const std::string& issuer_id) = 0;
 
   virtual void LogMetricsAfterSubmission(

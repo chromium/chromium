@@ -136,14 +136,6 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
-    public void onErrorOkPressed() {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
-            TouchToFillPaymentMethodControllerBridgeJni.get()
-                    .onErrorOkPressed(mNativeTouchToFillPaymentMethodViewController);
-        }
-    }
-
-    @Override
     public void onBnplIssuerSuggestionSelected(String issuerId) {
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
@@ -188,8 +180,6 @@ class TouchToFillPaymentMethodControllerBridge
         void loyaltyCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
                 @JniType("LoyaltyCard") LoyaltyCard loyaltyCardNumber);
-
-        void onErrorOkPressed(long nativeTouchToFillPaymentMethodViewController);
 
         void onBnplIssuerSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,

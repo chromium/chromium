@@ -448,10 +448,6 @@ void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
   }
 }
 
-void TouchToFillDelegateAndroidImpl::OnErrorOkPressed() {
-  HideTouchToFill();
-}
-
 void TouchToFillDelegateAndroidImpl::OnBnplIssuerSuggestionSelected(
     const std::string& issuer_id) {
   // This check is a safeguard. `selected_issuer_callback` is set in

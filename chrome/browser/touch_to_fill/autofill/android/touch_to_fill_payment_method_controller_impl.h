@@ -110,7 +110,6 @@ class TouchToFillPaymentMethodControllerImpl
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;
   void LoyaltyCardSuggestionSelected(JNIEnv* env,
                                      const LoyaltyCard& loyalty_card) override;
-  void OnErrorOkPressed(JNIEnv* env) override;
   void OnBnplIssuerSuggestionSelected(JNIEnv* env,
                                       const std::string& issuer_id) override;
   void OnBnplTosAccepted(JNIEnv* env) override;

@@ -739,7 +739,10 @@ class TouchToFillPaymentMethodMediator {
                         FILL_BUTTON,
                         createButtonModel(
                                 R.string.autofill_bnpl_error_ok_button,
-                                () -> this.onErrorOkPressed())));
+                                () ->
+                                        onDismissed(
+                                                BottomSheetController.StateChangeReason
+                                                        .INTERACTION_COMPLETE))));
 
         mModel.set(SHEET_ITEMS, errorScreenModel);
         mModel.set(
@@ -808,7 +811,10 @@ class TouchToFillPaymentMethodMediator {
                         TEXT_BUTTON,
                         createButtonModel(
                                 R.string.autofill_bnpl_tos_bottom_sheet_cancel_button_label,
-                                () -> onDismissed(BottomSheetController.StateChangeReason.SWIPE))));
+                                () ->
+                                        onDismissed(
+                                                BottomSheetController.StateChangeReason
+                                                        .INTERACTION_COMPLETE))));
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description);
@@ -846,7 +852,8 @@ class TouchToFillPaymentMethodMediator {
         boolean dismissedByUser =
                 reason == StateChangeReason.SWIPE
                         || reason == StateChangeReason.BACK_PRESS
-                        || reason == StateChangeReason.TAP_SCRIM;
+                        || reason == StateChangeReason.TAP_SCRIM
+                        || reason == StateChangeReason.INTERACTION_COMPLETE;
         mDelegate.onDismissed(dismissedByUser);
         if (dismissedByUser) {
             if (mSuggestions != null) {
@@ -1046,13 +1053,6 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.onBnplIssuerSuggestionSelected(issuerId);
 
         recordTouchToFillBnplIssuerUserAction(issuerId, isLinked);
-    }
-
-    private void onErrorOkPressed() {
-        if (!mInputProtector.shouldInputBeProcessed()) {
-            return;
-        }
-        mDelegate.onErrorOkPressed();
     }
 
     private void onBnplTosAccepted() {

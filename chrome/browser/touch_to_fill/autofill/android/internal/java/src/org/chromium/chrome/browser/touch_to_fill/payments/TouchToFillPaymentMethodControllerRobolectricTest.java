@@ -1953,7 +1953,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();
-        verify(mDelegateMock).onErrorOkPressed();
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true);
     }
 
     @Test

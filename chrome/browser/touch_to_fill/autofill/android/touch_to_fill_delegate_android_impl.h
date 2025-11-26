@@ -140,7 +140,6 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;
   void OnDismissed(bool dismissed_by_user) override;
-  void OnErrorOkPressed() override;
   void OnBnplIssuerSuggestionSelected(const std::string& issuer_id) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
