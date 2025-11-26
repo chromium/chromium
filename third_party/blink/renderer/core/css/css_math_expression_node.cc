@@ -4421,7 +4421,7 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 2;
         break;
       case CSSValueID::kRound:
-        max_argument_count = 3;
+        max_argument_count = 2;
         min_argument_count = 1;
         break;
       case CSSValueID::kMod:
@@ -4449,27 +4449,42 @@ class CSSMathExpressionNodeParser {
     }
 
     HeapVector<Member<const CSSMathExpressionNode>> nodes;
-    // Parse the initial (optional) <rounding-strategy> argument to the round()
-    // function.
-    if (function_id == CSSValueID::kRound) {
-      CSSMathExpressionNode* rounding_strategy = ParseRoundingStrategy(stream);
-      if (rounding_strategy) {
-        nodes.push_back(rounding_strategy);
-      }
-    }
 
-    // Parse the (optional) <random-value-sharing> argument of the random()
-    // function.
-    std::optional<RandomValueSharing> random_value_sharing =
-        RandomValueSharing::Parse(stream);
-    if (function_id == CSSValueID::kRandom) {
-      if (random_value_sharing.has_value() &&
-          !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-        return nullptr;
+    // Parse any non-expression argument(s).
+    std::variant<CSSMathOperator, RandomValueSharing> non_expr_argument;
+    switch (function_id) {
+      case CSSValueID::kRound: {
+        // Parse the initial (optional) <rounding-strategy> argument to the
+        // round() function.
+        std::optional<CSSMathOperator> rounding_strategy =
+            ParseRoundingStrategy(stream);
+        if (rounding_strategy) {
+          if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+            return nullptr;
+          }
+        }
+        // If no rounding strategy, was specified operation, use "nearest".
+        non_expr_argument =
+            rounding_strategy.value_or(CSSMathOperator::kRoundNearest);
+        break;
       }
-      if (!random_value_sharing.has_value()) {
-        random_value_sharing = RandomValueSharing::Auto();
+      case CSSValueID::kRandom: {
+        DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
+        // Parse the (optional) <random-value-sharing> argument of the random()
+        // function.
+        std::optional<RandomValueSharing> random_value_sharing =
+            RandomValueSharing::Parse(stream);
+        if (random_value_sharing) {
+          if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+            return nullptr;
+          }
+        }
+        non_expr_argument =
+            random_value_sharing.value_or(RandomValueSharing::Auto());
+        break;
       }
+      default:
+        break;
     }
 
     while (!stream.AtEnd() && nodes.size() < max_argument_count) {
@@ -4553,18 +4568,10 @@ class CSSMathExpressionNodeParser {
         CSSMathOperator op;
         if (function_id == CSSValueID::kRound) {
           DCHECK_GE(nodes.size(), 1u);
-          DCHECK_LE(nodes.size(), 3u);
-          // If the first argument is a rounding strategy, use the specified
-          // operation and drop the argument from the list of operands.
-          const auto* maybe_rounding_strategy =
-              DynamicTo<CSSMathExpressionOperation>(*nodes[0]);
-          if (maybe_rounding_strategy &&
-              maybe_rounding_strategy->IsRoundingStrategyKeyword()) {
-            op = maybe_rounding_strategy->OperatorType();
-            nodes.EraseAt(0);
-          } else {
-            op = CSSMathOperator::kRoundNearest;
-          }
+          DCHECK_LE(nodes.size(), 2u);
+          const auto& rounding_strategy =
+              std::get<CSSMathOperator>(non_expr_argument);
+          op = rounding_strategy;
           if (!CanonicalizeRoundArguments(nodes)) {
             return nullptr;
           }
@@ -4591,7 +4598,9 @@ class CSSMathExpressionNodeParser {
         DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
         DCHECK_GE(nodes.size(), 2u);
         DCHECK_LE(nodes.size(), 3u);
-        return CSSMathExpressionRandomFunction::Create(*random_value_sharing,
+        const auto& random_value_sharing =
+            std::get<RandomValueSharing>(non_expr_argument);
+        return CSSMathExpressionRandomFunction::Create(random_value_sharing,
                                                        std::move(nodes));
       }
       // TODO(crbug.com/1284199): Support other math functions.
@@ -4674,7 +4683,8 @@ class CSSMathExpressionNodeParser {
         CSSNumericLiteralValue::Create(token.NumericValue(), type));
   }
 
-  CSSMathExpressionNode* ParseRoundingStrategy(CSSParserTokenStream& stream) {
+  std::optional<CSSMathOperator> ParseRoundingStrategy(
+      CSSParserTokenStream& stream) {
     CSSMathOperator rounding_op = CSSMathOperator::kInvalid;
     switch (stream.Peek().Id()) {
       case CSSValueID::kNearest:
@@ -4690,11 +4700,10 @@ class CSSMathExpressionNodeParser {
         rounding_op = CSSMathOperator::kRoundToZero;
         break;
       default:
-        return nullptr;
+        return std::nullopt;
     }
     stream.ConsumeIncludingWhitespace();
-    return MakeGarbageCollected<CSSMathExpressionOperation>(
-        CalculationResultCategory::kCalcNumber, rounding_op, CSSMathType());
+    return rounding_op;
   }
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenStream& stream,

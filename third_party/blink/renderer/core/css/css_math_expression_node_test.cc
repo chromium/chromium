@@ -851,6 +851,10 @@ TEST(CSSMathExpressionNode, InvalidRandomFunction) {
       "random(fixed 0.1 element-shared, 1, 2)",
       "random(calc(1 + 1), calc(3px + 3px))",
       "random(fixed calc(2 / 4), 0px, 100px)",
+
+      // Not random(), but tests that other functions doesn't accept random()'s
+      // arguments.
+      "round(fixed 0 0px, 100px)",
   };
 
   for (const auto& test_case : test_cases) {
