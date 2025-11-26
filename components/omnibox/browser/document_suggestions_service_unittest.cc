@@ -39,9 +39,6 @@ void OnDocumentSuggestionsLoaderAvailable(
     std::unique_ptr<network::SimpleURLLoader> loader,
     const std::string& request_body) {}
 
-void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                       std::unique_ptr<std::string> response_body) {}
-
 class DocumentSuggestionsServiceTest : public testing::Test {
  protected:
   DocumentSuggestionsServiceTest()
@@ -95,7 +92,7 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureVariationHeaders) {
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
       u"", false, base::BindOnce(OnDocumentSuggestionsRequestAvailable),
       base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
-      base::BindOnce(OnURLLoadComplete));
+      /*completion_callback=*/base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -117,7 +114,7 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
       u"", false, base::BindOnce(OnDocumentSuggestionsRequestAvailable),
       base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
-      base::BindOnce(OnURLLoadComplete));
+      /*completion_callback=*/base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 

@@ -12,6 +12,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_SEARCH_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -190,7 +191,7 @@ class SearchProvider : public BaseSearchProvider,
   // Called back from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
   // Stops the suggest query.
   // NOTE: This does not update |done_|.  Callers must do so.

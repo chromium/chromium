@@ -181,13 +181,13 @@ class AimEligibilityService
   void OnServerEligibilityResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
       RequestSource request_source,
-      std::unique_ptr<std::string> response_string);
+      std::optional<std::string> response_string);
   void ProcessServerEligibilityResponse(
       RequestSource request_source,
       int response_code,
       bool was_fetched_via_cache,
       int num_retries,
-      std::unique_ptr<std::string> response_string);
+      std::optional<std::string> response_string);
 
   // Returns true if AIM is allowed by policy and Google is the DSE.
   bool IsAimAllowedByPolicyAndDse() const;

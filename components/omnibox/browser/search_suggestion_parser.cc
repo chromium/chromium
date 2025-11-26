@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -594,14 +595,14 @@ bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
 // static
 std::string SearchSuggestionParser::ExtractJsonData(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const net::HttpResponseHeaders* response_headers = nullptr;
   if (source && source->ResponseInfo())
     response_headers = source->ResponseInfo()->headers.get();
   if (!response_body)
     return std::string();
 
-  std::string json_data = std::move(*response_body);
+  std::string json_data = std::move(response_body).value();
 
   // JSON is supposed to be UTF-8, but some suggest service providers send
   // JSON files in non-UTF-8 encodings.  The actual encoding is usually

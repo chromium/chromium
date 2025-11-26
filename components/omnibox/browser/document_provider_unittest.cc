@@ -1174,11 +1174,11 @@ TEST_F(DocumentProviderTest, Backoff) {
     EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 200, std::nullopt);
     EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 400, std::nullopt);
     EXPECT_TRUE(provider_->backoff_for_this_instance_only_);
   }
 
@@ -1193,11 +1193,11 @@ TEST_F(DocumentProviderTest, Backoff) {
     EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 200, std::nullopt);
     EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     provider_->done_ = false;
-    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    provider_->OnURLLoadComplete(nullptr, 400, std::nullopt);
     EXPECT_TRUE(client_->GetDocumentSuggestionsService()->should_backoff());
 
     // After 20 minutes, the backoff state should still be active.

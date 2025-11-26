@@ -5,9 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_REMOTE_SUGGESTIONS_SERVICE_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_REMOTE_SUGGESTIONS_SERVICE_OBSERVER_BRIDGE_H_
 
+#import <string>
+
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/types/optional_ref.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 
 @protocol RemoteSuggestionsServiceObserver
@@ -51,7 +54,7 @@ class RemoteSuggestionsServiceObserverBridge
   void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
-      const std::unique_ptr<std::string>& response_body) override;
+      base::optional_ref<std::string> response_body) override;
 
  private:
   __weak id<RemoteSuggestionsServiceObserver> observer_;

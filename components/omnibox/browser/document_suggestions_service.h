@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_DOCUMENT_SUGGESTIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -46,7 +47,7 @@ class DocumentSuggestionsService : public KeyedService,
                               const std::string& request_body)>;
   using CompletionCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* source,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
 
   // Returns whether the user's primary account is available.
   bool HasPrimaryAccount();

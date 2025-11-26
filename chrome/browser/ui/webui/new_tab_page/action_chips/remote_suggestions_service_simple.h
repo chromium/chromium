@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_REMOTE_SUGGESTIONS_SERVICE_SIMPLE_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_REMOTE_SUGGESTIONS_SERVICE_SIMPLE_H_
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
@@ -81,7 +83,7 @@ class RemoteSuggestionsServiceSimpleImpl
           callback,
       const network::SimpleURLLoader* source,
       int response_code,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   raw_ptr<AutocompleteProviderClient> client_;
   base::WeakPtrFactory<RemoteSuggestionsServiceSimpleImpl> weak_ptr_factory_{

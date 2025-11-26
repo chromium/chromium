@@ -569,7 +569,7 @@ void AimEligibilityService::StartServerEligibilityRequest(
 void AimEligibilityService::OnServerEligibilityResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     RequestSource request_source,
-    std::unique_ptr<std::string> response_string) {
+    std::optional<std::string> response_string) {
   CHECK(initialized_);
 
   const int response_code =
@@ -590,7 +590,7 @@ void AimEligibilityService::ProcessServerEligibilityResponse(
     int response_code,
     bool was_fetched_via_cache,
     int num_retries,
-    std::unique_ptr<std::string> response_string) {
+    std::optional<std::string> response_string) {
   LogEligibilityRequestResponseCode(response_code, request_source);
 
   const bool custom_retry_policy_enabled = base::FeatureList::IsEnabled(

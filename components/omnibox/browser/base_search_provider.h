@@ -11,6 +11,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -251,7 +252,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   // completes.
   void OnDeletionComplete(const network::SimpleURLLoader* source,
                           const int response_code,
-                          std::unique_ptr<std::string> response_body);
+                          std::optional<std::string> response_body);
 
   raw_ptr<AutocompleteProviderClient> client_;
 

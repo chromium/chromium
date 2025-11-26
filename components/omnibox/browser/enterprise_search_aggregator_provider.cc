@@ -834,13 +834,13 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
     int request_index,
     const network::SimpleURLLoader* source,
     int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_GE(requests_.size(), static_cast<size_t>(request_index));
 
   if (response_code == 200) {
     // Parse `response_body` in utility process if feature param is true.
-    const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
+    std::string json_data = SearchSuggestionParser::ExtractJsonData(
         source, std::move(response_body));
     if (omnibox_feature_configs::SearchAggregatorProvider::Get()
             .parse_response_in_utility_process) {

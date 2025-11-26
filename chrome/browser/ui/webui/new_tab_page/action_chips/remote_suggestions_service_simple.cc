@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/remote_suggestions_service_simple.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -59,11 +61,11 @@ std::string GenerateTruncatedTitle(const std::u16string_view title) {
   return std::string(encoded.view());
 }
 
-base::expected<std::unique_ptr<std::string>,
+base::expected<std::optional<std::string>,
                RemoteSuggestionsServiceSimple::Error>
 HandleRawRemoteResponse(const network::SimpleURLLoader* source,
                         const int response_code,
-                        std::unique_ptr<std::string> response_body) {
+                        std::optional<std::string> response_body) {
   DCHECK(source);
   if (source->NetError() != net::OK || response_code != 200) {
     return base::unexpected(RemoteSuggestionsServiceSimple::NetworkError{
@@ -76,12 +78,12 @@ HandleRawRemoteResponse(const network::SimpleURLLoader* source,
 base::expected<SearchSuggestionParser::SuggestResults,
                RemoteSuggestionsServiceSimple::Error>
 ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
-                             std::unique_ptr<std::string> response) {
+                             std::optional<std::string> response) {
   using enum ::action_chips::RemoteSuggestionsServiceSimple::ParseError::
       ParseErrorType;
   DCHECK(response);
 
-  if (response == nullptr || response->empty()) {
+  if (!response || response->empty()) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{
         .parse_error_type = kResponseEmpty});
   }
@@ -154,10 +156,10 @@ void RemoteSuggestionsServiceSimpleImpl::HandleActionChipSuggestionsResponse(
         callback,
     const network::SimpleURLLoader* source,
     int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::move(callback).Run(
       HandleRawRemoteResponse(source, response_code, std::move(response_body))
-          .and_then([this](std::unique_ptr<std::string> response) {
+          .and_then([this](std::optional<std::string> response) {
             return ParseZeroSuggestionsResponse(this->client_,
                                                 std::move(response));
           }));

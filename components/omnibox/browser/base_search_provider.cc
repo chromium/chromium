@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -765,7 +767,7 @@ void BaseSearchProvider::DeleteMatchFromMatches(
 void BaseSearchProvider::OnDeletionComplete(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   RecordDeletionResult(response_code == 200);
   std::erase_if(
       deletion_loaders_,

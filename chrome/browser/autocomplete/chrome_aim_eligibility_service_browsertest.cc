@@ -161,7 +161,7 @@ class AimEligibilityServiceFriend {
       int response_code,
       bool was_fetched_via_cache,
       int num_retries,
-      std::unique_ptr<std::string> response_string) {
+      std::optional<std::string> response_string) {
     service->ProcessServerEligibilityResponse(
         request_source, response_code, was_fetched_via_cache, num_retries,
         std::move(response_string));
@@ -973,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
   aim_eligibility_service_friend.ProcessServerEligibilityResponse(
       service, AimEligibilityServiceFriend::RequestSource::kStartup, 200,
       /*was_fetched_via_cache=*/true,
-      /*num_retries=*/0, std::make_unique<std::string>(response_string));
+      /*num_retries=*/0, std::move(response_string));
   service->IsAimEligible();
 
   histogram_tester.ExpectUniqueSample(
