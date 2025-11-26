@@ -23,6 +23,16 @@ build_webui("build") {
   css_files = [ "app.css" ]
 
   webui_context_type = "trusted"
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "reload-button.top-chrome"
+    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_external_paths =
+        [ "chrome://reload-button.top-chrome|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/reload_button/tsc",
+              root_build_dir) ]
+  }
 
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
