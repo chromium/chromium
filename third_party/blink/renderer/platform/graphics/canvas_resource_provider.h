@@ -57,6 +57,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 class CanvasResource;
 class CanvasResourceSharedImage;
 class CanvasResourceProviderBitmap;
+class CanvasResourceProviderExternalBitmap;
 class CanvasResourceProviderSharedImage;
 class MemoryManagedPaintCanvas;
 class StaticBitmapImage;
@@ -125,6 +126,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Used to determine if the provider is going to be initialized or not.
   enum class ShouldInitialize { kNo, kCallClear };
+
+  static std::unique_ptr<CanvasResourceProviderExternalBitmap>
+  CreateExternalBitmapProvider(gfx::Size size,
+                               viz::SharedImageFormat format,
+                               SkAlphaType alpha_type,
+                               const gfx::ColorSpace& color_space,
+                               ShouldInitialize initialize_provider);
 
   static std::unique_ptr<CanvasResourceProviderBitmap> CreateBitmapProvider(
       gfx::Size size,
@@ -203,7 +211,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
   virtual scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) = 0;
+      ImageOrientation orientation) {
+    NOTREACHED();
+  }
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -404,9 +414,6 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
   bool IsSingleBuffered() const override { return false; }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
-  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) override;
 
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
@@ -422,6 +429,23 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
     return nullptr;
   }
   sk_sp<SkSurface> CreateSkSurface() const override;
+};
+
+// * Renders to a Skia RAM-backed bitmap via an external (client-supplied) draw.
+// * Mailboxing is not supported : cannot be directly composited.
+class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
+    : public CanvasResourceProviderBitmap {
+ public:
+  CanvasResourceProviderExternalBitmap(gfx::Size size,
+                                       viz::SharedImageFormat format,
+                                       SkAlphaType alpha_type,
+                                       const gfx::ColorSpace& color_space);
+
+  ~CanvasResourceProviderExternalBitmap() override = default;
+
+  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      ImageOrientation orientation) override;
 };
 
 // * Renders to a SharedImage, which manages memory internally.

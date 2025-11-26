@@ -155,8 +155,19 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
   return UnacceleratedSnapshot(orientation);
 }
 
+CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space)
+    : CanvasResourceProviderBitmap(size,
+                                   format,
+                                   alpha_type,
+                                   color_space,
+                                   /*delegate=*/nullptr) {}
+
 scoped_refptr<StaticBitmapImage>
-CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
+CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   draw_callback(Canvas());
@@ -1155,6 +1166,27 @@ void CanvasResourceProviderSharedImage::OnMemoryDump(
         static_cast<CanvasResourceSharedImage*>(unused_resource.resource.get());
     resource_pointer->OnMemoryDump(pmd, cached_path);
   }
+}
+
+std::unique_ptr<CanvasResourceProviderExternalBitmap>
+CanvasResourceProvider::CreateExternalBitmapProvider(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize) {
+  auto provider = std::make_unique<CanvasResourceProviderExternalBitmap>(
+      size, format, alpha_type, color_space);
+  if (provider->IsValid()) {
+    if (should_initialize ==
+        CanvasResourceProvider::ShouldInitialize::kCallClear) {
+      provider->Clear();
+    }
+    // The Clear() call cannot turn a CRPExternalBitmap invalid.
+    CHECK(provider->IsValid());
+    return provider;
+  }
+  return nullptr;
 }
 
 std::unique_ptr<CanvasResourceProviderBitmap>
