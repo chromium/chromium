@@ -99,7 +99,7 @@ enum class PrefetchPotentialCandidateServingResult {
   kNotServedOnDeterminedHeadWithNotServableUnknown = 13,
 
   // A special value for `PrefetchMatchResolver::UnblockForNoCandidates()`.
-  kNotServedNoCandidates = 13,
+  kNotServedNoCandidates = 14,
 
   kMaxValue = kNotServedNoCandidates,
 };
