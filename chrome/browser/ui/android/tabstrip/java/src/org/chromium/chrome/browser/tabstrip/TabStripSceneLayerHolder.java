@@ -28,6 +28,7 @@ public interface TabStripSceneLayerHolder extends TabStripTransitionDelegate {
      * Update the layer's exact yOffset in the top controls.
      *
      * @param yOffsetPx The layer's yOffset in Px.
+     * @param visibleHeightPx The tab strip's visible portion in Px.
      */
-    default void onLayerYOffsetChanged(int yOffsetPx) {}
+    default void onLayerYOffsetChanged(int yOffsetPx, int visibleHeightPx) {}
 }

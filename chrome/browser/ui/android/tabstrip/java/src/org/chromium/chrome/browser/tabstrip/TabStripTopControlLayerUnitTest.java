@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -19,7 +20,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 
 /** Unit tests for {@link TabStripTopControlLayer}. */
@@ -29,6 +32,7 @@ public class TabStripTopControlLayerUnitTest {
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private ControlContainer mControlContainer;
     @Mock private TabStripSceneLayerHolder mTabStripSceneLayerHolder;
+    @Mock private BrowserControlsStateProvider mBrowserControls;
 
     private TabStripTopControlLayer mTabStripTopControlLayer;
     private final CallbackHelper mOnTransitionStartedCallback = new CallbackHelper();
@@ -36,8 +40,10 @@ public class TabStripTopControlLayerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        doReturn(true).when(mTopControlsStacker).isLayerAtTop(TopControlType.TABSTRIP);
         mTabStripTopControlLayer =
-                new TabStripTopControlLayer(0, mTopControlsStacker, mControlContainer);
+                new TabStripTopControlLayer(
+                        0, mTopControlsStacker, mBrowserControls, mControlContainer);
         mTabStripTopControlLayer.initializeWithNative(mTabStripSceneLayerHolder);
     }
 
@@ -46,22 +52,27 @@ public class TabStripTopControlLayerUnitTest {
         requestTransition(100, true);
         verify(mTabStripSceneLayerHolder, times(0)).onHeightChanged(anyInt(), anyBoolean());
 
-        // First update to start the transition
+        // First update to start the transition. Visible height still at 0.
+        doReturn(-100).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
         verifyHeightTransitionStarted(/* newHeight= */ 100, /* applyScrimOverlay= */ true);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 0);
         clearInvocations(mTabStripSceneLayerHolder);
 
-        // Update, not reaching resting position
+        // Update, move by 40, not reaching resting position.
+        // Offset at -60, Visible height being 40.
+        doReturn(-60).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 40);
         verify(mTabStripSceneLayerHolder, times(0)).onHeightTransitionFinished(anyBoolean());
         clearInvocations(mTabStripSceneLayerHolder);
 
+        // Finishing, top control offset reach 0.
+        doReturn(0).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, /* reachRestingPosition= */ true);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 100);
         verify(mTabStripSceneLayerHolder, times(1)).onHeightTransitionFinished(true);
     }
 
@@ -71,21 +82,27 @@ public class TabStripTopControlLayerUnitTest {
         requestTransition(0, true);
         verify(mTabStripSceneLayerHolder, times(0)).onHeightChanged(anyInt(), anyBoolean());
 
+        // Start transition. Top controls offset change from 100 -> 0.
+        doReturn(100).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
         verifyHeightTransitionStarted(/* newHeight= */ 0, /* applyScrimOverlay= */ true);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 100);
         clearInvocations(mTabStripSceneLayerHolder);
 
-        // Another update to start the transition
+        // Another update to mid the transition. Controls moved by 60.
+        // Top offset = 100 - 60 = 40; visibleHeight being 40.
+        doReturn(40).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 40);
         verify(mTabStripSceneLayerHolder, times(0)).onHeightTransitionFinished(anyBoolean());
         clearInvocations(mTabStripSceneLayerHolder);
 
+        // Transition finishing. Top control offset reach 0. Strip fully hidden.
+        doReturn(0).when(mBrowserControls).getTopControlOffset();
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, /* reachRestingPosition= */ true);
-        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0);
+        verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 0);
         verify(mTabStripSceneLayerHolder).onHeightTransitionFinished(true);
     }
 
@@ -103,7 +120,8 @@ public class TabStripTopControlLayerUnitTest {
     public void testNotStartingTransitionBeforeTabStripInitialized() {
         // Recreate the stacker without setting the tab strip.
         mTabStripTopControlLayer =
-                new TabStripTopControlLayer(0, mTopControlsStacker, mControlContainer);
+                new TabStripTopControlLayer(
+                        0, mTopControlsStacker, mBrowserControls, mControlContainer);
         requestTransition(100, false);
 
         verifyHeightTransitionNotStarted();

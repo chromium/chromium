@@ -237,6 +237,27 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     /**
+     * Returns whether the given layer is the top most visible layer. Returns true when the layer is
+     * the top most non-hidden layer.
+     *
+     * @param controlType Type of control to query for.
+     * @return Whether or not the control is the top most non-hidden layer.
+     */
+    public boolean isLayerAtTop(@TopControlType int controlType) {
+        if (mControls.get(controlType) == null) return false;
+
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (!isLayerHidden(layer)) {
+                return type == controlType;
+            }
+        }
+
+        // No non-hidden layers were found, so this layer cannot be the top.
+        return false;
+    }
+
+    /**
      * Returns true when the given control type is at the bottom of the set of top controls. We
      * define the bottom as the point in the stack that has no non-null, visible,
      * height-contributing layers beyond it.

@@ -14,6 +14,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -33,6 +34,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         implements TopControlLayer, TabStripTransitionHandler {
     private static final String TAG = "TabStripLayer";
     private final TopControlsStacker mTopControlsStacker;
+    private final BrowserControlsStateProvider mBrowserControls;
     private final ControlContainer mControlContainer;
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
@@ -94,14 +96,17 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
      *
      * @param tabStripHeight The initial height of the tab strip.
      * @param topControlsStacker The top controls stacker instance.
+     * @param browserControls The browser controls instance.
      * @param controlContainer The {@link ControlContainer} instance.
      */
     public TabStripTopControlLayer(
             int tabStripHeight,
             TopControlsStacker topControlsStacker,
+            BrowserControlsStateProvider browserControls,
             ControlContainer controlContainer) {
         super(tabStripHeight);
         mTopControlsStacker = topControlsStacker;
+        mBrowserControls = browserControls;
         mControlContainer = controlContainer;
 
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
@@ -243,7 +248,25 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
 
     private void updateSceneLayerOffset(int yOffset) {
         if (mTabStrip == null) return;
-        mTabStrip.onLayerYOffsetChanged(yOffset);
+
+        assert getTopControlVisibility() == TopControlVisibility.HIDDEN
+                || mTopControlsStacker.isLayerAtTop(TopControlType.TABSTRIP);
+
+        int effectiveHeight = getTopControlHeight();
+        if (isInTransition()) {
+            assert mBrowserControls.getBottomControlsMinHeightOffset() == 0;
+
+            // Assuming tab strip is the top most layer, and there's no minHeight available.
+            // The top controls offset stands for the folded portion of the tab strip when negative
+            // (tab strip showing), or remaining portion when offset > 0 (tab strip hiding).
+            int topControlOffset = mBrowserControls.getTopControlOffset();
+            if (topControlOffset <= 0) {
+                effectiveHeight += topControlOffset;
+            } else {
+                effectiveHeight = topControlOffset;
+            }
+        }
+        mTabStrip.onLayerYOffsetChanged(yOffset, effectiveHeight);
     }
 
     private void notifyTransitionStarted() {
