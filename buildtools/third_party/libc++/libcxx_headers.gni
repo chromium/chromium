@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "99d9ab2603b02b6fb974cf19be99777f5cd99e7a",
+    libcxx_revision == "25731e23e3aae8f833705d3b2e6540d7d5eab3e0",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -537,7 +537,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__locale_dir/locale_base_api.h",
   "//third_party/libc++/src/include/__locale_dir/locale_base_api/bsd_locale_fallbacks.h",
   "//third_party/libc++/src/include/__locale_dir/locale_base_api/ibm.h",
-  "//third_party/libc++/src/include/__locale_dir/locale_base_api/musl.h",
   "//third_party/libc++/src/include/__locale_dir/locale_base_api/openbsd.h",
   "//third_party/libc++/src/include/__locale_dir/messages.h",
   "//third_party/libc++/src/include/__locale_dir/money.h",

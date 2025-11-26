@@ -281,7 +281,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
 
 TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
        ConstructAndDestroyDontCrash) {
-  std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
+  std::ignore = std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
       adapter_, device_.get(), remote_service_, to_peripheral_char_,
       from_peripheral_char_,
       base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
