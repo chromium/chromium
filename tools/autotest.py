@@ -504,7 +504,7 @@ def HaveUserPickFile(paths):
 
   msg = f"""\
 Found multiple paths with that name.
-Hint: Avoid this in subsequent runs using --path-index=$INDEX, or --all.
+Hint: Avoid this in subsequent runs using --path-index=$INDEX, or --run-all.
 
 {path_list}
 
@@ -518,7 +518,7 @@ def HaveUserPickTarget(paths, targets):
 
   msg = f"""\
 Path(s) belong to multiple test targets.
-Hint: Avoid this in subsequent runs using --target-index=$INDEX, or --all.
+Hint: Avoid this in subsequent runs using --target-index=$INDEX, or --run-all.
 
 {target_list}
 
