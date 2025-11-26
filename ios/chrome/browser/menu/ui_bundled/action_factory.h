@@ -249,6 +249,17 @@ class TabGroup;
 // Invokes the given `block` when executed.
 - (UIAction*)actionToOpenImageInGeminiWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance to pin a site to the most visited tile.
+- (UIAction*)actionToPinSiteToMostVisitedTileWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance to unpin a site from the most visited tile.
+- (UIAction*)actionToUnpinSiteFromMostVisitedTileWithBlock:
+    (ProceduralBlock)block;
+
+// Creates a UIAction instance to edit a pined site on the most visited tile.
+- (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
+    (ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_ACTION_FACTORY_H_

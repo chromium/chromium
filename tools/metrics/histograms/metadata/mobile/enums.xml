@@ -236,6 +236,9 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Leave shared tab group"/>
   <int value="67" label="Delete shared tab group"/>
   <int value="68" label="Gemini with image entry point"/>
+  <int value="69" label="Pin the site to most visited sites section"/>
+  <int value="70" label="Unpin the site from most visited sites section"/>
+  <int value="71" label="Edit on pinned site on most visited sites section"/>
 </enum>
 
 <enum name="IOSMenuScenario">

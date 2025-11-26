@@ -836,4 +836,39 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
                       block:block];
 }
 
+- (UIAction*)actionToPinSiteToMostVisitedTileWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPinSymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)
+                         image:image
+                          type:MenuActionType::PinSite
+                         block:block];
+}
+
+- (UIAction*)actionToUnpinSiteFromMostVisitedTileWithBlock:
+    (ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPinSlashSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE)
+                      image:image
+                       type:MenuActionType::UnpinSite
+                      block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
+- (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
+    (ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE)
+                         image:image
+                          type:MenuActionType::EditPinnedSite
+                         block:block];
+}
+
 @end

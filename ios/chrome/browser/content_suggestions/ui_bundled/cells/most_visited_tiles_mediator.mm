@@ -304,10 +304,26 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                                           title:item.title
                                                        fromView:view];
                 }]];
+  if (item.isPinned) {
+    [menuElements
+        addObject:[self.actionFactory
+                      actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
+                          // TODO(crbug.com/459873750): Edit.
+                      }]];
+    [menuElements addObject:[self.actionFactory
+                                actionToUnpinSiteFromMostVisitedTileWithBlock:^{
+                                    // TODO(crbug.com/459873750): Unpin.
+                                }]];
+  } else {
+    [menuElements addObject:[self.actionFactory
+                                actionToPinSiteToMostVisitedTileWithBlock:^{
+                                    // TODO(crbug.com/459873750): Pin the site.
+                                }]];
+    [menuElements addObject:[self.actionFactory actionToRemoveWithBlock:^{
+                    [weakSelf removeMostVisited:item];
+                  }]];
+  }
 
-  [menuElements addObject:[self.actionFactory actionToRemoveWithBlock:^{
-                  [weakSelf removeMostVisited:item];
-                }]];
   return menuElements;
 }
 
