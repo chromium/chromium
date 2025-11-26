@@ -6173,19 +6173,11 @@ if (!is_android) {
       # Needed by startup.mobile benchmark.
       data_deps += [ "//chrome/android/webapk/shell_apk:webapk" ]
 
-      if (telemetry_target_suffix == "_android_clank_chrome") {
-        # Depending on Android version, either Chrome.apk or Monochrome.apk can
-        # be selected. See ChromeBackendSettings.GetApkName method in
-        # catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py.
-        data_deps += [ "//tools/perf/:perf_android_clank_monochrome" ]
-      }
-
       if (telemetry_target_suffix == "_android_webview" &&
           enable_chrome_android_internal) {
         # This suffix is used by all webview tests. Several different webview
         # APKs can be used, depending on the platform.
         data_deps += [
-          "//tools/perf/:perf_android_clank_monochrome",
           "//tools/perf/:perf_android_clank_trichrome_webview_bundle",
           "//tools/perf/:perf_android_clank_webview",
         ]
