@@ -149,8 +149,6 @@ void FilteringRanker::UpdateResultRanks(ResultsMap& results,
   }
   FilterOmniboxResults(results, last_query_);
   DeduplicateDriveFilesAndTabs(results);
-  // TODO(crbug.com/40218201): Verify that game URLs match the omnibox stripped
-  // URL once game URLs are finalized.
   DeduplicateResults(results, ResultType::kGames, ResultType::kOmnibox);
   DeduplicateResults(results, ResultType::kImageSearch,
                      ResultType::kFileSearch);
