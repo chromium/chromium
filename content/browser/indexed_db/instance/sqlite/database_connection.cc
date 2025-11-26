@@ -25,6 +25,7 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/record.h"
@@ -1999,7 +2000,9 @@ DatabaseConnection::CreateAllExternalObjects(
                               /*readonly=*/true),
           GetMaxBlobSize().InBytes(),
           base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
-                         base::Unretained(this), object.blob_number()));
+                         base::Unretained(this), object.blob_number()),
+          base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
+                              in_memory()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
                .first;
       if (!AddActiveBlobReference(object.blob_number())) {

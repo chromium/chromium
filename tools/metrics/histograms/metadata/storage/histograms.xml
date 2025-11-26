@@ -298,6 +298,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.BackingStore.ReadBlob.{IndexedDBBackingStoreType}"
+    enum="NetErrorCodes" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the result of each attempt to read the bytes corresponding to a
+    blink.mojom.Blob or storage.mojom.BlobDataItem from an
+    {IndexedDBBackingStoreType} backing store only (i.e., not from pending blobs
+    which are yet to be written to the store). Logged when streaming completes,
+    successfully or otherwise. The source of the bytes may be a file as in the
+    case of LevelDB, or a blob streaming handle as in the case of SQLite. This
+    histogram gates rollout of the SQLite backing store.
+  </summary>
+</histogram>
+
 <histogram
     name="IndexedDB.BackingStore.{Operation}.{IndexedDBBackingStoreType}"
     enum="IndexedDbStatusType" expires_after="2026-10-01">
