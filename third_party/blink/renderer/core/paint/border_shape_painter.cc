@@ -105,6 +105,17 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
                                            style.EffectiveZoom(), 1);
 }
 
+PhysicalRect BorderShapePainter::BoundingRect(
+    const ComputedStyle& style,
+    PhysicalRect border_rect,
+    const PhysicalRect& outer_reference_rect,
+    const PhysicalRect& inner_reference_rect) {
+  CHECK(style.HasBorderShape());
+  border_rect.Expand(VisualOutsets(style, border_rect, outer_reference_rect,
+                                   inner_reference_rect));
+  return border_rect;
+}
+
 bool BorderShapePainter::Paint(GraphicsContext& context,
                                const ComputedStyle& style,
                                const PhysicalRect& outer_reference_rect,
