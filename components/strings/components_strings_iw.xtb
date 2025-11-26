@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">נטוי</translation>
 <translation id="2130448033692577677">‏לא ניתן להחיל את התבניות שבחרת, מפני שמדיניות DnsOverHttpsMode לא הוגדרה.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. ‫<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">מנועי החיפוש האלה מוצגים בסדר אקראי. תמיד אפשר לשנות את ברירת המחדל.</translation>
 <translation id="2137891579555018930">בהמתנה לאישור…</translation>
 <translation id="213826338245044447">סימניות לנייד</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">לא ניתן היה לעזור בבקשה הזו. אפשר לנסות שוב.</translation>
 <translation id="2453045048779611513">הארגון שלך מגביל את מה שאפשר לשמור</translation>
 <translation id="2456755709261364512">רמת הטעינה של הסוללה צריכה להיות גבוהה מ-<ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">כללי המדיניות של הדפדפן שהוחלו (מדיניות המחשב ומדיניות הפרופיל)</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core הוא כלי מרכזי להגדרה של כללי מדיניות לדפדפן דרך הענן</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2462932596748424101">רשתות חברתיות</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">החיבור מוצפן ומאומת באמצעות <ph name="CIPHER" /> ומשתמש ב-<ph name="KX" /> כמנגנון להחלפת מפתחות.</translation>
 <translation id="2833637280516285136">תוכניות דיבורים ברדיו</translation>
 <translation id="2835170189407361413">ניקוי הטופס</translation>
+<translation id="2835907903001172712">סקירה כללית של הדפדפן</translation>
 <translation id="2837891525090413132">אתרים יכולים לבקש לנעול את המקלדת ולהשתמש בה</translation>
 <translation id="2839032553903800133">ההודעות חסומות</translation>
 <translation id="2839501879576190149">האתר המבוקש נראה מזויף</translation>
@@ -1557,6 +1560,7 @@
 <translation id="3543935938072367282">תשלום מהיר יותר בעזרת מילוי אוטומטי</translation>
 <translation id="3547442767634383572">סקירה כללית של פרופיל העבודה</translation>
 <translation id="3547746132308051926">‏20x24 אינץ'</translation>
+<translation id="3549904448933807997">פרטים על הדפדפנים והפרופילים (כולל פרופילים אישיים ופרופילים של עבודה)</translation>
 <translation id="3552155506104542239">‏אזהרה: המדיניות הזו מתנגשת עם <ph name="POLICY_NAME" /> ולא תהיה לה השפעה על אפליקציות ל-Android. פרט לכך, המדיניות הזו פועלת כצפוי.</translation>
 <translation id="3552297013052089404">‏גופן Sans-Serif</translation>
 <translation id="3558573058928565255">שעות היום</translation>
@@ -2402,6 +2406,7 @@ Del</translation>
 <translation id="4887406273302438710">‏הגנה על סיסמאות באמצעות Windows Hello</translation>
 <translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי למחוק את היסטוריית הגלישה, קובצי ה-Cookie, המטמון ועוד בהגדרות של Chrome</translation>
 <translation id="4892518386797173871">חלק אחורי</translation>
+<translation id="4894390983254799375">למשל מזהה המכשיר, השם, גרסת מערכת ההפעלה ושם המשתמש במערכת ההפעלה</translation>
 <translation id="4895019427244614047">מחיקת הכתובת</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">אולימפיאדה</translation>
@@ -2938,6 +2943,7 @@ Del</translation>
 <translation id="5764920692828389743">שליחה לכתובת <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
 <translation id="57689295674415555">מספר הכרטיס הווירטואלי לא הוזן?</translation>
+<translation id="5773286975255318081">למשל שמות משתמש בפרופיל וגרסאות דפדפן</translation>
 <translation id="5776313857861697733">עדיפות</translation>
 <translation id="577804500166306874">התוצאה נטענת</translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
@@ -3552,6 +3558,7 @@ Del</translation>
 <translation id="6772959465807028761">‏כדי להשתמש ב-YouTube, צריך להמשיך עם חשבון Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏שימוש ב-YouTube עם הבחירות של ההורים</translation>
+<translation id="6779290995699117286">לאדמינים יש גישה לפרטי הפרופיל, הדפדפן והמכשיר. מה הם יכולים לראות:</translation>
 <translation id="6779348349813025131">‏למנהל הסיסמאות של Google נדרשת גישה אל 'צרור מפתחות של macOS'</translation>
 <translation id="6780449997190414928">‏בדרך כלל החיבור לאתר הזה מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">‏תמיד אפשר לשנות את מנוע החיפוש בהגדרות של Chrome.</translation>
@@ -4398,6 +4405,7 @@ Del</translation>
 <translation id="8135546115396015134">מקש שמאלי</translation>
 <translation id="8137456439814903304">אנרגיה ותשתיות</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{נוצרה לפני חודש}one{נוצרה לפני {NUM_MONTHS} חודשים}two{נוצרה לפני חודשיים ({NUM_MONTHS})}other{נוצרה לפני {NUM_MONTHS} חודשים}}</translation>
+<translation id="8147389370274164212">ברירת המחדל הנוכחית: <ph name="SEARCH_ENGINE_NAME" />. ‫<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
 <translation id="8149426793427495338">המחשב עבר למצב שינה.</translation>
 <translation id="815036624016370447">‏פרטים מחשבון Google <ph name="ACCOUNT" /> יכולים לעזור לך למלא טפסים מהר יותר ב-Chrome</translation>
@@ -4687,6 +4695,7 @@ Del</translation>
 <translation id="8606988009912891950">‏נושאים של מודעות עוזרים לאתרים להציג לך מודעות רלוונטיות, תוך הגנה על הזהות והיסטוריית הגלישה שלך. Chrome יכול לזהות נושאים שמעניינים אותך על סמך היסטוריית הגלישה שלך מהזמן האחרון. לאחר מכן, אתר שבחרת לבקר בו יכול לשלוח ל-Chrome בקשה לקבלת נושאים רלוונטיים כדי להתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="8612919051706159390">קהילות באינטרנט</translation>
 <translation id="8617269623452051934">השימוש שלך במכשיר</translation>
+<translation id="8619130384334725124">ברירת המחדל הנוכחית</translation>
 <translation id="8620276786115098679">‏מעטפה – Kaku 7</translation>
 <translation id="8622864575115813231">המערכת יוצרת קשר עם המוסד הפיננסי שלך…</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>

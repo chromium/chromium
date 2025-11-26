@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आयटम बंद करा}other{आयटम बंद करा}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">शेअर शीट पूर्वावलोकनाची थंबनेल</translation>
+<translation id="3776329373944672717">टॅब गटाचे शीर्षक <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{टॅब अनपिन करा}other{टॅब अनपिन करा}}</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>

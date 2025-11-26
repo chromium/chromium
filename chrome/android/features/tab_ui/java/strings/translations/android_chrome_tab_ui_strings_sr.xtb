@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Затвори ставку}one{Затвори ставке}few{Затвори ставке}other{Затвори ставке}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Сличица, преглед табеле за дељење.</translation>
+<translation id="3776329373944672717">Назив групе картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Откачи картицу}one{Откачи картице}few{Откачи картице}other{Откачи картице}}</translation>
 <translation id="3940195383040445971">Прати цене на картицама</translation>

@@ -3425,7 +3425,6 @@
 <translation id="3346306152660142597">ปรับแต่งหน้านี้ด้วย AI</translation>
 <translation id="3347086966102161372">คัด&amp;ลอกที่อยู่รูปภาพ</translation>
 <translation id="3348038390189153836">พบอุปกรณ์แบบถอดออกได้</translation>
-<translation id="3348131053948466246">มีการแนะนำอีโมจิ กดขึ้นหรือลงเพื่อไปยังอีโมจิที่ต้องการแล้วกด Enter เพื่อแทรก</translation>
 <translation id="3348973040180736882">กำลังแตกไฟล์</translation>
 <translation id="3349933790966648062">หน่วยความจำที่ใช้</translation>
 <translation id="3350450887151703713">เล่นซ้ำ 10 วินาที</translation>
@@ -6632,7 +6631,6 @@
 <translation id="5563234215388768762">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="5563824734298958390">ออกจากกลุ่มแท็บใช่ไหม</translation>
 <translation id="5564450015351086922">ลองใช้ Google Lens บน iOS</translation>
-<translation id="5565579144504951367">ฮาร์ดแวร์พร้อมตั้งค่าแล้ว</translation>
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
 <translation id="5568525251731145240">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE_NAME" /> รวมถึงเว็บไซต์ทั้งหมดภายใต้เว็บไซต์นี้และแอปที่ติดตั้งไว้ใช่ไหม</translation>
@@ -6878,6 +6876,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ตรวจสอบความพร้อมดำเนินการของการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="5753570386948603678">ลบจากประวัติ</translation>
+<translation id="5755101376452091923">คุณแก้ไขชื่อได้ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /> <ph name="USERNAME" /></translation>
 <translation id="5756163054456765343">ศู&amp;นย์ช่วยเหลือ</translation>
 <translation id="5757187557809630523">แทร็กถัดไป</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>

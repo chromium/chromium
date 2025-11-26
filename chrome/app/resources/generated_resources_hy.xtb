@@ -3425,7 +3425,6 @@
 <translation id="3346306152660142597">Անհատականացնել էջը AI-ի օգնությամբ</translation>
 <translation id="3347086966102161372">Պատճենել պատկերի հասցեն</translation>
 <translation id="3348038390189153836">Հայտնաբերվել է արտաքին կրիչ</translation>
-<translation id="3348131053948466246">Առաջարկվում են էմոջիներ։ Դիտելու համար սեղմեք վեր կամ վար սլաքով ստեղնը, իսկ ընտրելու համար՝ Enter։</translation>
 <translation id="3348973040180736882">Ապասեղմում</translation>
 <translation id="3349933790966648062">Օգտագործված հիշողության ծավալ</translation>
 <translation id="3350450887151703713">10 վայրկյան հետ գնալ</translation>
@@ -6633,7 +6632,6 @@
 <translation id="5563234215388768762">Որոնեք Google-ում կամ մուտքագրեք URL</translation>
 <translation id="5563824734298958390">Լքե՞լ ներդիրների խումբը</translation>
 <translation id="5564450015351086922">Փորձեք Google Տեսապակին iOS սարքերում</translation>
-<translation id="5565579144504951367">Ձեր սարքակազմը պատրաստ է կարգավորման համար</translation>
 <translation id="5565735124758917034">Ակտիվ է</translation>
 <translation id="5568069709869097550">Չհաջողվեց մուտք գործել</translation>
 <translation id="5568525251731145240">Հեռացնե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև տեղադրված հավելվածների կայքի տվյալներն ու թույլտվությունները</translation>
@@ -6879,6 +6877,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Ստուգել մոդեմի ռեժիմի պատրաստ լինելը</translation>
 <translation id="5753570386948603678">Ջնջել պատմությունից</translation>
+<translation id="5755101376452091923">Դուք կարող եք փոփոխել ձեր անունը <ph name="USERNAME" /> <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="5756163054456765343">Օ&amp;գնության կենտրոն</translation>
 <translation id="5757187557809630523">հաջորդ կատարումը</translation>
 <translation id="5758631781033351321">Ձեր ընթերցանության ցանկը կգտնեք այստեղ</translation>

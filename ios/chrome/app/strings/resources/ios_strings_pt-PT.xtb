@@ -75,7 +75,7 @@
 <translation id="126737128831326059">Exportação com êxito</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} palavra-passe}other{{count} palavras-passe}}</translation>
-<translation id="1275718070701477396">Linha selecionada</translation>
+<translation id="1275718070701477396">Opção selecionada</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1287229685519872919">Dados do Google Workspace</translation>
 <translation id="1291506870746876680">As autorizações de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> serão repostas para desativadas quando sair deste site.</translation>
@@ -798,7 +798,6 @@
 <translation id="4113957097611235433">Altere as suas palavras-passe</translation>
 <translation id="4120936477286528673">Este site está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="4121993058175073134">P/enviar dados exp. da Int., config. a conta de email na ap. Definiç.</translation>
-<translation id="4132991308423633339">Exportar palavras-passe e chaves de acesso…</translation>
 <translation id="4133139945030148655">Está tudo pronto para começar</translation>
 <translation id="4133265950310064865">Proteção melhorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -954,7 +953,7 @@
 <translation id="4720530280568305198">A sua seleção foi aberta num novo separador</translation>
 <translation id="4720782081196952026">Reduzir tamanho do texto</translation>
 <translation id="472259426228234149">Preço: 100 $ – 180 $</translation>
-<translation id="4735849923335729414">Iniciar sessão como <ph name="EMAIL" />, gerida pela sua organização.</translation>
+<translation id="4735849923335729414">Iniciar sessão como <ph name="EMAIL" />, gerido pela sua organização.</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="474209246745757965">Faça compras e traduza com a câmara</translation>
 <translation id="4742407542027196863">Gerir palavras-passe…</translation>
@@ -1158,7 +1157,7 @@
 <translation id="5475793109165786685">{count,plural, =0{Nenhuma palavra-passe importada}=1{{count} palavra-passe importada}other{{count} palavras-passe importadas}}</translation>
 <translation id="5478327362747197944">Crie eventos do Calendário diretamente ao clicar numa data numa página Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, desporto e muito mais com base nos seus interesses?</translation>
-<translation id="5483838506518938965">O processo está concluído</translation>
+<translation id="5483838506518938965">Está tudo pronto</translation>
 <translation id="5487521232677179737">Limpar dados</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5499648645977734083">Gerir métodos de pagamento…</translation>
@@ -1252,9 +1251,9 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5759484603608560822">Ocultar Transferências</translation>
 <translation id="5767099457279594162">A palavra-passe não foi partilhada</translation>
 <translation id="5768870767339201169">Retome a partir do ponto em que ficou</translation>
-<translation id="5779117921996157216">{count,plural, =1{Tem {count} palavras-passe comprometida que pode pôr a sua segurança em risco. Corrija-a agora para manter a sua segurança.}other{Tem {count} palavras-passe comprometidas que podem pôr a sua segurança em risco. Corrija-as agora para manter a sua segurança.}}</translation>
+<translation id="5779117921996157216">{count,plural, =1{Tem {count} palavra-passe comprometida que pode pôr a sua segurança em risco. Corrija-a agora para manter a sua segurança.}other{Tem {count} palavras-passe comprometidas que podem pôr a sua segurança em risco. Corrija-as agora para manter a sua segurança.}}</translation>
 <translation id="5791632441210678828">Botão Ordenar do feed A seguir.</translation>
-<translation id="5803566855766646066">Tem a certeza de que quer rejeitar o novo cartão?</translation>
+<translation id="5803566855766646066">Quer mesmo rejeitar o novo cartão?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="58081802114142635">A sua atividade melhora a IA da Google</translation>
 <translation id="5813223718099710537">Quando usa esta funcionalidade, o conteúdo da página e os URLs são enviados para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>

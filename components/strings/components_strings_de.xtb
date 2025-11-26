@@ -693,6 +693,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2127747486437921899">Kursiv</translation>
 <translation id="2130448033692577677">Die von dir angegebenen Vorlagen können nicht angewendet werden, weil die Richtlinie "DnsOverHttpsMode" nicht konfiguriert ist.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Die Reihenfolge ist zufällig. Du kannst deine Einstellung jederzeit ändern.</translation>
 <translation id="2137891579555018930">Berechtigung steht aus…</translation>
 <translation id="213826338245044447">Mobile Lesezeichen</translation>
@@ -912,6 +913,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2452837234288608067">Dabei konnten wir nicht helfen. Bitte versuche es noch einmal.</translation>
 <translation id="2453045048779611513">Deine Organisation schränkt ein, was du speichern kannst</translation>
 <translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
+<translation id="2459882793359532780">Angewandte Browserrichtlinien (Computer- und Profilrichtlinien)</translation>
 <translation id="2461385121573678775">Mit Chrome Enterprise Core kannst du Browserrichtlinien über die Cloud zentral konfigurieren</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2462932596748424101">Soziale Netzwerke</translation>
@@ -1123,6 +1125,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2826760142808435982">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt und authentifiziert und verwendet <ph name="KX" /> als Mechanismus für den Schlüsselaustausch.</translation>
 <translation id="2833637280516285136">Diskussionen im Radio</translation>
 <translation id="2835170189407361413">Formular leeren</translation>
+<translation id="2835907903001172712">Browserübersicht</translation>
 <translation id="2837891525090413132">Darf nachfragen, ob sie deine Tastatur sperren und verwenden darf</translation>
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2839501879576190149">Warnung: Gefälschte Website</translation>
@@ -1556,6 +1559,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3543935938072367282">Mit Autofill schneller bezahlen</translation>
 <translation id="3547442767634383572">Übersicht des Arbeitsprofils</translation>
 <translation id="3547746132308051926">20 × 24 Zoll</translation>
+<translation id="3549904448933807997">Informationen zu Browsern und Profilen (einschließlich privater und Arbeitsprofile)</translation>
 <translation id="3552155506104542239">Warnung: Diese Richtlinie steht mit der Richtlinie „<ph name="POLICY_NAME" />“ im Konflikt und hat deshalb keine Auswirkungen auf Android-Apps. Ansonsten funktioniert diese Richtlinie ordnungsgemäß.</translation>
 <translation id="3552297013052089404">Schriftart Sans-Serif</translation>
 <translation id="3558573058928565255">Tageszeit</translation>
@@ -2396,6 +2400,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen deinen Browserverlauf, deine Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
 <translation id="4892518386797173871">Hinten</translation>
+<translation id="4894390983254799375">Beispielsweise Geräte-ID, Name sowie Version und Nutzername des Betriebssystems</translation>
 <translation id="4895019427244614047">Adresse löschen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spiele</translation>
@@ -2931,6 +2936,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5764920692828389743">An <ph name="EMAIL_ADDRESS" /> senden</translation>
 <translation id="5765072501007116331">Wähle eine Adresse aus, um Lieferoptionen und -anforderungen zu sehen</translation>
 <translation id="57689295674415555">Wurde die virtuelle Kartennummer nicht eingefügt?</translation>
+<translation id="5773286975255318081">Beispielsweise Nutzernamen von Profilen und Browserversionen</translation>
 <translation id="5776313857861697733">Priorität</translation>
 <translation id="577804500166306874">Ergebnis wird geladen</translation>
 <translation id="5781136890105823427">Test aktiviert</translation>
@@ -3545,6 +3551,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6772959465807028761">Wenn du YouTube nutzen möchtest, melde dich mit deinem Google-Konto an</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube mit den Einstellungen deines Elternteils verwenden</translation>
+<translation id="6779290995699117286">Administratoren haben Zugriff auf Profil-, Browser- und Geräteinformationen. Sie können Folgendes sehen:</translation>
 <translation id="6779348349813025131">Der Google Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
 <translation id="6780449997190414928">Normalerweise nutzt du eine verschlüsselte Verbindung zu dieser Website, aber Chrome konnte in diesem Fall keine solche Verbindung verwenden. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Du kannst deine Suchmaschine jederzeit in den Einstellungen von Chrome ändern.</translation>
@@ -4391,6 +4398,7 @@ Weitere Details:
 <translation id="8135546115396015134">die linke Taste</translation>
 <translation id="8137456439814903304">Energie und Energieversorger</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vor 1 Monat erstellt}other{Vor {NUM_MONTHS} Monaten erstellt}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktueller Standard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-Version:</translation>
 <translation id="8149426793427495338">Dein Computer ist im Ruhemodus.</translation>
 <translation id="815036624016370447">Mit den Informationen aus deinem Google-Konto <ph name="ACCOUNT" /> kannst du Formulare in Chrome schneller ausfüllen</translation>
@@ -4681,6 +4689,7 @@ Weitere Details:
 <translation id="8606988009912891950">Werbethemen unterstützen Websites dabei, dir relevante Werbung zu zeigen – deine Identität und dein Browserverlauf werden dabei geschützt. Chrome kann aufgrund deines aktuellen Browserverlaufs auf Themen schließen, die dich interessieren könnten. Websites, die du besuchst, können dann relevante Themen von Chrome anfordern, um die dir angezeigte Werbung zu personalisieren.</translation>
 <translation id="8612919051706159390">Online-Communitys</translation>
 <translation id="8617269623452051934">Informationen zu deiner Gerätenutzung</translation>
+<translation id="8619130384334725124">Aktueller Standard</translation>
 <translation id="8620276786115098679">Umschlag Kaku 7</translation>
 <translation id="8622864575115813231">Dein Finanzinstitut wird kontaktiert…</translation>
 <translation id="8624354461147303341">Rabatte sichern</translation>

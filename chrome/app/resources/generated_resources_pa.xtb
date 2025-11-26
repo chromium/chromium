@@ -1653,6 +1653,7 @@
 <translation id="2104166991923847969">ਹੌਟਸਪੌਟ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ਲੁਕਿਆ ਹੋਇਆ ਹੈ</translation>
 <translation id="2106439768713835453">ਐਪਲੀਕੇਸ਼ਨ ਆਡੀਓ ਨੂੰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="2107359546799360577">JavaScript ਸੁਯੋਗਕਰਨ ਬੰਦ ਹਨ।</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ਫ਼ੋਨ ਨੰਬਰ}one{# ਫ਼ੋਨ ਨੰਬਰ}other{# ਫ਼ੋਨ ਨੰਬਰ}}</translation>
 <translation id="2109384632594340939">ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2390782873446084770">ਵਾਈ-ਫਾਈ ਸਿੰਕ</translation>
 <translation id="2391419135980381625">ਸਟੈਂਡਰਡ ਫੌਂਟ</translation>
 <translation id="2391805183137601570">Steam ਖੋਲ੍ਹੋ</translation>
+<translation id="239185270194776190">ਤੁਹਾਡੀ Gemini ਗੱਲਬਾਤ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਹੈ। ਇਸ ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਇੱਥੇ ਲਿਜਾਉਣ ਲਈ ਇਸ 'ਤੇ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2392369802118427583">ਸਕਿਰਿਆ ਬਣਾਓ</translation>
 <translation id="2393136602862631930">ਆਪਣੀ Chromebook 'ਤੇ <ph name="APP_NAME" /> ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex ਦੇ ਨਿਯਮਾਂ ਵਾਲੀਆਂ ਸਮੱਗਰੀਆਂ</translation>
@@ -3442,7 +3444,6 @@
 <translation id="3346306152660142597">AI ਨਾਲ ਇਸ ਪੰਨੇ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="3347086966102161372">ਚਿੱਤਰ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
 <translation id="3348038390189153836">ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਖੋਜੀ ਗਈ</translation>
-<translation id="3348131053948466246">ਇਮੋਜੀ ਸੁਝਾਇਆ ਗਿਆ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਉੱਪਰ ਜਾਂ ਹੇਠਾਂ ਵੱਲ ਦੀ ਤੀਰ ਕੁੰਜੀ ਦਬਾਓ ਅਤੇ ਦਾਖਲ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="3348973040180736882">ਨਪੀੜਨ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3349933790966648062">ਵਰਤੀ ਗਈ ਮੈਮੋਰੀ</translation>
 <translation id="3350450887151703713">10 ਸਕਿੰਟ ਮੁੜ-ਚਲਾਓ</translation>
@@ -4282,6 +4283,7 @@
 <translation id="3893536212201235195">ਆਪਣੀਆਂ ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਅਣਵਰਤੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="3894427358181296146">ਫੋਲਡਰ ਜੋੜੋ</translation>
 <translation id="3895076768659607631">&amp;ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="3895090224522145010">Kerberos ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
@@ -5007,6 +5009,7 @@
 <translation id="4405781821077215583">ਲਿਖਤ ਸਮੇਤ, ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਆਈਟਮਾਂ ਨੂੰ ਛੋਟਾ ਜਾਂ ਵੱਡਾ ਕਰੋ</translation>
 <translation id="4406308048672435032">ਤੁਸੀਂ ਇਸ ਟੈਬ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਪੂਰੀ ਸੂਚੀ ਨੂੰ ਦੁਬਾਰਾ ਦੇਖਣ ਲਈ ਰਿਫ੍ਰੈਸ਼ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
+<translation id="4406963243402726564">ਅਣਰੱਖਿਅਤ ਡਾਟਾ</translation>
 <translation id="4408599188496843485">ਸ&amp;ਹਾਇਤਾ</translation>
 <translation id="4409271659088619928">ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ <ph name="DSE" /> ਹੈ। ਲਾਗੂ ਹੋਣ 'ਤੇ, ਆਪਣਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਉਣ ਲਈ ਉਹਨਾਂ ਦੀਆਂ ਹਿਦਾਇਤਾਂ ਦੇਖੋ।</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="APP0_NAME" /> ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰ ਸਕਦਾ ਹੈ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।}=2{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="APP0_NAME" /> ਅਤੇ <ph name="APP1_NAME" /> ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰ ਸਕਦਾ ਹੈ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।}=3{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ਅਤੇ 1 ਹੋਰ ਐਪ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰ ਸਕਦਾ ਹੈ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।}one{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰ ਸਕਦਾ ਹੈ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।}other{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰ ਸਕਦਾ ਹੈ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।}}</translation>
@@ -6650,7 +6653,6 @@
 <translation id="5563234215388768762">Google 'ਤੇ ਖੋਜੋ ਜਾਂ ਕੋਈ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="5563824734298958390">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
 <translation id="5564450015351086922">iOS 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
-<translation id="5565579144504951367">ਤੁਹਾਡਾ ਹਾਰਡਵੇਅਰ ਸੈੱਟਅੱਪ ਲਈ ਤਿਆਰ ਹੈ</translation>
 <translation id="5565735124758917034">ਸਕਿਰਿਆ</translation>
 <translation id="5568069709869097550">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5568525251731145240">ਕੀ <ph name="SITE_NAME" />, ਇਸਦੇ ਅਧੀਨ ਆਉਂਦੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਅਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਲਈ ਸਾਈਟ ਡਾਟਾ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>

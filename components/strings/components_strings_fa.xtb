@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">ایتالیک</translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470">‫<ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ترتیب نمایش زیر تصادفی است. هرزمان بخواهید می‌توانید انتخاب پیش‌فرضتان را تغییر دهید.</translation>
 <translation id="2137891579555018930">درانتظار اجازه…</translation>
 <translation id="213826338245044447">نشانک‌های تلفن‌ همراه</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">در این مورد نمی‌توانم کمک کنم. دوباره امتحان کنید.</translation>
 <translation id="2453045048779611513">سازمانتان مواردی را که می‌توانید ذخیره کنید محدود می‌کند</translation>
 <translation id="2456755709261364512">شارژ باتری باید بیشتر از <ph name="REQUIRED_BATTERY_PRECENT" />٪ باشد</translation>
+<translation id="2459882793359532780">خط‌مشی‌های مرورگر اعمال‌شده (خط‌مشی‌های ماشین و نمایه)</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core ابزاری مرکزی برای پیکربندی خط‌مشی‌های مرورگر از فضای ابری دراختیارتان قرار می‌دهد</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2462932596748424101">شبکه‌های اجتماعی</translation>
@@ -1048,7 +1050,7 @@
 <translation id="2686919536310834199">درباره «کمک به نوشتن» بازخورد ارسال کنید.</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
 <translation id="2688186765492306706">۷۶۰ × ۵۰۰ میلی‌متر</translation>
-<translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
+<translation id="2688969097326701645">بله، ادامه دادن</translation>
 <translation id="2690699652723742414">‫۳۰ روز گذشته</translation>
 <translation id="2691385045260836588">مدل</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
 <translation id="2833637280516285136">رادیو بحث و گفتگو</translation>
 <translation id="2835170189407361413">پاک کردن فرم</translation>
+<translation id="2835907903001172712">نمای کلی مرورگر</translation>
 <translation id="2837891525090413132">می‌تواند برای قفل کردن و استفاده از صفحه‌کلید درخواست دهد</translation>
 <translation id="2839032553903800133">اعلان‌ها مسدود شدند</translation>
 <translation id="2839501879576190149">سایت پیش رو جعلی است</translation>
@@ -1557,6 +1560,7 @@
 <translation id="3543935938072367282">تسویه‌حساب سریع‌تر با تکمیل خودکار</translation>
 <translation id="3547442767634383572">نمای کلی نمایه کاری</translation>
 <translation id="3547746132308051926">۲۴ × ۲۰ اینچ</translation>
+<translation id="3549904448933807997">اطلاعات مرورگرها و نمایه‌ها (ازجمله نمایه‌های شخصی و کاری)</translation>
 <translation id="3552155506104542239">‏هشدار: این خط‌مشی با <ph name="POLICY_NAME" /> مغایرت دارد و اثری در برنامه‌های Android نخواهد داشت. به‌جز این مورد، این خط‌مشی همان‌طور که درنظر گرفته شده است کار می‌کند.</translation>
 <translation id="3552297013052089404">قلم سن‌سریف</translation>
 <translation id="3558573058928565255">ساعت از روز</translation>
@@ -2398,6 +2402,7 @@
 <translation id="4887406273302438710">‏محافظت از گذرواژه‌ها با Windows Hello</translation>
 <translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای حذف کردن سابقه مرور، کوکی‌ها، حافظه نهان، و غیره در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4892518386797173871">عقب</translation>
+<translation id="4894390983254799375">مانند شناسه، نام، نسخه سیستم‌عامل، و نام کاربری سیستم‌عامل دستگاه</translation>
 <translation id="4895019427244614047">حذف نشانی</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">بازی‌های المپیک</translation>
@@ -2933,6 +2938,7 @@
 <translation id="5764920692828389743">ارسال به <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
+<translation id="5773286975255318081">مانند نام‌های کاربری نمایه و نسخه‌های مرورگر</translation>
 <translation id="5776313857861697733">اولویت</translation>
 <translation id="577804500166306874">نتیجه درحال بار شدن است</translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
@@ -3245,7 +3251,7 @@
 <translation id="6292819926564202163">‏موتور جستجوی شما در Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">در حال ذخیره کردن...</translation>
+<translation id="6295855836753816081">درحال ذخیره کردن…</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6298456705131259420">‏بر سایت‌هایی فهرست‌شده در اینجا تأثیر می‌گذارد. با درج «[.*]» قبل‌از نام دامنه، یک استثنا برای کل دامنه ایجاد می‌شود. برای مثال، افزودن «‎[*.]google.com» بدین معنی است که کوکی‌های طرف سوم می‌توانند برای mail.google.com هم فعال باشند، زیرا این زیردامنه بخشی از google.com است.</translation>
 <translation id="6300452962057769623">{0,plural, =0{دستگاه اکنون بازراه‌اندازی خواهد شد}=1{دستگاه یک ثانیه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}}</translation>
@@ -3547,6 +3553,7 @@
 <translation id="6772959465807028761">‏برای استفاده کردن از YouTube، با «حساب Google» خود ادامه دهید</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏استفاده از YouTube با انتخاب‌های ولی</translation>
+<translation id="6779290995699117286">سرپرستتان می‌تواند به نمایه، مرورگر، و اطلاعات دستگاه دسترسی داشته باشد. می‌تواند موارد زیر را ببیند:</translation>
 <translation id="6779348349813025131">‏«مدیر گذرواژه Google» باید به MacOS Keychain دسترسی داشته باشد</translation>
 <translation id="6780449997190414928">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">‏هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chrome تغییر دهید.</translation>
@@ -4393,6 +4400,7 @@
 <translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8137456439814903304">انرژی و تأسیسات</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
+<translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، برنامه پیش‌فرض فعلی. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="815036624016370447">‏اطلاعات «حساب Google»‏ (<ph name="ACCOUNT" />) می‌تواند به شما کمک کند فرم‌ها را در Chrome سریع‌تر تکمیل کنید</translation>
@@ -4682,6 +4690,7 @@
 <translation id="8606988009912891950">‏موضوع‌های آگهی کمک می‌کنند سایت‌ها آگهی‌های مربوط به شما نشان دهند و درعین‌حال از سابقه مرور و هویت شما محافظت می‌کنند. Chrome می‌تواند براساس سابقه مرور اخیرتان موضوعات موردعلاقه شما را ثبت کند. بعداً سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی‌سازی آگهی‌هایی که می‌بینید، موضوع‌های مرتبط را از Chrome درخواست کند.</translation>
 <translation id="8612919051706159390">انجمن آنلاین</translation>
 <translation id="8617269623452051934">استفاده از دستگاه</translation>
+<translation id="8619130384334725124">برنامه پیش‌فرض فعلی</translation>
 <translation id="8620276786115098679">پاکت کاکو ۷</translation>
 <translation id="8622864575115813231">درحال برقراری ارتباط با مؤسسه مالی شما…</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>

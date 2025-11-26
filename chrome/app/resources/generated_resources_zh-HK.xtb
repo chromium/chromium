@@ -1652,6 +1652,7 @@
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
 <translation id="2106439768713835453">同時分享應用程式音訊</translation>
+<translation id="2107359546799360577">JavaScript 優化功能已停用。</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="2109384632594340939">個人檔案相片</translation>
@@ -2071,6 +2072,7 @@
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">標準字型</translation>
 <translation id="2391805183137601570">開啟 Steam</translation>
+<translation id="239185270194776190">你的 Gemini 對話目前在另一個視窗中。按一下側面板的任何一處，即可將對話移到這裡。</translation>
 <translation id="2392369802118427583">啟用</translation>
 <translation id="2393136602862631930">在 Chromebook 上設定 <ph name="APP_NAME" /></translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 條款內容</translation>
@@ -3437,7 +3439,6 @@
 <translation id="3346306152660142597">透過 AI 自訂呢個頁面</translation>
 <translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
-<translation id="3348131053948466246">提供咗 Emoji 建議。㩒向上鍵或者向下鍵就可以導覽，㩒 Enter 鍵就可以插入 Emoji。</translation>
 <translation id="3348973040180736882">正在解壓縮</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
@@ -4277,6 +4278,7 @@
 <translation id="3893536212201235195">讀取及變更您的協助工具設定</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">如要將書籤儲存至帳戶，請刪除未使用的書籤</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3895076768659607631">管理搜尋引擎…(&amp;M)</translation>
 <translation id="3895090224522145010">Kerberos 使用者名稱</translation>
@@ -4999,6 +5001,7 @@
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字</translation>
 <translation id="4406308048672435032">你可以將分頁設定為閒置，或重新整理以再次查看完整清單</translation>
 <translation id="4406883609789734330">即時字幕</translation>
+<translation id="4406963243402726564">未儲存的資料</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理員可使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面。開始錄製時，你會收到通知。}=2{管理員可使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面。開始錄製時，你會收到通知。}=3{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}other{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}}</translation>
@@ -6641,7 +6644,6 @@
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5563824734298958390">要離開分頁群組嗎？</translation>
 <translation id="5564450015351086922">在 iOS 上試用「Google 智能鏡頭」</translation>
-<translation id="5565579144504951367">可以開始設定硬件了</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5568069709869097550">無法登入</translation>
 <translation id="5568525251731145240">要刪除 <ph name="SITE_NAME" />、當中所有網站，以及已安裝應用程式的網站資料和權限嗎？</translation>
@@ -6887,6 +6889,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網絡共享準備工作</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
+<translation id="5755101376452091923">你可以在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /> <ph name="USERNAME" /> 中編輯名稱</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">下一首歌</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>

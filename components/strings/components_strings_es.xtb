@@ -693,6 +693,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Es posible que las plantillas que has especificado no se apliquen por no haber configurado la política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Se muestran en orden aleatorio. Puedes cambiar tu buscador predeterminado cuando quieras.</translation>
 <translation id="2137891579555018930">Esperando permiso...</translation>
 <translation id="213826338245044447">Marcadores móvil</translation>
@@ -912,6 +913,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2452837234288608067">No hemos podido ayudarte con eso. Inténtalo de nuevo.</translation>
 <translation id="2453045048779611513">Tu organización limita lo que puedes guardar</translation>
 <translation id="2456755709261364512">El nivel de carga de la batería debe ser superior al <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2459882793359532780">Políticas de navegador aplicadas (políticas de equipo y de perfil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core te ofrece una herramienta centralizada para configurar políticas del navegador desde la nube</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Redes sociales</translation>
@@ -1123,6 +1125,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2826760142808435982">La conexión se ha encriptado y autenticado con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio clave.</translation>
 <translation id="2833637280516285136">Tertulias de radio</translation>
 <translation id="2835170189407361413">Eliminar formulario</translation>
+<translation id="2835907903001172712">Vista general del navegador</translation>
 <translation id="2837891525090413132">Puede solicitar permiso para bloquear y usar tu teclado</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
 <translation id="2839501879576190149">Sitio web falso</translation>
@@ -1557,6 +1560,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3543935938072367282">Paga más rápido con Autocompletar</translation>
 <translation id="3547442767634383572">La vista general del perfil de trabajo</translation>
 <translation id="3547746132308051926">20x24 pulgadas</translation>
+<translation id="3549904448933807997">Información de navegadores y perfiles (incluidos los perfiles personales y de trabajo)</translation>
 <translation id="3552155506104542239">Advertencia: Esta política está en conflicto con la política <ph name="POLICY_NAME" /> y no tendrá ningún efecto en las aplicaciones Android. Por lo demás, esta política funciona según lo previsto.</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
 <translation id="3558573058928565255">Día y hora</translation>
@@ -2222,7 +2226,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="46128681529823442">Equipamiento de fútbol</translation>
 <translation id="4612904677925722054">Puede que este sitio web incluya contenido no apto para menores. Tu padre, madre o tutor/a debe darte permiso para visitarlo.</translation>
-<translation id="4619564267100705184">Verificar mi identidad</translation>
+<translation id="4619564267100705184">Demostrar mi identidad</translation>
 <translation id="4622292761762557753">Transferir de todos modos</translation>
 <translation id="4622647778991854660">Habilita las notificaciones en el Centro de notificaciones. Abre <ph name="LINK" />.</translation>
 <translation id="4623894491222334521">Documentos de identidad</translation>
@@ -2398,6 +2402,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4887406273302438710">Protege tus contraseñas con Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, a continuación, Intro para eliminar tu historial de navegación, las cookies, la caché y más desde la configuración de Chrome</translation>
 <translation id="4892518386797173871">Parte trasera</translation>
+<translation id="4894390983254799375">Como el ID, el nombre, la versión del SO y el nombre de usuario del SO del dispositivo</translation>
 <translation id="4895019427244614047">Eliminar dirección</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> y <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadas</translation>
@@ -2933,6 +2938,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Selecciona una dirección para ver los métodos de entrega y los requisitos</translation>
 <translation id="57689295674415555">¿No se ha introducido el número de tarjeta virtual?</translation>
+<translation id="5773286975255318081">Como nombres de usuario de perfiles y versiones de navegador</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="577804500166306874">Cargando resultado</translation>
 <translation id="5781136890105823427">Experimento habilitado</translation>
@@ -3547,6 +3553,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6772959465807028761">Para usar YouTube, continúa con tu cuenta de Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa YouTube con las elecciones de tus padres</translation>
+<translation id="6779290995699117286">Tu administrador puede acceder a información del perfil, el navegador y el dispositivo. Puede ver lo siguiente:</translation>
 <translation id="6779348349813025131">El Gestor de contraseñas de Google necesita acceder al llavero de macOS</translation>
 <translation id="6780449997190414928">Sueles conectarte a este sitio de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Puedes cambiar tu buscador cuando quieras en la configuración de Chrome.</translation>
@@ -4393,6 +4400,7 @@ Más información:
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creado hace 1 mes}other{Creado hace {NUM_MONTHS} meses}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predeterminado. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">El ordenador se ha suspendido.</translation>
 <translation id="815036624016370447">La información de tu cuenta de Google <ph name="ACCOUNT" /> puede ayudarte a rellenar formularios más rápido en Chrome</translation>
@@ -4682,6 +4690,7 @@ Más información:
 <translation id="8606988009912891950">Los temas de anuncios ayudan a los sitios a mostrarte anuncios relevantes a la vez que protegen tu historial de navegación y tu identidad. Chrome puede considerar temas de interés basados en tu historial de navegación reciente. Después, un sitio que visites puede pedirle a Chrome consultar los temas relevantes para personalizar los anuncios que veas.</translation>
 <translation id="8612919051706159390">Comunidades online</translation>
 <translation id="8617269623452051934">uso de tu dispositivo</translation>
+<translation id="8619130384334725124">Predeterminado</translation>
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
 <translation id="8622864575115813231">Contactando con tu entidad financiera...</translation>
 <translation id="8624354461147303341">Conseguir descuentos</translation>
@@ -4759,6 +4768,7 @@ Más información:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">Contenido insertado</translation>
 <translation id="8757526089434340176">Oferta de Google Play disponible</translation>
+<translation id="8758529215314160755">Puedes editar tu nombre en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">La tarjeta ha caducado</translation>
 <translation id="87601671197631245">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas, los mensajes o las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -4976,7 +4986,7 @@ Más información:
 <translation id="9128870381267983090">Conéctate a la red</translation>
 <translation id="9131119348384879525">¿Capturar contenido confidencial?</translation>
 <translation id="9133861214150761123">Contabilidad y auditorías</translation>
-<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar el bloqueo de pantalla para verificar que eres tú siempre que uses una contraseña guardada</translation>
+<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar el bloqueo de pantalla para demostrar que eres tú siempre que uses una contraseña guardada</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, tarjeta virtual</translation>
 <translation id="9138037198177304356">Notificaciones permitidas</translation>
 <translation id="9139318394846604261">Compras</translation>

@@ -3427,7 +3427,6 @@
 <translation id="3346306152660142597">Прилагодите ову страницу помоћу вештачке интелигенције</translation>
 <translation id="3347086966102161372">К&amp;опирај адресу слике</translation>
 <translation id="3348038390189153836">Откривен је преносиви уређај</translation>
-<translation id="3348131053948466246">Емоџи је предложен. Притисните нагоре или надоле да бисте се кретали и Enter за унос.</translation>
 <translation id="3348973040180736882">Декомпримује се</translation>
 <translation id="3349933790966648062">Меморијски простор у употреби</translation>
 <translation id="3350450887151703713">Поново пусти 10 секунди</translation>
@@ -6636,7 +6635,6 @@
 <translation id="5563234215388768762">Претражите Google или унесите URL</translation>
 <translation id="5563824734298958390">Желите да напустите групу картица?</translation>
 <translation id="5564450015351086922">Испробајте Google објектив на iOS-у</translation>
-<translation id="5565579144504951367">Хардвер је спреман за подешавање</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не могу да се пријавим</translation>
 <translation id="5568525251731145240">Желите да избришете податке о сајтовима и дозволе за <ph name="SITE_NAME" />, све подређене сајтове и инсталиране апликације?</translation>
@@ -6885,6 +6883,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Провера спремности за привезивање</translation>
 <translation id="5753570386948603678">Избриши из историје</translation>
+<translation id="5755101376452091923">Можете да измените име на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="USERNAME" /></translation>
 <translation id="5756163054456765343">Ц&amp;ентар за помоћ</translation>
 <translation id="5757187557809630523">следећа песма</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>

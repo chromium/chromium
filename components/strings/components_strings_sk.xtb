@@ -693,6 +693,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2127747486437921899">Kurzíva</translation>
 <translation id="2130448033692577677">Špecifikované šablóny nemusia byť uplatnené, pretože nebolo nastavené pravidlo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3×7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Zobrazujú sa v náhodnom poradí. Predvolenú možnosť môžete kedykoľvek zmeniť.</translation>
 <translation id="2137891579555018930">Čaká sa na povolenie…</translation>
 <translation id="213826338245044447">Mobilné záložky</translation>
@@ -912,6 +913,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2452837234288608067">S týmto nevieme pomôcť. Skúste to znova.</translation>
 <translation id="2453045048779611513">Vaša organizácia obmedzuje, čo môžete ukladať.</translation>
 <translation id="2456755709261364512">Batéria musí byť nabitá aspoň na <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2459882793359532780">Zavedené pravidlá prehliadača (pravidlá počítača a profilu).</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vám poskytuje centrálny nástroj na konfiguráciu pravidiel prehliadača z cloudu</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="2462932596748424101">Sociálne siete</translation>
@@ -1123,6 +1125,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2826760142808435982">Pripojenie je šifrované pomocou štandardu <ph name="CIPHER" /> a používa mechanizmus výmeny kľúčov <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Rozhlasové diskusie</translation>
 <translation id="2835170189407361413">Vymazať formulár</translation>
+<translation id="2835907903001172712">Prehľad prehliadača.</translation>
 <translation id="2837891525090413132">Môže požiadať o uzamknutie a používanie klávesnice</translation>
 <translation id="2839032553903800133">Boli zablokované upozornenia</translation>
 <translation id="2839501879576190149">Falošný web</translation>
@@ -1554,6 +1557,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3543935938072367282">Plaťte rýchlejšie pomocou automatického dopĺňania</translation>
 <translation id="3547442767634383572">prehľad o pracovnom profile,</translation>
 <translation id="3547746132308051926">20 × 24 palcov</translation>
+<translation id="3549904448933807997">Informácie o prehliadačoch a profiloch (vrátane osobných a pracovných profilov).</translation>
 <translation id="3552155506104542239">Upozornenie: Tieto pravidlá sú v rozpore s pravidlami <ph name="POLICY_NAME" /> a nebudú mať žiadny vplyv na aplikácie pre Android. Inak fungujú podľa očakávaní.</translation>
 <translation id="3552297013052089404">Bezpätkové písmo</translation>
 <translation id="3558573058928565255">Čas dňa</translation>
@@ -2394,6 +2398,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4887406273302438710">Ochrana hesiel pomocou funkcie Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter odstráňte v nastaveniach Chromu históriu prehliadania, súbory cookie, vyrovnávaciu pamäť a ďalšie položky</translation>
 <translation id="4892518386797173871">Vzadu</translation>
+<translation id="4894390983254799375">Napríklad identifikátor zariadenia, názov a verziu aj používateľské meno operačného systému.</translation>
 <translation id="4895019427244614047">Odstrániť adresu</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympijské hry</translation>
@@ -2929,6 +2934,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5764920692828389743">Odoslať na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>
 <translation id="57689295674415555">Nebolo vyplnené číslo virtuálnej karty?</translation>
+<translation id="5773286975255318081">Napríklad používateľské mená profilov a verzie prehliadača.</translation>
 <translation id="5776313857861697733">Priorita</translation>
 <translation id="577804500166306874">Výsledok sa načítava</translation>
 <translation id="5781136890105823427">Experiment je povolený</translation>
@@ -3542,6 +3548,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6772959465807028761">Ak chceš používať YouTube, pokračuj pomocou svojho účtu Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Používanie služby YouTube s voľbami tvojho rodiča</translation>
+<translation id="6779290995699117286">Váš správca má prístup k informáciám o profile, prehliadači a zariadení. Môže si pozrieť:</translation>
 <translation id="6779348349813025131">Správca hesiel Google potrebuje prístup ku Kľúčenke systému MacOS</translation>
 <translation id="6780449997190414928">K tomuto webu sa zvyčajne pripájate bezpečne, ale Chrome tentoraz nemohol použiť zabezpečené pripojenie. Útočník sa môže pokúsiť odpočúvať alebo upraviť vaše pripojenie k sieti. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Vyhľadávač môžete kedykoľvek zmeniť v nastaveniach Chromu.</translation>
@@ -4388,6 +4395,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvorená pred 1 mesiacom}few{Vytvorená pred {NUM_MONTHS} mesiacmi}many{Vytvorená pred {NUM_MONTHS} mesiaca}other{Vytvorená pred {NUM_MONTHS} mesiacmi}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálne predvolený. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>
 <translation id="8149426793427495338">Váš počítač prešiel do režimu spánku.</translation>
 <translation id="815036624016370447">Informácie z vášho účtu Google <ph name="ACCOUNT" /> vám môžu pomôcť rýchlejšie vypĺňať formuláre v Chrome</translation>
@@ -4678,6 +4686,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8606988009912891950">Témy reklám pomáhajú webom zobrazovať relevantné reklamy a zároveň chrániť vašu históriu prehliadania a totožnosť. Chrome môže zaznamenávať témy záujmu na základe vašej nedávnej histórie prehliadania. Neskôr môže web, ktorý navštívite, požiadať Chrome o relevantné témy na prispôsobenie reklám, ktoré sa vám zobrazujú.</translation>
 <translation id="8612919051706159390">Online komunity</translation>
 <translation id="8617269623452051934">používanie vášho zariadenia</translation>
+<translation id="8619130384334725124">Aktuálne predvolené</translation>
 <translation id="8620276786115098679">Obálka Kaku 7</translation>
 <translation id="8622864575115813231">Kontaktuje sa vaša finančná inštitúcia…</translation>
 <translation id="8624354461147303341">Získať zľavy</translation>

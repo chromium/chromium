@@ -3442,7 +3442,6 @@
 <translation id="3346306152660142597">AI மூலம் இந்தப் பக்கத்தைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="3347086966102161372">பட முகவரியை ந&amp;கலெடு</translation>
 <translation id="3348038390189153836">அகற்றத்தக்க சாதனம் கண்டறியப்பட்டது</translation>
-<translation id="3348131053948466246">ஈமோஜியைப் பரிந்துரைக்கிறது. தேர்வுசெய்ய மேல்நோக்கிய அல்லது கீழ்நோக்கிய அம்புக்குறி விசையை அழுத்துங்கள், சேர்ப்பதற்கு Enter விசையை அழுத்துங்கள்.</translation>
 <translation id="3348973040180736882">டீகம்ப்ரஸ்ஸிங்</translation>
 <translation id="3349933790966648062">நினைவகப் பயன்பாடு</translation>
 <translation id="3350450887151703713">10 வினாடிகளை மீண்டும் பிளே செய்</translation>
@@ -6653,7 +6652,6 @@
 <translation id="5563234215388768762">Googleளில் தேடவும் அல்லது URLலை உள்ளிடவும்</translation>
 <translation id="5563824734298958390">பக்கக் குழுவில் இருந்து வெளியேற வேண்டுமா?</translation>
 <translation id="5564450015351086922">iOSஸில் Google Lens பயன்படுத்திப் பாருங்கள்</translation>
-<translation id="5565579144504951367">வன்பொருள் அமைக்கப்படத் தயாராக உள்ளது</translation>
 <translation id="5565735124758917034">செயலில் உள்ளது</translation>
 <translation id="5568069709869097550">உள்நுழைய முடியவில்லை</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> தளம், இதன் கீழே உள்ள அனைத்து தளங்கள், நிறுவியுள்ள ஆப்ஸ் ஆகியவற்றில் இருந்து தளத் தரவையும் அனுமதிகளையும் நீக்கவா?</translation>
@@ -6902,6 +6900,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">இணைப்பு முறையின் தயார்நிலையைச் சரிபார்</translation>
 <translation id="5753570386948603678">இதுவரை பதிவிறக்கியவற்றில் இருந்து நீக்கு</translation>
+<translation id="5755101376452091923">உங்கள் <ph name="USERNAME" /> <ph name="BEGIN_LINK" />Google கணக்கில்<ph name="END_LINK" /> பெயரை மாற்றலாம்</translation>
 <translation id="5756163054456765343">உதவி மையம்</translation>
 <translation id="5757187557809630523">அடுத்த டிராக் ஐகான்</translation>
 <translation id="5758631781033351321">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>

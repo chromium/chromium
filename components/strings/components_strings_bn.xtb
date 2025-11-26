@@ -694,6 +694,7 @@
 <translation id="2127747486437921899">তির্যক টেক্সট</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">এগুলি র‍্যান্ডম অর্ডারে দেখা যায়। আপনি যেকোনও সময় আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
@@ -913,6 +914,7 @@
 <translation id="2452837234288608067">এই অনুরোধ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="2453045048779611513">আপনি কী সেভ করতে পারবেন তা আপনার সংস্থা সীমিত করেছে</translation>
 <translation id="2456755709261364512">আপনার ডিভাইসের ব্যাটারিতে <ph name="REQUIRED_BATTERY_PRECENT" />%-এর বেশি চার্জ থাকতে হবে</translation>
+<translation id="2459882793359532780">প্রয়োগ করা ব্রাউজার সংক্রান্ত নীতি (মেশিন ও প্রোফাইল সংক্রান্ত নীতি)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core আপনাকে ক্লাউড থেকে ব্রাউজার নীতি কনফিগার করার জন্য সেন্ট্রালাইজড টুল প্রদান করে</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2462932596748424101">সোশ্যাল নেটওয়ার্ক</translation>
@@ -1124,6 +1126,7 @@
 <translation id="2826760142808435982"><ph name="CIPHER" /> ব্যবহার করে এই সংযোগটি এনক্রিপ্টেড এবং প্রমাণীকৃত করা হয়েছে এবং কী এক্সচেঞ্জ প্রক্রিয়া হিসাবে <ph name="KX" /> ব্যবহার করে৷</translation>
 <translation id="2833637280516285136">টক রেডিও</translation>
 <translation id="2835170189407361413">ফর্ম সাফ করুন</translation>
+<translation id="2835907903001172712">ব্রাউজার ওভারভিউ</translation>
 <translation id="2837891525090413132">আপনার কীবোর্ড লক এবং ব্যবহার করার কথা বলতে পারবেন</translation>
 <translation id="2839032553903800133">বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="2839501879576190149">আপনি যে সাইটটি ভিজিট করতে চলেছেন সেটি ভুয়ো</translation>
@@ -1558,6 +1561,7 @@
 <translation id="3543935938072367282">'অটোফিল' ফিচার ব্যবহার করে ঝটপট চেক আউট করুন</translation>
 <translation id="3547442767634383572">এক নজরে অফিস প্রোফাইল</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
+<translation id="3549904448933807997">ব্রাউজার ও প্রোফাইল সম্পর্কিত তথ্য (ব্যক্তিগত ও অফিস প্রোফাইল সহ)</translation>
 <translation id="3552155506104542239">সতর্কতা: এই নীতি <ph name="POLICY_NAME" />-এর বিরোধী এবং Android অ্যাপের উপর কোনও প্রভাব ফেলবে না। তবে, এই নীতি প্রত্যাশা অনুযআয়ী কাজ করছে।</translation>
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
 <translation id="3558573058928565255">দিনের সময়</translation>
@@ -2399,6 +2403,7 @@
 <translation id="4887406273302438710">Windows Hello-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="4892518386797173871">রিয়ার</translation>
+<translation id="4894390983254799375">যেমন, ডিভাইস আইডি, নাম, OS ভার্সন ও OS ব্যবহারকারীর নাম</translation>
 <translation id="4895019427244614047">ঠিকানা মুছুন</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">অলিম্পিক</translation>
@@ -2934,6 +2939,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />-এ পাঠান</translation>
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
+<translation id="5773286975255318081">যেমন, প্রোফাইল ইউজারনেম ও ব্রাউজার ভার্সন</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
 <translation id="577804500166306874">ফলাফল লোড হচ্ছে</translation>
 <translation id="5781136890105823427">এক্সপেরিমেন্ট চালু করা হয়েছে</translation>
@@ -3547,6 +3553,7 @@
 <translation id="6772959465807028761">YouTube ব্যবহার করার জন্য, আপনার Google অ্যাকাউন্টের মাধ্যমে চালিয়ে যান</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">তোমার অভিভাবকের পছন্দ অনুযায়ী YouTube ব্যবহার করো</translation>
+<translation id="6779290995699117286">আপনার অ্যাডমিনিস্ট্রেটর প্রোফাইল, ব্রাউজার ও ডিভাইসের তথ্য অ্যাক্সেস করতে পারবেন। তিনি দেখতে পাবেন:</translation>
 <translation id="6779348349813025131">Google Password Manager-এর MacOS Keychain-এর অ্যাক্সেস প্রয়োজন</translation>
 <translation id="6780449997190414928">সাধারণত আপনি সুরক্ষিতভাবে এই সাইটের সাথে কানেক্ট করেন, তবে Chrome এই মুহূর্তে কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে বা সেটি পরিবর্তন করার চেষ্টা করতে পারে। <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">আপনি Chrome-এর সেটিংস থেকে সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন।</translation>
@@ -4393,6 +4400,7 @@
 <translation id="8135546115396015134">বাঁদিকের তীরচিহ্নযুক্ত 'কী'</translation>
 <translation id="8137456439814903304">শক্তি ও উপযোগিতা</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাস আগে তৈরি করা হয়েছে}one{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}other{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, বর্তমানে ডিফল্ট হিসেবে রয়েছে। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ভার্সন:</translation>
 <translation id="8149426793427495338">আপনার কম্পিউটারটি নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="815036624016370447">আপনার <ph name="ACCOUNT" /> Google অ্যাকাউন্ট থেকে তথ্য নিয়ে Chrome-এ আরও তাড়াতাড়ি ফর্ম পূরণ করতে পারবেন</translation>
@@ -4682,6 +4690,7 @@
 <translation id="8606988009912891950">বিজ্ঞাপনের বিষয়গুলি, সাইটকে আপনার ব্রাউজিং ইতিহাস এবং পরিচয় রক্ষা করার সাথে সাথে আপনাকে প্রাসঙ্গিক বিজ্ঞাপন দেখাতে সাহায্য করে। Chrome আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে আপনার আগ্রহের বিষয় মনে রাখতে পারে। পরে, আপনি যে সাইটটি ভিজিট করেন সেগুলি আপনাকে পছন্দমতো বিজ্ঞাপন দেখানোর জন্য প্রাসঙ্গিক বিষয় সম্পর্কে Chrome-কে জিজ্ঞাসা করতে পারে।</translation>
 <translation id="8612919051706159390">অনলাইন কমিউনিটি</translation>
 <translation id="8617269623452051934">আপনার ডিভাইসের ব্যবহার</translation>
+<translation id="8619130384334725124">বর্তমানে ডিফল্ট হিসেবে রয়েছে</translation>
 <translation id="8620276786115098679">এনভেলপ কাকু ৭</translation>
 <translation id="8622864575115813231">আপনার আর্থিক সংস্থার সাথে যোগাযোগ করা হচ্ছে...</translation>
 <translation id="8624354461147303341">ছাড় পান</translation>

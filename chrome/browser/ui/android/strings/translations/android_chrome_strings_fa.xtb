@@ -335,6 +335,7 @@
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2466378451804467735">‫<ph name="TAB_TITLE" />، زبانه بی‌صدای چندانتخابی</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
+<translation id="2471632347767899461">در «مرکز راهنمایی» جستجو کنید</translation>
 <translation id="2472163211318554013">‏برای بردن بیشترین بهره از Chrome، به سیستم وارد شوید</translation>
 <translation id="247737702124049222">توضیحات تصویر روشن است</translation>
 <translation id="2479148705183875116">رفتن به تنظیمات</translation>
@@ -362,6 +363,7 @@
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="2547843573592965873">‏قفل نمایه اطلاعات شما را در خودرو ایمن نگه می‌دارد، ازجمله گذرواژه‌ها، پرداخت‌ها، و اطلاعات دیگری که در «حساب Google» شما ذخیره می‌شود.</translation>
 <translation id="254973855621628293">گذرواژه‌های ذخیره‌شده در این دستگاه</translation>
+<translation id="2553962148913791095">برخی‌از نشانک‌ها ذخیره نمی‌شوند</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{بارگیری خطرناک مسدود شد}one{‫# بارگیری خطرناک مسدود شد}other{‫# بارگیری خطرناک مسدود شد}}</translation>
 <translation id="2569733278091928697">به‌راحتی می‌توانید کنترل‌های رسانه، جلسه‌های «ناشناس»، بارگیری‌ها، و موارد دیگر را مدیریت کنید</translation>
 <translation id="2571711316400087311">‏پیشنهاد ارسال صفحه‌های نوشته‌شده به زبان‌های دیگر به «ترجمه Google»</translation>
@@ -656,6 +658,7 @@
 <translation id="3870908470613821006">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه از همه دستگاه‌ها حذف می‌شود</translation>
 <translation id="3873174561423636563">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />شرایط خدمات<ph name="END_LINK1" /> این سایت را بررسی کنید.</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
+<translation id="3893858854379998374">برای ذخیره کردن نشانک‌ها در حسابتان، نشانک‌های استفاده‌نشده را حذف کنید</translation>
 <translation id="3898498281932368596">مسدود و ترک کردن</translation>
 <translation id="3899682235662194879">بستن همه «برگه‌های ناشناس»</translation>
 <translation id="3900966090527141178">صادر کردن گذرواژه‌ها</translation>
@@ -719,6 +722,7 @@
 <translation id="4170011742729630528">این سرویس در دسترس نیست؛ بعداً دوباره امتحان کنید.</translation>
 <translation id="4177222230309051052">دریافت همه نشانک‌ها</translation>
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
+<translation id="417865198503699526">تنظیمی را جستجو کنید</translation>
 <translation id="4180726336228139707">فقط در این دستگاه</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4188221736490993796">ترتیب براساس ی تا الف</translation>

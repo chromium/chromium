@@ -335,6 +335,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, meervoudig geselecteerd tabblad met geluid uit</translation>
 <translation id="2468444275314013497">Je browser ziet er goed uit</translation>
+<translation id="2471632347767899461">Zoek in het Helpcentrum</translation>
 <translation id="2472163211318554013">Log in om het maximale uit Chrome te halen</translation>
 <translation id="247737702124049222">Afbeeldingsbeschrijvingen staan aan</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
@@ -657,6 +658,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3870908470613821006">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van alle apparaten</translation>
 <translation id="3873174561423636563"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK1" />servicevoorwaarden<ph name="END_LINK1" /> van deze site.</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
+<translation id="3893858854379998374">Verwijder je ongebruikte bookmarks om bookmarks op te slaan in je account</translation>
 <translation id="3898498281932368596">Blokkeren en verlaten</translation>
 <translation id="3899682235662194879">Alle incognitotabbladen sluiten</translation>
 <translation id="3900966090527141178">Wachtwoorden exporteren</translation>
@@ -720,6 +722,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4170011742729630528">De service is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="4177222230309051052">Haal al je bookmarks op</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
+<translation id="417865198503699526">Zoek naar een instelling</translation>
 <translation id="4180726336228139707">Alleen op dit apparaat</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4188221736490993796">Sorteren van Z tot A</translation>
@@ -1969,7 +1972,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="930124987204876019">Geschiedenis, cookies, sitegegevens, cachegeheugen verwijderen…</translation>
 <translation id="930834144334005936">Huidige modus <ph name="MODE_NAME" /> resetten naar Zoeken</translation>
 <translation id="938850635132480979">Fout: <ph name="ERROR_CODE" /></translation>
-<translation id="939598580284253335">Wachtwoordzin opgeven</translation>
+<translation id="939598580284253335">Wachtwoordzin invoeren</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="95817756606698420">Chrome kan <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> gebruiken voor zoekopdrachten in China. Je kunt dit wijzigen in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>

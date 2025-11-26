@@ -335,6 +335,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2461822463642141190">Presennol</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, Tab wedi'i Ddistewi a Aml-ddewisir</translation>
 <translation id="2468444275314013497">Mae eich porwr yn edrych yn dda</translation>
+<translation id="2471632347767899461">Ceisio chwilio'r ganolfan gymorth</translation>
 <translation id="2472163211318554013">Mewngofnodwch i gael y gorau o Chrome</translation>
 <translation id="247737702124049222">Mae disgrifiadau lluniau wedi'u troi ymlaen</translation>
 <translation id="2479148705183875116">Mynd i'r Gosodiadau</translation>
@@ -362,6 +363,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
 <translation id="2547843573592965873">Mae clo eich proffil yn cadw'ch gwybodaeth yn ddiogel yn y car, gan gynnwys cyfrineiriau, taliadau a rhagor sydd wedi'u cadw yn eich Cyfrif Google.</translation>
 <translation id="254973855621628293">Cyfrineiriau sydd wedi'u cadw i'r ddyfais hon</translation>
+<translation id="2553962148913791095">Nid yw rhai nodau tudalen yn cael eu cadw</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Rhwystrwyd lawrlwythiad peryglus}zero{Rhwystrwyd # lawrlwythiad peryglus}two{Rhwystrwyd # lawrlwythiad peryglus}few{Rhwystrwyd # lawrlwythiad peryglus}many{Rhwystrwyd # lawrlwythiad peryglus}other{Rhwystrwyd # lawrlwythiad peryglus}}</translation>
 <translation id="2569733278091928697">Byddwch yn gallu rheoli rheolyddion cyfryngau, sesiynau Anhysbys, lawrlwythiadau a rhagor yn hawdd</translation>
 <translation id="2571711316400087311">Cynnig anfon tudalennau mewn ieithoedd eraill i Google Translate</translation>
@@ -657,6 +659,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3870908470613821006">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yn cael ei ddileu o bob dyfais</translation>
 <translation id="3873174561423636563">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
+<translation id="3893858854379998374">I gadw nodau tudalen yn eich cyfrif, dilëwch eich nodau tudalen sydd heb eu defnyddio</translation>
 <translation id="3898498281932368596">Rhwystro a gadael</translation>
 <translation id="3899682235662194879">Cau pob tab Anhysbys</translation>
 <translation id="3900966090527141178">Allforio cyfrineiriau</translation>
@@ -720,6 +723,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4170011742729630528">Nid yw'r gwasanaeth ar gael; rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4177222230309051052">Cael eich holl nodau tudalen</translation>
 <translation id="4177501066905053472">Pynciau hysbysebion</translation>
+<translation id="417865198503699526">Chwilio am osodiad</translation>
 <translation id="4180726336228139707">Ar y ddyfais hon yn unig</translation>
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4188221736490993796">Trefnu yn ôl Z i A</translation>

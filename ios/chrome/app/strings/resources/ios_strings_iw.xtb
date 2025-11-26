@@ -798,7 +798,6 @@
 <translation id="4113957097611235433">שינוי הסיסמאות</translation>
 <translation id="4120936477286528673">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
-<translation id="4132991308423633339">ייצוא של סיסמאות ומפתחות גישה…</translation>
 <translation id="4133139945030148655">הכול מוכן</translation>
 <translation id="4133265950310064865">הגנה משופרת</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />,‏ <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1095,7 +1094,7 @@
 <translation id="5206453674369664567">יציאה וניקוי נתונים</translation>
 <translation id="5210365745912300556">סגירת הכרטיסייה</translation>
 <translation id="5211488077761630279">לאפשר לאתר <ph name="SITE_NAME" /> להשתמש ב<ph name="PERMISSION" />?</translation>
-<translation id="5217245356412073535">אפשר לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב'הגדרות' &gt; 'הגדרות תוכן'</translation>
+<translation id="5217245356412073535">אפשר לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב"הגדרות" &gt; "הגדרות תוכן"</translation>
 <translation id="5217329997012062137">‏כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google.</translation>
 <translation id="5220945116117011963">יצירת אירועים ביומן דרך תאריכים</translation>
 <translation id="5222676887888702881">יציאה</translation>

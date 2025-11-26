@@ -2176,6 +2176,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4506599922270137252">da kontaktirate administratora sistema</translation>
 <translation id="450710068430902550">Deljenje sa administratorom</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste preveli ovu stranicu pomoću Google prevodioca</translation>
+<translation id="4510703642214459906">Mesto održavanja</translation>
 <translation id="4515275063822566619">Kartice i adrese su iz Chrome-a i sa vašeg Google naloga (<ph name="ACCOUNT_EMAIL" />). Njima možete da upravljate u <ph name="BEGIN_LINK" />podešavnjima<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikroautomobili i mala kompaktna vozila</translation>
 <translation id="451601984112574365">Zelena 3</translation>
@@ -4370,6 +4371,7 @@ Dodatni detalji:
 <translation id="8077669823243888800">Kineska koverta br. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite da otpremite poverljivi fajl?}one{Želite da otpremite poverljive fajlove?}few{Želite da otpremite poverljive fajlove?}other{Želite da otpremite poverljive fajlove?}}</translation>
 <translation id="8079031581361219619">Želite li ponovo da učitate sajt?</translation>
+<translation id="8079591184016291275">Naziv događaja</translation>
 <translation id="8079976827192572403">Opasan sajt</translation>
 <translation id="8081087320434522107">Sedani</translation>
 <translation id="8086429410809447605">Ženska odeća</translation>
@@ -4768,6 +4770,7 @@ Dodatni detalji:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">ugrađen sadržaj</translation>
 <translation id="8757526089434340176">Dostupna je Google Pay ponuda</translation>
+<translation id="8758529215314160755">Možete da izmenite ime na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju koja može da otkrije vaše informacije (na primer, lozinke, poruke ili kreditne kartice) kada se šalju tom sajtu.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>

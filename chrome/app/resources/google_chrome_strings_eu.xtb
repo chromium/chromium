@@ -79,6 +79,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Arakatzailea mantsotzen duen fitxa pausatzea gomendatzen du Chrome-k}other{Arakatzailea mantsotzen duten fitxak pausatzea gomendatzen du Chrome-k}}</translation>
 <translation id="1832046143430087831">Webguneen abiadura handitzen du Chrome-ren V8 motorrarekin, baina erasoen aurrean Chrome apur bat ahultzen du. Desaktibatuta dago ezarpena.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
+<translation id="1843347690926158494">Bilatu fitxa hau Google Lens-ekin</translation>
 <translation id="1849248141818021764">Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />kontuko Chrome-ko datuak ezabatu beharko dituzu<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome-k webgune honen izenean kamera erabiltzeko baimena behar du</translation>
 <translation id="1873233029667955273">Google Chrome ez da arakatzaile lehenetsia</translation>
@@ -167,6 +168,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2841525013647267359">Itzuli hizkuntza honetatik</translation>
 <translation id="2846251086934905009">Instalazio-errorea: instalatzailea ez da osatu. Instalazioa bertan behera utzi da.</translation>
 <translation id="2853415089995957805">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen</translation>
+<translation id="2856481144859256719">Erakutsi beti Google Bilaketa zerbitzuko AA moduaren lasterbidea</translation>
 <translation id="2857540653560290388">Chrome abiarazten…</translation>
 <translation id="286025080868315611">Ikusi zergatik blokeatzen dituen Chrome-k deskarga batzuk</translation>
 <translation id="2861074815332034794">Chrome eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>

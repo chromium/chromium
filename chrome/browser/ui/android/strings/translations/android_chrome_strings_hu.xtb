@@ -335,6 +335,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, több kiválasztott némított lap</translation>
 <translation id="2468444275314013497">Böngészője jól néz ki</translation>
+<translation id="2471632347767899461">Próbáljon keresni a Súgóban</translation>
 <translation id="2472163211318554013">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból</translation>
 <translation id="247737702124049222">A képleírások be vannak kapcsolva</translation>
 <translation id="2479148705183875116">Beállítások</translation>
@@ -362,6 +363,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2547843573592965873">A profilzárolásnak köszönhetően a Google-fiókjában tárolt adatai (például a jelszavak, fizetések és egyebek) biztonságban lesznek az autójában is.</translation>
 <translation id="254973855621628293">Az eszközre mentett jelszavak</translation>
+<translation id="2553962148913791095">Néhány könyvjelző nem lett elmentve</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Veszélyes letöltés letiltva}other{# veszélyes letöltés letiltva}}</translation>
 <translation id="2569733278091928697">Könnyedén tudja majd kezelni a médiavezérlőket, az inkognitó munkameneteket, a letöltéseket és egyebeket</translation>
 <translation id="2571711316400087311">Más nyelvű oldalak Google Fordítónak való küldésének felajánlása</translation>
@@ -656,6 +658,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3870908470613821006">Mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
 <translation id="3873174561423636563">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja a következőket ezzel a webhellyel: <ph name="FIELDS_STRING" />. Tekintse meg a szóban forgó webhely <ph name="BEGIN_LINK1" />általános szerződési feltételeit<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
+<translation id="3893858854379998374">Ha könyvjelzőket szeretne menteni a fiókjába, törölje a nem használt könyvjelzőket.</translation>
 <translation id="3898498281932368596">Letiltás és kilépés</translation>
 <translation id="3899682235662194879">Összes inkognitó lap bezárása</translation>
 <translation id="3900966090527141178">Jelszavak exportálása</translation>
@@ -719,6 +722,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4170011742729630528">A szolgáltatás nem érhető el, próbálja újra később.</translation>
 <translation id="4177222230309051052">Az összes könyvjelző megtekintése</translation>
 <translation id="4177501066905053472">Hirdetéstémák</translation>
+<translation id="417865198503699526">Keresse meg a kívánt beállítást</translation>
 <translation id="4180726336228139707">Csak ezen az eszközön</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4188221736490993796">Rendezés Z-től A-ig</translation>

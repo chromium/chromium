@@ -798,7 +798,6 @@
 <translation id="4113957097611235433">Change your passwords</translation>
 <translation id="4120936477286528673">This site is repeatedly trying to open another application.</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
-<translation id="4132991308423633339">Export passwords and passkeys…</translation>
 <translation id="4133139945030148655">You're all set up</translation>
 <translation id="4133265950310064865">Enhanced protection</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1013,7 +1012,7 @@
 <translation id="4913626501929406101">You can securely share a copy of your password with someone in your family group. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">You can use existing browsing data when you’re signed in as <ph name="USER_EMAIL" />. Your organisation may be able to view this data.</translation>
 <translation id="4918086044614829423">Accept</translation>
-<translation id="4930714375720679147">Turn On</translation>
+<translation id="4930714375720679147">Turn on</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4936354130727646074">Never move</translation>
 <translation id="4937410517508563815">Save passwords in account</translation>

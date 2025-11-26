@@ -688,6 +688,7 @@
 <translation id="2127747486437921899">ఇటాలిక్</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ఇవి ర్యాండమ్ ఆర్డర్‌లో చూపబడుతున్నాయి. మీ ఆటోమేటిక్ సెట్టింగ్‌ను ఎప్పుడైనా మార్చుకోవచ్చు.</translation>
 <translation id="2137891579555018930">అనుమతి కోసం వేచి ఉంది...</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
@@ -907,6 +908,7 @@
 <translation id="2452837234288608067">దానితో సహాయం చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2453045048779611513">మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది</translation>
 <translation id="2456755709261364512">మీ బ్యాటరీ తప్పనిసరిగా <ph name="REQUIRED_BATTERY_PRECENT" />% కంటే ఎక్కువ ఛార్జ్ అయి ఉండాలి</translation>
+<translation id="2459882793359532780">వర్తింపజేసిన బ్రౌజర్ పాలసీలు (మెషిన్, ప్రొఫైల్ పాలసీలు)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, క్లౌడ్ నుండి బ్రౌజర్ పాలసీలను కాన్ఫిగర్ చేయడానికి మీకు కేంద్రీకృత టూల్‌ను అందిస్తుంది</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="2462932596748424101">సోషల్ నెట్‌వర్క్‌లు</translation>
@@ -1118,6 +1120,7 @@
 <translation id="2826760142808435982"><ph name="CIPHER" />ను ఉపయోగించి కనెక్షన్ ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది, ప్రామాణీకరించబడింది మరియు <ph name="KX" />ను కీలకమైన పరివర్తన విధానంగా ఉపయోగిస్తుంది.</translation>
 <translation id="2833637280516285136">టాక్ రేడియో</translation>
 <translation id="2835170189407361413">ఫారమ్‌ను క్లియర్ చేయండి</translation>
+<translation id="2835907903001172712">బ్రౌజర్ ఓవర్‌వ్యూ</translation>
 <translation id="2837891525090413132">లాక్ చేసి, మీ కీబోర్డ్‌ను ఉపయోగించమని అడగవచ్చు</translation>
 <translation id="2839032553903800133">నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2839501879576190149">ముందున్న సైట్ నకిలీది</translation>
@@ -1552,6 +1555,7 @@
 <translation id="3543935938072367282">ఆటోఫిల్‌తో మరింత వేగంగా చెక్ అవుట్ చేయండి</translation>
 <translation id="3547442767634383572">వర్క్ ప్రొఫైల్ ఓవర్‌వ్యూ</translation>
 <translation id="3547746132308051926">20 x 24 అంగుళాలు</translation>
+<translation id="3549904448933807997">బ్రౌజర్‌లు &amp; ప్రొఫైల్స్ సమాచారం (వ్యక్తిగత, వర్క్ ప్రొఫైల్స్‌తో సహా)</translation>
 <translation id="3552155506104542239">హెచ్చరిక: ఈ పాలసీ <ph name="POLICY_NAME" /> పాలసీకి విరుద్ధంగా ఉంది, Android యాప్‌లపై ఎటువంటి ప్రభావం చూపదు. లేకపోతే, ఈ పాలసీ ఆశించిన విధంగానే పని చేస్తుంది.</translation>
 <translation id="3552297013052089404">Sans-Serif ఫాంట్</translation>
 <translation id="3558573058928565255">రోజు, సమయం</translation>
@@ -2393,6 +2397,7 @@
 <translation id="4887406273302438710">Windows Helloతో పాస్‌వర్డ్‌లను సురక్షితం చేసుకోండి</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని తొలగించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4892518386797173871">వెనుక భాగం</translation>
+<translation id="4894390983254799375">డివైజ్‌‌ ID, పేరు, OS వెర్షన్, OS యూజర్‌నేమ్ వంటివి</translation>
 <translation id="4895019427244614047">అడ్రస్‌ను తొలగించండి</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ఒలింపిక్స్</translation>
@@ -2928,6 +2933,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />‌కి పంపండి</translation>
 <translation id="5765072501007116331">డెలివరీ పద్ధతులు మరియు అవసరాలను చూడాలంటే, అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="57689295674415555">వర్చువల్ కార్డ్ నంబర్ పూరించబడలేదా?</translation>
+<translation id="5773286975255318081">ప్రొఫైల్ యూజర్‌నేమ్‌లు, బ్రౌజర్ వెర్షన్‌లు వంటివి</translation>
 <translation id="5776313857861697733">ప్రాధాన్యత</translation>
 <translation id="577804500166306874">ఫలితం లోడ్ అవుతోంది</translation>
 <translation id="5781136890105823427">ప్రయోగం ప్రారంభించబడింది</translation>
@@ -3542,6 +3548,7 @@
 <translation id="6772959465807028761">YouTubeను ఉపయోగించడానికి, మీ Google ఖాతాతో కొనసాగించండి</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">మీ తల్లి/తండ్రి ఎంపికలతో YouTubeను ఉపయోగించండి</translation>
+<translation id="6779290995699117286">ప్రొఫైల్, బ్రౌజర్, డివైజ్ సమాచారం మీ అడ్మినిస్ట్రేటర్‌కు అందుబాటులో ఉంటుంది. వారు వీటిని చూడగలరు:</translation>
 <translation id="6779348349813025131">Google Password Managerకి MacOS కీచెయిన్ యాక్సెస్ అవసరం</translation>
 <translation id="6780449997190414928">మీరు సాధారణంగా ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ అవుతుంటారు, కానీ Chrome ఈసారి సురక్షితమైన కనెక్షన్‌ను ఉపయోగించలేకపోతోంది. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌పై ఓ కన్నేసి ఉంచడానికి లేదా దాన్ని మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">మీ సెర్చ్ ఇంజిన్‌ను మీరు Chrome సెట్టింగ్‌లలో ఎప్పుడైనా సరే మార్చవచ్చు.</translation>
@@ -4388,6 +4395,7 @@
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ప్రస్తుతం ఆటోమేటిక్ సెట్టింగ్‌గా ఉంది. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
 <translation id="8149426793427495338">మీ కంప్యూటర్ నిద్రావస్థకి వెళ్లింది.</translation>
 <translation id="815036624016370447">మీ Google ఖాతా <ph name="ACCOUNT" />‌లో ఉన్న సమాచారం Chromeలో ఫారమ్‌లను వేగంగా ఫిల్ చేయడంలో సహాయపడగలదు</translation>
@@ -4677,6 +4685,7 @@
 <translation id="8606988009912891950">మీ గుర్తింపును, మీ బ్రౌజింగ్ హిస్టరీని కాపాడుతూ మీకు సందర్భోచిత యాడ్‌లను చూపడంలో యాడ్ టాపిక్‌లు సైట్‌లకు సహాయపడతాయి. మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీని బట్టి, మీకు ఏ టాపిక్‌ల పట్ల ఆసక్తి ఉందో Chrome గమనిస్తుంది. తర్వాత, మీరు సందర్శించే ఏదైనా సైట్, మీరు చూసే యాడ్‌లను వ్యక్తిగతీకరించడానికి గాను, సందర్భోచితమైన టాపిక్‌ల కోసం Chromeను అడగవచ్చు.</translation>
 <translation id="8612919051706159390">ఆన్‌లైన్ కమ్యూనిటీలు</translation>
 <translation id="8617269623452051934">మీ పరికర వినియోగం</translation>
+<translation id="8619130384334725124">ప్రస్తుతం ఆటోమేటిక్ సెట్టింగ్‌గా ఉంది</translation>
 <translation id="8620276786115098679">ఎన్వలప్ కాకు 7</translation>
 <translation id="8622864575115813231">మీ ఆర్థిక సంస్థను సంప్రదిస్తోంది...</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>

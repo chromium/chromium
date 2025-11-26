@@ -1639,6 +1639,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2104166991923847969">Hotspot automatisch deaktivieren</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ausgeblendet</translation>
 <translation id="2106439768713835453">Auch Audio der App teilen</translation>
+<translation id="2107359546799360577">JavaScript-Optimierungen sind deaktiviert.</translation>
 <translation id="2108204112555497972">Vor <ph name="NUM_DAYS_HOURS_MINUTES" /> geprüft</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# Telefonnummern}}</translation>
 <translation id="2109384632594340939">dein Profilbild</translation>
@@ -2055,6 +2056,7 @@ Diese Funktion sollte nur von Webentwicklern aktiviert und nur mit vertrauenswü
 <translation id="2390782873446084770">WLAN-Synchronisation</translation>
 <translation id="2391419135980381625">Standardschrift</translation>
 <translation id="2391805183137601570">Steam öffnen</translation>
+<translation id="239185270194776190">Dein Gemini-Chat wird in einem anderen Fenster angezeigt. Wenn du ihn hierher verschieben möchtest, klicke auf eine beliebige Stelle in dieser Seitenleiste.</translation>
 <translation id="2392369802118427583">Aktivieren</translation>
 <translation id="2393136602862631930">"<ph name="APP_NAME" />" auf deinem Chromebook einrichten</translation>
 <translation id="2393313392064891208">Inhalt der Google Chrome OS Flex-Nutzungsbedingungen</translation>
@@ -3422,7 +3424,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3346306152660142597">Diese Seite mit KI anpassen</translation>
 <translation id="3347086966102161372">Bildadresse k&amp;opieren</translation>
 <translation id="3348038390189153836">Externes Gerät erkannt</translation>
-<translation id="3348131053948466246">Emoji vorgeschlagen. Drücke die Nach-oben- oder Nach-unten-Taste, um ein Emoji auszuwählen und bestätige die Auswahl mit der Eingabetaste.</translation>
 <translation id="3348973040180736882">Entpacken</translation>
 <translation id="3349933790966648062">Speicherbedarf</translation>
 <translation id="3350450887151703713">10 Sekunden zurückspulen</translation>
@@ -4262,6 +4263,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3893536212201235195">Einstellungen für Bedienungshilfen lesen und ändern</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">Wenn du neue Lesezeichen in deinem Konto speichern möchtest, lösche deine nicht verwendeten Lesezeichen</translation>
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
 <translation id="3895076768659607631">Suchmaschinen &amp;verwalten…</translation>
 <translation id="3895090224522145010">Kerberos-Nutzername</translation>
@@ -4987,6 +4989,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4405781821077215583">Du kannst Elemente auf dem Bildschirm vergrößern oder verkleinern, einschließlich Text</translation>
 <translation id="4406308048672435032">Du kannst diesen Tab deaktivieren oder den Tab aktualisieren, um wieder die vollständige Liste anzeigen zu lassen</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
+<translation id="4406963243402726564">Nicht gespeicherte Daten</translation>
 <translation id="4408599188496843485">&amp;Hilfe</translation>
 <translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> aufzeichnen. Du wirst benachrichtigt, wenn die Aufzeichnung beginnt.}=2{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> und <ph name="APP1_NAME" /> aufzeichnen. Du wirst benachrichtigt, wenn die Aufzeichnung beginnt.}=3{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und einer weiteren App aufzeichnen. Du wirst benachrichtigt, wenn die Aufzeichnung beginnt.}other{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und # weiteren Apps aufzeichnen. Du wirst benachrichtigt, wenn die Aufzeichnung beginnt.}}</translation>
@@ -6629,7 +6632,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5563234215388768762">Suchbegriff oder URL eingeben</translation>
 <translation id="5563824734298958390">Tabgruppe verlassen?</translation>
 <translation id="5564450015351086922">Google Lens auf iOS-Geräten ausprobieren</translation>
-<translation id="5565579144504951367">Die Hardware kann eingerichtet werden</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5568069709869097550">Anmeldung nicht möglich</translation>
 <translation id="5568525251731145240">Websitedaten und Berechtigungen für <ph name="SITE_NAME" />, alle ihr untergeordneten Websites und auf ihr installierten Apps löschen?</translation>

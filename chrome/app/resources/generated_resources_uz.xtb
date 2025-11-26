@@ -3429,7 +3429,6 @@ Bu funksiyani faqat veb-dasturchilar yoqishi va faqat ishonchli ilovalar bilan i
 <translation id="3346306152660142597">Bu sahifani AI yordamida moslash</translation>
 <translation id="3347086966102161372">Tasvirning URL manzilini nusxalash</translation>
 <translation id="3348038390189153836">Xotira qurilmasi aniqlandi</translation>
-<translation id="3348131053948466246">Emoji taklif qilindi. Joylash uchun tepaga, pastga strelkalar bilan tanlab Enter tugmasini bosing</translation>
 <translation id="3348973040180736882">Arxivdan chiqarilmqoda</translation>
 <translation id="3349933790966648062">Xotira sarfi</translation>
 <translation id="3350450887151703713">10 soniya qayta ijro</translation>
@@ -6639,7 +6638,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5563234215388768762">Qidiring yoki veb-sahifa manzilini kiriting</translation>
 <translation id="5563824734298958390">Varaqlar guruhi tark etilsinmi?</translation>
 <translation id="5564450015351086922">iOS qurilmangizda Google Lens sinang</translation>
-<translation id="5565579144504951367">Qurilmangiz sozlanishga tayyor</translation>
 <translation id="5565735124758917034">Faol</translation>
 <translation id="5568069709869097550">Kirish amalga oshmadi</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> maʼlumotlari, ruxsatlari, unga kiruvchi saytlar va oʻrnatilgan ilovalar oʻchirilsinmi?</translation>
@@ -6887,6 +6885,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Modem rejimiga tayyorlikni tekshirish</translation>
 <translation id="5753570386948603678">Tarixdan oʻchirib tashlash</translation>
+<translation id="5755101376452091923">Ismingizni <ph name="BEGIN_LINK" />Google hisobingiz<ph name="END_LINK" /> (<ph name="USERNAME" />) orqali tahrirlashingiz mumkin</translation>
 <translation id="5756163054456765343">&amp;Yordam markazi</translation>
 <translation id="5757187557809630523">keyingi trek</translation>
 <translation id="5758631781033351321">Brauzer mutolaa roʻyxati shu yerda chiqadi</translation>

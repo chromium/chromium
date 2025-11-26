@@ -1417,6 +1417,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1949980990364952348">Aplikazioaren izena</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1951823516285577843">Bilatu ordezko luzapen bat</translation>
+<translation id="1953626242273481999">Urruneko arazketa egiteko baimena eman nahi duzu?</translation>
 <translation id="1953796913175502363">Konfiguratu laneko profila</translation>
 <translation id="1954597385941141174">Webguneek USB bidezko gailuetara konektatzea eska dezakete</translation>
 <translation id="1954813140452229842">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. Egiaztatu kredentzialak eta saiatu berriro.</translation>
@@ -1800,6 +1801,9 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2220572644011485463">PINa edo pasahitza</translation>
 <translation id="222115440608612541">Aldatu gaiak egunsentian eta ilunabarrean</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2221265863788848174">Kanpoko aplikazio batek Chrome-ko saio hau guztiz kontrolatu nahi du, hura arazteko. Gordetako datuak, cookieak eta webguneetako datuak atzitzeko baimena, eta edozein URLra nabigatzeko gaitasuna barne.
+
+Web-garatzaileek soilik aktibatu beharko lukete eginbide hau, eta aplikazio fidagarriekin soilik erabili.</translation>
 <translation id="222201875806112242">Multimedia-iturburu izengabea</translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2224444042887712269">Ezarpen hau <ph name="OWNER_EMAIL" /> erabiltzailearena da.</translation>
@@ -1905,6 +1909,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2294081976975808113">Pantailaren pribatutasuna</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> instalatu nahi duzu?</translation>
 <translation id="229477815107578534">Berrikusi ezarpenak</translation>
+<translation id="229524410604268773">Desaktibatu ezarpenetan</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> emaitza</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> erabiltzailearekin saioa hasten duzunean gailuak sarera konektatuta egotea eskatzen du <ph name="DOMAIN_NAME" /> domeinuak</translation>
 <translation id="2296218178174497398">Gailuen bilaketa</translation>
@@ -3420,7 +3425,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3346306152660142597">Pertsonalizatu orri hau AA bidez</translation>
 <translation id="3347086966102161372">K&amp;opiatu irudiaren helbidea</translation>
 <translation id="3348038390189153836">Gailu aldagarria hauteman da</translation>
-<translation id="3348131053948466246">Emojiak iradoki dira. Nabigatzeko, sakatu Gora edo Behera gezia; txertatzeko, sakatu "Sartu" tekla.</translation>
 <translation id="3348973040180736882">Deskonprimatzen</translation>
 <translation id="3349933790966648062">Memoriaren erabilera</translation>
 <translation id="3350450887151703713">Erreproduzitu 10 segundo berriro</translation>
@@ -6627,7 +6631,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5563234215388768762">Bilatu Google-n edo idatzi URL bat</translation>
 <translation id="5563824734298958390">Fitxa taldetik irten nahi duzu?</translation>
 <translation id="5564450015351086922">Probatu Google Lens iOS-en</translation>
-<translation id="5565579144504951367">Hardwarea konfiguratzeko prest dago</translation>
 <translation id="5565735124758917034">Aktibo</translation>
 <translation id="5568069709869097550">Ezin da hasi saioa</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> webguneko, haren mende dauden webgune guztietako eta instalatutako aplikazioetako datuak eta baimenak ezabatu nahi dituzu?</translation>

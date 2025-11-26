@@ -798,7 +798,6 @@
 <translation id="4113957097611235433">Şifrelerinizi Değiştirin</translation>
 <translation id="4120936477286528673">Bu site sürekli başka bir uygulama açmaya çalışıyor.</translation>
 <translation id="4121993058175073134">Net-export verilerini göndermek için lütfen Ayarlar uygulamasında e-posta hesabınızı yapılandırın.</translation>
-<translation id="4132991308423633339">Şifreleri ve şifre anahtarlarını dışa aktar…</translation>
 <translation id="4133139945030148655">Her şey hazır</translation>
 <translation id="4133265950310064865">Gelişmiş Koruma</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -920,7 +919,7 @@
 <translation id="461440297010471931">Google ile arama</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
 <translation id="4621768135601674446">Okuma Modu seçeneklerini aç</translation>
-<translation id="4627107755957573804">Sitelerin ve uygulamaların, mevcut hesapları geçiş anahtarlarını kullanmak için yükseltmesine izin verin.</translation>
+<translation id="4627107755957573804">Sitelerin ve uygulamaların, mevcut hesapları geçiş anahtarlarını kullanmak için yükseltmesine izin verin</translation>
 <translation id="4629065796475200039">Şifreniz içe aktarılamadı</translation>
 <translation id="4630212057753624203">Örnek balon</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> şifre yeniden kullanılıyor</translation>
