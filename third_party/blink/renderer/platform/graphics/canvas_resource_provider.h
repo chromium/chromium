@@ -54,12 +54,14 @@ namespace blink {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 
+class CanvasRenderingContext2D;
 class CanvasResource;
 class CanvasResourceSharedImage;
 class CanvasResourceProviderBitmap;
 class CanvasResourceProviderExternalBitmap;
 class CanvasResourceProviderSharedImage;
 class MemoryManagedPaintCanvas;
+class OffscreenCanvasRenderingContext2D;
 class StaticBitmapImage;
 class WebGraphicsSharedImageInterfaceProvider;
 
@@ -134,14 +136,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                const gfx::ColorSpace& color_space,
                                ShouldInitialize initialize_provider);
 
-  static std::unique_ptr<CanvasResourceProviderBitmap> CreateBitmapProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
-      Delegate* delegate = nullptr);
-
   static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateSharedImageProviderForSoftwareCompositor(
       gfx::Size size,
@@ -170,12 +164,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      Delegate* delegate = nullptr);
-
-  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProviderForTesting(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      ShouldInitialize initialize_provider,
       Delegate* delegate = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider>
@@ -337,6 +325,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void EnsureSkiaCanvas();
 
+  void Clear();
+
  private:
   friend class FlushForImageListener;
 
@@ -344,8 +334,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   size_t ComputeSurfaceSize() const;
   size_t GetSize() const override;
-
-  void Clear();
 
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
@@ -400,12 +388,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 class PLATFORM_EXPORT CanvasResourceProviderBitmap
     : public CanvasResourceProvider {
  public:
-  CanvasResourceProviderBitmap(gfx::Size size,
-                               viz::SharedImageFormat format,
-                               SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space,
-                               Delegate* delegate);
-
   ~CanvasResourceProviderBitmap() override = default;
 
   bool IsValid() const override { return GetSkSurface(); }
@@ -422,7 +404,31 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
                    int x,
                    int y) override;
 
+  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProviderForTesting(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
+      ShouldInitialize initialize_provider,
+      Delegate* delegate = nullptr);
+
+ protected:
+  CanvasResourceProviderBitmap(gfx::Size size,
+                               viz::SharedImageFormat format,
+                               SkAlphaType alpha_type,
+                               const gfx::ColorSpace& color_space,
+                               Delegate* delegate);
+
  private:
+  friend class CanvasRenderingContext2D;
+  friend class OffscreenCanvasRenderingContext2D;
+
+  static std::unique_ptr<CanvasResourceProviderBitmap> CreateBitmapProvider(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      Delegate* delegate = nullptr);
+
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     // Production of CanvasResources is used with direct compositing, which is
     // not supported by this class.

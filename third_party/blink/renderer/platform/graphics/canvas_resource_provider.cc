@@ -1190,14 +1190,16 @@ CanvasResourceProvider::CreateExternalBitmapProvider(
 }
 
 std::unique_ptr<CanvasResourceProviderBitmap>
-CanvasResourceProvider::CreateBitmapProvider(gfx::Size size,
-                                             viz::SharedImageFormat format,
-                                             SkAlphaType alpha_type,
-                                             const gfx::ColorSpace& color_space,
-                                             ShouldInitialize should_initialize,
-                                             Delegate* delegate) {
-  auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      size, format, alpha_type, color_space, delegate);
+CanvasResourceProviderBitmap::CreateBitmapProvider(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize,
+    Delegate* delegate) {
+  auto provider = base::WrapUnique<CanvasResourceProviderBitmap>(
+      new CanvasResourceProviderBitmap(size, format, alpha_type, color_space,
+                                       delegate));
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1911,12 +1913,12 @@ CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateBitmapProviderForTesting(
+CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
     ShouldInitialize initialize_provider,
     Delegate* delegate) {
-  return CreateBitmapProvider(
+  return CanvasResourceProviderBitmap::CreateBitmapProvider(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
       color_params.GetGfxColorSpace(), initialize_provider, delegate);
 }
