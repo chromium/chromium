@@ -102,6 +102,7 @@ class BatchUploadServiceTest : public testing::Test {
 TEST_F(BatchUploadServiceTest, SignedOut) {
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
 
   ASSERT_FALSE(
       identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -109,9 +110,10 @@ TEST_F(BatchUploadServiceTest, SignedOut) {
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
   EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+      opened_callback.Get(), closed_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -120,13 +122,15 @@ TEST_F(BatchUploadServiceTest, SignedPending) {
   signin::SetInvalidRefreshTokenForPrimaryAccount(&identity_manager());
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
   EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+      opened_callback.Get(), closed_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -136,13 +140,15 @@ TEST_F(BatchUploadServiceTest, Syncing) {
                             signin::ConsentLevel::kSync);
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
   EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+      opened_callback.Get(), closed_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -367,6 +373,7 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
   SigninWithFullInfo();
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
   const syncer::LocalDataDescription& contact_infos =
       test_helper().SetReturnDescriptions(syncer::CONTACT_INFO, 2);
   const syncer::LocalDataDescription& passwords =
@@ -389,13 +396,14 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+      opened_callback.Get(), closed_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       result{{syncer::PASSWORDS, {passwords.local_data_models[0].id}}};
   EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigrationForItems(result))
       .Times(1);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
   std::move(returned_complete_callback).Run(result);
   EXPECT_FALSE(service.IsDialogOpened());
 }
@@ -405,6 +413,7 @@ TEST_F(BatchUploadServiceTest,
   SigninWithFullInfo();
   BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
   const syncer::LocalDataDescription& contact_infos =
       test_helper().SetReturnDescriptions(syncer::CONTACT_INFO, 2);
   const syncer::LocalDataDescription& passwords =
@@ -427,11 +436,12 @@ TEST_F(BatchUploadServiceTest,
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
   service.OpenBatchUpload(
       nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+      opened_callback.Get(), closed_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 
   EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigrationForItems(_))
       .Times(0);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
   std::move(returned_complete_callback).Run({});
   EXPECT_FALSE(service.IsDialogOpened());
 }

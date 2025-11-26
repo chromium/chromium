@@ -683,6 +683,15 @@ void SettingsUI::BindInterface(
   theme_color_picker_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
 }
+
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<batch_upload_promo::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (batch_upload_promo_factory_receiver_.is_bound()) {
+    batch_upload_promo_factory_receiver_.reset();
+  }
+  batch_upload_promo_factory_receiver_.Bind(std::move(pending_receiver));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void SettingsUI::BindInterface(
@@ -725,6 +734,15 @@ void SettingsUI::CreateThemeColorPickerHandler(
       NtpCustomBackgroundServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())),
       web_ui()->GetWebContents());
+}
+
+void SettingsUI::CreateBatchUploadPromoHandler(
+    mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
+    mojo::PendingReceiver<batch_upload_promo::mojom::PageHandler>
+        pending_page_handler) {
+  batch_upload_promo_handler_ = std::make_unique<BatchUploadPromoHandler>(
+      std::move(pending_page_handler), std::move(pending_page),
+      Profile::FromWebUI(web_ui()), web_ui()->GetWebContents());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

@@ -10177,6 +10177,7 @@ test("unit_tests") {
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/profiles/guest_mode_policy_handler_unittest.cc",
       "../browser/signin/accounts_policy_manager_unittest.cc",
+      "../browser/ui/webui/batch_upload_promo/batch_upload_promo_handler_unittest.cc",
       "../browser/ui/webui/browser_switch/browser_switch_ui_unittest.cc",
     ]
 
@@ -10198,6 +10199,7 @@ test("unit_tests") {
       "../browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/browser_switcher",
       "//chrome/browser/browser_switcher:unit_tests",
+      "//chrome/browser/ui/webui/batch_upload_promo",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/soda",
       "//components/user_education/webui",

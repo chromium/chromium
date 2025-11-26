@@ -66,6 +66,7 @@ std::optional<syncer::DataType> PrimaryTypeFromEntryPoint(
     case BatchUploadService::EntryPoint::
         kProfileMenuPrimaryButtonWithBookmarksAction:
       return syncer::BOOKMARKS;
+    case BatchUploadService::EntryPoint::kAccountSettingsPage:
     case BatchUploadService::EntryPoint::kProfileMenuRowButtonAction:
     case BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction:
     case BatchUploadService::EntryPoint::
@@ -168,9 +169,11 @@ BatchUploadService::~BatchUploadService() = default;
 void BatchUploadService::OpenBatchUpload(
     Browser* browser,
     EntryPoint entry_point,
-    base::OnceCallback<void(bool)> success_callback) {
+    base::OnceCallback<void(bool)> dialog_shown_callback,
+    base::OnceCallback<void()> dialog_closed_callback) {
   if (!IsUserEligibleToOpenDialog()) {
-    std::move(success_callback).Run(false);
+    std::move(dialog_shown_callback).Run(false);
+    std::move(dialog_closed_callback).Run();
     return;
   }
 
@@ -178,7 +181,8 @@ void BatchUploadService::OpenBatchUpload(
   if (IsDialogOpened()) {
     // TODO(b/361330952): give focus to the browser that is showing the dialog
     // currently.
-    std::move(success_callback).Run(false);
+    std::move(dialog_shown_callback).Run(false);
+    std::move(dialog_closed_callback).Run();
     return;
   }
 
@@ -189,7 +193,10 @@ void BatchUploadService::OpenBatchUpload(
   state_.dialog_state_ = std::make_unique<ResettableState::DialogState>();
   state_.dialog_state_->browser_ = browser;
   state_.dialog_state_->entry_point_ = entry_point;
-  state_.dialog_state_->dialog_shown_callback_ = std::move(success_callback);
+  state_.dialog_state_->dialog_shown_callback_ =
+      std::move(dialog_shown_callback);
+  state_.dialog_state_->dialog_closed_callback_ =
+      std::move(dialog_closed_callback);
 
   GetLocalDataDescriptionsForAvailableTypes(
       base::BindOnce(&BatchUploadService::OnGetLocalDataDescriptionsReady,
@@ -235,21 +242,26 @@ void BatchUploadService::OnBatchUploadDialogResult(
         item_ids_to_move) {
   CHECK(state_.dialog_state_);
 
-  Browser* browser = state_.dialog_state_->browser_.get();
-  ResetDialogState();
-
   if (item_ids_to_move.empty()) {
+    std::move(state_.dialog_state_->dialog_closed_callback_).Run();
+    ResetDialogState();
     return;
   }
 
   sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
 
   // `browser` may be null in tests.
+  Browser* browser = state_.dialog_state_->browser_.get();
   if (browser) {
     state_.saving_browser_state_ =
         std::make_unique<ResettableState::SavingBrowserState>();
     TriggerAvatarButtonSavingDataText(browser);
   }
+
+  // The callback has to be called after `TriggerLocalDataMigrationForItems()`
+  // so that it reacts to the state after the migration.
+  std::move(state_.dialog_state_->dialog_closed_callback_).Run();
+  ResetDialogState();
 }
 
 bool BatchUploadService::IsUserEligibleToOpenDialog() const {

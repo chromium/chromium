@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 # TODO(crbug.com/369369575): complete modularization of this component.
@@ -23,6 +25,11 @@ source_set("settings") {
     "//extensions/common",
     "//url",
   ]
+
+  if (enable_dice_support) {
+    public_deps +=
+        [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
+  }
 
   allow_circular_includes_from = [ "//chrome/browser/ui/safety_hub" ]
 }

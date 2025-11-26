@@ -22,7 +22,9 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/batch_upload_promo/batch_upload_promo_handler.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
+#include "ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
@@ -56,9 +58,10 @@ class SettingsUI
       public customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory
 #if !BUILDFLAG(IS_CHROMEOS)
-    // chrome://settings/manageProfile which only exists on !OS_CHROMEOS
-    // requires mojo bindings.
     ,
+      public batch_upload_promo::mojom::PageHandlerFactory,
+      // chrome://settings/manageProfile which only exists on !IS_CHROMEOS
+      // requires mojo bindings.
       public theme_color_picker::mojom::ThemeColorPickerHandlerFactory
 #endif  // BUILDFLAG(IS_CHROMEOS)
 {
@@ -85,6 +88,13 @@ class SettingsUI
   void BindInterface(mojo::PendingReceiver<
                      theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
                          pending_receiver);
+
+  // Instantiates the implementor of the
+  // batch_upload_promo::mojom::PageHandlerFactory mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<batch_upload_promo::mojom::PageHandlerFactory>
+          pending_receiver);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Implements support for help bubbles (IPH, tutorials, etc.) in settings
@@ -123,6 +133,16 @@ class SettingsUI
   std::unique_ptr<ThemeColorPickerHandler> theme_color_picker_handler_;
   mojo::Receiver<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
       theme_color_picker_handler_factory_receiver_{this};
+
+  // batch_upload_promo::mojom::PageHandlerFactory:
+  void CreateBatchUploadPromoHandler(
+      mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
+      mojo::PendingReceiver<batch_upload_promo::mojom::PageHandler>
+          pending_page_handler) override;
+
+  std::unique_ptr<BatchUploadPromoHandler> batch_upload_promo_handler_;
+  mojo::Receiver<batch_upload_promo::mojom::PageHandlerFactory>
+      batch_upload_promo_factory_receiver_{this};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // help_bubble::mojom::HelpBubbleHandlerFactory:
