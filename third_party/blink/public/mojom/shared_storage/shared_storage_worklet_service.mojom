@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/private_aggregation/private_aggregation_h
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
@@ -126,11 +127,13 @@ struct PrivateAggregationOperationDetails {
 interface SharedStorageWorkletService {
   // Binds `client`. Also initializes the "private-aggregation" permissions
   // policy's status to `private_aggregation_permissions_policy_allowed`. Must
-  // be the first call on this interface.
+  // be the first call on this interface. The callback reports the value of
+  // the newly initialized worklet's unique SharedStorageWorkletToken.
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
     SharedStorageWorkletPermissionsPolicyState permissions_policy_state,
-    mojo_base.mojom.String16? embedder_context);
+    mojo_base.mojom.String16? embedder_context)
+    => (SharedStorageWorkletToken token);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
   // the worklet environment. The origin of the `script_source_url` should be

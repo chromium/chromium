@@ -417,6 +417,8 @@ void HTMLImageElement::ParseAttribute(
     } else if (!params.new_value.IsNull()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kSharedStorageAPI_Image_Attribute);
+      Deprecation::CountDeprecation(
+          execution_context, mojom::blink::WebFeature::kSharedStorageAPIAll);
     }
   } else {
     HTMLElement::ParseAttribute(params);

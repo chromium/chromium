@@ -6362,6 +6362,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5728" label="V8Origin_Parse_Method"/>
   <int value="5729" label="ExtendedTextMetrics"/>
   <int value="5730" label="UseCssSizingProperties"/>
+  <int value="5731" label="SharedStorageAPIAll"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

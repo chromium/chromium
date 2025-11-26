@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -653,7 +654,8 @@ class SharedStorageWorkletTest : public PageTestBase {
 
     shared_storage_worklet_service_->Initialize(
         std::move(pending_shared_storage_service_client_remote),
-        permissions_policy_state_->Clone(), embedder_context_);
+        permissions_policy_state_->Clone(), embedder_context_,
+        base::BindOnce([](const blink::SharedStorageWorkletToken&) {}));
 
     worklet_service_initialized_ = true;
   }

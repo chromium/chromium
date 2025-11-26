@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -465,12 +466,14 @@ void SharedStorageWorkletGlobalScope::Initialize(
         mojom::blink::SharedStorageWorkletServiceClient> client,
     mojom::blink::SharedStorageWorkletPermissionsPolicyStatePtr
         permissions_policy_state,
-    const String& embedder_context) {
+    const String& embedder_context,
+    InitializeCallback callback) {
   client_.Bind(std::move(client),
                GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 
   permissions_policy_state_ = std::move(permissions_policy_state);
   embedder_context_ = embedder_context;
+  std::move(callback).Run(token_);
 }
 
 void SharedStorageWorkletGlobalScope::AddModule(

@@ -521,6 +521,15 @@
       milestone: 106,
     },
     {
+      name: "SharedStorage",
+      message: "The Shared Storage API is deprecated and will be removed in a future release.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when one of the Shared Storage APIs like `sharedStorage.set()`, `sharedStorage.worklet.addModule()`, `sharedStorage.selectURL()`, etc., along with `<img sharedstoragewritable>`, `<iframe sharedstoragewritable>`, or `fetch(url, {sharedStorageWritable: true})` are used.",
+      web_features: [
+        "kSharedStorageAPIAll",
+      ],
+      chrome_status_feature: 5076349064708096,
+    },
+    {
       name: "StorageAccessAPI_requestStorageAccessFor_Method",
       message: "`document.requestStorageAccessFor` is deprecated and will be removed. See https://privacysandbox.com/news/update-on-plans-for-privacy-sandbox-technologies/ for more details.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when the `document.requestStorageAccessFor` API is called. The placeholder will always be the string `document.requestStorageAccessFor`.",

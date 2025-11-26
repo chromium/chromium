@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
@@ -180,6 +181,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   const base::UnguessableToken& GetWorkletDevToolsTokenForTesting() const;
 
+  const base::UnguessableToken& GetWorkletToken() const;
+
+  const net::NetworkIsolationKey& MaybeGetNetworkIsolationKey() const;
+
  protected:
   // virtual for testing
   virtual void OnCreateWorkletScriptLoadingFinished(
@@ -290,8 +295,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific);
 
+  void OnWorkletInitialized(const blink::SharedStorageWorkletToken& token);
+
   // RAII helper object for talking to `SharedStorageWorkletDevToolsManager`.
   std::unique_ptr<ScopedDevToolsHandle> devtools_handle_;
+
+  // The token to identify the worklet.
+  base::UnguessableToken worklet_token_;
 
   // The URL of the module script. Set when `AddModuleOnWorklet` is invoked.
   GURL script_source_url_;

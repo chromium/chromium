@@ -4023,7 +4023,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared-storage-selecturl-limit",
@@ -4045,7 +4045,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIEnableWALForDatabase,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared_array_buffer_on_desktop",

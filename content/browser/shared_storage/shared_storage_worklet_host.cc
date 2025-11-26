@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1743,7 +1744,9 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
-        std::move(permissions_policy_state), embedder_context);
+        std::move(permissions_policy_state), embedder_context,
+        base::BindOnce(&SharedStorageWorkletHost::OnWorkletInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   return shared_storage_worklet_service_.get();
@@ -1985,6 +1988,27 @@ void SharedStorageWorkletHost::OnCreateWorkletScriptLoadingFinished(
 
   script_loading_state_ = std::make_pair(success, error_message);
   MaybeFinishCreateWorklet();
+}
+
+const base::UnguessableToken& SharedStorageWorkletHost::GetWorkletToken()
+    const {
+  return worklet_token_;
+}
+
+const net::NetworkIsolationKey&
+SharedStorageWorkletHost::MaybeGetNetworkIsolationKey() const {
+  if (document_service_) {
+    return static_cast<RenderFrameHostImpl&>(
+               document_service_->render_frame_host())
+        .GetNetworkIsolationKey();
+  }
+  static const base::NoDestructor<net::NetworkIsolationKey> kEmptyNIK;
+  return *kEmptyNIK;
+}
+
+void SharedStorageWorkletHost::OnWorkletInitialized(
+    const blink::SharedStorageWorkletToken& token) {
+  worklet_token_ = static_cast<const base::UnguessableToken&>(token);
 }
 
 void SharedStorageWorkletHost::SetDataOriginOptInResultAndMaybeFinish(

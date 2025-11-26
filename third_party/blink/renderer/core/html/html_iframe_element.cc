@@ -332,6 +332,9 @@ void HTMLIFrameElement::ParseAttribute(
       if (!params.new_value.IsNull()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kSharedStorageAPI_Iframe_Attribute);
+        Deprecation::CountDeprecation(
+            GetExecutionContext(),
+            mojom::blink::WebFeature::kSharedStorageAPIAll);
       }
     }
   } else if (name == html_names::kCredentiallessAttr &&

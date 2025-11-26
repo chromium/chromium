@@ -66,6 +66,10 @@ mojom_component("tokens") {
           cpp = "::blink::PaintWorkletToken"
         },
         {
+          mojom = "blink.mojom.SharedStorageWorkletToken"
+          cpp = "::blink::SharedStorageWorkletToken"
+        },
+        {
           mojom = "blink.mojom.WorkletToken"
           cpp = "::blink::WorkletToken"
         },

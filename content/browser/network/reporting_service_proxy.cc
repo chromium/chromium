@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -301,6 +302,20 @@ void CreateReportingServiceProxyForDedicatedWorker(
           dedicated_worker_host->GetProcessHost()->GetDeprecatedID(),
           dedicated_worker_host->GetReportingSource(),
           dedicated_worker_host->GetNetworkAnonymizationKey()),
+      std::move(receiver));
+}
+
+void CreateReportingServiceProxyForSharedStorageWorklet(
+    SharedStorageWorkletHost* shared_storage_worklet_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(shared_storage_worklet_host->GetProcessHost());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ReportingServiceProxyImpl>(
+          shared_storage_worklet_host->GetProcessHost()->GetDeprecatedID(),
+          shared_storage_worklet_host->GetWorkletToken(),
+          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              shared_storage_worklet_host->MaybeGetNetworkIsolationKey())),
       std::move(receiver));
 }
 

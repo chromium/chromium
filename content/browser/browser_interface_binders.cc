@@ -1587,6 +1587,9 @@ void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
   // |SharedStorageWorkletHost::broker_|.
   map->Add<blink::mojom::LockManager>(base::BindRepeating(
       &SharedStorageWorkletHost::GetLockManager, base::Unretained(host)));
+  map->Add<blink::mojom::ReportingServiceProxy>(
+      base::BindRepeating(&CreateReportingServiceProxyForSharedStorageWorklet,
+                          base::Unretained(host)));
 }
 
 void PopulateBinderMapWithContext(

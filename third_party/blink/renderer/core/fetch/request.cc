@@ -749,6 +749,8 @@ Request* Request::CreateRequestWithRequestOrString(
       UseCounter::Count(
           execution_context,
           mojom::blink::WebFeature::kSharedStorageAPI_Fetch_Attribute);
+      Deprecation::CountDeprecation(
+          execution_context, mojom::blink::WebFeature::kSharedStorageAPIAll);
     }
   }
 
