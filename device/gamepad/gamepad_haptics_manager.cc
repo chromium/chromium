@@ -18,6 +18,7 @@ GamepadHapticsManager::~GamepadHapticsManager() = default;
 
 // static
 void GamepadHapticsManager::Create(
+    content::RenderFrameHost*,
     mojo::PendingReceiver<mojom::GamepadHapticsManager> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<GamepadHapticsManager>(),
                               std::move(receiver));
