@@ -231,10 +231,8 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   }
 
   DCHECK(!paint_image.IsTextureBacked());
-  scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
-      UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                             orientation);
-  return snapshot;
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                                orientation);
 }
 
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
