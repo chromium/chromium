@@ -297,16 +297,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                            : GlicPrewarmingChecksResult::kWarmingDisabled);
 }
 
-// TODO(crbug.com/460825008): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShouldPreloadForProfile_NotSupportedProfile \
-  DISABLED_ShouldPreloadForProfile_NotSupportedProfile
-#else
-#define MAYBE_ShouldPreloadForProfile_NotSupportedProfile \
-  ShouldPreloadForProfile_NotSupportedProfile
-#endif
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
-                       MAYBE_ShouldPreloadForProfile_NotSupportedProfile) {
+                       ShouldPreloadForProfile_NotSupportedProfile) {
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
