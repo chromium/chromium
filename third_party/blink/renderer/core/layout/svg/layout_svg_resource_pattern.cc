@@ -150,11 +150,12 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
   AffineTransform tile_transform;
   if (attributes.HasViewBox()) {
     // An empty viewBox disables rendering of the pattern.
-    if (attributes.ViewBox().IsEmpty())
+    const gfx::RectF view_box = attributes.ViewBox()->Rect();
+    if (view_box.IsEmpty()) {
       return pattern_data;
+    }
     tile_transform = SVGFitToViewBox::ViewBoxToViewTransform(
-        attributes.ViewBox(), attributes.PreserveAspectRatio(),
-        tile_bounds.size());
+        view_box, attributes.PreserveAspectRatio(), tile_bounds.size());
   } else {
     // A viewBox overrides patternContentUnits, per spec.
     if (attributes.PatternContentUnits() ==
