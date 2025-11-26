@@ -21,6 +21,9 @@ struct NaturalSizingInfo {
   static NaturalSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
     return {natural_size, natural_size, true, true};
   }
+  static NaturalSizingInfo MakeHeight(float height) {
+    return {{0, height}, {}, false, true};
+  }
 
   bool IsNone() const {
     return !has_width && !has_height && aspect_ratio.IsEmpty();
