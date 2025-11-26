@@ -157,6 +157,13 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables OnTask status check.
+BASE_FEATURE(kOnTaskStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Custom boca receiver polling time interval.
+const base::FeatureParam<base::TimeDelta> kOnTaskStatusCheckInterval{
+    &kOnTaskStatusCheck, "OnTaskStatusCheckInterval", base::Seconds(60)};
+
 // Enables or disables locked quiz migration to leverage the OnTask SWA.
 BASE_FEATURE(kBocaOnTaskLockedQuizMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2466,6 +2473,10 @@ bool IsBocaRedirectStudentAudioToKioskEnabled() {
 
 bool IsBocaReceiverCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaReceiverCustomPolling);
+}
+
+bool IsOnTaskStatusCheckEnabled() {
+  return base::FeatureList::IsEnabled(kOnTaskStatusCheck);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

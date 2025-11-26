@@ -17381,6 +17381,24 @@
             ]
         }
     ],
+    "OnTaskStatusCheck": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "OnTaskStatusCheckInterval": "60s"
+                    },
+                    "enable_features": [
+                        "OnTaskStatusCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [
