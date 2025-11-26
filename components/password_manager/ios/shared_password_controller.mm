@@ -311,6 +311,15 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     return;
   }
   _proactivePasswordGeneration = proactivePasswordGeneration;
+  if (proactivePasswordGeneration) {
+    // Record the dropdown selection metrics for password generation here
+    // because -didSelectSuggestion isn't called when triggering the proactive
+    // password generation sheet.
+    password_manager::metrics_util::LogPasswordSuggestionSelected(
+        password_manager::metrics_util::PasswordDropdownSelectedOption::
+            kGenerate,
+        [self IsOffTheRecord]);
+  }
   // This function is reached either by using manual fallback or proactive
   // generation. Therefore, if it is not proactive password generation, it is
   // manually triggered, hence how isManuallyTriggered is set in the following
@@ -1029,8 +1038,8 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
                manual:isManuallyTriggered];
   bool generatedPasswordEmpty = generatedPassword.length == 0;
   if (accepted) {
-    // Log "on accepted" metrics which doesn't necessarily mean that the generated
-    // password can be injected.
+    // Log "on accepted" metrics which doesn't necessarily mean that the
+    // generated password can be injected.
     LogPasswordGenerationEvent(
         autofill::password_generation::PASSWORD_ACCEPTED);
     base::UmaHistogramBoolean(
@@ -1142,8 +1151,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     // If the form isn't found, it disappeared between the call to
     // [self.formHelper fillPasswordForm:newPasswordIdentifier:...]
     // and here. There isn't much that can be done.
-    if (!found)
+    if (!found) {
       return;
+    }
 
     [weakSelf didExtractGeneratedPasswordForm:form
                         withGeneratedPassword:generatedPassword
@@ -1184,8 +1194,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 - (void)presaveGeneratedPassword:(NSString*)generatedPassword
                         formData:(const autofill::FormData&)formData
                          inFrame:(web::WebFrame*)frame {
-  if (!_passwordManager)
+  if (!_passwordManager) {
     return;
+  }
 
   _passwordManager->OnPresaveGeneratedPassword(
       [_driverHelper PasswordManagerDriver:frame], formData,
