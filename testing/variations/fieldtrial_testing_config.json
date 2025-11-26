@@ -15327,10 +15327,8 @@
     "LoadAllTabsAtStartup": [
         {
             "platforms": [
-                "android_webview",
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
