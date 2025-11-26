@@ -142,10 +142,10 @@ export class InputControllerImpl extends InputController {
    * Connect as the active Input Method Manager.
    * @param callback The callback to run after IME is connected.
    */
-  connect(callback: () => void): void {
+  async connect(callback: () => void): Promise<void> {
     this.onConnectCallback_ = callback;
-    chrome.inputMethodPrivate.getCurrentInputMethod(
-        (method: string) => this.saveCurrentInputMethodAndStart_(method));
+    const method = await chrome.inputMethodPrivate.getCurrentInputMethod();
+    this.saveCurrentInputMethodAndStart_(method);
   }
 
   /**

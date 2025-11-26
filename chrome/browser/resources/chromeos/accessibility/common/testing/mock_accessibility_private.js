@@ -573,10 +573,10 @@ class MockAccessibilityPrivate {
    * occur when the user or a chrome extension toggles Dictation active state.
    * @param {boolean} activated
    */
-  callOnToggleDictation(activated) {
+  async callOnToggleDictation(activated) {
     this.dictationActivated_ = activated;
     if (this.dictationToggleListener_) {
-      this.dictationToggleListener_(activated);
+      await this.dictationToggleListener_(activated);
     }
   }
 
