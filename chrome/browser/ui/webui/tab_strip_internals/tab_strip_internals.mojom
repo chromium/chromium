@@ -4,6 +4,7 @@
 
 module tab_strip_internals.mojom;
 
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -88,6 +89,12 @@ struct Tab {
   NodeId id;
   string title;
   url.mojom.Url url;
+  bool active;
+  bool visible;
+  bool selected;
+  bool pinned;
+  bool split;
+  array<tabs.mojom.TabAlertState> alert_states;
   // TODO (crbug.com/427204855): Add more tab metadata as needed.
 };
 

@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/tab_restore_types.h"
@@ -114,6 +115,13 @@ mojom::DataPtr BuildMojoTab(const tabs::TabInterface* tab) {
     mojo_tab->title = base::UTF16ToUTF8(data->GetTitle());
     mojo_tab->url = data->GetVisibleURL();
   }
+  mojo_tab->active = tab->IsActivated();
+  mojo_tab->visible = tab->IsVisible();
+  mojo_tab->selected = tab->IsSelected();
+  mojo_tab->pinned = tab->IsPinned();
+  mojo_tab->split = tab->IsSplit();
+  mojo_tab->alert_states =
+      tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
   return mojom::Data::NewTab(std::move(mojo_tab));
 }
