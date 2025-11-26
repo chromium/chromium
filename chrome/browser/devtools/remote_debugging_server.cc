@@ -73,6 +73,13 @@ class TCPServerSocketFactory
   TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
   TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
 
+ protected:
+  // content::DevToolsSocketFactory.
+  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
+    return CreateLocalHostServerSocket(port_);
+  }
+  uint16_t port_;
+
  private:
   std::unique_ptr<net::ServerSocket> CreateLocalHostServerSocket(int port) {
     std::unique_ptr<net::ServerSocket> socket(
@@ -83,11 +90,6 @@ class TCPServerSocketFactory
     if (socket->ListenWithAddressAndPort("::1", port, kBackLog) == net::OK)
       return socket;
     return nullptr;
-  }
-
-  // content::DevToolsSocketFactory.
-  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    return CreateLocalHostServerSocket(port_);
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -103,8 +105,54 @@ class TCPServerSocketFactory
     return CreateLocalHostServerSocket(port);
   }
 
-  uint16_t port_;
   uint16_t last_tethering_port_;
+};
+
+// Creates a server socket on a specific port, or any available port if the port
+// is busy. Prefers a free port over switching from IPv4 to IPv6.
+class TCPServerSocketFactoryWithPortFallback : public TCPServerSocketFactory {
+ public:
+  using TCPServerSocketFactory::TCPServerSocketFactory;
+
+ private:
+  std::unique_ptr<net::ServerSocket> CreateSocketOnAddress(const char* address,
+                                                           uint16_t port) {
+    auto socket =
+        std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
+    if (socket->ListenWithAddressAndPort(address, port, kBackLog) == net::OK) {
+      return socket;
+    }
+    return nullptr;
+  }
+
+  // content::DevToolsSocketFactory.
+  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
+    std::unique_ptr<net::ServerSocket> socket =
+        CreateSocketOnAddress("127.0.0.1", port_);
+    if (socket) {
+      return socket;
+    }
+
+    if (port_ != 0) {
+      socket = CreateSocketOnAddress("127.0.0.1", 0);
+      if (socket) {
+        return socket;
+      }
+    }
+
+    socket = CreateSocketOnAddress("::1", port_);
+    if (socket) {
+      return socket;
+    }
+
+    if (port_ != 0) {
+      socket = CreateSocketOnAddress("::1", 0);
+      if (socket) {
+        return socket;
+      }
+    }
+    return nullptr;
+  }
 };
 
 // Returns true, or a reason why remote debugging is not allowed.
@@ -166,25 +214,26 @@ void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
     return;
   }
 
-  // TODO(crbug.com/460665929): If the default 9222 is taken,
-  // we should find a free port and report it via the chrome://inspect page.
-  int port = 9222;
-  // Used to write the selected port to a well-known location in the profile
+  if (is_http_server_running_) {
+    return;
+  }
+
+  // The selected port is written to a well-known location in the profile
   // directory to bootstrap the connection process.
   base::FilePath output_dir;
   {
     bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
     DCHECK(result);
   }
-
-  if (is_http_server_running_) {
-    return;
-  }
-
+  // Try to listen on 9222 by default, if it is busy, find any other available
+  // port.
+  int port = 9222;
+  // TODO(alexrudenko): Read last used port from the user data directory.
   // We do not support hosting DevTools in this mode, therefore,
   // not passing the value of the kCustomDevtoolsFrontend switch.
   StartHttpServer(
-      std::make_unique<TCPServerSocketFactory>(port), output_dir,
+      std::make_unique<TCPServerSocketFactoryWithPortFallback>(port),
+      output_dir,
       /*debug_frontend_dir=*/base::FilePath(),
       content::DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly);
   is_http_server_running_ = true;
