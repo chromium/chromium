@@ -21,6 +21,12 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
+class PrefService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace wallet {
 
 class ContentWalletablePassIngestionController;
@@ -46,6 +52,9 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;
 
   strike_database::StrikeDatabaseBase* GetStrikeDatabase() override;
+  PrefService* GetPrefService() override;
+  signin::IdentityManager* GetIdentityManager() override;
+  GeoIpCountryCode GetGeoIpCountryCode() override;
 
   void ShowWalletablePassConsentBubble(
       optimization_guide::proto::PassCategory pass_category,

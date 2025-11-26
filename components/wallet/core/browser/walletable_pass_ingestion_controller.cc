@@ -10,6 +10,7 @@
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "url/gurl.h"
 
 namespace wallet {
@@ -58,7 +59,19 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
     return;
   }
 
-  // TODO(crbug.com/444148314): Request user consent if not consented yet.
+  if (!IsEligibleForWalletablePassDetection(client_->GetIdentityManager(),
+                                            client_->GetGeoIpCountryCode())) {
+    return;
+  }
+
+  if (GetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
+                                            client_->GetIdentityManager())) {
+    GetAnnotatedPageContent(base::BindOnce(
+        &WalletablePassIngestionController::OnGetAnnotatedPageContent,
+        weak_ptr_factory_.GetWeakPtr(), url, *pass_category));
+    return;
+  }
+
   ShowConsentBubble(url, *pass_category);
 }
 
@@ -100,7 +113,9 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
     WalletablePassClient::WalletablePassBubbleResult result) {
   switch (result) {
     case kAccepted:
-      // TODO(crbug.com/444148314): Write consent result to local storage
+      SetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
+                                            client_->GetIdentityManager(),
+                                            /*opt_in_status=*/true);
       GetAnnotatedPageContent(base::BindOnce(
           &WalletablePassIngestionController::OnGetAnnotatedPageContent,
           weak_ptr_factory_.GetWeakPtr(), url, pass_category));

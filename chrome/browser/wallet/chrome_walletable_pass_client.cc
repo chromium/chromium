@@ -6,15 +6,19 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strike_database/strike_database.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {
@@ -43,6 +47,27 @@ ChromeWalletablePassClient::GetStrikeDatabase() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+}
+
+PrefService* ChromeWalletablePassClient::GetPrefService() {
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  return profile->GetPrefs();
+}
+
+signin::IdentityManager* ChromeWalletablePassClient::GetIdentityManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  return IdentityManagerFactory::GetForProfile(profile);
+}
+
+GeoIpCountryCode ChromeWalletablePassClient::GetGeoIpCountryCode() {
+  if (!g_browser_process || !g_browser_process->variations_service()) {
+    return GeoIpCountryCode();
+  }
+
+  return GeoIpCountryCode(base::ToUpperASCII(
+      g_browser_process->variations_service()->GetStoredPermanentCountry()));
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(

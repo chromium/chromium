@@ -7,13 +7,21 @@
 #include <memory>
 
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller_test_api.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "components/wallet/core/common/wallet_features.h"
+#include "components/wallet/core/common/wallet_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -59,6 +67,9 @@ class MockWalletablePassClient : public WalletablePassClient {
               GetStrikeDatabase,
               (),
               (override));
+  MOCK_METHOD(PrefService*, GetPrefService, (), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(GeoIpCountryCode, GetGeoIpCountryCode, (), (override));
 };
 
 // Mock implementation of WalletablePassIngestionController that provides mocks
@@ -81,12 +92,22 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   WalletablePassIngestionControllerTest() = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kWalletablePassDetection,
+        {{"walletable_supported_country_allowlist", "US"}});
+    wallet::prefs::RegisterProfilePrefs(test_pref_service().registry());
     ON_CALL(mock_client_, GetOptimizationGuideDecider())
         .WillByDefault(Return(&mock_decider_));
     ON_CALL(mock_client_, GetRemoteModelExecutor())
         .WillByDefault(Return(&mock_model_executor_));
     ON_CALL(mock_client_, GetStrikeDatabase())
         .WillByDefault(Return(&test_strike_database_));
+    ON_CALL(mock_client_, GetPrefService())
+        .WillByDefault(Return(&test_pref_service()));
+    ON_CALL(mock_client_, GetIdentityManager())
+        .WillByDefault(Return(test_identity_environment().identity_manager()));
+    ON_CALL(mock_client_, GetGeoIpCountryCode())
+        .WillByDefault(Return(GeoIpCountryCode("US")));
     controller_ =
         std::make_unique<MockWalletablePassIngestionController>(&mock_client_);
   }
@@ -104,6 +125,14 @@ class WalletablePassIngestionControllerTest : public testing::Test {
 
   strike_database::TestInMemoryStrikeDatabase& test_strike_database() {
     return test_strike_database_;
+  }
+
+  sync_preferences::TestingPrefServiceSyncable& test_pref_service() {
+    return test_pref_service_;
+  }
+
+  signin::IdentityTestEnvironment& test_identity_environment() {
+    return test_identity_environment_;
   }
 
   WalletablePass CreateLoyaltyCard(
@@ -125,11 +154,15 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider>
       mock_decider_;
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       mock_model_executor_;
   strike_database::TestInMemoryStrikeDatabase test_strike_database_;
+  sync_preferences::TestingPrefServiceSyncable test_pref_service_;
+  signin::IdentityTestEnvironment test_identity_environment_;
   testing::NiceMock<MockWalletablePassClient> mock_client_;
 
   std::unique_ptr<MockWalletablePassIngestionController> controller_;
@@ -202,12 +235,14 @@ TEST_F(WalletablePassIngestionControllerTest,
                   url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
       .WillOnce(Return(kFalse));
 
-  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_)).Times(0);
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
   test_api(controller()).StartWalletablePassDetectionFlow(url);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
        StartWalletablePassDetectionFlow_Eligible) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
@@ -228,7 +263,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect GetAnnotatedPageContent to be called, and simulate a successful
   // response.
-  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent)
       .WillOnce(WithArgs<0>(
           [](MockWalletablePassIngestionController::AnnotatedPageContentCallback
                  callback) {
@@ -237,7 +272,7 @@ TEST_F(WalletablePassIngestionControllerTest,
           }));
 
   // Expect that the model executor is called when the content is retrieved.
-  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+  EXPECT_CALL(*controller(), GetPageTitle).WillOnce(Return("title"));
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 
@@ -247,7 +282,79 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_Eligible_OptedIn) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  GURL url("https://example.com");
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kTrue));
+
+  // Set OptIn status to true.
+  SetWalletablePassDetectionOptInStatus(
+      &test_pref_service(), test_identity_environment().identity_manager(),
+      true);
+
+  // Expect GetAnnotatedPageContent to be called directly.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent)
+      .WillOnce(WithArgs<0>(
+          [](MockWalletablePassIngestionController::AnnotatedPageContentCallback
+                 callback) {
+            optimization_guide::proto::AnnotatedPageContent content;
+            std::move(callback).Run(std::move(content));
+          }));
+
+  // Expect ShowWalletablePassConsentBubble NOT to be called.
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble).Times(0);
+
+  // Expect model executor call.
+  EXPECT_CALL(*controller(), GetPageTitle).WillOnce(Return("title"));
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _));
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_NotEligible_NotAllowedCountryCode) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  GURL url("https://example.com");
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kTrue));
+
+  // Set country code to something not in allowlist (allowlist is US).
+  EXPECT_CALL(mock_client(), GetGeoIpCountryCode)
+      .WillRepeatedly(Return(GeoIpCountryCode("CA")));
+
+  // Expect no consent bubble and no page content extraction.
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble).Times(0);
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_NotEligible_NotSignedIn) {
+  GURL url("https://example.com");
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kTrue));
+
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble).Times(0);
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
        ShowConsentBubble_Accepted_GetsPageContent) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
 
   // Expect ShowWalletablePassConsentBubble to be called.
@@ -263,7 +370,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent to be called when consent is accepted.
-  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_));
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent);
 
   // Simulate accepting the consent bubble.
   std::move(consent_callback)
@@ -287,7 +394,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent NOT to be called when consent is declined.
-  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_)).Times(0);
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
 
   // Simulate declining the consent bubble.
   std::move(consent_callback)

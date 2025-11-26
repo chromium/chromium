@@ -7,6 +7,13 @@
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "components/wallet/core/browser/country_type.h"
+
+class PrefService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -52,6 +59,12 @@ class WalletablePassClient {
   virtual optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() = 0;
 
   virtual strike_database::StrikeDatabaseBase* GetStrikeDatabase() = 0;
+
+  virtual PrefService* GetPrefService() = 0;
+
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
+
+  virtual GeoIpCountryCode GetGeoIpCountryCode() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
       optimization_guide::proto::PassCategory pass_category,
