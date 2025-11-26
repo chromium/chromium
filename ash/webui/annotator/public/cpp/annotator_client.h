@@ -22,6 +22,8 @@ class AnnotatorClient {
 
   static AnnotatorClient* Get();
 
+  static bool HasInstance();
+
   // Registers the AnnotatorPageHandlerImpl that is owned by the WebUI that
   // contains the annotator.
   virtual void SetAnnotatorPageHandler(
