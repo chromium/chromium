@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -130,6 +132,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
 
     private final int mIndexOfLocationBarInToolbar;
+    private int mLayerYOffset;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -815,6 +818,18 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.addView(mLocationBarView, mIndexOfLocationBarInToolbar);
     }
 
+    @Override
+    public void onCaptureSizeUpdated() {
+        // Y Offset is used when isTopControlsRefactorOffsetEnabled.
+        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                || mBrowserControls.getControlsPosition() != ControlsPosition.TOP
+                || mOverlayCoordinator == null) {
+            return;
+        }
+
+        updateSceneLayerYOffset();
+    }
+
     public void onTransitionStart() {
         mToolbarLayout.onTransitionStart();
     }
@@ -886,18 +901,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             return;
         }
 
-        // In compositor, the position of the toolbar depends on the capture. As for Oct 2025, the
-        // capture includes everything in control container, including the top margin, which
-        // represents the size of the tab strip.
-        // To place the toolbar at its desired position, we have to subtract the diffs of the
-        // capture and the toolbar, in order to put the toolbar at the desired yOffset.
+        mLayerYOffset = layerYOffset;
         if (mOverlayCoordinator != null) {
-            int captureHeight = mControlContainer.getToolbarCaptureHeight();
-            int diff =
-                    captureHeight
-                            - mControlContainer.getToolbarHeight()
-                            - mControlContainer.getToolbarHairlineHeight();
-            mOverlayCoordinator.setYOffset(layerYOffset - diff);
+            updateSceneLayerYOffset();
         }
 
         // Skip the layout params in non-resting position to avoid trigger layout during browser
@@ -918,5 +924,19 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Remove the offset tag on animation starts, so the toolbar does not set the yOffset
         // while the compositor moves the layer with offset tags.
         mOverlayCoordinator.setOffsetTagInfo(null);
+    }
+
+    // In compositor, the position of the toolbar depends on the capture. As of Nov 2025, the
+    // capture includes everything in control container, including the top margin, which represents
+    // the size of the tab strip.
+    // To place the toolbar at its desired position, we have to subtract the diffs of the capture a
+    // nd the toolbar, in order to put the toolbar at the desired yOffset.
+    private void updateSceneLayerYOffset() {
+        int captureHeight = mControlContainer.getToolbarCaptureHeight();
+        int diff =
+                captureHeight
+                        - mControlContainer.getToolbarHeight()
+                        - mControlContainer.getToolbarHairlineHeight();
+        assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff);
     }
 }

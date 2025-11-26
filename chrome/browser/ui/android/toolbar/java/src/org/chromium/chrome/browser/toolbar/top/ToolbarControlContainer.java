@@ -991,7 +991,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     private void onToolbarCaptureUpdated(Resource toolbarCaptureResource) {
+        Rect newSize = toolbarCaptureResource.getBitmapSize();
+        if (mToolbarCaptureSize.equals(newSize)) return;
+
         mToolbarCaptureSize.set(toolbarCaptureResource.getBitmapSize());
+        if (mToolbar != null) {
+            mToolbar.onCaptureSizeUpdated();
+        }
     }
 
     int getToolbarCaptureHeight() {
