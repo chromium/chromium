@@ -283,6 +283,8 @@ public class FuseboxMediator {
         if (mComposeBoxQueryControllerBridge == null) return;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
+        Set<Integer> currentAttachedIds = getAttachedTabIds();
+        if (currentAttachedIds.contains(tab.getId())) return;
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
@@ -309,12 +311,11 @@ public class FuseboxMediator {
     void onTabPickerClicked() {
         mPopup.dismiss();
         Intent intent;
-        ArrayList<Integer> preselectedIds = getPreselectionTabIds();
+        ArrayList<Integer> preselectedIds = new ArrayList<>(getAttachedTabIds());
         try {
             intent =
                     new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
-                            .putIntegerArrayListExtra(
-                                    EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
+                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
         } catch (ClassNotFoundException e) {
             return;
@@ -345,8 +346,7 @@ public class FuseboxMediator {
     public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        Set<Integer> currentAttachedIds = new HashSet<>(getPreselectionTabIds());
-        currentAttachedIds.remove(null);
+        Set<Integer> currentAttachedIds = getAttachedTabIds();
         mModelList.removeIf(
                 item -> {
                     if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
@@ -579,11 +579,9 @@ public class FuseboxMediator {
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
     }
 
-    /**
-     * @return Array of Tab IDs (as Integer[]), empty if no attachments.
-     */
-    public ArrayList<Integer> getPreselectionTabIds() {
-        ArrayList<Integer> attachedTabIds = new ArrayList<>();
+    /** Returns {@link HashSet} of all the tab ids, or empty if no tab attachments. */
+    public HashSet<Integer> getAttachedTabIds() {
+        HashSet<Integer> attachedTabIds = new HashSet<>();
 
         for (int i = 0; i < mModelList.size(); i++) {
             FuseboxAttachment attachment = mModelList.get(i);
