@@ -1241,22 +1241,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         continue;
       }
 
-      // Skip over the `Sec-CH-UA-Reduced` client hint because it is only added
-      // in the presence of a valid "UserAgentReduction" Origin Trial token.
-      // `Sec-CH-UA-Reduced` is tested via UaReducedOriginTrialBrowserTest
-      // below.
-      if (header == "sec-ch-ua-reduced") {
-        continue;
-      }
-
-      // TODO(crbug.com/40211003): Skip over the `Sec-CH-UA-Full` client hint
-      // because it is only added in the presence of a valid
-      // "UserAgentDeprecation" Origin Trial token. Need to add `Sec-CH-UA-Full`
-      // corresponding tests.
-      if (header == "sec-ch-ua-full") {
-        continue;
-      }
-
       EXPECT_EQ(expect_client_hints, base::Contains(request.headers, header));
     }
   }

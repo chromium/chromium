@@ -1573,10 +1573,7 @@ TEST_P(FrameFetchContextMockedLocalFrameClientTest,
 
 TEST_P(FrameFetchContextTest, PrepareRequestHistogramCount) {
   ResourceRequest request(KURL("https://localhost/"));
-  // Sets Sec-CH-UA-Reduced, which should result in the reduced User-Agent
-  // string being used.
-  request.SetHttpHeaderField(AtomicString("Sec-CH-ua-reduced"),
-                             AtomicString("?1"));
+
   WebScopedVirtualTimePauser virtual_time_pauser;
   ResourceLoaderOptions options(nullptr /* world */);
   GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
