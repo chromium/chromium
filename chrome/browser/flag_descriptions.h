@@ -4716,6 +4716,12 @@ inline constexpr char kWebXrIncubationsName[] = "WebXR Incubations";
 inline constexpr char kWebXrIncubationsDescription[] =
     "Enables experimental features for WebXR.";
 
+inline constexpr char kYourSavedInfoSettingsPageName[] =
+    "Your Saved Info settings page";
+inline constexpr char kYourSavedInfoSettingsPageDescription[] =
+    "Enables the experimental \"Your saved info\" settings page, replacing "
+    "the existing \"Autofill and passwords\" page.";
+
 inline constexpr char kZeroCopyName[] = "Zero-copy rasterizer";
 inline constexpr char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";

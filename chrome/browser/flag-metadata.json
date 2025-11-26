@@ -4813,6 +4813,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-your-saved-info-settings-page",
+    "owners": ["mikhe@google.com", "chrome-autofill@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-zero-copy",
     "owners": [ "ccameron@chromium.org", "chrome-gpu@google.com" ],
     // This flag is commonly used when asking users to help gather debug info.

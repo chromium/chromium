@@ -9319,6 +9319,7 @@ from previous Chrome versions.
   <int value="-1711751318" label="enable-data-reduction-proxy-lo-fi-preview"/>
   <int value="-1710901763" label="AccessibilityMagnifierFollowsSts:disabled"/>
   <int value="-1710772665" label="disable-my-files-navigation"/>
+  <int value="-1710371107" label="YourSavedInfoSettingsPage:enabled"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
   <int value="-1710182840" label="ConnectionAllowlists:disabled"/>
@@ -18014,6 +18015,7 @@ from previous Chrome versions.
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:disabled"/>
   <int value="1319638975" label="UseWallpaperStagingUrl:disabled"/>
   <int value="1319725131" label="enable-distance-field-text"/>
+  <int value="1319804064" label="YourSavedInfoSettingsPage:disabled"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>
   <int value="1321935981" label="CrosSafetyService:disabled"/>
