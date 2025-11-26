@@ -30,6 +30,7 @@ class CORE_EXPORT SpeculationRule final
   using RequiresAnonymousClientIPWhenCrossOrigin =
       base::StrongAlias<class RequiresAnonymousClientIPWhenCrossOriginTag,
                         bool>;
+  using FormSubmission = base::StrongAlias<class FormSubmissionTag, bool>;
 
   SpeculationRule(
       Vector<KURL>,
@@ -41,7 +42,8 @@ class CORE_EXPORT SpeculationRule final
       network::mojom::blink::NoVarySearchPtr,
       mojom::blink::SpeculationInjectionType,
       String ruleset_tag,
-      String rule_tag);
+      String rule_tag,
+      FormSubmission);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -66,6 +68,8 @@ class CORE_EXPORT SpeculationRule final
   String ruleset_tag() const { return ruleset_tag_; }
   String rule_tag() const { return rule_tag_; }
 
+  FormSubmission form_submission() { return form_submission_; }
+
   void Trace(Visitor*) const;
 
  private:
@@ -83,6 +87,7 @@ class CORE_EXPORT SpeculationRule final
   // `SpeculationRuleSet`.
   const String ruleset_tag_;
   const String rule_tag_;
+  const FormSubmission form_submission_;
 };
 
 }  // namespace blink

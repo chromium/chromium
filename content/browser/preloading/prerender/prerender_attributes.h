@@ -58,7 +58,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
       scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-      bool allow_reuse);
+      bool allow_reuse,
+      bool form_submission);
 
   ~PrerenderAttributes();
 
@@ -152,6 +153,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // Whether the created prerender host can be reused for future navigations.
   bool allow_reuse = false;
+
+  // Whether the created prerender is a GET form submission navigation.
+  bool form_submission = false;
 
   // Enabled the feature for the speculation rules sent from the
   // renderer process.

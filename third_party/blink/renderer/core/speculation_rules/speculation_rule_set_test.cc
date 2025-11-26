@@ -810,6 +810,56 @@ TEST_F(SpeculationRuleSetTest,
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
+// Test that only prerender rule supports "form-submission".
+TEST_F(SpeculationRuleSetTest, RulesWithFormSubmission) {
+  auto* rule_set =
+      CreateRuleSet(R"({
+        "prefetch": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prefetch_with_subresources": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prerender": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }],
+        "prerender_until_script": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }]
+      })",
+                    KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_EQ(rule_set->error_message(),
+            "\"form_submission\" may not be set for prefetch rules.");
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(
+      rule_set->prerender_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+  EXPECT_THAT(
+      rule_set->prerender_until_script_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+}
+
+TEST_F(SpeculationRuleSetTest, ParseFormSubmission) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prerender": [{
+          "urls": ["https://example.com/index2.html"],
+          "form_submission": true
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_EQ(rule_set->prerender_rules().size(), 1);
+  EXPECT_EQ(rule_set->prerender_rules()[0]->form_submission().value(), true);
+}
+
 TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
   auto* rule_set =
       CreateRuleSet(R"({

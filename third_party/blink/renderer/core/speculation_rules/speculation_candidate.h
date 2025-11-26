@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -35,7 +36,8 @@ class CORE_EXPORT SpeculationCandidate
                        mojom::blink::SpeculationInjectionType injection_type,
                        Vector<String> tags,
                        SpeculationRuleSet* rule_set,
-                       HTMLAnchorElementBase* anchor);
+                       HTMLAnchorElementBase* anchor,
+                       SpeculationRule::FormSubmission form_submission);
   virtual ~SpeculationCandidate() = default;
 
   void Trace(Visitor* visitor) const;
@@ -73,6 +75,7 @@ class CORE_EXPORT SpeculationCandidate
   const Vector<String> tags_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElementBase> anchor_;
+  const bool form_submission_;
 };
 
 }  // namespace blink

@@ -132,4 +132,8 @@ struct SpeculationCandidate {
   // This must not be empty, as when no tags are specified in rules, this should
   // contain the null tag.
   array<string?> tags;
+
+  // If true, this prerender attempt will be set to be a form submission. And
+  // this value should be used for prerender only.
+  bool form_submission = false;
 };

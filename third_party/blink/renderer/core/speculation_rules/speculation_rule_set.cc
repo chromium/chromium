@@ -146,10 +146,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
   // If input has any key other than these keys listed below, then return null.
   const char* const kKnownKeys[] = {
-      "source",      "urls",        "where",
-      "requires",    "target_hint", "referrer_policy",
-      "relative_to", "eagerness",   "expects_no_vary_search",
-      "tag"};
+      "source",      "urls",           "where",
+      "requires",    "target_hint",    "referrer_policy",
+      "relative_to", "eagerness",      "expects_no_vary_search",
+      "tag",         "form_submission"};
 
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
@@ -449,6 +449,23 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     rule_tag = AtomicString(tag_str);
   }
 
+  // If input["form_submission"] exists:
+  SpeculationRule::FormSubmission form_submission(false);
+  if (RuntimeEnabledFeatures::PrerenderActivationByFormSubmissionEnabled(
+          context)) {
+    JSONValue* form_submission_value = input->Get("form_submission");
+    if (form_submission_value) {
+      bool form_submission_bool_value = false;
+      if (!form_submission_value->AsBoolean(&form_submission_bool_value)) {
+        SetParseErrorMessage(out_error,
+                             "form_submission's value must be a boolean.");
+        return nullptr;
+      }
+      form_submission =
+          SpeculationRule::FormSubmission(form_submission_bool_value);
+    }
+  }
+
   auto injection_type = mojom::blink::SpeculationInjectionType::kNone;
   if (is_browser_injected) {
     injection_type =
@@ -465,7 +482,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
       target_hint, referrer_policy, eagerness, std::move(no_vary_search),
-      injection_type, std::move(ruleset_tag), std::move(rule_tag));
+      injection_type, std::move(ruleset_tag), std::move(rule_tag),
+      form_submission);
 }
 
 }  // namespace
@@ -668,7 +686,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
-          bool allow_target_hint,
+          bool allow_target_hint, bool allow_form_submission,
           bool allow_requires_anonymous_client_ip_when_cross_origin) {
         // If key doesn't exist, it is not an error and is nop.
         JSONValue* value = parsed->Get(key);
@@ -723,6 +741,14 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
             continue;
           }
 
+          // Rejects if "form_submission" is set but not allowed.
+          if (!allow_form_submission && rule->form_submission()) {
+            result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                             "\"form_submission\" may not be set for " +
+                                 String(key) + " rules.");
+            continue;
+          }
+
           // Rejects if "anonymous-client-ip-when-cross-origin" is required but
           // not allowed.
           if (!allow_requires_anonymous_client_ip_when_cross_origin &&
@@ -758,6 +784,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   parse_for_action(
       "prefetch", result->prefetch_rules_,
       /*allow_target_hint=*/false,
+      /*allow_form_submission=*/false,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/true);
 
   // If parsed["prefetch_with_subresources"] exists and is a list, then for
@@ -765,12 +792,14 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   parse_for_action(
       "prefetch_with_subresources", result->prefetch_with_subresources_rules_,
       /*allow_target_hint=*/false,
+      /*allow_form_submission=*/false,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
   // If parsed["prerender"] exists and is a list, then for each...
   parse_for_action(
       "prerender", result->prerender_rules_,
       /*allow_target_hint=*/true,
+      /*allow_form_submission=*/true,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
   // If parsed["prerender_until_script"] exists and is a list, then for
@@ -778,6 +807,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   parse_for_action(
       "prerender_until_script", result->prerender_until_script_rules_,
       /*allow_target_hint=*/true,
+      /*allow_form_submission=*/true,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
   result->SetTag(ruleset_tag);
