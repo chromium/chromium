@@ -2388,15 +2388,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
-    expires_after="2023-01-15">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on Home button in Android toolbar for each profile type.
-  </summary>
-</histogram>
-
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
     expires_after="2026-04-12">
   <owner>ckitagawa@chromium.org</owner>
@@ -4342,16 +4333,6 @@ chromium-metrics-reviews@google.com.
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>Records how the omnibox was focused.</summary>
-</histogram>
-
-<histogram name="Android.OpenHistoryFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2023-01-15">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on History menu item separately for each profile type in
-    Android.
-  </summary>
 </histogram>
 
 <histogram name="Android.OverscrollFromBottom.BottomControlsStatus"
