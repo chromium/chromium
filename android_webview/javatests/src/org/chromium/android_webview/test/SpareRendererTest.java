@@ -17,12 +17,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.ChildProcessUtils;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -121,5 +123,20 @@ public class SpareRendererTest extends AwParameterizedTest {
         assertEquals(
                 ChildBindingState.NOT_PERCEPTIBLE,
                 RenderProcessHostUtils.getSpareRenderBindingState());
+    }
+
+    @Test
+    @MediumTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @Feature({"AndroidWebView"})
+    public void testChildConnectionUsedBySpareRenderer() throws Throwable {
+        // We start a child connection during browser initialization.
+        mRule.startBrowserProcess();
+        assertEquals(1, ChildProcessUtils.getConnectedSandboxedServicesCount());
+        // Creating a non-default profile creates a spare renderer that is expected to reuse the
+        // pre-warmed child connection.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AwBrowserContextStore.getNamedContext("NonDefault", true));
+        assertEquals(1, ChildProcessUtils.getConnectedSandboxedServicesCount());
     }
 }
