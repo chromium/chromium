@@ -13558,6 +13558,21 @@
             ]
         }
     ],
+    "IOSKeyboardAccessoryTwoBubble": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSKeyboardAccessoryTwoBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensFetchSrp": [
         {
             "platforms": [
