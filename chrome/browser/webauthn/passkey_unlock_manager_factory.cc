@@ -51,4 +51,10 @@ PasskeyUnlockManagerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<PasskeyUnlockManager>(profile);
 }
 
+bool PasskeyUnlockManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // For the purpose of publishing passkey readiness metrics we need to create
+  // Passkey Unlock Manager as soon as the BrowserContext has been brought up.
+  return true;
+}
+
 }  // namespace webauthn

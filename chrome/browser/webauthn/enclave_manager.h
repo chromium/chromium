@@ -402,6 +402,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Check whether the GPM PIN Vault should be renewed, and do so if needed.
   void ConsiderPinRenewalForTesting();
 
+  void NotifyObserversThatStateUpdated();
+
   unsigned renewal_checks_for_testing() const;
   unsigned renewal_attempts_for_testing() const;
 
