@@ -5679,7 +5679,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   }
 
   CHECK_EQ(resource_provider->GetType(),
-           CanvasResourceProvider::ResourceProviderType::kBitmap);
+           CanvasResourceProvider::ResourceProviderType::kExternalBitmap);
   CanvasResourceProviderExternalBitmap* resource_provider_bitmap =
       static_cast<CanvasResourceProviderExternalBitmap*>(resource_provider);
 

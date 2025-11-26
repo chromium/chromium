@@ -118,7 +118,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kPassThrough [[deprecated]] = 7,
     kSwapChain [[deprecated]] = 8,
     kSkiaDawnSharedImage [[deprecated]] = 9,
-    kMaxValue = kSkiaDawnSharedImage,
+    kExternalBitmap = 10,
+    kMaxValue = kExternalBitmap,
   };
 #pragma GCC diagnostic pop
 
@@ -411,11 +412,11 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
       Delegate* delegate = nullptr);
 
  protected:
-  CanvasResourceProviderBitmap(gfx::Size size,
+  CanvasResourceProviderBitmap(ResourceProviderType type,
+                               gfx::Size size,
                                viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space,
-                               Delegate* delegate);
+                               const gfx::ColorSpace& color_space);
 
  private:
   friend class CanvasRenderingContext2D;
@@ -428,6 +429,12 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
       const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
       Delegate* delegate = nullptr);
+
+  CanvasResourceProviderBitmap(gfx::Size size,
+                               viz::SharedImageFormat format,
+                               SkAlphaType alpha_type,
+                               const gfx::ColorSpace& color_space,
+                               Delegate* delegate);
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     // Production of CanvasResources is used with direct compositing, which is

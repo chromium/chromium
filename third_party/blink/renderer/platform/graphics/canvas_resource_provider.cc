@@ -149,6 +149,20 @@ CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              delegate) {}
 
+CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
+    ResourceProviderType type,
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space)
+    : CanvasResourceProvider(type,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             /*delegate=*/nullptr) {}
+
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
@@ -160,11 +174,11 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space)
-    : CanvasResourceProviderBitmap(size,
+    : CanvasResourceProviderBitmap(kExternalBitmap,
+                                   size,
                                    format,
                                    alpha_type,
-                                   color_space,
-                                   /*delegate=*/nullptr) {}
+                                   color_space) {}
 
 scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
