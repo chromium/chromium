@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"
 

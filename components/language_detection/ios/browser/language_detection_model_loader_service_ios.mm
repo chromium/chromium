@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "components/language_detection/core/browser/language_detection_model_service.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/core/language_detection_provider.h"

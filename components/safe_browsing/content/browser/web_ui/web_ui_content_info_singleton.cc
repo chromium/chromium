@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "content/public/browser/browser_context.h"

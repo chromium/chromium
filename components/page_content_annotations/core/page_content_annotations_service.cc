@@ -11,6 +11,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"

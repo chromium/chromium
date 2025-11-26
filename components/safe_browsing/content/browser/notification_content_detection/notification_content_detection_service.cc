@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"

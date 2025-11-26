@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"

@@ -32,6 +32,7 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

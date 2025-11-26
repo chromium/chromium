@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 
 namespace update_client {

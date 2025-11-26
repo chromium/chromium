@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"

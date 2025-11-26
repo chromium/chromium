@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
