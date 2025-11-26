@@ -1412,6 +1412,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ServiceWorker.ResourceChecksumMatch" enum="Boolean"
+    expires_after="2026-03-31">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-storage-team-tokyo@google.com</owner>
+  <summary>
+    Records whether the checksum of a service worker resource matches the
+    expected checksum. This is used to detect data corruption.
+
+    Recorded after a service worker resource has been read from the disk, to
+    indicate whether the resource's checksum matches the expected checksum.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.RouterEvaluator.ConditionDepth" units="count"
     expires_after="2025-12-14">
   <owner>yyanagisawa@chromium.org</owner>
