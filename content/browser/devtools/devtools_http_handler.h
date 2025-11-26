@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "net/base/ip_endpoint.h"
 #include "net/http/http_status_code.h"
 
 namespace base {
@@ -61,6 +62,8 @@ class DevToolsHttpHandler {
   DevToolsHttpHandler& operator=(const DevToolsHttpHandler&) = delete;
 
   ~DevToolsHttpHandler();
+
+  net::IPEndPoint GetServerIpAddress() const;
 
  private:
   friend class ServerWrapper;

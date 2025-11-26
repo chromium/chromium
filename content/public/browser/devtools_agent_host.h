@@ -156,6 +156,9 @@ class CONTENT_EXPORT DevToolsAgentHost
       const base::FilePath& debug_frontend_dir,
       RemoteDebuggingServerMode mode = RemoteDebuggingServerMode::kDefault);
   static void StopRemoteDebuggingServer();
+  // Returns the address of the remote debugging server, if started.
+  // Returns empty string if server is not started.
+  static std::string GetRemoteDebuggingServerAddress();
 
   // Starts remote debugging for browser target for the given fd=3
   // for reading and fd=4 for writing remote debugging messages.

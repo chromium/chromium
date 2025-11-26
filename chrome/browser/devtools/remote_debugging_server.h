@@ -54,7 +54,7 @@ class RemoteDebuggingServer {
   void StartHttpServerInApprovalMode(PrefService* local_state);
 
  protected:
-  explicit RemoteDebuggingServer();
+  RemoteDebuggingServer();
 
   virtual void StartHttpServer(
       std::unique_ptr<content::DevToolsSocketFactory> factory,

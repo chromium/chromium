@@ -49,7 +49,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/io_buffer.h"
-#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -391,6 +390,13 @@ static bool TimeComparator(scoped_refptr<DevToolsAgentHost> host1,
 }
 
 // DevToolsHttpHandler -------------------------------------------------------
+
+net::IPEndPoint DevToolsHttpHandler::GetServerIpAddress() const {
+  if (server_ip_address_) {
+    return *server_ip_address_;
+  }
+  return net::IPEndPoint();
+}
 
 DevToolsHttpHandler::~DevToolsHttpHandler() {
   if (delegate_ &&
