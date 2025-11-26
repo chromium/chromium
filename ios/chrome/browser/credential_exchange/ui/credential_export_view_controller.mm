@@ -78,8 +78,18 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 #pragma mark - Actions
 
 - (void)didTapDone {
-  // TODO(crbug.com/449701042): Handle credentials selection
-  [self.delegate userDidStartExport];
+  NSArray<NSIndexPath*>* selectedIndexPaths =
+      self.tableView.indexPathsForSelectedRows;
+  NSMutableArray<CredentialGroupIdentifier*>* selectedItems =
+      [NSMutableArray arrayWithCapacity:selectedIndexPaths.count];
+  for (NSIndexPath* indexPath in selectedIndexPaths) {
+    CredentialGroupIdentifier* item =
+        [_dataSource itemIdentifierForIndexPath:indexPath];
+    CHECK(item);
+    [selectedItems addObject:item];
+  }
+
+  [self.delegate userDidStartExport:selectedItems];
 }
 
 - (void)didTapToggleAllButton {

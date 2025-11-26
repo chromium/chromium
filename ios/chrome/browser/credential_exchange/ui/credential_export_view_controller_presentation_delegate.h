@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_UI_CREDENTIAL_EXPORT_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_UI_CREDENTIAL_EXPORT_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
 
+@class CredentialGroupIdentifier;
+
 // Delegate for CredentialExportViewController.
 @protocol CredentialExportViewControllerPresentationDelegate <NSObject>
 
 // Called when the user accepts the export flow.
-- (void)userDidStartExport;
+- (void)userDidStartExport:(NSArray<CredentialGroupIdentifier*>*)selectedItems;
 
 @end
 

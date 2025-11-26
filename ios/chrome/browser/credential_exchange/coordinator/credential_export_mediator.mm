@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 
 @implementation CredentialExportMediator {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -47,17 +50,81 @@
       setAffiliatedGroups:_savedPasswordsPresenter->GetAffiliatedGroups()];
 }
 
-#pragma mark - Public
+#pragma mark - CredentialExportViewControllerPresentationDelegate
 
-// Called when the user confirms the export flow.
-- (void)startExportWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets {
-  _credentialExporter = [[CredentialExporter alloc]
-               initWithWindow:_window
-      savedPasswordsPresenter:_savedPasswordsPresenter
-        securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-                 passkeyModel:_passkeyModel];
-  [_credentialExporter startExport];
+- (void)userDidStartExport:(NSArray<CredentialGroupIdentifier*>*)selectedItems {
+  std::vector<password_manager::CredentialUIEntry> passwordsToExport;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeysToExport;
+
+  for (CredentialGroupIdentifier* item in selectedItems) {
+    password_manager::AffiliatedGroup group = item.affiliatedGroup;
+    for (const password_manager::CredentialUIEntry& credential :
+         group.GetCredentials()) {
+      if (credential.passkey_credential_id.empty()) {
+        passwordsToExport.push_back(credential);
+      } else {
+        std::string credentialId(credential.passkey_credential_id.begin(),
+                                 credential.passkey_credential_id.end());
+        std::string rpId = credential.rp_id;
+
+        std::optional<sync_pb::WebauthnCredentialSpecifics> passkey =
+            _passkeyModel->GetPasskeyByCredentialId(rpId, credentialId);
+
+        if (passkey.has_value() && !passkey->hidden()) {
+          passkeysToExport.push_back(*std::move(passkey));
+        }
+      }
+    }
+  }
+
+  if (passkeysToExport.empty()) {
+    [self startExportWithSecurityDomainSecrets:nil
+                                     passwords:std::move(passwordsToExport)
+                                      passkeys:std::move(passkeysToExport)];
+  } else {
+    __weak __typeof(self) weakSelf = self;
+
+    base::OnceCallback<void(NSArray<NSData*>*)> fetchSecretsCallback =
+        base::BindOnce(
+            [](__weak CredentialExportMediator* mediator,
+               std::vector<password_manager::CredentialUIEntry> passwords,
+               std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+               NSArray<NSData*>* secrets) {
+              [mediator
+                  startExportWithSecurityDomainSecrets:secrets
+                                             passwords:std::move(passwords)
+                                              passkeys:std::move(passkeys)];
+            },
+            weakSelf, std::move(passwordsToExport),
+            std::move(passkeysToExport));
+
+    void (^completionBlock)(NSArray<NSData*>*) =
+        base::CallbackToBlock(std::move(fetchSecretsCallback));
+
+    [self.delegate fetchSecurityDomainSecretsWithCompletion:completionBlock];
+  }
+}
+
+#pragma mark - Private
+
+- (void)
+    startExportWithSecurityDomainSecrets:
+        (NSArray<NSData*>*)securityDomainSecrets
+                               passwords:
+                                   (std::vector<
+                                       password_manager::CredentialUIEntry>)
+                                       passwords
+                                passkeys:
+                                    (std::vector<
+                                        sync_pb::WebauthnCredentialSpecifics>)
+                                        passkeys {
+  if (@available(iOS 26, *)) {
+    _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
+
+    [_credentialExporter startExportWithPasswords:std::move(passwords)
+                                         passkeys:std::move(passkeys)
+                            securityDomainSecrets:securityDomainSecrets];
+  }
 }
 
 @end

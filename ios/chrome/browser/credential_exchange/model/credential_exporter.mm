@@ -8,8 +8,6 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
@@ -22,34 +20,15 @@
 
   // Exports credentials through the OS ASCredentialExportManager API.
   CredentialExportManager* _credentialExportManager;
-
-  // Used to fetch the user's saved passwords for export.
-  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
-
-  // Secrets for passkey security domain needed for decryption.
-  // TODO(crbug.com/444112223): Ensure this is in memory only for decryption.
-  NSArray<NSData*>* _securityDomainSecrets;
-
-  // Provides access to stored WebAuthn credentials.
-  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
 }
 
-- (instancetype)initWithWindow:(UIWindow*)window
-       savedPasswordsPresenter:
-           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
-         securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
+- (instancetype)initWithWindow:(UIWindow*)window {
   CHECK(window);
-  CHECK(savedPasswordsPresenter);
-  CHECK(passkeyModel);
 
   self = [super init];
   if (self) {
     _window = window;
     _credentialExportManager = [[CredentialExportManager alloc] init];
-    _savedPasswordsPresenter = savedPasswordsPresenter;
-    _securityDomainSecrets = securityDomainSecrets;
-    _passkeyModel = passkeyModel;
   }
   return self;
 }
@@ -57,31 +36,38 @@
 #pragma mark - Public
 
 // TODO(crbug.com/449859205): Add a unit test for this method.
-- (void)startExport API_AVAILABLE(ios(26.0)) {
-  [_credentialExportManager
-      startExportWithPasswords:[self fetchAllExportablePasswords]
-                      passkeys:[self fetchAllExportablePasskeys]
-                        window:_window];
+- (void)startExportWithPasswords:
+            (std::vector<password_manager::CredentialUIEntry>)passwords
+                        passkeys:
+                            (std::vector<sync_pb::WebauthnCredentialSpecifics>)
+                                passkeys
+           securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+    API_AVAILABLE(ios(26.0)) {
+  NSArray<CredentialExchangePassword*>* exportedPasswords =
+      [self transformPasswords:std::move(passwords)];
+  NSArray<CredentialExchangePasskey*>* exportedPasskeys =
+      [self transformPasskeys:std::move(passkeys)
+                 usingSecrets:securityDomainSecrets];
+
+  [_credentialExportManager startExportWithPasswords:exportedPasswords
+                                            passkeys:exportedPasskeys
+                                              window:_window];
 }
 
 #pragma mark - Private
 
-// Fetches all saved passwords from the password presenter and converts them
-// into objects suitable for export.
-- (NSArray<CredentialExchangePassword*>*)fetchAllExportablePasswords {
-  std::vector<password_manager::CredentialUIEntry> credentials =
-      _savedPasswordsPresenter->GetSavedPasswords();
-
+// Returns an array of passwords formatted for the credential export API.
+- (NSArray<CredentialExchangePassword*>*)transformPasswords:
+    (std::vector<password_manager::CredentialUIEntry>)passwords {
   NSMutableArray<CredentialExchangePassword*>* exportedPasswords =
-      [NSMutableArray arrayWithCapacity:credentials.size()];
+      [NSMutableArray arrayWithCapacity:passwords.size()];
 
-  for (const password_manager::CredentialUIEntry& credential : credentials) {
+  for (const password_manager::CredentialUIEntry& credential : passwords) {
     NSString* username = base::SysUTF16ToNSString(credential.username) ?: @"";
     NSString* password = base::SysUTF16ToNSString(credential.password) ?: @"";
     NSString* note = base::SysUTF16ToNSString(credential.note) ?: @"";
     NSURL* URL =
         net::NSURLWithGURL(credential.GetURL()) ?: [NSURL URLWithString:@""];
-
     CredentialExchangePassword* exportedPassword =
         [[CredentialExchangePassword alloc] initWithURL:URL
                                                username:username
@@ -92,19 +78,18 @@
   return exportedPasswords;
 }
 
-// Fetches all non-hidden passkeys from the passkey model, decrypts them, and
-// converts them into objects suitable for export.
-- (NSArray<CredentialExchangePasskey*>*)fetchAllExportablePasskeys {
+// Returns an array of passkeys formatted for the credential export API.
+- (NSArray<CredentialExchangePasskey*>*)
+    transformPasskeys:
+        (std::vector<sync_pb::WebauthnCredentialSpecifics>)passkeys
+         usingSecrets:(NSArray<NSData*>*)secrets {
   NSMutableArray<CredentialExchangePasskey*>* exportedPasskeys =
-      [NSMutableArray array];
+      [NSMutableArray arrayWithCapacity:passkeys.size()];
 
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
-       _passkeyModel->GetUnShadowedPasskeys()) {
-    if (passkey.hidden()) {
-      continue;
-    }
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+    NSData* privateKey = [self decryptPrivateKeyForPasskey:passkey
+                                              usingSecrets:secrets];
 
-    NSData* privateKey = [self decryptPrivateKeyForPasskey:passkey];
     if (!privateKey) {
       continue;
     }
@@ -134,9 +119,10 @@
 // Attempts to decrypt the private key for a given passkey using the available
 // security domain secrets.
 - (NSData*)decryptPrivateKeyForPasskey:
-    (const sync_pb::WebauthnCredentialSpecifics&)passkey {
+               (const sync_pb::WebauthnCredentialSpecifics&)passkey
+                          usingSecrets:(NSArray<NSData*>*)secrets {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted_data;
-  for (NSData* securityDomainSecret in _securityDomainSecrets) {
+  for (NSData* securityDomainSecret in secrets) {
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
             base::apple::NSDataToSpan(securityDomainSecret), passkey,
             &decrypted_data)) {
