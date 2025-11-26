@@ -89,6 +89,7 @@ ReadAnythingController::GetOrCreateWebUIWrapper() {
             GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL), profile,
             IDS_READING_MODE_TITLE,
             /*esc_closes_ui=*/false);
+    Observe(web_ui_wrapper_->web_contents());
   }
   return std::move(web_ui_wrapper_);
 }
@@ -135,4 +136,12 @@ ReadAnythingController::GetPresentationState() const {
     }
   }
   return PresentationState::kInactive;
+}
+
+void ReadAnythingController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
+    has_shown_ui_ = true;
+    Observe(nullptr);
+  }
 }
