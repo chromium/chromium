@@ -18,6 +18,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -42,7 +44,8 @@ constexpr base::TimeDelta kSetPausedStateDelay = base::Seconds(3);
 
 OnTaskSessionManager::OnTaskSessionManager(
     std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
-    std::unique_ptr<OnTaskExtensionsManager> extensions_manager)
+    std::unique_ptr<OnTaskExtensionsManager> extensions_manager,
+    BocaSessionManager* boca_session_manager)
     : active_tab_tracker_(std::make_unique<ActiveTabTracker>()),
       system_web_app_manager_(std::move(system_web_app_manager)),
       extensions_manager_(std::move(extensions_manager)),
@@ -51,7 +54,8 @@ OnTaskSessionManager::OnTaskSessionManager(
               system_web_app_manager_.get(),
               std::vector<boca::BocaWindowObserver*>{active_tab_tracker_.get(),
                                                      this})),
-      notifications_manager_(OnTaskNotificationsManager::Create()) {
+      notifications_manager_(OnTaskNotificationsManager::Create()),
+      boca_session_manager_(boca_session_manager) {
   notification_countdown_duration_ =
       features::IsBocaLockedModeCustomCountdownDurationEnabled()
           ? ash::features::kBocaLockedModeCountdownDurationInSeconds.Get()
@@ -80,6 +84,11 @@ void OnTaskSessionManager::OnSessionStarted(
   }
   // Explicitly upload default title when session started.
   active_tab_tracker_->OnActiveTabChanged(/*tab_title=*/u"");
+  if (features::IsOnTaskStatusCheckEnabled()) {
+    status_checker_.Start(FROM_HERE,
+                          base::Seconds(kStatusCheckerIntervalInSeconds), this,
+                          &OnTaskSessionManager::MaybeHandleBundleUpdate);
+  }
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
@@ -127,11 +136,13 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
                      ash::NotificationCatalogName::kOnTaskSessionEnd));
   notifications_manager_->CreateNotification(
       std::move(notification_create_params));
+  if (features::IsOnTaskStatusCheckEnabled()) {
+    status_checker_.Stop();
+  }
 }
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // If the Boca SWA is closed, we launch it again so we can apply bundle
   // updates. We clear `provider_url_tab_ids_map_` so we reopen all tabs from
   // the latest bundle.
@@ -293,6 +304,28 @@ void OnTaskSessionManager::OnAppReloaded() {
 
   // Also lock window if necessary.
   LockOrUnlockWindow(should_lock_window_);
+}
+
+void OnTaskSessionManager::MaybeHandleBundleUpdate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const ::boca::Bundle current_bundle =
+      GetSessionConfigSafe(boca_session_manager_->GetCurrentSession())
+          .on_task_config()
+          .active_bundle();
+  const SessionID window_id =
+      system_web_app_manager_->GetActiveSystemWebAppWindowID();
+  if (!window_id.is_valid()) {
+    // If no boca window exits, immediately trigger bundle handling.
+    OnBundleUpdated(current_bundle);
+    return;
+  }
+  bool is_currently_locked = system_web_app_manager_->IsWindowPinned(window_id);
+  if (should_lock_window_ == is_currently_locked) {
+    return;
+  }
+  // If state is not expected, trigger the entire bundle handling which will
+  // cover app launch/tab app/lock update.
+  OnBundleUpdated(current_bundle);
 }
 
 void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {

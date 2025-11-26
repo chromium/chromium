@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -38,10 +39,13 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
  public:
   explicit OnTaskSessionManager(
       std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
-      std::unique_ptr<OnTaskExtensionsManager> extensions_manager);
+      std::unique_ptr<OnTaskExtensionsManager> extensions_manager,
+      BocaSessionManager* boca_session_manager);
   OnTaskSessionManager(const OnTaskSessionManager&) = delete;
   OnTaskSessionManager& operator=(const OnTaskSessionManager&) = delete;
   ~OnTaskSessionManager() override;
+
+  inline static constexpr int kStatusCheckerIntervalInSeconds = 60;
 
   // BocaSessionManager::Observer:
   void OnSessionStarted(const std::string& session_id,
@@ -72,6 +76,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   void SetNotificationManagerForTesting(
       std::unique_ptr<ash::boca::OnTaskNotificationsManager>
           notification_manager);
+
+  BocaSessionManager* boca_session_manager() {
+    return boca_session_manager_.get();
+  }
 
  private:
   friend class OnTaskSessionManagerTest;
@@ -130,7 +138,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
 
     base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
   };
-
+  // Lock or unlock current window if the state is not correct.
+  void MaybeHandleBundleUpdate();
   // Internal helper used to lock or unlock the current app window. This
   // involves disabling relevant extensions and pinning the window if
   // `lock_window` is true, or re-enabling extensions and unpinning the window
@@ -192,6 +201,9 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
 
   base::TimeDelta notification_countdown_duration_;
 
+  base::RepeatingTimer status_checker_;
+
+  raw_ptr<BocaSessionManager> boca_session_manager_;
   base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
 };
 

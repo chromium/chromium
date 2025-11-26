@@ -86,6 +86,9 @@ class OnTaskSystemWebAppManager {
   // Mute/unmute all tabs in all browser instances.
   virtual void SetAllChromeTabsMuted(bool muted) = 0;
 
+  // If current window is in lock/pinned state.
+  virtual bool IsWindowPinned(SessionID window_id) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };
