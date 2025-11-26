@@ -27,6 +27,7 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class Profile;
@@ -129,6 +130,7 @@ class ContextualSearchboxHandler
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
       WindowOpenDisposition disposition,
+      omnibox::ChromeAimEntryPoint aim_entry_point,
       std::map<std::string, std::string> additional_params);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTest,
                            CreateTabPreviewEncodingOptions_NotScaled);

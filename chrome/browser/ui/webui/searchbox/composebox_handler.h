@@ -77,6 +77,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   // match's `detination_url` will be appended during url creation.
   void SubmitQuery(const std::string& query_text,
                    WindowOpenDisposition disposition,
+                   omnibox::ChromeAimEntryPoint aim_entrypoint,
                    std::map<std::string, std::string> additional_params);
 
   omnibox::ChromeAimToolsAndModels GetAimToolMode() override;

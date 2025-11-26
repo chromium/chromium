@@ -20,6 +20,7 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 namespace base {
 class Time;
@@ -97,6 +98,10 @@ class ContextualSearchContextController {
 
     // The type of search url to create.
     SearchUrlType search_url_type = SearchUrlType::kAim;
+
+    // The entry point for the AIM search.
+    omnibox::ChromeAimEntryPoint aim_entry_point =
+        omnibox::UNKNOWN_AIM_ENTRY_POINT;
 
     // The tokens of the contextual inputs to attach to the search url.
     std::vector<base::UnguessableToken> file_tokens;

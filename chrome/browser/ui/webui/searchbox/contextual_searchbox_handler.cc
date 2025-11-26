@@ -445,7 +445,14 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  ComputeAndOpenQueryUrl(query_text, disposition, /*additional_params=*/{});
+  // TODO(crbug.com/463664553): Fix how `submitQuery()` aep is logged when it
+  // is not a part of an autocomplete match. Right now this flow is called on
+  // voice search submission, or when a file query is submitted with no text.
+  // This implementation may be able to be removed for now since this is
+  // handled in `ComposeboxHandler`.
+  ComputeAndOpenQueryUrl(query_text, disposition,
+                         omnibox::UNKNOWN_AIM_ENTRY_POINT,
+                         /*additional_params=*/{});
 }
 
 void ContextualSearchboxHandler::OnFileUploadStatusChanged(
@@ -481,6 +488,7 @@ std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,
+    omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
   std::vector<const contextual_search::FileInfo*> file_info_list;
@@ -497,6 +505,8 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->query_start_time = base::Time::Now();
     search_url_request_info->query_text = query_text;
     search_url_request_info->additional_params = additional_params;
+    search_url_request_info->aim_entry_point = aim_entry_point;
+
     OpenUrl(contextual_session_handle->CreateSearchUrl(
                 std::move(search_url_request_info)),
             disposition);

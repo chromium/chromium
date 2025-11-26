@@ -352,7 +352,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             template_url_service_,
             /*is_aim_search=*/search_url_request_info->search_url_type ==
                 SearchUrlType::kAim,
-            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+            search_url_request_info->aim_entry_point,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(), std::move(contextual_inputs),
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
@@ -398,7 +398,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             template_url_service_,
             /*is_aim_search=*/search_url_request_info->search_url_type ==
                 SearchUrlType::kAim,
-            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+            search_url_request_info->aim_entry_point,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
             request_id_generator_.GetNextRequestId(
@@ -421,7 +421,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
   return GetUrlForAim(template_url_service_,
-                      omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+                      search_url_request_info->aim_entry_point,
                       search_url_request_info->query_start_time,
                       base::UTF8ToUTF16(search_url_request_info->query_text),
                       std::move(search_url_request_info->additional_params));

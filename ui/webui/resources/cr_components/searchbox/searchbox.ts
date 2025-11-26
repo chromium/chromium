@@ -1114,6 +1114,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {
+    // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
+    // now a `ContextualSearchboxHandler`.
     if (!this.composeboxEnabled || this.$.input.value.trim()) {
       // Construct navigation url.
       const searchParams = new URLSearchParams();

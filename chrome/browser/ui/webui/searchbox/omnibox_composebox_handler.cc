@@ -9,8 +9,23 @@
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "components/lens/lens_url_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 namespace {
+
+omnibox::ChromeAimEntryPoint PageClassificationToAimEntryPoint(
+    metrics::OmniboxEventProto::PageClassification page_class) {
+  switch (page_class) {
+    case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+      return omnibox::DESKTOP_CHROME_NTP_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+    case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
+      return omnibox::DESKTOP_CHROME_SRP_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+    case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
+      return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+    default:
+      return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+  }
+}
 
 // OmniboxClient for the omnibox popup composebox.
 class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
@@ -59,8 +74,11 @@ class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
 
     std::string query_text;
     net::GetValueForKeyInQuery(destination_url, "q", &query_text);
-    composebox_handler_->SubmitQuery(query_text, disposition,
-                                     additional_params);
+    composebox_handler_->SubmitQuery(
+        query_text, disposition,
+        PageClassificationToAimEntryPoint(
+            GetPageClassification(/*is_prefetch=*/false)),
+        additional_params);
   }
 
  private:
