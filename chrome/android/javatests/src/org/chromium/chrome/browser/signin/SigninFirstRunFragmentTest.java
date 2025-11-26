@@ -35,13 +35,11 @@ import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.espresso.UiController;
@@ -106,7 +104,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
@@ -1552,24 +1549,6 @@ public class SigninFirstRunFragmentTest {
                 });
         // Wait for fragment to be added to the activity.
         CriteriaHelper.pollUiThread(() -> mFragment.isResumed());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Replace all the progress bars with dummies. Currently the progress bar cannot
-                    // be stopped otherwise due to some espresso issues (crbug/1115067).
-                    ProgressBar nativeAndPolicyProgressBar =
-                            mFragment
-                                    .getView()
-                                    .findViewById(R.id.fre_native_and_policy_load_progress_spinner);
-                    nativeAndPolicyProgressBar.setIndeterminateDrawable(
-                            new ColorDrawable(
-                                    SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
-                    ProgressBar signinProgressSpinner =
-                            mFragment.getView().findViewById(R.id.fre_signin_progress_spinner);
-                    signinProgressSpinner.setIndeterminateDrawable(
-                            new ColorDrawable(
-                                    SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
-                });
 
         ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_icon), isDisplayed()));
     }
