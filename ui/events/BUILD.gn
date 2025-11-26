@@ -403,6 +403,7 @@ component("events") {
 
   if (is_android) {
     public += [
+      "android/cached_historical_event_source.h",
       "android/drag_event_android.h",
       "android/event_handler_android.h",
       "android/events_android_utils.h",
@@ -421,6 +422,7 @@ component("events") {
       "back_gesture_event.h",
     ]
     sources += [
+      "android/cached_historical_event_source.cc",
       "android/drag_event_android.cc",
       "android/event_handler_android.cc",
       "android/events_android.cc",
@@ -773,10 +775,13 @@ if (use_blink) {
       sources += [
         "android/motion_event_android_unittest.cc",
         "keycodes/keyboard_code_conversion_android_unittest.cc",
+        "mojom/motion_event_android_mojom_traits_unittest.cc",
       ]
       deps += [
         ":motionevent_jni_headers",
+        "//ui/android:motion_event_test_utils_jni_headers",
         "//ui/android:ui_full_java",
+        "//ui/android:ui_java_test_support",
       ]
     } else {
       data_deps = [ "//third_party/angle:includes" ]

@@ -1,0 +1,54 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+struct PointerCoordinates {
+  gfx.mojom.PointF position;
+  float touch_major;
+};
+
+struct MotionEventAndroidCachedPointer {
+  int32 id;
+  PointerCoordinates pointer_data;
+  float touch_minor;
+  float pressure;
+  float orientation;
+  float tilt_x;
+  float tilt_y;
+  int32 tool_type;
+};
+
+struct HistoricalCachedPointer {
+  array<PointerCoordinates> pointers;
+  mojo_base.mojom.TimeTicks event_time;
+};
+
+struct CachedMotionEventAndroid {
+  float pix_to_dip;
+  float ticks_x;
+  float ticks_y;
+  float tick_multiplier;
+  // Source as read from `AInputEvent_getSource` or `MotionEvent.getSource`,
+  // this is different from `MotionEventAndroid.source_`.
+  int32 source;
+  bool for_touch_handle;
+  mojo_base.mojom.TimeTicks latest_event_time;
+  // Down time stored here is expected to have milliseconds precision since the
+  // the values is populated using `MotionEvent.getDownTime()` Android API which
+  // returns the timestamp in milliseconds precision.
+  mojo_base.mojom.TimeTicks down_time_ms;
+  int32 action;
+  int32 action_index;
+  int32 action_button;
+  int32 gesture_classification;
+  int32 button_state;
+  int32 flags;
+  gfx.mojom.Vector2dF raw_position_offset;
+  array<MotionEventAndroidCachedPointer> pointers;
+  array<HistoricalCachedPointer> historical_events;
+};

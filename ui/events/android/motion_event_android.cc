@@ -160,6 +160,9 @@ MotionEventAndroid::Pointer::Pointer(jint id,
 
 MotionEventAndroid::CachedPointer::CachedPointer() = default;
 
+MotionEventAndroid::MotionEventAndroid()
+    : unique_event_id_(ui::GetNextTouchEventId()) {}
+
 MotionEventAndroid::MotionEventAndroid(
     float pix_to_dip,
     float ticks_x,
@@ -234,8 +237,8 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e,
       source_(e.source_->Clone()) {
   cached_pointers_.push_back(CreateCachedPointer(e.cached_pointers_[0], point));
   if (cached_pointer_count_ > 1) {
-    gfx::Vector2dF diff =
-        e.cached_pointers_[1].position - e.cached_pointers_[0].position;
+    gfx::Vector2dF diff = e.cached_pointers_[1].pointer_data.position -
+                          e.cached_pointers_[0].pointer_data.position;
     cached_pointers_.push_back(
         CreateCachedPointer(e.cached_pointers_[1], point + diff));
   }
@@ -497,12 +500,12 @@ int MotionEventAndroid::GetCachedPointerId(size_t pointer_index) const {
 
 const gfx::PointF& MotionEventAndroid::GetCachedPointerPosition(
     size_t pointer_index) const {
-  return cached_pointers_[pointer_index].position;
+  return cached_pointers_[pointer_index].pointer_data.position;
 }
 
 float MotionEventAndroid::GetCachedPointerTouchMajor(
     size_t pointer_index) const {
-  return cached_pointers_[pointer_index].touch_major;
+  return cached_pointers_[pointer_index].pointer_data.touch_major;
 }
 
 float MotionEventAndroid::GetCachedPointerTouchMinor(
@@ -536,9 +539,9 @@ MotionEventAndroid::CachedPointer MotionEventAndroid::FromAndroidPointer(
     const Pointer& pointer) const {
   CachedPointer result;
   result.id = pointer.id;
-  result.position =
+  result.pointer_data.position =
       gfx::PointF(ToDips(pointer.pos_x_pixels), ToDips(pointer.pos_y_pixels));
-  result.touch_major = ToDips(pointer.touch_major_pixels);
+  result.pointer_data.touch_major = ToDips(pointer.touch_major_pixels);
   result.touch_minor = ToDips(pointer.touch_minor_pixels);
   if (cached_action_ != Action::UP) {
     result.pressure = pointer.pressure;
@@ -555,7 +558,7 @@ MotionEventAndroid::CachedPointer MotionEventAndroid::CreateCachedPointer(
     const CachedPointer& pointer,
     const gfx::PointF& point) const {
   CachedPointer result = pointer;
-  result.position = point;
+  result.pointer_data.position = point;
   return result;
 }
 

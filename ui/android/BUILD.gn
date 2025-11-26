@@ -981,6 +981,12 @@ generate_jni("ui_javatest_jni_headers") {
   ]
 }
 
+generate_jni("motion_event_test_utils_jni_headers") {
+  testonly = true
+
+  sources = [ "junit/src/org/chromium/ui/base/MotionEventTestUtils.java" ]
+}
+
 if (enable_new_texture_compressor) {
   rust_static_library("texture_compressor") {
     crate_root = "texture_compressor/lib.rs"

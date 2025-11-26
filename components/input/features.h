@@ -20,6 +20,8 @@ namespace input::features {
 COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kInputOnViz);
 COMPONENT_EXPORT(INPUT)
 extern const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime;
+COMPONENT_EXPORT(INPUT)
+extern const base::FeatureParam<bool> kForwardEventsSeenOnBrowserToViz;
 
 // If enabled, Chrome will receive buffered/batched input from Android.
 // Specifically, Chrome will NOT call

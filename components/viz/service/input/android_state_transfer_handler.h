@@ -73,7 +73,7 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
   void MaybeDropEventsFromEarlierSequences(
       const input::mojom::TouchTransferStatePtr& state);
   void EmitPendingTransfersHistogram();
-  void ValidateRootFrameSinkId(const FrameSinkId& root_frame_sink_id);
+  void HandleFirstDownEvent();
 
   bool ignore_remaining_touch_sequence_ = false;
 
