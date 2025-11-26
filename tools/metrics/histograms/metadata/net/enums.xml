@@ -583,6 +583,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No Rejection Non-Read-Write-Mode"/>
   <int value="4" label="No Rejection Skip Cache Validation"/>
   <int value="5" label="No Rejection Load Only From Cache"/>
+  <int value="6" label="No Rejection Hint disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/http/http_cache_transaction.h:HttpCacheEntryRejectionStatus) -->

@@ -678,6 +678,8 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHttpCacheSkipUnusableEntry, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReportingApiCorsOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

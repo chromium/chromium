@@ -354,7 +354,11 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     // The cache entry was not rejected because the request was loaded only from
     // cache.
     kNoRejectionLoadOnlyFromCache = 5,
-    kMaxValue = kNoRejectionLoadOnlyFromCache,
+    // The cache entry should be rejected, but handled as not rejected because
+    // kHttpCacheSkipUnusableEntry feature is disabled. This is intended to
+    // measure the performance impact of the in-memory unusable flag.
+    kNoRejectionHintDisabled = 6,
+    kMaxValue = kNoRejectionHintDisabled,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheEntryRejectionStatus)
 

@@ -802,7 +802,10 @@ void ContinueAfterConnect(
 
 }  // namespace
 
-using HttpCacheTest = TestWithTaskEnvironment;
+class HttpCacheTest : public TestWithTaskEnvironment {
+ public:
+  void CacheControlNoCacheNormalLoad(bool skip_feature_enabled);
+};
 
 class HttpCacheIOCallbackTest : public HttpCacheTest {
  public:
@@ -11034,7 +11037,14 @@ TEST_F(HttpCacheTest, CachedRedirect) {
 
 // Verify that no-cache resources are stored in cache, but are not fetched from
 // cache during normal loads.
-TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
+void HttpCacheTest::CacheControlNoCacheNormalLoad(bool skip_feature_enabled) {
+  base::test::ScopedFeatureList feature_list;
+  if (skip_feature_enabled) {
+    feature_list.InitAndEnableFeature(features::kHttpCacheSkipUnusableEntry);
+  } else {
+    feature_list.InitAndDisableFeature(features::kHttpCacheSkipUnusableEntry);
+  }
+
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
@@ -11053,7 +11063,7 @@ TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
     RunTransactionTest(cache.http_cache(), transaction);
 
     EXPECT_EQ(2, cache.network_layer()->transaction_count());
-    if (use_memory_entry_data) {
+    if (skip_feature_enabled && use_memory_entry_data) {
       EXPECT_EQ(0, cache.disk_cache()->open_count());
       EXPECT_EQ(2, cache.disk_cache()->create_count());
     } else {
@@ -11066,6 +11076,14 @@ TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
     EXPECT_TRUE(cache.OpenBackendEntry(request.CacheKey(), &entry));
     entry->Close();
   }
+}
+
+TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoadSkipUnusable) {
+  CacheControlNoCacheNormalLoad(true);
+}
+
+TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoadDontSkipUnusable) {
+  CacheControlNoCacheNormalLoad(false);
 }
 
 TEST_F(HttpCacheTest, ConcurrentUnusable) {

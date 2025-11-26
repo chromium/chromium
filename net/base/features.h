@@ -765,6 +765,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 // HttpNoVarySearchData::AreEquivalent().
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent);
 
+// Whether to skip opening the http cache entry which was marked as "unusable"
+// from the "Cache-Control" header point of view.
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheSkipUnusableEntry);
+
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
