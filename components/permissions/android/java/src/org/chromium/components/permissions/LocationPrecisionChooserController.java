@@ -40,11 +40,12 @@ public class LocationPrecisionChooserController {
     public LocationPrecisionChooserController(
             Context context,
             LinearLayout container,
+            @LocationAccuracy int initialSelection,
             @Nullable Consumer<Integer> selectionListener) {
 
         mContext = context;
         mContainer = container;
-        mInitialSelection = LocationAccuracy.PRECISE;
+        mInitialSelection = initialSelection;
         mSelectionListener = selectionListener;
 
         mArm =

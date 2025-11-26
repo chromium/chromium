@@ -184,6 +184,12 @@ public class PermissionDialogDelegate {
         mDialogController = controller;
     }
 
+    public @LocationAccuracy int getInitialGeolocationAccuracySelection() {
+        assert mNativeDelegatePtr != 0;
+        return PermissionDialogDelegateJni.get()
+                .getInitialGeolocationAccuracySelection(mNativeDelegatePtr);
+    }
+
     public void onGeolocationAccuracySelected(@LocationAccuracy int locationAccuracy) {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
@@ -343,5 +349,8 @@ public class PermissionDialogDelegate {
 
         void onGeolocationAccuracySelected(
                 long nativePermissionDialogDelegate, @LocationAccuracy int locationAccuracy);
+
+        @LocationAccuracy
+        int getInitialGeolocationAccuracySelection(long nativePermissionDialogDelegate);
     }
 }

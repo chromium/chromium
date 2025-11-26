@@ -109,6 +109,8 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
 
   void OnGeolocationAccuracySelected(JNIEnv* env, jint accuracy);
 
+  jint GetInitialGeolocationAccuracySelection(JNIEnv* env);
+
  private:
   // On navigation or page destruction, hide the dialog.
   void DismissDialog();

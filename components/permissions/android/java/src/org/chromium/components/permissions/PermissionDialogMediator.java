@@ -103,6 +103,7 @@ public class PermissionDialogMediator
                     new LocationPrecisionChooserController(
                             view.getContext(),
                             locationPrecisionContainer,
+                            mDialogDelegate.getInitialGeolocationAccuracySelection(),
                             this::onLocationAccuracyRadioButtonSelected);
             mLocationPrecisionChooserController.show();
         } else {
