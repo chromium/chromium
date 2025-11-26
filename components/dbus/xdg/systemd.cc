@@ -24,6 +24,7 @@
 #include "components/dbus/utils/name_has_owner.h"
 #include "components/dbus/utils/variant.h"
 #include "components/dbus/utils/write_value.h"
+#include "components/dbus/xdg/systemd_constants.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -41,15 +42,6 @@ using SystemdUnitCallbacks = std::vector<SystemdUnitCallback>;
 using StatusOrCallbacks = std::variant<SystemdUnitStatus, SystemdUnitCallbacks>;
 
 namespace {
-
-constexpr char kServiceNameSystemd[] = "org.freedesktop.systemd1";
-constexpr char kObjectPathSystemd[] = "/org/freedesktop/systemd1";
-constexpr char kInterfaceSystemdManager[] = "org.freedesktop.systemd1.Manager";
-constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
-constexpr char kMethodGetUnit[] = "GetUnit";
-
-constexpr char kInterfaceSystemdUnit[] = "org.freedesktop.systemd1.Unit";
-constexpr char kActiveStateProp[] = "ActiveState";
 
 constexpr char kUnitNameFormat[] = "app-$1-$2.scope";
 
@@ -74,7 +66,7 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
                               &SystemdUnitActiveStateWatcher::OnPropertyChanged,
                               base::Unretained(this))),
         bus_(bus) {
-    RegisterProperty(kActiveStateProp, &active_state_);
+    RegisterProperty(kSystemdActiveStateProp, &active_state_);
     ConnectSignals();
     GetAll();
   }
@@ -98,7 +90,7 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
     // There are other states as failed, inactive, and deactivating. Treat all
     // of them as failed.
     callbacks_called_ = true;
-    SetStateAndRunCallbacks(state_value == "active"
+    SetStateAndRunCallbacks(state_value == kSystemdStateActive
                                 ? SystemdUnitStatus::kUnitStarted
                                 : SystemdUnitStatus::kFailedToStart);
     MaybeDeleteSelf();

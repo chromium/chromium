@@ -5,14 +5,19 @@
 source_set("xdg") {
   visibility = [ "//components/dbus/*" ]
   sources = [
+    "portal.cc",
+    "portal.h",
+    "portal_constants.h",
     "request.cc",
     "request.h",
     "systemd.cc",
     "systemd.h",
+    "systemd_constants.h",
   ]
   defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
+    "//base/version_info",
     "//build:branding_buildflags",
     "//components/dbus/properties",
     "//components/dbus/utils",
@@ -27,7 +32,10 @@ source_set("xdg") {
 source_set("unit_tests") {
   testonly = true
   visibility = [ "//components/dbus:unit_tests" ]
-  sources = [ "systemd_unittest.cc" ]
+  sources = [
+    "portal_unittest.cc",
+    "systemd_unittest.cc",
+  ]
   deps = [
     ":xdg",
     "//base",

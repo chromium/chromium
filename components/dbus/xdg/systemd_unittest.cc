@@ -16,6 +16,7 @@
 #include "base/version_info/channel.h"
 #include "base/version_info/nix/version_extra_utils.h"
 #include "components/dbus/xdg/request.h"
+#include "components/dbus/xdg/systemd_constants.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -32,16 +33,7 @@ namespace dbus_xdg {
 
 namespace {
 
-constexpr char kServiceNameSystemd[] = "org.freedesktop.systemd1";
-constexpr char kObjectPathSystemd[] = "/org/freedesktop/systemd1";
-constexpr char kInterfaceSystemdManager[] = "org.freedesktop.systemd1.Manager";
-constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
-constexpr char kMethodGetUnit[] = "GetUnit";
-
 constexpr char kFakeUnitPath[] = "/fake/unit/path";
-constexpr char kActiveState[] = "ActiveState";
-constexpr char kStateActive[] = "active";
-constexpr char kStateInactive[] = "inactive";
 
 std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
     const std::string& state) {
@@ -51,7 +43,7 @@ std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
   dbus::MessageWriter dict_entry_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
   array_writer.OpenDictEntry(&dict_entry_writer);
-  dict_entry_writer.AppendString(kActiveState);
+  dict_entry_writer.AppendString(kSystemdActiveStateProp);
   dict_entry_writer.AppendVariantOfString(state);
   array_writer.CloseContainer(&dict_entry_writer);
   writer.CloseContainer(&array_writer);
@@ -189,7 +181,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
         EXPECT_EQ(method_call->GetInterface(), dbus::kPropertiesInterface);
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
         // Simulate a successful response with "active" state.
-        auto response = CreateActiveStateGetAllResponse(kStateActive);
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateActive);
         std::move(callback).Run(response.get());
       });
 
@@ -368,7 +360,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
 
         // Simulate a successful response, but with inactive state.
-        auto response = CreateActiveStateGetAllResponse(kStateInactive);
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateInactive);
         std::move(callback).Run(response.get());
       });
 
@@ -477,7 +469,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
 
         // Simulate a successful response
-        auto response = CreateActiveStateGetAllResponse(kStateActive);
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateActive);
         std::move(callback).Run(response.get());
       });
 
