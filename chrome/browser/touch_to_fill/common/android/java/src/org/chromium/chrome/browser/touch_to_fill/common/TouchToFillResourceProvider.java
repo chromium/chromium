@@ -43,4 +43,15 @@ public interface TouchToFillResourceProvider {
     default @DrawableRes int getBnplIssuerDrawableId(String issuerId, boolean isLinked) {
         return 0;
     }
+
+    /**
+     * Returns the drawable id to be displayed as a Buy-now-pay-later issuer ToS image.
+     *
+     * @param issuerId The ID of the BNPL issuer.
+     * @param isLightMode Whether to return the light or dark mode drawable id.
+     * @return A {@link DrawableRes} that is never 0.
+     */
+    default @DrawableRes int getBnplIssuerTosDrawableId(String issuerId, boolean isLightMode) {
+        return 0;
+    }
 }
