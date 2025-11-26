@@ -30,9 +30,9 @@ The usage information for any of the following tools is also accessible via
 #### JSON Dependency Generator
 
 Runs [jdeps](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jdeps.html)
-(dependency analysis tool) on all JARs a root build target depends
-on and writes the resulting dependency graph into a JSON file. The default
-root build target is chrome/android:monochrome_public_bundle.
+(dependency analysis tool) root build target depends on and writes the resulting
+dependency graph into a JSON file. The default root build target is
+chrome/android:chrome_public_bundle.
 
 ```
 usage: generate_json_dependency_graph.py [-h] -o OUTPUT [-C BUILD_OUTPUT_DIR]
