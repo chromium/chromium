@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -305,6 +306,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                                        fromView:view];
                 }]];
   if (item.isPinned) {
+    CHECK(IsContentSuggestionsCustomizable(), base::NotFatalUntil::M148);
     [menuElements
         addObject:[self.actionFactory
                       actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
@@ -315,10 +317,13 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                     // TODO(crbug.com/459873750): Unpin.
                                 }]];
   } else {
-    [menuElements addObject:[self.actionFactory
-                                actionToPinSiteToMostVisitedTileWithBlock:^{
-                                    // TODO(crbug.com/459873750): Pin the site.
-                                }]];
+    if (IsContentSuggestionsCustomizable()) {
+      [menuElements
+          addObject:[self.actionFactory
+                        actionToPinSiteToMostVisitedTileWithBlock:^{
+                            // TODO(crbug.com/459873750): Pin the site.
+                        }]];
+    }
     [menuElements addObject:[self.actionFactory actionToRemoveWithBlock:^{
                     [weakSelf removeMostVisited:item];
                   }]];

@@ -21,11 +21,8 @@ NSString* const kMagicStackEditSectionIdentifier =
 
 const int kMaxTextSizeForStyleFootnote = 24;
 
-const NSDirectionalEdgeInsets kMagicStackContainerInsets =
-    NSDirectionalEdgeInsetsMake(kContentTopInset,
-                                kContentHorizontalInset,
-                                0,
-                                kContentHorizontalInset);
+const NSDirectionalEdgeInsets kMagicStackContainerInsets = {
+    kContentTopInset, kContentHorizontalInset, 0, kContentHorizontalInset};
 
 const CGFloat kMagicStackSpacing = 12.0f;
 
