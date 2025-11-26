@@ -53,6 +53,9 @@ source_set("on_device_translation") {
     "//components/update_client",
     "//content/public/browser",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/image_loader" ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

@@ -167,6 +167,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/sensitive_content/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/sharing_message/features.h"
@@ -341,8 +342,11 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"  // nogncheck
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/webstore/features.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "components/services/on_device_translation/public/cpp/features.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
@@ -4136,7 +4140,7 @@ const FeatureEntry::FeatureVariation kSkiaGraphiteVariations[] = {
      std::size(kSkiaGraphite_DebugLabelsEnabled), nullptr},
 };
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
     {"TranslationAPIAcceptLanguagesCheck", "false"},
     {"TranslationAPILimitLanguagePackCount", "false"}};
@@ -4144,7 +4148,7 @@ const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
 const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
     {"without language pack limit", kTranslationAPI_SkipLanguagePackLimit,
      std::size(kTranslationAPI_SkipLanguagePackLimit), nullptr}};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
@@ -11528,9 +11532,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
     {"translation-api", flag_descriptions::kTranslationAPIName,
-     flag_descriptions::kTranslationAPIDescription, kOsMac | kOsWin | kOsLinux,
+     flag_descriptions::kTranslationAPIDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kTranslationAPI,
                                     kTranslationAPIVariations,
                                     "TranslationAPI")},
@@ -11538,9 +11542,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"translation-api-streaming-by-sentence",
      flag_descriptions::kTranslationAPIStreamingBySentenceName,
      flag_descriptions::kTranslationAPIStreamingBySentenceDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsDesktop,
      FEATURE_VALUE_TYPE(on_device_translation::kTranslateStreamingBySentence)},
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
     {"password-form-grouped-affiliations",
      flag_descriptions::kPasswordFormGroupedAffiliationsName,

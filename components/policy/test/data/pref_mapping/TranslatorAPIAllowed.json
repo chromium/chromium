@@ -3,7 +3,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "on_device_translation.translator_api_allowed",

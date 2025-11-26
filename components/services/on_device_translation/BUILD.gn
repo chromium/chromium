@@ -26,7 +26,7 @@ source_set("on_device_translation_service") {
     "//mojo/public/cpp/bindings",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "sandbox_hook.cc",
       "sandbox_hook.h",

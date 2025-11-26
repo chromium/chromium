@@ -1711,6 +1711,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "en", "ja", CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
 }
 
+// CreateGuestBrowser isn't available on ChromeOS
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests the behavior when the Translator API is accessed from an invalid
 // storage partition.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
@@ -1758,6 +1760,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       }));
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test the behavior of availability() when the language is not supported.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
@@ -2223,6 +2226,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   EXPECT_EQ(CheckTranslateInIframe(iframe1), "NotAllowedError");
 }
 
+// CreateGuestBrowser isn't available on ChromeOS
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests the behavior of the Translation API in a cross origin iframe using the
 // guest profile.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
@@ -2239,7 +2244,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
       AddIframe(0, guest_browser, /*enable_permission_policy=*/true);
   EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// CreateGuestBrowser isn't available on ChromeOS
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/423029203): This is timing out on a CQ bot so it is disabled
 // for now until we can resolve that issue.
 //
@@ -2310,6 +2318,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
     EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests the behavior of the Translation API in a cross origin iframe using
 // the command line. We need this test because the implementation of

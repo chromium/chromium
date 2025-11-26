@@ -8085,7 +8085,10 @@ static_library("browser") {
     }
   }
   if (enable_on_device_translation) {
-    deps += [ "//chrome/browser/on_device_translation" ]
+    deps += [
+      "//chrome/browser/on_device_translation",
+      "//components/services/on_device_translation/public/cpp",
+    ]
   }
 
   if (enable_pdf) {
