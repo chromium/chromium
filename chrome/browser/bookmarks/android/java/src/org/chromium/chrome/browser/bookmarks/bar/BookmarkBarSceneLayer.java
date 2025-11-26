@@ -67,6 +67,9 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     /** Push all information about the scene layer / snapshot to native-side code at once. */
     public void updateProperties(PropertyModel model) {
+        if (mNativePtr == 0) return;
+        if (!mIsVisible) return;
+
         BookmarkBarSceneLayerJni.get()
                 .updateBookmarkBarLayer(
                         mNativePtr,
@@ -102,6 +105,7 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
+        if (mNativePtr == 0) return;
         BookmarkBarSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
