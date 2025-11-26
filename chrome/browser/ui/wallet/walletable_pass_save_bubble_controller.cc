@@ -8,8 +8,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
+#include "chrome/common/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
@@ -77,6 +81,12 @@ base::WeakPtr<WalletablePassBubbleControllerBase>
 WalletablePassSaveBubbleController::
     GetWalletablePassBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void WalletablePassSaveBubbleController::OnGoToWalletClicked() {
+  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+    ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
+  }
 }
 
 }  // namespace wallet

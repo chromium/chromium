@@ -202,9 +202,10 @@ WalletablePassSaveBubbleView::GetSubtitleLabel(
 
   gfx::Range go_to_wallet_range(offsets[0],
                                 offsets[0] + google_wallet_text.size());
-  auto go_to_wallet = views::StyledLabel::RangeStyleInfo::CreateForLink(
-      base::BindRepeating(&WalletablePassSaveBubbleView::OnGoToWalletClicked,
-                          base::Unretained(this)));
+  auto go_to_wallet =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &WalletablePassSaveBubbleController::OnGoToWalletClicked,
+          controller_));
 
   return views::Builder<views::StyledLabel>()
       .SetText(std::move(formatted_text))
@@ -244,10 +245,6 @@ int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
       NOTREACHED() << "Not supported walletable pass type: "
                    << controller_->pass().pass_case();
   }
-}
-
-void WalletablePassSaveBubbleView::OnGoToWalletClicked() {
-  // TODO(crbug.com/451833977): Implement the go to Wallet action.
 }
 
 BEGIN_METADATA(WalletablePassSaveBubbleView)

@@ -53,8 +53,6 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
 
   int GetHeaderImageResourceId() const;
 
-  void OnGoToWalletClicked();
-
   base::WeakPtr<WalletablePassSaveBubbleController> controller_;
 };
 
