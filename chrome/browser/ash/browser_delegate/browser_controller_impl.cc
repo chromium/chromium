@@ -139,10 +139,11 @@ BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
 
 BrowserDelegate* BrowserControllerImpl::GetBrowserForTab(
     content::WebContents* contents) {
-  auto* tab = tabs::TabInterface::GetFromContents(contents);
-  return GetDelegate(
-      tab ? tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly()
-          : nullptr);
+  // TODO(crbug.com/369688254): We'd like to use
+  // tabs::TabInterface::MaybeGetFromContents followed by
+  // tabs::TabInterface::GetBrowserWindowInterface here but this can CHECK-fail
+  // during shutdown. Find a solution.
+  return GetDelegate(chrome::FindBrowserWithTab(contents));
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
