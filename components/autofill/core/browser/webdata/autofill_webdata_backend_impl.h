@@ -39,19 +39,28 @@ class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
 class Iban;
 
-// Backend implementation for the AutofillWebDataService. This class runs on the
-// DB sequence, as it handles reads and writes to the WebDatabase, and functions
-// in it should only be called from that sequence. Most functions here are just
-// the implementations of the corresponding functions in the Autofill
-// WebDataService.
-// This class is destroyed on the DB sequence.
+// Exposes operations on the Autofill database tables for AutofillWebDataService
+// and the sync bridges.
+//
+// The sync bridges are owned by this class (via a user-data mechanism; see
+// `GetDBUserData()`).
+//
+// Most of the functions must be called from the DB sequence.
+// The function declarations below are grouped by the calling sequence.
+// Every member function should DCHECK the calling sequence.
+//
+// Destruction proceeds in three phases:
+// - ShutdownOnUISequence() on the UI sequence.
+// - ResetUserData() on the DB sequence (destroys the sync bridges).
+// - Destructor on the DB sequence.
 class AutofillWebDataBackendImpl
     : public base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>,
       public AutofillWebDataBackend {
  public:
+  // Part 1: Functions called on the UI sequence:
+
   // `web_database_backend` is used to access the WebDatabase directly for
-  // Sync-related operations. `ui_task_runner` and `db_task_runner` are the task
-  // runners that this class uses for UI and DB tasks respectively.
+  // Sync-related operations.
   AutofillWebDataBackendImpl(
       scoped_refptr<WebDatabaseBackend> web_database_backend,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
@@ -63,18 +72,19 @@ class AutofillWebDataBackendImpl
 
   void ShutdownOnUISequence();
 
-  void SetAutofillProfileChangedCallback(
-      base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
+  // AutofillWebDataBackend:
+  void AddObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) override;
+  void RemoveObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) override;
 
-  // AutofillWebDataBackend implementation.
+  // Part 2: Functions called on the DB sequence:
+
+  // AutofillWebDataBackend:
   void AddObserver(
       AutofillWebDataServiceObserverOnDBSequence* observer) override;
   void RemoveObserver(
       AutofillWebDataServiceObserverOnDBSequence* observer) override;
-  void AddObserver(
-      AutofillWebDataServiceObserverOnUISequence* observer) override;
-  void RemoveObserver(
-      AutofillWebDataServiceObserverOnUISequence* observer) override;
   WebDatabase* GetDatabase() override;
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
@@ -292,9 +302,8 @@ class AutofillWebDataBackendImpl
   friend class base::DeleteHelper<AutofillWebDataBackendImpl>;
 
   // This makes the destructor public, and thus allows us to aggregate
-  // SupportsUserData. It is private by default to prevent incorrect
-  // usage in class hierarchies where it is inherited by
-  // reference-counted objects.
+  // SupportsUserData. It is private to prevent incorrect usage in class
+  // hierarchies where it is inherited by reference-counted objects.
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
     SupportsUserDataAggregatable() = default;
@@ -303,7 +312,7 @@ class AutofillWebDataBackendImpl
     SupportsUserDataAggregatable& operator=(
         const SupportsUserDataAggregatable&) = delete;
 
-    ~SupportsUserDataAggregatable() override {}
+    ~SupportsUserDataAggregatable() override = default;
   };
 
   // The task runner that this class uses for its UI tasks.
