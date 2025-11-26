@@ -40,21 +40,24 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/ComposeBoxQueryControllerBridge_jni.h"
 
-static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
-                                                      Profile* profile) {
+static jlong JNI_ComposeBoxQueryControllerBridge_Init(
+    JNIEnv* env,
+    Profile* profile,
+    const base::android::JavaParamRef<jobject>& java_obj) {
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_service || !aim_service->IsAimEligible()) {
     return 0L;
   }
 
   ComposeboxQueryControllerBridge* instance =
-      new ComposeboxQueryControllerBridge(profile);
+      new ComposeboxQueryControllerBridge(profile, java_obj);
   return reinterpret_cast<intptr_t>(instance);
 }
 
 ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
-    Profile* profile)
-    : profile_{profile} {
+    Profile* profile,
+    const base::android::JavaParamRef<jobject>& java_obj)
+    : profile_{profile}, java_obj_(java_obj) {
   auto query_controller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_controller_config_params->send_lns_surface = false;
@@ -271,12 +274,27 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
       lens_signals_ready_callback_.Run();
     }
   }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ComposeBoxQueryControllerBridge_onFileUploadStatusChanged(
+      env, java_obj_,
+      base::android::ConvertUTF8ToJavaString(env, file_token.ToString()),
+      static_cast<int>(file_upload_status));
 }
 
 void ComposeboxQueryControllerBridge::OnGetTabPageContext(
     JNIEnv* env,
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  if (!page_content_data->context_input.has_value() ||
+      page_content_data->context_input->size() <= 0) {
+    OnFileUploadStatusChanged(
+        context_token, lens::MimeType::kUnknown,
+        contextual_search::FileUploadStatus::kValidationFailed,
+        contextual_search::FileUploadErrorType::kBrowserProcessingError);
+    return;
+  }
+
   std::optional<lens::ImageEncodingOptions> image_options =
       lens::ImageEncodingOptions{.enable_webp_encoding = false,
                                  .max_size = 1500000,

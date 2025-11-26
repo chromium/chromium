@@ -31,7 +31,9 @@ class GURL;
 class ComposeboxQueryControllerBridge
     : public ComposeboxQueryController::FileUploadStatusObserver {
  public:
-  explicit ComposeboxQueryControllerBridge(Profile* profile);
+  explicit ComposeboxQueryControllerBridge(
+      Profile* profile,
+      const base::android::JavaParamRef<jobject>& java_obj);
   ~ComposeboxQueryControllerBridge() override;
   void Destroy(JNIEnv* env);
   void NotifySessionStarted(JNIEnv* env);
@@ -87,6 +89,7 @@ class ComposeboxQueryControllerBridge
   raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
   base::RepeatingCallback<void()> lens_signals_ready_callback_;
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   base::WeakPtrFactory<ComposeboxQueryControllerBridge> weak_ptr_factory_{this};
 };
 

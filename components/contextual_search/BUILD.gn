@@ -2,6 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "contextual_search_types.h" ]
+  }
+
+  android_library("components_contextual_search_java") {
+    srcjar_deps = [ ":java_enum_srcjar" ]
+
+    # Important: the generated enum uses the @IntDef annotation provided by
+    # this dependency.
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+}
+
 # Public interface target - contains the public types and abstract service API.
 source_set("public") {
   sources = [

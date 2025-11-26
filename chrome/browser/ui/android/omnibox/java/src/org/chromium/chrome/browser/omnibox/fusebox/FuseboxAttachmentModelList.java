@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.text.TextUtils;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge.FileUploadObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -22,7 +26,7 @@ import java.util.function.Predicate;
  * state.
  */
 @NullMarked
-public class FuseboxAttachmentModelList extends ModelList {
+public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
 
@@ -33,7 +37,13 @@ public class FuseboxAttachmentModelList extends ModelList {
             @Nullable ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
         if (mComposeBoxQueryControllerBridge == composeBoxQueryControllerBridge) return;
         clear();
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.setFileUploadObserver(null);
+        }
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.setFileUploadObserver(this);
+        }
     }
 
     /** Release all resources and mark this instance ready for recycling. */
@@ -157,5 +167,35 @@ public class FuseboxAttachmentModelList extends ModelList {
         for (var item : this) {
             item.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, brandedColorScheme);
         }
+    }
+
+    @Override
+    public void onFileUploadStatusChanged(String token, @FileUploadStatus int status) {
+        if (TextUtils.isEmpty(token)) return;
+        FuseboxAttachment pendingAttachment = findAttachmentWithToken(token);
+        if (pendingAttachment == null) return;
+
+        switch (status) {
+            case FileUploadStatus.VALIDATION_FAILED:
+            case FileUploadStatus.UPLOAD_FAILED:
+            case FileUploadStatus.UPLOAD_EXPIRED:
+                pendingAttachment.setUploadIsComplete();
+                remove(pendingAttachment);
+                break;
+            case FileUploadStatus.UPLOAD_SUCCESSFUL:
+                pendingAttachment.setUploadIsComplete();
+                notifyItemChanged(indexOf(pendingAttachment));
+                break;
+        }
+    }
+
+    private @Nullable FuseboxAttachment findAttachmentWithToken(String token) {
+        for (int i = 0; i < size(); i++) {
+            FuseboxAttachment attachment = get(i);
+            if (TextUtils.equals(token, attachment.getToken())) {
+                return attachment;
+            }
+        }
+        return null;
     }
 }

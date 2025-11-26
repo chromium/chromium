@@ -13,6 +13,19 @@ found in the LICENSE file.
     android:clipToOutline="true"
     android:padding="4dp">
 
+  <ProgressBar
+      android:id="@+id/attachment_spinner"
+      android:visibility="gone"
+      android:layout_height="@dimen/fusebox_attachment_spinner_size"
+      android:layout_width="@dimen/fusebox_attachment_spinner_size"
+      android:indeterminate="true"
+      android:indeterminateTint="@macro/circular_progress_icon_color_small_large"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      />
+
     <ImageView
         android:id="@+id/attachment_thumbnail"
         android:layout_width="@dimen/omnibox_suggestion_36dp_icon_size"

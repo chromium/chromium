@@ -176,6 +176,10 @@ found in the LICENSE file.
     <dimen name="fusebox_button_size">56dp</dimen>
     <dimen name="fusebox_button_padding">10dp</dimen>
     <dimen name="fusebox_button_corner_radius">8dp</dimen>
+    <dimen name ="fusebox_attachment_spinner_size">20dp</dimen>
+    <dimen name ="fusebox_attachment_loading_width">132dp</dimen>
+    <dimen name ="fusebox_attachment_file_width">132dp</dimen>
+    <dimen name ="fusebox_attachment_image_width">80dp</dimen>
 
     <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>

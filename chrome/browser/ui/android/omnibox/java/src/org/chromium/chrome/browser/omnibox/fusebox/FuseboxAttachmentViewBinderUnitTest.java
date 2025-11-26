@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 (ConstraintLayout)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
+        mView.setLayoutParams(new LayoutParams(100, 100));
         PropertyModelChangeProcessor.create(mModel, mView, FuseboxAttachmentViewBinder::bind);
     }
 
@@ -65,6 +67,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testSetThumbnail() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(mDrawable, "Test", "text/plain", new byte[0]);
+        attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         assertEquals(mDrawable, imageView.getDrawable());
@@ -74,6 +77,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testSetTitle_emptyString() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(mDrawable, "", "text/plain", new byte[0]);
+        attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals(View.GONE, textView.getVisibility());
@@ -83,6 +87,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testSetTitle() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(mDrawable, "My Attachment", "text/plain", new byte[0]);
+        attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
@@ -92,6 +97,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testSetDescription_withTitle() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(mDrawable, "My Title", "text/plain", new byte[0]);
+        attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
         TextView title = mView.findViewById(R.id.attachment_title);
@@ -106,10 +112,41 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "Test",
                         "text/plain",
                         new byte[0]);
+        attachment.setUploadIsComplete();
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         // Should have fallback drawable, not null
         assertNotNull(
                 "Fallback drawable should be set when thumbnail is null", imageView.getDrawable());
+    }
+
+    @Test
+    public void testUploadPending() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
+                        null, // null thumbnail should trigger fallback
+                        "Test",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+
+        ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
+        View spinner = mView.findViewById(R.id.attachment_spinner);
+
+        assertEquals(View.GONE, imageView.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
+        assertEquals(
+                mView.getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_attachment_loading_width),
+                mView.getLayoutParams().width);
+
+        attachment.setUploadIsComplete();
+        FuseboxAttachmentViewBinder.bind(mModel, mView, FuseboxAttachmentProperties.ATTACHMENT);
+
+        assertEquals(
+                mView.getResources().getDimensionPixelSize(R.dimen.fusebox_attachment_file_width),
+                mView.getLayoutParams().width);
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.VISIBLE, imageView.getVisibility());
     }
 }
