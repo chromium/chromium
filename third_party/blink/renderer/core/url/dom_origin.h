@@ -26,18 +26,8 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
 
   static DOMOrigin* Create(scoped_refptr<const SecurityOrigin>);
 
-  // Parses |value|, throwing an error if it isn't a validly serialized origin:
-  static DOMOrigin* Create(const String& value,
-                           ExceptionState& exception_state);
-
   DOMOrigin(base::PassKey<DOMOrigin>, scoped_refptr<const SecurityOrigin>);
   ~DOMOrigin() override;
-
-  // Parses |value|, returning `null` if it isn't a validly serialized origin:
-  static DOMOrigin* parse(const String& value);
-
-  // Parses |value|, returning `null` if it isn't a validly serialized URL:
-  static DOMOrigin* fromURL(const String& value);
 
   // Converts |value| to an Origin, throwing an error if conversion isn't
   // possible.
