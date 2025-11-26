@@ -5453,6 +5453,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Settings.PendingPopBackWorked" units="count"
+    expires_after="2026-12-31">
+  <owner>hidehiko@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <summary>
+    Records when the user triggers fragment pop back on SettingsActivity after
+    the fragment manager already saved its state. In the case we delayed the pop
+    back operation. Records the number of such cases to make sure this works
+    enough. This record is used to verify the effectiveness of the fix.
+  </summary>
+</histogram>
+
 <histogram name="Android.ShowSelectionMenuSourceType" enum="MenuSourceType"
     expires_after="2026-04-19">
   <owner>mvanouwerkerk@chromium.org</owner>
