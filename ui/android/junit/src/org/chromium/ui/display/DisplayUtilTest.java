@@ -99,7 +99,6 @@ public class DisplayUtilTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testGetUiDensityForAutomotive_clampedToMaxValue() {
-        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
         assertEquals(
                 "Density 200 should be scaled to 280 when the scaling factor is 1.34.",
                 DisplayMetrics.DENSITY_280,
@@ -114,7 +113,6 @@ public class DisplayUtilTest {
                         ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_200));
 
         CommandLine.getInstance().removeSwitch("clamp-automotive-scale-up");
-        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
     }
 
     // Tests when we have opted out of Clank's internal scaling when display compatibility is true.
@@ -124,15 +122,11 @@ public class DisplayUtilTest {
         DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
         DisplayUtil.setIsDisplayCompatAppForTesting(true);
 
-        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
-
         assertEquals(
                 "Density should be the base density when opted out of Clank's internal scaling.",
                 DisplayMetrics.DENSITY_DEFAULT,
                 DisplayUtil.getUiDensityForAutomotive(
                         ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT));
-
-        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
     }
 
     @Test
@@ -236,7 +230,7 @@ public class DisplayUtilTest {
         final int densityDefaultScale = 190;
         final int widthInPixels = 100;
         final int heightInPixels = 100;
-        DisplayMetrics displayMetrics = new DisplayMetrics();
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
         displayMetrics.density = 1.0f;
         displayMetrics.densityDpi = DisplayMetrics.DENSITY_DEFAULT;
         displayMetrics.xdpi = DisplayMetrics.DENSITY_DEFAULT;
@@ -244,35 +238,28 @@ public class DisplayUtilTest {
         displayMetrics.widthPixels = widthInPixels;
         displayMetrics.heightPixels = heightInPixels;
 
-        DisplayMetrics scaledDisplayMetrics =
-                DisplayUtil.scaleUpDisplayMetricsForXr(
-                        ContextUtils.getApplicationContext(), displayMetrics);
+        DisplayUtil.scaleUpDisplayMetricsForXr(
+                ContextUtils.getApplicationContext(), displayMetrics);
         assertEquals(
-                "The DisplayMetrics densityDpi should be scaled up by the " + "XR scale-up factor.",
+                "The DisplayMetrics densityDpi should be scaled up by the XR scale-up factor.",
                 densityDefaultScale,
                 displayMetrics.densityDpi);
         assertEquals(
-                "The DisplayMetrics xdpi should be scaled up by the " + "XR scale-up factor.",
+                "The DisplayMetrics xdpi should be scaled up by the XR scale-up factor.",
                 densityDefaultScale,
                 (int) displayMetrics.xdpi);
         assertEquals(
-                "The DisplayMetrics ydpi should be scaled up by the " + "XR scale-up factor.",
+                "The DisplayMetrics ydpi should be scaled up by the XR scale-up factor.",
                 densityDefaultScale,
                 (int) displayMetrics.ydpi);
         assertEquals(
-                "The DisplayMetrics widthPixels should not be affected by the "
-                        + "XR scale-up factor.",
+                "The DisplayMetrics widthPixels should not be affected by the XR scale-up factor.",
                 widthInPixels,
                 displayMetrics.widthPixels);
         assertEquals(
-                "The DisplayMetrics heightPixels should not be affected by the "
-                        + "XR scale-up factor.",
+                "The DisplayMetrics heightPixels should not be affected by the XR scale-up factor.",
                 heightInPixels,
                 displayMetrics.heightPixels);
-        assertEquals(
-                "The scaled DisplayMetrics should same as input DisplayMetrics",
-                scaledDisplayMetrics,
-                displayMetrics);
     }
 
     @Test
@@ -285,7 +272,6 @@ public class DisplayUtilTest {
                             Configuration configuration = new Configuration();
                             DisplayUtil.setUiScalingFactorForXrForTesting(1f);
                             DisplayUtil.scaleUpConfigurationForXr(activity, configuration);
-                            DisplayUtil.resetUiScalingFactorForXrForTesting();
 
                             assertEquals(
                                     "Configuration.densityDpi should be 1.",
