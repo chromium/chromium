@@ -44,21 +44,9 @@ import {ContentSettingsTypes} from '../../site_settings/constants.js';
 import type {SiteSettingsBrowserProxy} from '../../site_settings/site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from '../../site_settings/site_settings_browser_proxy.js';
 import {isSettingEnabled} from '../../site_settings/site_settings_util.js';
+import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 
 import {getTemplate} from './security_page.html.js';
-
-/**
- * Enumeration of all safe browsing modes. Must be kept in sync with the enum
- * of the same name located in:
- * components/safe_browsing/core/common/safe_browsing_prefs.h
- */
-// LINT.IfChange(SafeBrowsingSetting)
-export enum SafeBrowsingSetting {
-  DISABLED = 0,
-  STANDARD = 1,
-  ENHANCED = 2,
-}
-// LINT.ThenChange(/chrome/browser/safe_browsing/generated_safe_browsing_pref.h:SafeBrowsingSetting)
 
 /**
  * Enumeration of all HTTPS-First Mode setting states. Must be kept in sync with
