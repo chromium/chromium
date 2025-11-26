@@ -15,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
-#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_store.h"
 #include "url/gurl.h"
 
@@ -32,8 +31,10 @@ constexpr base::TimeDelta kPeriodicDeleteDelay = base::Days(1);
 }  // namespace
 
 PageContentCache::PageContentCache(os_crypt_async::OSCryptAsync* os_crypt_async,
-                                   const base::FilePath& profile_dir)
+                                   const base::FilePath& profile_dir,
+                                   base::TimeDelta max_context_age)
     : database_path_(profile_dir.Append(kPageContentAnnotationsDatabaseName)),
+      max_context_age_(max_context_age),
       store_(base::ThreadPool::CreateSequencedTaskRunner(
                  {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                   base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -246,9 +247,7 @@ void PageContentCache::OnStoreInitialized() {
 }
 
 void PageContentCache::DeleteOldData() {
-  const base::Time older_than =
-      base::Time::Now() -
-      base::Days(features::kPageContentCacheMaxCacheAgeInDays.Get());
+  const base::Time older_than = base::Time::Now() - max_context_age_;
   store_
       .AsyncCall(
           &optimization_guide::PageContentStore::DeletePageContentOlderThan)

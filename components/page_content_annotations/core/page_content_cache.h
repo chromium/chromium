@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace os_crypt_async {
 class Encryptor;
 class OSCryptAsync;
@@ -42,7 +46,8 @@ class PageContentCache {
 
  public:
   PageContentCache(os_crypt_async::OSCryptAsync* os_crypt_async,
-                   const base::FilePath& profile_dir);
+                   const base::FilePath& profile_dir,
+                   base::TimeDelta max_context_age);
   ~PageContentCache();
 
   PageContentCache(const PageContentCache&) = delete;
@@ -96,6 +101,9 @@ class PageContentCache {
 
   // `true` once `store_` has been initialized.
   bool store_initialized_ = false;
+
+  // The maximum age of page contexts in the cache not deleted at cleanup time.
+  base::TimeDelta max_context_age_;
 
   // Tasks that should be run once `store_` has been initialized.
   std::vector<base::OnceClosure> pending_tasks_;
