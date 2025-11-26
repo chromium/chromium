@@ -165,17 +165,15 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
 
 AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!user_data_) << "ResetUserData() must run before the destructor";
+  // Explicitly destroy user-data ownees (i.e., the sync bridges) first as their
+  // destructors may call into this AutofillWebDataBackendImpl.
+  user_data_.ClearAllUserData();
 }
 
 void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   weak_ptr_factory_for_ui_lifecycle_.InvalidateWeakPtrsAndDoom();
   DCHECK(!this_during_ui_lifecycle_);
-  // TODO(crbug.com/463674993): Simplify or document this.
-  owning_task_runner()->PostTask(
-      FROM_HERE, BindOnce(&AutofillWebDataBackendImpl::ResetUserData,
-                          scoped_refptr(this)));
 }
 
 void AutofillWebDataBackendImpl::AddObserver(
@@ -335,16 +333,9 @@ void AutofillWebDataBackendImpl::NotifyOnServerEntityMetadataChanged(
   }
 }
 
-base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
+base::SupportsUserData& AutofillWebDataBackendImpl::GetDBUserData() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!user_data_)
-    user_data_ = std::make_unique<SupportsUserDataAggregatable>();
-  return user_data_.get();
-}
-
-void AutofillWebDataBackendImpl::ResetUserData() {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  user_data_.reset();
+  return user_data_;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(

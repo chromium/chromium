@@ -269,6 +269,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   // from the DB sequence. Should be called only from the DB sequence, and will
   // be destroyed on the DB sequence soon after ShutdownOnUISequence() is
   // called.
+  // Never returns nullptr.
   base::SupportsUserData* GetDBUserData();
 
   // Takes a callback which will be called on the DB sequence with a pointer to

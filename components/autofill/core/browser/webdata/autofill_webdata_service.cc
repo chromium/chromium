@@ -454,7 +454,7 @@ void AutofillWebDataService::RemoveObserver(
 }
 
 base::SupportsUserData* AutofillWebDataService::GetDBUserData() {
-  return autofill_backend_->GetDBUserData();
+  return &autofill_backend_->GetDBUserData();
 }
 
 void AutofillWebDataService::GetAutofillBackend(

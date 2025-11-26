@@ -49,11 +49,13 @@ class Iban;
 // The function declarations below are grouped by the calling sequence.
 // Every member function should DCHECK the calling sequence.
 //
-// Destruction proceeds in three phases:
+// Destruction proceeds in two phases:
 // - ShutdownOnUISequence() on the UI sequence.
-// - ResetUserData() on the DB sequence (destroys the sync bridges).
 // - Destructor on the DB sequence.
-class AutofillWebDataBackendImpl
+//
+// This class is final because user-data ownees may call virtual functions of
+// during mutual destruction (in particular, RemoveObserver()).
+class AutofillWebDataBackendImpl final
     : public base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>,
       public AutofillWebDataBackend {
  public:
@@ -99,12 +101,8 @@ class AutofillWebDataBackendImpl
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
-  // from the DB sequence. Should be called only from the DB sequence, and will
-  // be destroyed on the DB sequence soon after ShutdownOnUISequence() is
-  // called.
-  base::SupportsUserData* GetDBUserData();
-
-  void ResetUserData();
+  // from the DB sequence.
+  base::SupportsUserData& GetDBUserData();
 
   // Adds form fields to the web database.
   WebDatabase::State AddFormElements(const std::vector<FormFieldData>& fields,
@@ -301,27 +299,8 @@ class AutofillWebDataBackendImpl
   friend class base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>;
   friend class base::DeleteHelper<AutofillWebDataBackendImpl>;
 
-  // This makes the destructor public, and thus allows us to aggregate
-  // SupportsUserData. It is private to prevent incorrect usage in class
-  // hierarchies where it is inherited by reference-counted objects.
-  class SupportsUserDataAggregatable : public base::SupportsUserData {
-   public:
-    SupportsUserDataAggregatable() = default;
-
-    SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
-    SupportsUserDataAggregatable& operator=(
-        const SupportsUserDataAggregatable&) = delete;
-
-    ~SupportsUserDataAggregatable() override = default;
-  };
-
   // The task runner that this class uses for its UI tasks.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  // Storage for user data to be accessed only on the DB sequence. May
-  // be used e.g. for SyncableService subclasses that need to be owned
-  // by this object. Is created on first call to |GetDBUserData()|.
-  std::unique_ptr<SupportsUserDataAggregatable> user_data_;
 
   base::ObserverList<AutofillWebDataServiceObserverOnDBSequence>::Unchecked
       db_observer_list_;
@@ -332,6 +311,12 @@ class AutofillWebDataBackendImpl
   // WebDatabaseBackend allows direct access to DB.
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
+
+  // Owns the sync bridges, which register themselves via `GetDBUserData()`.
+  class : public base::SupportsUserData {
+   public:
+    using base::SupportsUserData::ClearAllUserData;
+  } user_data_;
 
   // This WeakPtr is non-null from construction until ShutdownOnUISequence().
   //
