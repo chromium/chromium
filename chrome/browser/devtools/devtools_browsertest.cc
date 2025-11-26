@@ -3189,16 +3189,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_DisposeEmptyBrowserContext) {
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/40689291): Find a better strategy for testing protocol methods
-// against non-headless Chrome.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
-  window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
-      browser()->profile());
-  LoadLegacyFilesInFrontend(window_);
-  RunTestMethod("testNewWindowFromBrowserContext");
-  CloseDevToolsWindow();
-}
-
 IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   GURL url(embedded_test_server()->GetURL("a.com", "/devtools/oopif.html"));
   GURL iframe_url(

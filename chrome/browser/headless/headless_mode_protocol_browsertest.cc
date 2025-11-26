@@ -274,6 +274,9 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
                               ScreencastViewport,
                               "shared/screencast-viewport.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(WindowWithNewContext,
+                            "shared/window-with-new-context.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetCreate,
                             "shared/hidden-target-create.js")
 HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetClose, "shared/hidden-target-close.js")
