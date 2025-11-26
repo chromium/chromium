@@ -2615,7 +2615,16 @@ void Observable::SubscribeInternal(
   // context, because this might involve reporting an exception with the global,
   // which relies on a valid `ScriptState`.
   if (!script_state->ContextIsValid()) {
-    CHECK(!GetExecutionContext());
+    // Note that in this path, we used to have the following CHECK:
+    //
+    // CHECK(!GetExecutionContext());
+    //
+    // ... since this is condition is expected to hold. However, see the commit
+    // description of https://crrev.com/c/7017449, which lists a whole host of
+    // Clusterfuzz bugs and subtle repros that undermine this assumption.
+    // Ideally, we'd have time to go back and use rr or Pernosco to figure out
+    // why they are so hard to reproduce manually, and understand exactly what
+    // conditions are required to break this assumption.
     return;
   }
 
@@ -2713,7 +2722,6 @@ void Observable::SubscribeInternal(
       //    but inactive. Report the exception to the global instead of the
       //    subscriber.
       if (!script_state->ContextIsValid()) {
-        CHECK(!GetExecutionContext());
         return;
       }
       V8ScriptRunner::ReportException(script_state->GetIsolate(),
