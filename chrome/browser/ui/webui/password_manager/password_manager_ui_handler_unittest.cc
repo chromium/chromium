@@ -252,4 +252,21 @@ TEST_F(PasswordManagerUIHandlerUnitTest, ShowAddShortcutDialog_CallsDelegate) {
   EXPECT_TRUE(test_delegate().get_add_shortcut_dialog_shown());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       IsAccountStorageEnabled_ReturnsCorrectValue) {
+  // Set the delegate to return true.
+  test_delegate().SetAccountStorageEnabled(true);
+
+  base::test::TestFuture<bool> future_true;
+  handler().IsAccountStorageEnabled(future_true.GetCallback());
+  EXPECT_TRUE(future_true.Get());
+
+  // Set the delegate to return false.
+  test_delegate().SetAccountStorageEnabled(false);
+
+  base::test::TestFuture<bool> future_false;
+  handler().IsAccountStorageEnabled(future_false.GetCallback());
+  EXPECT_FALSE(future_false.Get());
+}
+
 }  // namespace password_manager

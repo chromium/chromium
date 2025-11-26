@@ -84,3 +84,9 @@ password_manager::SavedPasswordsPresenter*
 PasswordManagerUIHandler::GetSavedPasswordsPresenter() {
   return passwords_private_delegate_->GetSavedPasswordsPresenter();
 }
+
+void PasswordManagerUIHandler::IsAccountStorageEnabled(
+    IsAccountStorageEnabledCallback callback) {
+  bool result = passwords_private_delegate_->IsAccountStorageEnabled();
+  std::move(callback).Run(result);
+}

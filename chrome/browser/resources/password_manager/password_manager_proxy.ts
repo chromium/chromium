@@ -696,7 +696,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   isAccountStorageEnabled() {
-    return chrome.passwordsPrivate.isAccountStorageEnabled();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      return chrome.passwordsPrivate.isAccountStorageEnabled();
+    }
+    return this.handler.isAccountStorageEnabled().then(
+        result => result.enabled);
   }
 
   setAccountStorageEnabled(enabled: boolean) {
@@ -732,10 +736,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   deleteAllPasswordManagerData() {
-    return loadTimeData.getBoolean('enablePasswordManagerMojoApi') ?
-        this.handler.deleteAllPasswordManagerData().then(
-            result => result.success) :
-        chrome.passwordsPrivate.deleteAllPasswordManagerData();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      return chrome.passwordsPrivate.deleteAllPasswordManagerData();
+    }
+    return this.handler.deleteAllPasswordManagerData().then(
+        result => result.success);
   }
 
   getActorLoginPermissions() {
