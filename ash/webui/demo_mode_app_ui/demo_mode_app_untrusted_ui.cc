@@ -68,9 +68,6 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
   std::string resource_path_or_root =
       resource_path == "" ? "index.html" : resource_path;
   // Convert to GURL to strip out query params and URL fragments
-  //
-  // TODO (b/234170189): Verify that query params won't be used in the prod Demo
-  // App, or add support for them here instead of ignoring them.
   GURL full_url =
       GURL(kChromeUntrustedUIDemoModeAppURL + resource_path_or_root);
   // Trim leading slash from path
