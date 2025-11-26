@@ -269,4 +269,16 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_FALSE(future_false.Get());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       SetAccountStorageEnabled_CallsDelegate) {
+  // Ensure default state is false
+  EXPECT_FALSE(test_delegate().IsAccountStorageEnabled());
+
+  // Call the handler
+  handler().SetAccountStorageEnabled(true);
+
+  // Verify the state changed in the delegate
+  EXPECT_TRUE(test_delegate().IsAccountStorageEnabled());
+}
+
 }  // namespace password_manager

@@ -704,7 +704,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   setAccountStorageEnabled(enabled: boolean) {
-    chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
+      return;
+    }
+    this.handler.setAccountStorageEnabled(enabled);
   }
 
   shouldShowAccountStorageSettingToggle() {
