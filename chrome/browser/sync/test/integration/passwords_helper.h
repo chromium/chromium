@@ -22,7 +22,7 @@ namespace syncer {
 class Cryptographer;
 class KeyDerivationParams;
 class SyncServiceImpl;
-}
+}  // namespace syncer
 
 namespace password_manager {
 class PasswordStoreInterface;
@@ -48,7 +48,7 @@ void RemoveLogins(password_manager::PasswordStoreInterface* store);
 password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
     int index);
 
-// Gets the password store of the verifier profile.
+// Gets the profile password store of the verifier profile.
 password_manager::PasswordStoreInterface*
 GetVerifierProfilePasswordStoreInterface();
 
@@ -56,10 +56,19 @@ GetVerifierProfilePasswordStoreInterface();
 password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
     int index);
 
+// Gets the account password store of the verifier profile.
+password_manager::PasswordStoreInterface*
+GetVerifierAccountPasswordStoreInterface();
+
 // Gets either the profile-scoped or the account-scoped password store of the
 // profile with index |index|.
 password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
     int index,
+    password_manager::PasswordForm::Store store);
+
+// Gets either the profile-scoped or the account-scoped password store of the
+// verifier profile.
+password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
     password_manager::PasswordForm::Store store);
 
 // Returns true iff the profile with index |index| contains the same password
@@ -87,12 +96,16 @@ bool AwaitProfileContainsSamePasswordFormsAsVerifier(int index);
 
 // Returns the number of forms in the password store of the profile with index
 // |index|.
+// TODO(crbug.com/353425612): Remove the default value for `store`.
 int GetPasswordCount(int index,
                      password_manager::PasswordForm::Store store =
                          password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns the number of forms in the password store of the verifier profile.
-int GetVerifierPasswordCount();
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+int GetVerifierPasswordCount(
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.

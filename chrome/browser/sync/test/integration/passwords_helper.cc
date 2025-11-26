@@ -148,6 +148,12 @@ PasswordStoreInterface* GetAccountPasswordStoreInterface(int index) {
       .get();
 }
 
+PasswordStoreInterface* GetVerifierAccountPasswordStoreInterface() {
+  return AccountPasswordStoreFactory::GetForProfile(
+             test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS)
+      .get();
+}
+
 password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
     int index,
     PasswordForm::Store store) {
@@ -158,6 +164,18 @@ password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
       return GetProfilePasswordStoreInterface(index);
     case PasswordForm::Store::kAccountStore:
       return GetAccountPasswordStoreInterface(index);
+  }
+}
+
+password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
+    PasswordForm::Store store) {
+  switch (store) {
+    case PasswordForm::Store::kNotSet:
+      NOTREACHED();
+    case PasswordForm::Store::kProfileStore:
+      return GetVerifierProfilePasswordStoreInterface();
+    case PasswordForm::Store::kAccountStore:
+      return GetVerifierAccountPasswordStoreInterface();
   }
 }
 
@@ -227,8 +245,8 @@ int GetPasswordCount(int index, PasswordForm::Store store) {
   return GetLogins(GetPasswordStoreInterface(index, store)).size();
 }
 
-int GetVerifierPasswordCount() {
-  return GetLogins(GetVerifierProfilePasswordStoreInterface()).size();
+int GetVerifierPasswordCount(password_manager::PasswordForm::Store store) {
+  return GetLogins(GetVerifierPasswordStoreInterface(store)).size();
 }
 
 PasswordForm CreateTestPasswordForm(int index) {
