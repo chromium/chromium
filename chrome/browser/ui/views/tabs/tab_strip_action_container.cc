@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -643,20 +644,22 @@ void TabStripActionContainer::OnGlicButtonAnimationEnded() {
 
 void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   Profile* profile = tab_strip_controller_->GetProfile();
+  auto* icon_manager =
+      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+  CHECK(icon_manager);
 
   if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     ActorTaskListBubbleController* controller =
         ActorTaskListBubbleController::From(
             tab_strip_controller_->GetBrowserWindowInterface());
     controller->ShowBubble(glic_actor_task_icon_);
+    actor::ui::LogTaskNudgeClick(icon_manager->GetCurrentActorTaskNudgeState());
   } else {
     glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
         tab_strip_controller_->GetBrowserWindowInterface(),
         /*prevent_close=*/false, glic::mojom::InvocationSource::kActorTaskIcon);
 
     if (glic_actor_task_icon_->GetIsShowingNudge()) {
-      auto* icon_manager =
-          tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
       icon_manager->ClearStoppedTasks();
       // If a nudge is showing, activate the last actuated tab on click of the
       // Task Icon.
@@ -669,9 +672,8 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
         tab_strip_model->ActivateTabAt(tab_index);
       }
     }
+    actor::ui::LogTaskIconClick();
   }
-
-  actor::ui::LogTaskIconClick();
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

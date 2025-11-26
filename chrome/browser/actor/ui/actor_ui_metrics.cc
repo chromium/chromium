@@ -11,11 +11,16 @@
 
 namespace actor::ui {
 
-constexpr char kActorUiPrefix[] = "Actor.Ui.";
+namespace {
 
-std::string GetActorUiMetricName(const char* suffix) {
-  return base::StrCat({kActorUiPrefix, suffix});
+constexpr std::string_view kActorUiPrefix = "Actor.Ui.";
+
+template <typename... Args>
+std::string GetActorUiMetricName(Args... args) {
+  return base::StrCat({kActorUiPrefix, std::string_view(args)...});
 }
+
+}  // namespace
 
 void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership) {
   switch (ownership) {
@@ -31,8 +36,16 @@ void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership) {
 }
 
 void LogTaskIconClick() {
+  // TODO(crbug.com/462712067): Revise to use RecordComputedAction.
   base::RecordAction(
       base::UserMetricsAction(GetActorUiMetricName("TaskIcon.Click").c_str()));
+}
+
+void LogTaskNudgeClick(ActorTaskNudgeState nudge_state) {
+  DCHECK_NE(nudge_state.text, ActorTaskNudgeState::Text::kDefault)
+      << "Nudge is hidden in default state so it cannot be clicked.";
+  base::RecordComputedAction(
+      GetActorUiMetricName("TaskNudge.", ToString(nudge_state), ".Click"));
 }
 
 void RecordActuatingTabWebContentsAttached() {

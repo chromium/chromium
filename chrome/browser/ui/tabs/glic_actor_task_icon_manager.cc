@@ -20,6 +20,7 @@ bool ShouldDisplayInTaskListBubble(actor::ActorTask::State state) {
 namespace tabs {
 
 using actor::ActorKeyedService;
+using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using actor::ActorTask;
 using glic::GlicWindowController;
 using glic::Host;

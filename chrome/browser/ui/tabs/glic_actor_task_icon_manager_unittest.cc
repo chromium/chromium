@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
@@ -19,6 +20,7 @@
 namespace tabs {
 using actor::ActorKeyedServiceFake;
 using actor::TaskId;
+using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using glic::GlicWindowController;
 using glic::Host;
 using glic::MockGlicWindowController;

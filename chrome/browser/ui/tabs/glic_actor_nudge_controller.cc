@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace tabs {
+using actor::ui::ActorTaskNudgeState;
 using glic::GlicInstance;
 using glic::GlicKeyedService;
 using glic::GlicWindowController;
@@ -60,23 +61,23 @@ void GlicActorNudgeController::OnStateUpdateImpl(
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
   switch (actor_task_nudge_state.text) {
-    case tabs::ActorTaskNudgeState::Text::kDefault:
+    case ActorTaskNudgeState::Text::kDefault:
       tab_strip_action_container_->HideGlicActorTaskIcon();
       // All bubbles should close when the nudge is hidden.
       if (bubble_controller->GetBubbleWidget()) {
         bubble_controller->GetBubbleWidget()->Close();
       }
       break;
-    case tabs::ActorTaskNudgeState::Text::kNeedsAttention:
+    case ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(
           l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
       break;
-    case tabs::ActorTaskNudgeState::Text::kMultipleTasksNeedAttention:
+    case ActorTaskNudgeState::Text::kMultipleTasksNeedAttention:
       UpdateNudgeLabelOrRetrigger(GetCheckTasksNudgeLabel());
       break;
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.
-    case tabs::ActorTaskNudgeState::Text::kCompleteTasks:
+    case ActorTaskNudgeState::Text::kCompleteTasks:
       if (!base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
         tab_strip_action_container_->TriggerGlicActorNudge(
             l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));

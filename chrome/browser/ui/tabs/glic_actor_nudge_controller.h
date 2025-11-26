@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class Profile;
@@ -15,8 +16,6 @@ class BrowserWindowInterface;
 class TabStripActionContainer;
 
 namespace tabs {
-
-struct ActorTaskNudgeState;
 
 // Controller that handles Glic Actor notification/nudge handling.
 // TODO(crbug.com/431015299): Move GlicNudgeController logic into this
@@ -34,7 +33,7 @@ class GlicActorNudgeController {
   DECLARE_USER_DATA(GlicActorNudgeController);
   static GlicActorNudgeController* From(BrowserWindowInterface* browser);
 
-  void OnStateUpdate(ActorTaskNudgeState actor_task_nudge_state);
+  void OnStateUpdate(actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 
   // TODO(crbug.com/446871477): Add to actor/resources/common_resources post
   // M143.
@@ -43,7 +42,7 @@ class GlicActorNudgeController {
   }
 
  private:
-  void OnStateUpdateImpl(ActorTaskNudgeState actor_task_nudge_state);
+  void OnStateUpdateImpl(actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 
   // Subscribe to updates from the GlicActorTaskIconManager.
   void RegisterActorNudgeStateCallback();

@@ -3494,6 +3494,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Actor.Ui.TaskNudge.{NudgeText}.Click">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Task Nudge when it is shown (this
+    currently happens when a Task is interrupted).
+  </description>
+  <token key="NudgeText">
+    <variant name="CompleteTasks"
+        summary="Task Nudge text shown when a task is complete."/>
+    <variant name="MultipleTasksNeedAttention"
+        summary="Task Nudge text shown when multiple tasks need attention"/>
+    <variant name="NeedsAttention"
+        summary="Task Nudge text shown when one task needs attention."/>
+  </token>
+</action>
+
 <action name="AddAddressManually_AddressSaved">
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>
