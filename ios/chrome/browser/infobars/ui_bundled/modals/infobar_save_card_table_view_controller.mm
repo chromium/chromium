@@ -522,6 +522,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL isNameValid =
       [self isCardholderNameValid:self.cardholderNameItem.textFieldValue];
 
+  [self
+      updateErrorStateForItem:self.cardholderNameItem
+                      isValid:isNameValid
+                 errorMessage:
+                     IDS_IOS_AUTOFILL_INVALID_CARDHOLDER_NAME_ACCESSIBILITY_ANNOUNCEMENT];
+
   [self.cardholderNameItem setHasValidText:isNameValid];
   [self reconfigureCellsForItems:@[ self.cardholderNameItem ]];
 
@@ -532,6 +538,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL isMonthValid =
       [self isExpirationMonthValid:self.expirationMonthItem.textFieldValue
                            forYear:self.expirationYearItem.textFieldValue];
+
+  [self
+      updateErrorStateForItem:self.expirationMonthItem
+                      isValid:isMonthValid
+                 errorMessage:
+                     IDS_IOS_AUTOFILL_INVALID_EXPIRATION_DATE_ACCESSIBILITY_ANNOUNCEMENT];
 
   [self.expirationMonthItem setHasValidText:isMonthValid];
   [self reconfigureCellsForItems:@[ self.expirationMonthItem ]];
@@ -547,6 +559,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self isExpirationMonthValid:self.expirationMonthItem.textFieldValue
                            forYear:self.expirationYearItem.textFieldValue];
 
+  // Update Year
+  [self
+      updateErrorStateForItem:self.expirationYearItem
+                      isValid:isYearValid
+                 errorMessage:
+                     IDS_IOS_AUTOFILL_INVALID_EXPIRATION_DATE_ACCESSIBILITY_ANNOUNCEMENT];
+
+  // Update Month (re-validate as it depends on year)
+  [self
+      updateErrorStateForItem:self.expirationMonthItem
+                      isValid:isMonthValid
+                 errorMessage:
+                     IDS_IOS_AUTOFILL_INVALID_EXPIRATION_DATE_ACCESSIBILITY_ANNOUNCEMENT];
+
   [self.expirationYearItem setHasValidText:isYearValid];
   [self.expirationMonthItem setHasValidText:isMonthValid];
   [self reconfigureCellsForItems:@[
@@ -557,6 +583,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)cvcDidChange {
+  BOOL isCvcValid = [self isCVCValid:self.cardCvcItem.textFieldValue];
+
+  [self updateErrorStateForItem:self.cardCvcItem
+                        isValid:isCvcValid
+                   errorMessage:
+                       IDS_IOS_AUTOFILL_INVALID_CVC_ACCESSIBILITY_ANNOUNCEMENT];
   [self.cardCvcItem
       setHasValidText:[self isCVCValid:self.cardCvcItem.textFieldValue]];
   [self reconfigureCellsForItems:@[ self.cardCvcItem ]];
@@ -721,6 +753,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
   numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
   return [numberFormatter numberFromString:string];
+}
+
+// Helper to update the item's error state and accessibility label.
+- (void)updateErrorStateForItem:(TableViewTextEditItem*)item
+                        isValid:(BOOL)isValid
+                   errorMessage:(int)errorMessageID {
+  [item setHasValidText:isValid];
+
+  if (!isValid) {
+    // Append the error message to the field name for the accessibility label.
+    // e.g., "Name on Card, Invalid Name"
+    NSString* errorMessage = l10n_util::GetNSString(errorMessageID);
+    item.cellAccessibilityLabel = [NSString
+        stringWithFormat:@"%@, %@", item.fieldNameLabelText, errorMessage];
+  } else {
+    // Reset to nil to use the default accessibility label (Field Name + Value).
+    item.cellAccessibilityLabel = nil;
+  }
 }
 
 @end
