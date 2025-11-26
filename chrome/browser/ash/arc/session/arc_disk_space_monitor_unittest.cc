@@ -16,12 +16,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -47,6 +50,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
     // Initialize fake clients.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     ash::SpacedClient::InitializeFake();
 
     // Set --arc-availability=officially-supported.
@@ -75,11 +79,13 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
         testing_profile_.get());
-
+    arc_dlc_installer_ =
+        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
     // Initialize a session manager with a fake ARC session.
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     arc_session_manager_->SetProfile(testing_profile_.get());
     arc_session_manager_->Initialize();
     arc_session_manager_->RequestEnable();
@@ -92,6 +98,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   void TearDown() override {
     arc_disk_space_monitor_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     notification_tester_.reset();
 
     testing_profile_ = nullptr;
@@ -99,6 +106,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
     scoped_feature_list_.reset();
     ash::SpacedClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     fake_user_manager_.Reset();
   }
@@ -133,6 +141,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   raw_ptr<TestingProfile> testing_profile_ = nullptr;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcDiskSpaceMonitor> arc_disk_space_monitor_;
 };

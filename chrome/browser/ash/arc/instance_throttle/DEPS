@@ -26,4 +26,13 @@ specific_include_rules = {
   "arc_provisioning_throttle_observer_unittest\.cc": [
     "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
   ],
+  "arc_boot_phase_throttle_observer_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
+  "arc_instance_throttle_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
+  "arc_power_throttle_observer_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
 }

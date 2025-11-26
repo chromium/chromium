@@ -20,3 +20,9 @@ include_rules = [
   "+chrome/browser/ash/arc/vmm",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "arc_cpu_throttle_observer_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
+}

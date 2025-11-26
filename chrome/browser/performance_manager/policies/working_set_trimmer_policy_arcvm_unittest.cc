@@ -13,9 +13,13 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -50,6 +54,7 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
     arc::StabilityMetricsManager::Initialize(&local_state_);
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
 
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
 
@@ -60,9 +65,14 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
         arc_service_manager_->arc_bridge_service()->intent_helper());
     intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
 
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+    cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
+    arc_dlc_installer_ =
+        std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<arc::ArcSessionRunner>(
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     testing_profile_ = std::make_unique<TestingProfile>();
     policy_ =
         WorkingSetTrimmerPolicyArcVm::CreateForTesting(testing_profile_.get());
@@ -80,6 +90,8 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     policy_.reset();
     testing_profile_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
+    cros_settings_test_helper_.reset();
     intent_helper_instance_.reset();
     intent_helper_host_.reset();
     app_instance_.reset();
@@ -87,6 +99,7 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     arc_service_manager_.reset();
 
     // All other object must be destroyed before shutting down ConciergeClient.
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     arc::StabilityMetricsManager::Shutdown();
   }
@@ -128,7 +141,9 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::FakeAppHost> app_host_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;

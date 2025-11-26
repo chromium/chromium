@@ -56,6 +56,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
@@ -296,6 +297,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   viz::TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides
       gpu_thread_allow_racy_overrides_;
   base::test::ScopedCommandLine scoped_command_line_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::optional<ash::BrowserControllerImpl> browser_controller_;

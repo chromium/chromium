@@ -12,15 +12,19 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
@@ -45,9 +49,7 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     base::CommandLine::ForCurrentProcess()->InitFromArgv(
         {"", "--arc-availability=officially-supported", "--enable-arcvm"});
   }
-
   ~ArcVmDataMigrationNotifierTest() override = default;
-
   ArcVmDataMigrationNotifierTest(const ArcVmDataMigrationNotifierTest&) =
       delete;
   ArcVmDataMigrationNotifierTest& operator=(
@@ -57,9 +59,14 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
     ash::ConciergeClient::InitializeFake();
     ArcSessionManager::SetUiEnabledForTesting(false);
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
+    arc_dlc_installer_ =
+        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -83,19 +90,19 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
   }
 
   void TearDown() override {
-    arc_session_manager_->Shutdown();
-
     // Destroy profile dependents before the profile.
     arc_vm_data_migration_notifier_.reset();
 
+    arc_session_manager_.reset();
     // Clear the raw_ptr BEFORE specifically deleting the profile it points to.
     testing_profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(kProfileName);
 
     profile_manager_.reset();
     fake_user_manager_.Reset();
-    arc_session_manager_.reset();
-    ash::ConciergeClient::Shutdown();
+    arc_dlc_installer_.reset();
+    cros_settings_test_helper_.reset();
+
     ChromeAshTestBase::TearDown();
   }
 
@@ -106,6 +113,8 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
   TestingProfile* profile() { return testing_profile_; }
 
  private:
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
