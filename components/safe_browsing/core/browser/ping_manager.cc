@@ -134,6 +134,88 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
       })");
 
+// LINT.IfChange(ClientSafeBrowsingReportTypeString)
+std::string GetReportTypeSuffix(
+    safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type) {
+  switch (report_type) {
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_UNKNOWN:
+      return "Unknown";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_PHISHING:
+      return "URLPhishing";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_MALWARE:
+      return "URLMalware";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_UNWANTED:
+      return "URLUnwanted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_PHISHING:
+      return "URLClientSidePhishing";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_MALWARE:
+      return "URLClientSideMalware";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_RECOVERY:
+      return "DangerousDownloadRecovery";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_WARNING:
+      return "DangerousDownloadWarning";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_BY_API:
+      return "DangerousDownloadByAPI";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_PASSWORD_PROTECTION_PHISHING:
+      return "URLPasswordProtectionPhishing";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_OPENED:
+      return "DangerousDownloadOpened";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_AD_SAMPLE:
+      return "AdSample";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_SUSPICIOUS:
+      return "URLSuspicious";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_BILLING:
+      return "URLBilling";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_APK_DOWNLOAD:
+      return "APKDownload";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_BLOCKED_AD_REDIRECT:
+      return "BlockedAdRedirect";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_BLOCKED_AD_POPUP:
+      return "BlockedAdPopup";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_HASH_PREFIX_REAL_TIME_EXPERIMENT:
+      return "HashPrefixRealTimeExperiment";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_PHISHY_SITE_INTERACTIONS:
+      return "PhishySiteInteractions";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_WARNING_SHOWN:
+      return "WarningShown";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_NOTIFICATION_PERMISSION_ACCEPTED:
+      return "NotificationPermissionAccepted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_AUTO_DELETED:
+      return "DangerousDownloadAutoDeleted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
+      return "DangerousDownloadProfileClosed";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY:
+      return "URLRealTimeAndHashRealTimeDiscrepancy";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_EXTERNAL_APP_REDIRECT:
+      return "ExternalAppRedirect";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_WARNING_ANDROID:
+      return "DangerousDownloadWarningAndroid";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_SERVICE_WORKER_BEHAVIOR:
+      return "ServiceWorkerBehavior";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:ClientSafeBrowsingReportTypeString)
+
 }  // namespace
 
 namespace safe_browsing {
@@ -272,6 +354,7 @@ void PingManager::OnSafeBrowsingHitURLLoaderComplete(
                                 source->NetError(), response_code);
   OnURLLoaderComplete(source, response_body);
 }
+
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
@@ -281,12 +364,15 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
   std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
-  std::string suffix =
+  std::string access_token_suffix =
       (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
+  std::string report_type_token_suffix = "." + GetReportTypeSuffix(report_type);
   RecordHttpResponseOrErrorCode(metric.c_str(), source->NetError(),
                                 response_code);
-  RecordHttpResponseOrErrorCode((metric + suffix).c_str(), source->NetError(),
-                                response_code);
+  RecordHttpResponseOrErrorCode((metric + access_token_suffix).c_str(),
+                                source->NetError(), response_code);
+  RecordHttpResponseOrErrorCode((metric + report_type_token_suffix).c_str(),
+                                source->NetError(), response_code);
   if (response_code == net::HTTP_BAD_REQUEST) {
     base::UmaHistogramExactLinear(
         "SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",

@@ -268,6 +268,11 @@ void PingManagerTest::RunReportThreatDetailsTest(
         /*sample=*/200,
         /*expected_bucket_count=*/1);
   }
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.URLPhishing",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
       /*expected_count=*/0);
@@ -495,6 +500,11 @@ TEST_F(PingManagerTest, TestReportThreatDetails_BadRequestLog) {
   histogram_tester.ExpectTotalCount(
       /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful",
       /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.URLPhishing",
+      /*sample=*/net::HTTP_BAD_REQUEST,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PingManagerTest, TestSanitizeThreatDetailsReport) {
