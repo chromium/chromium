@@ -213,6 +213,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/geolocation/cached_location_provider.h"
 #include "chromeos/ash/components/geolocation/live_location_provider.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
@@ -1038,9 +1039,15 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   }
 
   // Initialize `SystemLocationProvider` for the system parts.
-  SystemLocationProvider::Initialize(
-      std::make_unique<LiveLocationProvider>(std::make_unique<LocationFetcher>(
-          g_browser_process->shared_url_loader_factory())));
+  if (chromeos::features::IsCachedLocationProviderEnabled()) {
+    SystemLocationProvider::Initialize(std::make_unique<CachedLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            g_browser_process->shared_url_loader_factory())));
+  } else {
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            g_browser_process->shared_url_loader_factory())));
+  }
 
   // Instantiate TImeZoneResolverManager here, so it subscribes to
   // SessionManager and profile creation notification is properly propagated.

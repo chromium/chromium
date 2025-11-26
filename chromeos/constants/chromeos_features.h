@@ -135,6 +135,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBatteryBadgeIconEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBluetoothWifiQSPodRefreshEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsCachedLocationProviderEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsCloudGamingDeviceEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAlmanacLauncherPayloadEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsBlinkExtensionEnabled();

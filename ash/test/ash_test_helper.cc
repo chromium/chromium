@@ -40,6 +40,7 @@
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
@@ -51,11 +52,13 @@
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
+#include "chromeos/ash/components/geolocation/cached_location_provider.h"
 #include "chromeos/ash/components/geolocation/live_location_provider.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -161,9 +164,15 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
 
   // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
-  SystemLocationProvider::Initialize(
-      std::make_unique<LiveLocationProvider>(std::make_unique<LocationFetcher>(
-          base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  if (::chromeos::features::IsCachedLocationProviderEnabled()) {
+    SystemLocationProvider::Initialize(std::make_unique<CachedLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  } else {
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  }
 }
 
 AshTestHelper::~AshTestHelper() {
