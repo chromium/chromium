@@ -518,6 +518,41 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, AddTabsToGroup) {
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 }
 
+// Test that calling AddTabsToGroup with a nonexistent ID is a no-op.
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       AddTabsToGroup_NonexistentGroupID) {
+  // This test only needs one tab.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  // Set the WebContents ID for the tab to its index.
+  SetID(tab_strip_model->GetWebContentsAt(0), 0);
+  EXPECT_EQ("0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Add the tab to a group then ungroup it. This is done to save the `group_id`
+  // which then points to a nonexistent tab group after the ungroup call.
+  auto group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(0)->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ("0g0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  tab_list_interface->Ungroup({tab_list_interface->GetTab(0)->GetHandle()});
+  EXPECT_EQ("0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Trying to add the tab to the now invalid `group_id` should be a no-op.
+  auto second_call_group_id = tab_list_interface->AddTabsToGroup(
+      group_id, {tab_list_interface->GetTab(0)->GetHandle()});
+  EXPECT_FALSE(second_call_group_id.has_value());
+  EXPECT_EQ("0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Ungroup) {
   // Create three tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
