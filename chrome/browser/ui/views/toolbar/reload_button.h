@@ -77,6 +77,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  friend class ReloadButtonMetricsTest;
   friend class ReloadButtonTestBase;
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipText);
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipTextAccessibility);
