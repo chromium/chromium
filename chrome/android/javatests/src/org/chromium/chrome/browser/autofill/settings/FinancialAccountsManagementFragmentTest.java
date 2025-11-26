@@ -515,7 +515,6 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_noArgs_emptyTitle() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -524,7 +523,6 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titlePresentInArgs_titleSet() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(FinancialAccountsManagementFragment.TITLE_KEY, "Title");
@@ -536,7 +534,6 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titleNotPresentInArgs_emptyTitle() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
 
