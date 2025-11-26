@@ -21,7 +21,7 @@ public class ContainerStyle {
     private final int mVerticalPadding;
     private final int mBackgroundColor;
 
-    /** A container that does not add any styling and preserves the original background. */
+    /** A container with no background. */
     public static final ContainerStyle EMPTY = new Builder().build();
 
     private ContainerStyle(Builder builder) {
