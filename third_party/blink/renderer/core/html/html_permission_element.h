@@ -125,9 +125,7 @@ class CORE_EXPORT HTMLPermissionElement
                                   const AtomicString& language_string);
   virtual void UpdateAppearance();
 
-  void UpdateIcon(mojom::blink::PermissionName permission,
-                  HTMLPermissionIconElement::VisualState state =
-                      HTMLPermissionIconElement::VisualState::kIdle);
+  void UpdateIcon(mojom::blink::PermissionName permission);
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();

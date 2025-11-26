@@ -15,23 +15,16 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
  public:
   explicit HTMLPermissionIconElement(Document&);
 
-  enum class VisualState {
-    kIdle,
-    kWaiting,
-  };
-
   CascadeFilter GetCascadeFilter() const override {
     // Reject all properties for which 'kValidForPermissionIcon' is false.
     return CascadeFilter(CSSProperty::kValidForPermissionIcon);
   }
   void SetIcon(mojom::blink::PermissionName permission_type,
-               bool is_precise_location,
-               VisualState visual_state = VisualState::kIdle);
+               bool is_precise_location);
 
  private:
   void SetIconImpl(mojom::blink::PermissionName permission_type,
-                   bool is_precise_location,
-                   VisualState visual_state);
+                   bool is_precise_location);
   // blink::Element overrides.
   void AdjustStyle(ComputedStyleBuilder& builder) override;
 

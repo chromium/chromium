@@ -626,11 +626,8 @@ void HTMLPermissionElement::UpdateAppearance() {
       GetLocale().QueryString(translated_message_id));
 }
 
-void HTMLPermissionElement::UpdateIcon(
-    PermissionName permnission,
-    HTMLPermissionIconElement::VisualState visual_state) {
-  permission_internal_icon_->SetIcon(permnission, is_precise_location_,
-                                     visual_state);
+void HTMLPermissionElement::UpdateIcon(PermissionName permnission) {
+  permission_internal_icon_->SetIcon(permnission, is_precise_location_);
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
