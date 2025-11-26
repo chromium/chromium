@@ -1035,7 +1035,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     SETTINGS_MULTI_COLUMN,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(
                     SETTINGS_SINGLE_ACTIVITY,

@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for ManageSpaceActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSpaceActivityTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
