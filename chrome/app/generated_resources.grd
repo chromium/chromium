@@ -17417,7 +17417,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Automation infobar -->
     <message name="IDS_CONTROLLED_BY_AUTOMATION" desc="Message shown when the browser session is being controlled by an automated test.">
-      Chrome is being controlled by automated test software.
+      Chrome is being controlled by automated test software
     </message>
 
     <!-- Chrome for Testing infobar main text -->
