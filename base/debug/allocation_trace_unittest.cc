@@ -332,7 +332,7 @@ TEST_F(AllocationTraceRecorderTest, VerifyWithHooks) {
   dispatcher.InitializeForTesting(&subject_under_test);
 
   // Perform an allocation and free.
-  std::make_unique<std::string>(
+  std::ignore = std::make_unique<std::string>(
       "Just enforce an allocation and free to trigger notification of the "
       "subject under test. Hopefully this string is long enough to bypass any "
       "small string optimizations that the STL implementation might use.");
