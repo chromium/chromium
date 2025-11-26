@@ -2830,8 +2830,6 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     ++end_size;
     if (preexisting_info.contains(&info)) return;
-    observed_checksums[info.hashes_bitwise_xor.load(
-        std::memory_order_relaxed)]++;
     reservations[info.max_reserve.load(std::memory_order_relaxed)]++;
     hit_misses[std::make_pair(
         info.num_insert_hits.load(std::memory_order_relaxed),
@@ -2851,10 +2849,6 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   // Expect that we sampled at the requested sampling rate of ~1%.
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
               0.01, 0.005);
-  ASSERT_EQ(observed_checksums.size(), 5);
-  for (const auto& [_, count] : observed_checksums) {
-    EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.2, 0.05);
-  }
 
   ASSERT_EQ(reservations.size(), 10);
   for (const auto& [reservation, count] : reservations) {

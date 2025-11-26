@@ -3507,6 +3507,7 @@ EXPORTS
     ?GetUsageConfig@flags_internal@absl@@YA?AUFlagsUsageConfig@2@XZ
     ?GetWaiter@?$WaiterCrtp@VWin32Waiter@synchronization_internal@absl@@@synchronization_internal@absl@@SAPAVWin32Waiter@23@PAUThreadIdentity@base_internal@3@@Z
     ?GetWeekday@absl@@YA?AW4weekday@detail@cctz@time_internal@1@V?$civil_time@Usecond_tag@time_internal@absl@@@3451@@Z
+    ?GetWindowsLocalTimeZone@cctz@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?GetWord@?$BigUnsigned@$03@strings_internal@absl@@QBEIH@Z
     ?GetWord@?$BigUnsigned@$0FE@@strings_internal@absl@@QBEIH@Z
     ?GetYearDay@absl@@YAHV?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@1@@Z

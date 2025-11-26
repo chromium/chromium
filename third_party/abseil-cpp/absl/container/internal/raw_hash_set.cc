@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -763,7 +764,16 @@ BackingArrayPtrs AllocBackingArray(CommonFields& common,
                                    void* alloc) {
   RawHashSetLayout layout(new_capacity, policy.slot_size, policy.slot_align,
                           has_infoz);
-  char* mem = static_cast<char*>(policy.alloc(alloc, layout.alloc_size()));
+  // Perform a direct call in the common case to allow for profile-guided
+  // heap optimization (PGHO) to understand which allocation function is used.
+  constexpr size_t kDefaultAlignment = BackingArrayAlignment(alignof(size_t));
+  char* mem = static_cast<char*>(
+      ABSL_PREDICT_TRUE(
+          policy.alloc ==
+          (&AllocateBackingArray<kDefaultAlignment, std::allocator<char>>))
+          ? AllocateBackingArray<kDefaultAlignment, std::allocator<char>>(
+                alloc, layout.alloc_size())
+          : policy.alloc(alloc, layout.alloc_size()));
   const GenerationType old_generation = common.generation();
   common.set_generation_ptr(
       reinterpret_cast<GenerationType*>(mem + layout.generation_offset()));
