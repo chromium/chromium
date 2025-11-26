@@ -10,6 +10,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/favicon_base/favicon_callback.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents_observer.h"
 
 using base::android::JavaParamRef;
@@ -106,7 +107,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // update permission icon or showing next dialog.
   void NotifyPermissionAllowed();
 
-  void OnGeolocationAccuracySelected(JNIEnv* env, bool isPrecise);
+  void OnGeolocationAccuracySelected(JNIEnv* env, jint accuracy);
 
  private:
   // On navigation or page destruction, hide the dialog.

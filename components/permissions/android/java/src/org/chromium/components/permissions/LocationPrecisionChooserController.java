@@ -8,10 +8,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RichRadioButtonData;
 import org.chromium.components.browser_ui.widget.RichRadioButtonList;
 
@@ -30,19 +28,10 @@ public class LocationPrecisionChooserController {
 
     private int mArm = ApproximateGeolocationPromptArm.NO_ARM_SELECTED;
 
-    @IntDef({
-        LocationAccuracy.PRECISE,
-        LocationAccuracy.APPROXIMATE,
-    })
-    public @interface LocationAccuracy {
-        int PRECISE = 0;
-        int APPROXIMATE = 1;
-    }
-
     private final Context mContext;
     private final LinearLayout mContainer;
     private final @LocationAccuracy int mInitialSelection;
-    private final @Nullable Consumer<Boolean> mSelectionListener;
+    private final @Nullable Consumer<Integer> mSelectionListener;
     private final List<RichRadioButtonData> mOptionsToDisplay;
     private final Map<String, Integer> mIdToAccuracyMap;
 
@@ -51,7 +40,7 @@ public class LocationPrecisionChooserController {
     public LocationPrecisionChooserController(
             Context context,
             LinearLayout container,
-            @Nullable Consumer<Boolean> selectionListener) {
+            @Nullable Consumer<Integer> selectionListener) {
 
         mContext = context;
         mContainer = container;
@@ -92,7 +81,7 @@ public class LocationPrecisionChooserController {
                     if (mSelectionListener != null) {
                         @LocationAccuracy Integer accuracy = mIdToAccuracyMap.get(selectedId);
                         if (accuracy != null) {
-                            mSelectionListener.accept(accuracy == LocationAccuracy.PRECISE);
+                            mSelectionListener.accept(accuracy);
                         }
                     }
                 });

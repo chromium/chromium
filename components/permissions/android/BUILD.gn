@@ -148,6 +148,16 @@ android_library("embedded_permission_prompt_enums_java") {
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
+java_cpp_enum("prompt_options_enums_javagen") {
+  visibility = [ ":*" ]
+  sources = [ "../resolvers/permission_prompt_options.h" ]
+}
+
+android_library("prompt_options_enums_java") {
+  srcjar_deps = [ ":prompt_options_enums_javagen" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 java_cpp_enum("embedded_permission_prompt_enums_javagen") {
   visibility = [ ":*" ]
   sources = [ "../embedded_permission_prompt_flow_model.h" ]
@@ -185,6 +195,7 @@ android_library("java") {
     ":core_java",
     ":embedded_permission_prompt_enums_java",
     ":java_resources",
+    ":prompt_options_enums_java",
     "//base:base_java",
     "//base:service_loader_java",
     "//build/android:build_java",

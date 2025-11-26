@@ -288,15 +288,11 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
 }
 
 void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
-                                                             bool isPrecise) {
+                                                             jint accuracy) {
   CHECK(permission_prompt_);
 
-  GeolocationPromptOptions geolocation_options;
-  geolocation_options.selected_precise = isPrecise;
-
-  PromptOptions prompt_options = geolocation_options;
-
-  permission_prompt_->SetPromptOptions(std::move(prompt_options));
+  permission_prompt_->SetPromptOptions(GeolocationPromptOptions{
+      .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)});
 }
 
 static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {

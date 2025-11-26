@@ -2263,8 +2263,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(
-      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitAndAcceptPromptForRequest(request_geolocation.get());
 
   histograms.ExpectUniqueSample(
@@ -2294,8 +2293,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(
-      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
   AcceptThisTime();
 
@@ -2326,8 +2324,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(
-      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
   Deny();
 
@@ -2357,8 +2354,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(
-      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
   Closing();
 
@@ -2388,8 +2384,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(
-      GeolocationPromptOptions{accuracy == GeolocationAccuracy::kPrecise});
+  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
   Ignore();
 

@@ -551,7 +551,8 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
                 permissions::PermissionHatsTriggerHelper::
                     OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
                 trigger_gurl, std::nullopt, CONTENT_SETTING_DEFAULT,
-                GeolocationPromptOptions{/*selected_precise=*/true}));
+                GeolocationPromptOptions{
+                    /*selected_accuracy=*/GeolocationAccuracy::kPrecise}));
     EXPECT_EQ(survey_data.survey_string_data.at(
                   permissions::kPermissionPromptSurveyPromptOptionsKey),
               "precise");
@@ -572,7 +573,8 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
                 permissions::PermissionHatsTriggerHelper::
                     OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
                 trigger_gurl, std::nullopt, CONTENT_SETTING_DEFAULT,
-                GeolocationPromptOptions{/*selected_precise=*/false}));
+                GeolocationPromptOptions{
+                    /*selected_accuracy=*/GeolocationAccuracy::kApproximate}));
     EXPECT_EQ(survey_data.survey_string_data.at(
                   permissions::kPermissionPromptSurveyPromptOptionsKey),
               "approximate");
