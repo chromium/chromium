@@ -140,13 +140,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Converts dpi to scale factor, including accessibility adjustments.
   virtual float GetScaleFactorForDPI(int dpi) const;
 
-  // Returns the system's global scale factor, ignoring the value of
-  // --force-device-scale-factor. Only use this if you are working with Windows
-  // metrics global to the system. Otherwise you should call
-  // GetScaleFactorForHWND() to get the correct scale factor for the monitor
-  // you are targeting.
-  virtual float GetSystemScaleFactor() const;
-
   // Set a callback to use to query the status of HDR. This callback will be
   // called when the status of HDR may have changed.
   using RequestHDRStatusCallback = base::RepeatingClosure;
