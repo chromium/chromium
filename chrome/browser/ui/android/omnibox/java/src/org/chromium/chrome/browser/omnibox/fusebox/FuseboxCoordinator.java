@@ -48,6 +48,8 @@ import java.util.List;
 public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlServiceObserver {
     private final @Nullable FuseboxViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
+    private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
+
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final PropertyModel mModel;
@@ -118,6 +120,10 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                                 AutocompleteRequestType.SEARCH)
                         .with(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false)
+                        // May not be correct, but the view side struggles to deal with a null here.
+                        // Init with a default, and it will be corrected by the mediator before it
+                        // matters.
+                        .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
                         .with(
                                 FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
@@ -159,6 +165,9 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mOnCompactModeChangedSupplier);
+        if (mLastBrandedColorScheme != null) {
+            mMediator.updateVisualsForState(mLastBrandedColorScheme);
+        }
     }
 
     public void destroy() {
@@ -181,6 +190,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
     public void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         if (mMediator == null) return;
+        mLastBrandedColorScheme = brandedColorScheme;
         mMediator.updateVisualsForState(brandedColorScheme);
     }
 

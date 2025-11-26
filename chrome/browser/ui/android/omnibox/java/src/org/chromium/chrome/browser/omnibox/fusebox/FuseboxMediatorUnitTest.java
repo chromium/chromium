@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.WebContents;
@@ -429,6 +430,19 @@ public class FuseboxMediatorUnitTest {
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
         verify(mPopup).dismiss();
+    }
+
+    @Test
+    public void testIsIncognito() {
+        mMediator.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+
+        mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        assertEquals(
+                BrandedColorScheme.INCOGNITO,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
     }
 
     @Test
