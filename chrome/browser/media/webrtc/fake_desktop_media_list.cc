@@ -36,6 +36,16 @@ void FakeDesktopMediaList::AddSourceByFullMediaID(
   observer_->OnSourceAdded(sources_.size() - 1);
 }
 
+void FakeDesktopMediaList::AddChromiumWindowSource(int id) {
+  Source source;
+  source.id = content::DesktopMediaID(DesktopMediaID::TYPE_WINDOW, id);
+  source.name = base::NumberToString16(id);
+  source.is_chromium_window = true;
+
+  sources_.push_back(source);
+  observer_->OnSourceAdded(sources_.size() - 1);
+}
+
 void FakeDesktopMediaList::RemoveSource(int index) {
   sources_.erase(sources_.begin() + index);
   observer_->OnSourceRemoved(index);

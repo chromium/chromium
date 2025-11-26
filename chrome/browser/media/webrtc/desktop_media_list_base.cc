@@ -111,7 +111,7 @@ void DesktopMediaListBase::ShowDelegatedList() {}
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
     const std::u16string& name)
-    : id(id), name(name) {}
+    : id(id), name(name), is_chromium_window(std::nullopt) {}
 
 void DesktopMediaListBase::UpdateSourcesList(
     const std::vector<SourceDescription>& new_sources) {
@@ -143,6 +143,7 @@ void DesktopMediaListBase::UpdateSourcesList(
         sources_.insert(sources_.begin() + i, Source());
         sources_[i].id = new_sources[i].id;
         sources_[i].name = new_sources[i].name;
+        sources_[i].is_chromium_window = new_sources[i].is_chromium_window;
         if (observer_)
           observer_->OnSourceAdded(i);
       }

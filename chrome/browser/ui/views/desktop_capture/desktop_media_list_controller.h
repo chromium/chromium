@@ -103,6 +103,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // controller's view, if there is one.
   std::optional<content::DesktopMediaID> GetSelection() const;
 
+  bool HasSelectedChromiumWindow() const;
+
   void ClearSelection();
 
   // These three methods are called by the view to inform the controller of

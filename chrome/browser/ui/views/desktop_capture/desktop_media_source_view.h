@@ -70,6 +70,10 @@ class DesktopMediaSourceView : public views::View {
   void SetThumbnail(const gfx::ImageSkia& thumbnail);
   void SetIcon(const gfx::ImageSkia& icon);
 
+  void SetIsChromiumWindow(std::optional<bool> is_chromium_window) {
+    is_chromium_window_ = is_chromium_window;
+  }
+
   // Id for the source shown by this View.
   const content::DesktopMediaID& source_id() const { return source_id_; }
 
@@ -104,7 +108,9 @@ class DesktopMediaSourceView : public views::View {
   raw_ptr<views::ImageView> image_view_;
   raw_ptr<views::Label> label_;
 
-  bool selected_;
+  // Set to true if this source represents a Chromium window.
+  std::optional<bool> is_chromium_window_;
+  bool selected_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_

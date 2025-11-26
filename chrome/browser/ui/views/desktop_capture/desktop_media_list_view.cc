@@ -178,6 +178,7 @@ void DesktopMediaListView::OnSourceAdded(size_t index) {
     }
 #endif
     source_view->SetIcon(icon_image);
+    source_view->SetIsChromiumWindow(source.is_chromium_window);
   }
   AddChildViewAt(source_view, index);
 
