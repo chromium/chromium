@@ -34,8 +34,12 @@ SessionService::DeferralParams& SessionService::DeferralParams::operator=(
 std::unique_ptr<SessionService> SessionService::Create(
     const URLRequestContext* request_context) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-  unexportable_keys::UnexportableKeyService* service =
-      UnexportableKeyServiceFactory::GetInstance()->GetShared();
+  unexportable_keys::UnexportableKeyService* service;
+  if (request_context->unexportable_key_service()) {
+    service = request_context->unexportable_key_service();
+  } else {
+    service = UnexportableKeyServiceFactory::GetInstance()->GetShared();
+  }
   if (!service) {
     return nullptr;
   }

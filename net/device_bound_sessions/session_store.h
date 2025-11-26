@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_key.h"
 
@@ -28,7 +29,8 @@ namespace net::device_bound_sessions {
 class NET_EXPORT SessionStore {
  public:
   static std::unique_ptr<SessionStore> Create(
-      const base::FilePath& db_storage_path);
+      const base::FilePath& db_storage_path,
+      unexportable_keys::UnexportableKeyService* unexportable_key_service);
 
   virtual ~SessionStore() = default;
 
