@@ -50,13 +50,7 @@ static base::HeapArray<uint8_t> PrepareData(int* size) {
   return buffer;
 }
 
-void SimulateReadSequence(base::span<const int> read_sequence,
-                          int spanification_suspected_redundant_sequence_size) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(static_cast<size_t>(spanification_suspected_redundant_sequence_size) ==
-            read_sequence.size(),
-        base::NotFatalUntil::M143);
+void SimulateReadSequence(base::span<const int> read_sequence) {
   // Prepare encoded data for testing.
   int size;
   auto test_data = PrepareData(&size);
@@ -74,9 +68,7 @@ void SimulateReadSequence(base::span<const int> read_sequence,
     SCOPED_TRACE("Input position: " + base::NumberToString(pos));
 
     // First generate the amount to feed the decoder.
-    int read = std::min(
-        size - pos,
-        read_sequence[pos % spanification_suspected_redundant_sequence_size]);
+    int read = std::min(size - pos, read_sequence[pos % read_sequence.size()]);
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);
@@ -116,17 +108,17 @@ void SimulateReadSequence(base::span<const int> read_sequence,
 
 TEST(MessageDecoderTest, SmallReads) {
   const int kReads[] = {1, 2, 3, 1};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 TEST(MessageDecoderTest, LargeReads) {
   const int kReads[] = {50, 50, 5};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 TEST(MessageDecoderTest, EmptyReads) {
   const int kReads[] = {4, 0, 50, 0};
-  SimulateReadSequence(kReads, std::size(kReads));
+  SimulateReadSequence(kReads);
 }
 
 }  // namespace remoting::protocol
