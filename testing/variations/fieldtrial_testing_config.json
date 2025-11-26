@@ -3407,8 +3407,26 @@
                     "enable_features": [
                         "CheckVisibilityInChangePasswordFormWaiter",
                         "DisableFillingOnPageLoadForLeakedCredentials",
-                        "DownloadModelForPasswordChange",
                         "StopLoginCheckOnFailedLogin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutomatedPasswordChangeStudyV4": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DownloadModelForPasswordChange",
+                        "ReduceRequirementsForPasswordChange"
                     ]
                 }
             ]
