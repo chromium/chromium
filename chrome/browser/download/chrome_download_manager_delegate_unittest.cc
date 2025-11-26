@@ -2438,7 +2438,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   run_loop.Run();
 }
 
-// TODO(crbug.com/41328715) Add a Windows version of this test.
 #if !BUILDFLAG(IS_WIN)
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        TrustedSourcesPolicyTrusted) {
