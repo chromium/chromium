@@ -1985,16 +1985,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 #if !BUILDFLAG(IS_ANDROID)
 class DevToolsProtocolTest_OpensDevTools : public DevToolsProtocolTest {
  public:
-  const base::Value::Dict* OpenDevToolsForCurrentPageTarget(
-      std::optional<std::string> panel_id = std::nullopt) {
+  std::string GetCurrentPageTargetId() {
     const base::Value::Dict* result = SendCommandSync("Target.getTargets");
     const base::Value::List* list = result->FindList("targetInfos");
     EXPECT_EQ(list->size(), 1u);
-    const std::string targetId =
-        *list->front().GetDict().FindString("targetId");
+    return *list->front().GetDict().FindString("targetId");
+  }
 
+  const base::Value::Dict* OpenDevToolsForCurrentPageTarget(
+      std::optional<std::string> panel_id = std::nullopt) {
+    const std::string target_id = GetCurrentPageTargetId();
     base::Value::Dict params;
-    params.Set("targetId", targetId);
+    params.Set("targetId", target_id);
     if (panel_id.has_value()) {
       params.Set("panelId", *panel_id);
     }
@@ -2019,6 +2021,34 @@ class DevToolsProtocolTest_OpensDevTools : public DevToolsProtocolTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
+                       FindsDevToolsTarget) {
+  AttachToBrowserTarget();
+
+  const std::string target_id = GetCurrentPageTargetId();
+
+  // 1. Check there is no devtools target initially.
+  base::Value::Dict params;
+  params.Set("targetId", target_id);
+  const base::Value::Dict* result =
+      SendCommandSync("Target.getDevToolsTarget", params.Clone());
+  EXPECT_FALSE(error());
+  EXPECT_FALSE(result->Find("targetId"));
+
+  // 2. Open DevTools.
+  OpenDevToolsForCurrentPageTarget();
+  EXPECT_FALSE(error());
+
+  // 3. Check that devtools target is found.
+  const base::Value::Dict* devtools_target_result =
+      SendCommandSync("Target.getDevToolsTarget", std::move(params));
+  EXPECT_FALSE(error());
+  const std::string* devtools_target_id =
+      devtools_target_result->FindString("targetId");
+  EXPECT_TRUE(devtools_target_id);
+  EXPECT_FALSE(devtools_target_id->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
                        OpensDevTools_FailsForNonBrowserTargetSession) {
   AttachToTabTarget(web_contents());
 
@@ -2028,11 +2058,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       OpensDevTools_FailsForNonExistantTarget) {
+                       OpensDevTools_FailsForNonExistentTarget) {
   AttachToBrowserTarget();
 
   base::Value::Dict params;
-  params.Set("targetId", "<NonExistantTargetId>");
+  params.Set("targetId", "<NonExistentTargetId>");
   SendCommandSync("Target.openDevTools", std::move(params));
 
   EXPECT_EQ(*error()->FindString("message"), "No target with given id found");

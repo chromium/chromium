@@ -452,6 +452,13 @@ bool DevToolsAgentHostImpl::Inspect() {
   return false;
 }
 
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::GetDevToolsAgentHost() {
+  if (auto* delegate = DevToolsManager::GetInstance()->delegate()) {
+    return delegate->GetDevToolsAgentHost(this);
+  }
+  return nullptr;
+}
+
 scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::OpenDevTools(
     const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   if (auto* delegate = DevToolsManager::GetInstance()->delegate()) {
