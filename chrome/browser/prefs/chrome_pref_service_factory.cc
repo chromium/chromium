@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -90,6 +91,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
+#include "services/preferences/tracked/features.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserContext;
@@ -215,8 +217,11 @@ SettingsEnforcementGroup GetSettingsEnforcementGroup() {
 #if BUILDFLAG(IS_WIN)
   if (!g_disable_domain_check_for_testing) {
     static const bool is_domain_joined = base::IsEnterpriseDevice();
-    if (is_domain_joined)
+    if (is_domain_joined &&
+        !base::FeatureList::IsEnabled(
+            tracked::kEnableEncryptedTrackedPrefOnEnterprise)) {
       return GROUP_NO_ENFORCEMENT;
+    }
   }
 #endif
 

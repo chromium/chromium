@@ -17,6 +17,10 @@
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/enterprise_util.h"
+#endif
+
 namespace {
 using ValueState =
     prefs::mojom::TrackedPreferenceValidationDelegate::ValueState;
@@ -1546,3 +1550,29 @@ TEST_F(
   EXPECT_NE(temp_split_ehs.at("common_subkey"),
             stored_split_ehs.at("common_subkey"));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(PrefHashStoreImplEncryptedTest,
+       CheckValueEnterpriseRoamingHmacOnWindows) {
+  const std::string kPath = "enterprise.roaming.pref";
+  base::Value value("enterprise_value");
+
+  SeedAtomicMac(kPath, hash_store_.ComputeMac(kPath, &value));
+  SeedAtomicEncryptedHash(
+      kPath, hash_store_.ComputeEncryptedHash(kPath, &value, &test_encryptor_));
+  SeedAtomicMac(kPath, "invalid_roaming_mac");
+
+  std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_ =
+      base::SetIsEnterpriseDeviceForTesting(true);
+
+  // Perform CheckValue without the encryptor.
+  auto tx = BeginTransaction(/*with_encryptor=*/false);
+  ValueState state = tx->CheckValue(kPath, &value);
+
+  // On an enterprise device, the presence of an encrypted hash should cause
+  // the transaction to defer validation.
+  EXPECT_EQ(ValueState::UNCHANGED, state);
+
+  is_enterprise_device_for_testing_.reset();
+}
+#endif

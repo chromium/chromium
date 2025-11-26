@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/enterprise_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "crypto/secure_util.h"
@@ -139,6 +141,15 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
     const std::string& path,
     const std::string& value_as_string,
     const std::string& digest_string) const {
+#if BUILDFLAG(IS_WIN)
+  // On enterprise-managed devices, bypass legacy HMAC validation. This is to
+  // support roaming user profiles, where the device-specific HMAC would fail
+  // upon roaming. Preference integrity on these devices is maintained by the
+  // encrypted hash.
+  if (base::IsEnterpriseDevice()) {
+    return VALID;
+  }
+#endif
   return HmacVerify(path, value_as_string, digest_string) ? VALID : INVALID;
 }
 

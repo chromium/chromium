@@ -13,9 +13,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/enterprise_util.h"
+#endif
 
 namespace {
 class PrefHashCalculatorEncryptedTest : public testing::Test {
@@ -89,6 +94,29 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
       calc1.Calculate("pref_path", static_cast<const base::Value*>(nullptr))
           .empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+class PrefHashCalculatorEnterpriseTest : public testing::Test {
+ protected:
+  PrefHashCalculatorEnterpriseTest() : calculator_("seed", "deviceid") {}
+
+  PrefHashCalculator calculator_;
+  std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_;
+};
+
+TEST_F(PrefHashCalculatorEnterpriseTest, EnterpriseDevice) {
+  base::Value string_value_1("string value 1");
+  base::Value string_value_2("string value 2");
+
+  is_enterprise_device_for_testing_ =
+      base::SetIsEnterpriseDeviceForTesting(true);
+  ASSERT_EQ(PrefHashCalculator::VALID,
+            calculator_.Validate(
+                "pref_path", &string_value_1,
+                calculator_.Calculate("pref_path", &string_value_2)));
+  is_enterprise_device_for_testing_.reset();
+}
+#endif
 
 // Tests the output against a known value to catch unexpected algorithm changes.
 // The test hashes below must NEVER be updated, the serialization algorithm used

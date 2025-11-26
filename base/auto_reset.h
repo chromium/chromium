@@ -6,6 +6,8 @@
 #define BASE_AUTO_RESET_H_
 
 #include <utility>
+// Necessary per <utility>'s usage of `sizeof(std::intmax_t)` without IWYU.
+#include <stdint.h>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"

@@ -12,6 +12,9 @@ namespace tracked {
 // Enabled encrypted hashing for prefs.
 BASE_DECLARE_FEATURE(kEncryptedPrefHashing);
 
+// Enables encrypted tracked preferences for enterprise users.
+BASE_DECLARE_FEATURE(kEnableEncryptedTrackedPrefOnEnterprise);
+
 }  // namespace tracked
 
 #endif  // SERVICES_PREFERENCES_TRACKED_FEATURES_H_
