@@ -24,7 +24,7 @@
 <translation id="1154147086299354128">&amp;Abrir no Chrome</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1158134713295836892">Gemini no Chrome</translation>
-<translation id="1184145431117212167">A instalação falhou porque a sua versão do Windows não é suportada.</translation>
+<translation id="1184145431117212167">A instalação falhou porque a sua versão do Windows não é compatível.</translation>
 <translation id="1194807384646768652">O Chrome bloqueou esta transferência porque o tipo de ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Reiniciar para atualizar o &amp;Chrome</translation>
@@ -107,7 +107,7 @@
 <translation id="2139300032719313227">Reinicie o ChromeOS</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2163089732491971196">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso</translation>
-<translation id="2174917724755363426">Instalação não concluída. Tem a certeza de que quer cancelar?</translation>
+<translation id="2174917724755363426">Instalação não concluída. Quer mesmo cancelar?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Erro na verificação de atualizações: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199691482078155239">O Chrome dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados</translation>
@@ -137,7 +137,7 @@
 <translation id="2571392474191184472">A sua organização gere o Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Para manter a sua navegação separada, o Chrome pode criar-lhe o seu próprio perfil.</translation>
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome atualmente em execução. Feche o Google Chrome e tente novamente.</translation>
-<translation id="2586406160782125153">Esta ação elimina os seus dados de navegação deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="2586406160782125153">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -163,7 +163,7 @@
 <translation id="2825024317344269723">Site perigoso. O Chrome removeu as autorizações de notificações.</translation>
 <translation id="2841525013647267359">Traduzir do</translation>
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
-<translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
+<translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita.</translation>
 <translation id="2857540653560290388">A iniciar o Chrome…</translation>
 <translation id="286025080868315611">Saiba por que motivo o Chrome bloqueia algumas transferências</translation>
 <translation id="2861074815332034794">A atualizar o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -218,7 +218,7 @@
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operativo durante a instalação. Descarregue de novo o Google Chrome.</translation>
-<translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
+<translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser usado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="3434246496373299699">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3438681572027105609">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chrome</translation>
 <translation id="3450887623636316740">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chrome pode verificar esta transferência se facultar a palavra-passe. As informações sobre o ficheiro são enviadas para a Navegação Segura do Google, mas o conteúdo do ficheiro e a palavra-passe permanecem no seu dispositivo.</translation>
@@ -549,7 +549,7 @@
 <translation id="7106741999175697885">Gestor de tarefas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="7155997830309522122">Em caso afirmativo, edite a sua palavra-passe guardada no Chrome para que corresponda à nova palavra-passe.</translation>
-<translation id="7161904924553537242">Bem-vindo ao Google Chrome</translation>
+<translation id="7161904924553537242">Damos-lhe as boas-vindas ao Google Chrome</translation>
 <translation id="7193885263065350793">A sua organização fecha o Chrome quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chrome em separado. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">A <ph name="MANAGER" /> gere o Chrome</translation>
@@ -560,7 +560,7 @@
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7386878009611068389">Para teres mais segurança online com as escolhas dos teus pais, muda para o teu perfil do Chrome onde já tens sessão iniciada como <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="7398801000654795464">Iniciou sessão no Chrome com a conta <ph name="USER_EMAIL_ADDRESS" />. Utilize a mesma conta para iniciar sessão novamente.</translation>
+<translation id="7398801000654795464">Iniciou sessão no Chrome com a conta <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7412494426921990001">Clique no menu do Chrome</translation>
 <translation id="7419819959108735624">Selecione o que quer pesquisar com o Google Lens</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chrome estavam a aceder a 1 dispositivo USB}=1{Uma ou mais extensões do Chrome estão a aceder a 1 dispositivo USB}other{Uma ou mais extensões do Chrome estão a aceder a # dispositivos USB}}</translation>
@@ -606,7 +606,7 @@
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>
 <translation id="778331955594035129">O Chrome necessita da autorização de acesso à localização para este site</translation>
-<translation id="7787950393032327779">O perfil parece estar a ser utilizado por outro processo do Google Chrome (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a utilizar este perfil, pode desbloqueá-lo e reiniciar o Chrome.</translation>
+<translation id="7787950393032327779">O perfil parece estar a ser usado por outro processo do Google Chrome (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a usar este perfil, pode desbloqueá-lo e reiniciar o Chrome.</translation>
 <translation id="7792336732117553384">&amp;Gerir perfis do Chrome</translation>
 <translation id="7801699035218095297">O Google Chrome está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="7804364787702057554">A sua conta no Chrome</translation>

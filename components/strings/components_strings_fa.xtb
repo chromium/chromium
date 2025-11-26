@@ -1038,7 +1038,7 @@
 <translation id="2686919536310834199">درباره «کمک به نوشتن» بازخورد ارسال کنید.</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
 <translation id="2688186765492306706">۷۶۰ × ۵۰۰ میلی‌متر</translation>
-<translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
+<translation id="2688969097326701645">بله، ادامه دادن</translation>
 <translation id="2690699652723742414">‫۳۰ روز گذشته</translation>
 <translation id="2691385045260836588">مدل</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
@@ -3224,7 +3224,7 @@
 <translation id="6292819926564202163">‏موتور جستجوی شما در Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">در حال ذخیره کردن...</translation>
+<translation id="6295855836753816081">درحال ذخیره کردن…</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6298456705131259420">‏بر سایت‌هایی فهرست‌شده در اینجا تأثیر می‌گذارد. با درج «[.*]» قبل‌از نام دامنه، یک استثنا برای کل دامنه ایجاد می‌شود. برای مثال، افزودن «‎[*.]google.com» بدین معنی است که کوکی‌های طرف سوم می‌توانند برای mail.google.com هم فعال باشند، زیرا این زیردامنه بخشی از google.com است.</translation>
 <translation id="6300452962057769623">{0,plural, =0{دستگاه اکنون بازراه‌اندازی خواهد شد}=1{دستگاه یک ثانیه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}}</translation>

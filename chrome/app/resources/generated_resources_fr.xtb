@@ -1856,7 +1856,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="225614027745146050">Bienvenue</translation>
 <translation id="2257053455312861282">L'ajout d'un compte scolaire permet de se connecter facilement aux sites Web, aux extensions et aux applications en tant qu'élève. Le contrôle parental n'est pas désactivé.</translation>
 <translation id="225716114209817872">Maximal</translation>
-<translation id="2259337945538989999">Pour accéder à vos onglets sur vos autres appareils, confirmez votre identité. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="2259337945538989999">Pour récupérer vos onglets depuis vos autres appareils, confirmez votre identité. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2261323523305321874">Votre administrateur a effectué une modification s'appliquant à tout le système qui désactive certains anciens profils.</translation>
 <translation id="22614517036276112">Ce document ou votre appareil ne respecte pas certaines règles de sécurité de votre organisation. Contactez votre administrateur pour savoir ce qui doit être corrigé.</translation>
 <translation id="2262477216570151239">Délai avant répétition</translation>
@@ -6404,7 +6404,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="5420935737933866496">Copier le &amp;lien</translation>
 <translation id="5421048291985386320">&amp;Se reconnecter</translation>
-<translation id="542237158771780634">Lorsque cette option est activée, les données sont enregistrées dans votre compte Google et peuvent être utilisées sur tous vos appareils. Désactivez-la pour n'enregistrer les données que sur cet appareil.</translation>
+<translation id="542237158771780634">Lorsqu'une option est activée, les données correspondantes sont enregistrées dans votre compte Google et peuvent être utilisées sur tous vos appareils. Désactivez l'option pour n'enregistrer les données que sur cet appareil.</translation>
 <translation id="5422781158178868512">Désolé, impossible de reconnaître votre périphérique de stockage externe.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">La prochaine fois que accéderez à <ph name="SITE" />, ce site utilisera les autorisations par défaut</translation>
@@ -6623,7 +6623,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5568069709869097550">Impossible de se connecter</translation>
 <translation id="5568525251731145240">Supprimer les données et autorisations de <ph name="SITE_NAME" />, de tous les sites qui en dépendent et des applis installées ?</translation>
 <translation id="5568602038816065197">Les sites peuvent utiliser les fonctionnalités avancées de n'importe quelle imprimante accessible à votre appareil sans passer par l'invite d'impression standard</translation>
-<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Mots de passe}=1{Mot de passe ({SELECTED_ITEMS})}one{Mots de passe ({SELECTED_ITEMS})}other{Mots de passe ({SELECTED_ITEMS})}}</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Mots de passe}=1{Mots de passe ({SELECTED_ITEMS})}one{Mots de passe ({SELECTED_ITEMS})}other{Mots de passe ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
 <translation id="5571092938913434726">Contrôles multimédias généraux</translation>
 <translation id="5571832155627049070">Personnalisez votre profil</translation>
@@ -8948,7 +8948,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucune action n'a encore été associée à un contacteur</translation>
 <translation id="7212097698621322584">Saisissez votre code actuel pour pouvoir le modifier. Si vous ne vous en souvenez plus, vous devez réinitialiser la clé de sécurité, puis créer un autre code.</translation>
-<translation id="7214047272988222011">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès à l'appareil photo du système<ph name="LINK_END" />.</translation>
+<translation id="7214047272988222011">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l‘<ph name="LINK_BEGIN" />accès à l'appareil photo du système<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
 <translation id="7217208603285112910">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
@@ -9502,7 +9502,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7600218158048761260">Google Drive est désactivé pour ce type de compte.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="760197030861754408">Accédez à la page "<ph name="LANDING_PAGE" />" pour vous connecter.</translation>
-<translation id="7602079150116086782">Aucun onglet depuis d'autres appareils.</translation>
+<translation id="7602079150116086782">Aucun onglet issu d'autres appareils</translation>
 <translation id="7602173054665172958">Gestion de l'impression</translation>
 <translation id="7603785829538808504">Les sites listés ci-dessous appliquent un paramètre personnalisé</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 mot de passe non importé}one{{NUM_PASSWORDS} mot de passe non importé}other{{NUM_PASSWORDS} mots de passe non importés}}</translation>
@@ -10596,7 +10596,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8323167517179506834">Saisir une URL</translation>
 <translation id="8323317289166663449">Accéder à toutes vos données sur votre ordinateur et tous les sites Web et les modifier</translation>
 <translation id="8323518750352551353">Séparer la navigation ?</translation>
-<translation id="8323744572398547859">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez l'historique. Vous pourrez également accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="8323744572398547859">Pour récupérer vos onglets depuis vos autres appareils, connectez-vous et synchronisez l'historique. Vous pourrez également accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8325413836429495820">Non autorisé à voir votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS #7, chaîne de certificats</translation>
@@ -11402,7 +11402,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8872506776304248286">Ouvrir dans l'appli</translation>
 <translation id="8872774989979382243">Le volume est désactivé. Activez le volume.</translation>
 <translation id="887292602123626481">En savoir plus sur les moteurs de recherche par défaut</translation>
-<translation id="8873075098103007382">Rester organisé avec les groupes d'onglets</translation>
+<translation id="8873075098103007382">Organisez-vous avec les groupes d'onglets</translation>
 <translation id="8874341931345877644">Castez sur un appareil :</translation>
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a été désactivé</translation>
 <translation id="8874647982044395866">Bio</translation>

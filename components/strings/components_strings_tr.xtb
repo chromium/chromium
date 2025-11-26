@@ -438,7 +438,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1711234383449478798"><ph name="POLICY_NAME" />, <ph name="VALUE" /> olarak ayarlanmadığından yok sayıldı.</translation>
 <translation id="1712552549805331520"><ph name="URL" />, verileri yerel bilgisayarınızda kalıcı olarak saklamak istiyor</translation>
 <translation id="1713628304598226412">Tepsi 2</translation>
-<translation id="1713819065634160212">Google Hesabınızdaki adresler kullanılsın ve kaydedilsin</translation>
+<translation id="1713819065634160212">Google Hesabımdaki adresler kullanılsın ve kaydedilsin</translation>
 <translation id="1714807406136741351">Göz atma modu. Formlar moduna geçip sol/sağ oku kullanarak grafikteki fiyat değişikliklerini inceleyebilirsiniz</translation>
 <translation id="1717218214683051432">Hareket sensörleri</translation>
 <translation id="1717494416764505390">Posta kutusu 3</translation>
@@ -4942,7 +4942,7 @@ Ek ayrıntılar:
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9131119348384879525">Gizli içerik yakalansın mı?</translation>
 <translation id="9133861214150761123">Muhasebe ve Denetim</translation>
-<translation id="9133985615769429248">Bu cihazı başkalarıyla paylaşıyorsanız kayıtlı bir şifre kullandığınızda kimliğinizi doğrulamak için ekran kilidinizi kullanabilirsiniz.</translation>
+<translation id="9133985615769429248">Bu cihazı başkalarıyla paylaşıyorsanız kayıtlı bir şifre kullandığınızda kimliğinizi doğrulamak için ekran kilidinizi kullanabilirsiniz</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, sanal kart</translation>
 <translation id="9138037198177304356">Bildirimlere izin veriliyor</translation>
 <translation id="9139318394846604261">Alışveriş</translation>

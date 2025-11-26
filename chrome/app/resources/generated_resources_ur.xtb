@@ -1005,7 +1005,7 @@
 <translation id="166454475160289583">آپ کی کی بورڈ ان پٹ کو اوور رائڈ کرنے کی اجازت نہیں ہے</translation>
 <translation id="1665328953287874063">‏اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کے لیے پاس ورڈ یا PIN کا استعمال کریں</translation>
 <translation id="1665859804801131136">اظہار پسندی</translation>
-<translation id="1667842670298352129">‏کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔ آپ کی بورڈ شارٹ کٹ بھی استعمال کر سکتے ہیں: ٹیکسٹ نمایاں کریں، پھر Search + S کو دبائیں۔</translation>
+<translation id="1667842670298352129">‏کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔ آپ کی بورڈ شارٹ کٹ بھی استعمال کر سکتے ہیں: ٹیکسٹ نمایاں کریں، پھر تلاش + S کو دبائیں۔</translation>
 <translation id="1668435968811469751">دستی طور پر اندراج کریں</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> کے لیے <ph name="BRAND" /> میں محفوظ کریں</translation>
 <translation id="1668979692599483141">تجاویز کے بارے میں جانیں</translation>
@@ -1272,7 +1272,7 @@
 <translation id="1850508293116537636">&amp;گھڑی وار گھمائیں</translation>
 <translation id="185111092974636561">‏<ph name="BEGIN_PARAGRAPH1" />اندراج کرنے سے پہلے آپ کو TPM صاف کرنے کی ضرورت ہے تاکہ <ph name="DEVICE_OS" /> آلے کی ملکیت لے سکے۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ TPM آلے کو مکمل طور پر آف بھی کر سکتے ہیں۔ آپ کا ڈیٹا اب بھی سافٹ ویئر مرموز کاری کے ساتھ محفوظ طریقے سے اسٹور کیا جائے گا لیکن کچھ حفاظتی خصوصیات جیسے ہارڈ ویئر کے ذریعے تعاون یافتہ سرٹیفیکیٹس غیر فعال ہو جائیں گے۔<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />آپ سسٹم کی BIOS/UEFI ترتیبات کو ریبوٹ کر کے اور درج کر کے اپنی TPM کی ترتیبات کو تبدیل کر سکتے ہیں۔ آلے کے ماڈل کی بنیاد پر اقدامات مختلف ہوتے ہیں۔ مزید معلومات کے لیے، ریبوٹ کرنے سے پہلے <ph name="DEVICE_OS" /> دستاویز کو ایک علیحدہ آلے پر کھولیں: g.co/flex/TPMHelp۔<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />آپ سسٹم کی BIOS/UEFI ترتیبات کو ریبوٹ کر کے اور درج کر کے اپنی TPM کی ترتیبات کو تبدیل کر سکتے ہیں۔ آلے کے ماڈل کی بنیاد پر اقدامات مختلف ہوتے ہیں۔ مزید معلومات کے لیے، ریبوٹ کرنے سے پہلے <ph name="DEVICE_OS" /> دستاویز کو ایک علیحدہ آلے پر کھولیں: g.co/flex/TPMHelp ۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1851551847729706116">اس ٹیب پر <ph name="TAB_NAME" /> کا اشتراک کیا جا رہا ہے</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
 <translation id="1856715684130786728">مقام شامل کریں…</translation>
@@ -1925,7 +1925,7 @@
       اپنے آلے پر حسب ضرورت کوڈ انسٹال اور ٹیسٹ کرنے کے لیے، آپ اپنے ChromeOS Flex آلے پر ڈیبگ کرنے کی خصوصیات کو فعال کر سکتے ہیں۔ اس سے آپ کو ان چیزوں کی اجازت مل جائے گی:<ph name="BR" />
       <ph name="BEGIN_LIST" />
         <ph name="LIST_ITEM" />rootfs کی توثیق ہٹائیں تاکہ آپ OS فائلوں میں ترمیم کر سکیں
-        <ph name="LIST_ITEM" />معیاری ٹیسٹ کی کلیدوں کا استعمال کر کے آلے پر SSH رسائی فعال کریں تاکہ آپ آلے تک رسائی حاصل کرنے کے لیے <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> جیسے ٹولز کا استعمال کر سکیں
+        <ph name="LIST_ITEM" />معیاری ٹیسٹ کی کلیدوں کا استعمال کر کے آلے پر SSH رسائی فعال کریں تاکہ آپ آلے تک رسائی حاصل کرنے کے لیے <ph name="BEGIN_CODE" />'cros flash‘<ph name="END_CODE" /> جیسے ٹولز کا استعمال کر سکیں
         <ph name="LIST_ITEM" />USB سے بوٹ کرنے کو فعال کریں تاکہ آپ ایک USB ڈرائیو سے OS امیج انسٹال کر سکیں
       <ph name="LIST_ITEM" />dev اور سسٹم root لاگ ان پاس ورڈ دونوں کو ایک حسب ضرورت قدر پر سیٹ کریں تاکہ آپ دستی طور پر آلے میں SSH کر سکیں
       <ph name="END_LIST" />
@@ -4715,7 +4715,7 @@
 <translation id="4225397296022057997">تمام سائٹس پر</translation>
 <translation id="4228071595943929139">اپنی تنظیم کا ای میل پتہ استعمال کریں</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{اس ایکسٹینشن کی اجازت نہیں ہے}other{کچھ ایکسٹینشنز کی اجازت نہیں ہے}}</translation>
-<translation id="4231053948789591973">فی الحال کاسٹنگ موقوف ہے۔ آپ کسی بھی وقت اپنی اسکرین کو دوبارہ کاسٹ کرنا شروع کر سکتے یا اسے کاسٹ کرنا بند سکتے ہیں۔</translation>
+<translation id="4231053948789591973">فی الحال کاسٹنگ موقوف ہے۔ آپ کسی بھی وقت اپنی اسکرین کو دوبارہ کاسٹ کرنا شروع کر سکتے یا اسے کاسٹ کرنا بند کر سکتے ہیں۔</translation>
 <translation id="4231095370974836764">‏اپنے <ph name="DEVICE_TYPE" /> پر Google Play سے ایپس اور گیمز انسٹال کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">گیم کنٹرولز بند کریں</translation>
 <translation id="4231231258999726714">‏Steam برائے Chromebook کو سیٹ اپ کیا جا رہا ہے</translation>
@@ -5595,7 +5595,7 @@
 <translation id="4841741146571978176">مطلوبہ ورچوئل مشین موجود نہیں ہے۔ براہ کرم جاری رکھنے کیلئے <ph name="VM_TYPE" /> سیٹ اپ کرنے کی کوشش کریں</translation>
 <translation id="4842976633412754305">یہ صفحہ غیر توثیق کردہ ذرائع سے اسکرپٹس لوڈ کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="4844333629810439236">دوسرے کی بورڈز</translation>
-<translation id="4844347226195896707">‏آپ Chrome یا Android استعمال نہ کر رہے ہوں تب بھی &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; میں سائن ان کر کے اپنے پاس ورڈز دیکھیں</translation>
+<translation id="4844347226195896707">‏آپ Chrome یا Android استعمال نہ کر رہے ہوں تب بھی &lt;a target='_blank' href=‘<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt; میں سائن ان کر کے اپنے پاس ورڈز دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4846628405149428620">منتخب کریں کہ یہ سائٹ تبدیلیاں کہاں محفوظ کر سکتی ہے</translation>
 <translation id="4846680374085650406">اس ترتیب کیلئے آپ منتظم کی تجویز کی پیروی کر رہے ہیں۔</translation>
@@ -6620,7 +6620,7 @@
 <translation id="5564450015351086922">‏‫iOS پر Google لینز آزمائیں</translation>
 <translation id="5565579144504951367">آپ کا ہارڈویئر سیٹ اپ کے لیے تیار ہے</translation>
 <translation id="5565735124758917034">فعال</translation>
-<translation id="5568069709869097550">سائن نہیں کیا جا سکتا ہے</translation>
+<translation id="5568069709869097550">سائن ان نہیں کیا جا سکتا ہے</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپس کے لیے سائٹ کا ڈیٹا اور اجازتیں حذف کریں؟</translation>
 <translation id="5568602038816065197">سائٹس معیاری پرنٹ پرامپٹ سے گزرے بغیر آپ کے آلے تک قابل رسائی کسی بھی پرنٹر سے اعلی خصوصیات کا استعمال کر سکتی ہیں</translation>
 <translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{پاس ورڈز}=1{پاس ورڈز ({SELECTED_ITEMS})}other{پاس ورڈز ({SELECTED_ITEMS})}}</translation>

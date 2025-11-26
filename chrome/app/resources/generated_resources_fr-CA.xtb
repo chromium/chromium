@@ -3202,7 +3202,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3185454065699440434">Autoriser les extensions sur <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3187556136478864255">Parvenez-vous à voir votre appareil de diffusion dans
-l'<ph name="BEGIN_LINK" />
+l‘<ph name="BEGIN_LINK" />
     appli Google Home<ph name="END_LINK" />?</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne mobile</translation>
@@ -5454,7 +5454,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4742334355511750246">Non autorisés à afficher des images</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
-<translation id="4743990041512863976">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès au microphone du système<ph name="LINK_END" />.</translation>
+<translation id="4743990041512863976">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez l‘<ph name="LINK_BEGIN" />accès au microphone du système<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminosité du rétroéclairage du clavier</translation>
 <translation id="4744268813103118742">Accéder au site</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -10202,7 +10202,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8052944601017749068">Importer vers <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Recharger la page</translation>
-<translation id="8054500940978949009">Autorisé. Activez l'<ph name="LINK_BEGIN" />accès au microphone système<ph name="LINK_END" />.</translation>
+<translation id="8054500940978949009">Autorisé. Activez l‘<ph name="LINK_BEGIN" />accès au microphone système<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Ce type de fichier peut endommager votre appareil. Voulez-vous vraiment conserver le fichier <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Veuillez entrer une adresse de courriel valide</translation>
 <translation id="8054609631325628928">Ces numéros peuvent être utilisés pour aider à activer le service</translation>

@@ -62,7 +62,7 @@
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Arraste o link para a barra de endereço do separador.</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
-<translation id="1199716647557067911">Tem a certeza de que quer desativar o acesso por switch?</translation>
+<translation id="1199716647557067911">Quer mesmo desativar o acesso por switch?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1210557957257435379">gravação de ecrã</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
@@ -86,7 +86,7 @@
 <translation id="1272079795634619415">Parar</translation>
 <translation id="12741168609094094">Selecione qualquer coisa no ecrã para pesquisar, copiar texto e muito mais</translation>
 <translation id="1275285675049378717">A carregar <ph name="POWER_SOURCE" /></translation>
-<translation id="1275718070701477396">Linha selecionada</translation>
+<translation id="1275718070701477396">Opção selecionada</translation>
 <translation id="1276975447697633661">Selecione o ficheiro e, em seguida, prima <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar telemóvel</translation>
@@ -597,7 +597,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3047761520276763270">Experimente dizer:</translation>
 <translation id="3053407068093039599">Ativar/desativar o acesso à câmara</translation>
 <translation id="3055162170959710888">Utilizou este dispositivo durante <ph name="USED_TIME" /> hoje.</translation>
-<translation id="3062298103034426069">Não suportado</translation>
+<translation id="3062298103034426069">Não compatível</translation>
 <translation id="3068622547379332530">Versão <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Prateleira à esquerda</translation>
 <translation id="3077734595579995578">shift</translation>
@@ -1577,7 +1577,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Programação</translation>
 <translation id="6199775032047436064">Recarregar a página actual</translation>
-<translation id="6200515304866777730">Não suportado pela app</translation>
+<translation id="6200515304866777730">Não compatível com a app</translation>
 <translation id="6210042900243040400">Ligue o dispositivo <ph name="NAME" /> guardado anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Durante 10 min</translation>
 <translation id="6213808132343683860">Fazer uma gravação de ecrã ou uma captura de ecrã parcial</translation>
@@ -1804,7 +1804,7 @@ Nova instalação</translation>
 <translation id="6942518653766415536">Menu de formato de gravação</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6945922087561257829">O telemóvel está a usar uma rede móvel. Certifique-se de que o telemóvel e o Chromebook estão ligados à mesma rede Wi-Fi e, de seguida, tente novamente. <ph name="LEARN_MORE" /></translation>
-<translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
+<translation id="6960565108681981554">Não ativada. Contacte a sua operadora.</translation>
 <translation id="6961121602502368900">A funcionalidade Silenciar telemóvel não está disponível no perfil de trabalho.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="696267987219125751">O enquadramento da câmara está desativado.</translation>
@@ -1893,7 +1893,7 @@ Nova instalação</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7312761820869643657">Atualize o dispositivo para a versão anterior</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
-<translation id="73289266812733869">Selecção anulada</translation>
+<translation id="73289266812733869">Desmarcado</translation>
 <translation id="7330397557116570022">Aceda a um campo de texto para usar o ditado</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7336943714413713812">Pesquise no histórico de navegação</translation>
@@ -2345,7 +2345,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8822104519413696986">Este é um jogo tátil</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
 <translation id="8832513206237979203">Mostrar ou ocultar a barra de marcadores</translation>
-<translation id="8834539327799336565">Atualmente ligados</translation>
+<translation id="8834539327799336565">Dispositivos atualmente ligados</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">Obter ajuda</translation>

@@ -562,7 +562,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1374844444528092021">Het certificaat dat wordt vereist door het netwerk '<ph name="NETWORK_NAME" />', is niet geïnstalleerd of is niet meer geldig. Haal een nieuw certificaat op en probeer opnieuw verbinding te maken.</translation>
 <translation id="1375557162880614858">Wil je ChromeVox, de ingebouwde schermlezer voor Chrome OS Flex, activeren?</translation>
 <translation id="1375938286942050085">Het instellen is afgerond. Maak je apparaat nu klaar voor games.</translation>
-<translation id="137651782282853227">Opgeslagen adressen zie je hier</translation>
+<translation id="137651782282853227">Opgeslagen adressen worden hier getoond</translation>
 <translation id="1376771218494401509">&amp;Venster een naam geven...</translation>
 <translation id="1377438103060664754">Als een van je wachtwoorden wordt gevonden bij een gegevenslek, vraagt Google Wachtwoordmanager of je het wilt wijzigen in een sterk wachtwoord</translation>
 <translation id="1377600615067678409">Nu overslaan</translation>
@@ -1855,7 +1855,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2257053455312861282">Door een schoolaccount toe te voegen, kunnen kinderen gemakkelijk als leerling inloggen bij websites, extensies en apps terwijl ze nog steeds onder ouderlijk toezicht staan.</translation>
 <translation id="225716114209817872">Maximum</translation>
-<translation id="2259337945538989999">Laat verifiëren dat jij het bent om de tabbladen van je andere apparaten te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
+<translation id="2259337945538989999">Bevestig dat jij het bent om de tabbladen van je andere apparaten te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="2261323523305321874">Je beheerder heeft een wijziging in het systeem gemaakt waardoor sommige oude profielen niet meer kunnen worden gebruikt.</translation>
 <translation id="22614517036276112">Dit document of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.</translation>
 <translation id="2262477216570151239">Vertraging vóór herhaling</translation>
@@ -3435,7 +3435,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3364159059299045452">Alt+cursor plaatsen</translation>
 <translation id="3364986687961713424">Van je beheerder: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Gebruik Ctrl of Alt</translation>
-<translation id="3365651640097487828">Als je tabbladen wilt delen en met anderen wilt samenwerken, laat je verifiëren dat jij het bent en synchroniseer je je geschiedenis en tabbladen</translation>
+<translation id="3365651640097487828">Als je tabbladen wilt delen en met anderen wilt samenwerken, bevestig je dat jij het bent en synchroniseer je je geschiedenis en tabbladen</translation>
 <translation id="3368662179834713970">Huis</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369067987974711168">Meer acties voor deze poort bekijken</translation>
@@ -4732,7 +4732,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4242577469625748426">Kan geen beleidsinstellingen op het apparaat installeren: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Je <ph name="BEGIN_LINK" />browser en profiel worden beheerd<ph name="END_LINK" /> door <ph name="DOMAIN" /></translation>
-<translation id="424315890655130736">Wachtwoordzin opgeven</translation>
+<translation id="424315890655130736">Wachtwoordzin invoeren</translation>
 <translation id="4243504193894350135">Printer is onderbroken</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, niveau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Meer stylus-apps zoeken</translation>
@@ -11935,7 +11935,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="936801553271523408">Diagnostische systeemgegevens</translation>
 <translation id="93766956588638423">Extensie repareren</translation>
 <translation id="938623846785894166">Ongebruikelijk bestand</translation>
-<translation id="939598580284253335">Wachtwoordzin opgeven</translation>
+<translation id="939598580284253335">Wachtwoordzin invoeren</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="940212040923880623">&amp;Zoeken en bewerken</translation>
 <translation id="942296794412775122">Microfoon aan/uit</translation>

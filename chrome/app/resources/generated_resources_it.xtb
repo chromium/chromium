@@ -5451,7 +5451,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4742334355511750246">Non possono mostrare immagini</translation>
 <translation id="4742795653798179840">Dati di Chrome eliminati</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
-<translation id="4743990041512863976">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
+<translation id="4743990041512863976">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l‘<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminosità della retroilluminazione della tastiera</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -8944,7 +8944,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
-<translation id="7214047272988222011">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214047272988222011">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l‘<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nuova scheda in 1 scheda}other{Nuova scheda in # schede}}</translation>
 <translation id="721490496276866468">Importa password</translation>
 <translation id="7217208603285112910">Selezione non in lingua: <ph name="LANGUAGE" /></translation>
@@ -10197,7 +10197,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8052944601017749068">Importa in <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Ricarica questa pagina</translation>
-<translation id="8054500940978949009">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
+<translation id="8054500940978949009">Autorizzazione consentita. Attiva l‘<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Questo tipo di file può danneggiare il tuo dispositivo. Vuoi conservare comunque <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Inserisci un indirizzo email valido</translation>
 <translation id="8054609631325628928">Questi numeri possono essere utilizzati per attivare il servizio</translation>

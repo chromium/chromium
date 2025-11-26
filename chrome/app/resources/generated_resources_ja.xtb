@@ -253,7 +253,7 @@
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1166212789817575481">右側のタブを閉じる</translation>
-<translation id="1166457390969131095">Google アカウントのパスワードとパスキーの使用と保存</translation>
+<translation id="1166457390969131095">Google アカウントのパスワードとパスキーを使用、保存する</translation>
 <translation id="1166583374608765787">新しい名前を確認</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> はデスク <ph name="DESK_TITLE" /> に含まれています</translation>
 <translation id="1168020859489941584">後 <ph name="TIME_REMAINING" />でファイルが開きます...</translation>
@@ -4726,7 +4726,7 @@
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">お使いの<ph name="BEGIN_LINK" />ブラウザとプロフィールは <ph name="DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
-<translation id="424315890655130736">パスフレーズの入力</translation>
+<translation id="424315890655130736">パスフレーズを入力</translation>
 <translation id="4243504193894350135">プリンタは一時停止中です</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />、グレード <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">他のタッチペン アプリを探す</translation>
@@ -10578,7 +10578,7 @@
 <translation id="8323167517179506834">URL を入力してください</translation>
 <translation id="8323317289166663449">自分のパソコンとすべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
 <translation id="8323518750352551353">ブラウジングを切り分け？</translation>
-<translation id="8323744572398547859">他のデバイスと同じタブを使用するには、ログインして履歴を同期します。同期すると、すべてのデバイスでパスワードなどの設定も使用できるようになります。 同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
+<translation id="8323744572398547859">他のデバイスと同じタブを使用するには、ログインして履歴を同期します。同期すると、すべてのデバイスでパスワードなどの設定も使用できるようになります。 同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8325413836429495820">クリップボードの読み取りを許可しないサイト</translation>
 <translation id="8326478304147373412">PKCS #7、証明書チェーン</translation>

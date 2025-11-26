@@ -2210,7 +2210,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="46128681529823442">Equipamiento de fútbol</translation>
 <translation id="4612904677925722054">Puede que este sitio web incluya contenido no apto para menores. Tu padre, madre o tutor/a debe darte permiso para visitarlo.</translation>
-<translation id="4619564267100705184">Verificar mi identidad</translation>
+<translation id="4619564267100705184">Demostrar mi identidad</translation>
 <translation id="4622292761762557753">Transferir de todos modos</translation>
 <translation id="4622647778991854660">Habilita las notificaciones en el Centro de notificaciones. Abre <ph name="LINK" />.</translation>
 <translation id="4623894491222334521">Documentos de identidad</translation>
@@ -4941,7 +4941,7 @@ Más información:
 <translation id="9128870381267983090">Conéctate a la red</translation>
 <translation id="9131119348384879525">¿Capturar contenido confidencial?</translation>
 <translation id="9133861214150761123">Contabilidad y auditorías</translation>
-<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar el bloqueo de pantalla para verificar que eres tú siempre que uses una contraseña guardada</translation>
+<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar el bloqueo de pantalla para demostrar que eres tú siempre que uses una contraseña guardada</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, tarjeta virtual</translation>
 <translation id="9138037198177304356">Notificaciones permitidas</translation>
 <translation id="9139318394846604261">Compras</translation>
