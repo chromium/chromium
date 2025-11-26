@@ -258,10 +258,6 @@ TestSharedImageInterface::CreateSharedImage(
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
-  if (always_use_shmem_for_mappable_si_) {
-    return ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
-  }
 
   // If the GMB handle passed here is shared memory (e.g. because it was created
   // by a unittest that is simulating a production flow with native handles),

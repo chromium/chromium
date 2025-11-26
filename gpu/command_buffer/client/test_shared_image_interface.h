@@ -193,10 +193,6 @@ class TestSharedImageInterface : public SharedImageInterface {
     fail_shared_image_creation_with_buffer_usage_ = value;
   }
 
-  void AlwaysBackMappableSharedImagesWithShMem() {
-    always_use_shmem_for_mappable_si_ = true;
-  }
-
   void emulate_client_provided_native_buffer() {
     emulate_client_provided_native_buffer_ = true;
   }
@@ -232,8 +228,6 @@ class TestSharedImageInterface : public SharedImageInterface {
 #endif
   SharedImageCapabilities shared_image_capabilities_;
   bool fail_shared_image_creation_with_buffer_usage_ = false;
-
-  bool always_use_shmem_for_mappable_si_ = false;
 
   // This is used to simply keep the SharedImagePoolClientInterface alive for
   // the duration of the SharedImagePool. Not keeping it alive and bound
