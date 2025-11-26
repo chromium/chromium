@@ -4,31 +4,21 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -36,8 +26,9 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
-import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,22 +40,17 @@ public class NtpChromeColorsCoordinator {
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
     private static final int MAX_NUMBER_OF_COLORS_PER_ROW = 7;
+
     private final List<NtpThemeColorInfo> mChromeColorsList = new ArrayList<>();
-    private final View mBackButton;
-    private final ImageView mLearnMoreButton;
     private final Context mContext;
     private final BottomSheetDelegate mDelegate;
-    private final ColorGridView mChromeColorsRecyclerView;
+    private final PropertyModel mPropertyModel;
+    private final NtpChromeColorGridRecyclerView mChromeColorsRecyclerView;
     private final int mItemWidth;
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
     private final @Nullable NtpThemeColorInfo mPrimaryColorInfo;
     private @Nullable NtpThemeColorInfo mLastClickedColorInfo;
-    private @Nullable EditText mBackgroundColorInput;
-    private @Nullable EditText mPrimaryColorInput;
-    private @Nullable ImageView mBackgroundColorCircleImageView;
-    private @Nullable ImageView mPrimaryColorCircleImageView;
-    private @Nullable ButtonCompat mSaveColorButton;
     private @Nullable @ColorInt Integer mTypedBackgroundColor;
     private @Nullable @ColorInt Integer mTypedPrimaryColor;
 
@@ -87,15 +73,23 @@ public class NtpChromeColorsCoordinator {
                                 null,
                                 false);
 
+        mPropertyModel = new PropertyModel(NtpChromeColorsProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mPropertyModel,
+                ntpChromeColorsBottomSheetView,
+                NtpChromeColorsLayoutViewBinder::bind);
+
         delegate.registerBottomSheetLayout(CHROME_COLORS, ntpChromeColorsBottomSheetView);
 
-        mBackButton = ntpChromeColorsBottomSheetView.findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(v -> delegate.showBottomSheet(THEME));
+        mPropertyModel.set(
+                NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER,
+                v -> delegate.showBottomSheet(THEME));
+        mPropertyModel.set(
+                NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER,
+                this::handleLearnMoreClick);
 
-        mLearnMoreButton = ntpChromeColorsBottomSheetView.findViewById(R.id.learn_more_button);
-        mLearnMoreButton.setOnClickListener(this::handleLearnMoreClick);
         if (ChromeFeatureList.sNewTabPageCustomizationV2ShowColorPicker.getValue()) {
-            setupColorInputs(ntpChromeColorsBottomSheetView);
+            setupColorInputs();
         }
 
         mChromeColorsRecyclerView =
@@ -111,7 +105,7 @@ public class NtpChromeColorsCoordinator {
 
         mPrimaryColorInfo = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
         buildRecyclerView();
-        setRecyclerViewMaxWidth(ntpChromeColorsBottomSheetView);
+        setRecyclerViewMaxWidth();
 
         // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
         // has a height, allowing it to correctly open to the half-height state.
@@ -122,8 +116,11 @@ public class NtpChromeColorsCoordinator {
     }
 
     private void buildRecyclerView() {
-        mChromeColorsRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 1));
-        mChromeColorsRecyclerView.init(mItemWidth, mSpacing);
+        mPropertyModel.set(
+                NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER,
+                new GridLayoutManager(mContext, 1));
+        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, mItemWidth);
+        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_SPACING, mSpacing);
 
         int primaryColorIndex =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
@@ -132,22 +129,12 @@ public class NtpChromeColorsCoordinator {
                 new NtpChromeColorsAdapter(
                         mContext, mChromeColorsList, this::onItemClicked, primaryColorIndex);
 
-        mChromeColorsRecyclerView.setAdapter(adapter);
+        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER, adapter);
     }
 
-    private void setRecyclerViewMaxWidth(View ntpChromeColorsBottomSheetView) {
-        ConstraintLayout constraintLayout = (ConstraintLayout) ntpChromeColorsBottomSheetView;
-        FrameLayout recyclerViewContainer =
-                ntpChromeColorsBottomSheetView.findViewById(
-                        R.id.chrome_colors_recycler_view_container);
-
+    private void setRecyclerViewMaxWidth() {
         int maxWidthPx = MAX_NUMBER_OF_COLORS_PER_ROW * (mItemWidth + mSpacing);
-
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(constraintLayout);
-        constraintSet.constrainedWidth(recyclerViewContainer.getId(), true);
-        constraintSet.constrainMaxWidth(recyclerViewContainer.getId(), maxWidthPx);
-        constraintSet.applyTo(constraintLayout);
+        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_WIDTH_PX, maxWidthPx);
     }
 
     /**
@@ -177,19 +164,13 @@ public class NtpChromeColorsCoordinator {
             NtpCustomizationMetricsUtils.recordChromeColorId(mLastClickedColorInfo.id);
         }
 
-        mBackButton.setOnClickListener(null);
-        mLearnMoreButton.setOnClickListener(null);
-        mChromeColorsList.clear();
+        mPropertyModel.set(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER, null);
+        mPropertyModel.set(NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER, null);
+        mPropertyModel.set(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER, null);
+        mPropertyModel.set(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER, null);
+        mPropertyModel.set(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER, null);
 
-        if (mBackgroundColorInput != null) {
-            mBackgroundColorInput.setOnClickListener(null);
-        }
-        if (mPrimaryColorInput != null) {
-            mPrimaryColorInput.setOnClickListener(null);
-        }
-        if (mSaveColorButton != null) {
-            mSaveColorButton.setOnClickListener(null);
-        }
+        mChromeColorsList.clear();
     }
 
     /**
@@ -202,59 +183,48 @@ public class NtpChromeColorsCoordinator {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 
-    /**
-     * Sets up the color picker view.
-     *
-     * @param bottomSheetView The parent bottom sheet view.
-     */
-    private void setupColorInputs(View bottomSheetView) {
-        mBackgroundColorCircleImageView =
-                bottomSheetView.findViewById(R.id.background_color_circle);
-        mBackgroundColorInput = bottomSheetView.findViewById(R.id.background_color_input);
-        mPrimaryColorCircleImageView = bottomSheetView.findViewById(R.id.primary_color_circle);
-        mPrimaryColorInput = bottomSheetView.findViewById(R.id.primary_color_input);
-        mSaveColorButton = bottomSheetView.findViewById(R.id.save_color_button);
-        mSaveColorButton.setOnClickListener(this::saveColors);
-        assumeNonNull(mBackgroundColorInput)
-                .addTextChangedListener(
-                        new EmptyTextWatcher() {
-                            @Override
-                            public void onTextChanged(
-                                    CharSequence charSequence, int i, int i1, int i2) {
-                                mTypedBackgroundColor =
-                                        updateColorCircle(
-                                                charSequence.toString(),
-                                                assumeNonNull(mBackgroundColorCircleImageView));
-                            }
-                        });
+    /** Sets up the color picker view. */
+    private void setupColorInputs() {
+        mPropertyModel.set(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER, this::saveColors);
+        mPropertyModel.set(
+                NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER,
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        mTypedBackgroundColor = getColorFromHex(charSequence.toString());
+                        if (mTypedBackgroundColor == null) return;
 
-        assumeNonNull(mPrimaryColorInput)
-                .addTextChangedListener(
-                        new EmptyTextWatcher() {
-                            @Override
-                            public void onTextChanged(
-                                    CharSequence charSequence, int i, int i1, int i2) {
-                                mTypedPrimaryColor =
-                                        updateColorCircle(
-                                                charSequence.toString(),
-                                                assumeNonNull(mPrimaryColorCircleImageView));
-                            }
-                        });
-        View containerView = bottomSheetView.findViewById(R.id.custom_color_picker_container);
-        containerView.setVisibility(View.VISIBLE);
+                        mPropertyModel.set(
+                                NtpChromeColorsProperties.BACKGROUND_COLOR_CIRCLE_VIEW_COLOR,
+                                mTypedBackgroundColor);
+                    }
+                });
+        mPropertyModel.set(
+                NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER,
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        mTypedPrimaryColor = getColorFromHex(charSequence.toString());
+                        if (mTypedPrimaryColor == null) return;
+
+                        mPropertyModel.set(
+                                NtpChromeColorsProperties.PRIMARY_COLOR_CIRCLE_VIEW_COLOR,
+                                mTypedPrimaryColor);
+                    }
+                });
+        mPropertyModel.set(
+                NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY, View.VISIBLE);
     }
 
     /**
-     * Updates the color of the color indicator view when a valid color hex is typed.
+     * Gets the color from the color hexadecimal string, null if the string isn't valid.
      *
      * @param hex The hexadecimal string of a color.
-     * @param circleImageView The color indicator view.
-     * @return The color as an int if the hexadecimal string is valid; otherwise, returns null.
      */
     @VisibleForTesting
     @Nullable
     @ColorInt
-    Integer updateColorCircle(String hex, ImageView circleImageView) {
+    Integer getColorFromHex(String hex) {
         if (hex.length() < 6) return null;
 
         String colorString = hex.trim();
@@ -262,14 +232,7 @@ public class NtpChromeColorsCoordinator {
             colorString = "#" + colorString;
         }
 
-        @ColorInt int color = Color.parseColor(colorString);
-        Drawable background = circleImageView.getBackground();
-        if (background instanceof GradientDrawable) {
-            ((GradientDrawable) background.mutate()).setColor(color);
-            circleImageView.setVisibility(View.VISIBLE);
-            return color;
-        }
-        return null;
+        return Color.parseColor(colorString);
     }
 
     /**
@@ -289,57 +252,7 @@ public class NtpChromeColorsCoordinator {
         return mPrimaryColorInfo;
     }
 
-    public @Nullable ImageView getBackgroundColorCircleImageViewForTesting() {
-        return mBackgroundColorCircleImageView;
-    }
-
-    /**
-     * A RecyclerView that automatically adjusts its GridLayoutManager's span count based on its
-     * measured width. This is more efficient than calculating in onLayoutChildren as it's done
-     * during the measurement pass, preventing re-layout cycles.
-     */
-    public static class ColorGridView extends RecyclerView {
-        private @Nullable GridLayoutManager mGridLayoutManager;
-        private int mSpanCount;
-        private int mItemWidth;
-        private int mSpacing;
-        private int mLastRecyclerViewWidth;
-
-        public ColorGridView(Context context, @Nullable AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        /** Initializes the grid with necessary dimensions for span calculation. */
-        public void init(int itemWidth, int spacing) {
-            mItemWidth = itemWidth;
-            mSpacing = spacing;
-        }
-
-        @Override
-        public void setLayoutManager(@Nullable LayoutManager layout) {
-            super.setLayoutManager(layout);
-            if (layout instanceof GridLayoutManager) {
-                mGridLayoutManager = (GridLayoutManager) layout;
-            }
-        }
-
-        @Override
-        protected void onMeasure(int widthSpec, int heightSpec) {
-            assert mGridLayoutManager != null;
-
-            super.onMeasure(widthSpec, heightSpec);
-            int measuredWidth = getMeasuredWidth();
-            if (measuredWidth > 0 && mLastRecyclerViewWidth != measuredWidth) {
-                mLastRecyclerViewWidth = measuredWidth;
-                int totalItemSpace = mItemWidth + mSpacing;
-                assert totalItemSpace > 0;
-
-                int maxSpanCount = Math.max(1, measuredWidth / totalItemSpace);
-                if (mSpanCount != maxSpanCount) {
-                    mSpanCount = maxSpanCount;
-                    mGridLayoutManager.setSpanCount(mSpanCount);
-                }
-            }
-        }
+    public PropertyModel getPropertyModelForTesting() {
+        return mPropertyModel;
     }
 }
