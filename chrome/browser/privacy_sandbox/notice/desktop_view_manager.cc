@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -23,9 +22,6 @@ DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service)
     : notice_service_(notice_service) {
   CHECK(notice_service_);
-  navigation_handler_ = std::make_unique<NavigationHandler>(
-      base::BindRepeating(&DesktopViewManager::HandleChromeOwnedPageNavigation,
-                          base::Unretained(this)));
 }
 
 DesktopViewManager::~DesktopViewManager() {
@@ -105,10 +101,6 @@ DesktopViewManager::GetPendingNoticesToShow() {
 void DesktopViewManager::SetPendingNoticesToShow(
     std::vector<PrivacySandboxNotice> notices) {
   pending_notices_to_show_ = std::move(notices);
-}
-
-NavigationHandler* DesktopViewManager::GetNavigationHandler() {
-  return navigation_handler_.get();
 }
 
 bool DesktopViewManager::IsPromptShowingOnBrowser(

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/navigation_handle.h"
 #include "privacy_sandbox_survey_desktop_controller.h"
 #include "privacy_sandbox_survey_desktop_controller_factory.h"
 #include "privacy_sandbox_tab_observer.h"
@@ -32,15 +32,6 @@ void PrivacySandboxTabObserver::DidFinishNavigation(
       !navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
-  }
-
-  // Notices
-  auto* notice_service =
-      PrivacySandboxNoticeServiceFactory::GetForProfile(profile);
-  if (notice_service) {
-    notice_service->GetDesktopViewManager()
-        ->GetNavigationHandler()
-        ->HandleNewNavigation(navigation_handle, profile);
   }
 
   // HATs

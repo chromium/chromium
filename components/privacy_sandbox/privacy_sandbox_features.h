@@ -232,10 +232,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
 
-// If true, enable showing notices through the notice framework.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxNoticeFramework);
-
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
