@@ -172,7 +172,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
+  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProviderForTesting(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
       ShouldInitialize initialize_provider,

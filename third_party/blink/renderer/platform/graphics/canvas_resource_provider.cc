@@ -1911,7 +1911,7 @@ CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateBitmapProvider(
+CanvasResourceProvider::CreateBitmapProviderForTesting(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
     ShouldInitialize initialize_provider,
