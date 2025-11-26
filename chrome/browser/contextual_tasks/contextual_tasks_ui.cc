@@ -94,6 +94,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
+  source->AddLocalizedString(
+      "lensSearchButtonLabel",
+      IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);
 
   source->AddString(
       "composeboxImageFileTypes",
