@@ -23405,6 +23405,23 @@
             ]
         }
     ],
+    "SettingsAndroidImprovement": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSettingsContainment",
+                        "SettingsMultiColumn",
+                        "SettingsSingleActivity"
+                    ]
+                }
+            ]
+        }
+    ],
     "SettingsMultiColumn": [
         {
             "platforms": [
