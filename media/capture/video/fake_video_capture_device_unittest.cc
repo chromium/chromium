@@ -95,7 +95,6 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
   void SetUp() override {
     EXPECT_CALL(*client_, OnError(_, _, _)).Times(0);
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
   }
