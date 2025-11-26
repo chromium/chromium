@@ -37,6 +37,11 @@ public class SpareChildConnection {
     // is retrieved.
     private ChildProcessConnection.@Nullable ServiceCallback mConnectionServiceCallback;
 
+    // The requested initial binding state passed in getConnection.
+    // If the connection is not yet bound when getConnection is called, we need to update
+    // the binding state in the onChildStarted callback.
+    @ChildBindingState @Nullable Integer mRequestedBindingState;
+
     /** Creates and binds a ChildProcessConnection using the specified parameters. */
     public SpareChildConnection(
             Context context, ChildConnectionAllocator connectionAllocator, Bundle serviceBundle) {
@@ -49,6 +54,9 @@ public class SpareChildConnection {
                     @Override
                     public void onChildStarted() {
                         assert LauncherThread.runningOnLauncherThread();
+                        if (mRequestedBindingState != null) {
+                            updateInitialBindingState(mRequestedBindingState);
+                        }
                         mConnectionReady = true;
                         if (mConnectionServiceCallback != null) {
                             mConnectionServiceCallback.onChildStarted();
@@ -100,20 +108,10 @@ public class SpareChildConnection {
 
         mConnectionServiceCallback = serviceCallback;
 
+        assert mConnection != null;
         ChildProcessConnection connection = mConnection;
-        assert connection != null;
-        // The spare connection is created with a visible binding. Adjust if needed.
-        if (requestedBindingState != ChildBindingState.VISIBLE) {
-            if (requestedBindingState == ChildBindingState.STRONG) {
-                connection.addStrongBinding();
-            } else if (requestedBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
-                connection.addNotPerceptibleBinding();
-            }
-            // For STRONG, NOT_PERCEPTIBLE, and WAIVED, we remove the original visible binding.
-            connection.removeVisibleBinding();
-        }
-
         if (mConnectionReady) {
+            updateInitialBindingState(requestedBindingState);
             // onChildStarted was already run. Call it explicitly on the passed serviceCallback.
             if (serviceCallback != null) {
                 // Post a task so the callback happens after the caller has retrieved the
@@ -127,6 +125,8 @@ public class SpareChildConnection {
                         });
             }
             clearConnection();
+        } else {
+            mRequestedBindingState = requestedBindingState;
         }
         return connection;
     }
@@ -148,5 +148,20 @@ public class SpareChildConnection {
     @VisibleForTesting
     public @Nullable ChildProcessConnection getConnection() {
         return mConnection;
+    }
+
+    private void updateInitialBindingState(@ChildBindingState int requestedBindingState) {
+        ChildProcessConnection connection = mConnection;
+        assert connection != null;
+        // The spare connection is created with a visible binding. Adjust if needed.
+        if (requestedBindingState != ChildBindingState.VISIBLE) {
+            if (requestedBindingState == ChildBindingState.STRONG) {
+                connection.addStrongBinding();
+            } else if (requestedBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
+                connection.addNotPerceptibleBinding();
+            }
+            // For STRONG, NOT_PERCEPTIBLE, and WAIVED, we remove the original visible binding.
+            connection.removeVisibleBinding();
+        }
     }
 }

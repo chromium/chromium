@@ -300,9 +300,18 @@ namespace features {
 // channel is paused, and only flushed at OnProcessLaunched.
 BASE_FEATURE(kSkipIPCChannelPausingForNonGuests,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> skip_channel_pausing_for_internal_webui_only{
     &features::kSkipIPCChannelPausingForNonGuests, "internal_webui_only",
     false};
+
+#if BUILDFLAG(IS_ANDROID)
+// The feature flag is added for a holdback experiment to estimate
+// the performance impace of the first spare renderer not using the warm-up
+// process in webview.
+BASE_FEATURE(kSpareRendererUseWarmupConnection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 }  // namespace features
 
@@ -5912,13 +5921,11 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool RenderProcessHostImpl::CanUseWarmUpConnection() {
-  // We disable the spare renderer from using the warmed up connection
-  // because of potential failure to reset the binding state when the
-  // connection is not yet connected or already killed. In practice the
-  // warmed up connection is only created during the start up of the Chrome
-  // application and will not be used by the spare renderer. The filter is
-  // only added for test purposes.
-  return !HasSpareRendererPriority();
+  // TODO(crbug.com/455620851): Remove the function after finishing the
+  // holdback experiment.
+  return base::FeatureList::IsEnabled(
+             features::kSpareRendererUseWarmupConnection) ||
+         !HasSpareRendererPriority();
 }
 
 bool RenderProcessHostImpl::HasSpareRendererPriority() {
