@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -45,6 +46,16 @@ import java.util.concurrent.TimeUnit;
 /** Static utilities for Tips Notifications. */
 @NullMarked
 public class TipsUtils {
+    // LINT.IfChange(TipsShownPrefs)
+    public static final String ENHANCED_SAFE_BROWSING_SHOWN =
+            "android.tips.notifications.esb_shown";
+    public static final String QUICK_DELETE_SHOWN = "android.tips.notifications.quick_delete_shown";
+    public static final String GOOGLE_LENS_SHOWN = "android.tips.notifications.lens_shown";
+    public static final String BOTTOM_OMNIBOX_SHOWN =
+            "android.tips.notifications.bottom_omnibox_shown";
+
+    // LINT.ThenChange(//chrome/common/pref_names.h:TipsShownPrefs)
+
     /**
      * Assembles a {@link FeatureTipPromoData} object containing required UI and callback
      * information for the respective {@link TipsNotificationsFeatureType}'s promo'.
@@ -153,6 +164,11 @@ public class TipsUtils {
                     if (profile.shutdownStarted()) return;
 
                     if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+                        if (ChromeFeatureList.sAndroidTipsNotificationsResetFeatureTipShown
+                                .getValue()) {
+                            clearFeatureTipShownPrefs(profile);
+                        }
+
                         DeferredStartupHandler.getInstance()
                                 .addDeferredTask(
                                         () -> {
@@ -289,5 +305,12 @@ public class TipsUtils {
                                     ChromePreferenceKeys.TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
                                     enabled);
                 });
+    }
+
+    private static void clearFeatureTipShownPrefs(Profile profile) {
+        UserPrefs.get(profile).setBoolean(ENHANCED_SAFE_BROWSING_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(QUICK_DELETE_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
     }
 }

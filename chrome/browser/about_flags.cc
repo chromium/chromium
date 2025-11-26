@@ -4862,6 +4862,9 @@ const FeatureEntry::FeatureParam
         {"start_time_minutes", "2"},
         {"window_time_minutes", "4"},
         {"trust_and_safety", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidTipsNotificationsResetFeatureTipShown[] = {
+        {"reset_feature_tip_shown", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
     {" - Trust and Safety", kAndroidTipsNotificationsTrustAndSafety,
@@ -4877,7 +4880,11 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
      std::size(kAndroidTipsNotificationsScheduleInstantNotification), nullptr},
     {" - Schedule Delayed Notification",
      kAndroidTipsNotificationsScheduleDelayedNotification,
-     std::size(kAndroidTipsNotificationsScheduleDelayedNotification), nullptr}};
+     std::size(kAndroidTipsNotificationsScheduleDelayedNotification), nullptr},
+    {" - Reset Feature Tip Shown",
+     kAndroidTipsNotificationsResetFeatureTipShown,
+     std::size(kAndroidTipsNotificationsResetFeatureTipShown), nullptr},
+};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

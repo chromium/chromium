@@ -64,9 +64,13 @@ void RunGetClassificationResultCallback(
 
   // Setup the schedule params to either be for testing with instant and delayed
   // 2 minutes notifications, or the base use case of 2-4 hours.
+  // The standard priority is low to include throttling logic from the scheduler
+  // service, however testing params will allow this to be unthrottled.
   notifications::ScheduleParams schedule_params;
   schedule_params.priority =
-      notifications::ScheduleParams::Priority::kNoThrottle;
+      (segmentation_platform::features::kStartTimeMinutes.Get() < 5)
+          ? notifications::ScheduleParams::Priority::kNoThrottle
+          : notifications::ScheduleParams::Priority::kLow;
   schedule_params.deliver_time_start =
       base::Time::Now() +
       base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get());
