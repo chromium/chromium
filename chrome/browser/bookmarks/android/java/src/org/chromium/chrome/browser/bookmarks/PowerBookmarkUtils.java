@@ -32,8 +32,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 
 /** Utilities for use in power bookmarks. */
-// TODO(crbug.com/40234642): We should add a JNI layer for the native version of these utilities in
-//                price_tracking_utils and use those instead.
 @NullMarked
 public class PowerBookmarkUtils {
     private static @Nullable Boolean sPriceTrackingEligibleForTesting;
