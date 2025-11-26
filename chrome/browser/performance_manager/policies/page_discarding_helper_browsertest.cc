@@ -556,10 +556,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                                              base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    PageDiscardingHelper::DiscardResult result =
+    std::optional<base::TimeTicks> first_discarded_at =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 
-    EXPECT_TRUE(result.first_discard_time.has_value());
+    EXPECT_TRUE(first_discarded_at.has_value());
   };
   attempt_discard();
 
@@ -625,10 +625,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                                              base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    PageDiscardingHelper::DiscardResult result =
+    std::optional<base::TimeTicks> first_discarded_at =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 
-    EXPECT_TRUE(result.first_discard_time.has_value());
+    EXPECT_TRUE(first_discarded_at.has_value());
   };
   attempt_discard();
 

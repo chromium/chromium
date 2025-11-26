@@ -18,10 +18,6 @@
 #include "components/tabs/public/tab_interface.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace performance_manager::policies {
 
 namespace {
@@ -155,8 +151,6 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
 
   // Don't discard tabs that don't have a main frame (restored tab which is not
   // loaded yet, discarded tab, crashed tab).
-  // TODO(crbug.com/463291982): Add test to verify crashed page cannot be
-  // discarded.
   if (!page_node->GetMainFrameNode()) {
     add_reason(CannotDiscardReason::kNoMainFrame);
     return CanDiscardResult::kDisallowed;
@@ -237,27 +231,14 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
                                  CanDiscardResult::kProtected);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Do not discard Desktop PWA windows. Preserve native-app experience.
-  content::WebContents* web_contents = page_node->GetWebContents().get();
-  if (web_contents) {
-    web_app::WebAppTabHelper* tab_helper =
-        web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->is_in_app_window()) {
-      add_reason_and_update_result(CannotDiscardReason::kWebApp,
-                                   CanDiscardResult::kProtected);
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_GLIC)
   // Do not discard pages that are pin-shared with Glic.
-  if (web_contents && is_proactive_or_suggested) {
-    auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (page_node->GetWebContents() && is_proactive_or_suggested) {
+    auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(
+        page_node->GetWebContents().get());
     if (tab_interface) {
       auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          web_contents->GetBrowserContext());
+          page_node->GetWebContents()->GetBrowserContext());
       if (glic_service && glic_service->sharing_manager().IsTabPinned(
                               tab_interface->GetHandle())) {
         add_reason_and_update_result(CannotDiscardReason::kGlicShared,

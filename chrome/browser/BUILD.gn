@@ -4165,6 +4165,7 @@ static_library("browser") {
       "renderer_context_menu/spelling_menu_observer.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
+      "resource_coordinator/decision_details.cc",
       "resource_coordinator/discard_metrics_lifecycle_unit_observer.cc",
       "resource_coordinator/discard_metrics_lifecycle_unit_observer.h",
       "resource_coordinator/lifecycle_unit.cc",
