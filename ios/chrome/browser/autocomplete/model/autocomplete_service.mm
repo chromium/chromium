@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
 
+#import <algorithm>
+
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
+#import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
-#import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/model/zero_suggest_prefetcher.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/web/public/web_state.h"
 
 AutocompleteService::AutocompleteService(
     base::RepeatingCallback<std::unique_ptr<AutocompleteProviderClient>()>
@@ -21,8 +25,7 @@ AutocompleteService::AutocompleteService(
 AutocompleteService::~AutocompleteService() {}
 
 void AutocompleteService::Shutdown() {
-  controllers_.clear();
-  shortcuts_helpers_.clear();
+  RemoveServices();
 }
 
 AutocompleteController* AutocompleteService::GetAutocompleteController(
@@ -55,8 +58,66 @@ OmniboxShortcutsHelper* AutocompleteService::GetOmniboxShortcutsHelper(
 }
 
 void AutocompleteService::RemoveServices() {
-  controllers_.clear();
+  for (auto it = web_state_list_prefetchers_.begin();
+       it != web_state_list_prefetchers_.end(); ++it) {
+    [it->second disconnect];
+  }
+  for (auto it = web_state_prefetchers_.begin();
+       it != web_state_prefetchers_.end(); ++it) {
+    [it->second disconnect];
+  }
+  web_state_list_prefetchers_.clear();
+  web_state_prefetchers_.clear();
   shortcuts_helpers_.clear();
+  controllers_.clear();
+}
+
+void AutocompleteService::RegisterWebStateListForPrefetching(
+    OmniboxPresentationContext context,
+    WebStateList* web_state_list,
+    PageClassificationCallback classification_callback) {
+  ZeroSuggestPrefetcher* prefetcher = [[ZeroSuggestPrefetcher alloc]
+      initWithAutocompleteController:GetAutocompleteController(context)
+                        webStateList:web_state_list
+              classificationCallback:std::move(classification_callback)
+                  disconnectCallback:
+                      base::BindOnce(&AutocompleteService::
+                                         UnregisterWebStateListForPrefetching,
+                                     AsWeakPtr())];
+  web_state_list_prefetchers_[web_state_list] = prefetcher;
+}
+
+void AutocompleteService::UnregisterWebStateListForPrefetching(
+    WebStateList* web_state_list) {
+  auto it = web_state_list_prefetchers_.find(web_state_list);
+  if (it != web_state_list_prefetchers_.end()) {
+    [it->second disconnect];
+    web_state_list_prefetchers_.erase(it);
+  }
+}
+
+void AutocompleteService::RegisterWebStateForPrefetching(
+    OmniboxPresentationContext context,
+    web::WebState* web_state,
+    PageClassificationCallback classification_callback) {
+  ZeroSuggestPrefetcher* prefetcher = [[ZeroSuggestPrefetcher alloc]
+      initWithAutocompleteController:GetAutocompleteController(context)
+                            webState:web_state
+              classificationCallback:std::move(classification_callback)
+                  disconnectCallback:base::BindOnce(
+                                         &AutocompleteService::
+                                             UnregisterWebStateForPrefetching,
+                                         AsWeakPtr())];
+  web_state_prefetchers_[web_state] = prefetcher;
+}
+
+void AutocompleteService::UnregisterWebStateForPrefetching(
+    web::WebState* web_state) {
+  auto it = web_state_prefetchers_.find(web_state);
+  if (it != web_state_prefetchers_.end()) {
+    [it->second disconnect];
+    web_state_prefetchers_.erase(it);
+  }
 }
 
 std::unique_ptr<AutocompleteController>

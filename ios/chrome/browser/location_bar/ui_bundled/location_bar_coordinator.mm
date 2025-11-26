@@ -417,6 +417,18 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     omniboxPositionBrowserAgent->SetOmniboxStateProvider(self);
   }
 
+  AutocompleteService* autocompleteService =
+      AutocompleteServiceFactory::GetForProfile(self.profile);
+  if (autocompleteService) {
+    __weak __typeof__(self) weakSelf = self;
+    autocompleteService->RegisterWebStateListForPrefetching(
+        IsComposeboxIOSEnabled() ? OmniboxPresentationContext::kComposebox
+                                 : OmniboxPresentationContext::kLocationBar,
+        self.webStateList,
+        base::BindRepeating(^metrics::OmniboxEventProto::PageClassification() {
+          return [weakSelf getPageClassification:YES];
+        }));
+  }
   self.started = YES;
 
   [self setUpDragAndDrop];
@@ -452,7 +464,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // TODO(crbug.com/462700929): Cleanup the service's objects like when it was
   // owned by the omnibox. Remove this workaround once the service can be safely
   // cleaned up during shutdown.
-  AutocompleteServiceFactory::GetForProfile(self.profile)->RemoveServices();
+  AutocompleteService* autocompleteService =
+      AutocompleteServiceFactory::GetForProfile(self.profile);
+  if (autocompleteService) {
+    autocompleteService->UnregisterWebStateListForPrefetching(
+        self.webStateList);
+    autocompleteService->RemoveServices();
+  }
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
   _locationBar.reset();
@@ -817,6 +835,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 #pragma mark - Private
+
+- (metrics::OmniboxEventProto::PageClassification)getPageClassification:
+    (BOOL)isPrefetch {
+  if (_locationBarModel) {
+    return _locationBarModel->GetPageClassification(isPrefetch);
+  }
+  return metrics::OmniboxEventProto::INVALID_SPEC;
+}
 
 // Navigate to `query` from omnibox.
 - (void)loadURLForQuery:(const std::u16string&)query {
