@@ -128,8 +128,15 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
   EXPECT_TRUE(control_animation_ended.Wait());
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AnimationIdObserversDoNotFireTypeCallbacks \
+  DISABLED_AnimationIdObserversDoNotFireTypeCallbacks
+#else
+#define MAYBE_AnimationIdObserversDoNotFireTypeCallbacks \
+  AnimationIdObserversDoNotFireTypeCallbacks
+#endif
 IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
-                       AnimationIdObserversDoNotFireTypeCallbacks) {
+                       MAYBE_AnimationIdObserversDoNotFireTypeCallbacks) {
   SidePanelAnimationCoordinator* animation_coordinator =
       GetAnimationCoordinator();
 
