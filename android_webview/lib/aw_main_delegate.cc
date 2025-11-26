@@ -142,10 +142,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
-  // Deemed that performance benefit is not worth the stability cost.
-  // See crbug.com/1309151.
-  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
-
   // Keep data: URL support in SVGUseElement for webview until deprecation is
   // completed in the Web Platform.
   cl->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);

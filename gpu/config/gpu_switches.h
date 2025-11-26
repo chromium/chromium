@@ -17,6 +17,7 @@ GPU_CONFIG_EXPORT extern const char kGpuDriverBugListTestGroup[];
 GPU_CONFIG_EXPORT extern const char kGpuPreferences[];
 GPU_CONFIG_EXPORT extern const char kIgnoreGpuBlocklist[];
 GPU_CONFIG_EXPORT extern const char kGpuDiskCacheSizeKB[];
+GPU_CONFIG_EXPORT extern const char kDisableGpuShaderDiskCache[];
 GPU_CONFIG_EXPORT extern const char kDisableGpuProcessForDX12InfoCollection[];
 GPU_CONFIG_EXPORT extern const char kEnableUnsafeWebGPU[];
 GPU_CONFIG_EXPORT extern const char kForceHighPerformanceGPU[];
