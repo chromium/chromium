@@ -10,10 +10,6 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/functional/callback_forward.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kAllTrafficWildcard[] = "*";
 
 // Returns a URL filter that covers all URL navigations.

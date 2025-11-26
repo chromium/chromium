@@ -15,7 +15,6 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"

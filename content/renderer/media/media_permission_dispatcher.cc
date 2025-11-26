@@ -13,10 +13,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/functional/callback_forward.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 
 using Type = media::MediaPermission::Type;

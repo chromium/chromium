@@ -15,7 +15,6 @@
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

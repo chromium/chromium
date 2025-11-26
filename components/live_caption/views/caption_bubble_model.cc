@@ -5,7 +5,6 @@
 #include "components/live_caption/views/caption_bubble_model.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/live_caption/caption_bubble_context.h"

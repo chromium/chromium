@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"

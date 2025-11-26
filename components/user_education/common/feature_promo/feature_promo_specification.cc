@@ -9,7 +9,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"

@@ -10,7 +10,6 @@
 #include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"

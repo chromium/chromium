@@ -7,7 +7,6 @@
 #include <optional>
 #include <tuple>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"

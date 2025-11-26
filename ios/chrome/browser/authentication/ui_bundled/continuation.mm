@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 
 #import "base/functional/callback.h"
-#import "base/functional/callback_forward.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
 namespace {

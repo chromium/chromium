@@ -9,7 +9,6 @@
 #include <string_view>
 #include <variant>
 
-#include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"

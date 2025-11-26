@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"

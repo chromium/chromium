@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"

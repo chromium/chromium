@@ -4,7 +4,6 @@
 
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 
-#import "base/functional/callback_forward.h"
 #import "base/task/sequenced_task_runner.h"
 
 @implementation FakeUIViewController

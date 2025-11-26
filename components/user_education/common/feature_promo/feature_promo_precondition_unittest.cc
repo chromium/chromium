@@ -4,7 +4,6 @@
 
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/test/gtest_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "testing/gmock/include/gmock/gmock.h"

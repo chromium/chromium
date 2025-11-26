@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

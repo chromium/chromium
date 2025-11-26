@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"

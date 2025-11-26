@@ -4,7 +4,6 @@
 
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/collaboration_controller.h"

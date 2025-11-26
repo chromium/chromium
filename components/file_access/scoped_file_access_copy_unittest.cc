@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"

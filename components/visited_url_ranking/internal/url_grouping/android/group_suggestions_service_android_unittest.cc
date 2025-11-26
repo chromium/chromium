@@ -5,7 +5,6 @@
 #include "components/visited_url_ranking/internal/url_grouping/android/group_suggestions_service_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"

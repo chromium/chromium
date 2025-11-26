@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"

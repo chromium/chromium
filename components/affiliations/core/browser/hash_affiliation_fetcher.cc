@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
-
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"

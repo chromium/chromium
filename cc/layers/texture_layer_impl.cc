@@ -13,7 +13,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"

@@ -4,7 +4,6 @@
 
 #include "services/accessibility/fake_service_client.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/accessibility/ax_tree_id.h"

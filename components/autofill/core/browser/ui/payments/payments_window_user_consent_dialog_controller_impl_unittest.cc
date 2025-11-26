@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

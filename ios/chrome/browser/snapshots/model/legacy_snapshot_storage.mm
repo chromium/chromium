@@ -10,7 +10,6 @@
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_forward.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"

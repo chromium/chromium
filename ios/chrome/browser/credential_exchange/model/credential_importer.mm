@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
-#import "base/functional/callback_forward.h"
 #import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"

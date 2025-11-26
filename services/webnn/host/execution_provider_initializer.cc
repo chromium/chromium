@@ -18,7 +18,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

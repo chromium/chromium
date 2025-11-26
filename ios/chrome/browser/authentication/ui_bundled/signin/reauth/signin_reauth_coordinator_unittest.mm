@@ -9,7 +9,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"

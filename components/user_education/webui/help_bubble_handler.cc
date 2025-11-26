@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"

@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"

@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/containers/queue.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "content/browser/navigation_or_document_handle.h"

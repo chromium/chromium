@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata.h"

@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

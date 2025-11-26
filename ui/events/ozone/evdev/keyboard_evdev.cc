@@ -5,7 +5,6 @@
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

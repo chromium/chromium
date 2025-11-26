@@ -4,7 +4,6 @@
 
 #include "chromecast/cast_core/grpc/test_utils.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 

@@ -5,7 +5,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/typed_data_collection.h"
 

@@ -9,7 +9,6 @@
 #import <memory>
 #import <optional>
 
-#import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"

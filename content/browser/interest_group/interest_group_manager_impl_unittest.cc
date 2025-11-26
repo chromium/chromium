@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"

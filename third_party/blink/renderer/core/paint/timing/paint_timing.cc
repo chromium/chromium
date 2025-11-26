@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"

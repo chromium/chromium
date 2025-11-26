@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"

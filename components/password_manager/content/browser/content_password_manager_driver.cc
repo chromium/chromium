@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"

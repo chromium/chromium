@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

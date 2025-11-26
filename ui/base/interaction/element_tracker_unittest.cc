@@ -4,7 +4,6 @@
 
 #include "ui/base/interaction/element_tracker.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/test/bind.h"

@@ -8,7 +8,6 @@
 #include <optional>
 #include <set>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata.h"

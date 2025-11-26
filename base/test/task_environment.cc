@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/enum_set.h"
 #include "base/debug/stack_trace.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
