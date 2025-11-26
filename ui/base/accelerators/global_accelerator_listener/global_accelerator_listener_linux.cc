@@ -15,9 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
-#include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/dbus/xdg/request.h"
-#include "components/dbus/xdg/systemd.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -58,9 +57,9 @@ GlobalAcceleratorListenerLinux::GlobalAcceleratorListenerLinux(
     bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
 
-  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
+  dbus_xdg::RequestXdgDesktopPortal(
       bus_.get(),
-      base::BindOnce(&GlobalAcceleratorListenerLinux::OnSystemdUnitStarted,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnServiceStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -68,18 +67,8 @@ GlobalAcceleratorListenerLinux::~GlobalAcceleratorListenerLinux() {
   CloseSession();
 }
 
-void GlobalAcceleratorListenerLinux::OnSystemdUnitStarted(
-    dbus_xdg::SystemdUnitStatus) {
-  // Intentionally ignoring the status.
-  dbus_utils::CheckForServiceAndStart(
-      bus_.get(), kPortalServiceName,
-      base::BindOnce(&GlobalAcceleratorListenerLinux::OnServiceStarted,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GlobalAcceleratorListenerLinux::OnServiceStarted(
-    std::optional<bool> service_started) {
-  service_started_ = service_started.value_or(false);
+void GlobalAcceleratorListenerLinux::OnServiceStarted(bool service_started) {
+  service_started_ = service_started;
 
   if (!*service_started_) {
     bound_commands_.clear();
