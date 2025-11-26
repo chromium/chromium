@@ -8,7 +8,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator.h"
@@ -74,8 +74,8 @@ SaveAddressProfileInfobarModalOverlayCoordinator (ModalConfiguration)
   SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
       [[SaveAddressProfileInfobarModalOverlayMediator alloc]
           initWithRequest:self.request];
-  InfobarSaveAddressProfileTableViewController* modalViewController =
-      [[InfobarSaveAddressProfileTableViewController alloc]
+  InfobarSaveAddressProfileViewController* modalViewController =
+      [[InfobarSaveAddressProfileViewController alloc]
           initWithModalDelegate:modalMediator];
   modalMediator.consumer = modalViewController;
   modalMediator.saveAddressProfileMediatorDelegate = self;

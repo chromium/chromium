@@ -97,6 +97,10 @@
 + (void)legacyRegisterCellForTableView:(UITableView*)tableView;
 + (LegacyTableViewCell*)legacyDequeueTableViewCell:(UITableView*)tableView;
 
+// Returns the same view as `makeContentView`, but with its accessibility
+// configured.
+- (UIView*)makeAccessibilityConfiguredContentView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CONTENT_CONFIGURATION_TABLE_VIEW_CELL_CONTENT_CONFIGURATION_H_
