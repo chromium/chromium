@@ -38,6 +38,13 @@ struct TabGroupMenuAction {
   std::variant<base::Uuid, GURL> element;
 };
 
+enum class TabGroupMenuContext {
+  SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU,
+  SAVED_TAB_GROUP_EVERYTHING_MENU,
+  APP_MENU,
+  MAC_SYSTEM_MENU
+};
+
 class TabGroupMenuUtils {
  public:
   static std::u16string GetMenuTextForGroup(

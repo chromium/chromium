@@ -16542,24 +16542,6 @@
             ]
         }
     ],
-    "NewTabsInGroups": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewTabAddsToActiveGroup"
-                    ]
-                }
-            ]
-        }
-    ],
     "NimbleCollisionAvoidanceV1": [
         {
             "platforms": [
@@ -25005,6 +24987,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabGridEmptyThumbnail"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabGroupInteractionsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BookmarkTabGroupConversion",
+                        "CreateNewTabGroupAppMenuTopLevel",
+                        "NewTabAddsToActiveGroup",
+                        "ShowTabGroupsMacSystemMenu",
+                        "TabGroupMenuImprovements",
+                        "TabGroupMenuMoreEntryPoints"
                     ]
                 }
             ]

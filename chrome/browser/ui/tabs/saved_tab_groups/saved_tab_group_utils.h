@@ -179,10 +179,10 @@ class SavedTabGroupUtils {
                                            LocalTabID tab_id);
 
   static void PerformTabGroupMenuAction(const TabGroupMenuAction& action,
+                                        const TabGroupMenuContext& context,
                                         Browser* browser,
                                         TabGroupSyncService* tab_group_service);
 };
-
 }  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
