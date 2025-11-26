@@ -300,10 +300,21 @@ BASE_DECLARE_FEATURE(kOpenAllProfilesFromProfilePickerExperiment);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
 
-// Experimenting with removing steps in the profile creation flow to reduce
-// friction.
+// Experimenting with prefill name requirement for the profile creation flow.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kProfileCreationFrictionReductionExperiment);
+BASE_DECLARE_FEATURE(
+    kProfileCreationFrictionReductionExperimentPrefillNameRequirement);
+
+// Experimenting with removing signin in the profile creation flow.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(
+    kProfileCreationFrictionReductionExperimentRemoveSigninStep);
+
+// Experimenting with removing the profile customization bubble in the profile
+// creation flow.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(
+    kProfileCreationFrictionReductionExperimentSkipCustomizeProfile);
 
 // Enables variations of the profile picker text.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -419,19 +430,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<SeamlessSigninStringType>
     kSeamlessSigninStringType;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Experimenting with variations of flow change.
-enum class ProfileCreationFrictionReductionVariation {
-  kRemoveSigninStep = 0,
-  kPrefillNameRequirement = 1,
-  kSkipCustomizeProfileStep = 2,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<ProfileCreationFrictionReductionVariation>
-    kProfileCreationFrictionReductionVariation;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 // keep-sorted end
 
 // Helper functions that are no longer attached to any features.

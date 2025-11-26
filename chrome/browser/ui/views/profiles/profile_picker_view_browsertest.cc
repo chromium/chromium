@@ -4089,16 +4089,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
 
 class ProfilePickerWithReducedFrictionRemoveSigninBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
- protected:
-  ProfilePickerWithReducedFrictionRemoveSigninBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kProfileCreationFrictionReductionExperiment,
-        {{"profile-creation-friction-reduction-variation",
-          "remove-signin-step"}});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kProfileCreationFrictionReductionExperimentRemoveSigninStep};
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
@@ -4155,16 +4148,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
 
 class ProfilePickerWithReducedFrictionSkipCustomizationBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
- protected:
-  ProfilePickerWithReducedFrictionSkipCustomizationBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kProfileCreationFrictionReductionExperiment,
-        {{"profile-creation-friction-reduction-variation",
-          "skip-customize-profile-step"}});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::
+          kProfileCreationFrictionReductionExperimentSkipCustomizeProfile};
 };
 
 IN_PROC_BROWSER_TEST_F(

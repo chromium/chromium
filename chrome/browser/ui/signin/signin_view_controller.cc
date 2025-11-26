@@ -458,10 +458,8 @@ void SigninViewController::ShowModalProfileCustomizationDialog(
     bool is_local_profile_creation) {
   CloseModalSignin();
   if (base::FeatureList::IsEnabled(
-          switches::kProfileCreationFrictionReductionExperiment) &&
-      switches::kProfileCreationFrictionReductionVariation.Get() ==
-          switches::ProfileCreationFrictionReductionVariation::
-              kSkipCustomizeProfileStep) {
+          switches::
+              kProfileCreationFrictionReductionExperimentSkipCustomizeProfile)) {
     FinishProfileCreationWhenNoCustomizeProfileIsShown(
         profile_, is_local_profile_creation);
     return;

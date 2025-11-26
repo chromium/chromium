@@ -8064,6 +8064,8 @@ from previous Chrome versions.
       label="AutofillEnablePrefetchingRiskDataForRetrieval:disabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
+  <int value="-2134871491"
+      label="ProfileCreationFrictionReductionExperimentRemoveSigninStep:enabled"/>
   <int value="-2134700188" label="InstantHotspotOnNearby:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
   <int value="-2134609104" label="SystemEmojiPickerVariantGrouping:enabled"/>
@@ -8195,8 +8197,6 @@ from previous Chrome versions.
   <int value="-2098150649" label="ForceListTabSwitcher:enabled"/>
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
-  <int value="-2097822155"
-      label="ProfileCreationFrictionReductionExperiment:enabled"/>
   <int value="-2097737027" label="SkiaGraphite:disabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2097013050" label="WaylandTextInputV3:disabled"/>
@@ -9116,6 +9116,8 @@ from previous Chrome versions.
       label="BlockV8OptimizerOnUnfamiliarSitesSetting:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
+  <int value="-1784739262"
+      label="ProfileCreationFrictionReductionExperimentSkipCustomizeProfile:disabled"/>
   <int value="-1784452112" label="ReplaceSyncPromosWithSignInPromos:enabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
@@ -12344,6 +12346,8 @@ from previous Chrome versions.
       label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:disabled"/>
   <int value="-662064703" label="MediaSessionService:enabled"/>
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
+  <int value="-660569428"
+      label="ProfileCreationFrictionReductionExperimentSkipCustomizeProfile:enabled"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-659763527" label="AccessCodeCastTabSwitchingUI:disabled"/>
   <int value="-658543308" label="AndroidTabDeclutterArchiveTabGroups:enabled"/>
@@ -15611,6 +15615,8 @@ from previous Chrome versions.
   <int value="487677879" label="SendTabToSelfIOSPushNotifications:enabled"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="489533404" label="GetDisplayMediaConfersActivation:enabled"/>
+  <int value="491126080"
+      label="ProfileCreationFrictionReductionExperimentPrefillNameRequirement:enabled"/>
   <int value="491258649" label="UseFirstPartySet"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
   <int value="492184007" label="PdfSearchify:enabled"/>
@@ -16129,6 +16135,8 @@ from previous Chrome versions.
   <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
   <int value="675918824" label="AndroidPinnedTabs:disabled"/>
   <int value="675963233" label="EsbDownloadRowPromo:disabled"/>
+  <int value="676197393"
+      label="ProfileCreationFrictionReductionExperimentPrefillNameRequirement:disabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
   <int value="676922235" label="SeparateUserDisplayModeForCrOS:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
@@ -20015,6 +20023,8 @@ from previous Chrome versions.
   <int value="2009697597"
       label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
   <int value="2009995411" label="GlicPanelResetOnSessionTimeout:enabled"/>
+  <int value="2010329451"
+      label="ProfileCreationFrictionReductionExperimentRemoveSigninStep:disabled"/>
   <int value="2011785323" label="EnableSchemeBoundCookies:enabled"/>
   <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
   <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>
@@ -20309,8 +20319,6 @@ from previous Chrome versions.
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
-  <int value="2119256759"
-      label="ProfileCreationFrictionReductionExperiment:disabled"/>
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120179658" label="FeedHeaderRemoval:enabled"/>

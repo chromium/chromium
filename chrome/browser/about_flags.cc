@@ -5049,35 +5049,6 @@ const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const FeatureEntry::FeatureParam
-    kProfileCreationFrictionReductionRemoveSigninStep[] = {
-        {"profile-creation-friction-reduction-variation",
-         "remove-signin-step"}};
-const FeatureEntry::FeatureParam
-    kProfileCreationFrictionReductionPrefillNameRequirement[] = {
-        {"profile-creation-friction-reduction-variation",
-         "prefill-name-requirement"}};
-const FeatureEntry::FeatureParam
-    kProfileCreationFrictionReductionSkipCustomizeProfileStep[] = {
-        {"profile-creation-friction-reduction-variation",
-         "skip-customize-profile-step"}};
-
-const FeatureEntry::FeatureVariation
-    kProfileCreationFrictionReductionVariations[] = {
-        {"- Remove sign-in step",
-         kProfileCreationFrictionReductionRemoveSigninStep,
-         std::size(kProfileCreationFrictionReductionRemoveSigninStep), nullptr},
-        {"- Prefill profile name requirement",
-         kProfileCreationFrictionReductionPrefillNameRequirement,
-         std::size(kProfileCreationFrictionReductionPrefillNameRequirement),
-         nullptr},
-        {"- Skip customize profile step",
-         kProfileCreationFrictionReductionSkipCustomizeProfileStep,
-         std::size(kProfileCreationFrictionReductionSkipCustomizeProfileStep),
-         nullptr}};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
     {"desktop-zoom-scaling-factor", "109"},
@@ -13314,6 +13285,42 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"profile-creation-friction-reduction-experiment-prefill-name-requirement",
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentPrefillNameRequirementName,
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentPrefillNameRequirementDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         switches::
+             kProfileCreationFrictionReductionExperimentPrefillNameRequirement)},
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"profile-creation-friction-reduction-experiment-remove-signin-step",
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentRemoveSigninStepName,
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentRemoveSigninStepDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         switches::
+             kProfileCreationFrictionReductionExperimentRemoveSigninStep)},
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"profile-creation-friction-reduction-experiment-skip-customize-profile",
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName,
+     flag_descriptions::
+         kProfileCreationFrictionReductionExperimentSkipCustomizeProfileDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         switches::
+             kProfileCreationFrictionReductionExperimentSkipCustomizeProfile)},
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"show-profile-picker-to-all-users-experiment",
      flag_descriptions::kShowProfilePickerToAllUsersExperimentName,
      flag_descriptions::kShowProfilePickerToAllUsersExperimentDescription,
@@ -13363,17 +13370,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidDesktopZoomScalingVariations,
                                     "AndroidDesktopZoomScaling")},
 #endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"profile-creation-friction-reduction-experiment",
-     flag_descriptions::kProfileCreationFrictionReductionExperimentName,
-     flag_descriptions::kProfileCreationFrictionReductionExperimentDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         switches::kProfileCreationFrictionReductionExperiment,
-         kProfileCreationFrictionReductionVariations,
-         "ProfileCreationFrictionReductionExperiment")},
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"profile-picker-text-variations",

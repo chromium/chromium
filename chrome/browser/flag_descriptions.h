@@ -4068,17 +4068,37 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "As part of the Sign In Level Up experiment, changes the decline "
     "sign in CTA string in profile creation entry points";
 
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentPrefillNameRequirementName[] =
+        "Enable prefill name requirement for profile creation for friction "
+        "reduction experiment";
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentPrefillNameRequirementDescription
+        [] = "As part of the profile creation friction reduction experiment, "
+             "prefills the name requirement in profile customization bubble";
+
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentRemoveSigninStepName[] =
+        "Remove sign-in step from profile creation for friction reduction "
+        "experiment";
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentRemoveSigninStepDescription[] =
+        "As part of the profile creation friction reduction experiment, "
+        "removes the sign-in step";
+
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName[] =
+        "Skip customize profile step for friction reduction experiment";
+inline constexpr char
+    kProfileCreationFrictionReductionExperimentSkipCustomizeProfileDescription
+        [] = "As part of the profile creation friction reduction experiment, "
+             "skips the customize profile bubble";
+
 inline constexpr char kProfilePickerTextVariationsName[] =
     "Profile Picker Text Variations";
 inline constexpr char kProfilePickerTextVariationsDescription[] =
     "As part of the Profile experiments, enables variations of the profile "
     "picker text.";
-
-inline constexpr char kProfileCreationFrictionReductionExperimentName[] =
-    "Profile Creation Friction Reduction";
-inline constexpr char kProfileCreationFrictionReductionExperimentDescription[] =
-    "As part of the Profile experiments, changes parts of the profile creation "
-    "flow to reduce friction.";
 
 inline constexpr char kShowProfilePickerToAllUsersExperimentName[] =
     "Show profile picker to all users";
