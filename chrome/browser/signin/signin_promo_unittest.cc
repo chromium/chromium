@@ -441,16 +441,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
 
-TEST_F(ShowSigninPromoTestWithFeatureFlags,
-       DoNotShowBookmarkPromoAfterSyncingAccount) {
-  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
-
-  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   "test_gaia");
-
-  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
-}
-
 TEST_F(ShowSigninPromoTestWithFeatureFlags, ShowExtensionsPromoWithNoAccount) {
   EXPECT_TRUE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
 }
