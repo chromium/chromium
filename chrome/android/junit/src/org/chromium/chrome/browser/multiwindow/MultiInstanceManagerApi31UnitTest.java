@@ -300,12 +300,13 @@ public class MultiInstanceManagerApi31UnitTest {
                                 taskId,
                                 type,
                                 MultiInstanceManagerApi31.readUrl(instanceId),
-                                "",
+                                /* title= */ "",
                                 /* customTitle= */ null,
-                                0,
-                                0,
-                                false,
-                                MultiInstanceManagerApi31.readLastAccessedTime(instanceId)));
+                                /* tabCount= */ 0,
+                                /* incognitoTabCount= */ 0,
+                                /* isIncognitoSelected= */ false,
+                                MultiInstanceManagerApi31.readLastAccessedTime(instanceId),
+                                /* closedByUser= */ false));
             }
         }
 
@@ -827,13 +828,19 @@ public class MultiInstanceManagerApi31UnitTest {
         removeTaskOnRecentsScreen(mActivityTask58);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
-        // Activity destroyed in the background due to memory constraint has no impact either.
+        // Trigger a soft closure on this window.
         softCloseInstance(mActivityTask57, TASK_ID_57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Soft closing an instance does not remove the entry.
         mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        for (InstanceInfo instanceInfo : mMultiInstanceManager.getInstanceInfo()) {
+            if (instanceInfo.instanceId == 1) {
+                assertTrue(instanceInfo.closedByUser);
+                break;
+            }
+        }
     }
 
     @Test
@@ -1781,16 +1788,17 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         InstanceInfo info =
                 new InstanceInfo(
-                        NON_EXISTENT_INSTANCE_ID,
-                        NON_EXISTENT_INSTANCE_ID,
+                        /* instanceId= */ NON_EXISTENT_INSTANCE_ID,
+                        /* taskId= */ NON_EXISTENT_INSTANCE_ID,
                         InstanceInfo.Type.ADJACENT,
                         "https://id-4.com",
-                        "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0);
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info,
                 Collections.singletonList(mTab1),
@@ -1821,16 +1829,17 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         InstanceInfo info =
                 new InstanceInfo(
-                        NON_EXISTENT_INSTANCE_ID,
-                        NON_EXISTENT_INSTANCE_ID,
+                        /* instanceId= */ NON_EXISTENT_INSTANCE_ID,
+                        /* taskId= */ NON_EXISTENT_INSTANCE_ID,
                         InstanceInfo.Type.ADJACENT,
                         "https://id-4.com",
-                        "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0);
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
 
@@ -1854,16 +1863,17 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         InstanceInfo info =
                 new InstanceInfo(
-                        NON_EXISTENT_INSTANCE_ID,
-                        NON_EXISTENT_INSTANCE_ID,
+                        /* instanceId= */ NON_EXISTENT_INSTANCE_ID,
+                        /* taskId= */ NON_EXISTENT_INSTANCE_ID,
                         InstanceInfo.Type.ADJACENT,
                         "https://id-4.com",
-                        "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0);
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false);
         mMultiInstanceManager.moveTabGroupToWindow(
                 info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
 

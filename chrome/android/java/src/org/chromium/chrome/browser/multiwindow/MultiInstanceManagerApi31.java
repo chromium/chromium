@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.isRestorableInstance;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
@@ -658,7 +660,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             readTabCount(i),
                             readIncognitoTabCount(i),
                             readIncognitoSelected(i),
-                            readLastAccessedTime(i)));
+                            readLastAccessedTime(i),
+                            readClosedByUser(i)));
         }
         // Move the current instance always to the top of the list for favorable display on the UI.
         // It is possible that |currentItemPos| is invalid if this method is invoked early during
@@ -1296,6 +1299,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         return ChromeSharedPreferences.getInstance().readInt(profileTypeKey(index));
     }
 
+    @VisibleForTesting
+    static String closedByUserKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_CLOSED_BY_USER.createKey(String.valueOf(index));
+    }
+
+    @VisibleForTesting
+    static boolean readClosedByUser(int index) {
+        return ChromeSharedPreferences.getInstance().readBoolean(closedByUserKey(index), false);
+    }
+
+    @VisibleForTesting
+    static void writeClosedByUser(int index, boolean closedByUser) {
+        ChromeSharedPreferences.getInstance().writeBoolean(closedByUserKey(index), closedByUser);
+    }
+
     /**
      * @return The window IDs of the currently running ChromeTabbedActivity's. It is possible to
      *     have more number of saved instances than the number of currently running activities (for
@@ -1404,7 +1422,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void closeWindow(int instanceId, @CloseWindowAppSource int source) {
-        if (!isSoftWindowClosure(source)) {
+        if (!isUserInitiatedClosure(source)) {
             removeInstanceInfo(instanceId, source);
             TabModelSelector selector =
                     TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
@@ -1426,15 +1444,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                         .closeTabs(params, /* allowDialog= */ false);
             }
             mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
+        } else {
+            writeClosedByUser(instanceId, /* closedByUser= */ true);
         }
         Activity activity = getActivityById(instanceId);
         if (activity != null) activity.finishAndRemoveTask();
     }
 
     /**
-     * Returns whether a window closure is considered a "soft closure," meaning the instance data
-     * should be preserved for later restoration via surfaces (like Recent Tabs) or keyboard
-     * shortcuts.
+     * Returns whether a window closure is initiated by the user, it usually means that the instance
+     * closure is a "soft closure" and should be preserved for later restoration via surfaces (like
+     * Recent Tabs) or keyboard shortcuts.
      *
      * <p>A soft closure means the window's {@link InstanceInfo} and {@link TabModel} data are
      * persisted, even though the {@link Activity} and Android task will be removed via {@link
@@ -1442,7 +1462,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      *
      * @param source The window closure source, from {@link CloseWindowAppSource}.
      */
-    private boolean isSoftWindowClosure(@CloseWindowAppSource int source) {
+    private boolean isUserInitiatedClosure(@CloseWindowAppSource int source) {
         return source == CloseWindowAppSource.WINDOW_MANAGER
                 && UiUtils.isRecentlyClosedTabsAndWindowsEnabled();
     }
@@ -1497,6 +1517,34 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 });
     }
 
+    // TODO (crbug.com/458784614): Move this to MultiWindowUtils
+    static int getInstanceCountForManageWindowsMenu() {
+        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
+        }
+
+        Map<String, Long> lastAccessedTimeMap =
+                ChromeSharedPreferences.getInstance()
+                        .readLongsWithPrefix(
+                                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
+        Pattern pattern = Pattern.compile("(\\d+)$");
+
+        int count = 0;
+
+        for (String prefKey : lastAccessedTimeMap.keySet()) {
+            Matcher matcher = pattern.matcher(prefKey);
+            boolean matchFound = matcher.find();
+            assert matchFound : "Key should be suffixed with the instance id.";
+            int id = Integer.parseInt(matcher.group(1));
+
+            // Exclude instances closed by the user.
+            if (readClosedByUser(id)) continue;
+            if (!isRestorableInstance(id)) continue;
+            count++;
+        }
+        return count;
+    }
+
     private Profile getProfile() {
         var profile =
                 mTabModelOrchestratorSupplier
@@ -1539,6 +1587,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         prefs.removeKey(lastAccessedTimeKey(index));
         prefs.removeKey(profileTypeKey(index));
         prefs.removeKey(customTitleKey(index));
+        prefs.removeKey(closedByUserKey(index));
 
         RecordHistogram.recordEnumeratedHistogram(
                 CLOSE_WINDOW_APP_SOURCE_HISTOGRAM, source, CloseWindowAppSource.NUM_ENTRIES);

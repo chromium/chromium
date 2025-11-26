@@ -896,38 +896,41 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0,
-                            57,
+                            /* instanceId= */ 0,
+                            /* taskId= */ 57,
                             InstanceInfo.Type.CURRENT,
                             "url0",
                             "title0",
                             /* customTitle= */ null,
-                            1,
-                            0,
-                            false,
-                            0),
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ 0,
+                            /* closedByUser= */ false),
                     new InstanceInfo(
-                            1,
-                            58,
+                            /* instanceId= */ 1,
+                            /* taskId= */ 58,
                             InstanceInfo.Type.OTHER,
                             "ur11",
                             "title1",
                             /* customTitle= */ null,
-                            2,
-                            0,
-                            false,
-                            0),
+                            /* tabCount= */ 2,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ 0,
+                            /* closedByUser= */ false),
                     new InstanceInfo(
-                            2,
-                            59,
+                            /* instanceId= */ 2,
+                            /* taskId= */ 59,
                             InstanceInfo.Type.OTHER,
                             "url2",
                             "title2",
                             /* customTitle= */ null,
-                            0,
-                            0,
-                            false,
-                            0)
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ 0,
+                            /* closedByUser= */ false)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
@@ -1481,47 +1484,50 @@ public class InstanceSwitcherCoordinatorTest {
         // Set instance0 as the current instance.
         instances[0] =
                 new InstanceInfo(
-                        0,
+                        /* instanceId= */ 0,
                         taskId++,
                         InstanceInfo.Type.CURRENT,
                         "url0",
                         "title0",
                         /* customTitle= */ null,
-                        1,
-                        1,
-                        false,
-                        0);
+                        /* tabCount= */ 1,
+                        /* incognitoTabCount= */ 1,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false);
 
         // Create other active instances.
         for (int i = 1; i < numActiveInstances; i++) {
             instances[i] =
                     new InstanceInfo(
-                            i,
+                            /* instanceId= */ i,
                             taskId++,
                             InstanceInfo.Type.OTHER,
                             "url" + i,
                             "title" + i,
                             /* customTitle= */ null,
-                            1,
-                            0,
-                            false,
-                            getDaysAgoMillis(i));
+                            /* tabCount= */ 1,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(i),
+                            /* closedByUser= */ false);
         }
 
         // Create inactive instances.
         for (int i = numActiveInstances; i < totalInstances; i++) {
             instances[i] =
                     new InstanceInfo(
-                            i,
-                            -1,
+                            /* instanceId= */ i,
+                            /* taskId= */ -1,
                             InstanceInfo.Type.OTHER,
                             "url" + i,
                             "title" + i,
                             /* customTitle= */ null,
-                            1,
-                            0,
-                            false,
-                            0);
+                            /* tabCount= */ 1,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ 0,
+                            /* closedByUser= */ false);
         }
 
         return instances;
