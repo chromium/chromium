@@ -213,6 +213,8 @@ std::string GetStringNameForOptimizationType(
       return "WalletablePassDetectionBoardingPassAllowlist";
     case proto::OptimizationType::READER_MODE_ELIGIBLE:
       return "ReaderModeEligible";
+    case proto::OptimizationType::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST:
+      return "AutofillActorIframeOriginAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

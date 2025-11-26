@@ -371,6 +371,9 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page is a good candidate
   // for enabling buy now pay later flow with Klarna on Android OS.
   BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID = 115;
+  // Provides information about whether we may trigger Autofill on a page
+  // element in an iframe with this origin during an actor task.
+  AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST = 116;
 }
 
 // Presents semantics for how page load URLs should be matched.
