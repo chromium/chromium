@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "content/public/browser/visibility.h"
 
@@ -23,7 +22,6 @@ using ::mojom::LifecycleUnitDiscardReason;
 using ::mojom::LifecycleUnitLoadingState;
 using ::mojom::LifecycleUnitState;
 
-class DecisionDetails;
 class LifecycleUnitObserver;
 class LifecycleUnitSource;
 class TabLifecycleUnitExternal;
@@ -77,17 +75,6 @@ class LifecycleUnit {
   // Returns the loading state associated with a LifecycleUnit.
   virtual LifecycleUnitLoadingState GetLoadingState() const = 0;
 
-  // Returns a key that can be used to evaluate the relative importance of this
-  // LifecycleUnit. This key may not be trivial to calculate, so this should not
-  // be called repeatedly if the value will be reused, e.g. during a sort.
-  //
-  // TODO(fdoray): Figure out if GetSortKey() and CanDiscard() should be
-  // replaced with a method that returns a numeric value representing the
-  // expected user pain caused by a discard. A values above a given threshold
-  // would be equivalent to CanDiscard() returning false for a given
-  // mojom::LifecycleUnitDiscardReason. https://crbug.com/775644
-  virtual SortKey GetSortKey() const = 0;
-
   // Returns the current state of this LifecycleUnit.
   virtual LifecycleUnitState GetState() const = 0;
 
@@ -97,14 +84,6 @@ class LifecycleUnit {
   // Request that the LifecycleUnit be loaded, return true if the request is
   // successful.
   virtual bool Load() = 0;
-
-  // Returns true if this LifecycleUnit can be discarded. Full details regarding
-  // the policy decision are recorded in the |decision_details|, for logging.
-  // Returning false but with an empty |decision_details| means the transition
-  // is not possible for a trivial reason that doesn't need to be reported
-  // (ie, the page is already discarded).
-  virtual bool CanDiscard(LifecycleUnitDiscardReason reason,
-                          DecisionDetails* decision_details) const = 0;
 
   // Discards this LifecycleUnit.
   //

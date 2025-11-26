@@ -4,17 +4,17 @@
 
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 
+#include "base/containers/contains.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace resource_coordinator {
 
-TestLifecycleUnit::TestLifecycleUnit(base::TimeTicks last_focused_time,
-                                     bool can_discard)
-    : LifecycleUnitBase(nullptr),
-      last_focused_time_ticks_(last_focused_time),
-      sort_key_(last_focused_time),
-      can_discard_(can_discard) {}
+TestLifecycleUnit::TestLifecycleUnit(base::TimeTicks last_focused_time)
+    : LifecycleUnitBase(nullptr), last_focused_time_ticks_(last_focused_time) {}
 
 TestLifecycleUnit::TestLifecycleUnit(LifecycleUnitSourceBase* source)
     : LifecycleUnitBase(source) {}
@@ -35,24 +35,12 @@ base::Time TestLifecycleUnit::GetLastFocusedTime() const {
   return last_focused_time_;
 }
 
-LifecycleUnit::SortKey TestLifecycleUnit::GetSortKey() const {
-  return sort_key_;
-}
-
 mojom::LifecycleUnitLoadingState TestLifecycleUnit::GetLoadingState() const {
   return mojom::LifecycleUnitLoadingState::LOADED;
 }
 
 bool TestLifecycleUnit::Load() {
   return false;
-}
-
-bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
-                                   DecisionDetails* decision_details) const {
-  if (failure_reason_) {
-    decision_details->AddReason(*failure_reason_);
-  }
-  return can_discard_;
 }
 
 bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason,
@@ -64,55 +52,85 @@ LifecycleUnitDiscardReason TestLifecycleUnit::GetDiscardReason() const {
   return discard_reason_;
 }
 
-void ExpectCanDiscardTrue(const LifecycleUnit* lifecycle_unit,
-                          LifecycleUnitDiscardReason discard_reason) {
-  DecisionDetails decision_details;
-  EXPECT_TRUE(lifecycle_unit->CanDiscard(discard_reason, &decision_details));
-  EXPECT_TRUE(decision_details.IsPositive());
-  EXPECT_EQ(1u, decision_details.reasons().size());
-  EXPECT_EQ(DecisionSuccessReason::HEURISTIC_OBSERVED_TO_BE_SAFE,
-            decision_details.SuccessReason());
+using performance_manager::policies::CanDiscardResult;
+using performance_manager::policies::CannotDiscardReason;
+using performance_manager::policies::CanDiscardResult::kDisallowed;
+using performance_manager::policies::CanDiscardResult::kEligible;
+using performance_manager::policies::CanDiscardResult::kProtected;
+
+namespace {
+
+CanDiscardResult CanDiscardHelper(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    LifecycleUnitDiscardReason discard_reason,
+    std::vector<CannotDiscardReason>* cannot_discard_reasons) {
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          tab_lifecycle_unit->GetWebContents());
+  CHECK(page_node);
+  performance_manager::policies::DiscardEligibilityPolicy* eligiblity_policy =
+      performance_manager::policies::DiscardEligibilityPolicy::GetFromGraph(
+          page_node->GetGraph());
+  CHECK(eligiblity_policy);
+  eligiblity_policy->SetNoDiscardPatternsForProfile(
+      page_node->GetBrowserContextID(), {});
+
+  CanDiscardResult result = eligiblity_policy->CanDiscard(
+      page_node.get(), discard_reason,
+      /*minimum_time_in_background*/ base::TimeDelta(), cannot_discard_reasons);
+  return result;
 }
 
-void ExpectCanDiscardTrueAllReasons(const LifecycleUnit* lifecycle_unit) {
-  ExpectCanDiscardTrue(lifecycle_unit, LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardTrue(lifecycle_unit, LifecycleUnitDiscardReason::URGENT);
+}  // namespace
+
+void ExpectCanDiscardTrue(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    LifecycleUnitDiscardReason discard_reason) {
+  CanDiscardResult result =
+      CanDiscardHelper(tab_lifecycle_unit, discard_reason, nullptr);
+  EXPECT_TRUE(result == kEligible);
 }
 
-void ExpectCanDiscardFalse(const LifecycleUnit* lifecycle_unit,
-                           DecisionFailureReason failure_reason,
-                           LifecycleUnitDiscardReason discard_reason) {
-  DecisionDetails decision_details;
-  EXPECT_FALSE(lifecycle_unit->CanDiscard(discard_reason, &decision_details));
-  EXPECT_FALSE(decision_details.IsPositive());
-  EXPECT_EQ(1u, decision_details.reasons().size());
-  EXPECT_EQ(failure_reason, decision_details.FailureReason());
+void ExpectCanDiscardTrueAllReasons(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit) {
+  ExpectCanDiscardTrue(tab_lifecycle_unit,
+                       LifecycleUnitDiscardReason::EXTERNAL);
+  ExpectCanDiscardTrue(tab_lifecycle_unit, LifecycleUnitDiscardReason::URGENT);
 }
 
-void ExpectCanDiscardFalseAllReasons(const LifecycleUnit* lifecycle_unit,
-                                     DecisionFailureReason failure_reason) {
-  ExpectCanDiscardFalse(lifecycle_unit, failure_reason,
+void ExpectCanDiscardFalse(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    CannotDiscardReason failure_reason,
+    LifecycleUnitDiscardReason discard_reason) {
+  std::vector<CannotDiscardReason> failure_reasons;
+  CanDiscardResult result =
+      CanDiscardHelper(tab_lifecycle_unit, discard_reason, &failure_reasons);
+  EXPECT_TRUE(result == kDisallowed || result == kProtected);
+  EXPECT_TRUE(base::Contains(failure_reasons, failure_reason));
+}
+
+void ExpectCanDiscardFalseAllReasons(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    CannotDiscardReason failure_reason) {
+  ExpectCanDiscardFalse(tab_lifecycle_unit, failure_reason,
                         LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardFalse(lifecycle_unit, failure_reason,
+  ExpectCanDiscardFalse(tab_lifecycle_unit, failure_reason,
                         LifecycleUnitDiscardReason::URGENT);
 }
 
-void ExpectCanDiscardFalseTrivial(const LifecycleUnit* lifecycle_unit,
-                                  LifecycleUnitDiscardReason discard_reason) {
-  DecisionDetails decision_details;
-  EXPECT_FALSE(lifecycle_unit->CanDiscard(discard_reason, &decision_details));
-  EXPECT_FALSE(decision_details.IsPositive());
-  // |reasons()| will either contain the status for the 4 local site features
-  // heuristics or be empty if the database doesn't track this lifecycle unit.
-  EXPECT_TRUE(decision_details.reasons().empty() ||
-              (decision_details.reasons().size() == 4));
+void ExpectCanDiscardFalseTrivial(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    LifecycleUnitDiscardReason discard_reason) {
+  CanDiscardResult result =
+      CanDiscardHelper(tab_lifecycle_unit, discard_reason, nullptr);
+  EXPECT_TRUE(result == kDisallowed || result == kProtected);
 }
 
 void ExpectCanDiscardFalseTrivialAllReasons(
-    const LifecycleUnit* lifecycle_unit) {
-  ExpectCanDiscardFalseTrivial(lifecycle_unit,
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit) {
+  ExpectCanDiscardFalseTrivial(tab_lifecycle_unit,
                                LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardFalseTrivial(lifecycle_unit,
+  ExpectCanDiscardFalseTrivial(tab_lifecycle_unit,
                                LifecycleUnitDiscardReason::URGENT);
 }
 

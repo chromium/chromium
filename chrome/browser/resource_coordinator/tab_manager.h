@@ -61,11 +61,6 @@ class TabManager : public LifecycleUnitObserver,
   // Start the Tab Manager.
   void Start();
 
-  // Returns the LifecycleUnits managed by this, sorted from less to most
-  // important to the user. It is unsafe to access a pointer in the returned
-  // vector after a LifecycleUnit has been destroyed.
-  LifecycleUnitVector GetSortedLifecycleUnits();
-
   // Method used by the extensions API to discard tabs. If |contents| is null,
   // discards the least important tab using DiscardTab(). Otherwise discards
   // the given contents. Returns the new web_contents or null if no tab
@@ -73,34 +68,9 @@ class TabManager : public LifecycleUnitObserver,
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
 
  private:
-  friend class TabManagerStatsCollectorTest;
+  friend class TabManagerTest;
 
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, AutoDiscardable);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, CanOnlyDiscardOnce);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ChildProcessNotifications);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, EnablePageAlmostIdleSignal);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, InvalidOrEmptyURL);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabDiscardDoneCallback);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsInternalPage);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsTabRestoredInForeground);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OomPressureListener);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectDevToolsTabsFromDiscarding);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectPDFPages);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           ProtectRecentlyUsedTabsFromUrgentDiscarding);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectVideoTabs);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerBasics);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerWasDiscarded);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           TabManagerWasDiscardedCrossSiteSubFrame);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           TrackingNumberOfLoadedLifecycleUnits);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, UrgentFastShutdownSharedTabProcess);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTestWithTwoTabs,
-                           UrgentFastShutdownSingleTabProcess);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           UrgentFastShutdownWithBeforeunloadHandler);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, UrgentFastShutdownWithUnloadHandler);
   FRIEND_TEST_ALL_PREFIXES(TabManagerIgnoreWorkersTest,
                            UrgentFastShutdownWithWorker);
 
@@ -109,8 +79,11 @@ class TabManager : public LifecycleUnitObserver,
   static bool IsInternalPage(const GURL& url);
 
   // Discards the less important LifecycleUnit that supports discarding under
-  // |reason|.
-  content::WebContents* DiscardTabImpl(LifecycleUnitDiscardReason reason);
+  // |reason|. Exposes |minimum_time_in_background_to_discard| so tests can set
+  // this to 0.
+  content::WebContents* DiscardTabImpl(
+      LifecycleUnitDiscardReason reason,
+      base::TimeDelta minimum_time_in_background_to_discard);
 
   void OnSessionRestoreStartedLoadingTabs();
   void OnSessionRestoreFinishedLoadingTabs();
