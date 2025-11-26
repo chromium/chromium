@@ -238,6 +238,11 @@ BASE_DECLARE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange);
 BASE_DECLARE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Updates password change flow to use the refined prompt on Open form step. The
+// prompt uses the list of interactable actionables on the web page to identify
+// the button, which opens the password change form.
+BASE_DECLARE_FEATURE(kUseActionablesForImprovedPasswordChange);
+
 inline constexpr base::FeatureParam<std::string>
     kPasswordChangeSuccessSurveyTriggerId{
         &kImprovedPasswordChangeService, "PasswordChangeSuccessSurveyTriggerId",
