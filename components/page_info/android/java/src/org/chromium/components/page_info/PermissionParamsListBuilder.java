@@ -46,8 +46,9 @@ public class PermissionParamsListBuilder {
         mEntries = new ArrayList<>();
     }
 
-    public void addPermissionEntry(String name, String nameMidSentence, int type, boolean allowed) {
-        mEntries.add(new PageInfoPermissionEntry(name, nameMidSentence, type, allowed));
+    public void addPermissionEntry(
+            String name, String nameMidSentence, int type, boolean allowed, boolean requested) {
+        mEntries.add(new PageInfoPermissionEntry(name, nameMidSentence, type, allowed, requested));
     }
 
     public void clearPermissionEntries() {
@@ -100,7 +101,8 @@ public class PermissionParamsListBuilder {
                 /* name= */ nameString,
                 /* nameMidSentence= */ nameStringMidSentence,
                 /* allowed= */ permission.allowed,
-                /* warningTextResource= */ warningTextResource);
+                /* warningTextResource= */ warningTextResource,
+                /* requested= */ permission.requested);
     }
 
     /**
@@ -112,12 +114,15 @@ public class PermissionParamsListBuilder {
         public final String nameMidSentence;
         public final int type;
         public final boolean allowed;
+        public final boolean requested;
 
-        PageInfoPermissionEntry(String name, String nameMidSentence, int type, boolean allowed) {
+        PageInfoPermissionEntry(
+                String name, String nameMidSentence, int type, boolean allowed, boolean requested) {
             this.name = name;
             this.nameMidSentence = nameMidSentence;
             this.type = type;
             this.allowed = allowed;
+            this.requested = requested;
         }
 
         @Override

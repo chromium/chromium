@@ -56,7 +56,7 @@ public class PermissionParamsListBuilderUnitTest {
     @Test
     public void addSingleEntryAndBuild() {
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Foo", "foo", ContentSettingsType.COOKIES, true);
+                "Foo", "foo", ContentSettingsType.COOKIES, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
@@ -68,7 +68,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void addLocationEntryAndBuildWhenSystemLocationDisabled() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Test", "test", ContentSettingsType.GEOLOCATION, true);
+                "Test", "test", ContentSettingsType.GEOLOCATION, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
@@ -81,7 +81,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void arNotificationWhenCameraBlocked() {
         FakePermissionDelegate.blockPermission(android.Manifest.permission.CAMERA);
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Test", "test", ContentSettingsType.AR, true);
+                "Test", "test", ContentSettingsType.AR, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
