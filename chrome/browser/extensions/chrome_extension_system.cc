@@ -219,7 +219,6 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/413460628): Port ExtensionService to desktop Android.
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, base::CommandLine::ForCurrentProcess(),
       profile_->GetPath().AppendASCII(kInstallDirectoryName),
