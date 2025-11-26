@@ -229,7 +229,8 @@ TEST_F(AndroidPaymentsWindowManagerTest,
             intermediate_url);
 
   EXPECT_CALL(*mock_controller,
-              OnDismissed(testing::IsNull(), /*dismissed_by_user=*/true));
+              OnDismissed(testing::IsNull(), /*dismissed_by_user=*/true,
+                          /*should_reshow=*/true));
 
   // Simulate destruction of the tab.
   window_manager().WebContentsDestroyed();
@@ -251,7 +252,8 @@ TEST_F(
       test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
 
   EXPECT_CALL(*mock_controller,
-              OnDismissed(testing::IsNull(), /*dismissed_by_user=*/true));
+              OnDismissed(testing::IsNull(), /*dismissed_by_user=*/true,
+                          /*should_reshow=*/true));
 
   // Simulate destruction of the tab.
   window_manager().WebContentsDestroyed();

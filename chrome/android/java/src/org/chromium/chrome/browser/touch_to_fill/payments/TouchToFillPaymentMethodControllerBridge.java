@@ -52,10 +52,13 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
-    public void onDismissed(boolean dismissedByUser) {
+    public void onDismissed(boolean dismissedByUser, boolean shouldReshow) {
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
-                    .onDismissed(mNativeTouchToFillPaymentMethodViewController, dismissedByUser);
+                    .onDismissed(
+                            mNativeTouchToFillPaymentMethodViewController,
+                            dismissedByUser,
+                            shouldReshow);
         }
     }
 
@@ -155,7 +158,9 @@ class TouchToFillPaymentMethodControllerBridge
     @NativeMethods
     interface Natives {
         void onDismissed(
-                long nativeTouchToFillPaymentMethodViewController, boolean dismissedByUser);
+                long nativeTouchToFillPaymentMethodViewController,
+                boolean dismissedByUser,
+                boolean shouldReshow);
 
         void scanCreditCard(long nativeTouchToFillPaymentMethodViewController);
 

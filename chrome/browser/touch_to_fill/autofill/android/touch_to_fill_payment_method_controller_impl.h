@@ -97,7 +97,9 @@ class TouchToFillPaymentMethodControllerImpl
                                       ContentAutofillDriver& driver) override;
 
   // TouchToFillPaymentMethodViewController:
-  void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
+  void OnDismissed(JNIEnv* env,
+                   bool dismissed_by_user,
+                   bool should_reshow) override;
   void ScanCreditCard(JNIEnv* env) override;
   void ShowPaymentMethodSettings(JNIEnv* env) override;
   void CreditCardSuggestionSelected(JNIEnv* env,

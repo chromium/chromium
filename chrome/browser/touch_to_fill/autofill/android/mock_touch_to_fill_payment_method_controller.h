@@ -94,7 +94,10 @@ class MockTouchToFillPaymentMethodController
                base::OnceClosure accept_callback,
                base::OnceClosure cancel_callback),
               (override));
-  MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
+  MOCK_METHOD(void,
+              OnDismissed,
+              (JNIEnv*, bool dismissed_by_user, bool should_reshow),
+              (override));
   MOCK_METHOD(void, ScanCreditCard, (JNIEnv*), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (JNIEnv*), (override));
   MOCK_METHOD(void,

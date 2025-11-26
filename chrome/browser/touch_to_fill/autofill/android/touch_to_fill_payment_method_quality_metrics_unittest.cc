@@ -135,7 +135,8 @@ TEST_P(TouchToFillForPaymentMethodsTest,
   touch_to_fill_delegate().CreditCardSuggestionSelected(
       /*unique_id=*/kTestLocalCardId,
       /*is_virtual=*/false);
-  touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false);
+  touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
   // Simulate that fields were autofilled.
   SetFieldsAutofilledValues(form, test_case.fields_have_autofilled_values,
                             test_case.field_types);

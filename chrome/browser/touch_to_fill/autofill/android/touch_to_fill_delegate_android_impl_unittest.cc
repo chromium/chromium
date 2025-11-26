@@ -250,7 +250,8 @@ class TouchToFillDelegateAndroidImplUnitTest
     ON_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod)
         .WillByDefault([delegate = touch_to_fill_delegate_weak] {
           if (delegate) {
-            delegate->OnDismissed(/*dismissed_by_user=*/false);
+            delegate->OnDismissed(/*dismissed_by_user=*/false,
+                                  /*should_reshow=*/false);
           }
         });
     autofill::MockFastCheckoutClient* fast_checkout_client =
@@ -520,9 +521,13 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        OnDismissSetsTouchToFillToNotShowingState) {
   TryToShowTouchToFill(/*expected_success=*/true);
-  touch_to_fill_delegate_->OnDismissed(false);
 
-  EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
+  EXPECT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
+
+  EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
@@ -532,7 +537,8 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
   touch_to_fill_delegate_->SetCancelCallback(mock_cancel_callback.Get());
 
   EXPECT_CALL(mock_cancel_callback, Run());
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/false);
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
@@ -542,19 +548,76 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
   touch_to_fill_delegate_->SetCancelCallback(mock_cancel_callback.Get());
 
   EXPECT_CALL(mock_cancel_callback, Run()).Times(0);
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillFailsIfShownBefore) {
+       TryToShowTouchToFillFailsIfShownBeforeAndShouldNotReshow_FlagOff) {
   TryToShowTouchToFill(/*expected_success=*/true);
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
+
+  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/false);
 
   EXPECT_CALL(autofill_client(),
               HideAutofillSuggestions(
                   SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   TryToShowTouchToFill(/*expected_success=*/false);
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsIfShownBeforeAndShouldReshow_FlagOff) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/true);
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillShownIfShownBeforeAndShouldReshow_FlagOn) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableTouchToFillReshowForBnpl);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/true);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsIfShownBeforeAndShouldNotReshow_FlagOn) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableTouchToFillReshowForBnpl);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/false);
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
@@ -581,14 +644,15 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
-       TryToShowTouchToFillFailsIfWasShown) {
+       TryToShowTouchToFillFailsIfWasShownAndShouldNotBeShownAgain) {
   TryToShowTouchToFill(/*expected_success=*/true);
   touch_to_fill_delegate_->HideTouchToFill();
 
   TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectBucketCount(
-      GetTriggerOutcomeHistogramName(),
-      TouchToFillPaymentMethodTriggerOutcome::kShownBefore, 1);
+  histogram_tester_.ExpectBucketCount(GetTriggerOutcomeHistogramName(),
+                                      TouchToFillPaymentMethodTriggerOutcome::
+                                          kShownBeforeAndShouldNotBeShownAgain,
+                                      1);
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
@@ -1140,7 +1204,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        AutofillUsedAfterTouchToFillDismissal) {
   TryToShowTouchToFill(/*expected_success=*/true);
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/false);
 
   // Simulate that the form was autofilled by other means
   FormStructure submitted_form(form_);

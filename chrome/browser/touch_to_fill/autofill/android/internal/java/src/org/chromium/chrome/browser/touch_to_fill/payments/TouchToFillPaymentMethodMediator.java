@@ -854,7 +854,10 @@ class TouchToFillPaymentMethodMediator {
                         || reason == StateChangeReason.BACK_PRESS
                         || reason == StateChangeReason.TAP_SCRIM
                         || reason == StateChangeReason.INTERACTION_COMPLETE;
-        mDelegate.onDismissed(dismissedByUser);
+        // TODO(crbug.com/463785747): For now, a boolean is passed from the Java side to decide if
+        // we allow showing the bottom sheet again. The ideal approach is to create a list of types
+        // that can be shown again.
+        mDelegate.onDismissed(dismissedByUser, shouldReshow(dismissedByUser));
         if (dismissedByUser) {
             if (mSuggestions != null) {
                 if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
@@ -979,6 +982,8 @@ class TouchToFillPaymentMethodMediator {
         if (mSuggestions != null) {
             // TODO(crbug.com/438784993): Disable and grey out BNPL chip if no issuers are available
             // for the transaction.
+            // TODO(crbug.com/430575808): Reset mBnplIssuerContexts when navigating back to the
+            // payment method home screen after pressing the back button.
             setPaymentMethodsHomeScreenItems();
         } else if (mAffiliatedLoyaltyCards != null) {
             mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_item);
@@ -1354,6 +1359,17 @@ class TouchToFillPaymentMethodMediator {
                                     openLink(mContext, url);
                                 })
                         .build());
+    }
+
+    private boolean shouldReshow(boolean dismissedByUser) {
+        // Ensure the bottom sheet can be reshown if the user dismissed a BNPL flow.
+        int currentScreen = mModel.get(CURRENT_SCREEN);
+        return dismissedByUser
+                && mBnplIssuerContexts != null
+                && (currentScreen == BNPL_ISSUER_SELECTION_SCREEN
+                        || currentScreen == BNPL_ISSUER_TOS_SCREEN
+                        || currentScreen == PROGRESS_SCREEN
+                        || currentScreen == ERROR_SCREEN);
     }
 
     private static boolean hasOnlyLocalCards(List<AutofillSuggestion> suggestions) {
