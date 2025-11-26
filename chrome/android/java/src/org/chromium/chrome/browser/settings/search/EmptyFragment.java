@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings.search;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -46,6 +47,10 @@ public class EmptyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (mImageSrc == 0) {
+            clear();
+            return;
+        }
         ImageView stateImage = view.findViewById(R.id.empty_state_icon);
         stateImage.setImageResource(mImageSrc);
 
@@ -75,5 +80,15 @@ public class EmptyFragment extends Fragment {
         var fcs = new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(context));
         ss.setSpan(fcs, 0, helpCenter.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return ss;
+    }
+
+    void clear() {
+        // No need to actively hide the widgets when the fragment is going away.
+        if (isRemoving()) return;
+
+        Activity activity = getActivity();
+        activity.findViewById(R.id.empty_state_icon).setVisibility(View.GONE);
+        activity.findViewById(R.id.empty_state_text_title).setVisibility(View.GONE);
+        activity.findViewById(R.id.empty_state_text_description).setVisibility(View.GONE);
     }
 }

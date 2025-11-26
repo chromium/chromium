@@ -308,7 +308,7 @@ public class SettingsSearchCoordinator {
         queryEdit.setText("");
         KeyboardUtils.showKeyboard(queryEdit);
         mQueryEntered = false;
-        clearFragment(/* addToBackStack= */ true);
+        clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
         if (mMultiColumnSettings != null && !mMultiColumnSettings.isLayoutOpen()) {
@@ -330,9 +330,9 @@ public class SettingsSearchCoordinator {
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
 
-        // Clearing the fragment first before popping the back stack. Otherwise the existing
+        // Clearing the fragment before popping the back stack. Otherwise the existing
         // fragment is visible behind the popped one through the transparent background.
-        clearFragment(/* addToBackStack= */ false);
+        clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
         getSettingsFragmentManager().popBackStack();
         if (mMultiColumnSettings != null
                 && mMultiColumnSettings.isLayoutOpen()
@@ -359,7 +359,9 @@ public class SettingsSearchCoordinator {
                 queryEdit.requestFocus();
             }
         }
-        clearFragment(/* addToBackStack= */ false);
+        // Clearing the fragment before popping the back stack. Otherwise the existing
+        // fragment is visible behind the popped one through the transparent background.
+        clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
         fragmentManager.popBackStack();
     }
 
@@ -371,16 +373,31 @@ public class SettingsSearchCoordinator {
         }
     }
 
-    private void clearFragment(boolean addToBackStack) {
+    @SuppressWarnings("ReferenceEquality")
+    private void clearFragment(int imageId, boolean addToBackStack, Runnable openHelpCenter) {
         var fragmentManager = getSettingsFragmentManager();
         int viewId = getViewIdForSearchDisplay();
         var transaction = fragmentManager.beginTransaction();
+        var emptyFragment = new EmptyFragment(imageId, openHelpCenter);
         transaction.setReorderingAllowed(true);
-        transaction.replace(
-                viewId, new EmptyFragment(R.drawable.settings_zero_state, emptyRunnable()));
+        transaction.replace(viewId, emptyFragment);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
+
+        if (imageId != 0) {
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    new FragmentManager.FragmentLifecycleCallbacks() {
+                        @Override
+                        public void onFragmentDetached(FragmentManager fm, Fragment f) {
+                            if (f == emptyFragment) {
+                                emptyFragment.clear();
+                                fm.unregisterFragmentLifecycleCallbacks(this);
+                            }
+                        }
+                    },
+                    false);
+        }
     }
 
     private void openHelpCenter() {
@@ -561,7 +578,8 @@ public class SettingsSearchCoordinator {
             mHandler.postDelayed(mSearchRunnable, 200);
         } else if (mQueryEntered) {
             // Do this only after a query has been entered at least once.
-            clearFragment(/* addToBackStack= */ false);
+            clearFragment(
+                    R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
         }
     }
 
@@ -574,12 +592,17 @@ public class SettingsSearchCoordinator {
     private void displayResultsFragment(SearchResults results) {
         mSearchRunnable = null;
 
+        if (results.getItems().isEmpty()) {
+            clearFragment(
+                    R.drawable.settings_no_match,
+                    /* addToBackStack= */ false,
+                    this::openHelpCenter);
+            return;
+        }
         // Create a new instance of the fragment and pass the results
         mResultsFragment =
-                results.getItems().size() > 0
-                        ? new SearchResultsPreferenceFragment(
-                                results.groupByHeader(), this::onResultSelected)
-                        : new EmptyFragment(R.drawable.settings_no_match, this::openHelpCenter);
+                new SearchResultsPreferenceFragment(
+                        results.groupByHeader(), this::onResultSelected);
 
         // Get the FragmentManager and replace the current fragment in the container
         FragmentManager fragmentManager = getSettingsFragmentManager();
