@@ -5,9 +5,14 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
@@ -19,6 +24,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -232,11 +238,11 @@ public class TopControlsStackerUnitTest {
     public void testAddRemoveControl() {
         TestLayer toolbar = TestLayer.toolbarLayer();
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         assertControlsHeight(100, 0);
 
         mTopControlsStacker.removeControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         assertControlsHeight(0, 0);
     }
 
@@ -247,7 +253,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(tabStrip);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(150, 0);
     }
@@ -261,7 +267,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(tabStrip);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
     }
@@ -273,7 +279,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
     }
@@ -285,7 +291,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(120, 20);
     }
@@ -301,7 +307,7 @@ public class TopControlsStackerUnitTest {
     public void testRemoveControlNotAdded() {
         TestLayer toolbar = TestLayer.toolbarLayer();
         mTopControlsStacker.removeControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         assertControlsHeight(0, 0);
     }
 
@@ -309,7 +315,7 @@ public class TopControlsStackerUnitTest {
     public void testZeroHeightControl() {
         TestLayer progressBar = TestLayer.progressBarLayer();
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         assertControlsHeight(0, 0);
     }
 
@@ -324,7 +330,7 @@ public class TopControlsStackerUnitTest {
                 false);
 
         mTopControlsStacker.setScrollingDisabled(true);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 100);
     }
@@ -357,7 +363,7 @@ public class TopControlsStackerUnitTest {
         TestLayer toolbar = TestLayer.toolbarLayer();
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.setScrollingDisabled(true);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         assertControlsHeight(100, 100);
         reset(mBrowserControlsSizer);
 
@@ -384,7 +390,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(120, 20);
         statusIndicator.assertHasNoOffsetTags();
@@ -402,7 +408,7 @@ public class TopControlsStackerUnitTest {
 
         TestLayer toolbar = TestLayer.toolbarLayer();
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
         toolbar.assertHasOffsetTags(offsetTagsInfo);
@@ -430,7 +436,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(hairline);
         mTopControlsStacker.addControl(progressBar);
 
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(220, 0);
 
@@ -476,7 +482,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         tabStrip.assertOffset(0);
@@ -520,7 +526,7 @@ public class TopControlsStackerUnitTest {
         // Initiate the simulator and sets the correct offset for mocks.
         var simulator = new TestBrowserControlsOffsetHelper(0, 50);
 
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         statusIndicator.assertOffset(0);
@@ -563,7 +569,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         tabStrip.assertOffset(0);
@@ -599,7 +605,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         tabStrip.assertOffset(0);
@@ -632,7 +638,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(150, 0);
@@ -642,7 +648,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide tab strip - other layers should move up.
         tabStrip.mVisibility = TopControlVisibility.HIDDEN;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
         tabStrip.assertOffset(-50);
@@ -661,7 +667,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(progressBar);
 
         var simulator = new TestBrowserControlsOffsetHelper(0, 20);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(120, 20);
@@ -671,7 +677,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide tab strip - other layers should move up.
         statusIndicator.mVisibility = TopControlVisibility.HIDDEN;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
         statusIndicator.assertOffset(-20);
@@ -688,7 +694,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmark);
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(220, 0);
@@ -698,7 +704,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide bookmark - other layers should move up, top layer remains
         bookmark.mVisibility = TopControlVisibility.HIDDEN;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
         toolbar.assertOffset(0);
@@ -715,7 +721,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmark);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(270, 0);
@@ -725,7 +731,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide bookmark - other layers should move up, top layer remains
         bookmark.mVisibility = TopControlVisibility.HIDDEN;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(150, 0);
         tabStrip.assertOffset(0);
@@ -742,7 +748,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmark);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(270, 0);
@@ -752,7 +758,7 @@ public class TopControlsStackerUnitTest {
 
         // Tab strip height grow.
         tabStrip.mHeight += 10;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(280, 0);
         tabStrip.assertOffset(0);
@@ -771,7 +777,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
 
@@ -782,7 +788,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide tab strip - other layers should move up.
         tabStrip.mVisibility = TopControlVisibility.VISIBLE;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(150, 0);
         tabStrip.assertOffset(0);
@@ -802,7 +808,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(progressBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         assertControlsHeight(100, 0);
@@ -812,7 +818,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide tab strip - other layers should move up.
         statusIndicator.mVisibility = TopControlVisibility.VISIBLE;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Simulate the controls reaches the resting state.
         simulator.driveMinHeightOffsetBy(20);
@@ -834,7 +840,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmark);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Resting position.
         tabStrip.assertOffset(0);
@@ -843,7 +849,7 @@ public class TopControlsStackerUnitTest {
 
         // Hide tab strip - other layers should move up.
         bookmark.mVisibility = TopControlVisibility.VISIBLE;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         tabStrip.assertOffset(0);
         toolbar.assertOffset(50);
@@ -860,12 +866,12 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         simulator.commitCurrentOffset();
 
         // Animate hiding tab strip. The call to prepForAnimation should happen here.
         tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // Both layers should have their prepForHeightAdjustmentAnimation called.
         tabStrip.assertPrepForAnimation(0);
@@ -882,7 +888,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         simulator.commitCurrentOffset();
 
         // Scroll when toolbar and tab strip all hidden.
@@ -893,7 +899,7 @@ public class TopControlsStackerUnitTest {
 
         // Animate hiding tab strip. The call to prepForAnimation should happen here.
         tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // Both layers should have their prepForHeightAdjustmentAnimation called.
         tabStrip.assertPrepForAnimation(-50);
@@ -910,12 +916,12 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
         simulator.commitCurrentOffset();
 
         // Animate hiding tab strip. The call to prepForAnimation should not happen here.
         tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // Both layers should not have their prepForHeightAdjustmentAnimation called.
         tabStrip.assertPrepForAnimation(OFFSET_NOT_OBSERVED);
@@ -935,7 +941,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -947,7 +953,7 @@ public class TopControlsStackerUnitTest {
 
         // Add tab strip into the stacker, and animate showing.
         tabStrip.mVisibility = TopControlVisibility.SHOWING_TOP_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -980,7 +986,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -991,7 +997,7 @@ public class TopControlsStackerUnitTest {
         toolbar.assertOffset(50);
 
         tabStrip.mVisibility = TopControlVisibility.HIDING_TOP_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1030,7 +1036,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmarkBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -1042,7 +1048,7 @@ public class TopControlsStackerUnitTest {
         bookmarkBar.assertOffset(-120);
 
         bookmarkBar.mVisibility = TopControlVisibility.SHOWING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1081,7 +1087,7 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(tabStrip);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.addControl(bookmarkBar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -1093,7 +1099,7 @@ public class TopControlsStackerUnitTest {
         bookmarkBar.assertOffset(150);
 
         bookmarkBar.mVisibility = TopControlVisibility.HIDING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1130,7 +1136,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -1142,7 +1148,7 @@ public class TopControlsStackerUnitTest {
         toolbar.assertOffset(20);
 
         statusIndicator.mVisibility = TopControlVisibility.HIDING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1176,7 +1182,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -1187,7 +1193,7 @@ public class TopControlsStackerUnitTest {
         toolbar.assertOffset(0);
 
         statusIndicator.mVisibility = TopControlVisibility.SHOWING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1219,7 +1225,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This step is needed as this test disabled the offsetOverridden.
         // So the toolbar layer can receive the correct offsets.
@@ -1231,7 +1237,7 @@ public class TopControlsStackerUnitTest {
         toolbar.assertOffset(-80);
 
         statusIndicator.mVisibility = TopControlVisibility.HIDING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1264,7 +1270,7 @@ public class TopControlsStackerUnitTest {
 
         mTopControlsStacker.addControl(statusIndicator);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.requestLayerUpdate(false);
+        mTopControlsStacker.requestLayerUpdateSync(false);
 
         // This simulates that the toolbar is already scrolled off.
         var simulator = new TestBrowserControlsOffsetHelper(-100, 0);
@@ -1275,7 +1281,7 @@ public class TopControlsStackerUnitTest {
         toolbar.assertOffset(-100);
 
         statusIndicator.mVisibility = TopControlVisibility.SHOWING_BOTTOM_ANCHOR;
-        mTopControlsStacker.requestLayerUpdate(true);
+        mTopControlsStacker.requestLayerUpdateSync(true);
 
         // The height should be updated. However, because browser controls did not dispatch new
         // offsets, the layers should stay as is.
@@ -1307,6 +1313,25 @@ public class TopControlsStackerUnitTest {
                 minHeight,
                 mTopControlsStacker.getVisibleTopControlsMinHeight());
         verify(mBrowserControlsSizer, atLeastOnce()).setTopControlsHeight(totalHeight, minHeight);
+    }
+
+    @Test
+    public void requestLayerUpdatePost_multipleCalls() {
+        mTopControlsStacker = spy(mTopControlsStacker);
+        doNothing().when(mTopControlsStacker).requestLayerUpdateSync(anyBoolean());
+
+        // Call requestLayerUpdatePost multiple times.
+        mTopControlsStacker.requestLayerUpdatePost(false);
+        mTopControlsStacker.requestLayerUpdatePost(true);
+
+        // Verify that requestLayerUpdateSync has not been called yet.
+        verify(mTopControlsStacker, never()).requestLayerUpdateSync(anyBoolean());
+
+        // Execute the posted runnable.
+        ShadowLooper.runUiThreadTasks();
+
+        // Verify that requestLayerUpdateSync is called only once with animate=true.
+        verify(mTopControlsStacker, times(1)).requestLayerUpdateSync(true);
     }
 
     // Helper class to store the current offset during test cases.

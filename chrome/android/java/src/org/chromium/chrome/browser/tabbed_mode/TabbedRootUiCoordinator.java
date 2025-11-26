@@ -1388,7 +1388,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         && !sDisableTopControlsAnimationForTesting
                         && !AppHeaderUtils.isAppInDesktopWindow(getDesktopWindowStateManager());
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
-            mTopControlsStacker.requestLayerUpdate(animate);
+            mTopControlsStacker.requestLayerUpdateSync(animate);
             return;
         }
 
@@ -1924,7 +1924,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (mToolbarManager != null) {
                 mToolbarManager.setBookmarkBarHeightSupplier(mBookmarkBarHeightSupplier);
             }
-            mTopControlsStacker.requestLayerUpdate(false);
+            mTopControlsStacker.requestLayerUpdateSync(false);
         } else {
             mBookmarkBarCoordinator.setVisibility(true);
             // When toggling the visibility of the existing view, the LayoutChangeListener will not
