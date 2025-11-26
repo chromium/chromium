@@ -17,12 +17,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "content/public/test/browser_test.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 class IOSPromosUtilsTest : public SyncTest {
  public:
@@ -47,11 +44,9 @@ class IOSPromosUtilsTest : public SyncTest {
         IdentityManagerFactory::GetForProfile(GetProfile(0))
             ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
-    AccountInfo account_info;
-    account_info.account_id = current_info.account_id;
-    account_info.gaia = current_info.gaia;
-    account_info.email = current_info.email;
-    account_info.hosted_domain = kNoHostedDomainFound;
+    AccountInfo account_info = AccountInfo::Builder(current_info)
+                                   .SetHostedDomain(std::string())
+                                   .Build();
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
