@@ -38,10 +38,12 @@ source_set("impl") {
   deps = [
     ":tab_strip_internals",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/tab_strip_internals:resources",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//components/sessions",
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//content/public/browser",

@@ -7,16 +7,20 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals.mojom.h"
-#include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
+class TabStripInternalsObserver;
 
 // Browser side handler for requests from `chrome://tab-strip-internals` WebUI.
 class TabStripInternalsPageHandler
     : public tab_strip_internals::mojom::PageHandler {
  public:
   TabStripInternalsPageHandler(
+      Profile* profile,
       mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_strip_internals::mojom::Page> page);
 
@@ -36,6 +40,7 @@ class TabStripInternalsPageHandler
 
   mojo::Receiver<tab_strip_internals::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip_internals::mojom::Page> page_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<TabStripInternalsObserver> observer_;
 

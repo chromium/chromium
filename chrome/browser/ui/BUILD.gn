@@ -5441,10 +5441,7 @@ static_library("ui") {
   }
 
   if (enable_session_service) {
-    deps += [
-      "//chrome/browser/ui/webui/tab_strip_internals",
-      "//chrome/browser/ui/webui/tab_strip_internals:impl",
-    ]
+    deps += [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
 
     # TODO(crbug.com/427204855): Remove this circular include once
     # "chrome/browser/ui/browser.h" and

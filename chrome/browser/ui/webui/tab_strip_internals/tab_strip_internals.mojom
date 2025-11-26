@@ -5,12 +5,17 @@
 module tab_strip_internals.mojom;
 
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Root level data structure.
 struct Container {
+  // TODO (crbug.com/427204855): Revisit the definition of entries in
+  // TabStripTree and TabRestoreData to add more fields.
   TabStripTree tabstrip_tree;
-  // TODO (crbug.com/427204855): Add tab restore and session restore data.
+  TabRestoreData tab_restore;
+  // TODO (crbug.com/427204855): Add session restore data.
 };
 
 // A tree structure representing the TabStrip.
@@ -26,7 +31,7 @@ struct WindowNode {
   SelectionModel selection_model;
 };
 
-// Represents an opaque identifier for a node in the TabStripTree.
+// Represents an opaque identifier for a node in the TabStripData tree.
 // Ensures that all ids are represented as strings.
 struct NodeId {
   // The type of node referenced by the id.
@@ -37,6 +42,12 @@ struct NodeId {
     kCollection,
     // A browser window.
     kWindow,
+    // A tab restore Tab entry.
+    kTabRestoreTab,
+    // A tab restore Group entry.
+    kTabRestoreGroup,
+    // A tab restore Window entry.
+    kTabRestoreWindow,
   };
 
   // An opaque string that uniquely identifies the underlying resource.
@@ -77,7 +88,7 @@ struct Tab {
   NodeId id;
   string title;
   url.mojom.Url url;
-  // TODO (crbum.com/427204855): Add more tab metadata as needed.
+  // TODO (crbug.com/427204855): Add more tab metadata as needed.
 };
 
 // Specific tab collections.
@@ -132,6 +143,63 @@ struct SelectionModel {
   int32 active_index = -1;
   int32 anchor_index = -1;
   array<int32> selected_indices;
+};
+
+// Contains session restore data from the TabRestoreService.
+// We will refer to it as tab restore data.
+struct TabRestoreData {
+  array<TabRestoreEntry> entries;
+};
+
+// Represents a tab restore entry which can either be a tab, window, or a group.
+// Using a union enforces that an entry must be exactly one of the types below.
+union TabRestoreEntry {
+  TabRestoreTab tab;
+  TabRestoreWindow window;
+  TabRestoreGroup group;
+};
+
+// Represents common fields for all tab restore entries.
+struct TabRestoreEntryBase {
+  int32 original_id;
+  // The time when the entry was added to TabRestoreService.
+  // It's not always set - can be nullptr or 0 in cases where
+  // a timestamp isn't available at entry creation.
+  mojo_base.mojom.Time? timestamp;
+};
+
+// Tab restore data for a Tab.
+struct TabRestoreTab {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 browser_id;
+  int32 tabstrip_index;
+  bool pinned;
+  // Could be Null if the tab is not part of a group.
+  mojo_base.mojom.Token? group_id;
+  TabGroupVisualData? group_visual_data;
+  // Below fields represent properties of the selected navigation entry.
+  string title;
+  url.mojom.Url url;
+  // TODO (crbug.com/427204855): Add more tab metadata as needed.
+};
+
+// Tab restore data for a Group.
+struct TabRestoreGroup {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 browser_id;
+  mojo_base.mojom.Token group_id;
+  TabGroupVisualData visual_data;
+  array<TabRestoreTab> tabs;
+};
+
+// Tab restore data for a Window.
+struct TabRestoreWindow {
+  NodeId id;
+  TabRestoreEntryBase restore_entry;
+  int32 selected_tab_index;
+  array<TabRestoreTab> tabs;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication

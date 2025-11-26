@@ -8231,8 +8231,15 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/ui/webui/tab_strip_internals",
+      "//chrome/browser/ui/webui/tab_strip_internals:impl",
       "//components/tab_groups",
     ]
+
+    # TODO(crbug.com/427204855): Remove this circular include once
+    # "chrome/browser/sessions/tab_restore_service_factory.h" is
+    # fully componentized.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
 
   if (enable_spellcheck) {
