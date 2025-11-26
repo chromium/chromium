@@ -219,12 +219,12 @@ crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 
 # Failures with SkiaGraphite
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 crbug.com/329138770 [ graphite-enabled win11 nvidia ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled win11 nvidia ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled win11 nvidia ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
