@@ -7268,7 +7268,7 @@
 
       <!-- Strings for Class Tools remote receiver -->
       <message name="IDS_BOCA_RECEIVER_TITLE" desc="Title of an app which runs in kiosk mode and receives incoming screen share presentations. Screen share presentations are initiated from the Class Tools app on another ChromeOS device.">
-        Class Tools screen share
+        Class Tools display
       </message>
     </messages>
   </release>
