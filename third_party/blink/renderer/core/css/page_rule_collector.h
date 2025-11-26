@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PAGE_RULE_COLLECTOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -59,8 +60,9 @@ class CORE_EXPORT PageRuleCollector {
   }
   bool IsFirstPage(uint32_t page_index) const;
 
-  void MatchPageRulesForList(HeapVector<Member<StyleRulePage>>& matched_rules,
-                             const HeapVector<Member<StyleRulePage>>& rules);
+  void MatchPageRulesForList(
+      HeapVector<CascadeLayered<StyleRulePage>>& matched_rules,
+      const HeapVector<CascadeLayered<StyleRulePage>>& rules);
 
   const bool is_left_page_;
   const bool is_first_page_;

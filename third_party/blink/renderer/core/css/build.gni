@@ -38,6 +38,7 @@ blink_core_sources_css = [
   "cascade_layer.h",
   "cascade_layer_map.cc",
   "cascade_layer_map.h",
+  "cascade_layered.h",
   "check_pseudo_has_argument_context.cc",
   "check_pseudo_has_argument_context.h",
   "check_pseudo_has_cache_scope.cc",

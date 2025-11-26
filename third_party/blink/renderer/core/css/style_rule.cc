@@ -928,7 +928,6 @@ MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
 
 void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
-  visitor->Trace(layer_);
   visitor->Trace(selector_list_);
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }

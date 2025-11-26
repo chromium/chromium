@@ -30,6 +30,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -508,7 +509,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   base::span<const RuleData> ActiveViewTransitionRules() const {
     return active_view_transition_rules_;
   }
-  const HeapVector<Member<StyleRulePage>>& PageRules() const {
+  const HeapVector<CascadeLayered<StyleRulePage>>& PageRules() const {
     return page_rules_;
   }
   const HeapVector<Member<StyleRuleRoute>>& RouteRules() const {
@@ -667,7 +668,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   void AddToBucket(const AtomicString& key, RuleMap&, const RuleData&);
   void AddToBucket(HeapVector<RuleData>&, const RuleData&);
-  void AddPageRule(StyleRulePage*);
+  void AddPageRule(StyleRulePage*, const CascadeLayer*);
   void AddRouteRule(StyleRuleRoute*);
   void AddFontFaceRule(StyleRuleFontFace*);
   void AddKeyframesRule(StyleRuleKeyframes*);
@@ -795,7 +796,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<RuleData> active_view_transition_rules_;
   HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
-  HeapVector<Member<StyleRulePage>> page_rules_;
+  HeapVector<CascadeLayered<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleRoute>> route_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
   HeapVector<Member<StyleRuleFontPaletteValues>> font_palette_values_rules_;

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -894,9 +895,10 @@ static void AddRuleToIntervals(const T* value,
   intervals.push_back(RuleSet::Interval<T>(value, position));
 }
 
-void RuleSet::AddPageRule(StyleRulePage* rule) {
+void RuleSet::AddPageRule(StyleRulePage* rule, const CascadeLayer* layer) {
   need_compaction_ = true;
-  page_rules_.push_back(rule);
+  page_rules_.push_back(
+      CascadeLayered<StyleRulePage>{.value = rule, .layer = layer});
 }
 
 void RuleSet::AddRouteRule(StyleRuleRoute* rule) {
@@ -964,8 +966,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    apply_mixins_stack, container_query, cascade_layer,
                    style_scope);
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
-      page_rule->SetCascadeLayer(cascade_layer);
-      AddPageRule(page_rule);
+      AddPageRule(page_rule, cascade_layer);
     } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
       const RouteQuery& query = route_rule->GetRouteQuery();
       if (query.Evaluate(medium.GetMediaValues().GetDocument())) {
