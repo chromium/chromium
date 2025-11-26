@@ -54,12 +54,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<media::VideoDecoderConfig>
-    : public CrossThreadCopierPassThrough<media::VideoDecoderConfig> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // Any reasonable size, will be overridden by the decoder anyway.

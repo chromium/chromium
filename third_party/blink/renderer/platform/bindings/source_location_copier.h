@@ -10,10 +10,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<CrossThreadSourceLocation>
-    : public CrossThreadCopierByValuePassThrough<CrossThreadSourceLocation> {};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_COPIER_H_

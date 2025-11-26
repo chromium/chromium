@@ -35,15 +35,6 @@
 
 namespace blink {
 
-// Template specialization of [1], needed to be able to pass callbacks
-// that have ScopedPromiseResolver parameters across threads.
-//
-// [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-template <>
-struct CrossThreadCopier<ImageCaptureFrameGrabber::ScopedPromiseResolver>
-    : public CrossThreadCopierByValuePassThrough<
-          ImageCaptureFrameGrabber::ScopedPromiseResolver> {};
-
 // Helper that ensures `resolver` is always rejected on `task_runner` if it is
 // not consumed.
 class ImageCaptureFrameGrabber::ScopedPromiseResolver {

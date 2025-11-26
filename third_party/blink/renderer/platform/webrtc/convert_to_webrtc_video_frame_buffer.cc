@@ -31,12 +31,6 @@ namespace blink {
 // that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
 //
 // [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-template <>
-struct CrossThreadCopier<scoped_refptr<webrtc::VideoFrameBuffer>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<webrtc::VideoFrameBuffer>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 }  // namespace blink
 

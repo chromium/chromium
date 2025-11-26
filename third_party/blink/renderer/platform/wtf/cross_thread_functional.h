@@ -19,34 +19,29 @@ namespace blink {
 // equivalents of `base::BindOnce()` and `base::BindRepeating()` for creating
 // a callback that is run or destroyed on a different thread.
 //
-// Unlike `base::RepeatingCallback`, a repeatable cross-thread function is *not*
-// copyable. This is intentional: a number of objects in Blink are
-// thread-hostile: allowing a cross-thread function to be copied
-// means it would be easy to end up in situations where multiple threads might
-// unsafely reference the same object.
+// Unlike `base::RepeatingCallback`, a repeatable cross-thread function is
+// *not* copyable. This is historical; prior to https://crbug.com/40692434,
+// `blink::String` was thread-hostile, making any type that transitively held a
+// `blink::String` thread-hostile as well. Making the bound function object
+// non-copyable somewhat mitigateg this sharp edge: the bound arguments would
+// be copied/moved in a way that guaranteed the function object itself held
+// sole, unique ownership of thread-hostile arguments, allowing safe transfer
+// to another thread.
 //
 // TODO(crbug.com/963574): Deprecate `CrossThreadBindRepeating()`.
 //
 // Example:
 // // Given the prototype:
-// // void MyFunction(const ThreadUnsafeObject&, int);
-// ThreadUnsafeObject obj;
+// // void MyFunction(const CopyAndMovableObject&, int);
+// CopyableAndMovableObject obj;
 // CrossThreadFunction<void(int)> f =
 //     CrossThreadBindOnce(&MyFunction, obj);
-// std::move(f).Run(42);  // Calls MyFunction(<deep copy of `obj`>, 42);
+// std::move(f).Run(42);  // Calls MyFunction(<copy of `obj`>, 42);
 //
-// Arguments bound to a `CrossThreadFunction` are copied with
-// `CrossThreadCopier`.
-//
-// Important!
-// `CrossThreadBindOnce(obj)` is similar to `BindOnce(<deep copy of `obj`>)`,
-// but historically, the latter was unsafe since it was possible to end up with
-// situations where a thread-hostile object would be referenced on multiple
-// threads, leading to crashes. See https://crbug.com/390851 for more details.
-//
-// In contrast, `CrossThreadBindOnce()` and `CrossThreadBindRepeating()` are
-// implemented in a way that only the destination thread can refer to any bound
-// arguments.
+// // Moves ownership of `obj` into `g`.
+// CrossThreadFunction<void(int)> g =
+//     CrossThreadBindOnce(&MyFunction, std::move(obj));
+// std::move(g).Run(42);  // Calls MyFunction(<`obj` that was moved>, 42);
 
 namespace internal {
 
@@ -92,8 +87,7 @@ auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
   return internal::MakeCrossThreadFunction(
       base::BindRepeating(internal::CoerceFunctorForCrossThreadBind(
                               std::forward<FunctionType>(function)),
-                          CrossThreadCopier<std::decay_t<Ps>>::Copy(
-                              std::forward<Ps>(parameters))...));
+                          std::forward<Ps>(parameters)...));
 }
 
 template <typename FunctionType, typename... Ps>
@@ -107,8 +101,7 @@ auto CrossThreadBindOnce(FunctionType&& function, Ps&&... parameters) {
   return internal::MakeCrossThreadOnceFunction(
       base::BindOnce(internal::CoerceFunctorForCrossThreadBind(
                          std::forward<FunctionType>(function)),
-                     CrossThreadCopier<std::decay_t<Ps>>::Copy(
-                         std::forward<Ps>(parameters))...));
+                     std::forward<Ps>(parameters)...));
 }
 
 }  // namespace blink

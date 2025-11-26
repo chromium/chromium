@@ -135,24 +135,10 @@ PLATFORM_EXPORT sk_sp<SkData> TryAllocateSkData(size_t size);
 //     sk_sp<SkShader> shader = SkShader::MakeFoo(...);
 //     paint.setShader(shader);
 
-// We define CrossThreadCopier<SKBitMap> here because we cannot include skia
-// headers in platform/wtf.
-template <>
-struct CrossThreadCopier<SkBitmap> {
-  STATIC_ONLY(CrossThreadCopier);
-
-  using Type = SkBitmap;
-  static SkBitmap Copy(const SkBitmap& bitmap) {
-    CHECK(bitmap.isImmutable() || bitmap.isNull())
-        << "Only immutable bitmaps can be transferred.";
-    return bitmap;
-  }
-  static SkBitmap Copy(SkBitmap&& bitmap) {
-    CHECK(bitmap.isImmutable() || bitmap.isNull())
-        << "Only immutable bitmaps can be transferred.";
-    return std::move(bitmap);
-  }
-};
+// TODO(dcheng): This one might have some value, though it's not entirely clear
+// if there is a specific issue with thread-hostility here. We transfer other
+// mutable references across threads all the time, e.g. there is a broad
+// allowance for scoped_refptr<T> as long as T is RefCountedThreadSafe.
 
 }  // namespace blink
 

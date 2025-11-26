@@ -264,11 +264,6 @@ inline float Font::TabWidth(const SimpleFontData* font_data,
   return base_tab_width;
 }
 
-template <>
-struct CrossThreadCopier<Font> : public CrossThreadCopierPassThrough<Font> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_H_

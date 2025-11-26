@@ -57,26 +57,6 @@ namespace blink {
 
 class InternalStandardStatsObserver;
 
-template <>
-struct CrossThreadCopier<scoped_refptr<InternalStandardStatsObserver>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<InternalStandardStatsObserver>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = webrtc::scoped_refptr<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-template <>
-struct CrossThreadCopier<base::Value::List>
-    : public CrossThreadCopierByValuePassThrough<base::Value::List> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 // TODO(hta): This module should be redesigned to reduce string copies.
 
 namespace {

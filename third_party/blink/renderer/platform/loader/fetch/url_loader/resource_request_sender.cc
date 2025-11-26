@@ -71,29 +71,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::vector<std::unique_ptr<URLLoaderThrottle>>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::vector<std::unique_ptr<URLLoaderThrottle>>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<net::NetworkTrafficAnnotationTag>
-    : public CrossThreadCopierPassThrough<net::NetworkTrafficAnnotationTag> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = net::NetworkTrafficAnnotationTag;
-  static const Type& Copy(const Type& traffic_annotation) {
-    return traffic_annotation;
-  }
-};
-
-template <>
-struct CrossThreadCopier<std::vector<WebString>>
-    : public CrossThreadCopierPassThrough<std::vector<WebString>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 #if BUILDFLAG(IS_WIN)

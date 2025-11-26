@@ -27,13 +27,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<media::AudioParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = media::AudioParameters;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
 namespace {
 
 // Translates |num_samples_rendered| into a TimeDelta duration and adds it to

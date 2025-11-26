@@ -36,13 +36,6 @@
 
 namespace blink {
 
-using StatePtr = mojo::StructPtr<mojom::blink::DevToolsSessionState>;
-template <>
-struct CrossThreadCopier<StatePtr>
-    : public CrossThreadCopierByValuePassThrough<StatePtr> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 DevToolsAgent* DevToolsAgentFromContext(ExecutionContext* execution_context) {

@@ -376,36 +376,6 @@ using CrossThreadClosure = CrossThreadFunction<void()>;
 
 using CrossThreadOnceClosure = CrossThreadOnceFunction<void()>;
 
-template <typename T>
-struct CrossThreadCopier<RetainedRefWrapper<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
-                "scoped_refptr<T> can be passed across threads only if T is "
-                "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
-  using Type = RetainedRefWrapper<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-template <typename T>
-struct CrossThreadCopier<CrossThreadUnretainedWrapper<T>>
-    : public CrossThreadCopierPassThrough<CrossThreadUnretainedWrapper<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename Signature>
-struct CrossThreadCopier<CrossThreadFunction<Signature>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = CrossThreadFunction<Signature>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <typename Signature>
-struct CrossThreadCopier<CrossThreadOnceFunction<Signature>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = CrossThreadOnceFunction<Signature>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 }  // namespace blink
 
 namespace base {

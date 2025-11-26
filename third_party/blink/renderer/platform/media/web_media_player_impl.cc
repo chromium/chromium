@@ -122,24 +122,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<viz::SurfaceId>
-    : public CrossThreadCopierPassThrough<viz::SurfaceId> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoTransformation>
-    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::MediaPlayerLoggingID>
-    : public CrossThreadCopierPassThrough<media::MediaPlayerLoggingID> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 enum SplitHistogramTypes {

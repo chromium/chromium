@@ -110,12 +110,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<media::EncoderStatus>
-    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 using EncoderType = media::VideoEncodeAccelerator::Config::EncoderType;
 
 namespace {

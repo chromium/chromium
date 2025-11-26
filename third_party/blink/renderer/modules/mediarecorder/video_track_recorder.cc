@@ -71,33 +71,6 @@ using video_track_recorder::kVEAEncoderMinResolutionWidth;
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<media::EncoderStatus>
-    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<std::optional<media::VideoEncoder::CodecDescription>>
-    : public CrossThreadCopierPassThrough<
-          std::optional<media::VideoEncoder::CodecDescription>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<blink::KeyFrameRequestProcessor::Configuration>
-    : public CrossThreadCopierPassThrough<
-          blink::KeyFrameRequestProcessor::Configuration> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::Muxer::VideoParameters>
-    : public CrossThreadCopierByValuePassThrough<
-          media::Muxer::VideoParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 // Helper class used to bless annotation of our calls to
 // CreateOffscreenGraphicsContext3DProvider using ScopedAllowBaseSyncPrimitives.
 class VideoTrackRecorderImplContextProvider {

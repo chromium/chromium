@@ -365,12 +365,6 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
 PLATFORM_EXPORT NetworkStateNotifier& GetNetworkStateNotifier();
 
-template <>
-struct CrossThreadCopier<NetworkStateNotifier::NetworkState>
-    : public CrossThreadCopierPassThrough<NetworkStateNotifier::NetworkState> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_STATE_NOTIFIER_H_

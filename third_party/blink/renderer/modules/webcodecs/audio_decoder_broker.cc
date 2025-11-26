@@ -36,24 +36,6 @@ using DecoderDetails = blink::AudioDecoderBroker::DecoderDetails;
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<media::AudioDecoderConfig>
-    : public CrossThreadCopierPassThrough<media::AudioDecoderConfig> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::DecoderStatus>
-    : public CrossThreadCopierPassThrough<media::DecoderStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<std::optional<DecoderDetails>>
-    : public CrossThreadCopierPassThrough<std::optional<DecoderDetails>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 // Wrapper class for state and API calls that must be made from the
 // |media_task_runner_|. Construction must happen on blink main thread to safely
 // make use of ExecutionContext and Document. These GC blink types must not be

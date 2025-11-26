@@ -9,23 +9,6 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace blink {
-
-template <>
-struct CrossThreadCopier<
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = Vector<network::mojom::blink::ContentSecurityPolicyPtr>;
-  static Type Copy(const Type&);
-};
-
-template <>
-struct CrossThreadCopier<std::unique_ptr<blink::GlobalScopeCreationParams>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::unique_ptr<blink::GlobalScopeCreationParams>;
-  static Type Copy(Type);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_CROSS_THREAD_GLOBAL_SCOPE_CREATION_PARAMS_COPIER_H_

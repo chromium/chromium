@@ -20,15 +20,6 @@ struct CORE_EXPORT CustomEventMessage {
   uint64_t trace_id;
 };
 
-template <>
-struct CrossThreadCopier<CustomEventMessage> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = CustomEventMessage;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_CUSTOM_EVENT_MESSAGE_H_

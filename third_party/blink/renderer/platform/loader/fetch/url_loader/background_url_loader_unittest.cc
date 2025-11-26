@@ -61,20 +61,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<network::mojom::URLResponseHeadPtr> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = network::mojom::URLResponseHeadPtr;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::optional<mojo_base::BigBuffer>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 namespace {
 
 constexpr char kTestURL[] = "http://example.com/";

@@ -88,26 +88,6 @@ using webrtc::StatsReports;
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<scoped_refptr<DataChannelInterface>>
-    : public CrossThreadCopierPassThrough<scoped_refptr<DataChannelInterface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<scoped_refptr<PeerConnectionInterface>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<PeerConnectionInterface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::StatsObserver>>
-    : public CrossThreadCopierPassThrough<
-          webrtc::scoped_refptr<webrtc::StatsObserver>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // Used to back histogram value of "WebRTC.PeerConnection.RtcpMux",

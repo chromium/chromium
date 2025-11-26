@@ -29,13 +29,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<V8WorkerMemoryReporter::WorkerMemoryUsage>
-    : public CrossThreadCopierPassThrough<
-          V8WorkerMemoryReporter::WorkerMemoryUsage> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 const base::TimeDelta V8WorkerMemoryReporter::kTimeout = base::Seconds(60);
 
 namespace {

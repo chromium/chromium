@@ -43,19 +43,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::optional<media::AudioEncoder::CodecDescription>>
-    : public CrossThreadCopierPassThrough<
-          std::optional<media::AudioEncoder::CodecDescription>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::EncoderStatus>
-    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 // Max size of buffers passed on to encoders.
 const int kMaxChunkedBufferDurationMs = 60;
 

@@ -41,13 +41,6 @@ using testing::StrictMock;
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::unique_ptr<WritableStreamTransferringOptimizer>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::unique_ptr<WritableStreamTransferringOptimizer>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
 class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamAudioTrackUnderlyingSinkTest() : testing_thread_("TestingThread") {

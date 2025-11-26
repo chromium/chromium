@@ -214,9 +214,7 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementInternal(
   // Otherwise, post a task to the main thread to update the media element's
   // track lists there. Note that task might never run if the main context is
   // destroyed in the interim. Using blink::RetainedRef(this) here to ensure we
-  // are still alive if/when |main_runner_| executes the task. Note that there
-  // exists a CrossThreadCopier<Vector<String>> that deep-copies the bound ids
-  // vector to keep thread safety for the contained Strings.
+  // are still alive if/when |main_runner_| executes the task.
   PostCrossThreadTask(
       *main_runner_, FROM_HERE,
       CrossThreadBindOnce(&CrossThreadMediaSourceAttachment::
@@ -338,9 +336,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementInternal(
   // Post a task to the main thread to add the track to the appropriate media
   // element track list there. Note that task might never run if the main
   // context is destroyed in the interim. Using blink::RetainedRef(this) here to
-  // ensure we are still alive if/when |main_runner_| executes the task. Note
-  // that there exists a CrossThreadCopier<String> that deep-copies the bound
-  // Strings to keep thread safety.
+  // ensure we are still alive if/when |main_runner_| executes the task.
   PostCrossThreadTask(
       *main_runner_, FROM_HERE,
       CrossThreadBindOnce(

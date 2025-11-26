@@ -50,15 +50,6 @@ CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image);
 
-template <>
-struct CrossThreadCopier<BlinkTransferableMessage> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = BlinkTransferableMessage;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_H_

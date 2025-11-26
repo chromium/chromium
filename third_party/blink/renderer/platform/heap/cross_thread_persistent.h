@@ -60,18 +60,6 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
 }
 
 template <typename T>
-struct CrossThreadCopier<CrossThreadPersistent<T>>
-    : public CrossThreadCopierPassThrough<CrossThreadPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<CrossThreadWeakPersistent<T>>
-    : public CrossThreadCopierPassThrough<CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
 

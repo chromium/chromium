@@ -8,25 +8,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "url/scheme_host_port.h"
 
-namespace network {
-struct URLLoaderCompletionStatus;
-}
-
-namespace blink {
-
-template <>
-struct CrossThreadCopier<url::SchemeHostPort> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = url::SchemeHostPort;
-  static Type Copy(const Type& value) { return value; }
-};
-
-template <>
-struct CrossThreadCopier<network::URLLoaderCompletionStatus>
-    : public CrossThreadCopierPassThrough<network::URLLoaderCompletionStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_URL_H_

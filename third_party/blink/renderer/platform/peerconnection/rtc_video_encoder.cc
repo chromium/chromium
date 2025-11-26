@@ -348,41 +348,6 @@ bool IsValidTemporalSVC(
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<webrtc::VideoEncoder::RateControlParameters>
-    : public CrossThreadCopierPassThrough<
-          webrtc::VideoEncoder::RateControlParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<
-    std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>>
-    : public CrossThreadCopierPassThrough<
-          std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<FrameChunk>
-    : public CrossThreadCopierPassThrough<FrameChunk> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoEncodeAccelerator::Config>
-    : public CrossThreadCopierPassThrough<
-          media::VideoEncodeAccelerator::Config> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<SignaledValue> {
-  static SignaledValue Copy(SignaledValue sv) {
-    return sv;  // this is a move in fact.
-  }
-};
-
 namespace features {
 
 // Enabled-by-default, except for Android where SW encoder for H264 and AV1 are

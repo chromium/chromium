@@ -52,7 +52,6 @@ class CORE_EXPORT CSSSyntaxDefinition {
     return Components() == a.Components();
   }
 
-  CSSSyntaxDefinition IsolatedCopy() const;
   String ToString() const;
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
@@ -72,20 +71,6 @@ class CORE_EXPORT CSSSyntaxDefinition {
   explicit CSSSyntaxDefinition(Vector<CSSSyntaxComponent>);
 
   Vector<CSSSyntaxComponent> syntax_components_;
-};
-
-template <wtf_size_t inlineCapacity, typename Allocator>
-struct CrossThreadCopier<
-    Vector<CSSSyntaxDefinition, inlineCapacity, Allocator>> {
-  using Type = Vector<CSSSyntaxDefinition, inlineCapacity, Allocator>;
-  static Type Copy(const Type& value) {
-    Type result;
-    result.ReserveInitialCapacity(value.size());
-    for (const auto& element : value) {
-      result.push_back(element.IsolatedCopy());
-    }
-    return result;
-  }
 };
 
 }  // namespace blink

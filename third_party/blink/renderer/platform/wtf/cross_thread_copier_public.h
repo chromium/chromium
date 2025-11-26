@@ -33,40 +33,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-// CrossThreadCopier specializations for classes in third_party/blink/public/.
-
-namespace blink {
-
-class MessagePortChannel;
-// TODO(https://crbug.com/1247393): Move this and others to
-// blink/public/platform.
-class WebTimeRanges;
-
-template <>
-struct CrossThreadCopier<MessagePortChannel> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = MessagePortChannel;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
-template <wtf_size_t inlineCapacity, typename Allocator>
-struct CrossThreadCopier<
-    Vector<MessagePortChannel, inlineCapacity, Allocator>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = Vector<MessagePortChannel, inlineCapacity, Allocator>;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
-template <>
-struct CrossThreadCopier<WebTimeRanges>
-    : public CrossThreadCopierByValuePassThrough<WebTimeRanges> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_PUBLIC_H_

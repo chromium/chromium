@@ -42,13 +42,6 @@
 
 namespace blink {
 
-template <typename T>
-struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = webrtc::scoped_refptr<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
 namespace {
 
 // Audio parameters that don't change.

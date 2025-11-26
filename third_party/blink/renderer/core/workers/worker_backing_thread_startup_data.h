@@ -32,19 +32,6 @@ struct WorkerBackingThreadStartupData {
   AtomicsWaitMode atomics_wait_mode;
 };
 
-// This allows to pass std::optional<WorkerBackingThreadStartupData> across
-// threads by PostTask().
-template <>
-struct CrossThreadCopier<std::optional<WorkerBackingThreadStartupData>>
-    : public CrossThreadCopierPassThrough<
-          std::optional<WorkerBackingThreadStartupData>> {};
-
-// This allows to pass WorkerBackingThreadStartupData across threads by
-// PostTask().
-template <>
-struct CrossThreadCopier<WorkerBackingThreadStartupData>
-    : public CrossThreadCopierPassThrough<WorkerBackingThreadStartupData> {};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_BACKING_THREAD_STARTUP_DATA_H_

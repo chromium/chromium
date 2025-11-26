@@ -12,10 +12,6 @@ namespace blink {
 
 using cc::PaintRecord;
 
-template <>
-struct CrossThreadCopier<PaintRecord>
-    : public CrossThreadCopierPassThrough<PaintRecord> {};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_RECORD_H_
