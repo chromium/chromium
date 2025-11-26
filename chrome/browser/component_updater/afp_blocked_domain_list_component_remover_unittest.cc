@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/afp_blocked_domain_list_component_installer.h"
+#include "chrome/browser/component_updater/afp_blocked_domain_list_component_remover.h"
 
 #include <memory>
 
@@ -26,24 +26,22 @@ using ::testing::_;
 
 namespace component_updater {
 
-class AntiFingerprintingBlockedDomainListComponentInstallerTest
+class AntiFingerprintingBlockedDomainListComponentRemoverTest
     : public PlatformTest {
  public:
-  AntiFingerprintingBlockedDomainListComponentInstallerTest() = default;
+  AntiFingerprintingBlockedDomainListComponentRemoverTest() = default;
 
-  AntiFingerprintingBlockedDomainListComponentInstallerTest(
-      const AntiFingerprintingBlockedDomainListComponentInstallerTest&) =
-      delete;
-  AntiFingerprintingBlockedDomainListComponentInstallerTest& operator=(
-      const AntiFingerprintingBlockedDomainListComponentInstallerTest&) =
-      delete;
+  AntiFingerprintingBlockedDomainListComponentRemoverTest(
+      const AntiFingerprintingBlockedDomainListComponentRemoverTest&) = delete;
+  AntiFingerprintingBlockedDomainListComponentRemoverTest& operator=(
+      const AntiFingerprintingBlockedDomainListComponentRemoverTest&) = delete;
 
  protected:
   base::ScopedPathOverride user_data_dir_override_{chrome::DIR_USER_DATA};
   content::BrowserTaskEnvironment task_env_;
 };
 
-TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+TEST_F(AntiFingerprintingBlockedDomainListComponentRemoverTest,
        ComponentUnregistration_Success) {
   base::HistogramTester histogram_tester;
   // Create a test file in the component directory.
@@ -74,7 +72,7 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
       InstallationResult::kDeletionSuccess, 1);
 }
 
-TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+TEST_F(AntiFingerprintingBlockedDomainListComponentRemoverTest,
        ComponentUnregistration_DirDoesNotExist) {
   base::HistogramTester histogram_tester;
   auto service =
