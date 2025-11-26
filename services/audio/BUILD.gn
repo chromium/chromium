@@ -121,6 +121,8 @@ source_set("audio") {
       "sync_mixing_graph_input.h",
     ]
 
+    deps += [ "//third_party/abseil-cpp:absl" ]
+
     public_deps += [
       "//media/webrtc",
       "//third_party/tflite",

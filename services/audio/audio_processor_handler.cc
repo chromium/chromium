@@ -25,7 +25,10 @@ AudioProcessorHandler::AudioProcessorHandler(
         controls_receiver,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager)
-    : audio_processor_(media::AudioProcessor::Create(
+    : residual_echo_estimation_model_handle_(
+          ml_model_manager ? ml_model_manager->GetResidualEchoEstimationModel()
+                           : nullptr),
+      audio_processor_(media::AudioProcessor::Create(
           // Unretained is safe because this class owns audio_processor_, so it
           // will be destroyed first.
           base::BindRepeating(&AudioProcessorHandler::DeliverProcessedAudio,
@@ -34,8 +37,9 @@ AudioProcessorHandler::AudioProcessorHandler(
           settings,
           input_format,
           output_format,
-          ml_model_manager ? ml_model_manager->GetResidualEchoEstimationModel()
-                           : nullptr)),
+          residual_echo_estimation_model_handle_
+              ? residual_echo_estimation_model_handle_->Get()
+              : nullptr)),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       reference_stream_error_callback_(

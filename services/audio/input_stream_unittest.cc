@@ -49,8 +49,7 @@ const char* kDefaultDeviceId = "default";
 
 class MockMlModelManager : public MlModelManager {
  public:
-  raw_ptr<const tflite::FlatBufferModel> GetResidualEchoEstimationModel()
-      override {
+  std::unique_ptr<MlModelHandle> GetResidualEchoEstimationModel() override {
     model_requested_ = true;
     return nullptr;
   }
