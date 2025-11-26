@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -642,7 +643,7 @@ struct SingleSubmissionKeyMetricExpectations {
 
 void VerifySingleSubmissionKeyMetricExpectations(
     const base::HistogramTester& histogram_tester,
-    absl::string_view form_type_name,
+    std::string_view form_type_name,
     const SingleSubmissionKeyMetricExpectations& expectations);
 
 }  // namespace test

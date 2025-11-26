@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -1605,7 +1606,7 @@ void VerifySingleBooleanSampleOrEmpty(
 
 void VerifySingleSubmissionKeyMetricExpectations(
     const base::HistogramTester& histogram_tester,
-    absl::string_view form_type_name,
+    std::string_view form_type_name,
     const SingleSubmissionKeyMetricExpectations& expectations) {
   VerifySingleBooleanSampleOrEmpty(
       histogram_tester,
