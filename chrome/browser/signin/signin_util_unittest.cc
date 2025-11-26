@@ -23,7 +23,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -392,9 +391,10 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
             .WithGaiaId(kSignedInGaiaId)
             .Build(managed_account ? "test@managed.com" : "test@gmail.com"));
 
-    account_info.hosted_domain = managed_account
-                                     ? "managed.com"
-                                     : signin::constants::kNoHostedDomainFound;
+    account_info =
+        AccountInfo::Builder(account_info)
+            .SetHostedDomain(managed_account ? "managed.com" : std::string())
+            .Build();
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

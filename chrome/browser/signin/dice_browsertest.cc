@@ -94,7 +94,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -129,7 +128,6 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using signin::AccountConsistencyMethod;
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -738,11 +736,13 @@ class DiceBrowserTest : public InProcessBrowserTest,
 
   void UpdateAccountInfoForAccount(AccountInfo account_info) {
     // Fill the account info.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(std::string())
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     // Fill in the required account capabilities for the sign in intercept.
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_is_subject_to_parental_controls(false);
@@ -2054,10 +2054,12 @@ class DiceBrowserTestWithChromeSigninIPH
             signin::ConsentLevel::kSignin);
     AccountInfo account_info =
         GetIdentityManager()->FindExtendedAccountInfo(core_account_info);
-    account_info.full_name = "First Last";
-    account_info.given_name = "First";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("First Last")
+                       .SetGivenName("First")
+                       .SetHostedDomain(std::string())
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
   }
 

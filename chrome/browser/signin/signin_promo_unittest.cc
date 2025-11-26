@@ -38,7 +38,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -1091,11 +1090,13 @@ class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
         identity_manager, "test@email.com", consent_level);
     EXPECT_FALSE(account_info.IsEmpty());
 
-    account_info.given_name = "given_name";
-    account_info.full_name = "full_name";
-    account_info.picture_url = "SOME_FAKE_URL";
-    account_info.hosted_domain = constants::kNoHostedDomainFound;
-    account_info.locale = "en";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("full_name")
+                       .SetGivenName("given_name")
+                       .SetHostedDomain(std::string())
+                       .SetAvatarUrl("SOME_FAKE_URL")
+                       .SetLocale("en")
+                       .Build();
 
     UpdateAccountInfoForAccount(identity_manager, account_info);
 
