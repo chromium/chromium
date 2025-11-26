@@ -20,10 +20,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
@@ -55,18 +53,14 @@ class ArcLockedFullscreenManagerTest
 
     // Initialize fake clients and enable ARC through command line.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    ash::DlcserviceClient::InitializeFake();
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 
     // Force ARC session manager to skip UI.
     ArcSessionManager::SetUiEnabledForTesting(false);
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
-    arc_session_manager_ = CreateTestArcSessionManager(
-        std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+    arc_session_manager_ =
+        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)));
 
     // Initialize a testing profile and the user manager. Needed to test ARC.
     user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
@@ -98,8 +92,6 @@ class ArcLockedFullscreenManagerTest
     // Reset ARC session manager before shutting down the Concierge client since
     // it is observing it.
     arc_session_manager_.reset();
-    arc_dlc_installer_.reset();
-    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     user_manager_->Destroy();
   }
@@ -130,7 +122,6 @@ class ArcLockedFullscreenManagerTest
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcLockedFullscreenManager> arc_locked_fullscreen_manager_;
   base::HistogramTester histogram_tester_;

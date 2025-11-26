@@ -9,7 +9,6 @@
 
 namespace arc {
 
-class ArcDlcInstaller;
 class ArcSessionManager;
 class ArcSessionRunner;
 
@@ -17,8 +16,7 @@ class ArcSessionRunner;
 // Unlike the regular one, this function's behaves as if the property files
 // has already successfully been done.
 std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
-    std::unique_ptr<ArcSessionRunner> arc_session_runner,
-    ArcDlcInstaller* arc_dlc_installer);
+    std::unique_ptr<ArcSessionRunner> arc_session_runner);
 
 // Does something similar to CreateTestArcSessionManager(), but for an existing
 // object. This function is useful for ARC browser_tests where ArcSessionManager

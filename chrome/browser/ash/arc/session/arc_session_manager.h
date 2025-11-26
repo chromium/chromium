@@ -28,10 +28,8 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
-#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "components/session_manager/core/session_manager.h"
@@ -146,8 +144,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
-                        adb_sideloading_availability_delegate,
-                    ArcDlcInstaller* arc_dlc_installer);
+                        adb_sideloading_availability_delegate);
 
   ArcSessionManager(const ArcSessionManager&) = delete;
   ArcSessionManager& operator=(const ArcSessionManager&) = delete;
@@ -399,12 +396,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     return is_activation_delayed_.value_or(false);
   }
 
-  // Sets a callback that is run when the provisioning timer is started.
-  void SetProvisioningTimerStartedCallbackForTesting(
-      base::OnceClosure callback) {
-    provisioning_timer_started_callback_for_testing_ = std::move(callback);
-  }
-
  private:
   // TODO(crbug.com/395161942, crbug.com/393644378): Tracking
   // internal state transition for the production behavior.
@@ -528,17 +519,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // will be no-op.
   void MaybeRecordFirstActivationDuringUserSessionStartUp(bool value);
 
-  // Called after the ARCVM DLC state has been checked. Starts the provisioning
-  // timer with the appropriate timeout.
-  void OnDlcCheckDoneForTimer(ArcDlcInstaller::DlcState state);
-
-  // Starts the ARC sign-in provisioning timer with the specified |timeout|.
-  void StartProvisioningTimerWithTimeout(base::TimeDelta timeout);
-
-  // Invoked after WaitForServiceToBeAvailable(). Proceeds to query DLC state
-  // if |available|, otherwise aborts ARC provisioning
-  void OnDlcServiceReady(bool available);
-
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
       adb_sideloading_availability_delegate_;
@@ -590,7 +570,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
-  const raw_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;
@@ -626,8 +605,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
-
-  base::OnceClosure provisioning_timer_started_callback_for_testing_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};

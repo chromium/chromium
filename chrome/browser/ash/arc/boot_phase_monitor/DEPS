@@ -21,9 +21,3 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/test/base",
 ]
-
-specific_include_rules = {
-  "arc_boot_phase_monitor_bridge_unittest\.cc": [
-    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
-  ],
-}
