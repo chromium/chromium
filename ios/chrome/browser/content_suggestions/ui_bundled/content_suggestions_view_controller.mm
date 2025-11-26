@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -91,8 +92,9 @@
   if (self.mostVisitedModuleContainer) {
     [self.mostVisitedModuleContainer removeFromSuperview];
   }
-  self.mostVisitedModuleContainer =
-      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+  self.mostVisitedModuleContainer = [[MagicStackModuleContainer alloc]
+      initWithFrame:CGRectZero
+            noInset:IsContentSuggestionsCustomizable()];
   [self.mostVisitedModuleContainer configureWithConfig:_mostVisitedTileConfig];
   // If viewDidLoad has been called before the first valid Most Visited Tiles
   // are available, construct the most visited tiles.

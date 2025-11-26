@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_collection_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_plus_button_item.h"
@@ -12,7 +13,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
 #import "url/gurl.h"
 
 namespace {
@@ -34,6 +35,19 @@ const NSUInteger kMaximumVisibleItemsOnScreen = 4;
 /// Item identifier for the plus button.
 const int kPlusButtonIdentifier = -1;
 
+/// Multiplier for peeking the first off-screen element.
+const CGFloat kPeekInsetMultiplerCompactWidth = 0.6;
+const CGFloat kPeekInsetMultiplerRegularWidth = 0.85;
+
+/// Peeking inset for the first off-screen element.
+CGFloat PeekInsetForCollectionView(UITraitCollection* trait_collection) {
+  CGFloat peek_inset_multiplier =
+      trait_collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact
+          ? kPeekInsetMultiplerCompactWidth
+          : kPeekInsetMultiplerRegularWidth;
+  return kMagicStackImageContainerWidth * peek_inset_multiplier;
+}
+
 /// Creates a section in the collection view layout.
 NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
     NSUInteger item_count,
@@ -52,10 +66,11 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
               sizeWithWidthDimension:item_width_dimension
                      heightDimension:estimated_height_dimension]];
   /// Group configuration.
-  CGFloat group_width = container_width;
+  CGFloat group_width = container_width - kMagicStackContainerInsets.leading -
+                        kMagicStackContainerInsets.trailing;
   if (item_count > kMaximumVisibleItemsOnScreen) {
-    group_width -=
-        ModuleNarrowerWidthToAllowPeekingForTraitCollection(trait_collection);
+    /// Allow peeking the 5th element.
+    group_width -= PeekInsetForCollectionView(trait_collection);
   }
   NSCollectionLayoutDimension* group_width_dimension =
       [NSCollectionLayoutDimension absoluteDimension:group_width];
@@ -71,7 +86,10 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
   /// Section configuration.
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
+  section.orthogonalScrollingBehavior =
+      UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
   section.interGroupSpacing = spacing;
+  section.contentInsets = kMagicStackContainerInsets;
   return section;
 }
 
@@ -80,7 +98,6 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
     NSUInteger item_count) {
   UICollectionViewCompositionalLayoutConfiguration* config =
       [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
-  [config setScrollDirection:UICollectionViewScrollDirectionHorizontal];
   UICollectionViewCompositionalLayoutSectionProvider section_provider =
       ^NSCollectionLayoutSection*(
           NSInteger section_index,
@@ -116,6 +133,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.backgroundColor = UIColor.clearColor;
     self.showsHorizontalScrollIndicator = NO;
+    self.scrollEnabled = NO;  /// Disables vertical scrolling.
     [self registerClass:[UICollectionViewCell class]
         forCellWithReuseIdentifier:kCellReuseIdentifier];
     [self initializeDataSource];

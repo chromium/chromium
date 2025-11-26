@@ -45,12 +45,6 @@
 
 namespace {
 
-// The horizontal inset for the content within this container.
-const CGFloat kContentHorizontalInset = 20.0f;
-
-// The top inset for the content within this container.
-const CGFloat kContentTopInset = 16.0f;
-
 // The bottom inset for the content within this container.
 const CGFloat kContentBottomInset = 24.0f;
 const CGFloat kReducedContentBottomInset = 10.0f;
@@ -88,7 +82,7 @@ const CGFloat kSeparatorHeight = 0.5;
   MagicStackModuleBackgroundView* _backgroundView;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame noInset:(BOOL)noInset {
   self = [super initWithFrame:frame];
   if (self) {
     self.maximumContentSizeCategory = UIContentSizeCategoryAccessibilityMedium;
@@ -199,8 +193,7 @@ const CGFloat kSeparatorHeight = 0.5;
     AddSameConstraintsToSidesWithInsets(
         _stackView, self,
         (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
-        NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
-                                    0, kContentHorizontalInset));
+        noInset ? NSDirectionalEdgeInsetsZero : kMagicStackContainerInsets);
     _contentStackViewBottomMarginAnchor =
         [_stackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
                                                 constant:-kContentBottomInset];
@@ -218,6 +211,10 @@ const CGFloat kSeparatorHeight = 0.5;
     [self applyBackgroundColors];
   }
   return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+  return [self initWithFrame:frame noInset:NO];
 }
 
 - (void)dealloc {
