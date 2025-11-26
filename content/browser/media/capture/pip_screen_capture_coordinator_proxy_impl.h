@@ -20,11 +20,16 @@ class PipScreenCaptureCoordinatorProxyImpl
  public:
   PipScreenCaptureCoordinatorProxyImpl(
       base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator,
-      std::optional<NativeWindowId> initial_pip_window_id);
+      std::optional<NativeWindowId> initial_pip_window_id,
+      const std::vector<CaptureInfo>& initial_captures);
 
   ~PipScreenCaptureCoordinatorProxyImpl() override;
 
   std::optional<NativeWindowId> PipWindowId() const override;
+  const std::vector<CaptureInfo>& Captures() const override;
+
+  void AddCapture(CaptureInfo capture_info) override;
+  void RemoveCapture(const base::UnguessableToken& session_id) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -34,11 +39,13 @@ class PipScreenCaptureCoordinatorProxyImpl
   friend class UiThreadObserver;
 
   void SetPipWindowId(const std::optional<NativeWindowId>& new_pip_window_id);
+  void SetCaptures(const std::vector<CaptureInfo>& captures);
 
   base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::optional<NativeWindowId> pip_window_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<CaptureInfo> captures_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> bound_sequence_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<PipScreenCaptureCoordinatorProxy::Observer> observers_

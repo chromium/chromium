@@ -47,6 +47,16 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
                        proxy_, new_pip_window_id));
   }
 
+  void OnCapturesChanged(
+      const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
+          captures) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+    proxy_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PipScreenCaptureCoordinatorProxyImpl::SetCaptures,
+                       proxy_, captures));
+  }
+
  private:
   base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator_;
   base::WeakPtr<PipScreenCaptureCoordinatorProxyImpl> proxy_;
@@ -56,9 +66,11 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
 
 PipScreenCaptureCoordinatorProxyImpl::PipScreenCaptureCoordinatorProxyImpl(
     base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator,
-    std::optional<NativeWindowId> initial_pip_window_id)
+    std::optional<NativeWindowId> initial_pip_window_id,
+    const std::vector<CaptureInfo>& initial_captures)
     : coordinator_(std::move(coordinator)),
       pip_window_id_(initial_pip_window_id),
+      captures_(initial_captures),
       ui_thread_observer_(
           nullptr,
           base::OnTaskRunnerDeleter(GetUIThreadTaskRunner({}))) {
@@ -77,6 +89,33 @@ std::optional<NativeWindowId>
 PipScreenCaptureCoordinatorProxyImpl::PipWindowId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pip_window_id_;
+}
+
+const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
+PipScreenCaptureCoordinatorProxyImpl::Captures() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return captures_;
+}
+
+void PipScreenCaptureCoordinatorProxyImpl::AddCapture(
+    CaptureInfo capture_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (coordinator_) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PipScreenCaptureCoordinatorImpl::AddCapture,
+                                  coordinator_, std::move(capture_info)));
+  }
+}
+
+void PipScreenCaptureCoordinatorProxyImpl::RemoveCapture(
+    const base::UnguessableToken& session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (coordinator_) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PipScreenCaptureCoordinatorImpl::RemoveCapture,
+                       coordinator_, session_id));
+  }
 }
 
 void PipScreenCaptureCoordinatorProxyImpl::AddObserver(Observer* observer) {
@@ -123,6 +162,15 @@ void PipScreenCaptureCoordinatorProxyImpl::SetPipWindowId(
   pip_window_id_ = new_pip_window_id;
   for (Observer& obs : observers_) {
     obs.OnPipWindowIdChanged(pip_window_id_);
+  }
+}
+
+void PipScreenCaptureCoordinatorProxyImpl::SetCaptures(
+    const std::vector<CaptureInfo>& captures) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  captures_ = captures;
+  for (Observer& obs : observers_) {
+    obs.OnCapturesChanged(captures_);
   }
 }
 

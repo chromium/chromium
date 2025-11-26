@@ -607,6 +607,9 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     };
     [SCShareableContent getShareableContentWithCompletionHandler:handler];
   }
+  void OnCapturesChanged(
+      const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
+          captures) override {}
 
   // IOSurfaceCaptureDeviceBase:
   void OnStart() override {
