@@ -130,6 +130,22 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
+  // TODO(crbug.com/462697239): The current implementation is a placeholder to
+  // unblock development. Update this with the account capability once it is
+  // available from the server.
+  switch (is_subject_to_parental_controls()) {
+    case signin::Tribool::kTrue:
+      return signin::Tribool::kFalse;
+    case signin::Tribool::kFalse:
+      return signin::Tribool::kTrue;
+    case signin::Tribool::kUnknown:
+      return signin::Tribool::kUnknown;
+  }
+}
+#endif
+
 signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
     const {
   return GetCapabilityByName(kCanUseGenerativeAiInRecorderApp);

@@ -40,6 +40,9 @@ class AccountCapabilitiesTestMutator {
   void set_can_use_copyeditor_feature(bool value);
   void set_can_use_devtools_generative_ai_features(bool value);
   void set_can_use_edu_features(bool value);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void set_can_use_gemini_in_chrome(bool value);
+#endif
   void set_can_use_generative_ai_in_recorder_app(bool value);
   void set_can_use_generative_ai_photo_editing(bool value);
   void set_can_use_manta_service(bool value);
