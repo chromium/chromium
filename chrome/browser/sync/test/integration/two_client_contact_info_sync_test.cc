@@ -83,9 +83,16 @@ class AutofillProfilesEqualChecker
   std::vector<raw_ptr<PersonalDataManager, VectorExperimental>> pdms_;
 };
 
-class TwoClientContactInfoSyncTest : public SyncTest {
+class TwoClientContactInfoSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   bool SetupSyncAndHideAccountNameEmailProfile() {
     if (!SetupSync()) {
@@ -105,9 +112,17 @@ class TwoClientContactInfoSyncTest : public SyncTest {
             identity_manager->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSignin)));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientContactInfoSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
   ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Add `profile` on client 0 and expect it to appear on client 1.
   AutofillProfile profile = BuildTestAccountProfile();
@@ -140,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
 // like this are not expected in practice.
 // Whichever profile makes it to the server first wins, since clients always
 // merge in favor of the remote version.
-IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, DuplicateGUID) {
+IN_PROC_BROWSER_TEST_P(TwoClientContactInfoSyncTest, DuplicateGUID) {
   const AutofillProfile kProfile0 = BuildTestAccountProfile();
   // Constructs a second profile with the same GUID but different content (the
   // exact difference is irrelevant). The lambda is used to keep it const.
