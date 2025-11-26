@@ -184,15 +184,13 @@ public class TabItemPickerCoordinator {
         List<Tab> allTabs =
                 TabModelUtils.convertTabListToListOfTabs(
                         mTabModelSelector.getModel(profile.isIncognitoBranded()));
-        if (cachedTabIds == null || cachedTabIds.length == 0) {
-            showEditorUi(allTabs);
-            return;
-        }
 
         List<Tab> tabsToShow = new ArrayList<>();
         Set<Integer> cachedTabIdsSet = new HashSet<>();
-        for (long id : cachedTabIds) {
-            cachedTabIdsSet.add((int) id);
+        if (cachedTabIds != null) {
+            for (long id : cachedTabIds) {
+                cachedTabIdsSet.add((int) id);
+            }
         }
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
