@@ -27,6 +27,11 @@ class TwoClientAutocompleteSyncTest : public SyncTest {
   ~TwoClientAutocompleteSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
+
+  SetupSyncMode GetSetupSyncMode() const override {
+    // The AUTOFILL data type is not supported in transport mode.
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest, WebDataServiceSanity) {
