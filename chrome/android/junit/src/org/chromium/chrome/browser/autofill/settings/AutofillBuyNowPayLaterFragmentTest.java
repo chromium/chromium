@@ -321,4 +321,28 @@ public class AutofillBuyNowPayLaterFragmentTest {
                                 AutofillBuyNowPayLaterFragment
                                         .BNPL_ISSUER_TERMS_CLICKED_USER_ACTION));
     }
+
+    // Test to verify that the user action is logged when the user clicks on the BNPL toggle.
+    @Test
+    public void testBnplIssuerPreference_toggleClicked() {
+        when(mPersonalDataManager.isBuyNowPayLaterEnabled()).thenReturn(true);
+        launchAutofillBuyNowPayLaterFragment();
+        assertNotNull(mBnplToggle);
+
+        mBnplToggle.performClick();
+
+        assertTrue(
+                "User action should be logged when the user toggles BNPL off.",
+                mActionTester
+                        .getActions()
+                        .contains(AutofillBuyNowPayLaterFragment.BNPL_TOGGLED_OFF_USER_ACTION));
+
+        mBnplToggle.performClick();
+
+        assertTrue(
+                "User action should be logged when the user toggles BNPL on.",
+                mActionTester
+                        .getActions()
+                        .contains(AutofillBuyNowPayLaterFragment.BNPL_TOGGLED_ON_USER_ACTION));
+    }
 }
