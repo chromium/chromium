@@ -6251,6 +6251,17 @@ shown properly on the user-facing crash UI.
   <int value="4" label="SearchDigitTranslated"/>
 </enum>
 
+<!-- LINT.IfChange(InputStartPresence) -->
+
+<enum name="InputStartPresence">
+  <int value="0" label="None"/>
+  <int value="1" label="OnlyOld"/>
+  <int value="2" label="OnlyNew"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigator.cc:InputStartPresence) -->
+
 <enum name="InstallableStatusCode">
   <int value="0" label="No error"/>
   <int value="1" label="Renderer exiting"/>
