@@ -931,9 +931,11 @@ void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
   font_palette_values_rules_.push_back(rule);
 }
 
-void RuleSet::AddFontFeatureValuesRule(StyleRuleFontFeatureValues* rule) {
+void RuleSet::AddFontFeatureValuesRule(StyleRuleFontFeatureValues* rule,
+                                       const CascadeLayer* layer) {
   need_compaction_ = true;
-  font_feature_values_rules_.push_back(rule);
+  font_feature_values_rules_.push_back(
+      CascadeLayered<StyleRuleFontFeatureValues>(rule, layer));
 }
 
 void RuleSet::AddPositionTryRule(StyleRulePositionTry* rule) {
@@ -989,8 +991,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       AddFontPaletteValuesRule(font_palette_values_rule);
     } else if (auto* font_feature_values_rule =
                    DynamicTo<StyleRuleFontFeatureValues>(rule)) {
-      font_feature_values_rule->SetCascadeLayer(cascade_layer);
-      AddFontFeatureValuesRule(font_feature_values_rule);
+      AddFontFeatureValuesRule(font_feature_values_rule, cascade_layer);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       keyframes_rule->SetCascadeLayer(cascade_layer);
       AddKeyframesRule(keyframes_rule);

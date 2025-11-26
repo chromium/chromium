@@ -172,7 +172,6 @@ String StyleRuleFontFeatureValues::FamilyAsString() const {
 void StyleRuleFontFeatureValues::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(layer_);
 }
 
 }  // namespace blink

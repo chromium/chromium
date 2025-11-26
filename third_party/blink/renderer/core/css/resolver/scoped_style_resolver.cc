@@ -359,14 +359,15 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
     return;
   }
 
-  const HeapVector<Member<StyleRuleFontFeatureValues>>
+  const HeapVector<CascadeLayered<StyleRuleFontFeatureValues>>&
       font_feature_values_rules = rule_set.FontFeatureValuesRules();
-  for (auto& rule : font_feature_values_rules) {
+  for (auto& layered_rule : font_feature_values_rules) {
+    StyleRuleFontFeatureValues* rule = layered_rule.value;
+    const CascadeLayer* layer = layered_rule.layer;
     for (auto& font_family : rule->GetFamilies()) {
       unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-      if (cascade_layer_map_ && rule->GetCascadeLayer() != nullptr) {
-        layer_order =
-            cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
+      if (cascade_layer_map_ && layer != nullptr) {
+        layer_order = cascade_layer_map_->GetLayerOrder(*layer);
       }
       auto key = String(font_family).FoldCase();
       auto add_result =

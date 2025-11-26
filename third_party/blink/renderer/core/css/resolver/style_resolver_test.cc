@@ -1612,6 +1612,32 @@ TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredFontFaceRule) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredFontFeatureValues) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @layer foo, bar;
+    </style>
+    <style id=style></style>
+    <style>
+      @layer bar {
+        @font-feature-values name { fancy: 1; }
+      }
+      @layer foo {
+        @font-feature-values name { fancy: 2; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+  // This should have no side effects:
+  CreateUnconnectedRuleSets(scoped_resolver->GetActiveStyleSheets());
+  // Add a layer that causes a rebuild of the CascadeLayer map:
+  SetInnerText("#style", "@layer { div {} }");
+  // Don't crash:
+  UpdateAllLifecyclePhasesForTest();
+}
+
 TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
