@@ -217,6 +217,9 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
 
+  // The total number of reporting IDs.
+  const size_t reporting_ids_count_;
+
   // A flag that recordes if the reset pref has been recorded.
   bool reset_metric_recorded_ = false;
 
