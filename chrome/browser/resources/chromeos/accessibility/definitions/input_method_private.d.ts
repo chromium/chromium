@@ -101,6 +101,50 @@ declare global {
         appKey?: string;
       }
 
+      export enum JapaneseInputMode {
+        KANA = 'Kana',
+        ROMAJI = 'Romaji',
+      }
+
+      export enum JapanesePunctuationStyle {
+        KUTEN_TOUTEN = 'KutenTouten',
+        COMMA_PERIOD = 'CommaPeriod',
+        KUTEN_PERIOD = 'KutenPeriod',
+        COMMA_TOUTEN = 'CommaTouten',
+      }
+
+      export enum JapaneseSymbolStyle {
+        CORNER_BRACKET_MIDDLE_DOT = 'CornerBracketMiddleDot',
+        SQUARE_BRACKET_SLASH = 'SquareBracketSlash',
+        CORNER_BRACKET_SLASH = 'CornerBracketSlash',
+        SQUARE_BRACKET_MIDDLE_DOT = 'SquareBracketMiddleDot',
+      }
+
+      export enum JapaneseSpaceInputStyle {
+        INPUT_MODE = 'InputMode',
+        FULLWIDTH = 'Fullwidth',
+        HALFWIDTH = 'Halfwidth',
+      }
+
+      export enum JapaneseSelectionShortcut {
+        NO_SHORTCUT = 'NoShortcut',
+        DIGITS123456789 = 'Digits123456789',
+        ASDFGHJKL = 'ASDFGHJKL',
+      }
+
+      export enum JapaneseKeymapStyle {
+        ATOK = 'Atok',
+        MS_IME = 'MsIme',
+        KOTOERI = 'Kotoeri',
+        CHROME_OS = 'ChromeOs',
+      }
+
+      export enum ShiftKeyModeStyle {
+        OFF = 'Off',
+        ALPHANUMERIC = 'Alphanumeric',
+        KATAKANA = 'Katakana',
+      }
+
       export interface InputMethodSettings {
         enableCompletion?: boolean;
         enableDoubleSpacePeriod?: boolean;
@@ -115,6 +159,18 @@ declare global {
         virtualKeyboardAutoCorrectionLevel?: number;
         virtualKeyboardEnableCapitalization?: boolean;
         xkbLayout?: string;
+        JapaneseInputMode?: JapaneseInputMode;
+        JapanesePunctuationStyle?: JapanesePunctuationStyle;
+        JapaneseSymbolStyle?: JapaneseSymbolStyle;
+        JapaneseSpaceInputStyle?: JapaneseSpaceInputStyle;
+        JapaneseSectionShortcut?: JapaneseSelectionShortcut;
+        JapaneseKeymapStyle?: JapaneseKeymapStyle;
+        AutomaticallySwitchToHalfwidth?: boolean;
+        ShiftKeyModeStyle?: ShiftKeyModeStyle;
+        UseInputHistory?: boolean;
+        UseSystemDictionary?: boolean;
+        numberOfSuggestions?: number;
+        JapaneseDisableSuggestions?: boolean;
         koreanEnableSyllableInput?: boolean;
         koreanKeyboardLayout?: string;
         koreanShowHangulCandidate?: boolean;
