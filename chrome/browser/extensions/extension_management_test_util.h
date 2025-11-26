@@ -46,6 +46,7 @@ class ExtensionManagementPrefUpdaterBase {
   void SetIndividualExtensionAutoInstalled(const ExtensionId& id,
                                            const std::string& update_url,
                                            bool forced);
+  void SetIndividualExtensionRemoved(const ExtensionId& id);
 
   // Helper functions for 'install_sources' manipulation.
   void UnsetInstallSources();

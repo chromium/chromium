@@ -687,7 +687,9 @@ void ExtensionSyncService::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   DCHECK_EQ(profile_, browser_context);
   // Don't bother syncing if the extension will be re-installed momentarily.
+  // Don't sync extension removals enforced by policy.
   if (reason == extensions::UNINSTALL_REASON_REINSTALL ||
+      reason == extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT ||
       !ShouldSync(*extension)) {
     return;
   }

@@ -29,9 +29,12 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/extension_policy_test_base.h"
@@ -46,6 +49,9 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
+#include "components/sync/model/sync_change.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -2231,6 +2237,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       extension_prefs->GetDisableReasons(kGoodCrxId),
       testing::UnorderedElementsAre(
           extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, DontSyncPolicyUninstalls) {
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
+
+  // 1. Install an extension.
+  extensions::ExtensionRegistry* registry = extension_registry();
+  const extensions::Extension* extension = InstallExtension(kGoodCrxName);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(extension_id));
+
+  // 2. Start syncing.
+  extensions::StatefulChangeProcessor extensions_processor(syncer::EXTENSIONS);
+  ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
+  sync_service->MergeDataAndStartSyncing(syncer::EXTENSIONS,
+                                         syncer::SyncDataList(),
+                                         extensions_processor.GetWrapped());
+
+  // The initial merge should sync the locally installed extension.
+  ASSERT_EQ(1u, extensions_processor.data().size());
+  extensions_processor.changes().clear();
+
+  // 3. Set policy to remove the extension.
+  extensions::TestExtensionRegistryObserver observer(registry);
+  {
+    extensions::ExtensionManagementPolicyUpdater management_policy(&provider_);
+    management_policy.SetIndividualExtensionRemoved(extension_id);
+  }
+  base::RunLoop().RunUntilIdle();
+  observer.WaitForExtensionUninstalled();
+
+  // 4. Verify that the extension has been uninstalled.
+  EXPECT_FALSE(registry->GetInstalledExtension(extension_id));
+
+  // 5. Verify that no deletion was synced.
+  // The uninstall should not be synced as a deletion.
+  for (const auto& change : extensions_processor.changes()) {
+    EXPECT_NE(syncer::SyncChange::ACTION_DELETE, change.change_type());
+  }
+  EXPECT_EQ(1u, extensions_processor.data().size());
 }
 
 // Verifies that policy host block/allow settings are applied even when
