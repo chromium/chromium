@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -115,11 +118,17 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowTypedSuggest", false);
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   // Disable ZPS.
-  source->AddBoolean("composeboxShowZps", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
+  source->AddBoolean(
+      "composeboxShowZps",
+      contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable image context suggestions.
-  source->AddBoolean("composeboxShowImageSuggest", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
+  source->AddBoolean(
+      "composeboxShowImageSuggest",
+      contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable context menu and related features.
-    source->AddBoolean("composeboxShowContextMenu", contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
+  source->AddBoolean(
+      "composeboxShowContextMenu",
+      contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
@@ -327,8 +336,7 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     : content::WebContentsObserver(web_contents),
       ui_service_(ui_service),
       context_controller_(context_controller),
-      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {
-}
+      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -347,6 +355,26 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   const GURL& url = navigation_handle->GetURL();
   if (!ui_service_->IsAiUrl(url)) {
     return;
+  }
+
+  // Create a session handle on the web contents if it doesn't already exist.
+  // TODO(crbug.com/462193737): Pass the session handle from the omnibox
+  // or NTP through the web contents helper.
+  // TODO(crbug.com/456793138): Try to reuse sessions if the thread already
+  // has a corresponding session, based on the mtid, once mtid is reliably
+  // set by the server.
+  if (auto* contextual_search_web_contents_helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              web_contents());
+      !contextual_search_web_contents_helper->session_handle()) {
+  Profile* profile = Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile);
+    auto contextual_session_handle = contextual_search_service->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kNewTabPage);
+    contextual_search_web_contents_helper->set_session_handle(
+        std::move(contextual_session_handle));
   }
 
   std::string url_thread_id;
