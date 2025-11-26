@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceEvent) -->
 
 <!-- LINT.IfChange(GlicInstanceMetricsError) -->
 
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Floaty closed without open."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceMetricsError) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceMetricsError) -->
 
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_metrics_session_manager.h:GlicMultiInstanceSessionEndReason) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_metrics_session_manager.h:GlicMultiInstanceSessionEndReason) -->
 
 <!-- LINT.IfChange(GlicPrewarmingChecksResult) -->
 
@@ -629,7 +629,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Start New Conversation"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_coordinator_metrics.h:GlicSwitchConversationTarget) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h:GlicSwitchConversationTarget) -->
 
 <!-- LINT.IfChange(GlicTabPinnedForSharingResult) -->
 
@@ -661,7 +661,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Floaty Audio"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.cc:GlicTurnSource) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.cc:GlicTurnSource) -->
 
 <!-- LINT.IfChange(GlicWebClientMode) -->
 

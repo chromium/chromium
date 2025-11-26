@@ -158,6 +158,28 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
 }
 
 void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
+  if (is_active_ == is_active) {
+    return;
+  }
+  is_active_ = is_active;
+
+  if (is_active) {
+    // If this is not the first activation, log the time since the last one.
+    if (!last_active_time_.is_null()) {
+      base::TimeDelta time_since_last_active =
+          base::TimeTicks::Now() - last_active_time_;
+      base::UmaHistogramLongTimes("Glic.Instance.TimeSinceLastActive",
+                                  time_since_last_active);
+      base::UmaHistogramCustomTimes("Glic.Instance.TimeSinceLastActive.24H",
+                                    time_since_last_active, base::Seconds(1),
+                                    base::Hours(24), 50);
+      base::UmaHistogramCustomTimes("Glic.Instance.TimeSinceLastActive.7D",
+                                    time_since_last_active, base::Seconds(1),
+                                    base::Days(7), 50);
+    }
+  }
+
+  last_active_time_ = base::TimeTicks::Now();
   session_manager_.OnActivationChanged(is_active);
   activity_tracker_->OnStateChanged(is_active);
 }

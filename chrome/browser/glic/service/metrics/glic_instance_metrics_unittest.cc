@@ -23,12 +23,39 @@ class GlicInstanceMetricsTest : public testing::Test {
   GlicInstanceMetricsTest() = default;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   GlicInstanceMetrics metrics_;
   tabs::MockTabInterface mock_tab_;
   base::UserActionTester user_action_tester_;
 };
+
+TEST_F(GlicInstanceMetricsTest, OnActivationChanged_LogsTimeSinceLastActive) {
+  // First activation.
+  metrics_.OnActivationChanged(true);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 0);
+
+  // Deactivate.
+  metrics_.OnActivationChanged(false);
+
+  // Advance time.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Second activation.
+  metrics_.OnActivationChanged(true);
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Instance.TimeSinceLastActive",
+                                           base::Minutes(5), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeSinceLastActive.24H", base::Minutes(5), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeSinceLastActive.7D", base::Minutes(5), 1);
+
+  // Redundant activation should not log again.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  metrics_.OnActivationChanged(true);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+}
 
 TEST_F(GlicInstanceMetricsTest, OnResponseStarted_WithoutInput_LogsError) {
   metrics_.OnResponseStarted();

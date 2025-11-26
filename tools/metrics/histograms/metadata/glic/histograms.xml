@@ -1013,6 +1013,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Instance.TimeSinceLastActive{Range}" units="ms"
+    expires_after="2026-11-20">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time elapsed since the instance was last active. This is
+    measured on reactivation as the duration from the last time the instance
+    became inactive to the current time of activation.
+  </summary>
+  <token key="Range">
+    <variant name="" summary="Default range"/>
+    <variant name=".7D" summary="7 day range"/>
+    <variant name=".24H" summary="24 hour range"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Instance.TotalActiveDuration" units="ms"
     expires_after="2026-06-01">
   <owner>birnie@google.com</owner>

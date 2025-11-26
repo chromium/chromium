@@ -318,6 +318,8 @@ class GlicInstanceMetrics {
   base::TimeTicks invocation_start_time_;
   base::TimeTicks web_ui_load_start_time_;
 
+  base::TimeTicks last_active_time_;
+  bool is_active_ = false;
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<tabs::TabHandle, base::TimeTicks> side_panel_open_times_;

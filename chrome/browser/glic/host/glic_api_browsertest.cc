@@ -1189,6 +1189,71 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationToNew) {
       GlicSwitchConversationTarget::kStartNewConversation, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "This test requires multi-instance mode.";
+  }
+
+  // Open Glic in the first tab. This is the first activation.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kAttached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("first")});
+
+  // Open a second tab and navigate it.
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  TrackGlicInstanceWithTabIndex(1);
+
+  // Activate the second tab and open Glic there.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kAttached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("second")});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetService()->window_controller().GetInstances().size() == 1u;
+  }));
+  ASSERT_EQ("A", GetGlicInstanceImpl()->conversation_id());
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  TrackGlicInstanceWithTabIndex(0);
+  // The original switch to tab 2 deactivated the first instance so this is
+  // expected to log once when we reactivate the first instance in tab 2.
+  histogram_tester->ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+
+  // Switch back to the second tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  TrackGlicInstanceWithTabIndex(1);
+  // active instance switching to the same instance in a new tab DOES NOT log
+  // the TimeSinceLastActive metric.
+  histogram_tester->ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachDoesNotLogActivationMetric) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "This test requires multi-instance mode.";
+  }
+
+  // Open Glic in side panel.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kAttached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("registerAndDetach")});
+
+  TrackFloatingGlicInstance();
+  // Verify conversation ID.
+  ASSERT_EQ("A", GetGlicInstanceImpl()->conversation_id());
+
+  // Verify no spurious activation metric.
+  histogram_tester->ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 0);
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {
   ExecuteJsTest();
   RunTestSequence(WaitForHide(kGlicViewElementId));
