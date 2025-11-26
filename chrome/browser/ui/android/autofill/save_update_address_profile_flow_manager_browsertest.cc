@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                            &original_profile, kNotMigrationToAccount,
                            /*callback=*/base::DoNothing());
   // Proceed with message to prompt.
-  flow_manager_->GetMessageControllerForTest()->OnPrimaryAction();
+  flow_manager_->GetMessageControllerForTest()->OnPrimaryActionForTest();
   flow_manager_->GetMessageControllerForTest()->DismissMessageForTest(
       messages::DismissReason::PRIMARY_ACTION);
   EXPECT_FALSE(IsMessageDisplayed());
