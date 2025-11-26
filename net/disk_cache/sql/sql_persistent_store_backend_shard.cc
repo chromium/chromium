@@ -204,12 +204,13 @@ void SqlPersistentStore::BackendShard::UpdateEntryHeaderAndLastUsed(
     const CacheEntryKey& key,
     ResId res_id,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     ErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsed)
-      .WithArgs(key, res_id, last_used, std::move(buffer), header_size_delta,
-                base::TimeTicks::Now())
+      .WithArgs(key, res_id, last_used, new_hints, std::move(buffer),
+                header_size_delta, base::TimeTicks::Now())
       .Then(WrapCallbackWithStoreStatus(std::move(callback)));
 }
 
@@ -374,6 +375,21 @@ SqlPersistentStore::BackendShard::GetIndexStateForHash(
     return IndexState::kHashFound;
   }
   return IndexState::kHashNotFound;
+}
+
+void SqlPersistentStore::BackendShard::SetInMemoryEntryDataHints(
+    ResId res_id,
+    MemoryEntryDataHints hints) {
+  if (index_.has_value()) {
+    index_->SetEntryDataHints(res_id, hints);
+  }
+}
+
+std::optional<MemoryEntryDataHints>
+SqlPersistentStore::BackendShard::GetInMemoryEntryDataHints(
+    CacheEntryKey::Hash key_hash) const {
+  return index_.has_value() ? index_->GetEntryDataHints(key_hash)
+                            : std::nullopt;
 }
 
 std::optional<SqlPersistentStore::ResId>

@@ -32,14 +32,17 @@ SqlEntryImpl::~SqlEntryImpl() {
   if (doomed_) {
     backend_->ReleaseDoomedEntry(*this);
   } else {
-    if (previous_header_size_in_storage_.has_value()) {
+    if (previous_header_size_in_storage_.has_value() ||
+        new_hints_.has_value()) {
       // If the entry's header was modified (i.e., a write to stream 0
-      // occurred), update both the header and `last_used_` in the persistent
-      // store.
-      const int64_t header_size_delta = static_cast<int64_t>(head_->size()) -
-                                        *previous_header_size_in_storage_;
+      // occurred) or `new_hints_` is set, update the header, `last_used` and
+      // optionally `hints` in the persistent store.
+      const int64_t header_size_delta =
+          static_cast<int64_t>(head_->size()) -
+          previous_header_size_in_storage_.value_or(0);
       backend_->UpdateEntryHeaderAndLastUsed(key_, res_id_or_error_, last_used_,
-                                             head_, header_size_delta);
+                                             new_hints_, head_,
+                                             header_size_delta);
     } else if (last_used_modified_) {
       // Otherwise, if only last_used was modified, update just last_used.
       backend_->UpdateEntryLastUsed(key_, res_id_or_error_, last_used_);
@@ -286,6 +289,14 @@ void SqlEntryImpl::CancelSparseIO() {
 net::Error SqlEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
   // SqlEntryImpl doesn't distinguish the stream 1 data and the sparse data.
   return net::OK;
+}
+
+void SqlEntryImpl::SetEntryInMemoryData(uint8_t data) {
+  const MemoryEntryDataHints hints(data);
+  new_hints_ = hints;
+  if (backend_) {
+    backend_->SetEntryDataHints(key_, res_id_or_error_, hints);
+  }
 }
 
 void SqlEntryImpl::SetLastUsedTimeForTest(base::Time time) {

@@ -208,6 +208,7 @@ int32_t CalculateCheckSum(base::span<const uint8_t> data,
       !db.Execute(GetQuery(Query::kInitSchema_CreateTableBlobs)) ||
       !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyHashDoomed)) ||
       !db.Execute(GetQuery(Query::kIndex_LiveResourcesLastUsed)) ||
+      !db.Execute(GetQuery(Query::kIndex_LiveResourcesHints)) ||
       !db.Execute(GetQuery(Query::kIndex_BlobsResIdStart))) {
     return false;
   }
@@ -285,10 +286,7 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
   base::ElapsedTimer timer;
   CHECK(!db_init_status_.has_value());
   bool corruption_detected = false;
-  SqlPersistentStoreInMemoryIndex index;
-  ResIdList doomed_entry_res_ids;
-  db_init_status_ =
-      InitializeInternal(corruption_detected, index, doomed_entry_res_ids);
+  db_init_status_ = InitializeInternal(corruption_detected);
 
   std::optional<int64_t> result_max_bytes;
   // `max_bytes` of InitResult is set only for the first shard.
@@ -328,9 +326,7 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
 }
 
 Error SqlPersistentStore::Backend::InitializeInternal(
-    bool& corruption_detected,
-    SqlPersistentStoreInMemoryIndex& index,
-    ResIdList& doomed_entry_res_ids) {
+    bool& corruption_detected) {
   if (simulate_db_failure_for_testing_) {
     return Error::kFailedForTesting;
   }
@@ -1177,6 +1173,7 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsed(
     const CacheEntryKey& key,
     ResId res_id,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     base::TimeTicks start_time) {
@@ -1187,13 +1184,16 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsed(
                        dict.Add("key", key.string());
                        dict.Add("res_id", res_id.value());
                        dict.Add("last_used", last_used);
+                       if (new_hints) {
+                         dict.Add("new_hints", *new_hints);
+                       }
                        dict.Add("header_size_delta", header_size_delta);
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = UpdateEntryHeaderAndLastUsedInternal(
-      key, res_id, last_used, std::move(buffer), header_size_delta,
+      key, res_id, last_used, new_hints, std::move(buffer), header_size_delta,
       corruption_detected);
   RecordTimeAndErrorResultHistogram("UpdateEntryHeaderAndLastUsed",
                                     posting_delay, timer.Elapsed(), result,
@@ -1210,6 +1210,7 @@ Error SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsedInternal(
     const CacheEntryKey& key,
     ResId res_id,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     bool& corruption_detected) {
@@ -1223,14 +1224,27 @@ Error SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsedInternal(
     return Error::kFailedToStartTransaction;
   }
   {
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        GetQuery(Query::kUpdateEntryHeaderAndLastUsed_UpdateResource)));
-    statement.BindTime(0, last_used);
-    statement.BindInt64(1, header_size_delta);
-    statement.BindInt(2, CalculateCheckSum(buffer->span(), key.hash()));
-    statement.BindBlob(3, buffer->span());
-    statement.BindInt64(4, res_id.value());
+    sql::Statement statement(
+        new_hints.has_value()
+            ? db_.GetCachedStatement(
+                  SQL_FROM_HERE,
+                  GetQuery(
+                      Query::
+                          kUpdateEntryHeaderAndLastUsed_UpdateResourceAndHints))
+            : db_.GetCachedStatement(
+                  SQL_FROM_HERE,
+                  GetQuery(
+                      Query::kUpdateEntryHeaderAndLastUsed_UpdateResource)));
+    int param_index = 0;
+    statement.BindTime(param_index++, last_used);
+    if (new_hints.has_value()) {
+      statement.BindInt(param_index++, new_hints->value());
+    }
+    statement.BindInt64(param_index++, header_size_delta);
+    statement.BindInt(param_index++,
+                      CalculateCheckSum(buffer->span(), key.hash()));
+    statement.BindBlob(param_index++, buffer->span());
+    statement.BindInt64(param_index++, res_id.value());
     if (statement.Step()) {
       const int64_t bytes_usage = statement.ColumnInt64(0);
       if (bytes_usage < static_cast<int64_t>(buffer->size()) +
@@ -2266,17 +2280,30 @@ SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
   SqlPersistentStoreInMemoryIndex index;
   ResIdList doomed_entry_res_ids;
   base::ElapsedTimer timer;
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      GetQuery(Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources)));
-  while (statement.Step()) {
-    const auto res_id = ResId(statement.ColumnInt64(0));
-    const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt(1));
-    const bool doomed = statement.ColumnBool(2);
-    if (doomed) {
-      doomed_entry_res_ids.emplace_back(res_id);
-    } else {
-      index.Insert(key_hash, res_id);
+  {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(
+            Query::kLoadInMemoryIndex_SelectCacheKeyHashFromLiveResources)));
+    while (statement.Step()) {
+      const auto res_id = ResId(statement.ColumnInt64(0));
+      const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt(1));
+      const bool doomed = statement.ColumnBool(2);
+      if (doomed) {
+        doomed_entry_res_ids.emplace_back(res_id);
+      } else {
+        index.Insert(key_hash, res_id);
+      }
+    }
+  }
+  {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kLoadInMemoryIndex_SelectHintsFromLiveResources)));
+    while (statement.Step()) {
+      const auto res_id = ResId(statement.ColumnInt64(0));
+      const auto hints = MemoryEntryDataHints(statement.ColumnInt(1));
+      index.SetEntryDataHints(res_id, hints);
     }
   }
   base::UmaHistogramMicrosecondsTimes(

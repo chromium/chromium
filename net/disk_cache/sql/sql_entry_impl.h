@@ -79,6 +79,7 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
+  void SetEntryInMemoryData(uint8_t data) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   // Returns the cache key of the entry.
@@ -141,6 +142,11 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   // The entry's header data (stream 0).
   scoped_refptr<net::GrowableIOBuffer> head_;
+
+  // Stores the new hints value if it has been modified. This is used to
+  // determine if the hints need to be persisted to the database when the entry
+  // is destructed.
+  std::optional<MemoryEntryDataHints> new_hints_;
 
   // Stores the original size of the header (stream 0) before it was first
   // modified. `std::nullopt` indicates that the header has not been written to

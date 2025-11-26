@@ -305,7 +305,21 @@ class SqlPersistentStoreTest : public testing::Test {
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->UpdateEntryHeaderAndLastUsed(key, res_id, last_used,
+    store_->UpdateEntryHeaderAndLastUsed(
+        key, res_id, last_used, /*new_hints=*/std::nullopt, std::move(buffer),
+        header_size_delta, future.GetCallback());
+    return future.Get();
+  }
+
+  SqlPersistentStore::Error UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      SqlPersistentStore::ResId res_id,
+      base::Time last_used,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta,
+      const std::optional<MemoryEntryDataHints>& new_hints) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->UpdateEntryHeaderAndLastUsed(key, res_id, last_used, new_hints,
                                          std::move(buffer), header_size_delta,
                                          future.GetCallback());
     return future.Get();
@@ -480,6 +494,18 @@ class SqlPersistentStoreTest : public testing::Test {
       details.doomed = s.ColumnBool(3);
       details.body_end = s.ColumnInt64(4);
       return details;
+    }
+    return std::nullopt;
+  }
+
+  // Helper to read hints from the resources table.
+  std::optional<uint8_t> GetResourceHints(const CacheEntryKey& key) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
+        "SELECT hints FROM resources WHERE cache_key=?"));
+    s.BindString(0, key.string());
+    if (s.Step()) {
+      return static_cast<uint8_t>(s.ColumnInt(0));
     }
     return std::nullopt;
   }
@@ -3531,7 +3557,8 @@ TEST_F(SqlPersistentStoreTest,
   bool callback_run = false;
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   store_->UpdateEntryHeaderAndLastUsed(
-      kKey, res_id, base::Time::Now(), buffer, buffer->size(),
+      kKey, res_id, base::Time::Now(), /*new_hints=*/std::nullopt, buffer,
+      buffer->size(),
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();
@@ -4661,6 +4688,49 @@ TEST_F(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
   open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
   EXPECT_FALSE(open_result->has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, SetAndGetEntryInMemoryData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+
+  // 1. Create a new entry.
+  auto res_id = CreateEntryAndGetResId(kKey);
+
+  // 2. Load the index.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 3. Set in-memory data hints.
+  const uint8_t hints_value = 42;
+  store_->SetInMemoryEntryDataHints(kKey.hash(), res_id,
+                                    MemoryEntryDataHints(hints_value));
+
+  // 4. Get the hints and verify.
+  auto hints = store_->GetInMemoryEntryDataHints(kKey.hash());
+  ASSERT_TRUE(hints.has_value());
+  EXPECT_EQ(hints->value(), hints_value);
+
+  // 5. Persist the hints to the database.
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>("");
+  ASSERT_EQ(
+      UpdateEntryHeaderAndLastUsed(kKey, res_id, base::Time::Now(), buffer, 0,
+                                   MemoryEntryDataHints(hints_value)),
+      SqlPersistentStore::Error::kOk);
+
+  // Verify hints are in the database.
+  auto db_hints = GetResourceHints(kKey);
+  ASSERT_TRUE(db_hints.has_value());
+  EXPECT_EQ(*db_hints, hints_value);
+
+  // 6. Close and re-open the store.
+  ClearStore();
+  CreateAndInitStore();
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 7. Get the hints again and verify they were loaded from the DB.
+  auto reloaded_hints = store_->GetInMemoryEntryDataHints(kKey.hash());
+  ASSERT_TRUE(reloaded_hints.has_value());
+  EXPECT_EQ(reloaded_hints->value(), hints_value);
 }
 
 }  // namespace disk_cache

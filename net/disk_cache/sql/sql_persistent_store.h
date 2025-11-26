@@ -310,19 +310,21 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                   base::Time last_used,
                                   ErrorCallback callback);
 
-  // Updates the header data (stream 0) and the `last_used` timestamp for a
-  // specific cache entry. The `bytes_usage` for the entry is adjusted based
-  // on `header_size_delta`. `callback` is invoked with `kOk` on success,
-  // `kNotFound` if the entry (matching `key` and `res_id`) is not found or is
-  // doomed, or `kInvalidData` if internal data consistency checks fail.
-  // `buffer` must not be null. `header_size_delta` is the change in the size
-  // of the header data.
-  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                    ResId res_id,
-                                    base::Time last_used,
-                                    scoped_refptr<net::IOBuffer> buffer,
-                                    int64_t header_size_delta,
-                                    ErrorCallback callback);
+  // Updates the header data (stream 0), `last_used` timestamp, and optionally
+  // the in-memory `hints` for a specific cache entry. The `bytes_usage` for
+  // the entry is adjusted based on `header_size_delta`. `callback` is invoked
+  // with `kOk` on success, `kNotFound` if the entry (matching `key` and
+  // `res_id`) is not found or is doomed, or `kInvalidData` if internal data
+  // consistency checks fail. `buffer` must not be null. `header_size_delta`
+  // is the change in the size of the header data.
+  void UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      ResId res_id,
+      base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta,
+      ErrorCallback callback);
 
   // Writes data to an entry's body. This can be used to write new data,
   // overwrite existing data, or append to the entry.
@@ -454,6 +456,16 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Synchronously checks the state of a key hash against the in-memory index.
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
+
+  // Updates the in-memory index with the given hints for the specified entry.
+  void SetInMemoryEntryDataHints(CacheEntryKey::Hash key_hash,
+                                 ResId res_id,
+                                 MemoryEntryDataHints hints);
+
+  // Retrieves the hints for the specified entry from the in-memory index, if
+  // available.
+  std::optional<MemoryEntryDataHints> GetInMemoryEntryDataHints(
+      CacheEntryKey::Hash key_hash) const;
 
   // Attempts to retrieve a single resource ID associated with the given key
   // hash from the in-memory index. Returns the resource ID if a unique entry

@@ -25,6 +25,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "net/base/features.h"
@@ -864,6 +865,12 @@ void SqlBackendImpl::HandleOnExternalCacheHitOperation(
           .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
+uint8_t SqlBackendImpl::GetEntryInMemoryData(const std::string& key) {
+  return store_->GetInMemoryEntryDataHints(CacheEntryKey::HashFromString(key))
+      .value_or(MemoryEntryDataHints(0))
+      .value();
+}
+
 void SqlBackendImpl::OnBrowserIdle() {
   store_->MaybeLoadInMemoryIndex(base::DoNothing());
   store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
@@ -1039,13 +1046,14 @@ void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta) {
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(
                &SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation,
                weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
-               std::move(buffer), header_size_delta,
+               new_hints, std::move(buffer), header_size_delta,
                PushInFlightEntryModification(
                    key, InFlightEntryModification(res_id_or_error, last_used,
                                                   buffer))));
@@ -1055,6 +1063,7 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
@@ -1068,7 +1077,8 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     return;
   }
   store_->UpdateEntryHeaderAndLastUsed(
-      key, *optional_res_id, last_used, std::move(buffer), header_size_delta,
+      key, *optional_res_id, last_used, new_hints, std::move(buffer),
+      header_size_delta,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1338,6 +1348,30 @@ void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
   }
   store_->GetEntryAvailableRange(key, *optional_res_id, offset, len,
                                  std::move(callback));
+}
+
+void SqlBackendImpl::SetEntryDataHints(
+    const CacheEntryKey& key,
+    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    MemoryEntryDataHints hints) {
+  exclusive_operation_coordinator_.PostOrRunNormalOperation(
+      key,
+      base::BindOnce(&SqlBackendImpl::HandleSetEntryDataHintsOperation,
+                     weak_factory_.GetWeakPtr(), key, res_id_or_error, hints));
+}
+
+void SqlBackendImpl::HandleSetEntryDataHintsOperation(
+    const CacheEntryKey& key,
+    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    MemoryEntryDataHints hints,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  const auto optional_res_id = GetResId(res_id_or_error);
+  if (!optional_res_id) {
+    // Fail the operation for entries that previously failed a speculative
+    // creation or optimistic write.
+    return;
+  }
+  store_->SetInMemoryEntryDataHints(key.hash(), *optional_res_id, hints);
 }
 
 SqlBackendImpl::PopInFlightEntryModificationRunner

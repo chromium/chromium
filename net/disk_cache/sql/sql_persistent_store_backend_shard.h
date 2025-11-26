@@ -66,12 +66,14 @@ class SqlPersistentStore::BackendShard {
   void UpdateEntryLastUsedByResId(ResId res_id,
                                   base::Time last_used,
                                   ErrorCallback callback);
-  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                    ResId res_id,
-                                    base::Time last_used,
-                                    scoped_refptr<net::IOBuffer> buffer,
-                                    int64_t header_size_delta,
-                                    ErrorCallback callback);
+  void UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      ResId res_id,
+      base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta,
+      ErrorCallback callback);
   void WriteEntryData(const CacheEntryKey& key,
                       ResId res_id,
                       int64_t old_body_end,
@@ -109,6 +111,14 @@ class SqlPersistentStore::BackendShard {
   int64_t GetSizeOfAllEntries() const;
 
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
+
+  // Updates the in-memory index with the given hints for the specified entry.
+  void SetInMemoryEntryDataHints(ResId res_id, MemoryEntryDataHints hints);
+
+  // Retrieves the hints for the specified entry from the in-memory index, if
+  // available.
+  std::optional<MemoryEntryDataHints> GetInMemoryEntryDataHints(
+      CacheEntryKey::Hash key_hash) const;
 
   // Tries to find a single resource ID for the given key hash in the in-memory
   // index of this shard. Returns the resource ID if the index is available and

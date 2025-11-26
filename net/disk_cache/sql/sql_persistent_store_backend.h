@@ -71,6 +71,7 @@ class SqlPersistentStore::Backend {
       const CacheEntryKey& key,
       ResId res_id,
       base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta,
       base::TimeTicks start_time);
@@ -142,9 +143,7 @@ class SqlPersistentStore::Backend {
 
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
-  Error InitializeInternal(bool& corruption_detected,
-                           SqlPersistentStoreInMemoryIndex& index,
-                           ResIdList& doomed_entry_res_ids);
+  Error InitializeInternal(bool& corruption_detected);
   EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                              bool& corruption_detected);
   OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
@@ -171,6 +170,7 @@ class SqlPersistentStore::Backend {
       const CacheEntryKey& key,
       ResId res_id,
       base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta,
       bool& corruption_detected);

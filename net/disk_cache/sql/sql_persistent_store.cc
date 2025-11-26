@@ -174,11 +174,12 @@ void SqlPersistentStore::UpdateEntryHeaderAndLastUsed(
     const CacheEntryKey& key,
     ResId res_id,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     ErrorCallback callback) {
   GetShard(key).UpdateEntryHeaderAndLastUsed(
-      key, res_id, last_used, std::move(buffer), header_size_delta,
+      key, res_id, last_used, new_hints, std::move(buffer), header_size_delta,
       std::move(callback));
 }
 
@@ -467,6 +468,18 @@ void SqlPersistentStore::RazeAndPoisonForTesting() {
 SqlPersistentStore::IndexState SqlPersistentStore::GetIndexStateForHash(
     CacheEntryKey::Hash key_hash) const {
   return GetShard(key_hash).GetIndexStateForHash(key_hash);
+}
+
+void SqlPersistentStore::SetInMemoryEntryDataHints(CacheEntryKey::Hash key_hash,
+                                                   ResId res_id,
+                                                   MemoryEntryDataHints hints) {
+  return GetShard(key_hash).SetInMemoryEntryDataHints(res_id, hints);
+}
+
+std::optional<MemoryEntryDataHints>
+SqlPersistentStore::GetInMemoryEntryDataHints(
+    CacheEntryKey::Hash key_hash) const {
+  return GetShard(key_hash).GetInMemoryEntryDataHints(key_hash);
 }
 
 std::optional<SqlPersistentStore::ResId>

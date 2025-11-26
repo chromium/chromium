@@ -2195,5 +2195,79 @@ TEST_F(SqlBackendImplTest, DoomEntryWithInMemoryIndex) {
   EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
 }
 
+TEST_F(SqlBackendImplTest, SetDataHintsAndDoomAndWriteOptimistically) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+  const uint8_t kUnusableHint = 1;
+
+  // 1. Create an entry.
+  TestEntryResultCompletionCallback cb_create;
+  EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // 2. Set an in-memory hint.
+  entry->SetEntryInMemoryData(kUnusableHint);
+  entry->Close();
+
+  // 3. Call OnBrowserIdle() to trigger in-memory index loading.
+  backend->OnBrowserIdle();
+  FlushQueue(*backend);
+
+  // 4. Verify the hint is set in the backend.
+  EXPECT_EQ(backend->GetEntryInMemoryData(kKey), kUnusableHint);
+
+  // 5. Doom the entry.
+  base::test::TestFuture<int> doom_future;
+  int doom_rv =
+      backend->DoomEntry(kKey, net::HIGHEST, doom_future.GetCallback());
+  EXPECT_EQ(doom_rv, net::ERR_IO_PENDING);
+
+  // 6. OpenOrCreateEntry should complete synchronously and create a new entry.
+  TestEntryResultCompletionCallback cb_open_or_create;
+  EntryResult open_or_create_result = backend->OpenOrCreateEntry(
+      kKey, net::HIGHEST, cb_open_or_create.callback());
+  ASSERT_THAT(open_or_create_result.net_error(), IsOk());
+  EXPECT_FALSE(open_or_create_result.opened());
+
+  open_or_create_result.ReleaseEntry()->Close();
+  EXPECT_EQ(doom_future.Get(), net::OK);
+}
+
+TEST_F(SqlBackendImplTest, SetEntryDataHintsWithSpeculativeCreateEntryFailure) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  const std::string kKey = "my-key";
+
+  // 1. Create an entry. This should return immediately with a speculatively
+  //    created entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // 2. Wait for the database operation to complete.
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(false);
+
+  // 3. Set an in-memory hint. This should fail silently because the entry has
+  //    an error.
+  const uint8_t kUnusableHint = 1;
+  entry->SetEntryInMemoryData(kUnusableHint);
+  entry->Close();
+
+  // 4. Flush the queue to make sure the SetEntryInMemoryData operation is
+  //    processed.
+  FlushQueue(*backend);
+
+  // 5. Verify the hint is not set in the backend.
+  EXPECT_EQ(backend->GetEntryInMemoryData(kKey), 0);
+}
+
 }  // namespace
 }  // namespace disk_cache
