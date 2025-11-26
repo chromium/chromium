@@ -316,10 +316,12 @@ class FirstRunInteractiveUiTest
     }
 
     // Controls behavior of sync buttons and supervision.
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     if (with_extended_info && account_email == kTestEnterpriseEmail) {
-      account_info.hosted_domain = "chromium.org";
+      account_info = AccountInfo::Builder(account_info)
+                         .SetHostedDomain("chromium.org")
+                         .Build();
     }
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_is_subject_to_enterprise_features(account_email ==
                                                   kTestEnterpriseEmail);
 
@@ -1260,7 +1262,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   account_info = signin::WithGeneratedUserInfo(account_info, kTestGivenName);
-  account_info.hosted_domain = "chromium.org";
+  account_info = AccountInfo::Builder(account_info)
+                     .SetHostedDomain("chromium.org")
+                     .Build();
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 

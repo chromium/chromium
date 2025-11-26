@@ -18,7 +18,6 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -29,8 +28,6 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -112,11 +109,13 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
         identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
     ASSERT_FALSE(account_info.IsEmpty());
 
-    account_info.full_name = "Joe Testing";
-    account_info.given_name = "Joe";
-    account_info.picture_url = "SOME_FAKE_URL";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = "en";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("Joe Testing")
+                       .SetGivenName("Joe")
+                       .SetHostedDomain(std::string())
+                       .SetAvatarUrl("SOME_FAKE_URL")
+                       .SetLocale("en")
+                       .Build();
     ASSERT_TRUE(account_info.IsValid());
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }

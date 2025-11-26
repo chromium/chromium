@@ -80,7 +80,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -109,8 +108,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
 #endif
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 using ::testing::StrictMock;
@@ -320,11 +317,13 @@ class AvatarToolbarButtonBaseBrowserTest {
         GetIdentityManager(), base::UTF16ToUTF8(email), consent_level);
     EXPECT_FALSE(account_info.IsEmpty());
 
-    account_info.given_name = base::UTF16ToUTF8(name);
-    account_info.full_name = base::UTF16ToUTF8(name);
-    account_info.picture_url = "SOME_FAKE_URL";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = "en";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetGivenName(base::UTF16ToUTF8(name))
+                       .SetFullName(base::UTF16ToUTF8(name))
+                       .SetAvatarUrl("SOME_FAKE_URL")
+                       .SetHostedDomain(std::string())
+                       .SetLocale("en")
+                       .Build();
 
     AccountCapabilitiesTestMutator(&account_info.capabilities)
         .set_is_subject_to_account_level_enterprise_policies(false);

@@ -202,17 +202,13 @@ AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
     const std::string& given_name,
     const std::string& hosted_domain = kNoHostedDomainFound) {
-  AccountInfo account_info;
-  account_info.email = core_info.email;
-  account_info.gaia = core_info.gaia;
-  account_info.account_id = core_info.account_id;
-  account_info.is_under_advanced_protection =
-      core_info.is_under_advanced_protection;
-  account_info.full_name = "Test Full Name";
-  account_info.given_name = given_name;
-  account_info.hosted_domain = hosted_domain;
-  account_info.locale = "en";
-  account_info.picture_url = "https://get-avatar.com/foo";
+  AccountInfo account_info = AccountInfo::Builder(core_info)
+                                 .SetFullName("Test Full Name")
+                                 .SetGivenName(given_name)
+                                 .SetHostedDomain(hosted_domain)
+                                 .SetLocale("en")
+                                 .SetAvatarUrl("https://get-avatar.com/foo")
+                                 .Build();
   bool is_managed = hosted_domain != kNoHostedDomainFound;
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_is_subject_to_enterprise_features(is_managed);
