@@ -54,7 +54,7 @@ class ValueMatcher : public MatcherInterface<const base::Value&> {
   void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
-  std::unique_ptr<base::Value> expected_value_;
+  base::Value expected_value_;
 };
 
 inline Matcher<const base::Value&> ValueEq(const base::Value& expected_value) {
