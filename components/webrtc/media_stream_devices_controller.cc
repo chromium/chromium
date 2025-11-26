@@ -372,10 +372,13 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
     return CONTENT_SETTING_BLOCK;
   }
 
-  if (!IsUserAcceptAllowed(permission)) {
-    *denial_reason = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
+#if BUILDFLAG(IS_ANDROID)
+  if (!IsUserAcceptAllowedOnAndroid(permission)) {
+    *denial_reason =
+        blink::mojom::MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION;
     return CONTENT_SETTING_BLOCK;
   }
+#endif
 
   // Don't request if the kill switch is on.
   if (PermissionIsBlockedForReason(
@@ -387,9 +390,9 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
   return CONTENT_SETTING_ASK;
 }
 
-bool MediaStreamDevicesController::IsUserAcceptAllowed(
-    blink::PermissionType permission) const {
 #if BUILDFLAG(IS_ANDROID)
+bool MediaStreamDevicesController::IsUserAcceptAllowedOnAndroid(
+    blink::PermissionType permission) const {
   ui::WindowAndroid* window_android =
       web_contents_->GetNativeView()->GetWindowAndroid();
   if (!window_android)
@@ -422,10 +425,8 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
   // TODO(qinmin): Add a test for this. http://crbug.com/396869.
   // TODO(raymes): Shouldn't this apply to all permissions not just audio/video?
   return web_contents_->GetRenderWidgetHostView()->IsShowing();
-#else
-  return true;
-#endif
 }
+#endif
 
 bool MediaStreamDevicesController::PermissionIsBlockedForReason(
     blink::PermissionType permission,

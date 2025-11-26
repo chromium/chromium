@@ -334,6 +334,9 @@ const char* RequestResultToString(
       return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
     case blink::mojom::MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
       return "STREAM_NOT_FOUND_IN_REGISTRY";
+    case blink::mojom::MediaStreamRequestResult::
+        ANDROID_CANT_REQUEST_PERMISSION:
+      return "ANDROID_CANT_REQUEST_PERMISSION";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }
