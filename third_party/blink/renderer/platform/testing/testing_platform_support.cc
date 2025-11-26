@@ -257,7 +257,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
         }
 
         result.Set(std::string(*name_utf8, name_utf8.length()),
-                   std::move(*std::move(child)));
+                   std::move(*child));
       }
       return std::make_unique<base::Value>(std::move(result));
     }
