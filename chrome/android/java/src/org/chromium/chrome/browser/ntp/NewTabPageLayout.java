@@ -470,7 +470,6 @@ public class NewTabPageLayout extends LinearLayout
 
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
-        // TODO(b/181067692): Report user action for this click.
         mLensButtonClickListener =
                 v -> {
                     LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
