@@ -841,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                             blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY));
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
 
-  VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED, false, false);
+  VerifyResultState(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
+                            false);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, WebContentsDestroyed) {

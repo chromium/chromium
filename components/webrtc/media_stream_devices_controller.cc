@@ -69,15 +69,8 @@ void MediaStreamDevicesController::RequestPermissions(
     return;
   }
 
-  if (rfh->GetLastCommittedOrigin().GetURL().is_empty()) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, false, {},
-        {});
-    return;
-  }
-
-  if (rfh->GetLastCommittedOrigin().GetURL() != request.security_origin) {
+  const GURL url = rfh->GetLastCommittedOrigin().GetURL();
+  if (url.is_empty() || url != request.security_origin) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
