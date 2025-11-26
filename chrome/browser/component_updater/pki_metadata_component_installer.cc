@@ -75,7 +75,7 @@ namespace {
 // if it is set). This should never be decreased since that will cause CT
 // enforcement to eventually stop. This should also only be increased if Chrome
 // is compatible with the version it is being incremented to.
-const uint64_t kMaxSupportedCTCompatibilityVersion = 3;
+const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 
 // This is the last version of key pins lists that this version of Chrome will
 // accept. If a list is delivered with a compatibility version higher than this,

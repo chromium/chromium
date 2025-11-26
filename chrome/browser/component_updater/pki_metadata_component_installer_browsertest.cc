@@ -78,8 +78,8 @@ namespace {
 enum class CTEnforcement {
   // Enables CT enforcement.
   kEnabled,
-  // Enables CT with Static CT API policy enforcement.
-  kEnabledWithStaticCTEnforcement,
+  // Enables CT with one-6962-log CT policy enforcement.
+  kEnabledWithOne6962Enforcement,
   // Disables CT enforcement via component updater proto.
   kDisabledByProto,
   // Disables CT enforcement via feature flag.
@@ -176,15 +176,14 @@ class PKIMetadataComponentUpdaterTest
         scoped_feature_list_.InitWithFeatures(
             /*enabled_features=*/
             {features::kCertificateTransparencyAskBeforeEnabling},
-            /*disabled_features=*/{
-                net::features::kEnableStaticCTAPIEnforcement});
+            /*disabled_features=*/{net::features::kEnforceOneRfc6962CtPolicy});
         break;
 
-      case CTEnforcement::kEnabledWithStaticCTEnforcement:
+      case CTEnforcement::kEnabledWithOne6962Enforcement:
         scoped_feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::
                                       kCertificateTransparencyAskBeforeEnabling,
-                                  net::features::kEnableStaticCTAPIEnforcement},
+                                  net::features::kEnforceOneRfc6962CtPolicy},
             /*disabled_features=*/{});
         break;
 
@@ -254,7 +253,7 @@ class PKIMetadataComponentUpdaterTest
 
   bool is_ct_enforced() const {
     return GetParam() == CTEnforcement::kEnabled ||
-           GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement;
+           GetParam() == CTEnforcement::kEnabledWithOne6962Enforcement;
   }
 
   void DoTestAtLeastOneRFC6962LogPolicy(
@@ -450,11 +449,11 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
 
 // Tests that at least one RFC6962 log policy is correctly applied when Static
 // CT API enforcement is enabled. All logs in the test will be set to
-// `log_type`. If `expect_ct_error_with_static_ct_api_enforcement` is true,
+// `log_type`. If `expect_ct_error_with_one_6962_policy_enforcement` is true,
 // CT checks with Static CT API enforcement should cause an SSL error.
 void PKIMetadataComponentUpdaterTest::DoTestAtLeastOneRFC6962LogPolicy(
     chrome_browser_certificate_transparency::CTLog::LogType log_type,
-    bool expect_ct_error_with_static_ct_api_enforcement) {
+    bool expect_ct_error_with_one_6962_policy_enforcement) {
   const base::Time kLogStart = base::Time::Now() - base::Days(1);
   const base::Time kLogEnd = base::Time::Now() + base::Days(1);
   CTLog log1("log operator 1", kLogStart, kLogEnd, log_type);
@@ -521,8 +520,8 @@ void PKIMetadataComponentUpdaterTest::DoTestAtLeastOneRFC6962LogPolicy(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
 
-  if (GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement) {
-    if (expect_ct_error_with_static_ct_api_enforcement) {
+  if (is_ct_enforced()) {
+    if (expect_ct_error_with_one_6962_policy_enforcement) {
       EXPECT_NE(u"OK",
                 chrome_test_utils::GetActiveWebContents(this)->GetTitle());
     } else {
@@ -537,10 +536,10 @@ void PKIMetadataComponentUpdaterTest::DoTestAtLeastOneRFC6962LogPolicy(
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
                        TestAtLeastOneRFC6962LogPolicy_StaticCTAPILogs) {
   // Test with all logs with Static CT API type. Since at least one RFC6962 log
-  // is expected, this should show an SSL error caused by CT.
+  // is expected when the one-6962 policy is enabled, this should show an error.
   DoTestAtLeastOneRFC6962LogPolicy(
       chrome_browser_certificate_transparency::CTLog::STATIC_CT_API,
-      /*expect_ct_error_with_static_ct_api_enforcement=*/true);
+      /*expect_ct_error_with_one_6962_policy_enforcement=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
@@ -551,14 +550,14 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   // the hardcoded and component updater protos have proper log types.
   DoTestAtLeastOneRFC6962LogPolicy(
       chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED,
-      /*expect_ct_error_with_static_ct_api_enforcement=*/false);
+      /*expect_ct_error_with_one_6962_policy_enforcement=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     PKIMetadataComponentUpdater,
     PKIMetadataComponentUpdaterTest,
     testing::Values(CTEnforcement::kEnabled,
-                    CTEnforcement::kEnabledWithStaticCTEnforcement,
+                    CTEnforcement::kEnabledWithOne6962Enforcement,
                     CTEnforcement::kDisabledByProto,
                     CTEnforcement::kDisabledByFeature));
 
@@ -1789,7 +1788,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
-    case CTEnforcement::kEnabledWithStaticCTEnforcement:
+    case CTEnforcement::kEnabledWithOne6962Enforcement:
       // Should be distrusted if CT is enabled. The SCTNotAfter constraint is
       // not satisfied by any valid SCT. The SCT from the unknown log is not
       // counted even though the timestamp matches the constraint.
@@ -1847,7 +1846,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
-    case CTEnforcement::kEnabledWithStaticCTEnforcement:
+    case CTEnforcement::kEnabledWithOne6962Enforcement:
       // Should be distrusted since one of the SCTs was before the SCTAllAfter
       // constraint.
       EXPECT_NE(u"OK",
@@ -1867,7 +1866,7 @@ INSTANTIATE_TEST_SUITE_P(
     PKIMetadataComponentUpdater,
     PKIMetadataComponentCtAndCrsUpdaterTest,
     testing::Values(CTEnforcement::kEnabled,
-                    CTEnforcement::kEnabledWithStaticCTEnforcement,
+                    CTEnforcement::kEnabledWithOne6962Enforcement,
                     CTEnforcement::kDisabledByProto,
                     CTEnforcement::kDisabledByFeature));
 

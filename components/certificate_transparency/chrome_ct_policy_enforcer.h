@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       base::Time log_list_date,
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::map<std::string, LogInfo> log_info,
-      bool enable_static_ct_api_enforcement);
+      bool enforce_one_rfc6962_ct_policy);
 
   net::ct::CTPolicyCompliance CheckCompliance(
       net::X509Certificate* cert,
@@ -130,7 +130,9 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // generated.
   const base::Time log_list_date_;
 
-  const bool enable_static_ct_api_enforcement_;
+  // Whether or not to require that at least one SCT comes from a recognized
+  // RFC6962 CT log.
+  const bool enforce_one_rfc6962_ct_policy_;
 };
 
 }  // namespace certificate_transparency

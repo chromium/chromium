@@ -683,10 +683,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
 // Otherwise, unrecognized keys are treated as if the header was invalid.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 
-// Kill switch for Static CT Log (aka Tiled Log aka Sunlight)
-// enforcements in Certificate Transparency policy checks. If disabled, SCTs
-// from Static CT Logs will simply be ignored.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
+// Enables enforcement of One-RFC6962 policy for Certificate Transparency. When
+// disabled, Chrome does not distinguish between SCTs based on log type.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnforceOneRfc6962CtPolicy);
 
 // Finch experiment to select a disk cache backend.
 enum class DiskCacheBackend {
