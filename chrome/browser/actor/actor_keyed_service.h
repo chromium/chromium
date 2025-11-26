@@ -71,14 +71,11 @@ class ActorKeyedService : public KeyedService,
   TaskId AddActiveTask(std::unique_ptr<ActorTask> task);
 
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
-  const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
 
   std::vector<TaskId> FindTaskIdsInActive(
       base::FunctionRef<bool(const ActorTask&)> predicate) const;
-  std::vector<TaskId> FindTaskIdsInInactive(
-      base::FunctionRef<bool(const ActorTask&)> predicate) const;
 
-  // Stop and clear all active and inactive tasks for testing only.
+  // Stop and clear all active tasks for testing only.
   void ResetForTesting();
 
   // Starts a new task with an execution engine and returns the new task's id.
@@ -194,8 +191,6 @@ class ActorKeyedService : public KeyedService,
   std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
-  // Stores completed tasks. May want to add cancelled tasks in the future.
-  std::map<TaskId, std::unique_ptr<ActorTask>> inactive_tasks_;
 
   TaskId::Generator next_task_id_;
 

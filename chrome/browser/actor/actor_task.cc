@@ -480,22 +480,11 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
         JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
     // Notify the UI of the tab removal.
-    if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      // We call this synchronously since a Stop will destroy the ActorTask
-      // in the same event pump and the UIEventDispatcher will be destroyed
-      // before dispatching the event.
-      ui_event_dispatcher_->OnActorTaskSyncChange(
-          ui::UiEventDispatcher::RemoveTab{.task_id = id_,
-                                           .handle = tab_handle});
-
-    } else {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
-                         ui_weak_ptr_factory_.GetWeakPtr(),
-                         ui::UiEventDispatcher::RemoveTab{
-                             .task_id = id_, .handle = tab_handle}));
-    }
+    // We call this synchronously since a Stop will destroy the ActorTask
+    // in the same event pump and the UIEventDispatcher will be destroyed
+    // before dispatching the event.
+    ui_event_dispatcher_->OnActorTaskSyncChange(
+        ui::UiEventDispatcher::RemoveTab{.task_id = id_, .handle = tab_handle});
   }
 }
 

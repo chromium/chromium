@@ -29,7 +29,6 @@ BASE_FEATURE_PARAM(bool,
                    "allowlist_only",
                    true);
 
-BASE_FEATURE(kActorDoNotStoreCompletedTasks, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorBypassTOUValidationForGuestView,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
