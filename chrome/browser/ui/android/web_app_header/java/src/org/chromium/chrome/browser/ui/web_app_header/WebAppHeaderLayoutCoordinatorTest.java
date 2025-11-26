@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -62,11 +63,16 @@ import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -693,6 +699,35 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testDisplayModePiPUMA() {
         testDisplayModeUMA(DisplayMode.PICTURE_IN_PICTURE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TWA_ORIGIN_DISPLAY)
+    public void testOriginTextViewShowsCorrectDomain() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+
+        GURL testUrl = new GURL("https://www.example.com/path/to/page");
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(testUrl.getSpec());
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins())
+                .thenReturn(Collections.singleton(Origin.create(testUrl.getOrigin().getSpec())));
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        // Simulate finished navigation.
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+
+        TextView originTextView = mActivity.findViewById(R.id.origin);
+        assertNotNull("Origin TextView should not be null", originTextView);
+        assertEquals(
+                "Origin TextView should show the correct domain",
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(testUrl),
+                originTextView.getText().toString());
     }
 
     @Test
