@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,11 +29,11 @@ using testing::Pair;
 using testing::SaveArg;
 
 MATCHER_P(OneTimeTokenValueEq, expected_token_value, "") {
-  if (!std::holds_alternative<OneTimeToken>(arg)) {
+  if (!arg.has_value()) {
     *result_listener << "Expected OneTimeToken, but got error.";
     return false;
   }
-  const OneTimeToken& actual_token = std::get<OneTimeToken>(arg);
+  const OneTimeToken& actual_token = arg.value();
   if (actual_token.value() != expected_token_value) {
     *result_listener << "Token value mismatch: expected "
                      << expected_token_value << ", got "
@@ -74,20 +75,21 @@ class OneTimeTokenServiceTestObserver {
  public:
   void OnTokenReceived(
       OneTimeTokenSource backend,
-      std::variant<OneTimeToken, OneTimeTokenRetrievalError> result) {
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
     results_.emplace_back(backend, result);
   }
 
   const std::vector<
       std::pair<OneTimeTokenSource,
-                std::variant<OneTimeToken, OneTimeTokenRetrievalError>>>&
+                base::expected<OneTimeToken, OneTimeTokenRetrievalError>>>&
   results() const {
     return results_;
   }
 
  private:
-  std::vector<std::pair<OneTimeTokenSource,
-                        std::variant<OneTimeToken, OneTimeTokenRetrievalError>>>
+  std::vector<
+      std::pair<OneTimeTokenSource,
+                base::expected<OneTimeToken, OneTimeTokenRetrievalError>>>
       results_;
 };
 
@@ -346,9 +348,8 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
   ASSERT_EQ(observer.results().size(), 1u);
   EXPECT_EQ(observer.results()[0].first, OneTimeTokenSource::kOnDeviceSms);
   const auto& result = observer.results()[0].second;
-  ASSERT_TRUE(std::holds_alternative<OneTimeTokenRetrievalError>(result));
-  EXPECT_EQ(std::get<OneTimeTokenRetrievalError>(result),
-            OneTimeTokenRetrievalError::kUnknown);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), OneTimeTokenRetrievalError::kUnknown);
 }
 
 // Test GetCachedOneTimeTokens returns cached tokens, including expired ones.

@@ -27,7 +27,7 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   // strictly guarantee this order, though, because multiple backends may need
   // to be asked in parallel in the future.
   for (const auto& token : base::Reversed(recent_tokens)) {
-    callback.Run(OneTimeTokenSource::kOnDeviceSms, token);
+    callback.Run(OneTimeTokenSource::kOnDeviceSms, base::ok(token));
   }
 }
 
@@ -63,8 +63,9 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
     // TODO(crbug.com/415273270) Do proper error handling:
     // - In case of timeout, schedule a refetch if appropriate.
     // - In case of a permission error or API error, report the problems.
-    subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                                 OneTimeTokenRetrievalError::kUnknown);
+    subscription_manager_.Notify(
+        OneTimeTokenSource::kOnDeviceSms,
+        base::unexpected(OneTimeTokenRetrievalError::kUnknown));
     return;
   }
 
@@ -73,7 +74,7 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
   // subscribers are always notified. This ensures that newly added subscribers
   // who missed notifications from before their subscription are informed.
   subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                               *reply.otp_value);
+                               base::ok(*reply.otp_value));
 
   // It's possible that the SMS OTP backend responded with a stale OTP.
   // Therefore, schedule a new retrieval to see if a new OTP arrives.

@@ -122,11 +122,11 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
 
 void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
-    std::variant<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
+    base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
   // TODO(crbug.com/415272524): Record metrics on how often the retrieval
   // succeeds or fails, in combination with the OTP source.
   // If token_or_error holds an error, run the callback with empty otp value.
-  if (std::holds_alternative<OneTimeTokenRetrievalError>(token_or_error)) {
+  if (!token_or_error.has_value()) {
     if (!last_pending_get_suggestions_callback_.is_null()) {
       std::move(last_pending_get_suggestions_callback_).Run({});
     }
@@ -139,7 +139,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     return;
   }
 
-  OneTimeToken& token = std::get<OneTimeToken>(token_or_error);
+  OneTimeToken& token = token_or_error.value();
 
   // We run PhishGuard check to make sure OTPs are not shown to users on
   // potential phishing sites.

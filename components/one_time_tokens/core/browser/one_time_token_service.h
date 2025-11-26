@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
@@ -31,7 +32,7 @@ class OneTimeTokenService {
  public:
   using CallbackSignature =
       void(OneTimeTokenSource,
-           std::variant<OneTimeToken, OneTimeTokenRetrievalError>);
+           base::expected<OneTimeToken, OneTimeTokenRetrievalError>);
   using Callback = base::RepeatingCallback<CallbackSignature>;
 
   virtual ~OneTimeTokenService() = default;
