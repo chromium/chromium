@@ -29,6 +29,7 @@ static_library("main") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",

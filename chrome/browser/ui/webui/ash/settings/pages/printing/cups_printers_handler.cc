@@ -26,6 +26,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
@@ -36,8 +38,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/local_discovery/endpoint_resolver.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
@@ -1098,11 +1098,12 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
+  ash::BrowserDelegate* browser =
+      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                         web_contents)
+                   : nullptr;
   gfx::NativeWindow owning_window =
-      web_contents ? chrome::FindBrowserWithTab(web_contents)
-                         ->window()
-                         ->GetNativeWindow()
-                   : gfx::NativeWindow();
+      browser ? browser->GetNativeWindow() : gfx::NativeWindow();
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({"ppd"});

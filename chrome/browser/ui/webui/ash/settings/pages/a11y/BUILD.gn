@@ -42,6 +42,7 @@ static_library("a11y") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",
