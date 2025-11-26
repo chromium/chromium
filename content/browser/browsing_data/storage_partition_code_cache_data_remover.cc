@@ -103,6 +103,8 @@ void StoragePartitionCodeCacheDataRemover::ClearCache(
 
 void StoragePartitionCodeCacheDataRemover::ClearJSCodeCache() {
   if (generated_code_cache_context_) {
+    // TODO(crbug.com/374930286): Add support for selective removal in
+    // PersistentCache.
     generated_code_cache_context_->ClearAndDeletePersistentCacheCollection();
   }
 

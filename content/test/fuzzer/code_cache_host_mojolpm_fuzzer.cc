@@ -251,7 +251,7 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
-  auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
+  auto code_cache_host = content::CodeCacheHostImpl::Create(
       renderer_id, generated_code_cache_context_, nik, storage_key);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());

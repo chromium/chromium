@@ -185,6 +185,7 @@ source_set("common") {
     "interest_group/interest_group.cc",
     "interest_group/interest_group_mojom_traits.cc",
     "link_to_text/link_to_text_mojom_traits.cc",
+    "loader/code_cache_util.cc",
     "loader/inter_process_time_ticks_converter.cc",
     "loader/lcp_critical_path_predictor_util.cc",
     "loader/loader_constants.cc",

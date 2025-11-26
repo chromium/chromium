@@ -503,12 +503,13 @@ void SharedStorageWorkletGlobalScope::AddModule(
   resource_request->destination =
       network::mojom::RequestDestination::kSharedStorageWorklet;
 
-  CHECK(GetCodeCacheHost());
-  code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
-      *resource_request, GetCodeCacheHost(),
-      GetTaskRunner(blink::TaskType::kMiscPlatformAPI),
-      BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
-               WrapWeakPersistent(this)));
+  if (auto* code_cache_host = GetCodeCacheHost(); code_cache_host) {
+    code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
+        *resource_request, code_cache_host,
+        GetTaskRunner(blink::TaskType::kMiscPlatformAPI),
+        BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
+                 WrapWeakPersistent(this)));
+  }
 }
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(

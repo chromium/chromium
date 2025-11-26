@@ -626,6 +626,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AddModue_TheThirdTimeCompilesWithV8CodeCache) {
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    GTEST_SKIP() << "SharedStorage does not use a CodeCache when "
+                    "UsePersistentCacheForCodeCache is enabled.";
+  }
+
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(

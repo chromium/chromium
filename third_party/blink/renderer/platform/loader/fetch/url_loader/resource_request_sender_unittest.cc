@@ -24,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -274,11 +275,15 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
     mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
     receiver_ = std::make_unique<mojo::Receiver<mojom::blink::CodeCacheHost>>(
         this, pending_remote.InitWithNewPipeAndPassReceiver());
-    host_ = std::make_unique<blink::CodeCacheHost>(
+    host_ = blink::CodeCacheHost::Create(
         mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote)));
   }
 
   // mojom::blink::CodeCacheHost implementations
+  void GetPendingBackend(mojom::blink::CodeCacheType cache_type,
+                         GetPendingBackendCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
   void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
                                     const KURL& url,
                                     base::Time expected_response_time,

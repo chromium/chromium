@@ -5,11 +5,19 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_java = true
   sources = [ "persistent_cache.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
-  cpp_typemaps = [
+  shared_cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "persistent_cache.mojom.PendingReadOnlyBackend"
+          cpp = "::persistent_cache::PendingBackend"
+          forward_declaration =
+              "namespace persistent_cache { struct PendingBackend; }"
+          move_only = true
+        },
         {
           mojom = "persistent_cache.mojom.PendingReadWriteBackend"
           cpp = "::persistent_cache::PendingBackend"
@@ -18,16 +26,24 @@ mojom("mojom") {
           move_only = true
         },
       ]
-      traits_headers = [
-        "//components/persistent_cache/mojom/persistent_cache_mojom_traits.h",
-      ]
-      traits_sources = [
-        "//components/persistent_cache/mojom/persistent_cache_mojom_traits.cc",
-      ]
-      traits_public_deps = [ "//components/persistent_cache" ]
-      traits_deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
+      traits_headers = [ "persistent_cache_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
   ]
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+}
+
+component("mojom_traits") {
+  public = [ "persistent_cache_mojom_traits.h" ]
+  sources = [ "persistent_cache_mojom_traits.cc" ]
+  public_deps = [
+    "//base",
+    "//components/persistent_cache",
+    "//components/persistent_cache/mojom:mojom_shared",
+  ]
+  deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
+  defines = [ "IS_PERSISTENT_CACHE_MOJOM_TRAITS_IMPL" ]
 }
 
 source_set("unit_tests") {

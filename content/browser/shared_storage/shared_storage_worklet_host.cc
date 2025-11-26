@@ -1702,17 +1702,22 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
     RenderFrameHostImpl& rfh = static_cast<RenderFrameHostImpl&>(
         document_service_->render_frame_host());
 
-    mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
-    code_cache_host_receivers_->Add(
-        rfh.GetProcess()->GetDeprecatedID(), rfh.GetNetworkIsolationKey(),
-        rfh.GetStorageKey(),
-        actual_code_cache_host.InitWithNewPipeAndPassReceiver());
-
+    // Only supply a CodeCacheHost when PersistentCache is not enabled, as
+    // Shared Storage is deprecated and its removal is planned.
     mojo::PendingRemote<blink::mojom::CodeCacheHost> proxied_code_cache_host;
-    code_cache_host_proxy_ = std::make_unique<SharedStorageCodeCacheHostProxy>(
-        std::move(actual_code_cache_host),
-        proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
-        script_source_url_);
+    if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+      mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
+      code_cache_host_receivers_->Add(
+          rfh.GetProcess()->GetDeprecatedID(), rfh.GetNetworkIsolationKey(),
+          rfh.GetStorageKey(),
+          actual_code_cache_host.InitWithNewPipeAndPassReceiver());
+
+      code_cache_host_proxy_ =
+          std::make_unique<SharedStorageCodeCacheHostProxy>(
+              std::move(actual_code_cache_host),
+              proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
+              script_source_url_);
+    }
 
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker;

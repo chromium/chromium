@@ -10,10 +10,15 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "components/persistent_cache/persistent_cache_collection.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/persistent_cache_collection.h"
+#endif
 
 namespace content {
 
@@ -60,6 +65,16 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   // memory and persisted.
   void ClearAndDeletePersistentCacheCollection();
 
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Returns a pending backend for an independent read-only connection to the
+  // `context_key` cache, or nothing if it is not functional or the handles
+  // cannot be exported. The returned value grants read access to all data
+  // stored in the cache corresponding to `context_key`. Take care to only pass
+  // it to the renderer for which it is intended; see
+  // CodeCacheWithPersistentCacheHost::GetCacheId for more on this topic.
+  std::optional<persistent_cache::PendingBackend> ShareReadOnlyConnection(
+      const std::string& context_key);
+
   // Using a persistent cache collection with `context_key` as the cache_id
   // makes sure that there are seperate files for separate process locks. This
   // will eventually allow the sharing of the files with the renderers.
@@ -83,6 +98,7 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   std::optional<MetadataAndContent> FindInPersistentCacheCollection(
       const std::string& context_key,
       std::string_view url);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
   friend class base::RefCountedThreadSafe<GeneratedCodeCacheContext>;
@@ -103,6 +119,7 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
           nullptr, base::OnTaskRunnerDeleter(nullptr)};
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+#if !BUILDFLAG(IS_FUCHSIA)
   // When used instead of `generated_js_code_cache_` this stores the code
   // following the same isolation principles but using two keys instead of one.
   // The first key is used to get a `PersistentCache` associated with an
@@ -112,6 +129,7 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   std::unique_ptr<persistent_cache::PersistentCacheCollection,
                   base::OnTaskRunnerDeleter>
       persistent_cache_collection_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

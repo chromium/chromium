@@ -9898,6 +9898,10 @@ crbug.com/457578724 [ Win11-arm64 ] external/wpt/webxr/xrView_visibility_mask_ch
 crbug.com/444447168 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
 crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
 
+# UsePersistentCacheForCodeCache test failures.
+crbug.com/455909145 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
+crbug.com/455909145 [ Win ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
+
 # Gardener 2025-11-11
 crbug.com/40516274 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
 crbug.com/40516274 [ Win ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
