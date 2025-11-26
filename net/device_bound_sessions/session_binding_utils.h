@@ -21,19 +21,6 @@ class Time;
 
 namespace net::device_bound_sessions {
 
-// Creates header and payload parts of a legacy JWT before the feedback
-// from our first Origin Trial.
-// TODO(crbug.com/447104530): Remove support for this JWT schema.
-std::optional<std::string> NET_EXPORT
-CreateLegacyKeyRegistrationHeaderAndPayload(
-    std::string_view challenge,
-    const GURL& registration_url,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey_spki,
-    base::Time timestamp,
-    std::optional<std::string> authorization,
-    std::optional<std::string> session_identifier);
-
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> NET_EXPORT CreateKeyRegistrationHeaderAndPayload(
     std::string_view challenge,

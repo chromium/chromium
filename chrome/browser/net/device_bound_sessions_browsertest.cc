@@ -55,17 +55,14 @@ class DeviceBoundSessionAccessObserver : public content::WebContentsObserver {
   base::RepeatingCallback<void(const SessionAccess&)> on_access_callback_;
 };
 
-class DeviceBoundSessionBrowserTest : public InProcessBrowserTest,
-                                      public testing::WithParamInterface<bool> {
+class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
  public:
   DeviceBoundSessionBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+    scoped_feature_list_.InitWithFeatures(
         {net::features::kDeviceBoundSessions,
-         {{"OriginTrialFeedback", GetParam() ? "true" : "false"}}},
-        {unexportable_keys::
-             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
-         {}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+         unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -107,9 +104,7 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DeviceBoundSessionBrowserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        AccessCalledOnRegistrationFromNavigation) {
   base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
@@ -126,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
   EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        AccessCalledOnRegistrationFromResource) {
   base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
@@ -146,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
               testing::Contains(net::MatchesCookieWithName("auth_cookie")));
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
   WebFeatureHistogramTester histograms;
 
   content::WebContents* web_contents =
@@ -163,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
   WebFeatureHistogramTester histograms;
 
   base::test::TestFuture<SessionAccess> future;
@@ -182,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        UseCounterForNotDeferred) {
   WebFeatureHistogramTester histograms;
 
@@ -207,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
             0);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterForDeferred) {
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterForDeferred) {
   WebFeatureHistogramTester histograms;
 
   content::WebContents* web_contents =
@@ -236,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, UseCounterForDeferred) {
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        UseCounterForMultipleRequestsOnePage) {
   WebFeatureHistogramTester histograms;
 
@@ -264,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        UseCounterForMultipleRequestsTwoPages) {
   WebFeatureHistogramTester histograms;
 
@@ -300,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
             2);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, NotDeferredLogs) {
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, NotDeferredLogs) {
   base::HistogramTester histogram_tester;
 
   base::test::TestFuture<SessionAccess> future;
@@ -320,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, NotDeferredLogs) {
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, DeferredLogs) {
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, DeferredLogs) {
   base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
@@ -345,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest, DeferredLogs) {
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        RefreshWithoutResigningMultipleTimes) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
@@ -372,20 +367,12 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
   // Force one more refresh.
   ASSERT_TRUE(
       content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  // When "OriginTrialFeedback" is disabled, the refresh quota is exceeded. When
-  // "OriginTrialFeedback" is enabled, the signing quota is not exceeded because
-  // the consistent challenge has allowed reusing the stored signed challenge.
-  if (GetParam()) {
-    ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-  } else {
-    std::string refresh_quota_query_param = base::EscapeQueryParamValue(
-        "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
-    ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
-                                      refresh_quota_query_param)));
-  }
+  // The signing quota is not exceeded because the consistent challenge
+  // has allowed reusing the stored signed challenge.
+  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        RefreshWithResigningMultipleTimes) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
@@ -408,34 +395,16 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
     ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
   }
 
-  // The quota differs depending on the "OriginTrialFeedback" feature.
-  if (GetParam()) {
-    // The initial registration signing counts towards the quota, so the next
-    // refresh hits the quota.
-    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
-    ASSERT_TRUE(
-        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-    // This hits the signing quota.
-    std::string signing_quota_query_param = base::EscapeQueryParamValue(
-        "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
-    ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
-                                      signing_quota_query_param)));
-  } else {
-    // The initial registration does not count towards the quota, so we need two
-    // more refreshes.
-    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
-    ASSERT_TRUE(
-        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-    ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-    // One last refresh triggers the refresh quota.
-    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
-    ASSERT_TRUE(
-        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-    std::string refresh_quota_query_param = base::EscapeQueryParamValue(
-        "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
-    ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
-                                      refresh_quota_query_param)));
-  }
+  // The initial registration signing counts towards the quota, so the next
+  // refresh hits the quota.
+  ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+  // This hits the signing quota.
+  std::string signing_quota_query_param = base::EscapeQueryParamValue(
+      "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
+  ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
+                                    signing_quota_query_param)));
 }
 
 }  // namespace

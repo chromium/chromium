@@ -13,11 +13,7 @@
 namespace {
 // Secure-Session-Challenge header defined in
 // https://github.com/WICG/dbsc/blob/main/README.md#high-level-overview
-const char* GetSessionChallengeHeaderName() {
-  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-             ? "Secure-Session-Challenge"
-             : "Sec-Session-Challenge";
-}
+constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
 
 constexpr char kSessionIdKey[] = "id";
 }  // namespace
@@ -87,7 +83,7 @@ std::vector<SessionChallengeParam> SessionChallengeParam::CreateIfValid(
     return params;
   }
   std::optional<std::string> header_value =
-      headers->GetNormalizedHeader(GetSessionChallengeHeaderName());
+      headers->GetNormalizedHeader(kSessionChallengeHeaderName);
   if (!header_value) {
     return params;
   }

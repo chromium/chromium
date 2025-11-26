@@ -60,11 +60,7 @@ const std::string kSessionId3 = "SessionId3";
 
 const std::string kChallenge = "challenge";
 
-const char* GetSessionChallengeHeaderName() {
-  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-             ? "Secure-Session-Challenge"
-             : "Sec-Session-Challenge";
-}
+constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
 
 // Matcher for SessionKeys
 auto ExpectId(std::string_view id) {
@@ -182,32 +178,6 @@ class SessionServiceImplNoRefreshQuotaTest : public SessionServiceImplTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class SessionServiceImplTestWithOriginTrialFeedback
-    : public SessionServiceImplTest {
- public:
-  SessionServiceImplTestWithOriginTrialFeedback() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDeviceBoundSessions,
-        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class SessionServiceImplTestWithoutOriginTrialFeedback
-    : public SessionServiceImplTest {
- public:
-  SessionServiceImplTestWithoutOriginTrialFeedback() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDeviceBoundSessions,
-        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class SessionServiceImplTestWithFederatedSessions
     : public SessionServiceImplTest {
  public:
@@ -297,9 +267,9 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   headers->AddHeader(
-      GetSessionChallengeHeaderName(),
+      kSessionChallengeHeaderName,
       R"("challenge";id="SessionId", "challenge1";id="NonExisted")");
-  headers->AddHeader(GetSessionChallengeHeaderName(), R"("challenge2")");
+  headers->AddHeader(kSessionChallengeHeaderName, R"("challenge2")");
 
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
@@ -326,13 +296,12 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   ASSERT_FALSE(session);
 }
 
-TEST_F(SessionServiceImplTestWithOriginTrialFeedback,
-       SetChallengeForBoundSessionBlockedCookies) {
+TEST_F(SessionServiceImplTest, SetChallengeForBoundSessionBlockedCookies) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader(GetSessionChallengeHeaderName(),
+  headers->AddHeader(kSessionChallengeHeaderName,
                      R"("challenge";id="SessionId")");
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
@@ -351,33 +320,6 @@ TEST_F(SessionServiceImplTestWithOriginTrialFeedback,
       service().GetSession({SchemefulSite(kTestUrl), Session::Id(kSessionId)});
   ASSERT_TRUE(session);
   EXPECT_EQ(session->cached_challenge(), std::nullopt);
-}
-
-TEST_F(SessionServiceImplTestWithoutOriginTrialFeedback,
-       SetChallengeForBoundSessionBlockedCookies) {
-  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader(GetSessionChallengeHeaderName(),
-                     R"("challenge";id="SessionId")");
-  std::vector<SessionChallengeParam> params =
-      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
-
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-
-  network_delegate()->set_cookie_options(TestNetworkDelegate::NO_SET_COOKIE);
-
-  ASSERT_EQ(params.size(), 1U);
-  service().SetChallengeForBoundSession(base::DoNothing(), *request,
-                                        FirstPartySetMetadata(), params[0]);
-
-  const Session* session =
-      service().GetSession({SchemefulSite(kTestUrl), Session::Id(kSessionId)});
-  ASSERT_TRUE(session);
-  EXPECT_EQ(session->cached_challenge(), "challenge");
 }
 
 TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
@@ -466,7 +408,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader(GetSessionChallengeHeaderName(),
+  headers->AddHeader(kSessionChallengeHeaderName,
                      "\"challenge\";id=\"SessionId\"");
 
   std::vector<SessionChallengeParam> params =

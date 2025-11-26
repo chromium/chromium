@@ -632,13 +632,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kDeviceBoundSessionsCheckSubdomainRegistration);
 // This feature controls the database schema version for stored sessions.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeviceBoundSessionsSchemaVersion);
-// This feature will enable breaking changes to Device Bound Session
-// Credentials from after the Origin Trial started. This is disabled by
-// default to facilitate implementation of feedback from the Origin
-// Trial while still being able to get consistent metrics across Chrome
-// releases.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                      kDeviceBoundSessionsOriginTrialFeedback);
 
 // This feature controls whether DBSC allows federated sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsFederatedRegistration);

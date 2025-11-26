@@ -19,6 +19,7 @@ namespace {
 
 constexpr char kSessionIdKey[] = "id";
 constexpr char kTestUrl[] = "https://www.example.com/refresh";
+constexpr char kChallengeHeaderName[] = "Secure-Session-Challenge";
 constexpr base::cstring_view kSampleSessionId("session_id");
 constexpr base::cstring_view kSampleChallenge("challenge");
 
@@ -32,17 +33,11 @@ std::string CreateHeaderStringForTest(
   return base::StringPrintf(R"("%s")", challenge.c_str());
 }
 
-const char* GetChallengeHeaderName() {
-  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-             ? "Secure-Session-Challenge"
-             : "Sec-Session-Challenge";
-}
-
 TEST(SessionChallengeParamTest, ValidBareChallenge) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(std::nullopt, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -57,7 +52,7 @@ TEST(SessionChallengeParamTest, ValidSessionAndChallenge) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -72,7 +67,7 @@ TEST(SessionChallengeParamTest, InvalidURL) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -93,7 +88,7 @@ TEST(SessionChallengeParamTest, EmptyHeader) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(), "")
+          .AddHeader(kChallengeHeaderName, "")
           .Build();
   const std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(url, headers.get());
@@ -106,7 +101,7 @@ TEST(SessionChallengeParamTest, EmptySessionId) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(empty_session_id, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -120,7 +115,7 @@ TEST(SessionChallengeParamTest, EmptyChallenge) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(kSampleSessionId, ""))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -132,7 +127,7 @@ TEST(SessionChallengeParamTest, NoQuotes) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      base::StringPrintf(R"(%s;%s="%s")", kSampleChallenge,
                                         kSessionIdKey, kSampleSessionId))
           .Build();
@@ -146,7 +141,7 @@ TEST(SessionChallengeParamTest, InvalidNonsenseCharacters) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               base::StringPrintf(R"("%s"; %s="%s";;=;OTHER)", kSampleChallenge,
                                  kSessionIdKey, kSampleSessionId))
           .Build();
@@ -160,7 +155,7 @@ TEST(SessionChallengeParamTest, ExtraSymbol) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               base::StringPrintf(R"("%s"; %s="%s";cache)", kSampleChallenge,
                                  kSessionIdKey, kSampleSessionId))
           .Build();
@@ -175,7 +170,7 @@ TEST(SessionChallengeParamTest, ExtraParameters) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      base::StringPrintf(R"("%s"; %s="%s";cache;key=value;k=v)",
                                         kSampleChallenge, kSessionIdKey,
                                         kSampleSessionId))
@@ -191,7 +186,7 @@ TEST(SessionChallengeParamTest, InnerListParameter) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      R"(("challenge";id="id"), ("challenge1" "id1"))")
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -203,7 +198,7 @@ TEST(SessionChallengeParamTest, SessionChallengeAsByteSequence) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      base::StringPrintf(R"("%s"; %s=%s)", kSampleChallenge,
                                         kSessionIdKey, ":Y29kZWQ=:"))
           .Build();
@@ -216,7 +211,7 @@ TEST(SessionChallengeParamTest, BareChallengeAsByteSequence) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(), ":Y29kZWQ=:")
+          .AddHeader(kChallengeHeaderName, ":Y29kZWQ=:")
           .Build();
   const std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(url, headers.get());
@@ -230,9 +225,9 @@ TEST(SessionChallengeParamTest, ValidTwoSessionChallenges) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(session_id2, challenge2))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -251,9 +246,9 @@ TEST(SessionChallengeParamTest, ValidTwoBareChallenges) {
   static constexpr base::cstring_view challenge2("nonce2");
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(std::nullopt, kSampleChallenge))
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(std::nullopt, challenge2))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -272,10 +267,10 @@ TEST(SessionChallengeParamTest, ValidMixedChallenges) {
   static constexpr base::cstring_view challenge("new");
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(std::nullopt, challenge))
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -295,9 +290,9 @@ TEST(SessionChallengeParamTest, MixedHeaderParameterFirst) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(std::nullopt, challenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -318,7 +313,7 @@ TEST(SessionChallengeParamTest, TwoChallengesInOneHeader) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               base::StrCat(
                   {CreateHeaderStringForTest(kSampleSessionId,
                                              kSampleChallenge),
@@ -340,9 +335,9 @@ TEST(SessionChallengeParamTest, ValidInvalid) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
-          .AddHeader(GetChallengeHeaderName(), ";;OTHER")
+          .AddHeader(kChallengeHeaderName, ";;OTHER")
           .Build();
   const std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(url, headers.get());
@@ -354,9 +349,9 @@ TEST(SessionChallengeParamTest, EmptyHeaderValidHeader) {
   const GURL url(kTestUrl);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
-          .AddHeader(GetChallengeHeaderName(), "")
+          .AddHeader(kChallengeHeaderName, "")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               CreateHeaderStringForTest(kSampleSessionId, kSampleChallenge))
           .Build();
   const std::vector<SessionChallengeParam> params =
@@ -374,12 +369,12 @@ TEST(SessionChallengeParamTest, ThreeChallengesInTwoHeaders) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
           .AddHeader(
-              GetChallengeHeaderName(),
+              kChallengeHeaderName,
               base::StrCat(
                   {CreateHeaderStringForTest(kSampleSessionId,
                                              kSampleChallenge),
                    ", ", CreateHeaderStringForTest(session_id2, challenge2)}))
-          .AddHeader(GetChallengeHeaderName(),
+          .AddHeader(kChallengeHeaderName,
                      CreateHeaderStringForTest(session_id3, challenge3))
           .Build();
   const std::vector<SessionChallengeParam> params =

@@ -28,31 +28,12 @@ class SessionTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
   SessionTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        context_(CreateTestURLRequestContextBuilder()->Build()) {}
+        context_(CreateTestURLRequestContextBuilder()->Build()) {
+    feature_list_.InitAndEnableFeature(features::kDeviceBoundSessions);
+  }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<URLRequestContext> context_;
-};
-
-class SessionTestWithOriginTrialFeedback : public SessionTest {
- protected:
-  SessionTestWithOriginTrialFeedback() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDeviceBoundSessions,
-        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "true"}});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SessionTestWithoutOriginTrialFeedback : public SessionTest {
- protected:
-  SessionTestWithoutOriginTrialFeedback() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDeviceBoundSessions,
-        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "false"}});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class FakeDelegate : public URLRequest::Delegate {
@@ -149,7 +130,7 @@ TEST_F(SessionTest, InvalidFetcherUrl) {
   EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidFetcherUrl);
 }
 
-TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
+TEST_F(SessionTest, InvalidScopeOriginWithPath) {
   auto params = CreateValidParams();
   params.scope.origin = "https://example.test/path";
   auto session_or_error = Session::CreateIfValid(params);
@@ -158,33 +139,13 @@ TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
             SessionError::kScopeOriginContainsPath);
 }
 
-// This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
-// enabled by default.
-TEST_F(SessionTestWithoutOriginTrialFeedback, ValidScopeOriginWithPath) {
-  auto params = CreateValidParams();
-  params.scope.origin = "https://example.test/path";
-  auto session_or_error = Session::CreateIfValid(params);
-  EXPECT_TRUE(session_or_error.has_value());
-}
-
-TEST_F(SessionTestWithOriginTrialFeedback,
-       InvalidScopeOriginWithTrailingSlash) {
+TEST_F(SessionTest, InvalidScopeOriginWithTrailingSlash) {
   auto params = CreateValidParams();
   params.scope.origin = "https://example.test/";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
             SessionError::kScopeOriginContainsPath);
-}
-
-// This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
-// enabled by default.
-TEST_F(SessionTestWithoutOriginTrialFeedback,
-       ValidScopeOriginWithTrailingSlash) {
-  auto params = CreateValidParams();
-  params.scope.origin = "https://example.test/";
-  auto session_or_error = Session::CreateIfValid(params);
-  EXPECT_TRUE(session_or_error.has_value());
 }
 
 TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
@@ -603,63 +564,7 @@ TEST_F(SessionTest, DeferredMissingScopeOrigin) {
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
-TEST_F(SessionTestWithoutOriginTrialFeedback,
-       DeferredAllowedRefreshInitiators) {
-  auto params = CreateValidParams();
-  params.allowed_refresh_initiators = {"*.not-example.test"};
-  // We need a third-party cookie to be included on requests from other
-  // initiators.
-  params.credentials = {SessionParams::Credential{
-      "test_cookie",
-      /*attributes=*/"Secure; Domain=example.test; SameSite=None"}};
-  auto session_or_error = Session::CreateIfValid(params);
-  ASSERT_TRUE(session_or_error.has_value());
-  std::unique_ptr<Session> session = std::move(*session_or_error);
-  ASSERT_TRUE(session);
-  net::TestDelegate delegate;
-  // Create a request matching the fetcher URL.
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-
-  // Browser-initiated requests can always be deferred
-  request->set_initiator(std::nullopt);
-  EXPECT_TRUE(session->IsInScope(request.get()));
-  EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
-          .is_zero());
-
-  // Initiators on the site can always be deferred, despite no matching
-  // initiator pattern.
-  request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
-  EXPECT_TRUE(session->IsInScope(request.get()));
-  EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
-          .is_zero());
-
-  // Initiators matching the pattern can be deferred.
-  request->set_initiator(
-      url::Origin::Create(GURL("https://subdomain.not-example.test/")));
-  EXPECT_TRUE(session->IsInScope(request.get()));
-  EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
-          .is_zero());
-
-  // Initiators not on the site can be deferred since
-  // kDeviceBoundSessionsOriginTrialFeedback is not enabled.
-  request->set_initiator(
-      url::Origin::Create(GURL("https://some-other-not-example.test/")));
-  EXPECT_TRUE(session->IsInScope(request.get()));
-  EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
-          .is_zero());
-}
-
-TEST_F(SessionTestWithOriginTrialFeedback, DeferredAllowedRefreshInitiators) {
+TEST_F(SessionTest, DeferredAllowedRefreshInitiators) {
   auto params = CreateValidParams();
   params.allowed_refresh_initiators = {"*.not-example.test"};
   // We need a third-party cookie to be included on requests from other
@@ -934,42 +839,7 @@ TEST_F(SessionTest, NetLogNoRefresh) {
             "refresh_not_required");
 }
 
-TEST_F(SessionTestWithoutOriginTrialFeedback, NetLogWrongInitiator) {
-  auto params = CreateValidParams();
-  params.allowed_refresh_initiators = {};
-  // We need a third-party cookie to be included on requests from other
-  // initiators.
-  params.credentials = {SessionParams::Credential{
-      "test_cookie",
-      /*attributes=*/"Secure; Domain=example.test; SameSite=None"}};
-  auto session_or_error = Session::CreateIfValid(params);
-  ASSERT_TRUE(session_or_error.has_value());
-  std::unique_ptr<Session> session = std::move(*session_or_error);
-  ASSERT_TRUE(session);
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  request->set_initiator(
-      url::Origin::Create(GURL("https://not-example.test/")));
-
-  RecordingNetLogObserver net_log_observer;
-  EXPECT_TRUE(session->IsInScope(request.get()));
-  EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
-          .is_zero());
-
-  // Because kDeviceBoundSessionsOriginTrialFeedback is not enabled, we will not
-  // enforce the initiators.
-  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
-  ASSERT_EQ(entries.size(), 1u);
-  EXPECT_EQ(*entries[0].params.FindString("refresh_required_reason"),
-            "missing_cookie");
-}
-
-TEST_F(SessionTestWithOriginTrialFeedback, NetLogWrongInitiator) {
+TEST_F(SessionTest, NetLogWrongInitiator) {
   auto params = CreateValidParams();
   params.allowed_refresh_initiators = {};
   // We need a third-party cookie to be included on requests from other

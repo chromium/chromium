@@ -98,43 +98,6 @@ std::optional<std::string> CreateHeaderAndPayload(
 
 }  // namespace
 
-std::optional<std::string> CreateLegacyKeyRegistrationHeaderAndPayload(
-    std::string_view challenge,
-    const GURL& registration_url,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey_spki,
-    base::Time timestamp,
-    std::optional<std::string> authorization,
-    std::optional<std::string> session_id) {
-  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
-  if (jwk.empty()) {
-    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
-    return std::nullopt;
-  }
-
-  auto header = base::Value::Dict()
-                    .Set("alg", SignatureAlgorithmToString(algorithm))
-                    .Set("typ", "dbsc+jwt");
-  auto payload =
-      base::Value::Dict()
-          .Set("aud", registration_url.spec())
-          .Set("jti", challenge)
-          // Write out int64_t variable as a double.
-          // Note: this may discard some precision, but for `base::Value`
-          // there's no other option.
-          .Set("iat", static_cast<double>(
-                          (timestamp - base::Time::UnixEpoch()).InSeconds()))
-          .Set("key", std::move(jwk));
-
-  if (authorization.has_value()) {
-    payload.Set("authorization", authorization.value());
-  }
-  if (session_id.has_value()) {
-    payload.Set("sub", session_id.value());
-  }
-  return CombineHeaderAndPayload(header, payload);
-}
-
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::string_view challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,

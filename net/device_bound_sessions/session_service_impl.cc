@@ -706,8 +706,7 @@ void SessionServiceImpl::SetChallengeForBoundSession(
     return;
   }
 
-  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
-      !session->CanSetBoundCookie(request, first_party_set_metadata)) {
+  if (!session->CanSetBoundCookie(request, first_party_set_metadata)) {
     return;
   }
 
@@ -1070,8 +1069,7 @@ void SessionServiceImpl::RefreshSessionInternal(
   request->net_log().AddEventReferencingSource(
       net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
 
-  if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionSigningQuotaAndCaching)) {
     refresh_times_[session_key.site].push_back(base::TimeTicks::Now());
   }
@@ -1101,8 +1099,7 @@ void SessionServiceImpl::RefreshSessionInternal(
 }
 
 bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
-  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionSigningQuotaAndCaching)) {
     return false;
   }
@@ -1137,8 +1134,7 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
 }
 
 bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
-  if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionSigningQuotaAndCaching)) {
     return false;
   }

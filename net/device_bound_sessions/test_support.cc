@@ -93,9 +93,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     return response;
   } else if (request.relative_url == "/dbsc_required") {
     response->AddCustomHeader(
-        net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-            ? "Secure-Session-Registration"
-            : "Sec-Session-Registration",
+        "Secure-Session-Registration",
         "(RS256 "
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
     response->set_content_type("text/html");
@@ -139,11 +137,8 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
   } else if (request.relative_url.starts_with("/set_early_challenge")) {
     std::string challenge = request.GetURL().GetQuery();
     CHECK(!challenge.empty());
-    response->AddCustomHeader(
-        net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-            ? "Secure-Session-Challenge"
-            : "Sec-Session-Challenge",
-        "\"" + challenge + "\";id=\"session_id\"");
+    response->AddCustomHeader("Secure-Session-Challenge",
+                              "\"" + challenge + "\";id=\"session_id\"");
     response->set_content_type("text/html");
     return response;
   } else if (request.relative_url.starts_with("/ensure_authenticated")) {
@@ -337,10 +332,7 @@ bool VerifyEs256Jwt(std::string_view jwt) {
   }
 
   // Extract the JWK.
-  const base::Value::Dict* jwk =
-      net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-          ? header_json->FindDict("jwk")
-          : payload_json->FindDict("key");
+  const base::Value::Dict* jwk = header_json->FindDict("jwk");
   if (!jwk) {
     return false;
   }

@@ -106,8 +106,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   }
 
   // If there is an origin in the scope, verify it has no path (including '/').
-  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
-      !params.scope.origin.empty()) {
+  if (!params.scope.origin.empty()) {
     std::string_view origin_view =
         base::TrimWhitespaceASCII(params.scope.origin, base::TRIM_ALL);
     if ((scope_origin_as_url.has_path() && scope_origin_as_url.path() != "/") ||
@@ -294,8 +293,7 @@ bool Session::IsInScope(URLRequest* request) {
         return dict;
       });
 
-  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
-      !AllowedToInitiateRefresh(request->initiator())) {
+  if (!AllowedToInitiateRefresh(request->initiator())) {
     request->net_log().AddEvent(
         net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
         [&](NetLogCaptureMode capture_mode) {

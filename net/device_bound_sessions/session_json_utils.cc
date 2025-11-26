@@ -29,15 +29,11 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
   SessionParams::Scope scope;
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
-  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
-    if (!include_site.has_value()) {
-      return base::unexpected{
-          SessionError{SessionError::kMissingScopeIncludeSite}};
-    }
-    scope.include_site = *include_site;
-  } else {
-    scope.include_site = include_site.value_or(false);
+  if (!include_site.has_value()) {
+    return base::unexpected{
+        SessionError{SessionError::kMissingScopeIncludeSite}};
   }
+  scope.include_site = *include_site;
   const std::string* origin = scope_dict.FindString("origin");
   scope.origin = origin ? *origin : "";
   const base::Value::List* specifications_list =

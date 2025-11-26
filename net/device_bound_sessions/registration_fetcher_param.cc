@@ -18,12 +18,8 @@
 #include "net/http/structured_headers.h"
 
 namespace {
-const char* GetRegistrationHeaderName() {
-  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
-             ? "Secure-Session-Registration"
-             : "Sec-Session-Registration";
-}
 
+constexpr char kRegistrationHeaderName[] = "Secure-Session-Registration";
 constexpr char kChallengeParamKey[] = "challenge";
 constexpr char kPathParamKey[] = "path";
 constexpr char kAuthCodeParamKey[] = "authorization";
@@ -46,6 +42,7 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 
   return std::nullopt;
 }
+
 }  // namespace
 
 namespace net::device_bound_sessions {
@@ -168,7 +165,7 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     return params;
   }
   std::optional<std::string> header_value =
-      headers->GetNormalizedHeader(GetRegistrationHeaderName());
+      headers->GetNormalizedHeader(kRegistrationHeaderName);
   if (!header_value) {
     return params;
   }
