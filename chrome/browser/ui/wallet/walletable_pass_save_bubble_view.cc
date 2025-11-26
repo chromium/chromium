@@ -59,7 +59,8 @@ WalletablePassSaveBubbleView::WalletablePassSaveBubbleView(
 
   std::unique_ptr<views::BoxLayoutView> subtitle_container =
       autofill::CreateAutofillAiBubbleSubtitleContainer();
-  subtitle_container->AddChildView(GetSubtitleLabel());
+  subtitle_container->AddChildView(
+      GetSubtitleLabel(controller_->GetPrimaryAccountEmail()));
   main_content_wrapper->AddChildView(std::move(subtitle_container));
 
   AddChildView(GetAttributesView());
@@ -156,15 +157,15 @@ void WalletablePassSaveBubbleView::AddedToWidget() {
 }
 
 std::unique_ptr<views::StyledLabel>
-WalletablePassSaveBubbleView::GetSubtitleLabel() {
+WalletablePassSaveBubbleView::GetSubtitleLabel(
+    const std::u16string& user_email) {
   std::vector<size_t> offsets;
   const std::u16string google_wallet_text =
       l10n_util::GetStringUTF16(IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE);
 
-  // TODO(crbug.com/451833977): Replace the email with the actual user's email.
   std::u16string formatted_text = l10n_util::GetStringFUTF16(
       IDS_WALLET_WALLETABLE_PASS_SAVE_DIALOG_SUBTITLE,
-      {google_wallet_text, u"dummy@gmail.com"}, &offsets);
+      {google_wallet_text, user_email}, &offsets);
 
   gfx::Range go_to_wallet_range(offsets[0],
                                 offsets[0] + google_wallet_text.size());

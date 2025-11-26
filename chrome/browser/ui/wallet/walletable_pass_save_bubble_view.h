@@ -38,7 +38,8 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
   void AddedToWidget() override;
 
  private:
-  std::unique_ptr<views::StyledLabel> GetSubtitleLabel();
+  std::unique_ptr<views::StyledLabel> GetSubtitleLabel(
+      const std::u16string& user_email);
 
   std::unique_ptr<views::BoxLayoutView> GetAttributesView();
 

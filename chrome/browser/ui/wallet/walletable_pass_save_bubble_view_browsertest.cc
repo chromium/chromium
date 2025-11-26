@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,6 +19,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,6 +61,11 @@ class WalletablePassSaveBubbleViewBrowserTest
     mock_controller_ = std::make_unique<
         testing::NiceMock<MockWalletablePassSaveBubbleController>>(
         browser()->tab_strip_model()->GetTabAtIndex(0));
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    signin::MakePrimaryAccountAvailable(identity_manager, "test@gmail.com",
+                                        signin::ConsentLevel::kSignin);
   }
 
   void TearDownOnMainThread() override {

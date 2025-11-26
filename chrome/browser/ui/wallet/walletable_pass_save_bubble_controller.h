@@ -43,6 +43,9 @@ class WalletablePassSaveBubbleController
 
   const optimization_guide::proto::WalletablePass& pass() const;
 
+  // Returns the primary account email of the user.
+  std::u16string GetPrimaryAccountEmail();
+
   base::WeakPtr<WalletablePassSaveBubbleController> GetWeakPtr();
 
  protected:

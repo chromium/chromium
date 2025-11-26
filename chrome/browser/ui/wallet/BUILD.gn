@@ -22,6 +22,7 @@ source_set("wallet") {
 
   deps = [
     "//base",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/views/location_bar",
     "//components/wallet/core/browser",
