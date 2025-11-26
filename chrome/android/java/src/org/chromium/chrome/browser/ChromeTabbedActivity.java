@@ -3557,6 +3557,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (isColdStart()) {
             NtpCustomizationMetricsUtils.recordNtpThemeType();
+            NtpCustomizationMetricsUtils.recordMvtUserEngagement();
         }
     }
 

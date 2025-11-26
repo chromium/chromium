@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** The utility class for logging the NTP customization bottom sheet's metrics. */
 @NullMarked
@@ -22,6 +24,10 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED =
             HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".MvtEnabled";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_NTP_CUSTOMIZATION_USER_ENGAGEMENT_MVT_ENABLED =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".UserEngagement.MostVisitedSitesEnabled";
 
     @VisibleForTesting
     static final String HISTOGRAM_BOTTOM_SHEET_SHOWN =
@@ -137,6 +143,19 @@ public class NtpCustomizationMetricsUtils {
      */
     public static void recordMvtToggledInBottomSheet(boolean isEnabled) {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED, isEnabled);
+    }
+
+    /**
+     * Records the visibility state of the Most Visited Tiles section on the New Tab Page.
+     *
+     * <p>This method is called during Chrome's launch sequence to log whether the MVT section is
+     * configured to be visible.
+     */
+    public static void recordMvtUserEngagement() {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_NTP_CUSTOMIZATION_USER_ENGAGEMENT_MVT_ENABLED,
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true));
     }
 
     /** Records the total number of times the Upload Image Preview is shown. */

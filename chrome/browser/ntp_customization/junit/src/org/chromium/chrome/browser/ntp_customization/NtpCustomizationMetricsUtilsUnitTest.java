@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,6 +43,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link NtpCustomizationMetricsUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -187,6 +190,35 @@ public class NtpCustomizationMetricsUtilsUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(histogramName, themeCollectionHash);
         NtpCustomizationMetricsUtils.recordThemeCollectionSelected(themeCollectionHash);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordMvtUserEngagement() {
+        final String histogramName =
+                "NewTabPage.Customization.UserEngagement.MostVisitedSitesEnabled";
+        final String prefKey = ChromePreferenceKeys.IS_MVT_VISIBLE;
+        final SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+
+        // --- Test Case 1: MVT is visible (true) ---
+        prefs.writeBoolean(prefKey, true);
+        HistogramWatcher histogramWatcherTrue =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+
+        NtpCustomizationMetricsUtils.recordMvtUserEngagement();
+
+        histogramWatcherTrue.assertExpected();
+
+        // --- Test Case 2: MVT is not visible (false) ---
+        prefs.writeBoolean(prefKey, false);
+        HistogramWatcher histogramWatcherFalse =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+
+        NtpCustomizationMetricsUtils.recordMvtUserEngagement();
+
+        histogramWatcherFalse.assertExpected();
+
+        // Cleanup: Remove the key to not affect other tests.
+        prefs.removeKey(prefKey);
     }
 
     @Test
