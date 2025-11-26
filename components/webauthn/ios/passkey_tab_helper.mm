@@ -53,18 +53,6 @@ bool IsOriginValidForRelyingPartyId(const url::Origin& origin,
   return true;
 }
 
-// Returns a set of credential ids from a vector of credential descriptors.
-std::set<std::string> GetIdsFromDescriptors(
-    const std::vector<device::PublicKeyCredentialDescriptor>& descriptors) {
-  std::set<std::string> descriptor_ids;
-  std::transform(descriptors.begin(), descriptors.end(),
-                 std::inserter(descriptor_ids, descriptor_ids.begin()),
-                 [](const device::PublicKeyCredentialDescriptor& desc) {
-                   return std::string(desc.id.begin(), desc.id.end());
-                 });
-  return descriptor_ids;
-}
-
 // Utility function to create a passkey and an attestation object from the
 // provided parameters.
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
@@ -145,75 +133,6 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
 
 }  // namespace
 
-PasskeyTabHelper::RequestParams::RequestParams()
-    : user_verification_(device::UserVerificationRequirement::kPreferred) {}
-
-PasskeyTabHelper::RequestParams::RequestParams(
-    const std::string& frame_id,
-    const std::string& request_id,
-    device::PublicKeyCredentialRpEntity rp_entity,
-    std::vector<uint8_t> challenge,
-    device::UserVerificationRequirement user_verification)
-    : frame_id_(frame_id),
-      request_id_(request_id),
-      rp_entity_(std::move(rp_entity)),
-      challenge_(std::move(challenge)),
-      user_verification_(user_verification) {}
-
-PasskeyTabHelper::RequestParams::RequestParams(
-    PasskeyTabHelper::RequestParams&& other) = default;
-
-PasskeyTabHelper::RequestParams::~RequestParams() {}
-
-PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
-    RequestParams request_params,
-    std::vector<device::PublicKeyCredentialDescriptor> allow_credentials)
-    : request_params_(std::move(request_params)),
-      allow_credentials_(std::move(allow_credentials)) {}
-
-PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
-    PasskeyTabHelper::AssertionRequestParams&& other) = default;
-
-const std::set<std::string>
-PasskeyTabHelper::AssertionRequestParams::GetAllowCredentialIds() const {
-  return GetIdsFromDescriptors(allow_credentials_);
-}
-
-const std::string& PasskeyTabHelper::AssertionRequestParams::RpId() const {
-  return request_params_.rp_entity_.id;
-}
-
-PasskeyTabHelper::AssertionRequestParams::~AssertionRequestParams() {}
-
-PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
-    RequestParams request_params,
-    device::PublicKeyCredentialUserEntity user_entity,
-    std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials)
-    : request_params_(std::move(request_params)),
-      user_entity_(std::move(user_entity)),
-      exclude_credentials_(std::move(exclude_credentials)) {}
-
-PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
-    PasskeyTabHelper::RegistrationRequestParams&& other) = default;
-
-const std::set<std::string>
-PasskeyTabHelper::RegistrationRequestParams::GetExcludeCredentialIds() const {
-  return GetIdsFromDescriptors(exclude_credentials_);
-}
-
-const std::string& PasskeyTabHelper::RegistrationRequestParams::RpId() const {
-  return request_params_.rp_entity_.id;
-}
-
-PasskeyModel::UserEntity
-PasskeyTabHelper::RegistrationRequestParams::UserEntity() const {
-  return PasskeyModel::UserEntity(user_entity_.id,
-                                  user_entity_.name.value_or(""),
-                                  user_entity_.display_name.value_or(""));
-}
-
-PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}
-
 PasskeyTabHelper::~PasskeyTabHelper() = default;
 
 void PasskeyTabHelper::LogEvent(
@@ -223,19 +142,19 @@ void PasskeyTabHelper::LogEvent(
 }
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
-  // If the request is invalid, there's nothing we can do.
-  if (params.request_params_.request_id_.empty()) {
+  // If the request is invalid, the request can't be processed.
+  if (params.RequestId().empty()) {
     return;
   }
 
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
                                       params.RpId())) {
-    DeferToRenderer(web_frame, params.request_params_);
+    DeferToRenderer(web_frame, params);
     return;
   }
 
@@ -260,12 +179,12 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
     RegistrationRequestParams params) {
-  // If the request ID is invalid, there's nothing we can do.
-  if (params.request_params_.request_id_.empty()) {
+  // If the request ID is invalid, the request can't be processed.
+  if (params.RequestId().empty()) {
     return;
   }
 
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
@@ -273,12 +192,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
                                       params.RpId()) ||
       HasExcludedPasskey(params)) {
-    DeferToRenderer(web_frame, params.request_params_);
+    DeferToRenderer(web_frame, params);
     return;
   }
 
   // TODO(crbug.com/460485333): Handle this event.
-  DeferToRenderer(web_frame, params.request_params_);
+  DeferToRenderer(web_frame, params);
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
@@ -298,7 +217,7 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
 }
 
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
-    const RequestParams& request_params) const {
+    const PasskeyRequestParams& request_params) const {
   web::WebState* web_state = web_state_.get();
   if (!web_state) {
     return nullptr;
@@ -308,7 +227,7 @@ web::WebFrame* PasskeyTabHelper::GetWebFrame(
       PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
 
   return web_frames_manager
-             ? web_frames_manager->GetFrameWithId(request_params.frame_id_)
+             ? web_frames_manager->GetFrameWithId(request_params.FrameId())
              : nullptr;
 }
 
@@ -360,7 +279,7 @@ void PasskeyTabHelper::AddNewPasskey(
 }
 
 void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
@@ -368,7 +287,7 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
   // TODO(crbug.com/460485333): Use proper top origin.
   std::string client_data_json = BuildClientDataJson(
       {ClientDataRequestType::kWebAuthnCreate, web_frame->GetSecurityOrigin(),
-       /*top_origin=*/url::Origin(), params.request_params_.challenge_,
+       /*top_origin=*/url::Origin(), params.Challenge(),
        /*is_cross_origin_iframe=*/false},
       /*payment_json=*/std::nullopt);
 
@@ -380,23 +299,23 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
 
 void PasskeyTabHelper::DeferToRenderer(
     web::WebFrame* web_frame,
-    const RequestParams& request_params) const {
+    const PasskeyRequestParams& request_params) const {
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(
-      web_frame, request_params.request_id_);
+      web_frame, request_params.RequestId());
 }
 
 void PasskeyTabHelper::CompletePasskeyCreation(
     RegistrationRequestParams params,
     std::string client_data_json,
     const SharedKeyList& shared_key_list) {
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
 
   // `hw_protected` security domain currently supports a single secret.
   if (shared_key_list.size() != 1) {
-    DeferToRenderer(web_frame, params.request_params_);
+    DeferToRenderer(web_frame, params);
     return;
   }
 
@@ -416,14 +335,14 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   // Resolve the PublicKeyCredential promise.
   const std::string& credential_id = passkey.credential_id();
   PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
-      web_frame, params.request_params_.request_id_, credential_id,
+      web_frame, params.RequestId(), credential_id,
       std::move(attestation_data));
 }
 
 void PasskeyTabHelper::StartPasskeyAssertion(
     AssertionRequestParams params,
     sync_pb::WebauthnCredentialSpecifics passkey) {
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
@@ -431,7 +350,7 @@ void PasskeyTabHelper::StartPasskeyAssertion(
   // TODO(crbug.com/460485333): Use proper top origin.
   std::string client_data_json = BuildClientDataJson(
       {ClientDataRequestType::kWebAuthnGet, web_frame->GetSecurityOrigin(),
-       /*top_origin=*/url::Origin(), params.request_params_.challenge_,
+       /*top_origin=*/url::Origin(), params.Challenge(),
        /*is_cross_origin_iframe=*/false},
       /*payment_json=*/std::nullopt);
 
@@ -447,14 +366,14 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     sync_pb::WebauthnCredentialSpecifics passkey,
     std::string client_data_json,
     const SharedKeyList& shared_key_list) {
-  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  web::WebFrame* web_frame = GetWebFrame(params);
   if (!web_frame) {
     return;
   }
 
   // `hw_protected` security domain currently supports a single secret.
   if (shared_key_list.size() != 1) {
-    DeferToRenderer(web_frame, params.request_params_);
+    DeferToRenderer(web_frame, params);
     return;
   }
 
@@ -473,10 +392,10 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     // Resolve the PublicKeyCredential promise.
     const std::string& credential_id = passkey.credential_id();
     PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
-        web_frame, params.request_params_.request_id_, credential_id,
+        web_frame, params.RequestId(), credential_id,
         std::move(*assertion_data));
   } else {
-    DeferToRenderer(web_frame, params.request_params_);
+    DeferToRenderer(web_frame, params);
   }
 }
 

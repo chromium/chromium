@@ -5,15 +5,10 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
-#import <set>
-#import <vector>
-
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
-#import "device/fido/public_key_credential_descriptor.h"
-#import "device/fido/public_key_credential_rp_entity.h"
-#import "device/fido/public_key_credential_user_entity.h"
+#import "components/webauthn/ios/passkey_request_params.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -46,70 +41,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
     kMaxValue = kCreateResolvedNonGpm,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
-
-  class RequestParams {
-   public:
-    RequestParams();
-    RequestParams(const std::string& frame_id,
-                  const std::string& request_id,
-                  device::PublicKeyCredentialRpEntity rp_entity,
-                  std::vector<uint8_t> challenge,
-                  device::UserVerificationRequirement user_verification);
-    RequestParams(RequestParams&& other);
-    ~RequestParams();
-
-    const std::string frame_id_;
-    const std::string request_id_;
-    const device::PublicKeyCredentialRpEntity rp_entity_;
-    const std::vector<uint8_t> challenge_;
-    const device::UserVerificationRequirement user_verification_;
-  };
-
-  class AssertionRequestParams {
-   public:
-    AssertionRequestParams(
-        RequestParams request_params,
-        std::vector<device::PublicKeyCredentialDescriptor> allow_credentials);
-    AssertionRequestParams(AssertionRequestParams&& other);
-    ~AssertionRequestParams();
-
-    // Returns the credential ids contained in `allow_credentials_`.
-    const std::set<std::string> GetAllowCredentialIds() const;
-
-    // Returns the relying party identifier.
-    const std::string& RpId() const;
-
-    RequestParams request_params_;
-
-   private:
-    const std::vector<device::PublicKeyCredentialDescriptor> allow_credentials_;
-  };
-
-  class RegistrationRequestParams {
-   public:
-    RegistrationRequestParams(
-        RequestParams request_params,
-        device::PublicKeyCredentialUserEntity user_entity,
-        std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials);
-    RegistrationRequestParams(RegistrationRequestParams&& other);
-    ~RegistrationRequestParams();
-
-    // Returns the credential ids contained in `exclude_credentials_`.
-    const std::set<std::string> GetExcludeCredentialIds() const;
-
-    // Returns the relying party identifier.
-    const std::string& RpId() const;
-
-    // Converts `user_entity_` to PasskeyModel::UserEntity.
-    PasskeyModel::UserEntity UserEntity() const;
-
-    RequestParams request_params_;
-
-   private:
-    const device::PublicKeyCredentialUserEntity user_entity_;
-    const std::vector<device::PublicKeyCredentialDescriptor>
-        exclude_credentials_;
-  };
 
   PasskeyTabHelper(const PasskeyTabHelper&) = delete;
   PasskeyTabHelper& operator=(const PasskeyTabHelper&) = delete;
@@ -181,10 +112,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(web::WebFrame* web_frame,
-                       const RequestParams& request_params) const;
+                       const PasskeyRequestParams& request_params) const;
 
   // Returns a web frame from a web frame id. May return null.
-  web::WebFrame* GetWebFrame(const RequestParams& request_params) const;
+  web::WebFrame* GetWebFrame(const PasskeyRequestParams& request_params) const;
 
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;

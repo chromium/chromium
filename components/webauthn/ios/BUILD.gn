@@ -13,6 +13,8 @@ source_set("ios") {
     "ios_webauthn_credentials_delegate_factory.mm",
     "passkey_java_script_feature.h",
     "passkey_java_script_feature.mm",
+    "passkey_request_params.h",
+    "passkey_request_params.mm",
     "passkey_tab_helper.h",
     "passkey_tab_helper.mm",
   ]

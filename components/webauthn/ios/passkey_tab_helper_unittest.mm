@@ -62,32 +62,31 @@ sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
   return passkey;
 }
 
-// Builds RequestParams using the default rp id.
-PasskeyTabHelper::RequestParams BuildRequestParams() {
+// Builds PasskeyRequestParams using the default rp id.
+PasskeyRequestParams BuildPasskeyRequestParams() {
   std::string frame_id = web::kMainFakeFrameId;
   std::string request_id = kFakeRequestId;
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
-  return PasskeyTabHelper::RequestParams(
-      frame_id, request_id, std::move(rp_entity), std::move(challenge),
-      device::UserVerificationRequirement::kPreferred);
+  return PasskeyRequestParams(frame_id, request_id, std::move(rp_entity),
+                              std::move(challenge),
+                              device::UserVerificationRequirement::kPreferred);
 }
 
 // Builds RegistrationRequestParams from an exclude credentials list.
-PasskeyTabHelper::RegistrationRequestParams BuildRegistrationRequestParams(
+RegistrationRequestParams BuildRegistrationRequestParams(
     const std::vector<device::PublicKeyCredentialDescriptor>&
         exclude_credentials) {
   device::PublicKeyCredentialUserEntity user_entity;
-  return PasskeyTabHelper::RegistrationRequestParams(
-      BuildRequestParams(), std::move(user_entity), exclude_credentials);
+  return RegistrationRequestParams(BuildPasskeyRequestParams(),
+                                   std::move(user_entity), exclude_credentials);
 }
 
 // Builds AssertionRequestParams from an allow credentials list.
-PasskeyTabHelper::AssertionRequestParams BuildAssertionRequestParams(
+AssertionRequestParams BuildAssertionRequestParams(
     const std::vector<device::PublicKeyCredentialDescriptor>&
         allow_credentials) {
-  return PasskeyTabHelper::AssertionRequestParams(BuildRequestParams(),
-                                                  allow_credentials);
+  return AssertionRequestParams(BuildPasskeyRequestParams(), allow_credentials);
 }
 
 }  // namespace
@@ -132,14 +131,13 @@ class PasskeyTabHelperTest : public PlatformTest {
     return PasskeyTabHelper::FromWebState(&fake_web_state_);
   }
 
-  bool HasExcludedPasskey(
-      const PasskeyTabHelper::RegistrationRequestParams& params) {
+  bool HasExcludedPasskey(const RegistrationRequestParams& params) {
     return passkey_tab_helper()->HasExcludedPasskey(params);
   }
 
   // Returns the list of passkeys filtered by the allowed credentials list.
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetFilteredPasskeys(
-      const PasskeyTabHelper::AssertionRequestParams& params) {
+      const AssertionRequestParams& params) {
     return passkey_tab_helper()->GetFilteredPasskeys(params);
   }
 
@@ -307,8 +305,7 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
             password_manager::WebAuthnCredentialsDelegate::
                 PasskeysUnavailableReason::kNotReceived);
 
-  PasskeyTabHelper::AssertionRequestParams params =
-      BuildAssertionRequestParams({});
+  AssertionRequestParams params = BuildAssertionRequestParams({});
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Verify that the delegate has recevied the passkey.

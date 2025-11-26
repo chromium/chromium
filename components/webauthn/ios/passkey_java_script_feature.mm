@@ -259,21 +259,20 @@ std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
   return credential_descriptors;
 }
 
-// Extracts all parameters required to build a RequestParams object from the
-// provided dictionary.
-PasskeyTabHelper::RequestParams ExtractRequestParams(
-    const base::Value::Dict* dict) {
+// Extracts all parameters required to build a PasskeyRequestParams object from
+// the provided dictionary.
+PasskeyRequestParams ExtractRequestParams(const base::Value::Dict* dict) {
   if (!dict) {
-    return PasskeyTabHelper::RequestParams();
+    return PasskeyRequestParams();
   }
 
   const std::string* frame_id = dict->FindString(kFrameId);
   const std::string* request_id = dict->FindString(kRequestId);
   if (!frame_id || !request_id) {
-    return PasskeyTabHelper::RequestParams();
+    return PasskeyRequestParams();
   }
 
-  return PasskeyTabHelper::RequestParams(
+  return PasskeyRequestParams(
       *frame_id, *request_id, ExtractRpEntity(dict->FindDict(kRpEntity)),
       Base64Decode(dict->FindString(kChallenge)),
       ExtractUserVerification(dict->FindString(kUserVerification)));
@@ -281,18 +280,18 @@ PasskeyTabHelper::RequestParams ExtractRequestParams(
 
 // Extracts all parameters required to build an ExtractAssertionRequestParams
 // object from the provided dictionary.
-PasskeyTabHelper::AssertionRequestParams ExtractAssertionRequestParams(
+AssertionRequestParams ExtractAssertionRequestParams(
     const base::Value::Dict& dict) {
-  return PasskeyTabHelper::AssertionRequestParams(
+  return AssertionRequestParams(
       ExtractRequestParams(dict.FindDict(kRequest)),
       ExtractCredentials(dict.FindList(kAllowCredentials)));
 }
 
 // Extracts all parameters required to build a RegistrationRequestParams object
 // from the provided dictionary.
-PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
+RegistrationRequestParams ExtractRegistrationRequestParams(
     const base::Value::Dict& dict) {
-  return PasskeyTabHelper::RegistrationRequestParams(
+  return RegistrationRequestParams(
       ExtractRequestParams(dict.FindDict(kRequest)),
       ExtractUserEntity(dict.FindDict(kUserEntity)),
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
