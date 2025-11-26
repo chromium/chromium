@@ -22,7 +22,6 @@ class MockDeviceAttestationService : public DeviceAttestationService {
               (std::string_view,
                std::string_view,
                std::string_view,
-               std::string_view,
                DeviceAttestationCallback),
               (override));
 };

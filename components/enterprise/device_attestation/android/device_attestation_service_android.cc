@@ -13,15 +13,14 @@ DeviceAttestationServiceAndroid::DeviceAttestationServiceAndroid() = default;
 DeviceAttestationServiceAndroid::~DeviceAttestationServiceAndroid() = default;
 
 void DeviceAttestationServiceAndroid::GetAttestationResponse(
-    std::string_view flow_name,
-    std::string_view request_payload,
+    std::string_view report_request,
     std::string_view timestamp,
     std::string_view nonce,
     DeviceAttestationCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GenerateAttestationBlob, flow_name, request_payload,
-                     timestamp, nonce),
+      base::BindOnce(&GenerateAttestationBlob, report_request, timestamp,
+                     nonce),
       base::BindOnce(&DeviceAttestationServiceAndroid::OnAttestationResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

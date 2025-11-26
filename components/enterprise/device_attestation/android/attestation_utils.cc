@@ -34,8 +34,7 @@ namespace enterprise {
 
 // TODO(crbug.com/445677557): Add C++ test coverage once internal logic is
 // implemented, if Java test coverage is insufficient.
-BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
-                                             std::string_view request_payload,
+BlobGenerationResult GenerateAttestationBlob(std::string_view request,
                                              std::string_view timestamp,
                                              std::string_view nonce) {
   {
@@ -44,11 +43,10 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
     JNIEnv* env = base::android::AttachCurrentThread();
     ScopedJavaLocalRef<jobject> generation_result =
         Java_AttestationBlobGenerator_generate(
-            env, base::android::ConvertUTF8ToJavaString(env, flow_name),
+            env,
             base::android::ConvertUTF8ToJavaString(
-                env,
-                GetHashString(base::StringPrintf(
-                    kReportRequestHashKey, request_payload, timestamp, nonce))),
+                env, GetHashString(base::StringPrintf(
+                         kReportRequestHashKey, request, timestamp, nonce))),
             base::android::ConvertUTF8ToJavaString(env,
                                                    GetHashString(timestamp)),
             base::android::ConvertUTF8ToJavaString(env, GetHashString(nonce)));

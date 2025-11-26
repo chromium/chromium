@@ -24,8 +24,7 @@ class DeviceAttestationServiceAndroid : public DeviceAttestationService {
       const DeviceAttestationServiceAndroid&) = delete;
   ~DeviceAttestationServiceAndroid() override;
 
-  void GetAttestationResponse(std::string_view flow_name,
-                              std::string_view request_payload,
+  void GetAttestationResponse(std::string_view report_request,
                               std::string_view timestamp,
                               std::string_view nonce,
                               DeviceAttestationCallback callback) override;
