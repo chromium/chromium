@@ -404,7 +404,6 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-// TODO(b/284428237): Add more browser tests regarding focus changes.
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionEventsApiBrowserTest,
     StartListeningToRegularAndFocusRestrictedEvents_Success) {
