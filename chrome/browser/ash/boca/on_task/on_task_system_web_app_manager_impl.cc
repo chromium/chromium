@@ -467,6 +467,14 @@ void OnTaskSystemWebAppManagerImpl::SetAllChromeTabsMuted(bool muted) {
       });
 }
 
+bool OnTaskSystemWebAppManagerImpl::IsWindowPinned(SessionID window_id) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return false;
+  }
+  return platform_util::IsBrowserLockedFullscreen(browser);
+}
+
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
     LockedSessionWindowTracker* window_tracker) {
   window_tracker_for_testing_ = window_tracker;
