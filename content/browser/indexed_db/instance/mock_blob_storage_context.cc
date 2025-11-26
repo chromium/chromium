@@ -140,18 +140,9 @@ BlobWriteCallback MockBlobStorageContext::CreateBlobWriteCallback(
     base::OnceClosure on_done) {
   *succeeded = false;
   return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
-         storage::mojom::WriteBlobToFileResult error) {
-        switch (result) {
-          case BlobWriteResult::kFailure:
-            *succeeded = false;
-            break;
-          case BlobWriteResult::kRunPhaseTwoAsync:
-          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
-            DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
-            *succeeded = true;
-            break;
-        }
+      [](bool* succeeded, base::OnceClosure on_done,
+         StatusOr<BlobWriteResult> result) {
+        *succeeded = result.has_value();
         std::move(on_done).Run();
         return Status::OK();
       },

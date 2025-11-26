@@ -27,9 +27,7 @@ FakeTransaction::~FakeTransaction() = default;
 
 Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback,
                                        SerializeFsaCallback /*unused*/) {
-  return std::move(callback).Run(
-      BlobWriteResult::kRunPhaseTwoAndReturnResult,
-      storage::mojom::WriteBlobToFileResult::kSuccess);
+  return std::move(callback).Run(BlobWriteResult::kRunPhaseTwoAndReturnResult);
 }
 
 Status FakeTransaction::CommitPhaseTwo() {

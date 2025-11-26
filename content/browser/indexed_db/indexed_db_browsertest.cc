@@ -920,6 +920,8 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, BlobHistograms) {
   base::HistogramTester histograms;
   SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"));
+  histograms.ExpectBucketCount("IndexedDB.BackingStore.WriteBlobs.OnDisk",
+                               0 /*Status::Type::kOk*/, 1);
   histograms.ExpectBucketCount("IndexedDB.BackingStore.ReadBlob.OnDisk",
                                0 /*net::Error::OK*/, 1);
 }

@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/common/content_export.h"
 

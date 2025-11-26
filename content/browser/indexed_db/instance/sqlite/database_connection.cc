@@ -1128,8 +1128,7 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
 
   if (outstanding_external_object_writes_ == 0) {
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult,
-        storage::mojom::WriteBlobToFileResult::kSuccess);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult);
   }
 
   CHECK_NE(transaction.mode(), blink::mojom::IDBTransactionMode::ReadOnly);
@@ -1178,9 +1177,7 @@ void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
   }
 
   if (--outstanding_external_object_writes_ == 0) {
-    std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kRunPhaseTwoAsync,
-             storage::mojom::WriteBlobToFileResult::kSuccess);
+    std::move(blob_write_callback_).Run(BlobWriteResult::kRunPhaseTwoAsync);
   }
 }
 
@@ -1207,8 +1204,7 @@ void DatabaseConnection::CancelBlobWriting() {
   outstanding_external_object_writes_ = 0;
   if (blob_write_callback_) {
     std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kFailure,
-             storage::mojom::WriteBlobToFileResult::kError);
+        .Run(base::unexpected(Status::IOError("Error")));
   }
 }
 

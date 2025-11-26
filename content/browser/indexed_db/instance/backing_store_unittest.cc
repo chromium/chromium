@@ -139,14 +139,12 @@ TEST_P(BackingStoreTest, RollbackDuringBlobWrite) {
       transaction
           ->CommitPhaseOne(
               /*blob_write_callback=*/
-              base::IgnoreArgs<BlobWriteResult,
-                               storage::mojom::WriteBlobToFileResult>(
-                  base::BindOnce(
-                      [](base::AutoReset<bool> auto_reset) {
-                        ADD_FAILURE();
-                        return Status::OK();
-                      },
-                      base::AutoReset(&blob_write_callback_lives, true))),
+              base::IgnoreArgs<StatusOr<BlobWriteResult>>(base::BindOnce(
+                  [](base::AutoReset<bool> auto_reset) {
+                    ADD_FAILURE();
+                    return Status::OK();
+                  },
+                  base::AutoReset(&blob_write_callback_lives, true))),
               /*serialize_fsa_handle=*/base::DoNothing())
           .ok());
   EXPECT_TRUE(blob_write_callback_lives);
