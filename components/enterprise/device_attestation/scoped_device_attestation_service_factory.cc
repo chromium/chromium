@@ -35,6 +35,7 @@ ScopedDeviceAttestationServiceFactory::CreateDeviceAttestationService() {
   ON_CALL(*mocked_service.get(), GetAttestationResponse)
       .WillByDefault(
           [](std::string_view, std::string_view, std::string_view,
+             std::string_view,
              DeviceAttestationService::DeviceAttestationCallback callback) {
             std::move(callback).Run({kFakeAttestationBlob, std::string()});
           });

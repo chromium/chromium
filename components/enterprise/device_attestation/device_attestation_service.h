@@ -25,7 +25,8 @@ class DeviceAttestationService {
   DeviceAttestationService& operator=(const DeviceAttestationService&) = delete;
   virtual ~DeviceAttestationService();
 
-  virtual void GetAttestationResponse(std::string_view report_request,
+  virtual void GetAttestationResponse(std::string_view flow_name,
+                                      std::string_view request_payload,
                                       std::string_view timestamp,
                                       std::string_view nonce,
                                       DeviceAttestationCallback callback);

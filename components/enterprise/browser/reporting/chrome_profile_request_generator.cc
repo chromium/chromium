@@ -33,6 +33,8 @@ namespace {
 // The size of the nonce challenge in bytes.
 const int kNonceSizeInBytes = 16;
 
+constexpr char kAttestationFlowName[] = "chrome-signals-sharing";
+
 std::string CreateNonce() {
   std::vector<uint8_t> nonce_buffer(kNonceSizeInBytes);
   base::RandBytes(nonce_buffer);
@@ -385,7 +387,7 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
   auto signals_string =
       GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
   device_attestation_service_->GetAttestationResponse(
-      signals_string, report_timestamp, report_nonce,
+      kAttestationFlowName, signals_string, report_timestamp, report_nonce,
       base::BindOnce(&ChromeProfileRequestGenerator::OnAttestationResultReady,
                      weak_ptr_factory_.GetWeakPtr(), report_timestamp,
                      report_nonce, std::move(callback), std::move(request)));
