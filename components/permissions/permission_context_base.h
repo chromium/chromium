@@ -274,9 +274,13 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Called when a request is no longer used so it can be cleaned up.
   void CleanUpRequest(content::WebContents* web_contents,
-                      const PermissionRequestID& id,
-                      bool embedded_permission_element_initiated);
-
+                      const PermissionRequestID& id);
+  void CleanUpRequestEmbeddedPermissionElement(
+      content::WebContents* web_contents,
+      const PermissionRequestID& id,
+      BrowserPermissionCallback callback,
+      PermissionDecision decision,
+      PermissionSetting new_value);
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
   void PermissionDecided(PermissionDecision decision,

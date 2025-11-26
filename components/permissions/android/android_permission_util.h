@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -101,6 +102,9 @@ void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents);
 
 // Starts an activity for showing the Location Services setting page.
 void RequestLocationServices(content::WebContents* web_contents);
+
+// Called from tests to temporarily set system location settings enabled.
+base::AutoReset<bool> EnableSystemLocationSettingForTesting();
 
 }  // namespace permissions
 

@@ -229,6 +229,11 @@ class PermissionRequest {
 
   bool uses_automatic_embargo() const { return uses_automatic_embargo_; }
 
+  void set_request_finished_callback(
+      base::OnceClosure request_finished_callback) {
+    request_finished_callback_ = std::move(request_finished_callback);
+  }
+
  protected:
   // Sets whether this request is permission element initiated, for testing
   // subclasses only.

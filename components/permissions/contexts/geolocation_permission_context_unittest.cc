@@ -77,8 +77,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "components/location/android/mock_location_settings.h"
+#include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/prefs/pref_service.h"
+#include "ui/android/window_android.h"
 #endif
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -228,6 +230,7 @@ class GeolocationPermissionContextTests
   int num_permission_updates_ = 0;
   raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
   raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
+  std::vector<std::string> events_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -302,6 +305,7 @@ void GeolocationPermissionContextTests::PermissionResponse(
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
                      permission_result.status == PermissionStatus::GRANTED);
+  events_.push_back("PermissionResponse");
 }
 
 void GeolocationPermissionContextTests::OnPermissionChanged(
@@ -314,6 +318,7 @@ void GeolocationPermissionContextTests::OnPermissionChanged(
   EXPECT_EQ(*expected_secondary_pattern_, secondary_pattern);
   EXPECT_EQ(content_type_set.GetType(), ContentSettingsType::GEOLOCATION);
   num_permission_updates_++;
+  events_.push_back("OnPermissionChanged");
 }
 
 void GeolocationPermissionContextTests::CheckPermissionMessageSent(
@@ -993,12 +998,17 @@ TEST_F(GeolocationPermissionContextTests,
   GURL requesting_frame("https://www.example.com/geolocation");
   NavigateAndCommit(requesting_frame);
   RequestManagerDocumentLoadCompleted();
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
   MockLocationSettings::SetLocationStatus(
       /*has_android_coarse_location_permission=*/false,
       /*has_android_fine_location_permission=*/false,
       /*is_system_location_setting_enabled=*/true);
   MockLocationSettings::SetCanPromptForAndroidPermission(true);
-
+  SetGeolocationContentSetting(requesting_frame, requesting_frame,
+                               CONTENT_SETTING_ALLOW);
+  auto system_location_setting = EnableSystemLocationSettingForTesting();
   EXPECT_FALSE(HasActivePrompt());
   RequestGeolocationPermission(RequestID(0), requesting_frame, true,
                                /*embedded_permission_element_initiated=*/true);
@@ -1371,4 +1381,29 @@ TEST_F(GeolocationPermissionContextTests, SystemPermissionUpdates) {
 }
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+TEST_F(GeolocationPermissionContextTests, DecisionEventOrder) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  // Clear any previous event order.
+  events_.clear();
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromURLNoWildcard(requesting_frame);
+  ContentSettingsPattern secondary_pattern = ContentSettingsPattern::Wildcard();
+  expected_primary_pattern_ = &primary_pattern;
+  expected_secondary_pattern_ = &secondary_pattern;
+  geolocation_permission_context_->AddObserver(this);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true,
+                               /*embedded_permission_element_initiated=*/true);
+  AcceptPrompt();
+  content::RunAllTasksUntilIdle();
+  CheckPermissionMessageSent(0, true);
+  geolocation_permission_context_->RemoveObserver(this);
+
+  // Verify the order of events. OnPermissionChanged should be called before
+  // PermissionResponse.
+  ASSERT_EQ(2U, events_.size());
+  EXPECT_EQ("OnPermissionChanged", events_[0]);
+  EXPECT_EQ("PermissionResponse", events_[1]);
+}
 }  // namespace permissions

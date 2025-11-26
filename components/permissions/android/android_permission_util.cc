@@ -5,6 +5,7 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
+#include "base/auto_reset.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/permission_uma_util.h"
@@ -20,8 +21,13 @@ namespace permissions {
 
 namespace {
 
+bool g_is_system_location_setting_enabled_for_test = false;
+
 // Returns whether the Android location setting is enabled/disabled.
 bool IsSystemLocationSettingEnabled() {
+  if (g_is_system_location_setting_enabled_for_test) {
+    return true;
+  }
   LocationSettingsImpl location_settings;
   return location_settings.IsSystemLocationSettingEnabled();
 }
@@ -196,6 +202,11 @@ void RequestLocationServices(content::WebContents* web_contents) {
   DCHECK(window_android);
   return Java_PermissionUtil_requestLocationServices(
       env, window_android->GetJavaObject());
+}
+
+base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
+  return base::AutoReset<bool>(&g_is_system_location_setting_enabled_for_test,
+                               true);
 }
 
 }  // namespace permissions

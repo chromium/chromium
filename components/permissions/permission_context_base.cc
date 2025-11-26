@@ -600,10 +600,9 @@ void PermissionContextBase::DecidePermission(
 
   auto decided_cb = base::BindRepeating(
       &PermissionContextBase::PermissionDecided, weak_factory_.GetWeakPtr());
-  auto cleanup_cb =
-      base::BindOnce(&PermissionContextBase::CleanUpRequest,
-                     weak_factory_.GetWeakPtr(), web_contents, request_data->id,
-                     request_data->IsEmbeddedPermissionElementInitiated());
+  auto cleanup_cb = base::BindOnce(&PermissionContextBase::CleanUpRequest,
+                                   weak_factory_.GetWeakPtr(), web_contents,
+                                   request_data->id);
   PermissionRequestID permission_request_id = request_data->id;
 
   std::unique_ptr<PermissionRequest> request =
@@ -767,26 +766,45 @@ void PermissionContextBase::NotifyPermissionSet(
     }
   }
 
-  std::move(callback).Run(content::PermissionResult(
-      PermissionUtil::PermissionDecisionToPermissionStatus(decision),
-      content::PermissionStatusSource::UNSPECIFIED, new_value));
+  auto request = pending_requests_.find(request_data.id.ToString());
+  if (request != pending_requests_.end() &&
+      request_data.IsEmbeddedPermissionElementInitiated()) {
+    CHECK(request->second.first);
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(rfh);
+    request->second.first->set_request_finished_callback(base::BindOnce(
+        &PermissionContextBase::CleanUpRequestEmbeddedPermissionElement,
+        weak_factory_.GetWeakPtr(), web_contents, request_data.id,
+        std::move(callback), decision, new_value));
+  } else {
+    std::move(callback).Run(content::PermissionResult(
+        PermissionUtil::PermissionDecisionToPermissionStatus(decision),
+        content::PermissionStatusSource::UNSPECIFIED, new_value));
+  }
 }
 
-void PermissionContextBase::CleanUpRequest(
+void PermissionContextBase::CleanUpRequest(content::WebContents* web_contents,
+                                           const PermissionRequestID& id) {
+  size_t success = pending_requests_.erase(id.ToString());
+  DCHECK(success == 1) << "Missing request " << id.ToString();
+}
+
+void PermissionContextBase::CleanUpRequestEmbeddedPermissionElement(
     content::WebContents* web_contents,
     const PermissionRequestID& id,
-    bool embedded_permission_element_initiated) {
+    BrowserPermissionCallback callback,
+    PermissionDecision decision,
+    PermissionSetting new_value) {
   // A request from an embedded permission element requires a notification
   // `OnPermissionChanged` when changing the device status, which is currently
   // unavailable. We compare the device status with the cached status and notify
   // `OnPermissionChanged` here. We should remove this line once the device
   // status change observer is implemented.
-  if (embedded_permission_element_initiated) {
-    MaybeUpdateCachedHasDevicePermission(web_contents);
-  }
-
-  size_t success = pending_requests_.erase(id.ToString());
-  DCHECK(success == 1) << "Missing request " << id.ToString();
+  MaybeUpdateCachedHasDevicePermission(web_contents);
+  std::move(callback).Run(content::PermissionResult(
+      PermissionUtil::PermissionDecisionToPermissionStatus(decision),
+      content::PermissionStatusSource::UNSPECIFIED, new_value));
+  CleanUpRequest(web_contents, id);
 }
 
 void PermissionContextBase::UpdateSetting(
