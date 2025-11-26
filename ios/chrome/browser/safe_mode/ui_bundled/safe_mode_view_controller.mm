@@ -15,13 +15,12 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/button_util.h"
-#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
 namespace {
+const CGFloat kButtonCornerRadius = 15;
 const CGFloat kVerticalSpacing = 20;
 const CGFloat kUploadProgressSpacing = 5;
 const NSTimeInterval kUploadPumpInterval = 0.1;
@@ -50,7 +49,7 @@ constexpr std::string_view kThirdPartyModsDirectory =
 @implementation SafeModeViewController {
   __weak id<SafeModeViewControllerDelegate> _delegate;
   UIView* _innerView;
-  ChromeButton* _startButton;
+  UIButton* _startButton;
   UILabel* _uploadDescription;
   UIProgressView* _uploadProgress;
   NSDate* _uploadStartTime;
@@ -212,16 +211,29 @@ constexpr std::string_view kThirdPartyModsDirectory =
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  _startButton = [UIButton buttonWithType:UIButtonTypeSystem];
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
-  _startButton.title = startText;
-
-  UIButtonConfiguration* buttonConfiguration = _startButton.configuration;
+  buttonConfiguration.title = startText;
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kBlueColor];
+  buttonConfiguration.background.cornerRadius = kButtonCornerRadius;
   buttonConfiguration.titleAlignment =
       UIButtonConfigurationTitleAlignmentCenter;
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kSolidWhiteColor];
   buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
   _startButton.configuration = buttonConfiguration;
+  _startButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* innerConfiguration = button.configuration;
+    innerConfiguration.background.backgroundColor =
+        button.enabled ? [UIColor colorNamed:kBlueColor]
+                       : [UIColor colorNamed:kGrey300Color];
+    button.configuration = innerConfiguration;
+  };
 
   frame = [_startButton frame];
   frame.size.width =
