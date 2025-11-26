@@ -31,7 +31,13 @@ config("runtime_library") {
     }
   }
 
-  include_dirs += [ "//buildtools/third_party/libc++" ]
+  # TODO(https://crbug.com/440260716): This can be removed if
+  # //buildtools/third_party/libc++:copy_custom_headers is always run.
+  if (!use_clang_modules) {
+    # In non-clang modules build, custom libc++ headers are used from this
+    # directory instead of under gen dir.
+    include_dirs += [ "//buildtools/third_party/libc++" ]
+  }
 
   # libc++ has two levels of additional checking:
   # 1. _LIBCPP_ENABLE_ASSERTIONS enables assertions for bounds checking.
