@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -32,16 +32,10 @@ def RunNode(cmd_parts, stdout=None):
   stdout, stderr = process.communicate()
 
   if process.returncode != 0:
-    errs = []
-    if len(stderr) > 0:
-      errs.append("stderr:\n" + stderr)
     # Handle cases where stderr is empty, even though the command failed, for
     # example https://github.com/microsoft/TypeScript/issues/615
-    if len(stdout) > 0:
-      errs.append("stdout:\n" + stdout)
-    errs.append("exit=%d" % process.returncode)
-    raise RuntimeError('Command \'%s\' failed\n%s' % (
-        ' '.join(cmd), '\n'.join(errs)))
+    err = stderr if len(stderr) > 0 else stdout
+    raise RuntimeError('Command \'%s\' failed\n%s' % (' '.join(cmd), err))
 
   return stdout
 
