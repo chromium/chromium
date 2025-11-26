@@ -59,20 +59,15 @@ class LevelDBWrapperTest : public testing::Test {
     return db_.get();
   }
 
-  void CheckDBContents(base::span<const TestData> expects,
-                       size_t spanification_suspected_redundant_size) {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(spanification_suspected_redundant_size == expects.size(),
-          base::NotFatalUntil::M143);
+  void CheckDBContents(base::span<const TestData> expects) {
     DCHECK(db_);
 
     std::unique_ptr<LevelDBWrapper::Iterator> itr = db_->NewIterator();
     itr->SeekToFirst();
-    for (size_t i = 0; i < spanification_suspected_redundant_size; ++i) {
+    for (const auto& expect : expects) {
       ASSERT_TRUE(itr->Valid());
-      EXPECT_EQ(expects[i].key, itr->key().ToString());
-      EXPECT_EQ(expects[i].value, itr->value().ToString());
+      EXPECT_EQ(expect.key, itr->key().ToString());
+      EXPECT_EQ(expect.value, itr->value().ToString());
       itr->Next();
     }
     EXPECT_FALSE(itr->Valid());
@@ -182,7 +177,7 @@ TEST_F(LevelDBWrapperTest, PutTest) {
   GetDB()->Put("bb", "new2");  // Overwrite an entry.
 
   SCOPED_TRACE("PutTest_Pending");
-  CheckDBContents(merged_data, std::size(merged_data));
+  CheckDBContents(merged_data);
 
   EXPECT_EQ(3, GetDB()->num_puts());
   // Remove all pending transactions.
@@ -190,7 +185,7 @@ TEST_F(LevelDBWrapperTest, PutTest) {
   EXPECT_EQ(0, GetDB()->num_puts());
 
   SCOPED_TRACE("PutTest_Clear");
-  CheckDBContents(orig_data, std::size(orig_data));
+  CheckDBContents(orig_data);
 
   // Add pending transactions again, with commiting.
   GetDB()->Put("aa", "new0");
@@ -202,7 +197,7 @@ TEST_F(LevelDBWrapperTest, PutTest) {
   GetDB()->Clear();  // Clear just in case.
 
   SCOPED_TRACE("PutTest_Commit");
-  CheckDBContents(merged_data, std::size(merged_data));
+  CheckDBContents(merged_data);
 }
 
 TEST_F(LevelDBWrapperTest, DeleteTest) {
@@ -223,13 +218,13 @@ TEST_F(LevelDBWrapperTest, DeleteTest) {
   EXPECT_EQ(2, GetDB()->num_deletes());
 
   SCOPED_TRACE("DeleteTest_Pending");
-  CheckDBContents(merged_data, std::size(merged_data));
+  CheckDBContents(merged_data);
 
   // Remove all pending transactions.
   GetDB()->Clear();
 
   SCOPED_TRACE("DeleteTest_Clear");
-  CheckDBContents(orig_data, std::size(orig_data));
+  CheckDBContents(orig_data);
 
   // Add pending transactions again, with commiting.
   GetDB()->Put("aa", "new0");
@@ -244,7 +239,7 @@ TEST_F(LevelDBWrapperTest, DeleteTest) {
   EXPECT_EQ(0, GetDB()->num_deletes());
 
   SCOPED_TRACE("DeleteTest_Commit");
-  CheckDBContents(merged_data, std::size(merged_data));
+  CheckDBContents(merged_data);
 }
 
 }  // namespace drive_backend

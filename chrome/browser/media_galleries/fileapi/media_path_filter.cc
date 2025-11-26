@@ -170,15 +170,12 @@ void MediaPathFilter::EnsureInitialized() {
                                        MEDIA_GALLERY_FILE_TYPE_AUDIO);
   AddExtensionsToMediaFileExtensionMap(GetMediaExtensionList("video/*"),
                                        MEDIA_GALLERY_FILE_TYPE_VIDEO);
-  AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedImageExtensions, std::size(kExtraSupportedImageExtensions),
-      MEDIA_GALLERY_FILE_TYPE_IMAGE);
-  AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedAudioExtensions, std::size(kExtraSupportedAudioExtensions),
-      MEDIA_GALLERY_FILE_TYPE_AUDIO);
-  AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedVideoExtensions, std::size(kExtraSupportedVideoExtensions),
-      MEDIA_GALLERY_FILE_TYPE_VIDEO);
+  AddAdditionalExtensionsToMediaFileExtensionMap(kExtraSupportedImageExtensions,
+                                                 MEDIA_GALLERY_FILE_TYPE_IMAGE);
+  AddAdditionalExtensionsToMediaFileExtensionMap(kExtraSupportedAudioExtensions,
+                                                 MEDIA_GALLERY_FILE_TYPE_AUDIO);
+  AddAdditionalExtensionsToMediaFileExtensionMap(kExtraSupportedVideoExtensions,
+                                                 MEDIA_GALLERY_FILE_TYPE_VIDEO);
 
   initialized_ = true;
 }
@@ -192,16 +189,9 @@ void MediaPathFilter::AddExtensionsToMediaFileExtensionMap(
 
 void MediaPathFilter::AddAdditionalExtensionsToMediaFileExtensionMap(
     base::span<const base::FilePath::CharType* const> extensions_list,
-    size_t spanification_suspected_redundant_extensions_list_size,
     MediaGalleryFileType type) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_extensions_list_size ==
-            extensions_list.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_extensions_list_size;
-       ++i) {
-    AddExtensionToMediaFileExtensionMap(extensions_list[i], type);
+  for (auto* extension : extensions_list) {
+    AddExtensionToMediaFileExtensionMap(extension, type);
   }
 }
 

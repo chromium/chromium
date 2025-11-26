@@ -240,13 +240,11 @@ class DownloadTestBase : public InProcessBrowserTest {
   // |download_info| array.  |count| is the number of files.
   // If a Select File dialog appears, it will choose the default and return
   // immediately.
-  void DownloadFilesCheckErrors(size_t spanification_suspected_redundant_count,
-                                base::span<DownloadInfo> download_info);
+  void DownloadFilesCheckErrors(base::span<DownloadInfo> download_info);
   void DownloadFilesCheckErrorsLoopBody(const DownloadInfo& download_info,
                                         size_t i);
 
   void DownloadInsertFilesErrorCheckErrors(
-      size_t spanification_suspected_redundant_count,
       base::span<FileErrorInjectInfo> info);
   void DownloadInsertFilesErrorCheckErrorsLoopBody(
       scoped_refptr<content::TestFileErrorInjector> injector,
@@ -255,9 +253,7 @@ class DownloadTestBase : public InProcessBrowserTest {
 
   // Attempts to download a file to a read-only folder, based on information
   // in |download_info|.
-  void DownloadFilesToReadonlyFolder(
-      size_t spanification_suspected_redundant_count,
-      base::span<DownloadInfo> download_info);
+  void DownloadFilesToReadonlyFolder(base::span<DownloadInfo> download_info);
 
   // This method:
   // * Starts a mock download by navigating to embedded test server URL.
