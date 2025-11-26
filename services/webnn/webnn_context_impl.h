@@ -315,6 +315,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // The owning_task_runner is the underlying single-thread runner for the GPU
   // sequence.
   scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner_;
+
+  // This callback is created in the constructor on the context's owning thread.
+  // It is posted from the main thread to the context's owning thread in the
+  // `OnLost()` method.
+  base::OnceCallback<void(const std::string&)> on_lost_callback_;
+
+  base::WeakPtrFactory<WebNNContextImpl> weak_factory_{this};
 };
 
 }  // namespace webnn
