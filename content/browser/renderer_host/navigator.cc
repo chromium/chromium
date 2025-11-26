@@ -590,12 +590,17 @@ void Navigator::DidNavigate(
   const bool allow_paint_holding = frame_tree_node->IsMainFrame()
                                        ? allow_main_frame_paint_holding
                                        : allow_subframe_paint_holding;
+  const RenderFrameHostManager::ViewTransitionCommitInfo
+      view_transition_commit_info{
+          .has_view_transition_resources =
+              navigation_request->HasViewTransitionResources()};
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
-      navigation_request->commit_params().frame_policy, allow_paint_holding);
+      navigation_request->commit_params().frame_policy, allow_paint_holding,
+      view_transition_commit_info);
 
   // Reset the old frame host's weak pointer to auction initiator page when it
   // is a cross-document navigation and the frame does not go into bfcache.
