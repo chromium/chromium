@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_FUNCTIONAL_H_
 
 #include <type_traits>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional_internal.h"
 
 namespace blink {
 
@@ -81,10 +83,12 @@ base::OnceCallback<Signature> CoerceFunctorForCrossThreadBind(
 
 template <typename FunctionType, typename... Ps>
 auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
+  static_assert(functional_internal::CheckGCedTypeRestrictions<
+                    std::index_sequence_for<Ps...>, std::decay_t<Ps>...>::ok,
+                "A bound argument uses a bad pattern.");
   static_assert(
-      internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
-                                          std::decay_t<Ps>...>::ok,
-      "A bound argument uses a bad pattern.");
+      functional_internal::kCheckNoThreadUnsafeRefCounted<std::decay_t<Ps>...>);
+
   return internal::MakeCrossThreadFunction(
       base::BindRepeating(internal::CoerceFunctorForCrossThreadBind(
                               std::forward<FunctionType>(function)),
@@ -94,10 +98,12 @@ auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
 
 template <typename FunctionType, typename... Ps>
 auto CrossThreadBindOnce(FunctionType&& function, Ps&&... parameters) {
+  static_assert(functional_internal::CheckGCedTypeRestrictions<
+                    std::index_sequence_for<Ps...>, std::decay_t<Ps>...>::ok,
+                "A bound argument uses a bad pattern.");
   static_assert(
-      internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
-                                          std::decay_t<Ps>...>::ok,
-      "A bound argument uses a bad pattern.");
+      functional_internal::kCheckNoThreadUnsafeRefCounted<std::decay_t<Ps>...>);
+
   return internal::MakeCrossThreadOnceFunction(
       base::BindOnce(internal::CoerceFunctorForCrossThreadBind(
                          std::forward<FunctionType>(function)),

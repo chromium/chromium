@@ -79,6 +79,7 @@ component("wtf") {
     "dynamic_annotations.h",
     "forward.h",
     "functional.h",
+    "functional_internal.h",
     "gc_plugin.h",
     "get_ptr.h",
     "hash_counted_set.h",

@@ -37,6 +37,7 @@
 #include "base/sequence_checker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/functional_internal.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -169,39 +170,6 @@ CrossThreadUnretainedWrapper<T> CrossThreadUnretained(const raw_ptr<T>& value) {
                 "CrossThreadUnretained() + GCed type is forbidden");
   return CrossThreadUnretainedWrapper<T>(value.get());
 }
-
-namespace internal {
-
-template <size_t, typename T>
-struct CheckGCedTypeRestriction {
-  static_assert(
-      !std::is_pointer<T>::value,
-      "Raw pointers are not allowed to bind. Wrap it with either "
-      "WrapPersistent, WrapWeakPersistent, WrapCrossThreadPersistent, "
-      "WrapCrossThreadWeakPersistent, RetainedRef or Unretained.");
-  static_assert(!IsMemberOrWeakMemberType<T>::value,
-                "Member and WeakMember are not allowed to bind. Wrap it with "
-                "either WrapPersistent, WrapWeakPersistent, "
-                "WrapCrossThreadPersistent or WrapCrossThreadWeakPersistent.");
-  static_assert(!IsGarbageCollectedTypeV<T>,
-                "GCed types are forbidden as bound parameters.");
-  static_assert(!IsStackAllocatedTypeV<T>,
-                "Stack allocated types are forbidden as bound parameters.");
-  static_assert(
-      !(IsDisallowNew<T> && IsTraceableV<T>),
-      "Traceable disallow new types are forbidden as bound parameters.");
-};
-
-template <typename Index, typename... Args>
-struct CheckGCedTypeRestrictions;
-
-template <size_t... Ns, typename... Args>
-struct CheckGCedTypeRestrictions<std::index_sequence<Ns...>, Args...>
-    : CheckGCedTypeRestriction<Ns, Args>... {
-  static constexpr bool ok = true;
-};
-
-}  // namespace internal
 
 #if DCHECK_IS_ON()
 
@@ -361,7 +329,7 @@ class CrossThreadOnceFunction<R(Args...)> {
 template <typename FunctionType, typename... BoundParameters>
 // `auto` here deduces to an appropriate `base::OnceCallback<>`.
 auto BindOnce(FunctionType&& function, BoundParameters&&... bound_parameters) {
-  static_assert(internal::CheckGCedTypeRestrictions<
+  static_assert(functional_internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
                 "A bound argument uses a bad pattern.");
@@ -383,7 +351,7 @@ template <typename FunctionType, typename... BoundParameters>
 // `auto` here deduces to an appropriate `base::RepeatingCallback<>`.
 auto BindRepeating(FunctionType function,
                    BoundParameters&&... bound_parameters) {
-  static_assert(internal::CheckGCedTypeRestrictions<
+  static_assert(functional_internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
                 "A bound argument uses a bad pattern.");
