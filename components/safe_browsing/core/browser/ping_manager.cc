@@ -292,6 +292,15 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
         "SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
         report_type, ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
   }
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.ClientSafeBrowsingReport.ResponseReceived", report_type,
+      ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  if (source->NetError() == net::OK && response_code == net::HTTP_OK) {
+    base::UmaHistogramExactLinear(
+        "SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful", report_type,
+        ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  }
+
   OnURLLoaderComplete(source, response_body);
 }
 

@@ -691,6 +691,27 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.ResponseReceived"
+    enum="ClientSafeBrowsingReportType" expires_after="2026-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs per report type when the network request to send the report completes.
+    Logged each time the response is received once a report has been sent.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful"
+    enum="ClientSafeBrowsingReportType" expires_after="2026-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs per report type when the network request to send the report completes
+    when the response was 200 OK and no net error. Logged each time the response
+    is received once a report has been sent.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult"
     enum="ClientReportSendDownloadReportResult" expires_after="2026-04-26">
