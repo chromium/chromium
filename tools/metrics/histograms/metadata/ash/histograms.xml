@@ -841,12 +841,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Auth.ActiveSessionAuthFingerprintAttempt" units="attempts"
-    expires_after="2025-10-05">
+    expires_after="2026-11-25">
   <owner>iscsi@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The number of fingerprint attempts while the active session auth dialog was
     opened. Recorded when the active session auth dialog closes.
+
+    Warning: this histogram was expired from 2025-10-05 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4752,11 +4755,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2025-08-31">
+    enum="AuthMethodSwitchType" expires_after="2026-11-25">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The count of auth method switching actions on ChromeOS lock screen.
+
+    Warning: this histogram was expired from 2025-08-31 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4772,12 +4778,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
-    expires_after="2025-08-31">
+    expires_after="2026-11-25">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in tablet mode.
+
+    Warning: this histogram was expired from 2025-08-31 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4822,13 +4831,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Login.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2025-06-29">
+    enum="AuthMethod" expires_after="2026-11-25">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
     other form-factors.
+
+    Warning: this histogram was expired from 2025-06-29 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4843,7 +4855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Login.MigrationBanner" enum="BooleanShown"
-    expires_after="2025-10-24">
+    expires_after="2026-11-25">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -4852,16 +4864,22 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2024-02-04 to 2024-04-24; data may
     be missing.
+
+    Warning: this histogram was expired from 2025-10-24 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Login.Login.UserClicks" enum="LoginScreenUserClickTarget"
-    expires_after="2025-06-29">
+    expires_after="2026-11-25">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The numbers of times that users click on the shelf buttons and trays on the
     ChromeOS login screen.
+
+    Warning: this histogram was expired from 2025-06-29 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6037,12 +6055,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.OSAuth.Login.AuthFactorMigrationResult.{AuthFactorMigrationName}"
-    enum="AuthFactorMigrationResult" expires_after="2025-09-07">
+    enum="AuthFactorMigrationResult" expires_after="2026-11-25">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     The result of {AuthFactorMigrationName} migration. Reported on each login
     after the migrations are run.
+
+    Warning: this histogram was expired from 2025-09-07 to 2025-11-25; data may
+    be missing.
   </summary>
   <token key="AuthFactorMigrationName">
     <variant name="KnowledgeFactorHashInfoMigration"/>
@@ -6068,12 +6089,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.OSAuth.Login.Times.{LoginStage}" units="ms"
-    expires_after="2025-02-01">
+    expires_after="2026-11-25">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     Time spent during particular stages of login process. Recorded upon
     successful login.
+
+    Warning: this histogram was expired from 2025-02-01 to 2025-11-25; data may
+    be missing.
   </summary>
   <token key="LoginStage">
     <variant name="EarlyPrefsParse"/>
@@ -8135,12 +8159,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.Action"
-    enum="ShutdownConfirmationBubbleAction" expires_after="2025-04-24">
+    enum="ShutdownConfirmationBubbleAction" expires_after="2026-11-25">
   <owner>antrim@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     Track actions on the shutdown confirmation bubble, if it's opened, dismissed
     or which buttons are clicked.
+
+    Warning: this histogram was expired from 2025-04-24 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -9651,24 +9678,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowManager.Lock.Success" units="ms"
-    expires_after="2025-08-31">
+    expires_after="2026-11-25">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     How long it took for the screen lock process to complete. This does not
     include timeouts. Warning: this histogram was expired from M78 till M104 and
     from 2023-08-13 till 2024-04-24.
+
+    Warning: this histogram was expired from 2025-08-31 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.WindowManager.Lock.Timeout" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2026-11-25">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     How long it took for the screen lock process to complete, for timeouts only.
     Warning: this histogram was expired from M78 till M104. It was also expired
     from 2023-04-23 till 2023-07-10.
+
+    Warning: this histogram was expired from 2024-12-01 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
