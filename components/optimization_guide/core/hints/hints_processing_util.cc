@@ -135,8 +135,6 @@ std::string GetStringNameForOptimizationType(
       return "AutofillAblationSitesList6";
     case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST:
       return "AmountExtractionAllowlist";
-    case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
-      return "AutofillPredictionImprovementsAllowlist";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM:
       return "BuyNowPayLaterAllowlistAffirmDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP:
