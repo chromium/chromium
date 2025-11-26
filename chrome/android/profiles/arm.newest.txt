@@ -1,1 +1,1 @@
-chromeos-chrome-arm-144.0.7545.0_pre1549389_rc-r1-merged.afdo.bz2
+chromeos-chrome-arm-144.0.7547.0_pre1550212_rc-r1-merged.afdo.bz2
