@@ -73,7 +73,10 @@ password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
 
 // Returns true iff the profile with index |index| contains the same password
 // forms as the verifier profile.
-bool ProfileContainsSamePasswordFormsAsVerifier(int index);
+bool ProfileContainsSamePasswordFormsAsVerifier(
+    int index,
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns true iff the profile with index |index_a| contains the same
 // password forms as the profile with index |index_b|.
@@ -85,7 +88,9 @@ bool ProfilesContainSamePasswordForms(
 
 // Returns true iff all profiles contain the same password forms as the
 // verifier profile.
-bool AllProfilesContainSamePasswordFormsAsVerifier();
+bool AllProfilesContainSamePasswordFormsAsVerifier(
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns true iff all profiles contain the same password forms.
 bool AllProfilesContainSamePasswordForms(
@@ -109,7 +114,10 @@ int GetVerifierPasswordCount(
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
-password_manager::PasswordForm CreateTestPasswordForm(int index);
+password_manager::PasswordForm CreateTestPasswordForm(
+    int index,
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
@@ -180,13 +188,17 @@ class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
 class SamePasswordFormsAsVerifierChecker
     : public SingleClientStatusChangeChecker {
  public:
-  explicit SamePasswordFormsAsVerifierChecker(int index);
+  explicit SamePasswordFormsAsVerifierChecker(
+      int index,
+      password_manager::PasswordForm::Store store =
+          password_manager::PasswordForm::Store::kProfileStore);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const int index_;
+  const password_manager::PasswordForm::Store store_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;
 };
@@ -196,7 +208,9 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
  public:
   PasswordFormsChecker(
       int index,
-      const std::vector<password_manager::PasswordForm>& expected_forms);
+      const std::vector<password_manager::PasswordForm>& expected_forms,
+      password_manager::PasswordForm::Store store =
+          password_manager::PasswordForm::Store::kProfileStore);
   ~PasswordFormsChecker() override;
 
   // StatusChangeChecker implementation.
@@ -206,6 +220,7 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfiedImpl(std::ostream* os);
 
   const int index_;
+  const password_manager::PasswordForm::Store store_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;
