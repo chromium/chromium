@@ -258,7 +258,6 @@ void AnsibleManagementService::OnApplyAnsiblePlaybook(
 
   VLOG(1) << "Ansible playbook application has been started successfully";
   // Waiting for Ansible playbook application progress being reported.
-  // TODO(https://crbug.com/1043060): Add a timeout after which we stop waiting.
   for (auto& observer : observers_) {
     observer.OnApplyAnsiblePlaybook(container_id);
   }
