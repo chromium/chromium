@@ -20,7 +20,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace readaloud {
 
-ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(JNIEnv* env) {
+static ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(
+    JNIEnv* env) {
   if (g_browser_process && g_browser_process->metrics_service()) {
     return ConvertUTF8ToJavaString(
         env, g_browser_process->metrics_service()->GetClientId());
@@ -28,8 +29,8 @@ ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(JNIEnv* env) {
   return ConvertUTF8ToJavaString(env, "");
 }
 
-ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetServerExperimentFlag(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_ReadAloudFeatures_GetServerExperimentFlag(JNIEnv* env) {
   base::FieldTrial* trial =
       base::FeatureList::GetInstance()->GetAssociatedFieldTrialByFeatureName(
           chrome::android::kReadAloudServerExperiments.name);

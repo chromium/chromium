@@ -79,7 +79,7 @@ void SetJavaException(const char* exception) {
   }
 }
 
-void JNI_JavaExceptionReporter_ReportJavaException(
+static void JNI_JavaExceptionReporter_ReportJavaException(
     JNIEnv* env,
     jboolean crash_after_report,
     const JavaRef<jthrowable>& e) {
@@ -98,8 +98,9 @@ void JNI_JavaExceptionReporter_ReportJavaException(
   }
 }
 
-void JNI_JavaExceptionReporter_ReportJavaStackTrace(JNIEnv* env,
-                                                    std::string& stack_trace) {
+static void JNI_JavaExceptionReporter_ReportJavaStackTrace(
+    JNIEnv* env,
+    std::string& stack_trace) {
   SetJavaException(stack_trace.c_str());
   base::debug::DumpWithoutCrashing();
   SetJavaException(nullptr);

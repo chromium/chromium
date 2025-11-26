@@ -157,15 +157,15 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
       env, java_manager_, encoding, surrounding_text, start_offset, end_offset);
 }
 
-jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
-                                       Profile* profile) {
+static jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
+                                              const JavaParamRef<jobject>& obj,
+                                              Profile* profile) {
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);
   return reinterpret_cast<intptr_t>(manager);
 }
 
-jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
+static jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
     JNIEnv* env,
     Profile* profile) {
   // Attempt to resolve a (empty) query. Return whether resulting URL is

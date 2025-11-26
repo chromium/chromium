@@ -851,7 +851,7 @@ void TabAndroid::SetTabGroupId(
   Java_TabImpl_setTabGroupId(env, weak_java_tab_.get(env), java_token);
 }
 
-base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
+static base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   base::android::ScopedJavaLocalRef<jobject> jtab;

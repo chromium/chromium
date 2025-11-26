@@ -62,7 +62,7 @@ namespace {
 
 const char kOfflinePageBridgeKey[] = "offline-page-bridge";
 
-ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaOfflinePageItem(
+static ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaOfflinePageItem(
     JNIEnv* env,
     const OfflinePageItem& offline_page) {
   return Java_OfflinePageBridge_createOfflinePageItem(
@@ -76,7 +76,7 @@ ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaOfflinePageItem(
       offline_page.request_origin);
 }
 
-ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaDeletedPageInfo(
+static ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaDeletedPageInfo(
     JNIEnv* env,
     const OfflinePageItem& deleted_page) {
   return Java_OfflinePageBridge_createDeletedPageInfo(

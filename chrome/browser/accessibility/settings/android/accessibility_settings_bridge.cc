@@ -12,7 +12,7 @@
 using base::android::JavaParamRef;
 
 // static
-jboolean JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
+static jboolean JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
@@ -20,7 +20,7 @@ jboolean JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
 }
 
 // static
-void JNI_AccessibilitySettingsBridge_SetCaretBrowsingEnabled(
+static void JNI_AccessibilitySettingsBridge_SetCaretBrowsingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
@@ -29,7 +29,8 @@ void JNI_AccessibilitySettingsBridge_SetCaretBrowsingEnabled(
 }
 
 // static
-void JNI_AccessibilitySettingsBridge_SetShowCaretBrowsingDialogPreference(
+static void
+JNI_AccessibilitySettingsBridge_SetShowCaretBrowsingDialogPreference(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
@@ -38,7 +39,8 @@ void JNI_AccessibilitySettingsBridge_SetShowCaretBrowsingDialogPreference(
 }
 
 // static
-jboolean JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
+static jboolean
+JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);

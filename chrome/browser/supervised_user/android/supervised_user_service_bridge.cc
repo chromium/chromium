@@ -11,7 +11,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_bridge_jni_headers/SupervisedUserServiceBridge_jni.h"
 
 namespace supervised_user {
-jboolean JNI_SupervisedUserServiceBridge_IsSupervisedLocally(
+static jboolean JNI_SupervisedUserServiceBridge_IsSupervisedLocally(
     JNIEnv* env,
     Profile* profile) {
   SupervisedUserService* supervised_user_service =

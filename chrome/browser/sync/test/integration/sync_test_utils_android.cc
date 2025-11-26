@@ -165,8 +165,8 @@ void UpdateTabGroupVisualData(TabAndroid* tab,
                                                      j_title, j_color);
 }
 
-void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
-                                                jlong callbackPtr) {
+static void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
+                                                       jlong callbackPtr) {
   std::unique_ptr<base::OnceClosure> heap_callback(
       reinterpret_cast<base::OnceClosure*>(callbackPtr));
   std::move(*heap_callback).Run();

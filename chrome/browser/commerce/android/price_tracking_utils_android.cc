@@ -24,7 +24,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace commerce {
 
-void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
+static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     JNIEnv* env,
     Profile* profile,
     jlong bookmark_id,
@@ -54,7 +54,7 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
       bookmark_created_by_price_tracking);
 }
 
-void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
+static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
     JNIEnv* env,
     Profile* profile,
     jlong bookmark_id,

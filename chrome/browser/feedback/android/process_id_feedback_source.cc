@@ -26,12 +26,13 @@ using jni_zero::AttachCurrentThread;
 namespace chrome {
 namespace android {
 
-int64_t JNI_ProcessIdFeedbackSource_GetCurrentPid(JNIEnv* env) {
+static int64_t JNI_ProcessIdFeedbackSource_GetCurrentPid(JNIEnv* env) {
   return base::GetCurrentProcId();
 }
 
-void JNI_ProcessIdFeedbackSource_Start(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+static void JNI_ProcessIdFeedbackSource_Start(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
   scoped_refptr<ProcessIdFeedbackSource> source =
       new ProcessIdFeedbackSource(env, obj);
   source->PrepareProcessIds();

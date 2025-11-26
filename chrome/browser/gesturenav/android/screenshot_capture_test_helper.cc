@@ -37,7 +37,7 @@ void OnNavScreenshotAvailableForTesting(int nav_entry_index,
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-void JNI_ScreenshotCaptureTestHelper_SetNavScreenshotCallbackForTesting(
+static void JNI_ScreenshotCaptureTestHelper_SetNavScreenshotCallbackForTesting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jhandler) {
   java_handler_for_testing_ =

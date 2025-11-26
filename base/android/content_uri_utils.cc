@@ -123,13 +123,13 @@ bool IsDocumentUri(const FilePath& content_uri) {
 
 }  // namespace internal
 
-void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
-                                             jlong vector_pointer,
-                                             std::string& uri,
-                                             std::string& display_name,
-                                             jboolean is_directory,
-                                             jlong size,
-                                             jlong last_modified) {
+static void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
+                                                    jlong vector_pointer,
+                                                    std::string& uri,
+                                                    std::string& display_name,
+                                                    jboolean is_directory,
+                                                    jlong size,
+                                                    jlong last_modified) {
   auto* result =
       reinterpret_cast<std::vector<FileEnumerator::FileInfo>*>(vector_pointer);
   result->emplace_back(FilePath(uri), FilePath(display_name), is_directory,

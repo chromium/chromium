@@ -13,7 +13,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 
-void JNI_DevToolsWindowAndroid_OpenDevTools(
+static void JNI_DevToolsWindowAndroid_OpenDevTools(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& java_web_contents) {
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -27,7 +27,7 @@ void JNI_DevToolsWindowAndroid_OpenDevTools(
 #endif
 }
 
-jboolean JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
+static jboolean JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& java_profile,
     const jni_zero::JavaParamRef<jobject>& java_web_contents) {

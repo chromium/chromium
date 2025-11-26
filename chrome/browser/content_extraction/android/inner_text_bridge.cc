@@ -29,7 +29,7 @@ void OnGotInnerText(
 }
 }  // namespace
 
-void JNI_InnerTextBridge_GetInnerText(
+static void JNI_InnerTextBridge_GetInnerText(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback) {

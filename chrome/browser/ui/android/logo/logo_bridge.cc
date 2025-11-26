@@ -36,7 +36,7 @@ using base::android::ToJavaByteArray;
 
 namespace {
 
-ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
+static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     JNIEnv* env,
     const SkBitmap& bitmap,
     const GURL& on_click_url,
@@ -64,7 +64,7 @@ ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
 }
 
 // Converts a C++ Logo to a Java Logo.
-ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
+static ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
     JNIEnv* env,
     const search_provider_logos::Logo* logo) {
   if (!logo) {

@@ -12,11 +12,11 @@
 namespace base {
 namespace android {
 
-jint JNI_CpuFeatures_GetCoreCount(JNIEnv*) {
+static jint JNI_CpuFeatures_GetCoreCount(JNIEnv*) {
   return android_getCpuCount();
 }
 
-jlong JNI_CpuFeatures_GetCpuFeatures(JNIEnv*) {
+static jlong JNI_CpuFeatures_GetCpuFeatures(JNIEnv*) {
   return static_cast<jlong>(android_getCpuFeatures());
 }
 

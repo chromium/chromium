@@ -489,39 +489,42 @@ bool IsKnownConsumerDomain(const std::string& email_domain) {
 #if BUILDFLAG(IS_ANDROID)
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
-                                                  Profile* profile) {
+static jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
+                                                         Profile* profile) {
   return policy::ManagementServiceFactory::GetForProfile(profile)
       ->IsBrowserManaged();
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
-                                                  Profile* profile) {
+static jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
+                                                         Profile* profile) {
   return policy::ManagementServiceFactory::GetForProfile(profile)
       ->IsAccountManaged();
 }
 
 // static
-std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env, Profile* profile) {
+static std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env,
+                                                       Profile* profile) {
   return GetManagementPageSubtitle(profile);
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
+static jboolean JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(
       enterprise_reporting::kCloudReportingEnabled);
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
-                                                           Profile* profile) {
+static jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
+    JNIEnv* env,
+    Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       enterprise_reporting::kCloudProfileReportingEnabled);
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
+static jboolean
+JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
     JNIEnv* env,
     Profile* profile) {
   DCHECK(profile);
@@ -537,7 +540,7 @@ jboolean JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
+static jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
     JNIEnv* env,
     Profile* profile) {
   DCHECK(profile);

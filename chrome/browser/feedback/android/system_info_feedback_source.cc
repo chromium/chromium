@@ -19,27 +19,28 @@ using base::android::ScopedJavaLocalRef;
 namespace chrome {
 namespace android {
 
-std::string JNI_SystemInfoFeedbackSource_GetCpuArchitecture(JNIEnv* env) {
+static std::string JNI_SystemInfoFeedbackSource_GetCpuArchitecture(
+    JNIEnv* env) {
   return base::SysInfo::OperatingSystemArchitecture();
 }
 
-std::string JNI_SystemInfoFeedbackSource_GetGpuVendor(JNIEnv* env) {
+static std::string JNI_SystemInfoFeedbackSource_GetGpuVendor(JNIEnv* env) {
   gpu::GPUInfo info = content::GpuDataManager::GetInstance()->GetGPUInfo();
 
   return info.active_gpu().vendor_string;
 }
 
-std::string JNI_SystemInfoFeedbackSource_GetGpuModel(JNIEnv* env) {
+static std::string JNI_SystemInfoFeedbackSource_GetGpuModel(JNIEnv* env) {
   gpu::GPUInfo info = content::GpuDataManager::GetInstance()->GetGPUInfo();
   return info.active_gpu().device_string;
 }
 
-int JNI_SystemInfoFeedbackSource_GetAvailableMemoryMB(JNIEnv* env) {
+static int JNI_SystemInfoFeedbackSource_GetAvailableMemoryMB(JNIEnv* env) {
   return base::saturated_cast<int>(
       base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB());
 }
 
-int JNI_SystemInfoFeedbackSource_GetTotalMemoryMB(JNIEnv* env) {
+static int JNI_SystemInfoFeedbackSource_GetTotalMemoryMB(JNIEnv* env) {
   return base::SysInfo::AmountOfPhysicalMemory().InMiB();
 }
 

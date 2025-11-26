@@ -127,7 +127,7 @@ void WebApkUkmRecorder::RecordWebApkableVisit(const GURL& manifest_id) {
 }
 
 // Called by the Java counterpart to record the Session Duration UKM metric.
-void JNI_WebApkUkmRecorder_RecordSessionDuration(
+static void JNI_WebApkUkmRecorder_RecordSessionDuration(
     JNIEnv* env,
     const JavaParamRef<jstring>& manifest_id,
     jint distributor,
@@ -139,18 +139,19 @@ void JNI_WebApkUkmRecorder_RecordSessionDuration(
 }
 
 // Called by the Java counterpart to record the Visit UKM metric.
-void JNI_WebApkUkmRecorder_RecordVisit(JNIEnv* env,
-                                       const JavaParamRef<jstring>& manifest_id,
-                                       jint distributor,
-                                       jint version_code,
-                                       jint source) {
+static void JNI_WebApkUkmRecorder_RecordVisit(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& manifest_id,
+    jint distributor,
+    jint version_code,
+    jint source) {
   WebApkUkmRecorder::RecordVisit(
       ConvertNullableJavaStringToGURL(env, manifest_id), distributor,
       version_code, source);
 }
 
 // Called by the Java counterpart to record the Uninstall UKM metrics.
-void JNI_WebApkUkmRecorder_RecordUninstall(
+static void JNI_WebApkUkmRecorder_RecordUninstall(
     JNIEnv* env,
     const JavaParamRef<jstring>& manifest_id,
     jint distributor,

@@ -50,9 +50,10 @@ void RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kReadAloudSyntheticTrials);
 }
 
-void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
-                                  const JavaParamRef<jobject>& j_pref_service,
-                                  const JavaParamRef<jobject>& j_output_map) {
+static void JNI_ReadAloudPrefs_GetVoices(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_pref_service,
+    const JavaParamRef<jobject>& j_output_map) {
   PrefService* prefs =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
 
@@ -63,10 +64,11 @@ void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
   }
 }
 
-void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
-                                 const JavaParamRef<jobject>& j_pref_service,
-                                 const JavaParamRef<jstring>& j_language,
-                                 const JavaParamRef<jstring>& j_voice_id) {
+static void JNI_ReadAloudPrefs_SetVoice(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_pref_service,
+    const JavaParamRef<jstring>& j_language,
+    const JavaParamRef<jstring>& j_voice_id) {
   ScopedDictPrefUpdate(
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service),
       prefs::kReadAloudVoiceSettings)
@@ -74,7 +76,7 @@ void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
             ConvertJavaStringToUTF8(env, j_voice_id));
 }
 
-jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
+static jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_pref_service,
     const JavaParamRef<jstring>& j_metrics_id) {

@@ -154,7 +154,7 @@ void RlzPingHandler::OnSimpleLoaderComplete(
   delete this;
 }
 
-void JNI_RlzPingHandler_StartPing(
+static void JNI_RlzPingHandler_StartPing(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaParamRef<jstring>& j_brand,

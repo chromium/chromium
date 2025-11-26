@@ -103,10 +103,10 @@ static jboolean JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
                                                  jdefault_value);
 }
 
-std::vector<std::string> JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(
-    JNIEnv* env,
-    jlong jfeature_map,
-    std::string& feature_name) {
+static std::vector<std::string>
+JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(JNIEnv* env,
+                                                    jlong jfeature_map,
+                                                    std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   base::FieldTrialParams params;
   std::vector<std::string> keys_and_values;

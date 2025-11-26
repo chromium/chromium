@@ -806,15 +806,16 @@ base::FilePath AwMetricsServiceClient::GetNoBackupFilesDir() {
 }
 
 // static
-void JNI_AwMetricsServiceClient_SetHaveMetricsConsent(JNIEnv* env,
-                                                      jboolean user_consent,
-                                                      jboolean app_consent) {
+static void JNI_AwMetricsServiceClient_SetHaveMetricsConsent(
+    JNIEnv* env,
+    jboolean user_consent,
+    jboolean app_consent) {
   AwMetricsServiceClient::GetInstance()->SetHaveMetricsConsent(user_consent,
                                                                app_consent);
 }
 
 // static
-void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
+static void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
     JNIEnv* env,
     jboolean fast_startup_for_testing) {
   AwMetricsServiceClient::GetInstance()->SetFastStartupForTesting(
@@ -822,7 +823,7 @@ void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
 }
 
 // static
-void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
+static void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
     JNIEnv* env,
     jlong upload_interval_ms) {
   AwMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
@@ -830,7 +831,8 @@ void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
 }
 
 // static
-void JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
+static void
+JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& listener) {
   AwMetricsServiceClient::GetInstance()

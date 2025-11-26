@@ -48,11 +48,11 @@ using base::android::JavaParamRef;
 
 namespace android {
 
-jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
+static jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
   return features::IsAndroidSurfaceControlEnabled();
 }
 
-jlong JNI_CompositorView_Init(
+static jlong JNI_CompositorView_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jwindow_android,
@@ -75,7 +75,7 @@ jlong JNI_CompositorView_Init(
   return reinterpret_cast<intptr_t>(view);
 }
 
-jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
+static jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
   return features::PreferRGB565ResourcesForDisplay();
 }
 

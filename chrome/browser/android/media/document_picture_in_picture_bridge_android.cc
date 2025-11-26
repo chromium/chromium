@@ -14,7 +14,7 @@ class DocumentPictureInPictureCCTActivity {
   void NonStatic(JNIEnv* env);
 };
 
-void JNI_DocumentPictureInPictureActivity_OnActivityStart(
+static void JNI_DocumentPictureInPictureActivity_OnActivityStart(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& parentWebContent,
     const jni_zero::JavaParamRef<jobject>& webContent) {

@@ -104,7 +104,7 @@ using content::WebContents;
 
 namespace {
 
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRectF(JNIEnv* env,
                                                       const gfx::RectF& rect) {
   return ScopedJavaLocalRef<jobject>(
@@ -112,7 +112,7 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRectF(JNIEnv* env,
           env, rect.x(), rect.y(), rect.right(), rect.bottom()));
 }
 
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(JNIEnv* env,
                                                      const gfx::Rect& rect) {
   return ScopedJavaLocalRef<jobject>(
@@ -121,7 +121,7 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(JNIEnv* env,
           static_cast<int>(rect.right()), static_cast<int>(rect.bottom())));
 }
 
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
     JNIEnv* env,
     const blink::mojom::WindowFeatures& window_features) {
@@ -736,7 +736,7 @@ void TabWebContentsDelegateAndroid::DraggableRegionsChanged(
 
 }  // namespace android
 
-void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
+static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   // Rate limit the number of stack dumps so we don't overwhelm our crash

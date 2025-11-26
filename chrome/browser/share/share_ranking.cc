@@ -555,14 +555,15 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 #if BUILDFLAG(IS_ANDROID)
 
-void JNI_ShareRankingBridge_Rank(JNIEnv* env,
-                                 Profile* profile,
-                                 std::string& type,
-                                 std::vector<std::string>& available,
-                                 jint jfold,
-                                 jint jlength,
-                                 jboolean jpersist,
-                                 const JavaParamRef<jobject>& jcallback) {
+static void JNI_ShareRankingBridge_Rank(
+    JNIEnv* env,
+    Profile* profile,
+    std::string& type,
+    std::vector<std::string>& available,
+    jint jfold,
+    jint jlength,
+    jboolean jpersist,
+    const JavaParamRef<jobject>& jcallback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);
 
   if (profile->IsOffTheRecord()) {

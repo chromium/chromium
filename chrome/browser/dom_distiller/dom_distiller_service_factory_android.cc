@@ -29,7 +29,7 @@ ScopedJavaLocalRef<jobject> DomDistillerServiceFactoryAndroid::GetForProfile(
   return ScopedJavaLocalRef<jobject>(service_android->java_ref_);
 }
 
-ScopedJavaLocalRef<jobject> JNI_DomDistillerServiceFactory_GetForProfile(
+static ScopedJavaLocalRef<jobject> JNI_DomDistillerServiceFactory_GetForProfile(
     JNIEnv* env,
     Profile* profile) {
   return DomDistillerServiceFactoryAndroid::GetForProfile(env, profile);

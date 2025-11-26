@@ -14,9 +14,10 @@ using base::android::JavaParamRef;
 namespace chrome {
 namespace android {
 
-jboolean JNI_IntentHandler_IsCorsSafelistedHeader(JNIEnv* env,
-                                                  std::string& header_name,
-                                                  std::string& header_value) {
+static jboolean JNI_IntentHandler_IsCorsSafelistedHeader(
+    JNIEnv* env,
+    std::string& header_name,
+    std::string& header_value) {
   return network::cors::IsCorsSafelistedHeader(header_name, header_value);
 }
 

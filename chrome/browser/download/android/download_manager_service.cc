@@ -69,7 +69,8 @@ bool ShouldShowDownloadItem(download::DownloadItem* item) {
   return !item->IsTemporary() && !item->IsTransient();
 }
 
-ScopedJavaLocalRef<jobject> JNI_DownloadManagerService_CreateJavaDownloadItem(
+static ScopedJavaLocalRef<jobject>
+JNI_DownloadManagerService_CreateJavaDownloadItem(
     JNIEnv* env,
     download::DownloadItem* item) {
   DCHECK(!item->IsTransient());
@@ -690,7 +691,7 @@ void DownloadManagerService::InitializeForProfile(ProfileKey* profile_key) {
 }
 
 // static
-jboolean JNI_DownloadManagerService_IsSupportedMimeType(
+static jboolean JNI_DownloadManagerService_IsSupportedMimeType(
     JNIEnv* env,
     std::string& mime_type) {
   return blink::IsSupportedMimeType(mime_type);

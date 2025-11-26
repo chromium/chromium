@@ -23,7 +23,7 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 // Called by Java when the WebContents instance for a request Id is available.
-void JNI_ServiceTabLauncher_OnWebContentsForRequestAvailable(
+static void JNI_ServiceTabLauncher_OnWebContentsForRequestAvailable(
     JNIEnv* env,
     jint request_id,
     const JavaParamRef<jobject>& android_web_contents) {

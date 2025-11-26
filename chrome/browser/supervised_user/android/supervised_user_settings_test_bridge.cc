@@ -21,9 +21,10 @@
 
 using base::android::JavaParamRef;
 
-void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(JNIEnv* env,
-                                                               Profile* profile,
-                                                               jint setting) {
+static void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
+    JNIEnv* env,
+    Profile* profile,
+    jint setting) {
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
@@ -33,7 +34,7 @@ void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(JNIEnv* env,
       base::Value(setting));
 }
 
-void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
+static void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jstring>& host,
@@ -58,7 +59,8 @@ class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
 };
 }  // namespace
 
-void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
+static void
+JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
     JNIEnv* env,
     Profile* profile,
     jboolean is_allowed) {

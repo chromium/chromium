@@ -246,15 +246,16 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 }  // namespace sharing
 
 #if BUILDFLAG(IS_ANDROID)
-void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
-                                          Profile* profile,
-                                          const JavaParamRef<jstring>& name) {
+static void JNI_ShareHistoryBridge_AddShareEntry(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaParamRef<jstring>& name) {
   auto* instance = sharing::ShareHistory::Get(profile);
   if (instance)
     instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
 }
 
-void JNI_ShareHistoryBridge_Clear(JNIEnv* env, Profile* profile) {
+static void JNI_ShareHistoryBridge_Clear(JNIEnv* env, Profile* profile) {
   auto* instance = sharing::ShareHistory::Get(profile);
   if (instance)
     instance->Clear();

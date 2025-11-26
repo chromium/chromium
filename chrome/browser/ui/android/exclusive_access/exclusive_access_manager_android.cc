@@ -143,7 +143,7 @@ void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jlong JNI_ExclusiveAccessManager_Init(
+static jlong JNI_ExclusiveAccessManager_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& jeam,
     const jni_zero::JavaParamRef<jobject>& j_context,

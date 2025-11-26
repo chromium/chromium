@@ -325,7 +325,7 @@ ManualFillingViewAndroid::GetOrCreateJavaObject() {
 }
 
 // static
-void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
+static void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     std::vector<std::string>& usernames,
@@ -353,7 +353,7 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
+static void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     jlong j_focused_field_id,
@@ -366,7 +366,8 @@ void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
+static void
+JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     jboolean j_available) {
@@ -382,7 +383,7 @@ void JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_DisableServerPredictionsForTesting(
+static void JNI_ManualFillingComponentBridge_DisableServerPredictionsForTesting(
     JNIEnv* env) {
   password_manager::PasswordFormManager::
       DisableFillingServerPredictionsForTesting();

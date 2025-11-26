@@ -58,12 +58,13 @@ TestSupervisedUserService* GetTestSupervisedUserService(Profile* profile) {
 
 }  // namespace
 
-void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env, Profile* profile) {
+static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
+                                                     Profile* profile) {
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile, base::BindRepeating(&BuildSupervisedUserService));
 }
 
-void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
+static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env,
     Profile* profile) {
   GetTestSupervisedUserService(profile)
@@ -71,7 +72,7 @@ void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
       ->SetEnabled(true);
 }
 
-void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
+static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env,
     Profile* profile) {
   GetTestSupervisedUserService(profile)

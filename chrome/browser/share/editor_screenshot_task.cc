@@ -28,7 +28,7 @@ namespace android {
  * TODO(crbug.com/40107491): Remove this temporary class and instead move
  * chrome/browser/android/feedback/screenshot_task.cc.
  */
-void JNI_EditorScreenshotTask_SnapshotCallback(
+static void JNI_EditorScreenshotTask_SnapshotCallback(
     JNIEnv* env,
     const JavaRef<jobject>& callback,
     scoped_refptr<base::RefCountedMemory> png_data) {
@@ -43,7 +43,7 @@ void JNI_EditorScreenshotTask_SnapshotCallback(
   }
 }
 
-void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
+static void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcallback,
     const JavaParamRef<jobject>& jwindow_android,

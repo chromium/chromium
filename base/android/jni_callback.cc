@@ -107,7 +107,7 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
                std::move(callback)));
 }
 
-void JNI_JniCallbackImpl_OnResult(
+static void JNI_JniCallbackImpl_OnResult(
     JNIEnv* env,
     jboolean isRepeating,
     jlong callbackPtr,
@@ -123,9 +123,9 @@ void JNI_JniCallbackImpl_OnResult(
   }
 }
 
-void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
-                                 jboolean isRepeating,
-                                 jlong callbackPtr) {
+static void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
+                                        jboolean isRepeating,
+                                        jlong callbackPtr) {
   if (isRepeating) {
     auto* callback =
         reinterpret_cast<JniRepeatingWrappedCallbackType*>(callbackPtr);

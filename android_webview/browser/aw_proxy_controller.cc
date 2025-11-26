@@ -48,7 +48,7 @@ void ProxyOverrideChanged(const JavaRef<jobject>& obj,
 
 }  // namespace
 
-std::string JNI_AwProxyController_SetProxyOverride(
+static std::string JNI_AwProxyController_SetProxyOverride(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobjectArray>& jurl_schemes,
@@ -83,7 +83,7 @@ std::string JNI_AwProxyController_SetProxyOverride(
   return result;
 }
 
-void JNI_AwProxyController_ClearProxyOverride(
+static void JNI_AwProxyController_ClearProxyOverride(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& listener,

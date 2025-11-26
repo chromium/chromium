@@ -59,7 +59,7 @@ void RunTaskNotifyCallback(
 }
 
 // static
-void JNI_DownloadBackgroundTask_StartBackgroundTask(
+static void JNI_DownloadBackgroundTask_StartBackgroundTask(
     JNIEnv* env,
     const JavaParamRef<jobject>& jkey,
     jint task_type,
@@ -88,7 +88,7 @@ void JNI_DownloadBackgroundTask_StartBackgroundTask(
 }
 
 // static
-jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
+static jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
     JNIEnv* env,
     const JavaParamRef<jobject>& jkey,
     jint task_type) {

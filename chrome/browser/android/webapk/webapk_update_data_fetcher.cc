@@ -52,7 +52,7 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 
 }  // anonymous namespace
 
-jlong JNI_WebApkUpdateDataFetcher_Initialize(
+static jlong JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     std::string& java_start_url,

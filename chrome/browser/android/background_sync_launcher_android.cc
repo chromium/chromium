@@ -44,22 +44,23 @@ int GetBackgroundTaskType(blink::mojom::BackgroundSyncType sync_type) {
 }  // namespace
 
 // static
-void JNI_BackgroundSyncBackgroundTask_FireOneShotBackgroundSyncEvents(
+static void JNI_BackgroundSyncBackgroundTask_FireOneShotBackgroundSyncEvents(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_runnable) {
-
   BackgroundSyncLauncherAndroid::Get()->FireBackgroundSyncEvents(
       blink::mojom::BackgroundSyncType::ONE_SHOT, j_runnable);
 }
 
-void JNI_PeriodicBackgroundSyncChromeWakeUpTask_FirePeriodicBackgroundSyncEvents(
+static void
+JNI_PeriodicBackgroundSyncChromeWakeUpTask_FirePeriodicBackgroundSyncEvents(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_runnable) {
   BackgroundSyncLauncherAndroid::Get()->FireBackgroundSyncEvents(
       blink::mojom::BackgroundSyncType::PERIODIC, j_runnable);
 }
 
-void JNI_BackgroundSyncBackgroundTaskScheduler_SetPlayServicesVersionCheckDisabledForTests(
+static void
+JNI_BackgroundSyncBackgroundTaskScheduler_SetPlayServicesVersionCheckDisabledForTests(
     JNIEnv* env,
     jboolean disabled) {
   BackgroundSyncLauncherAndroid::SetPlayServicesVersionCheckDisabledForTests(

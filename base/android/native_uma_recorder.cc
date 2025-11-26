@@ -153,7 +153,7 @@ static void OnActionRecorded(const JavaRef<jobject>& callback,
 
 }  // namespace
 
-jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
+static jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
     JNIEnv* env,
     std::string& j_histogram_name,
     jlong j_histogram_hint,
@@ -165,7 +165,7 @@ jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
+static jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
     JNIEnv* env,
     std::string& j_histogram_name,
     jlong j_histogram_hint,
@@ -180,13 +180,14 @@ jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-jlong JNI_NativeUmaRecorder_RecordLinearHistogram(JNIEnv* env,
-                                                  std::string& j_histogram_name,
-                                                  jlong j_histogram_hint,
-                                                  jint j_sample,
-                                                  jint j_min,
-                                                  jint j_max,
-                                                  jint j_num_buckets) {
+static jlong JNI_NativeUmaRecorder_RecordLinearHistogram(
+    JNIEnv* env,
+    std::string& j_histogram_name,
+    jlong j_histogram_hint,
+    jint j_sample,
+    jint j_min,
+    jint j_max,
+    jint j_num_buckets) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram = LinearHistogram(
       env, j_histogram_name, j_histogram_hint, j_min, j_max, j_num_buckets);
@@ -194,10 +195,11 @@ jlong JNI_NativeUmaRecorder_RecordLinearHistogram(JNIEnv* env,
   return reinterpret_cast<jlong>(histogram);
 }
 
-jlong JNI_NativeUmaRecorder_RecordSparseHistogram(JNIEnv* env,
-                                                  std::string& j_histogram_name,
-                                                  jlong j_histogram_hint,
-                                                  jint j_sample) {
+static jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
+    JNIEnv* env,
+    std::string& j_histogram_name,
+    jlong j_histogram_hint,
+    jint j_sample) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram =
       SparseHistogram(env, j_histogram_name, j_histogram_hint);
@@ -205,9 +207,10 @@ jlong JNI_NativeUmaRecorder_RecordSparseHistogram(JNIEnv* env,
   return reinterpret_cast<jlong>(histogram);
 }
 
-void JNI_NativeUmaRecorder_RecordUserAction(JNIEnv* env,
-                                            std::string& user_action_name,
-                                            jlong j_millis_since_event) {
+static void JNI_NativeUmaRecorder_RecordUserAction(
+    JNIEnv* env,
+    std::string& user_action_name,
+    jlong j_millis_since_event) {
   // Time values coming from Java need to be synchronized with TimeTick clock.
   RecordComputedActionSince(user_action_name,
                             Milliseconds(j_millis_since_event));
@@ -217,7 +220,7 @@ void JNI_NativeUmaRecorder_RecordUserAction(JNIEnv* env,
 // MetricsUtils.HistogramDelta. It should live in a test-specific file, but we
 // currently can't have test-specific native code packaged in test-specific Java
 // targets - see http://crbug.com/415945.
-jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
+static jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
     JNIEnv* env,
     std::string& name,
     jint sample,
@@ -240,7 +243,7 @@ jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
   return actual_count;
 }
 
-jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
+static jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
     JNIEnv* env,
     std::string& name,
     jlong snapshot_ptr) {
@@ -263,7 +266,7 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
 
 // Returns an array with 3 entries for each bucket, representing (min, max,
 // count).
-ScopedJavaLocalRef<jlongArray>
+static ScopedJavaLocalRef<jlongArray>
 JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
                                                     std::string& name) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
@@ -289,7 +292,8 @@ JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
   return base::android::ToJavaLongArray(env, buckets);
 }
 
-jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(JNIEnv* env) {
+static jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(
+    JNIEnv* env) {
   HistogramsSnapshot* snapshot = new HistogramsSnapshot();
   for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
     InsertOrAssign(*snapshot, histogram->histogram_name(),
@@ -298,7 +302,7 @@ jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(snapshot);
 }
 
-void JNI_NativeUmaRecorder_DestroyHistogramSnapshotForTesting(
+static void JNI_NativeUmaRecorder_DestroyHistogramSnapshotForTesting(
     JNIEnv* env,
     jlong snapshot_ptr) {
   delete reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);

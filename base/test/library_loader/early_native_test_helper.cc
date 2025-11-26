@@ -13,13 +13,13 @@
 namespace base {
 
 // Ensures that the LibraryLoader swapped over to the native command line.
-jboolean JNI_EarlyNativeTest_IsCommandLineInitialized(JNIEnv* env) {
+static jboolean JNI_EarlyNativeTest_IsCommandLineInitialized(JNIEnv* env) {
   return CommandLine::InitializedForCurrentProcess();
 }
 
 // Ensures that native initialization took place, allowing early native code to
 // use things like Tracing that don't depend on content initialization.
-jboolean JNI_EarlyNativeTest_IsProcessNameEmpty(JNIEnv* env) {
+static jboolean JNI_EarlyNativeTest_IsProcessNameEmpty(JNIEnv* env) {
   return CurrentProcess::GetInstance().IsProcessNameEmpty();
 }
 

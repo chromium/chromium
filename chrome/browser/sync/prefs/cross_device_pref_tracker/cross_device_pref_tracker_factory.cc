@@ -74,7 +74,7 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_CrossDevicePrefTrackerFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   DCHECK(profile);
 

@@ -40,8 +40,9 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
 
 OmniboxPrerender::~OmniboxPrerender() = default;
 
-jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
-                                const jni_zero::JavaParamRef<jobject>& obj) {
+static jlong JNI_OmniboxPrerender_Init(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& obj) {
   OmniboxPrerender* omnibox = new OmniboxPrerender(env, obj);
   return reinterpret_cast<intptr_t>(omnibox);
 }
