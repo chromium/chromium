@@ -322,8 +322,8 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> ResolveMethod(
   // 6. If method is not undefined,
   //    a. If ! IsCallable(method) is false, throw a TypeError exception.
   if (!method->IsFunction() && !method->IsUndefined()) {
-    exception_state.ThrowTypeError(String(name_for_error) +
-                                   " must be a function or undefined");
+    exception_state.ThrowTypeError(
+        StrCat({name_for_error, " must be a function or undefined"}));
     return v8::MaybeLocal<v8::Value>();
   }
 

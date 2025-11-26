@@ -147,7 +147,7 @@ void SVGElement::ReportAttributeParsingError(SVGParsingError error,
   GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kRendering,
       mojom::ConsoleMessageLevel::kError,
-      "Error: " + error.Format(tagName(), name, value)));
+      StrCat({"Error: ", error.Format(tagName(), name, value)})));
 }
 
 String SVGElement::title() const {

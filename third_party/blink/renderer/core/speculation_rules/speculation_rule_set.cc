@@ -46,12 +46,13 @@ void AddConsoleMessageForSpeculationRuleSetValidation(
   if (speculation_rule_set.HasError()) {
     String error_message;
     if (script_element) {
-      error_message = "While parsing speculation rules: " +
-                      speculation_rule_set.error_message();
+      error_message = StrCat({"While parsing speculation rules: ",
+                              speculation_rule_set.error_message()});
     } else {
-      error_message = "While parsing speculation rules fetched from \"" +
-                      resource->GetResourceRequest().Url().ElidedString() +
-                      "\": " + speculation_rule_set.error_message() + "\".";
+      error_message =
+          StrCat({"While parsing speculation rules fetched from \"",
+                  resource->GetResourceRequest().Url().ElidedString(),
+                  "\": ", speculation_rule_set.error_message(), "\"."});
     }
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
@@ -66,13 +67,13 @@ void AddConsoleMessageForSpeculationRuleSetValidation(
     // Only add the first warning message to console.
     String warning_message;
     if (script_element) {
-      warning_message = "While parsing speculation rules: " +
-                        speculation_rule_set.warning_messages()[0];
+      warning_message = StrCat({"While parsing speculation rules: ",
+                                speculation_rule_set.warning_messages()[0]});
     } else {
-      warning_message = "While parsing speculation rules fetched from \"" +
-                        resource->GetResourceRequest().Url().ElidedString() +
-                        "\": " + speculation_rule_set.warning_messages()[0] +
-                        "\".";
+      warning_message =
+          StrCat({"While parsing speculation rules fetched from \"",
+                  resource->GetResourceRequest().Url().ElidedString(),
+                  "\": ", speculation_rule_set.warning_messages()[0], "\"."});
     }
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
@@ -154,7 +155,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     const String& input_key = input->at(i).first;
     if (!base::Contains(kKnownKeys, input_key)) {
       SetParseErrorMessage(
-          out_error, "A rule contains an unknown key: \"" + input_key + "\".");
+          out_error,
+          StrCat({"A rule contains an unknown key: \"", input_key, "\"."}));
       return nullptr;
     }
   }
@@ -195,8 +197,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   }
 
   if (source != "list" && source != "document") {
-    SetParseErrorMessage(out_error,
-                         "A rule has an unknown source: \"" + source + "\".");
+    SetParseErrorMessage(
+        out_error, StrCat({"A rule has an unknown source: \"", source, "\"."}));
     return nullptr;
   }
 
@@ -315,9 +317,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         requires_anonymous_client_ip =
             SpeculationRule::RequiresAnonymousClientIPWhenCrossOrigin(true);
       } else {
-        SetParseErrorMessage(
-            out_error,
-            "A rule has an unknown requirement: \"" + requirement + "\".");
+        SetParseErrorMessage(out_error,
+                             StrCat({"A rule has an unknown requirement: \"",
+                                     requirement, "\"."}));
         return nullptr;
       }
     }
@@ -337,9 +339,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         return nullptr;
       }
       if (!IsValidBrowsingContextNameOrKeyword(target_hint_str)) {
-        SetParseErrorMessage(out_error,
-                             "A rule has an invalid \"target_hint\": \"" +
-                                 target_hint_str + "\".");
+        SetParseErrorMessage(
+            out_error, StrCat({"A rule has an invalid \"target_hint\": \"",
+                               target_hint_str, "\"."}));
         return nullptr;
       }
       target_hint =
@@ -364,9 +366,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       if (!SecurityPolicy::ReferrerPolicyFromString(
               referrer_policy_str, kDoNotSupportReferrerPolicyLegacyKeywords,
               &referrer_policy_out)) {
-        SetParseErrorMessage(out_error,
-                             "A rule has an invalid referrer policy: \"" +
-                                 referrer_policy_str + "\".");
+        SetParseErrorMessage(
+            out_error, StrCat({"A rule has an invalid referrer policy: \"",
+                               referrer_policy_str, "\"."}));
         return nullptr;
       }
       DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
@@ -395,7 +397,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       eagerness = mojom::blink::SpeculationEagerness::kConservative;
     } else {
       SetParseErrorMessage(
-          out_error, "Eagerness value: \"" + eagerness_str + "\" is invalid.");
+          out_error,
+          StrCat({"Eagerness value: \"", eagerness_str, "\" is invalid."}));
       return nullptr;
     }
 
@@ -626,14 +629,14 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           "prerender",
           "prerender_until_script",
       };
-      duplicate_key_warning =
-          "An object contained more than one key named " +
-          key.EncodeForDebugging() + ". All but the last are ignored." +
-          (base::Contains(action_allow_list, key)
-               ? " It is likely that either one of them was intended to be "
-                 "another action, or that their rules should be merged into a "
-                 "single array."
-               : String());
+      duplicate_key_warning = StrCat(
+          {"An object contained more than one key named ",
+           key.EncodeForDebugging(), ". All but the last are ignored.",
+           (base::Contains(action_allow_list, key)
+                ? " It is likely that either one of them was intended to be "
+                  "another action, or that their rules should be merged into a "
+                  "single array."
+                : "")});
     } else {
       StringBuilder builder;
       builder.Append(
@@ -675,9 +678,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
         JSONArray* array = JSONArray::Cast(value);
         if (!array) {
-          result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                           "A rule set for a key must be an array: path = [\"" +
-                               String(key) + "\"]");
+          result->SetError(
+              SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+              StrCat({"A rule set for a key must be an array: path = [\"", key,
+                      "\"]"}));
           return;
         }
 
@@ -687,9 +691,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           JSONObject* input_rule = JSONObject::Cast(array->at(i));
           if (!input_rule) {
             result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                             "A rule must be an object: path = [\"" +
-                                 String(key) + "\"][" + String::Number(i) +
-                                 "]");
+                             StrCat({"A rule must be an object: path = [\"",
+                                     key, "\"][", String::Number(i), "]"}));
             continue;
           }
 
@@ -715,8 +718,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           if (!allow_target_hint &&
               rule->target_browsing_context_name_hint().has_value()) {
             result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                             "\"target_hint\" may not be set for " +
-                                 String(key) + " rules.");
+                             StrCat({"\"target_hint\" may not be set for ", key,
+                                     " rules."}));
             continue;
           }
 
@@ -726,8 +729,9 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
               rule->requires_anonymous_client_ip_when_cross_origin()) {
             result->SetError(
                 SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                "requirement \"anonymous-client-ip-when-cross-origin\" for \"" +
-                    String(key) + "\" is not supported.");
+                StrCat({"requirement \"anonymous-client-ip-when-cross-origin\" "
+                        "for \"",
+                        key, "\" is not supported."}));
             continue;
           }
 
