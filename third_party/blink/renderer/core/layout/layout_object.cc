@@ -717,8 +717,9 @@ void LayoutObject::AddChild(LayoutObject* new_child,
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
-  } else if (new_child->IsHorizontalWritingMode() || !new_child->IsText())
-      [[likely]] {
+  } else if (!LayoutTextCombine::IsSupportedMode(
+                 new_child->StyleRef().GetWritingMode()) ||
+             !new_child->IsText()) [[likely]] {
     children->InsertChildNode(this, new_child, before_child);
   } else if (IsA<LayoutTextCombine>(*this)) {
     DCHECK(LayoutTextCombine::ShouldBeParentOf(*new_child)) << new_child;
