@@ -206,6 +206,20 @@ TEST(AutofillEntityInstanceTest, AttributesFlightFormat) {
   }
 }
 
+// Tests that calling `SetInfo` with an ICU date format string causes a CHECK
+// failure.
+TEST(AutofillEntityInstanceTest, Attributes_SetInfoWithIcuDate_CheckFails) {
+  AttributeType type(kFlightReservationDepartureDate);
+  AttributeInstance attribute(type);
+  EXPECT_DEATH_IF_SUPPORTED(
+      attribute.SetInfo(
+          FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
+          /*app_locale=*/"", /*format_string=*/
+          AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_ICU_DATE),
+          VerificationStatus::kObserved),
+      "");
+}
+
 TEST(AutofillEntityInstanceTest,
      GetEntityMergeability_IdentiticalEntities_NoMergeableAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =
@@ -424,36 +438,9 @@ TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
                     AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
                     VerificationStatus::kObserved);
   EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
-                    {.app_locale = "en_US"}),
-            u"Jan 1");
-}
-
-TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate_IsLocaleDependent) {
-  AttributeType type(kFlightReservationDepartureDate);
-  AttributeInstance attribute(type);
-  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
-                    /*app_locale=*/"", /*format_string=*/
-                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
-                    VerificationStatus::kObserved);
-  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
-                    {.app_locale = "PL_pl"}),
-            u"1 sty");
-}
-
-TEST(AutofillEntityInstanceTest,
-     FormatFlightDepartureDate_IsNotLocaleDependent_WithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitFromCommandLine(
-      /*enable_features=*/"",
-      /*disable_features=*/"AutofillFlightEnableLocaleAwareDepartureDate");
-  AttributeType type(kFlightReservationDepartureDate);
-  AttributeInstance attribute(type);
-  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
-                    /*app_locale=*/"", /*format_string=*/
-                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
-                    VerificationStatus::kObserved);
-  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
-                    {.app_locale = "PL_pl"}),
+                    {.app_locale = "en_US",
+                     .format_string = AutofillFormatString(
+                         u"MMM d", FormatString_Type_ICU_DATE)}),
             u"Jan 1");
 }
 

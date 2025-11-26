@@ -181,6 +181,11 @@ std::optional<int> GetExpirationYear(int value);
 // country code in the form of "49" in the example or an empty string.
 std::u16string FindPossiblePhoneCountryCode(std::u16string_view text);
 
+// Returns the localized pattern for the given `pattern` and `locale`.
+// If the `locale` is invalid or localization fails, returns `std::nullopt`.
+std::optional<std::u16string> LocalizePattern(std::u16string_view pattern,
+                                              std::string_view locale);
+
 }  // namespace autofill::data_util
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_DATA_MODEL_UTILS_H_

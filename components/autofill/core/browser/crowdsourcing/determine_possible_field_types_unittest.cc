@@ -40,6 +40,8 @@ void PrintTo(const PossibleTypes& ps, std::ostream* os) {
         return u"DATE";
       case FormatString_Type_FLIGHT_NUMBER:
         return u"FLIGHT_NUMBER";
+      case FormatString_Type_ICU_DATE:
+        return u"ICU_DATE";
     }
     NOTREACHED();
   };

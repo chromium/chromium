@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -80,6 +81,22 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
     // - The one that is available otherwise.
     return {JoinAttributes(entity, kAirports, u"\u2013", app_locale),
             DenseSet<AttributeType>(kAirports)};
+  }
+  if (type == AttributeType(kFlightReservationDepartureDate)) {
+    static constexpr char16_t date_format[] = u"MMM d";
+    base::optional_ref<const AttributeInstance> attribute =
+        entity.attribute(type);
+    if (!attribute) {
+      return {u"", {type}};
+    }
+    std::optional<std::u16string> localized_pattern =
+        data_util::LocalizePattern(date_format, app_locale);
+    AutofillFormatString format_string(
+        data_util::LocalizePattern(date_format, app_locale)
+            .value_or(date_format),
+        FormatString_Type_ICU_DATE);
+    return {attribute->GetInfo(type.field_type(), app_locale, format_string),
+            {type}};
   }
   return {GetInfo(entity, type, app_locale), {type}};
 }

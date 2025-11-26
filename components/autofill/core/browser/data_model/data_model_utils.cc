@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
+#include "third_party/icu/source/i18n/unicode/dtptngen.h"
 
 namespace autofill::data_util {
 
@@ -385,6 +386,26 @@ std::u16string FindPossiblePhoneCountryCode(std::u16string_view text) {
   }
 
   return std::u16string();
+}
+
+std::optional<std::u16string> LocalizePattern(std::u16string_view pattern,
+                                              std::string_view locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale icu_locale(std::string(locale).c_str());
+  if (icu_locale.isBogus()) {
+    return std::nullopt;
+  }
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(icu_locale, status));
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  icu::UnicodeString generated_pattern =
+      generator->getBestPattern(pattern, status);
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  return base::i18n::UnicodeStringToString16(generated_pattern);
 }
 
 }  // namespace autofill::data_util
