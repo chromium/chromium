@@ -192,8 +192,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   ASSERT_FALSE(activity_log->is_active());
 }
 
-// TODO(crbug.com/439448148): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionsActivityLogTest : public ExtensionSettingsUIBrowserTest {
  protected:
   // Enable command line flags for test.
@@ -203,10 +201,14 @@ class ExtensionsActivityLogTest : public ExtensionSettingsUIBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
+  content::WebContents* page_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(page_contents);
+
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   test_data_dir = test_data_dir.AppendASCII("extensions");
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(GetProfile());
 
   ExtensionTestMessageListener listener("ready");
   scoped_refptr<const extensions::Extension> extension = loader.LoadExtension(
@@ -214,18 +216,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   GURL activity_log_url("chrome://extensions/?activity=" + extension->id());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), activity_log_url));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(page_contents, activity_log_url));
   content::WebContents* activity_log_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(activity_log_contents);
   EXPECT_EQ(activity_log_url, activity_log_contents->GetLastCommittedURL());
 
   // We are looking for the 'test.sendMessage' entry in the activity log as
   // that is the only API call the simple_call.crx extension does.
   // The querySelectors and shadowRoots are used here in order to penetrate
-  // multiple nested shadow DOMs created by Polymer components
-  // in the chrome://extensions page.
-  // See chrome/browser/resources/extensions for the Polymer code.
+  // multiple nested shadow DOMs in the chrome://extensions page.
   // This test only serves as an end to end test, and most of the functionality
   // is covered in the JS unit tests.
   EXPECT_EQ(true,
@@ -236,22 +237,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
              manager.shadowRoot.querySelector('extensions-activity-log');
          let activityLogHistory =
              activityLog.shadowRoot.querySelector('activity-log-history');
-         const polymerPath =
-             'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-         Promise.all([
-           activityLogHistory.whenDataFetched(),
-           import(polymerPath),
-         ]).then((results) => {
-             const polymerModule = results[1];
-             polymerModule.flush();
-             let item = activityLogHistory.shadowRoot.querySelector(
-                 'activity-log-history-item');
-             let activityKey = item.shadowRoot.getElementById('activity-key');
-             return activityKey.innerText === 'test.sendMessage';
-         });
+         activityLogHistory.whenDataFetched()
+             .then(() => activityLogHistory.updateComplete)
+             .then(() => {
+               let item = activityLogHistory.shadowRoot.querySelector(
+                   'activity-log-history-item');
+               let activityKey = item.shadowRoot.getElementById('activity-key');
+               return activityKey.innerText === 'test.sendMessage';
+             });
       )"));
 }
 
+// TODO(crbug.com/439448148): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
   Profile* profile = browser()->profile();
