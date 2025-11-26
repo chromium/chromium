@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -304,7 +306,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
 void ContextualSearchDelegateImpl::OnUrlLoadComplete(
     base::WeakPtr<ContextualSearchContext> context,
     SearchTermResolutionCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!context) {
     return;
   }

@@ -62,7 +62,7 @@ class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
                              const std::string& access_token);
 
   // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // The URL for the remote Optimization Guide Service.
   const GURL optimization_guide_service_url_;

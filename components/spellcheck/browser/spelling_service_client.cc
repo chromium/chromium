@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -316,7 +318,7 @@ SpellingServiceClient::TextCheckCallbackData::~TextCheckCallbackData() =
 void SpellingServiceClient::OnSimpleLoaderComplete(
     SpellCheckLoaderList::iterator it,
     base::TimeTicks request_start,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   UMA_HISTOGRAM_TIMES("SpellCheck.SpellingService.RequestDuration",
                       base::TimeTicks::Now() - request_start);
 

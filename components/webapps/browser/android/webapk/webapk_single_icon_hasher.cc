@@ -4,6 +4,8 @@
 
 #include "components/webapps/browser/android/webapk/webapk_single_icon_hasher.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -101,7 +103,7 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
     base::WeakPtr<content::WebContents> web_contents,
     int ideal_icon_size,
     int timeout_ms,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   download_timeout_timer_.Stop();
 
   // Check for non-empty body in case of HTTP 204 (no content) response.
@@ -121,7 +123,7 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
     // image's raw, unsanitized bytes from the web. |*response_body| may contain
     // malicious data. Decoding unsanitized bitmap data to an SkBitmap in the
     // browser process is a security bug.
-    icon_->SetData(std::move(*response_body));
+    icon_->SetData(std::move(response_body).value());
     icon_->set_hash(ComputeMurmur2Hash(icon_->unsafe_data()));
     RunCallbackAndFinish();
     return;
@@ -149,7 +151,7 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
 }
 
 void WebApkSingleIconHasher::OnImageDownloaded(
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int id,
     int http_status_code,
     const GURL& url,
@@ -169,7 +171,7 @@ void WebApkSingleIconHasher::OnImageDownloaded(
 void WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
     WebappIcon* icon,
     const SkBitmap& bitmap,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (bitmap.drawsNothing()) {
     return;
   }
@@ -180,8 +182,8 @@ void WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
   } else {
     icon->SetData(std::string());
   }
-  icon->set_hash(
-      ComputeMurmur2Hash(response_body ? *response_body : icon->unsafe_data()));
+  icon->set_hash(ComputeMurmur2Hash(
+      std::move(response_body).value_or(icon->unsafe_data())));
 }
 
 void WebApkSingleIconHasher::OnDownloadTimedOut() {

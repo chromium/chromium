@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -186,7 +187,7 @@ void PredictionModelFetcherImpl::HandleResponse(
 }
 
 void PredictionModelFetcherImpl::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT("optimization_guide",
               "PredictionModelFetcherImpl::OnURLLoadComplete");
 
@@ -194,7 +195,7 @@ void PredictionModelFetcherImpl::OnURLLoadComplete(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  HandleResponse(response_body ? *response_body : "", url_loader_->NetError(),
+  HandleResponse(std::move(response_body).value_or(""), url_loader_->NetError(),
                  response_code);
   url_loader_.reset();
 }

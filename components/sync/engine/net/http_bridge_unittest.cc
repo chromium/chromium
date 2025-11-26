@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -146,7 +148,7 @@ class ShuntedHttpBridge : public HttpBridge {
 
     // Set up a fake content response.
     OnURLLoadCompleteInternal(200, net::OK, GURL("http://www.google.com"),
-                              std::make_unique<std::string>("success!"));
+                              "success!");
   }
   const raw_ptr<MAYBE_SyncHttpBridgeTest> test_;
   bool never_finishes_;
@@ -421,8 +423,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, AbortAndReleaseBeforeFetchComplete) {
   // simulate what HttpBridge::MakeAsynchronousPost() does.
   ASSERT_TRUE(io_thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&syncer::HttpBridge::OnURLLoadComplete,
-                                bridge_for_race_test(),
-                                std::make_unique<std::string>("success!"))));
+                                bridge_for_race_test(), "success!")));
 
   // Abort the fetch. This should be smart enough to handle the case where
   // the bridge is released on the sync therad before the callback scheduled

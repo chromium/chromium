@@ -4,6 +4,9 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -83,7 +86,7 @@ void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
     proto::LogAiDataRequest::FeatureCase feature,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
   TRACE_EVENT("optimization_guide",
               "ModelQualityLogsUploaderService::OnURLLoadComplete", "feature",

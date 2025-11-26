@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -97,7 +98,7 @@ class PasswordRequirementsSpecFetcherImpl
   // the entry corresponding to |hash_prefix| out of |lookups_in_flight_| as
   // their first order of business.
   void OnFetchComplete(const std::string& hash_prefix,
-                       std::unique_ptr<std::string> response_body);
+                       std::optional<std::string> response_body);
   void OnFetchTimeout(const std::string& hash_prefix);
 
   // Calls all |callbacks| in order. Note that these callbacks are OnceCallback

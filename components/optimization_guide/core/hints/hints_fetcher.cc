@@ -5,6 +5,8 @@
 #include "components/optimization_guide/core/hints/hints_fetcher.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -465,9 +467,8 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 }
 
 // Callback is only invoked if |active_url_loader_| is bound and still alive.
-void HintsFetcher::OnURLLoadComplete(
-    bool skip_cache,
-    std::unique_ptr<std::string> response_body) {
+void HintsFetcher::OnURLLoadComplete(bool skip_cache,
+                                     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int response_code = -1;
@@ -481,8 +482,8 @@ void HintsFetcher::OnURLLoadComplete(
   // handling may destroy |this|.
   active_url_loader_.reset();
 
-  HandleResponse(response_body ? *response_body : "", net_error, response_code,
-                 skip_cache);
+  HandleResponse(std::move(response_body).value_or(""), net_error,
+                 response_code, skip_cache);
 }
 
 // Returns the subset of URLs from |urls| for which the URL is considered

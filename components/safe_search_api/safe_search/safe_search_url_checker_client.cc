@@ -5,6 +5,7 @@
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -128,7 +129,7 @@ void SafeSearchURLCheckerClient::CheckURL(const GURL& url,
 
 void SafeSearchURLCheckerClient::OnSimpleLoaderComplete(
     CheckList::iterator it,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::unique_ptr<Check> check = std::move(*it);
 
   checks_in_progress_.erase(it);

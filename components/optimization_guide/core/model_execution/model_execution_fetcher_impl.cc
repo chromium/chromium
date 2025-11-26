@@ -4,6 +4,9 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -462,7 +465,7 @@ void ModelExecutionFetcherImpl::OnAccessTokenReceived(
 }
 
 void ModelExecutionFetcherImpl::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto net_error = active_url_loader_->NetError();

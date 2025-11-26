@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_URL_FETCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "net/http/http_request_headers.h"
@@ -61,7 +62,7 @@ class TranslateURLFetcher {
   State state() { return state_; }
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // URL to send the request.
   GURL url_;

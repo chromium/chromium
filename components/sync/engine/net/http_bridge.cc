@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -311,7 +313,7 @@ void HttpBridge::Abort() {
   http_post_completed_.Signal();
 }
 
-void HttpBridge::OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
+void HttpBridge::OnURLLoadComplete(std::optional<std::string> response_body) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(fetch_state_lock_);
@@ -340,7 +342,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
     int http_status_code,
     int net_error_code,
     const GURL& final_url,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!fetch_state_.aborted);
 
@@ -368,7 +370,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
           << fetch_state_.http_status_code;
 
   if (response_body) {
-    fetch_state_.response_content = std::move(*response_body);
+    fetch_state_.response_content = std::move(response_body).value();
   }
 
   fetch_state_.url_loader.reset();

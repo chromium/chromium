@@ -4,6 +4,8 @@
 
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -147,7 +149,7 @@ void EmbeddedPolicyTestServerTestBase::StartRequestAndWait() {
 
 void EmbeddedPolicyTestServerTestBase::DownloadedToString(
     base::OnceClosure callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(!done_);
   CHECK(!response_body_);
   CHECK(callback);
@@ -166,7 +168,7 @@ int EmbeddedPolicyTestServerTestBase::GetResponseCode() const {
 }
 
 bool EmbeddedPolicyTestServerTestBase::HasResponseBody() const {
-  return response_body_ != nullptr;
+  return response_body_.has_value();
 }
 
 std::string EmbeddedPolicyTestServerTestBase::GetResponseBody() const {
