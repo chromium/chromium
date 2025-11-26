@@ -162,6 +162,7 @@
     "committed/libs/androidx_test_runner",
     "committed/libs/androidx_test_services_storage",
     "committed/libs/androidx_test_uiautomator_uiautomator",
+    "committed/libs/androidx_test_uiautomator_uiautomator_shell_android",
     "committed/libs/androidx_tracing_tracing_android",
     "committed/libs/androidx_tracing_tracing_ktx",
     "committed/libs/androidx_tracing_tracing_perfetto",
