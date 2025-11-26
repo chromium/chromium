@@ -522,10 +522,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed,
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, Bug941965Test) {
-  if (using_sqlite_) {
-    GTEST_SKIP() << "Flaky with SQLite, see crbug.com/435459644";
-  }
-
   // Double-open an incognito window to test that saving & reading a blob from
   // indexeddb works.
   Shell* incognito_browser = CreateOffTheRecordBrowser();
