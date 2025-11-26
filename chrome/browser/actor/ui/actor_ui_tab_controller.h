@@ -20,11 +20,7 @@ class ActorKeyedService;
 namespace actor::ui {
 
 class ActorUiTabControllerFactory
-    : public ActorUiTabControllerFactoryInterface {
- public:
-  std::unique_ptr<HandoffButtonController> CreateHandoffButtonController(
-      tabs::TabInterface& tab) override;
-};
+    : public ActorUiTabControllerFactoryInterface {};
 
 class ActorUiTabController : public ActorUiTabControllerInterface,
                              public ImmersiveModeController::Observer,
@@ -47,6 +43,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnOverlayHoverStatusChanged(bool is_hovering) override;
   void OnHandoffButtonHoverStatusChanged() override;
   void OnHandoffButtonFocusStatusChanged() override;
+  [[nodiscard]] base::ScopedClosureRunner RegisterHandoffButtonController(
+      HandoffButtonController* controller) override;
   UiTabState GetCurrentUiTabState() const override;
 
   // ImmersiveModeController::Observer
@@ -116,6 +114,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void UnregisterActorOverlayStateChange();
   void UnregisterActorOverlayBackgroundChange();
   void UnregisterActorTabIndicatorStateChange();
+  void UnregisterHandoffButtonController();
 
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
@@ -145,10 +144,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
 
-  // Owned controllers:
   // The Handoff Button controller for this tab.
-  std::unique_ptr<HandoffButtonController> handoff_button_controller_;
-  std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
+  raw_ptr<HandoffButtonController> handoff_button_controller_ = nullptr;
 
   TabIndicatorStatus tab_indicator_ = TabIndicatorStatus::kNone;
   base::RetainingOneShotTimer update_scrim_background_debounce_timer_;

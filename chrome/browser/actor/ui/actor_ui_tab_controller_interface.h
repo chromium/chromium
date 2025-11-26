@@ -53,8 +53,6 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
 class ActorUiTabControllerFactoryInterface {
  public:
   virtual ~ActorUiTabControllerFactoryInterface() = default;
-  virtual std::unique_ptr<HandoffButtonController>
-  CreateHandoffButtonController(tabs::TabInterface& tab) = 0;
 };
 
 class ActorUiTabControllerInterface {
@@ -93,6 +91,9 @@ class ActorUiTabControllerInterface {
 
   // Called when the focus status changes on the handoff button.
   virtual void OnHandoffButtonFocusStatusChanged() = 0;
+
+  [[nodiscard]] virtual base::ScopedClosureRunner
+  RegisterHandoffButtonController(HandoffButtonController* controller) = 0;
 
   virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
 

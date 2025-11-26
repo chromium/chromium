@@ -8,6 +8,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -24,6 +25,10 @@ ActorUiContentsContainerController::ActorUiContentsContainerController(
     : contents_container_view_(contents_container_view),
       overlay_(actor_overlay_web_view) {
   CHECK(contents_container_view_);
+  if (features::kGlicActorUiHandoffButton.Get()) {
+    handoff_button_controller_ =
+        std::make_unique<HandoffButtonController>(contents_container_view_);
+  }
   web_contents_callback_subscriptions_.push_back(
       contents_container_view_->AddWebContentsAttachedCallback(
           base::BindRepeating(
@@ -77,6 +82,14 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
                 base::BindRepeating(&ActorUiContentsContainerController::
                                         OnActorOverlayBackgroundChange,
                                     weak_ptr_factory_.GetWeakPtr())));
+      }
+
+      if (handoff_button_controller_) {
+        actor_ui_tab_controller_callback_runners_.push_back(
+            tab_controller->RegisterHandoffButtonController(
+                handoff_button_controller_.get()));
+        actor_ui_tab_controller_callback_runners_.push_back(
+            handoff_button_controller_->RegisterTabInterface(tab));
       }
 
       // Record user action if associated task isn't paused or stopped
