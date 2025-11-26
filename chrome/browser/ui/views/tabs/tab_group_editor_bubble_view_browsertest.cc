@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -32,9 +34,12 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -409,4 +414,78 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
           TabGroupEditorBubbleView::
               TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK));
   ASSERT_EQ(nullptr, convert_to_bookmark_button);
+}
+
+class TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled,
+    ToggleFocusGroup) {
+  ShowUi("SetUp");
+
+  TabStripModel* const tsm = browser()->tab_strip_model();
+  ASSERT_TRUE(group_.has_value());
+  const tab_groups::TabGroupId group_id = group_.value();
+
+  // 1. Initially, no group is focused.
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+  ASSERT_NE(nullptr, editor_bubble->GetContentsView());
+
+  views::View* focus_button_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleFocusGroupButtonId,
+          views::ElementTrackerViews::GetContextForView(
+              editor_bubble->GetRootView()));
+  ASSERT_NE(nullptr, focus_button_view);
+  views::LabelButton* const focus_button =
+      static_cast<views::LabelButton*>(focus_button_view);
+  EXPECT_EQ(focus_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP));
+
+  // 2. Click to focus the group.
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
+                                gfx::PointF(), base::TimeTicks(), 0, 0);
+  views::test::ButtonTestApi(focus_button).NotifyClick(released_event);
+
+  // The bubble should close. Wait for it.
+  views::test::WidgetDestroyedWaiter(editor_bubble).Wait();
+
+  EXPECT_TRUE(tsm->GetFocusedGroup().has_value());
+  EXPECT_EQ(group_id, tsm->GetFocusedGroup().value());
+
+  // 3. Open the editor again to unfocus.
+  browser()->tab_strip_model()->OpenTabGroupEditor(group_id);
+  views::Widget* editor_bubble2 = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble2);
+  ASSERT_NE(nullptr, editor_bubble2->GetContentsView());
+
+  views::View* unfocus_button_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleUnfocusGroupButtonId,
+          views::ElementTrackerViews::GetInstance()->GetContextForView(
+              editor_bubble2->GetRootView()));
+  ASSERT_NE(nullptr, unfocus_button_view);
+  views::LabelButton* const unfocus_button =
+      static_cast<views::LabelButton*>(unfocus_button_view);
+  EXPECT_EQ(
+      unfocus_button->GetText(),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP));
+
+  // 4. Click to unfocus the group.
+  views::test::ButtonTestApi(unfocus_button).NotifyClick(released_event);
+  views::test::WidgetDestroyedWaiter(editor_bubble2).Wait();
+
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
 }

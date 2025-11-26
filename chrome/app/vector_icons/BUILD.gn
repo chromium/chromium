@@ -243,9 +243,11 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webid/webid_arrow.icon",
     "webid/webid_globe.icon",
     "zoom_in.icon",
+    "zoom_in_map.icon",
     "zoom_minus.icon",
     "zoom_minus_chrome_refresh.icon",
     "zoom_minus_menu_refresh.icon",
+    "zoom_out_map.icon",
     "zoom_plus_chrome_refresh.icon",
     "zoom_plus_menu_refresh.icon",
 

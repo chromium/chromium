@@ -68,6 +68,7 @@
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -375,6 +376,14 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
 
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      if (browser_->tab_strip_model()->GetFocusedGroup() == group_) {
+        simple_menu_items_.push_back(AddChildView(BuildUnfocusGroupButton()));
+      } else {
+        simple_menu_items_.push_back(AddChildView(BuildFocusGroupButton()));
+      }
+    }
+
     if (CanShareGroups()) {
       if (IsGroupShared()) {
         manage_shared_group_button_ = AddChildView(BuildManageSharingButton());
@@ -644,6 +653,36 @@ TabGroupEditorBubbleView::BuildRecentActivityButton() {
                                      kDefaultIconSize));
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleRecentActivityButtonId);
+  return menu_item;
+}
+
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildFocusGroupButton() {
+  auto menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP),
+      base::BindRepeating(&TabGroupEditorBubbleView::FocusGroupPressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kZoomInMapIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleFocusGroupButtonId);
+  return menu_item;
+}
+
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildUnfocusGroupButton() {
+  auto menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP),
+      base::BindRepeating(&TabGroupEditorBubbleView::UnfocusGroupPressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kZoomOutMapIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleUnfocusGroupButtonId);
   return menu_item;
 }
 
@@ -1027,6 +1066,18 @@ void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
 
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
   browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
+  GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::FocusGroupPressed() {
+  TabStripModel* const model = browser_->tab_strip_model();
+  model->SetFocusedGroup(group_);
+  GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::UnfocusGroupPressed() {
+  TabStripModel* const model = browser_->tab_strip_model();
+  model->SetFocusedGroup(std::nullopt);
   GetWidget()->Close();
 }
 
