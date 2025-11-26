@@ -318,7 +318,10 @@ interface UntrustedPage {
   // might be due to a different side panel opening, the side panel closing
   // while reading mode is open, or a new tab opening. If reading mode is closed
   // because of the tab closing, OnTabWillDetach is called instead.
-  OnReadingModeHidden();
+  // tab_active indicates whether the tab for reading mode is still the active
+  // tab. If it's true, then Reading mode was closed. If false, then the tab was
+  // switched.
+  OnReadingModeHidden(bool tab_active);
 
   // Notifies the WebUI that current tab will detach so it can clean up.
   OnTabWillDetach();

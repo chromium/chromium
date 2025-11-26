@@ -885,8 +885,8 @@ void ReadAnythingUntrustedPageHandler::Activate(
     last_open_trigger_ = open_trigger;
   }
   if (features::IsReadAnythingReadAloudEnabled() && !active &&
-      side_panel_controller_->tab()->IsActivated() && !tab_will_detach_) {
-    page_->OnReadingModeHidden();
+      !tab_will_detach_) {
+    page_->OnReadingModeHidden(side_panel_controller_->tab()->IsActivated());
   }
 }
 
