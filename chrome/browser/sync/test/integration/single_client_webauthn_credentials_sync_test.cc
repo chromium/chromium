@@ -146,11 +146,11 @@ class PasskeyModelReadyChecker : public StatusChangeChecker,
       observation_{this};
 };
 
-class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
+class SingleClientWebAuthnCredentialsSyncTestBase : public SyncTest {
  public:
-  SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientWebAuthnCredentialsSyncTestBase() : SyncTest(SINGLE_CLIENT) {}
 
-  ~SingleClientWebAuthnCredentialsSyncTest() override = default;
+  ~SingleClientWebAuthnCredentialsSyncTestBase() override = default;
 
   // Injects a new WEBAUTHN_CREDENTIAL type server entity and returns the
   // randomly generated `sync_id`.
@@ -187,14 +187,42 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   void WaitTillModelReady() {
     CHECK(PasskeyModelReadyChecker(&GetModel()).Wait());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      webauthn::features::kDeleteOldHiddenPasskeys};
 };
 
+class SingleClientWebAuthnCredentialsSyncTest
+    : public SingleClientWebAuthnCredentialsSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+ public:
+  SingleClientWebAuthnCredentialsSyncTest() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          {webauthn::features::kDeleteOldHiddenPasskeys,
+           syncer::kReplaceSyncPromosWithSignInPromos},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {webauthn::features::kDeleteOldHiddenPasskeys}, {});
+    }
+  }
+
+  ~SingleClientWebAuthnCredentialsSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SingleClientWebAuthnCredentialsSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
 // Adding a local passkey should sync to the server.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UploadNewLocalPasskey) {
   ASSERT_TRUE(SetupSync());
 
@@ -216,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                 .value());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        StartWithLocalPasskey) {
   // Exercise the case where PasskeySyncBridge::MergeFullSyncData has local
   // credentials that the server doesn't know about.
@@ -230,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // CreatePasskey should create a new passkey entity and upload it to the server.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
   ASSERT_TRUE(SetupSync());
 
   const webauthn::PasskeyModel::UserEntity test_user(
@@ -255,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
 }
 
 // Creating a new passkey should shadow passkeys for the same (RP ID, user ID).
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyWithShadows) {
   ASSERT_TRUE(SetupSync());
 
@@ -302,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyFromEntity) {
   ASSERT_TRUE(SetupSync());
 
@@ -319,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics with
 // shadow passkeys being added.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyFromEntityWithShadows) {
   ASSERT_TRUE(SetupSync());
 
@@ -361,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Adding a remote passkey should sync to the client.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadNewServerPasskey) {
   ASSERT_TRUE(SetupSync());
 
@@ -373,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // The model should retrieve individual passkeys by RP ID and credential ID.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
   ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
@@ -413,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
 }
 
 // When getting passkeys, shadowed entities should be ignored.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        GetPasskeysWithShadows) {
   ASSERT_TRUE(SetupSync());
 
@@ -450,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Deleting a local passkey should remove from the server.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UploadLocalPasskeyDeletion) {
   const base::Location kLocation = FROM_HERE;
 
@@ -476,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // Downloading a deletion for a passkey that does not exist locally should not
 // crash.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadDeletionOfNonExistingLocalPasskey) {
   ASSERT_TRUE(SetupSync());
 
@@ -490,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Deleting a remote passkey should remove from the client.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadServerPasskeyDeletion) {
   ASSERT_TRUE(SetupSync());
 
@@ -506,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Attempting to delete a passkey that does not exist should return false.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteNonExistingPasskey) {
   ASSERT_TRUE(SetupSync());
 
@@ -522,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Deleting a passkey should also delete its shadowed credentials.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteShadowedPasskeys) {
   ASSERT_TRUE(SetupSync());
 
@@ -579,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // Deleting a passkey should not delete passkeys for a different rp id or user
 // id.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DoNotDeleteCredentialsForDifferentRpIdOrUserId) {
   ASSERT_TRUE(SetupSync());
 
@@ -612,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Attempt deleting a passkey that is part of a shadow chain circle.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeletePasskeyFromShadowChainCircle) {
   ASSERT_TRUE(SetupSync());
 
@@ -638,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteAllPasskeys) {
   ASSERT_TRUE(SetupSync());
 
@@ -657,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteAllPasskeysEmptyStore) {
   ASSERT_TRUE(SetupSync());
 
@@ -671,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Tests that deleting a passkey is persisted across browser restarts.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_DeletingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupSync());
 
@@ -686,14 +714,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeletingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        SetPasskeyHidden) {
   ASSERT_TRUE(SetupSync());
 
@@ -746,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Tests updating a passkey.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
   ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
@@ -791,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
 
 // Verifies that UpdatePasskeyEncryptedBlob propagates new blob to the server
 // and the local model.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UpdatePasskeyEncryptedBlob) {
   ASSERT_TRUE(SetupSync());
 
@@ -828,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Tests that attempting to update a non existing passkey returns false.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UpdateNonExistingPasskey) {
   ASSERT_TRUE(SetupSync());
 
@@ -887,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // Tests that attempting to update a passkey that was previously edited by the
 // user is rejected.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UpdatePasskeyEditedByUser) {
   ASSERT_TRUE(SetupSync());
 
@@ -902,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Tests that updating a passkey is persisted across browser restarts.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_UpdatingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupSync());
 
@@ -921,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                                        /*updated_by_user=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        UpdatingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -933,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_EQ(passkeys[0].user_display_name(), kDisplayName1);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        LegacySyncIdCompatibilityUponInitialDownload) {
   // Ordinarily, client_tag_hash is derived from the 16-byte `sync_id`.
   // Internally, it's computed as Base64(SHA1(prefix + client_tag)), which is 28
@@ -997,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
               UnorderedElementsAreArray(expected_sync_ids));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        LegacySyncIdCompatibilityUponIncrementalUpdate) {
   ASSERT_TRUE(SetupSync());
 
@@ -1075,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // Updating a remote passkey should sync to the client.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadPasskeyUpdate) {
   ASSERT_TRUE(SetupSync());
 
@@ -1098,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Tests that disabling sync before sync startup correctly clears the passkey
 // cache.
 // Regression test for crbug.com/1476895.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_ClearingModelDataOnSyncStartup) {
   ASSERT_TRUE(SetupSync());
 
@@ -1109,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        ClearingModelDataOnSyncStartup) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
@@ -1122,18 +1150,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 
 class SingleClientWebAuthnCredentialsSyncTestExplicitParamTest
-    : public SingleClientWebAuthnCredentialsSyncTest,
-      public testing::WithParamInterface<bool /*explicit_signin*/> {
+    : public SingleClientWebAuthnCredentialsSyncTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, SyncTest::SetupSyncMode>> {
  public:
-  SingleClientWebAuthnCredentialsSyncTestExplicitParamTest() = default;
+  SingleClientWebAuthnCredentialsSyncTestExplicitParamTest() {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          {webauthn::features::kDeleteOldHiddenPasskeys,
+           syncer::kReplaceSyncPromosWithSignInPromos},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {webauthn::features::kDeleteOldHiddenPasskeys}, {});
+    }
+  }
 
-  bool is_explicit_signin() const { return GetParam(); }
+  bool is_explicit_signin() const { return std::get<0>(GetParam()); }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that passkeys sync on transport mode only if the user has consented to
 // showing credentials from their Google account.
 IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
                        TransportModeConsent) {
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GTEST_SKIP() << "This test only applies to transport mode.";
+  }
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
   ASSERT_TRUE(SetupClients());
 
@@ -1171,7 +1220,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
 // This test sets up two passkeys and hides them. One of the passkeys is hidden
 // with a date that is long ago enough for it to be deleted automatically, while
 // the other should be kept a little longer.
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_DeleteOldHiddenPasskeysOnLoad) {
   ASSERT_TRUE(SetupSync());
 
@@ -1200,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                                    PasskeyHasSyncId(old_passkey.sync_id())));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteOldHiddenPasskeysOnLoad) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -1210,13 +1259,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
               UnorderedElementsAre(PasskeyHasDisplayName("New")));
 }
 
+struct PrintWebAuthnTestSuffixToString {
+  std::string operator()(
+      const testing::TestParamInfo<std::tuple<bool, SyncTest::SetupSyncMode>>&
+          info) const {
+    return (std::get<0>(info.param) ? "Explicit" : "Implicit") +
+           SetupSyncModeAsString(std::get<1>(info.param));
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "Explicit" : "Implicit";
-    });
+    testing::Combine(::testing::Bool(), GetSyncTestModes()),
+    PrintWebAuthnTestSuffixToString());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
