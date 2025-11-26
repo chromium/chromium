@@ -75,7 +75,9 @@
 }
 
 .action-chip:focus-visible {
-  outline-offset: 4px;
+  box-shadow: none;
+  outline: 2px solid var(--color-new-tab-page-focus-ring);
+  outline-offset: 2px;
 }
 
 .action-chips-container .action-chip:nth-child(1) {
