@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -539,6 +540,10 @@ void InstallAttributes::DecodeInstallAttributes(
   const std::string realm = ReadMapKey(attr_map, kAttrEnterpriseRealm);
   const std::string device_id = ReadMapKey(attr_map, kAttrEnterpriseDeviceId);
 
+  SYSLOG(INFO) << "Found attributes " << kAttrEnterpriseOwned << "="
+               << enterprise_owned << ", " << kAttrEnterpriseMode << "="
+               << mode;
+
   if (enterprise_owned == "true") {
     registration_device_id_ = device_id;
 
@@ -547,7 +552,8 @@ void InstallAttributes::DecodeInstallAttributes(
     if (registration_mode_ != policy::DEVICE_MODE_ENTERPRISE &&
         registration_mode_ != policy::DEVICE_MODE_DEMO) {
       if (!mode.empty()) {
-        LOG(WARNING) << "Bad " << kAttrEnterpriseMode << ": " << mode;
+        LOG(WARNING) << "Bad " << kAttrEnterpriseMode << ": " << mode
+                     << ", will default to DEVICE_MODE_ENTERPRISE";
       }
       registration_mode_ = policy::DEVICE_MODE_ENTERPRISE;
     }
