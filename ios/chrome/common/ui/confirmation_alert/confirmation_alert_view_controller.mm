@@ -143,8 +143,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
   self.view.preservesSuperviewLayoutMargins = YES;
 
   // Constraint the stack view to the content view.
-  AddSameConstraints(self.stackView, self.contentView);
-
+  [NSLayoutConstraint activateConstraints:@[
+    [self.stackView.bottomAnchor
+        constraintEqualToAnchor:self.contentView.bottomAnchor],
+    [self.stackView.leadingAnchor
+        constraintEqualToAnchor:self.contentView.leadingAnchor],
+    [self.stackView.trailingAnchor
+        constraintEqualToAnchor:self.contentView.trailingAnchor],
+  ]];
   CGFloat stackViewTopConstant = 0;
   if (!self.hasNavigationBar) {
     stackViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
