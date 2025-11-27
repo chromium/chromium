@@ -71,7 +71,8 @@ class AimEligibilityService
   bool IsLanguage(const std::string& language) const;
 
   // Registers a callback to be called when eligibility has changed.
-  [[nodiscard]] base::CallbackListSubscription
+  // Virtual for testing purposes.
+  [[nodiscard]] virtual base::CallbackListSubscription
   RegisterEligibilityChangedCallback(base::RepeatingClosure callback);
 
   // Checks if server eligibility checking is enabled.

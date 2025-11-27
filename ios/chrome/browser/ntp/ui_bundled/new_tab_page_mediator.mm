@@ -570,10 +570,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 - (void)updateAIMAvailability {
   BOOL aimAllowed = NO;
   if (_aimEligibilityService) {
-    aimAllowed = _aimEligibilityService->IsAimEligible();
-  }
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    aimAllowed = IsAIMNTPEntrypointTabletEnabled();
+    const BOOL allowedOnDevice =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
+        IsAIMNTPEntrypointTabletEnabled();
+    aimAllowed = _aimEligibilityService->IsAimEligible() && allowedOnDevice;
   }
 
   [self.consumer setAIMAllowed:aimAllowed];
