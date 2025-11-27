@@ -427,10 +427,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   scoped_refptr<base::SingleThreadTaskRunner>
       copy_native_buffer_to_shmem_task_runner_;
 
-  bool is_software_ = false;
-
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
+
+  bool is_software_ = false;
 
   AsyncMapInvokedCallback async_map_invoked_callback_for_testing_;
   bool premapped_for_testing_;
@@ -471,7 +471,8 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
                       std::string debug_label,
                       std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                       std::optional<gfx::BufferUsage> buffer_usage,
-                      uint32_t texture_target);
+                      uint32_t texture_target,
+                      bool is_software);
 
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
@@ -480,6 +481,7 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   uint32_t texture_target_ = 0;
+  bool is_software_ = false;
 };
 
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageTexture {

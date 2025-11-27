@@ -26,4 +26,6 @@ struct ExportedSharedImage {
   // Necessary to allow the ClientSharedImage that is created from this
   // ExportedSharedImage to use the correct GL texture target.
   uint32 texture_target;
+
+  bool is_software;
 };
