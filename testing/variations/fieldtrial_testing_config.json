@@ -8234,6 +8234,23 @@
             ]
         }
     ],
+    "DefaultBrowserFramework": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromoAndroid2": [
         {
             "platforms": [
