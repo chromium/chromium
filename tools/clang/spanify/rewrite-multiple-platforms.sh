@@ -119,6 +119,7 @@ then
     time tools/clang/scripts/build.py \
         --with-android \
         --without-fuchsia \
+        --with-ml-inliner-model="" \
         --extra-tools spanify || exit 1
 
   fi
