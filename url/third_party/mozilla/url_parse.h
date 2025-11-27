@@ -73,15 +73,6 @@ struct Component {
   }
 
   // Returns a string_view using `source` as a backend.
-  // TODO(crbug.com/350788890): This is unsafe. We should use AsViewOn().
-  template <typename CharT>
-  std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
-    DCHECK(is_valid());
-    return std::basic_string_view(&UNSAFE_TODO(source[begin]),
-                                  static_cast<size_t>(len));
-  }
-
-  // Returns a string_view using `source` as a backend.
   template <typename CharT>
   std::basic_string_view<CharT> AsViewOn(
       std::basic_string_view<CharT> source) const {

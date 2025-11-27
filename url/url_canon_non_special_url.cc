@@ -130,8 +130,7 @@ bool DoCanonicalizeNonSpecialUrl(const Replacements<CHAR>& source,
           CanonicalizePath(*source.MaybePath(), CanonMode::kNonSpecialURL,
                            &output, &new_parsed.path);
       if (!parsed.host.is_valid() && new_parsed.path.is_valid() &&
-          new_parsed.path.as_string_view_on(output.view().data())
-              .starts_with("//")) {
+          new_parsed.path.AsViewOn(output.view()).starts_with("//")) {
         // To avoid path being treated as the host, prepend "/." to the path".
         //
         // Examples:
