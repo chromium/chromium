@@ -113,14 +113,26 @@ PageDiscardingHelper::PageDiscardingHelper()
     : page_discarder_(std::make_unique<PageDiscarder>()) {}
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
-std::optional<base::TimeTicks> PageDiscardingHelper::DiscardAPage(
+PageDiscardingHelper::DiscardResult PageDiscardingHelper::DiscardAPage(
     DiscardEligibilityPolicy::DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
-  return DiscardMultiplePages(std::nullopt, false, discard_reason,
-                              minimum_time_in_background);
+  return DiscardMultiplePagesImpl(std::nullopt, false, discard_reason,
+                                  minimum_time_in_background);
 }
 
 std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
+    std::optional<memory_pressure::ReclaimTarget> reclaim_target,
+    bool discard_protected_tabs,
+    DiscardEligibilityPolicy::DiscardReason discard_reason,
+    base::TimeDelta minimum_time_in_background) {
+  auto result =
+      DiscardMultiplePagesImpl(reclaim_target, discard_protected_tabs,
+                               discard_reason, minimum_time_in_background);
+  return result.first_discard_time;
+}
+
+PageDiscardingHelper::DiscardResult
+PageDiscardingHelper::DiscardMultiplePagesImpl(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     DiscardEligibilityPolicy::DiscardReason discard_reason,
@@ -176,7 +188,7 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
   }
 
   base::ByteCount total_reclaim;
-  std::optional<base::TimeTicks> first_successful_discard_time;
+  DiscardResult result;
 
   // Note: If `reclaim_target->target` is zero, this loop is not entered.
   while (!candidates.empty() &&
@@ -220,6 +232,13 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
     DiscardEligibilityPolicy::AddDiscardAttemptMarker(
         PageNodeImpl::FromNode(node));
 
+    // PageNode may be replaced after discard. TabHandle is not replaced after
+    // discard.
+    TabPageDecorator::TabHandle* tab_handle;
+    if (!result.first_discard_time.has_value()) {
+      tab_handle = TabPageDecorator::FromPageNode(node);
+    }
+
     // Do the discard.
     std::optional<base::ByteCount> estimated_memory_freed =
         page_discarder_->DiscardPageNode(node, discard_reason);
@@ -233,23 +252,33 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
 
       RecordDiscardedTabMetrics(candidate);
 
-      // Without a reclaim target: Return after the first successful discard.
-      if (!reclaim_target) {
-        return discard_time;
+      // Update the time of the first successful discard.
+      if (!result.first_discard_time.has_value()) {
+        result.first_discard_time = discard_time;
+        // Get the WebContents of the first discarded tab after discard.
+        if (tab_handle) {
+          const PageNode* node_after_discard = tab_handle->page_node();
+          if (node_after_discard) {
+            result.first_content_after_discard =
+                node_after_discard->GetWebContents().get();
+          }
+        }
       }
 
-      // With a reclaim target: Update the amount of memory reclaimed and the
-      // time of the first successful discard, and loop again.
-      total_reclaim += node_reclaim.value();
-      if (!first_successful_discard_time.has_value()) {
-        first_successful_discard_time = discard_time;
+      // Without a reclaim target: Return after the first successful discard.
+      if (!reclaim_target) {
+        return result;
       }
+
+      // With a reclaim target: Update the amount of memory reclaimed, and loop
+      // again.
+      total_reclaim += node_reclaim.value();
     }
   }
 
   unnecessary_discard_monitor_.OnReclaimTargetEnd();
 
-  return first_successful_discard_time;
+  return result;
 }
 
 bool PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
