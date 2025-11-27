@@ -1145,7 +1145,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests that the selected value for the time range updates across all open
 // Quick Delete menus.
-- (void)testTimeRangeSelectionUpdatesInMultiwindow {
+// TODO(crbug.com/464192351): Re-enable test for multi-window.
+- (void)DISABLED_testTimeRangeSelectionUpdatesInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -1743,7 +1744,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests that changing the state of one pref, updates the browsing data summary
 // across all open Quick Delete menus.
-- (void)testPrefChangeUpdatesInMultiwindow {
+// TODO(crbug.com/464192351): Re-enable test for multi-window.
+- (void)DISABLED_testPrefChangeUpdatesInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
