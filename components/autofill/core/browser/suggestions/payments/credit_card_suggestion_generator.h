@@ -93,10 +93,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
-  void SetConsiderFromAsSecureForTest(bool value) {
-    consider_form_as_secure_for_testing_ = value;
-  }
-
  private:
   // Determines whether the "Save and Fill" suggestion should be shown in the
   // credit card autofill dropdown.
@@ -110,11 +106,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
                                 const FormData& form,
                                 const FormFieldData& trigger_field,
                                 const AutofillField* autofill_field);
-
-  // Examines `form` and returns true if it is in a non-secure context or its
-  // action attribute targets a HTTP url.
-  bool IsFormNonSecure(const AutofillClient& client,
-                       const FormData& form) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for
   // standalone CVC field. Cards will only be added to the returned map if they
@@ -275,9 +266,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   AutofillMetrics::PaymentsSigninState signin_state_for_metrics_;
 
   const std::vector<std::string> four_digit_combinations_in_dom_;
-
-  // TODO(crbug.com/409962888): Make naming consistent after moving all logic.
-  std::optional<bool> consider_form_as_secure_for_testing_;
 
   // This value is generated in Fetch phase, and is needed in Generate phase.
   // It is saved to the class state to avoid recalculation.

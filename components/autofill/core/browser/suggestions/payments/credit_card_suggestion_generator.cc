@@ -347,25 +347,12 @@ bool CreditCardSuggestionGenerator::ShouldShowScanCreditCard(
   if (!is_card_number_field) {
     return false;
   }
-  if (IsFormNonSecure(client, form)) {
+  if (IsFormOrClientNonSecure(client, form)) {
     return false;
   }
 
   static const int kShowScanCreditCardMaxValueLength = 6;
   return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
-}
-
-// TODO(crbug.com/409962888): right now it's copied from BAM. maybe move this
-// to a separate util file, common for all modules that potentially use this?
-// For example crrev.com/c/7013595
-bool CreditCardSuggestionGenerator::IsFormNonSecure(
-    const AutofillClient& client,
-    const FormData& form) const {
-  // Check if testing override applies.
-  if (consider_form_as_secure_for_testing_.value_or(false)) {
-    return false;
-  }
-  return IsFormOrClientNonSecure(client, form);
 }
 
 // TODO(crbug.com/409962888): rename to clarify that this returns a map
