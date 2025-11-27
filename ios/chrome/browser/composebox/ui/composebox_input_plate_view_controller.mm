@@ -874,6 +874,8 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   [menuItems addObject:submenu];
 
   _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
+  _plusButton.preferredMenuElementOrder =
+      UIContextMenuConfigurationElementOrderFixed;
 }
 
 /// Initializes and configures the collection view for the attachment carousel.
