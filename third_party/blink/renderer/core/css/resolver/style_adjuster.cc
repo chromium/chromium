@@ -1009,7 +1009,8 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   //
   // [1] https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties
   FontVariantEmoji variant = builder.GetFontDescription().VariantEmoji();
-  if (variant == kNormalVariantEmoji || variant == kUnicodeVariantEmoji) {
+  if (RuntimeEnabledFeatures::EmojiMonochromeRenderingEnabled() &&
+      (variant == kNormalVariantEmoji || variant == kUnicodeVariantEmoji)) {
     builder.SetFontVariantEmoji(kTextVariantEmoji);
   }
   if (builder.InternalForcedColor().IsSystemColor()) {

@@ -2134,6 +2134,11 @@
       status: "stable",
     },
     {
+      // crbug.com/420857717
+      name: "EmojiMonochromeRendering",
+      status: "experimental"
+    },
+    {
       name: "EmphasisMarkShapeCache",
       status: "stable",
     },
