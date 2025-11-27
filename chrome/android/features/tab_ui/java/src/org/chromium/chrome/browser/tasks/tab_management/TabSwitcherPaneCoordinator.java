@@ -1059,7 +1059,19 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
-        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
+        Runnable onAnimEnd =
+                () -> {
+                    onAnimationEnd.run();
+                    // Update the pinned tabs bar, as there might be movement of items in the
+                    // recycler view.
+                    if (mPinnedTabsCoordinator != null) mPinnedTabsCoordinator.onScrolled();
+                };
+        mTabListCoordinator.showQuickDeleteAnimation(onAnimEnd, tabs);
+
+        // Reveal the search bar if needed.
+        if (mPinnedTabsCoordinator != null) {
+            updatePinnedTabsStripOnScroll(/* shouldShowSearchBox= */ true, /* forced= */ false);
+        }
     }
 
     /** Returns the filter index of a tab from its view index. */
