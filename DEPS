@@ -504,7 +504,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    'de02e5d57052b3b6d5fcd76dccde9380bca39360',
+  'libcxxabi_revision':    '83a852080747b9a362e8f9e361366b7a601f302c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -540,7 +540,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '91c45fc28459e814889633be985b698c5e8050b4',
+  'libcxx_revision':       '13cfd0942dfd76fc838d1ead5c3c75a540f4760c',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:4619125bd337d259c0dc9f958d0102adc99d2543',

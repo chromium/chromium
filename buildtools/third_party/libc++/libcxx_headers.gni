@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "91c45fc28459e814889633be985b698c5e8050b4",
+    libcxx_revision == "13cfd0942dfd76fc838d1ead5c3c75a540f4760c",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -586,7 +586,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__mdspan/mdspan.h",
   "//third_party/libc++/src/include/__memory/addressof.h",
   "//third_party/libc++/src/include/__memory/align.h",
-  "//third_party/libc++/src/include/__memory/aligned_alloc.h",
   "//third_party/libc++/src/include/__memory/allocate_at_least.h",
   "//third_party/libc++/src/include/__memory/allocation_guard.h",
   "//third_party/libc++/src/include/__memory/allocator.h",
