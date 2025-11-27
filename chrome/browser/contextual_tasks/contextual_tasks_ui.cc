@@ -19,13 +19,13 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -177,6 +177,23 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddResourcePath(
       "internals/",
       IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
+
+  // Create a session handle on the web contents if it doesn't already exist.
+  // TODO(crbug.com/462193737): Pass the session handle from the omnibox
+  // or NTP through the web contents helper.
+  if (auto* contextual_search_web_contents_helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              web_ui->GetWebContents());
+      !contextual_search_web_contents_helper->session_handle()) {
+    Profile* profile = Profile::FromWebUI(web_ui);
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile);
+    auto contextual_session_handle = contextual_search_service->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kNewTabPage);
+    contextual_search_web_contents_helper->set_session_handle(
+        std::move(contextual_session_handle));
+  }
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -357,26 +374,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
-  // Create a session handle on the web contents if it doesn't already exist.
-  // TODO(crbug.com/462193737): Pass the session handle from the omnibox
-  // or NTP through the web contents helper.
-  // TODO(crbug.com/456793138): Try to reuse sessions if the thread already
-  // has a corresponding session, based on the mtid, once mtid is reliably
-  // set by the server.
-  if (auto* contextual_search_web_contents_helper =
-          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-              web_contents());
-      !contextual_search_web_contents_helper->session_handle()) {
-  Profile* profile = Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto* contextual_search_service =
-        ContextualSearchServiceFactory::GetForProfile(profile);
-    auto contextual_session_handle = contextual_search_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kNewTabPage);
-    contextual_search_web_contents_helper->set_session_handle(
-        std::move(contextual_session_handle));
-  }
-
   std::string url_thread_id;
   if (!net::GetValueForKeyInQuery(url, "mtid", &url_thread_id)) {
     return;
@@ -412,6 +409,10 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     }
   }
   task_info_delegate_->SetThreadId(url_thread_id);
+
+  // TODO(crbug.com/456793138): Update the contextual search session handle on
+  // the webcontents, reusing sessions if the thread already has a corresponding
+  // session entry, based on the mtid, once mtid is reliably set by the server.
 
   // If we don't yet have a title, try to pull one from the query.
   if (!task_info_delegate_->GetThreadTitle()) {
