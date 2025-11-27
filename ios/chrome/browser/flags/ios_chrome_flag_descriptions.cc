@@ -859,6 +859,12 @@ const char kIOSTrustedVaultNotificationDescription[] =
     "When enabled and when the trusted vault key is missing, the provisional "
     "notification will be delivered.";
 
+const char kIOSWebContextMenuNewTitleName[] =
+    "Use the new title for the Web context menu";
+const char kIOSWebContextMenuNewTitleDescription[] =
+    "Enables actions in context menu title instead of customized action for "
+    "web context menu.";
+
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =

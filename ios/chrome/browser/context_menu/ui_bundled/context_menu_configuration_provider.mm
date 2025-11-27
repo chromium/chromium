@@ -275,18 +275,31 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
     if (!IsImageTitle(params) &&
         menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      // "Show URL action" at the top of the context menu.
-      __weak __typeof(self) weakSelf = self;
-      BrowserActionFactory* actionFactory =
-          [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                               scenario:menuScenario];
-      showFullURL =
-          [actionFactory actionToShowFullURL:menuTitle
-                                       block:^{
-                                         [weakSelf showFullURLPopUp:params
-                                                          URLString:menuTitle];
-                                       }];
-      menuTitle = nil;
+      if (IsIOSWebContextMenuNewTitleEnabled()) {
+        NSString* fullURL = menuTitle;
+        // Truncate context menu titles that originate from URLs, leaving text
+        // titles untruncated.
+        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+            stringByAppendingString:kContextMenuEllipsis];
+        __weak __typeof(self) weakSelf = self;
+        ProceduralBlock block = ^{
+          [weakSelf showFullURLPopUp:params URLString:fullURL];
+        };
+        ios::provider::AttachBlockToContextMenu(menuTitle, block);
+      } else {
+        // "Show URL action" at the top of the context menu.
+        __weak __typeof(self) weakSelf = self;
+        BrowserActionFactory* actionFactory =
+            [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                                 scenario:menuScenario];
+        showFullURL = [actionFactory
+            actionToShowFullURL:menuTitle
+                          block:^{
+                            [weakSelf showFullURLPopUp:params
+                                             URLString:menuTitle];
+                          }];
+        menuTitle = nil;
+      }
     }
   }
 

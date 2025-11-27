@@ -1195,4 +1195,10 @@ BASE_DECLARE_FEATURE(kAIMEligibilityRefreshNTPModules);
 // Returns true if the AIMEligibilityRefreshNTPModules feature is enabled.
 bool IsAIMEligibilityRefreshNTPModulesEnabled();
 
+// Enables the IOSWebContextMenuNewTitle feature.
+BASE_DECLARE_FEATURE(kIOSWebContextMenuNewTitle);
+
+// Returns true if the IOSWebContextMenuNewTitle feature is enabled.
+bool IsIOSWebContextMenuNewTitleEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

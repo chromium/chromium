@@ -48,4 +48,8 @@ NSString* StyledContextMenuStringForString(NSString* string) {
   return string;
 }
 
+void AttachBlockToContextMenu(NSString* string, ProceduralBlock block) {
+  return;
+}
+
 }  // namespace ios::provider
