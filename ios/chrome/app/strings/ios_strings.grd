@@ -1410,7 +1410,7 @@
         Tabs
       </message>
       <message name="IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE" desc="Title for the Composebox tab picker when no tabs are selected.">
-        Add tabs
+        Add recent tabs
       </message>
       <message name="IDS_IOS_COMPOSEBOX_UNABLE_TO_ADD_ATTACHMENT" desc="Message displayed in a snackbar when a file upload fails. [iOS only].">
         Unable to add attachments
