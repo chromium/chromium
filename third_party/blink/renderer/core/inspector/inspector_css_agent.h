@@ -56,6 +56,7 @@ namespace probe {
 class RecalculateStyle;
 }  // namespace probe
 
+class CascadeLayer;
 class CSSConditionRule;
 class CSSContainerRule;
 class CSSFunctionRule;

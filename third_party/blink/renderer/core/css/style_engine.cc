@@ -768,9 +768,10 @@ void StyleEngine::MarkPositionTryStylesDirty(
     const HeapHashSet<Member<RuleSet>>& changed_rule_sets) {
   for (RuleSet* rule_set : changed_rule_sets) {
     CHECK(rule_set);
-    for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
-      if (try_rule) {
-        dirty_position_try_names_.insert(try_rule->Name());
+    for (const CascadeLayered<StyleRulePositionTry>& try_rule :
+         rule_set->PositionTryRules()) {
+      if (try_rule.value) {
+        dirty_position_try_names_.insert(try_rule.value->Name());
       }
     }
   }
@@ -4656,7 +4657,7 @@ StyleEngine::FindFunctionAcrossScopes(const AtomicString& name,
   // User origin.
   auto iter = user_function_rule_map_.find(AtomicString(name));
   if (iter != user_function_rule_map_.end()) {
-    return {iter->value.Get(), nullptr};
+    return {iter->value.value, nullptr};
   }
   return {nullptr, nullptr};
 }

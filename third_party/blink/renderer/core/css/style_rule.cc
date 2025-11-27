@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 #include "base/compiler_specific.h"
-#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_apply_mixin_rule.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_contents_mixin_rule.h"
@@ -1070,7 +1069,6 @@ StyleRuleFunction::StyleRuleFunction(
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
   visitor->Trace(parameters_);
-  visitor->Trace(layer_);
 }
 
 StyleRuleMixin::StyleRuleMixin(

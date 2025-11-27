@@ -391,7 +391,7 @@ StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
   DCHECK(try_name);
   auto iter = position_try_rule_map_.find(try_name);
   if (iter != position_try_rule_map_.end()) {
-    return iter->value.Get();
+    return iter->value.value;
   }
   return nullptr;
 }
@@ -399,7 +399,7 @@ StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
 StyleRuleFunction* ScopedStyleResolver::FunctionForName(StringView name) {
   auto iter = function_rule_map_.find(AtomicString(name));
   if (iter != function_rule_map_.end()) {
-    return iter->value.Get();
+    return iter->value.value;
   }
   return nullptr;
 }

@@ -160,7 +160,7 @@ class CORE_EXPORT ScopedStyleResolver final
   KeyframesRuleMap keyframes_rule_map_;
 
   using PositionTryRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;
+      HeapHashMap<AtomicString, CascadeLayered<StyleRulePositionTry>>;
   PositionTryRuleMap position_try_rule_map_;
 
   FunctionRuleMap function_rule_map_;

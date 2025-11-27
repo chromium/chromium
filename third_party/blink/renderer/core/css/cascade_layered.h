@@ -15,6 +15,8 @@
 
 namespace blink {
 
+class CascadeLayer;
+
 // Stores an object and an associated CascadeLayer.
 //
 // For example, if you specify the following:

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 
-#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_position_try_descriptors.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -18,7 +17,6 @@ StyleRulePositionTry::StyleRulePositionTry(const AtomicString& name,
 StyleRulePositionTry::~StyleRulePositionTry() = default;
 
 void StyleRulePositionTry::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(layer_);
   visitor->Trace(properties_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }

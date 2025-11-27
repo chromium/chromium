@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
@@ -3641,11 +3642,12 @@ StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
 
   // Try UA rules if no author rule matches
   if (!position_try_rule) {
-    for (const auto& rule : CSSDefaultStyleSheets::Instance()
-                                .DefaultHtmlStyle()
-                                ->PositionTryRules()) {
-      if (position_try_name == rule->Name()) {
-        position_try_rule = rule;
+    for (const CascadeLayered<StyleRulePositionTry>& rule :
+         CSSDefaultStyleSheets::Instance()
+             .DefaultHtmlStyle()
+             ->PositionTryRules()) {
+      if (position_try_name == rule.value->Name()) {
+        position_try_rule = rule.value;
         break;
       }
     }

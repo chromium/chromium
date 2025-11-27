@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -15,7 +16,8 @@ namespace blink {
 
 class CascadeLayerMap;
 
-using FunctionRuleMap = HeapHashMap<AtomicString, Member<StyleRuleFunction>>;
+using FunctionRuleMap =
+    HeapHashMap<AtomicString, CascadeLayered<StyleRuleFunction>>;
 
 // Certain at-rules define names that can be referenced later by their
 // corresponding properties, for example @keyframes/animation-name. When
@@ -32,20 +34,17 @@ using FunctionRuleMap = HeapHashMap<AtomicString, Member<StyleRuleFunction>>;
 // [1] https://drafts.csswg.org/css-cascade-5/#layering
 // [2] https://drafts.csswg.org/css-scoping/#shadow-names
 template <typename T>
-void AddNameDefiningRules(const HeapVector<Member<T>>& input_rules,
+void AddNameDefiningRules(const HeapVector<CascadeLayered<T>>& input_rules,
                           const CascadeLayerMap* cascade_layer_map,
-                          HeapHashMap<AtomicString, Member<T>>& out) {
-  for (T* rule : input_rules) {
-    auto result = out.insert(rule->Name(), rule);
+                          HeapHashMap<AtomicString, CascadeLayered<T>>& out) {
+  for (const CascadeLayered<T>& rule : input_rules) {
+    auto result = out.insert(rule.value->Name(), rule);
     if (result.is_new_entry) {
       continue;
     }
-    Member<T>& stored_rule = result.stored_value->value;
-    const bool should_override =
-        !cascade_layer_map ||
-        cascade_layer_map->CompareLayerOrder(stored_rule->GetCascadeLayer(),
-                                             rule->GetCascadeLayer()) <= 0;
-    if (should_override) {
+    CascadeLayered<T>& stored_rule = result.stored_value->value;
+    if (CascadeLayerMap::CompareLayerOrder(cascade_layer_map, stored_rule,
+                                           rule) <= 0) {
       stored_rule = rule;
     }
   }
