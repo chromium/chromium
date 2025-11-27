@@ -302,10 +302,9 @@ void EnsureExecutionProviderReadyAsync(
 
   ensure_op->put_Completed(
       Microsoft::WRL::Callback<EnsureReadyCompletedHandler>(
-          [provider, callback = base::BindPostTask(
-                         base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(callback))](EnsureReadyAsyncOp* ensure_op,
-                                               AsyncStatus status) mutable {
+          [provider,
+           callback = base::BindPostTaskToCurrentDefault(std::move(callback))](
+              EnsureReadyAsyncOp* ensure_op, AsyncStatus status) mutable {
             std::move(callback).Run(
                 QueryPackageInfoFromProvider(provider.Get(), ensure_op));
             return S_OK;
