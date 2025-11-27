@@ -62,7 +62,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(PermissionsAndroidFeatureList.BYPASS_PEPC_SECURITY_FOR_TESTING)
-@Features.DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 @Batch(Batch.PER_CLASS)
 @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/394097674
 public class EmbeddedPermissionPromptTest {
