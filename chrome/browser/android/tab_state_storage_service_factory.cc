@@ -9,18 +9,20 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/android/restore_id_associator_builder_android.h"
-#include "chrome/browser/android/tab_android_conversions.h"
-#include "chrome/browser/android/tab_storage_packager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageServiceFactory_jni.h"
-#include "chrome/browser/tab/restore_id_associator.h"
-#include "chrome/browser/tab/restore_id_associator_builder.h"
+#include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/restore_entity_tracker_android.h"
+#include "chrome/browser/android/tab_android_conversions.h"
+#include "chrome/browser/android/tab_storage_packager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tabs {
 
@@ -37,19 +39,21 @@ TabCanonicalizer GetTabCanonicalizer() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-AssociatorBuilderFactory GetAssociatorBuilderFactory() {
+RestoreEntityTrackerFactory GetRestoreEntityTrackerFactory() {
 #if BUILDFLAG(IS_ANDROID)
   return base::BindRepeating(
-      [](OnTabAssociation on_tab_assoc,
-         OnCollectionAssociation on_collection_assoc)
-          -> std::unique_ptr<RestoreIdAssociatorBuilder> {
-        return std::make_unique<RestoreIdAssociatorBuilderAndroid>(
-            on_tab_assoc, on_collection_assoc);
+      [](OnTabAssociation on_tab_associated,
+         OnCollectionAssociation on_collection_associated)
+          -> std::unique_ptr<RestoreEntityTracker> {
+        return std::make_unique<RestoreEntityTrackerAndroid>(
+            on_tab_associated, on_collection_associated);
       });
 #else
   return base::BindRepeating(
-      [](OnTabAssociation, OnCollectionAssociation)
-          -> std::unique_ptr<RestoreIdAssociatorBuilder> { return nullptr; });
+      [](OnTabAssociation,
+         OnCollectionAssociation) -> std::unique_ptr<RestoreEntityTracker> {
+        return nullptr;
+      });
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -99,7 +103,7 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif
   return std::make_unique<TabStateStorageService>(
       profile->GetPath(), std::move(packager), GetTabCanonicalizer(),
-      GetAssociatorBuilderFactory());
+      GetRestoreEntityTrackerFactory());
 }
 
 }  // namespace tabs

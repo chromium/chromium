@@ -67,14 +67,14 @@ void TabStateStorageBackend::Update(
 void TabStateStorageBackend::LoadAllNodes(
     const std::string& window_tag,
     bool is_off_the_record,
-    base::OnceCallback<void(std::vector<NodeState>)> callback) {
+    std::unique_ptr<StorageLoadedData::Builder> builder,
+    OnStorageLoadedData on_storage_loaded_data) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
                      base::Unretained(database_.get()), window_tag,
-                     is_off_the_record),
-      base::BindOnce(&TabStateStorageBackend::OnAllTabsRead,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     is_off_the_record, std::move(builder)),
+      std::move(on_storage_loaded_data));
 }
 
 void TabStateStorageBackend::ClearAllNodes() {
@@ -92,11 +92,5 @@ void TabStateStorageBackend::ClearWindow(const std::string& window_tag) {
 void TabStateStorageBackend::OnDBReady(bool success) {}
 
 void TabStateStorageBackend::OnWrite(bool success) {}
-
-void TabStateStorageBackend::OnAllTabsRead(
-    base::OnceCallback<void(std::vector<NodeState>)> callback,
-    std::vector<NodeState> result) {
-  std::move(callback).Run(std::move(result));
-}
 
 }  // namespace tabs

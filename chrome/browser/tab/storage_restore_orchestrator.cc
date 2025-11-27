@@ -25,8 +25,7 @@ void OnAddChildTab(
 
   TabHandle tab_handle = std::get<TabHandle>(handle);
   bool was_tab_on_disk =
-      loaded_data->GetNodeAssociator()->AssociateTabAndAncestors(
-          tab_handle.Get());
+      loaded_data->GetTracker()->AssociateTabAndAncestors(tab_handle.Get());
   if (!was_tab_on_disk || restored_nodes_.contains(handle)) {
     service->Save(tab_handle.Get());
   } else if (was_tab_on_disk) {
@@ -48,13 +47,12 @@ void OnAddChildCollection(
   const TabCollection* collection = collection_handle.Get();
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kPinned) {
-    loaded_data->GetNodeAssociator()->AssociatePinnedCollection(
+    loaded_data->GetTracker()->AssociatePinnedCollection(
         static_cast<const PinnedTabCollection*>(collection));
   }
 
   bool was_collection_on_disk =
-      loaded_data->GetNodeAssociator()->HasCollectionBeenAssociated(
-          collection_handle);
+      loaded_data->GetTracker()->HasCollectionBeenAssociated(collection_handle);
   if (!was_collection_on_disk || restored_nodes_.contains(handle)) {
     service->Save(collection_handle.Get());
   } else if (was_collection_on_disk) {

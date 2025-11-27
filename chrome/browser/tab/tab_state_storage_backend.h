@@ -33,9 +33,12 @@ class TabStateStorageBackend {
   // Performs an atomic database update.
   void Update(std::unique_ptr<TabStateStorageUpdater> updater);
 
+  using OnStorageLoadedData =
+      base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
   void LoadAllNodes(const std::string& window_tag,
                     bool is_off_the_record,
-                    base::OnceCallback<void(std::vector<NodeState>)> callback);
+                    std::unique_ptr<StorageLoadedData::Builder> builder,
+                    OnStorageLoadedData on_storage_loaded_data);
 
   void ClearAllNodes();
 
@@ -44,8 +47,6 @@ class TabStateStorageBackend {
  private:
   void OnDBReady(bool success);
   void OnWrite(bool success);
-  void OnAllTabsRead(base::OnceCallback<void(std::vector<NodeState>)> callback,
-                     std::vector<NodeState> result);
 
   const base::FilePath profile_path_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;

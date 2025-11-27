@@ -9,9 +9,11 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/tab/storage_loaded_data.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -133,19 +135,6 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
 }  // namespace
 
-NodeState::NodeState(StorageId id,
-                     TabStorageType type,
-                     std::vector<uint8_t> payload,
-                     std::vector<uint8_t> children)
-    : id(id),
-      type(type),
-      payload(std::move(payload)),
-      children(std::move(children)) {}
-NodeState::~NodeState() = default;
-
-NodeState::NodeState(NodeState&&) noexcept = default;
-NodeState& NodeState::operator=(NodeState&&) noexcept = default;
-
 OpenTransaction::OpenTransaction(sql::Database* db,
                                  base::PassKey<TabStateStorageDatabase>)
     : transaction_(db) {}
@@ -174,6 +163,7 @@ bool TabStateStorageDatabase::OpenTransaction::IsValid(
 TabStateStorageDatabase::TabStateStorageDatabase(
     const base::FilePath& profile_path)
     : profile_path_(profile_path),
+
       db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
           sql::Database::Tag("TabStateStorage")) {}
 
@@ -331,10 +321,10 @@ bool TabStateStorageDatabase::CloseTransaction(
   return success;
 }
 
-std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
+std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
     const std::string& window_tag,
-    bool is_off_the_record) {
-  std::vector<NodeState> entries;
+    bool is_off_the_record,
+    std::unique_ptr<StorageLoadedData::Builder> builder) {
   static constexpr char kSelectAllNodesSql[] =
       "SELECT id, type, payload, children FROM nodes "
       "WHERE window_tag = ? AND is_off_the_record = ?";
@@ -343,13 +333,15 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
   select_statement.BindString(0, window_tag);
   select_statement.BindInt(1, static_cast<int>(is_off_the_record));
   while (select_statement.Step()) {
-    entries.emplace_back(
-        StorageIdFromBlob(select_statement.ColumnBlob(0)),
-        static_cast<TabStorageType>(select_statement.ColumnInt(1)),
-        select_statement.ColumnBlobAsVector(2),
-        select_statement.ColumnBlobAsVector(3));
+    StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
+    TabStorageType type =
+        static_cast<TabStorageType>(select_statement.ColumnInt(1));
+    builder->AddNode(id, type, select_statement.ColumnBlob(2),
+                     base::PassKey<TabStateStorageDatabase>());
+    builder->AddChildren(id, type, select_statement.ColumnBlob(3),
+                         base::PassKey<TabStateStorageDatabase>());
   }
-  return entries;
+  return builder->Build();
 }
 
 void TabStateStorageDatabase::ClearAllNodes() {

@@ -15,8 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/tab/restore_id_associator.h"
-#include "chrome/browser/tab/restore_id_associator_builder.h"
+#include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
@@ -38,8 +37,8 @@ using TabCanonicalizer =
 
 // Constructs an associater using the specified callbacks. This indirection is
 // required to minimize OS-specific coupling.
-using AssociatorBuilderFactory = base::RepeatingCallback<std::unique_ptr<
-    RestoreIdAssociatorBuilder>(OnTabAssociation, OnCollectionAssociation)>;
+using RestoreEntityTrackerFactory = base::RepeatingCallback<std::unique_ptr<
+    RestoreEntityTracker>(OnTabAssociation, OnCollectionAssociation)>;
 
 class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
@@ -51,7 +50,7 @@ class TabStateStorageService : public KeyedService,
   TabStateStorageService(const base::FilePath& profile_path,
                          std::unique_ptr<TabStoragePackager> packager,
                          TabCanonicalizer tab_canonicalizer,
-                         AssociatorBuilderFactory builder_factory);
+                         RestoreEntityTrackerFactory builder_factory);
   ~TabStateStorageService() override;
 
   // StorageIdMapping:
@@ -92,9 +91,6 @@ class TabStateStorageService : public KeyedService,
       TabStateStorageService* tab_state_storage_service);
 
  private:
-  void OnAllNodesLoaded(LoadDataCallback callback,
-                        std::vector<NodeState> entries);
-
   void OnTabCreated(StorageId storage_id, const TabInterface* tab);
   void OnCollectionCreated(StorageId storage_id,
                            const TabCollection* collection);
@@ -103,7 +99,7 @@ class TabStateStorageService : public KeyedService,
   std::unique_ptr<TabStoragePackager> packager_;
 
   TabCanonicalizer tab_canonicalizer_;
-  AssociatorBuilderFactory builder_factory_;
+  RestoreEntityTrackerFactory tracker_factory_;
 
   // Storage ids need to be unique across tabs and collections, but the handles
   // do not have this guarantee. Track them separately.

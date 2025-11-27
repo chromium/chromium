@@ -6,40 +6,22 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_DATABASE_H_
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/transaction.h"
 
 namespace tabs {
-
-// Represents a row in the node table, to allow returning many rows of data.
-// Each row may be a tab or parent collection.
-struct NodeState {
-  NodeState(StorageId id,
-            TabStorageType type,
-            std::vector<uint8_t> payload,
-            std::vector<uint8_t> children);
-  ~NodeState();
-
-  NodeState(const NodeState&) = delete;
-  NodeState& operator=(const NodeState&) = delete;
-
-  NodeState(NodeState&&) noexcept;
-  NodeState& operator=(NodeState&&) noexcept;
-
-  StorageId id;
-  TabStorageType type;
-  std::vector<uint8_t> payload;
-  std::vector<uint8_t> children;
-};
 
 // This class is responsible for all database operations.
 class TabStateStorageDatabase {
@@ -112,8 +94,10 @@ class TabStateStorageDatabase {
   bool CloseTransaction(OpenTransaction* transaction);
 
   // Loads all nodes from the database.
-  std::vector<NodeState> LoadAllNodes(const std::string& window_tag,
-                                      bool is_off_the_record);
+  std::unique_ptr<StorageLoadedData> LoadAllNodes(
+      const std::string& window_tag,
+      bool is_off_the_record,
+      std::unique_ptr<StorageLoadedData::Builder> builder);
 
   // Clears all nodes from the database.
   void ClearAllNodes();
