@@ -207,12 +207,6 @@ class TestSharedImageInterface : public SharedImageInterface {
   ~TestSharedImageInterface() override;
 
  private:
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  static gfx::GpuMemoryBufferHandle CreatePixmapHandle(
-      const gfx::Size& size,
-      viz::SharedImageFormat format);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
   void InitializeSharedImageCapabilities();
 
   mutable base::Lock lock_;
