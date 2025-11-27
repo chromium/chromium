@@ -26,6 +26,8 @@ class PageStabilityMetrics {
 
   void OnInteractionContentfulPaint();
 
+  void Flush();
+
  private:
   void RecordTimingMetrics();
 
@@ -45,6 +47,8 @@ class PageStabilityMetrics {
 
   base::TimeDelta total_time_between_interaction_contentful_paints_;
   int subsequent_contentful_paint_count_ = 0;
+
+  bool flushed_ = false;
 };
 
 }  // namespace actor

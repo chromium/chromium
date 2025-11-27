@@ -279,6 +279,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
 void PageStabilityMonitor::StopMonitoring() {
   network_and_main_thread_stability_monitor_.reset();
   paint_stability_monitor_.reset();
+
+  CHECK(metrics_);
+  metrics_->Flush();
 }
 
 void PageStabilityMonitor::Teardown() {
