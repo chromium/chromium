@@ -86,4 +86,36 @@ public class DirectionalScrollListenerUnitTest {
         verify(mOnScrollDown, times(2)).run();
         verify(mOnScrollUp, never()).run();
     }
+
+    @Test
+    @SmallTest
+    public void testDifferentThresholds() {
+        int scrollUpThreshold = 10;
+        int scrollDownThreshold = 20;
+        mListener =
+                new DirectionalScrollListener(
+                        mOnScrollUp, mOnScrollDown, 50, scrollUpThreshold, scrollDownThreshold);
+
+        // Test scroll down threshold.
+        mListener.onScrolled(mRecyclerView, 0, 15);
+        verify(mOnScrollDown, never()).run();
+        verify(mOnScrollUp, never()).run();
+
+        mListener.onScrolled(mRecyclerView, 0, 25);
+        verify(mOnScrollDown, times(1)).run();
+        verify(mOnScrollUp, never()).run();
+
+        // Wait for the throttle to expire.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Test scroll up threshold.
+        mListener.onScrolled(mRecyclerView, 0, -5);
+        verify(mOnScrollUp, never()).run();
+        // Verify scroll down didn't run again.
+        verify(mOnScrollDown, times(1)).run();
+
+        mListener.onScrolled(mRecyclerView, 0, -15);
+        verify(mOnScrollUp, times(1)).run();
+        verify(mOnScrollDown, times(1)).run();
+    }
 }
