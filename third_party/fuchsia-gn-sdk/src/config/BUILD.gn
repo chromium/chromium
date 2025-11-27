@@ -14,6 +14,8 @@ config("compiler") {
   ldflags = []
   if (current_cpu == "arm64") {
     cflags += [ "--target=aarch64-unknown-fuchsia" ]
+  } else if (current_cpu == "riscv64") {
+    cflags += [ "--target=riscv64-unknown-fuchsia" ]
   } else if (current_cpu == "x64") {
     cflags += [ "--target=x86_64-unknown-fuchsia" ]
   } else {
