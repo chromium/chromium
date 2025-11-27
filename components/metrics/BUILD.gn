@@ -279,6 +279,7 @@ if (!is_cronet_build || is_ios) {
       ":server_urls_grd",
       "//base",
       "//base:base_static",
+      "//base:build_time",
       "//base:i18n",
       "//build:branding_buildflags",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",

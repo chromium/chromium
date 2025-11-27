@@ -2353,6 +2353,7 @@ if (!is_android) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//base",
+      "//base:build_time",
       "//base:i18n",
       "//base/allocator:buildflags",
       "//base/test:proto_test_support",

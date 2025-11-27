@@ -97,6 +97,7 @@ source_set("impl") {
         "upgrade_detector_impl.cc",
       ]
       deps += [
+        "//base:build_time",
         "//chrome/browser:buildflags",
         "//chrome/browser/google",
         "//content/public/browser",

@@ -57,6 +57,7 @@ static_library("service") {
   public_deps = [ "//base" ]
   deps = [
     ":buildflags",
+    "//base:build_time",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/country_codes",
@@ -97,6 +98,7 @@ source_set("unit_tests") {
     ":buildflags",
     ":service",
     "//base",
+    "//base:build_time",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//components/metrics",

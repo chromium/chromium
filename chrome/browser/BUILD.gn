@@ -1816,6 +1816,7 @@ static_library("browser") {
     ":shell_integration",
     ":unexpire_flags",
     "//base",
+    "//base:build_time",
     "//base:i18n",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",

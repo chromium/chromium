@@ -211,7 +211,6 @@ component("base") {
     "big_endian.h",
     "bit_cast.h",
     "bits.h",
-    "build_time.h",
     "byte_count.cc",
     "byte_count.h",
     "byte_size.cc",
@@ -961,7 +960,6 @@ component("base") {
     "version_info/channel.h",
     "vlog.cc",
     "vlog.h",
-    _build_date_header,
   ]
 
   # Various files that are unused in the Chromium build, but presumably here to
@@ -1098,7 +1096,6 @@ component("base") {
   public_deps = [
     ":anchor_functions_buildflags",
     ":base_static",
-    ":build_date",
     ":cfi_buildflags",
     ":clang_profiling_buildflags",
     ":debugging_buildflags",
@@ -3805,6 +3802,7 @@ test("base_unittests") {
   deps = [
     ":base",
     ":base_stack_sampling_profiler_test_util",
+    ":build_time",
     ":check_version_internal",
     ":feature_list_buildflags",
     ":hardening_tests",
@@ -4442,10 +4440,20 @@ if (current_toolchain == default_toolchain) {
   }
 }
 
-copy("build_date") {
+copy("build_date_header") {
   sources = [ "$root_build_dir/gen/base/generated_build_date_internal.h" ]
   outputs = [ _build_date_header ]
   deps = [ ":build_date_internal($default_toolchain)" ]
+}
+
+source_set("build_time") {
+  # This is a header, but it should be private.
+  sources = [ _build_date_header ]
+  public_deps = [
+    ":base",
+    ":build_date_header",
+  ]
+  public = [ "build_time.h" ]
 }
 
 if (enable_nocompile_tests) {

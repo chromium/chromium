@@ -87,6 +87,7 @@ source_set("unit_tests") {
     ":home_metrics",
     ":metrics",
     "//base",
+    "//base:build_time",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",

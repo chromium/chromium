@@ -336,6 +336,7 @@ component("network_service") {
 
   deps = [
     "//base",
+    "//base:build_time",
     "//build:chromecast_buildflags",
     "//components/content_settings/core/common",
     "//components/cookie_config",
