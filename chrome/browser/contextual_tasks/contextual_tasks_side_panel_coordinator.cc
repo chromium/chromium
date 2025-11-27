@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -178,7 +179,11 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
         SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
   }
   UpdateOpenState(/*is_open=*/true);
-  UpdateForActiveTab();
+  UpdateContextualTaskUI();
+  ObserveWebContentsOnActiveTab();
+  browser_window_->GetFeatures()
+      .contextual_tasks_active_task_context_provider()
+      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
@@ -186,6 +191,10 @@ void ContextualTasksSidePanelCoordinator::Close() {
   browser_window_->GetFeatures().side_panel_ui()->Close(
       SidePanelEntry::PanelType::kToolbar);
   Observe(nullptr);
+
+  browser_window_->GetFeatures()
+      .contextual_tasks_active_task_context_provider()
+      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -219,12 +228,12 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
 
 void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
-  UpdateActiveTabContextStatus();
+  UpdateContextualTaskUI();
 }
 
 void ContextualTasksSidePanelCoordinator::TitleWasSet(
     content::NavigationEntry* entry) {
-  UpdateActiveTabContextStatus();
+  UpdateContextualTaskUI();
 }
 
 content::WebContents*
@@ -354,7 +363,12 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
-  UpdateForActiveTab();
+  UpdateContextualTaskUI();
+  ObserveWebContentsOnActiveTab();
+
+  browser_window_->GetFeatures()
+      .contextual_tasks_active_task_context_provider()
+      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
 }
 
 void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
@@ -443,6 +457,10 @@ void ContextualTasksSidePanelCoordinator::Hide() {
                        SidePanelEntryHideReason::kSidePanelClosed,
                        /*suppress_animations=*/true);
   Observe(nullptr);
+
+  browser_window_->GetFeatures()
+      .contextual_tasks_active_task_context_provider()
+      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
@@ -453,14 +471,16 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
           /*tab_handle=*/std::nullopt,
           SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks)},
       /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
-  UpdateActiveTabContextStatus();
-  UpdateForActiveTab();
+  UpdateContextualTaskUI();
+  ObserveWebContentsOnActiveTab();
+
+  browser_window_->GetFeatures()
+      .contextual_tasks_active_task_context_provider()
+      ->OnSidePanelStateUpdated(IsSidePanelOpenForContextualTask());
 }
 
-void ContextualTasksSidePanelCoordinator::UpdateForActiveTab() {
+void ContextualTasksSidePanelCoordinator::ObserveWebContentsOnActiveTab() {
   CHECK(browser_window_);
-
-  UpdateActiveTabContextStatus();
 
   tabs::TabInterface* active_tab_interface =
       browser_window_->GetActiveTabInterface();
@@ -474,7 +494,7 @@ void ContextualTasksSidePanelCoordinator::UpdateForActiveTab() {
   }
 }
 
-void ContextualTasksSidePanelCoordinator::UpdateActiveTabContextStatus() {
+void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
   if (!web_view_) {
     return;
   }

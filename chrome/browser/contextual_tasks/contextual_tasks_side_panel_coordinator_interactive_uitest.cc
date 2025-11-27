@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -15,12 +16,16 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 
+using testing::AtLeast;
 using testing::Field;
+using testing::IsEmpty;
 using testing::Mock;
+using testing::Not;
 using testing::Pointee;
 
 namespace contextual_tasks {
@@ -51,6 +56,15 @@ class MockContextualTasksComposeboxHandler
               (override));
 };
 
+class MockActiveTaskContextProviderObserver
+    : public ActiveTaskContextProvider::Observer {
+ public:
+  MockActiveTaskContextProviderObserver() = default;
+  ~MockActiveTaskContextProviderObserver() override = default;
+
+  MOCK_METHOD(void, OnContextTabsChanged, (const std::set<tabs::TabHandle>&));
+};
+
 class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
@@ -60,6 +74,11 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
   ~ContextualTasksSidePanelCoordinatorInteractiveUiTest() override = default;
 
   void SetUpTasks() {
+    browser()
+        ->GetFeatures()
+        .contextual_tasks_active_task_context_provider()
+        ->AddObserver(&mock_active_task_context_provider_observer_);
+
     // Add tab1.
     chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
     // Add tab2.
@@ -113,6 +132,8 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
  protected:
   base::Uuid task_id1_;
   base::Uuid task_id2_;
+  MockActiveTaskContextProviderObserver
+      mock_active_task_context_provider_observer_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -121,6 +142,9 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        SwitchTabChangeSidePanelWebContents) {
   SetUpTasks();
+  EXPECT_CALL(mock_active_task_context_provider_observer_,
+              OnContextTabsChanged(testing::_))
+      .Times(AtLeast(1));
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
   RunTestSequence(

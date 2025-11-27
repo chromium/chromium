@@ -25,6 +25,11 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated(bool is_open) {}
+void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated(bool is_open) {
+  // TODO(crbug.com/458718633): Implement it to account for all cases.
+  for (auto& observer : observers_) {
+    observer.OnContextTabsChanged({});
+  }
+}
 
 }  // namespace contextual_tasks

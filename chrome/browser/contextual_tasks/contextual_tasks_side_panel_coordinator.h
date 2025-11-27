@@ -139,10 +139,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   void MaybeDetachWebContentsFromWebView(content::WebContents* web_contents);
 
   // Called when active tab has been updated.
-  void UpdateForActiveTab();
+  void ObserveWebContentsOnActiveTab();
 
   // Update the statucs of active tab context on the side panel.
-  void UpdateActiveTabContextStatus();
+  void UpdateContextualTaskUI();
 
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
