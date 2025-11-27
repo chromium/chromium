@@ -59,10 +59,10 @@ class WebViewPermissionHelper {
 
   using RequestMap = std::map<int, PermissionResponseInfo>;
 
-  int RequestPermission(WebViewPermissionType permission_type,
-                        base::Value::Dict request_info,
-                        PermissionResponseCallback callback,
-                        bool allowed_by_default);
+  void RequestPermission(WebViewPermissionType permission_type,
+                         base::Value::Dict request_info,
+                         PermissionResponseCallback callback,
+                         bool allowed_by_default);
 
   static WebViewPermissionHelper* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
@@ -135,8 +135,6 @@ class WebViewPermissionHelper {
   SetPermissionResult SetPermission(int request_id,
                                     PermissionResponseAction action,
                                     const std::string& user_input);
-
-  void CancelPendingPermissionRequest(int request_id);
 
   WebViewGuest* web_view_guest() { return web_view_guest_; }
 
