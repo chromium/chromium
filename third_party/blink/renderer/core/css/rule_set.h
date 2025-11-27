@@ -536,8 +536,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   FontFeatureValuesRules() const {
     return font_feature_values_rules_;
   }
-  const HeapVector<Member<StyleRuleViewTransition>>& ViewTransitionRules()
-      const {
+  const HeapVector<CascadeLayered<StyleRuleViewTransition>>&
+  ViewTransitionRules() const {
     return view_transition_rules_;
   }
   const HeapVector<Member<StyleRulePositionTry>>& PositionTryRules() const {
@@ -680,7 +680,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                                 const CascadeLayer*);
   void AddPositionTryRule(StyleRulePositionTry*);
   void AddFunctionRule(StyleRuleFunction*);
-  void AddViewTransitionRule(StyleRuleViewTransition*);
+  void AddViewTransitionRule(StyleRuleViewTransition*, const CascadeLayer*);
 
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                              const MediaQuerySet* media_queries);
@@ -804,7 +804,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleFontPaletteValues>> font_palette_values_rules_;
   HeapVector<CascadeLayered<StyleRuleFontFeatureValues>>
       font_feature_values_rules_;
-  HeapVector<Member<StyleRuleViewTransition>> view_transition_rules_;
+  HeapVector<CascadeLayered<StyleRuleViewTransition>> view_transition_rules_;
   HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<CascadeLayered<StyleRuleProperty>> property_rules_;
   HeapVector<CascadeLayered<StyleRuleCounterStyle>> counter_style_rules_;

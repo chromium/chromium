@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
@@ -2684,9 +2685,9 @@ void StyleEngine::UpdateViewTransitionOptIn() {
   // TODO(https://crbug.com/1463966): This will likely need to change to a
   // CSSValueList if we want to support multiple tokens as a trigger.
   Vector<String> types;
-  if (view_transition_rule_) {
-    types = view_transition_rule_->GetTypes();
-    if (const CSSValue* value = view_transition_rule_->GetNavigation()) {
+  if (view_transition_rule_.value) {
+    types = view_transition_rule_.value->GetTypes();
+    if (const CSSValue* value = view_transition_rule_.value->GetNavigation()) {
       cross_document_enabled =
           To<CSSIdentifierValue>(value)->GetValueID() == CSSValueID::kAuto;
     }
@@ -3441,7 +3442,7 @@ bool StyleEngine::UserKeyframeStyleShouldOverride(
 }
 
 void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
-  view_transition_rule_.Clear();
+  view_transition_rule_ = CascadeLayered<StyleRuleViewTransition>();
 
   for (const ActiveStyleSheet& active_sheet : sheets) {
     RuleSet* rule_set = active_sheet.second;
@@ -3453,10 +3454,11 @@ void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
         document_->GetScopedStyleResolver()
             ? document_->GetScopedStyleResolver()->GetCascadeLayerMap()
             : nullptr;
-    for (auto& rule : rule_set->ViewTransitionRules()) {
-      if (!view_transition_rule_ || !layer_map ||
-          layer_map->CompareLayerOrder(view_transition_rule_->GetCascadeLayer(),
-                                       rule->GetCascadeLayer()) <= 0) {
+    for (const CascadeLayered<StyleRuleViewTransition>& rule :
+         rule_set->ViewTransitionRules()) {
+      if (!view_transition_rule_.value ||
+          CascadeLayerMap::CompareLayerOrder(layer_map, view_transition_rule_,
+                                             rule) <= 0) {
         view_transition_rule_ = rule;
       }
     }

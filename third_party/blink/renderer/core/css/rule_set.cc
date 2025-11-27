@@ -952,9 +952,11 @@ void RuleSet::AddFunctionRule(StyleRuleFunction* rule) {
   function_rules_.push_back(rule);
 }
 
-void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule) {
+void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule,
+                                    const CascadeLayer* layer) {
   need_compaction_ = true;
-  view_transition_rules_.push_back(rule);
+  view_transition_rules_.push_back(
+      CascadeLayered<StyleRuleViewTransition>(rule, layer));
 }
 
 void RuleSet::AddChildRules(StyleRule* parent_rule,
@@ -1005,8 +1007,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       AddCounterStyleRule(counter_style_rule, cascade_layer);
     } else if (auto* view_transition_rule =
                    DynamicTo<StyleRuleViewTransition>(rule)) {
-      view_transition_rule->SetCascadeLayer(cascade_layer);
-      AddViewTransitionRule(view_transition_rule);
+      AddViewTransitionRule(view_transition_rule, cascade_layer);
     } else if (auto* position_try_rule =
                    DynamicTo<StyleRulePositionTry>(rule)) {
       position_try_rule->SetCascadeLayer(cascade_layer);
