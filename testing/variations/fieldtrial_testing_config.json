@@ -1262,23 +1262,6 @@
             ]
         }
     ],
-    "AndroidWindowOcclusion": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidWindowOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidWindowPopupLargeScreen": [
         {
             "platforms": [
