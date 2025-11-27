@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -72,6 +73,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   DownloadManagerMediator mediator_;
