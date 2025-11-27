@@ -20141,6 +20141,42 @@
             ]
         }
     ],
+    "ProfileExperimentsM1FrictionReduction": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ProfileCreationFrictionReductionExperimentPrefillNameRequirement",
+                        "ProfileCreationFrictionReductionExperimentRemoveSigninStep",
+                        "ProfileCreationFrictionReductionExperimentSkipCustomizeProfile"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProfileExperimentsM1Usability": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "OpenAllProfilesFromProfilePickerExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProfileRemoteCommands": [
         {
             "platforms": [
@@ -23890,6 +23926,23 @@
                     },
                     "enable_features": [
                         "IPH_SideSearch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninPromoLimitsExperiment": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "SigninPromoLimitsExperiment"
                     ]
                 }
             ]
