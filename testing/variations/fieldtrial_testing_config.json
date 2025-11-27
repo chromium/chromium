@@ -25887,6 +25887,24 @@
             ]
         }
     ],
+    "UnoPhase2FollowUpDesktop": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SpellcheckSeparateLocalAndAccountDictionaries",
+                        "UnoPhase2FollowUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "UpdateIsMainFrameOriginRecentlyAccessedStudy": [
         {
             "platforms": [
