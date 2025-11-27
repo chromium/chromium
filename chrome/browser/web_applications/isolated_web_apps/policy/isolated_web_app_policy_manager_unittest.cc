@@ -1061,6 +1061,10 @@ TEST_F(IsolatedWebAppRetryTest, RetryTimeStepsCorrect) {
         MockIwaInstallCommandWrapper::ExecutionMode::kSimulateFailure,
         /*execute_immediately=*/true);
 
+    // Make sure all the scheduled policy process calls related to startup have
+    // already been executed
+    task_environment().RunUntilIdle();
+
     test::AddForceInstalledIwaToPolicy(
         profile()->GetPrefs(),
         IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
