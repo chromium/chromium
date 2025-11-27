@@ -1039,8 +1039,7 @@ void PermissionRequestManager::ShowPrompt() {
       // `on_page_loaded_time_` is not reset because it is ok to record the
       // session duration multiple times per permission type for the same page
       // load.
-      if (requests_[0]->GetContentSettingsType() ==
-              ContentSettingsType::GEOLOCATION ||
+      if (requests_[0]->request_type() == RequestType::kGeolocation ||
           requests_[0]->GetContentSettingsType() ==
               ContentSettingsType::NOTIFICATIONS) {
         PermissionUmaUtil::RecordPrePromptSessionDuration(
@@ -1050,8 +1049,7 @@ void PermissionRequestManager::ShowPrompt() {
       if (requests_[0]->GetContentSettingsType() ==
           ContentSettingsType::NOTIFICATIONS) {
         notification_request_first_display_time_ = base::TimeTicks::Now();
-      } else if (requests_[0]->GetContentSettingsType() ==
-                 ContentSettingsType::GEOLOCATION) {
+      } else if (requests_[0]->request_type() == RequestType::kGeolocation) {
         geolocation_request_first_display_time_ = base::TimeTicks::Now();
       }
     }
@@ -1240,7 +1238,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
       ContentSettingsType content_settings_type =
           request->GetContentSettingsType();
 
-      if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+      if (request->request_type() == RequestType::kGeolocation ||
           content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
           content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
         actions_history->RecordOneTimeGrant(request->requesting_origin(),
@@ -1250,7 +1248,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
       ContentSettingsType content_settings_type =
           request->GetContentSettingsType();
 
-      if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+      if (request->request_type() == RequestType::kGeolocation ||
           content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
           content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
         actions_history->RecordOTPCountForGrant(
@@ -1856,7 +1854,7 @@ void PermissionRequestManager::RecordPostPromptSessionDuration() {
       notification_request_first_display_time_);
 
   PermissionUmaUtil::RecordPostPromptSessionDuration(
-      ContentSettingsType::GEOLOCATION,
+      RequestTypeToContentSettingsType(RequestType::kGeolocation).value(),
       geolocation_request_first_display_time_);
 
   notification_request_first_display_time_ = base::TimeTicks();

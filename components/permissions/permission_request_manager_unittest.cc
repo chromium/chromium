@@ -1508,6 +1508,26 @@ TEST_F(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
   EXPECT_TRUE(request1_state.granted);
 }
 
+// Class to run tests both with kApproximateGeolocationPermission enabled and
+// disabled;
+class PermissionRequestManagerAlsoWithApproximateGeolocationTest
+    : public PermissionRequestManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PermissionRequestManagerAlsoWithApproximateGeolocationTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          content_settings::features::kApproximateGeolocationPermission);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          content_settings::features::kApproximateGeolocationPermission);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies that the quiet UI chip is not ignored if another request came in
 // less than 8.5 seconds after.
 // Permissions requested in order:
@@ -1518,7 +1538,7 @@ TEST_F(PermissionRequestManagerTest, NewHighPriorityRequestDuringUIDecision) {
 // 1. Notifications request shown but is preempted because of quiet UI.
 // 2. Geolocation request shown
 // 3. Notifications request shown again
-TEST_F(PermissionRequestManagerTest,
+TEST_P(PermissionRequestManagerAlsoWithApproximateGeolocationTest,
        AbusiveNotificationsGeolocationQuietUIChipRequest) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
@@ -1551,7 +1571,8 @@ TEST_F(PermissionRequestManagerTest,
 // Prompt display order:
 // 1. Notifications request shown but is preempted because of quiet UI.
 // 2. Geolocation request shown
-TEST_F(PermissionRequestManagerTest, AbusiveNotificationsShownLongEnough) {
+TEST_P(PermissionRequestManagerAlsoWithApproximateGeolocationTest,
+       AbusiveNotificationsShownLongEnough) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
       PermissionUiSelector::QuietUiReason::kTriggeredDueToAbusiveRequests,
@@ -1592,7 +1613,7 @@ TEST_F(PermissionRequestManagerTest, AbusiveNotificationsShownLongEnough) {
 // 3. Camera request shown
 // 4. Geolocation request shown again
 // 5. Notifications quiet UI request shown again
-TEST_F(PermissionRequestManagerTest,
+TEST_P(PermissionRequestManagerAlsoWithApproximateGeolocationTest,
        AbusiveNotificationsShownLongEnoughCamera) {
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_,
@@ -1622,6 +1643,10 @@ TEST_F(PermissionRequestManagerTest,
   EXPECT_EQ(prompt_factory_->show_count(), 5);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    kApproximateGeolocationPermissionFeature,
+    PermissionRequestManagerAlsoWithApproximateGeolocationTest,
+    testing::Values(false, true));
 // Verifies that the quiet UI chip is not ignored if another request came in
 // more than 8.5 seconds after. Verify different requests priority. Camera
 // request is not preemted.
