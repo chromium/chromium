@@ -334,7 +334,6 @@ void GlicProfileManager::ForceConnectionTypeForTesting(
 }
 
 bool GlicProfileManager::IsUnderMemoryPressure() const {
-  // TODO(crbug.com/390719004): Look at discarding when pressure increases.
   base::MemoryPressureLevel memory_pressure = base::MEMORY_PRESSURE_LEVEL_NONE;
   if (g_forced_memory_pressure_level_) {
     memory_pressure = *g_forced_memory_pressure_level_;
