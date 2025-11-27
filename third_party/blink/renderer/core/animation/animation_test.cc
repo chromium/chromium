@@ -243,9 +243,16 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
   }
 
   void SimulateFrameForScrollAnimations() {
-    // Advance time by 100 ms.
-    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
-    GetPage().Animator().ServiceScriptedAnimations(new_time);
+    if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+      // Scroll-timelines are not updated until after layout with this flag
+      // enabled.
+      UpdateAllLifecyclePhasesForTest();
+    } else {
+      // Advance time by 100 ms.
+      auto new_time =
+          GetAnimationClock().CurrentTime() + base::Milliseconds(100);
+      GetPage().Animator().ServiceScriptedAnimations(new_time);
+    }
   }
 
   bool StartTimeIsSet(Animation* for_animation) {
