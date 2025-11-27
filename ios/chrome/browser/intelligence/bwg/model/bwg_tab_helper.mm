@@ -403,6 +403,7 @@ void BwgTabHelper::PageLoaded(
 }
 
 void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   web_state_observation_.Reset();
   if (!IsGeminiCrossTabEnabled()) {
     CleanupSessionFromPrefs(GetClientId());
@@ -634,6 +635,10 @@ void BwgTabHelper::PrepareWebPageReportedImagesSnackbar() {
   web::WebFrame* main_frame =
       web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
 
+  if (!main_frame) {
+    return;
+  }
+
   // Extract the OG image.
   main_frame->ExecuteJavaScript(
       u"(() => {"
@@ -667,6 +672,10 @@ void BwgTabHelper::OnImageExtractedFromWebState(const base::Value* value,
       ImageFetchTabHelper::FromWebState(web_state_.get());
   const GURL& lastCommittedURL = web_state_->GetLastCommittedURL();
   web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
+
+  if (!image_fetcher) {
+    return;
+  }
 
   image_fetcher->GetImageData(
       GURL(value->GetString()), referrer,
