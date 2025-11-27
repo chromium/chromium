@@ -591,10 +591,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
   [_sceneState addAgent:[[TabGridSceneAgent alloc] init]];
-
-  if (IsShareExtensionForMultiprofileEnabled()) {
-    [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
-  }
+  [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
 
   // Start observing the ProfileState. This needs to happen after the agents
   // as this may result in creation of the UI which can access to the agents.
@@ -708,14 +705,14 @@ void RecordIfNeededSigninFullscreenPromoEvent(
         kContextsToOpen, ContextsToOpen::kMoreThanOneContextWithAccountChange);
   }
 
-  BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
-  if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
-    // Find the first context that requires an account change.
-    URLContext* context = [self findContextRequiringAccountChange:contexts];
-    // Perform profile switching if needed.
-    if ([self changeProfileForContext:context contexts:contexts openURL:NO]) {
-      return YES;
-    }
+  // Find the first context that requires an account change.
+  URLContext* firstContextForAccountChange =
+      [self findContextRequiringAccountChange:contexts];
+  // Perform profile switching if needed.
+  if ([self changeProfileForContext:firstContextForAccountChange
+                           contexts:contexts
+                            openURL:NO]) {
+    return YES;
   }
 
   // Handle URL opening from
@@ -995,16 +992,12 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   }
   self.sceneState.URLContextsToOpen = nil;
 
-  BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
-
-  if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
-    // Find the first context that requires an account change.
-    URLContext* context = [self findContextRequiringAccountChange:contexts];
-    // Perform profile switching if needed.
-    if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
-      // Don't open the URLs if the profile was changed.
-      return;
-    }
+  // Find the first context that requires an account change.
+  URLContext* context = [self findContextRequiringAccountChange:contexts];
+  // Perform profile switching if needed.
+  if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
+    // Don't open the URLs if the profile was changed.
+    return;
   }
 
   [self openURLContexts:contexts];
@@ -1091,12 +1084,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 - (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {
-  return IsShareExtensionForMultiprofileEnabled() &&
-         [URL.path
-             isEqualToString:
-                 [NSString
-                     stringWithFormat:
-                         @"/%s", app_group::kChromeAppGroupXCallbackCommand]];
+  return [URL.path
+      isEqualToString:
+          [NSString
+              stringWithFormat:@"/%s",
+                               app_group::kChromeAppGroupXCallbackCommand]];
 }
 
 - (URLContext*)findContextRequiringAccountChange:

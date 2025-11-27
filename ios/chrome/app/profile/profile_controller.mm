@@ -705,9 +705,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   [self sendChromeOpenedEvent];
 
   _spotlightManager = [SpotlightManager spotlightManagerWithProfile:profile];
-  if (!IsShareExtensionForMultiprofileEnabled()) {
-    ShareExtensionServiceFactory::GetForProfile(profile)->Initialize();
-  }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetForProfile(profile);
