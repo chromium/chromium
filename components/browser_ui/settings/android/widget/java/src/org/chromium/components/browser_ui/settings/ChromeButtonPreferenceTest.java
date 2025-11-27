@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.View;
 
 import androidx.preference.PreferenceFragmentCompat;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.browser_ui.settings.test.R;
 
 /** Tests of {@link ChromeButtonPreference}. */
@@ -97,6 +99,9 @@ public class ChromeButtonPreferenceTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/464320061")
     public void testSetButtonWithStringsAndListener() {
         ChromeButtonPreference preference = new ChromeButtonPreference(mActivity);
         String buttonText = "Custom Text";
