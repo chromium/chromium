@@ -235,13 +235,16 @@ TEST_F(DrawingBufferTest, VerifySharedImagesReleasedAfterReleaseCallback) {
 
   EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
   std::move(release_callback1).Run(gpu::SyncToken(), true /* lostResource */);
+  resource1 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 3u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), true /* lostResource */);
+  resource2 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 2u);
 
   // The resource is not marked lost so it's recycled after the callback.
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
+  resource3 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 2u);
 
   drawing_buffer_->BeginDestruction();
@@ -419,6 +422,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   // Return the exported resource. Now it should get destroyed too.
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
+  resource = viz::TransferableResource();
   VerifyStateWasRestored();
   EXPECT_EQ(1u, sii->shared_image_count());
   EXPECT_FALSE(sii->CheckSharedImageExists(mailbox1));
@@ -455,6 +459,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   // Return the exported resource. Now it will be destroyed too.
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
+  resource = viz::TransferableResource();
   VerifyStateWasRestored();
   EXPECT_EQ(1u, sii->shared_image_count());
   EXPECT_FALSE(sii->CheckSharedImageExists(mailbox3));
@@ -492,6 +497,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   drawing_buffer_->BeginDestruction();
   testing::Mock::VerifyAndClearExpectations(sii);
+  resource = viz::TransferableResource();
   EXPECT_EQ(0u, sii->shared_image_count());
 }
 

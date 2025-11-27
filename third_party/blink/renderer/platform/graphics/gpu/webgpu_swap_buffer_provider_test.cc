@@ -337,12 +337,15 @@ TEST_F(WebGPUSwapBufferProviderTest,
   // Release resources one by one and expect shared images to be destroyed.
   provider_ = nullptr;
   std::move(release_callback1).Run(gpu::SyncToken(), false /* lostResource */);
+  resource1 = viz::TransferableResource();
   EXPECT_EQ(sii_->shared_image_count(), 2u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), false /* lostResource */);
+  resource2 = viz::TransferableResource();
   EXPECT_EQ(sii_->shared_image_count(), 1u);
 
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
+  resource3 = viz::TransferableResource();
   EXPECT_EQ(sii_->shared_image_count(), 0u);
 }
 
@@ -414,6 +417,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   gpu::SyncToken release_token;
   webgpu_->GenSyncTokenCHROMIUM(release_token.GetData());
   std::move(release_callback).Run(release_token, false /* lostResource */);
+  resource = viz::TransferableResource();
 
   // Release the unused swap buffers held by the provider.
   provider_ = nullptr;
