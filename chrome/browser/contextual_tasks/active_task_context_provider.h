@@ -10,6 +10,10 @@
 #include "base/observer_list_types.h"
 #include "components/tabs/public/tab_interface.h"
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 namespace contextual_tasks {
 
 // A per-window context provider class that tracks the task associated with the
@@ -17,7 +21,6 @@ namespace contextual_tasks {
 // currently included in the context of the active tab's context and notifies
 // the observers when the active tab is switched. Mainly used for underling the
 // tabs that are part of the active task.
-// TODO(crbug.com/458718633): Finish implementation.
 class ActiveTaskContextProvider {
  public:
   class Observer : public base::CheckedObserver {
@@ -30,12 +33,18 @@ class ActiveTaskContextProvider {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  virtual ~ActiveTaskContextProvider() = default;
+  // Called by the UI handler when the pending context from the compose plate
+  // changes.
+  virtual void OnPendingContextUpdated(
+      const contextual_search::ContextualSearchSessionHandle&
+          session_handle) = 0;
 
   // Called to notify the state of side panel. Called :
   // 1. After every tab switch with the correct state of `is_open`.
   // 2. Whenever the side panel is opened or closed, e.g. due to user action.
   virtual void OnSidePanelStateUpdated(bool is_open) = 0;
+
+  virtual ~ActiveTaskContextProvider() = default;
 };
 
 }  // namespace contextual_tasks
