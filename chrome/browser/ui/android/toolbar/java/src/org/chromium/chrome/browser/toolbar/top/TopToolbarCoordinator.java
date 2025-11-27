@@ -79,6 +79,7 @@ import java.util.function.Supplier;
 /** A coordinator for the top toolbar component. */
 @NullMarked
 public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
+    private static final int UNSPECIFIED_TOOLBAR_OFFSET = -1234;
 
     /** Observes toolbar color or expanding state change. */
     public interface ToolbarColorObserver {
@@ -298,6 +299,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
         // Add the layer after toolbar / control container is initialized.
         mTopControlsStacker.addControl(this);
+        mTopControlsStacker.requestLayerUpdatePost(false);
     }
 
     /**
@@ -932,6 +934,14 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     // To place the toolbar at its desired position, we have to subtract the diffs of the capture a
     // nd the toolbar, in order to put the toolbar at the desired yOffset.
     private void updateSceneLayerYOffset() {
+        // Edge case: When Chrome launches on NTP, the browser controls might not dispatch
+        // a valid yOffset for the toolbar. If the capture size changes (e.g. resize screen), we
+        // we will not have a valid yOffset.
+        // Pull the height from top as a fallback value from top controls stacker.
+        if (mLayerYOffset == UNSPECIFIED_TOOLBAR_OFFSET) {
+            mLayerYOffset = mTopControlsStacker.getHeightFromLayerToTop(getTopControlType());
+        }
+
         int captureHeight = mControlContainer.getToolbarCaptureHeight();
         int diff =
                 captureHeight

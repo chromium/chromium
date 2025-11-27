@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -129,7 +130,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         @Override
         public void run() {
             TopControlsStacker.this.mPendingRequest = null;
-            requestLayerUpdateSync(requireAnimate);
+            updateLayersInternally(requireAnimate, /* shouldUpdateOffsets= */ true);
         }
     }
 
@@ -254,7 +255,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         }
     }
 
-    private void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
+    @VisibleForTesting
+    void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
         if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
 
         recalculateHeights();

@@ -1318,20 +1318,20 @@ public class TopControlsStackerUnitTest {
     @Test
     public void requestLayerUpdatePost_multipleCalls() {
         mTopControlsStacker = spy(mTopControlsStacker);
-        doNothing().when(mTopControlsStacker).requestLayerUpdateSync(anyBoolean());
+        doNothing().when(mTopControlsStacker).updateLayersInternally(anyBoolean(), anyBoolean());
 
         // Call requestLayerUpdatePost multiple times.
         mTopControlsStacker.requestLayerUpdatePost(false);
         mTopControlsStacker.requestLayerUpdatePost(true);
 
         // Verify that requestLayerUpdateSync has not been called yet.
-        verify(mTopControlsStacker, never()).requestLayerUpdateSync(anyBoolean());
+        verify(mTopControlsStacker, never()).updateLayersInternally(anyBoolean(), anyBoolean());
 
         // Execute the posted runnable.
         ShadowLooper.runUiThreadTasks();
 
         // Verify that requestLayerUpdateSync is called only once with animate=true.
-        verify(mTopControlsStacker, times(1)).requestLayerUpdateSync(true);
+        verify(mTopControlsStacker, times(1)).updateLayersInternally(true, true);
     }
 
     // Helper class to store the current offset during test cases.
