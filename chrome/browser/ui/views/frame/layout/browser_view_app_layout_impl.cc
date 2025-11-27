@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
@@ -139,6 +140,10 @@ BrowserViewAppLayoutImpl::CalculateProposedLayout(
         /*needs_exclusion=*/false);
     top_container_layout.bounds =
         GetTopContainerBoundsInParent(top_container_local_bounds, params);
+    // In cases where the top container is nonzero size, need to move everything
+    // else down.
+    params.SetTop(std::max(params.visual_client_area.y(),
+                           top_container_layout.bounds.bottom()));
   }
 
   // Lay out infobar container if present.
@@ -295,7 +300,12 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
   } else {
     // Move the available space downward when not in overlay mode (in overlay
     // mode the contents pane will need to render behind the overlay area).
-    params.SetTop(full_toolbar_bounds.bottom());
+    // Also, if the tabstrip is visible then it needs to be overlapped by the
+    // contents slightly to give the impression that the tabs connect to the
+    // contents.
+    const int tabstrip_adjustment =
+        tabstrip_enabled ? GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) : 0;
+    params.SetTop(full_toolbar_bounds.bottom() - tabstrip_adjustment);
     overlay_rect_ = std::nullopt;
   }
 }
