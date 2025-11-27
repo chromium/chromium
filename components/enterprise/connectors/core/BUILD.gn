@@ -143,9 +143,12 @@ source_set("test_support") {
     "realtime_reporting_test_server.h",
     "reporting_test_utils.cc",
     "reporting_test_utils.h",
+    "uploader_test_utils.cc",
+    "uploader_test_utils.h",
   ]
 
   deps = [
+    ":cloud_content_scanning",
     ":core",
     "//base/test:test_support",
     "//components/enterprise",

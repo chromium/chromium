@@ -39,7 +39,6 @@ source_set("test_support") {
       "fake_clipboard_request_handler.h",
       "fake_content_analysis_delegate.h",
       "fake_files_request_handler.h",
-      "uploader_test_utils.h",
     ]
 
     sources += [
@@ -48,7 +47,6 @@ source_set("test_support") {
       "fake_clipboard_request_handler.cc",
       "fake_content_analysis_delegate.cc",
       "fake_files_request_handler.cc",
-      "uploader_test_utils.cc",
     ]
 
     public_deps += [

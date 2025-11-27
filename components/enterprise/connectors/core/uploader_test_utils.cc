@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
+#include "components/enterprise/connectors/core/uploader_test_utils.h"
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise_connectors {
 
 std::string GetBodyFromFileOrPageRequest(
     ConnectorDataPipeGetter* data_pipe_getter) {
@@ -54,4 +55,4 @@ std::string GetBodyFromFileOrPageRequest(
   return body;
 }
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise_connectors

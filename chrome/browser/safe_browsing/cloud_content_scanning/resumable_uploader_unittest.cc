@@ -17,11 +17,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/uploader_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -505,9 +505,8 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
   if (GetRequestType() == UploadRequestType::kString) {
     EXPECT_EQ(GetContent(), content_upload_body);
   } else {
-    EXPECT_EQ(GetContent(),
-              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
-                  request->data_pipe_getter_for_testing()));
+    EXPECT_EQ(GetContent(), enterprise_connectors::GetBodyFromFileOrPageRequest(
+                                request->data_pipe_getter_for_testing()));
   }
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
@@ -669,9 +668,8 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
   if (GetRequestType() == UploadRequestType::kString) {
     EXPECT_EQ(GetContent(), content_upload_body);
   } else {
-    EXPECT_EQ(GetContent(),
-              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
-                  request->data_pipe_getter_for_testing()));
+    EXPECT_EQ(GetContent(), enterprise_connectors::GetBodyFromFileOrPageRequest(
+                                request->data_pipe_getter_for_testing()));
   }
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
