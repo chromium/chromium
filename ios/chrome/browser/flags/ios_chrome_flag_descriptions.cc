@@ -1152,11 +1152,6 @@ const char kOmniboxDRSPrototypeName[] = "Enable the Omnibox DRS prototype";
 const char kOmniboxDRSPrototypeDescription[] =
     "Enables the omnibox dynamic response system prototype";
 
-const char kOmniboxGeminiPrototypeProviderName[] =
-    "Omnibox Gemini Prototype Provider";
-const char kOmniboxGeminiPrototypeProviderDescription[] =
-    "Enables a prototype provider that suggests a query on omnibox focus.";
-
 const char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
     "Omnibox Grouping Framework for Typed Suggestions";
 const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[] =

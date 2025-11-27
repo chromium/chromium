@@ -90,10 +90,6 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "ContextualSearch";
     case TYPE_TAB_GROUP:
       return "TabGroup";
-#if BUILDFLAG(IS_IOS)
-    case TYPE_GEMINI_PROTOTYPE:
-      return "GeminiPrototype";
-#endif
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -207,10 +203,6 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::CONTEXTUAL_SEARCH_PROVIDER;
     case TYPE_TAB_GROUP:
       return metrics::OmniboxEventProto::TAB_GROUP_PROVIDER;
-#if BUILDFLAG(IS_IOS)
-    case TYPE_GEMINI_PROTOTYPE:
-      return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
-#endif
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their

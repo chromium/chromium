@@ -56,7 +56,6 @@ source_set("model") {
     "//components/unified_consent",
     "//ios/chrome/browser/ai_prototyping/model",
     "//ios/chrome/browser/aim/model:aim_availability",
-    "//ios/chrome/browser/autocomplete/model/prototype",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",

@@ -341,17 +341,6 @@ BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
 // users to type in multiline / longer text.
 BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 
-#if BUILDFLAG(IS_IOS)
-// Enables the Gemini Prototype Omnibox Provider.
-BASE_FEATURE(kGeminiPrototypeOmniboxProvider,
-             "OmniboxGeminiPrototypeProvider",
-             DISABLED);
-
-bool IsGeminiPrototypeProviderEnabled() {
-  return base::FeatureList::IsEnabled(kGeminiPrototypeOmniboxProvider);
-}
-#endif
-
 // Controls whether the composebox
 BASE_FEATURE(kComposeboxUsesChromeComposeClient, DISABLED);
 
