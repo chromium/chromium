@@ -430,7 +430,10 @@ class NET_EXPORT CookieMonster : public CookieStore {
     // The cookie insertion resulted in a web-observable change. This can happen
     // if a new cookie was inserted or an existing cookie was overwritten with
     // new properties.
-    kWebObservable = 1
+    kWebObservable = 1,
+    // The cookie insertion resulted in a web-observable change, but the cookie
+    // value is not changed.
+    kWebObservableWithoutValueChange = 2
   };
 
   // Record statistics every kRecordStatisticsIntervalSeconds of uptime.

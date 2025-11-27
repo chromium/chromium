@@ -248,6 +248,10 @@ chromium-metrics-reviews@google.com.
     The newly inserted cookie overwrote a cookie but did not result in any
     change.
   </int>
+  <int value="8" label="INSERTED_NO_VALUE_CHANGE_OVERWRITE">
+    The newly inserted cookie overwrote a cookie but did not result in any value
+    change, but it's web observable (e.g. updates the expiry).
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//net/cookies/cookie_change_dispatcher.h:CookieChangeCause) -->

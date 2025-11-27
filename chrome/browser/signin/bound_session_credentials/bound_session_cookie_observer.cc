@@ -72,6 +72,7 @@ void BoundSessionCookieObserver::OnCookieChange(
   switch (change.cause) {
     // The cookie was inserted.
     case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
       callback_.Run(cookie_name_, change.cookie.ExpiryDate());
       break;
 

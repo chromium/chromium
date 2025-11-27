@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -6905,6 +6906,106 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
       DeleteCanonicalCookie(cm.get(), cookie_copy);
     }
   }
+}
+
+// Test the different cookie change causes.
+TEST_F(CookieMonsterTest, CookieChangeCause) {
+  auto cookie_monster =
+      std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  std::vector<CookieChangeInfo> changes;
+  auto subscription =
+      cookie_monster->GetChangeDispatcher().AddCallbackForAllChanges(
+          base::BindLambdaForTesting([&](const CookieChangeInfo& change) {
+            changes.push_back(change);
+          }));
+
+  auto format_cookie_line = [](std::string& cookie_name,
+                               std::string& cookie_value,
+                               base::Time expiry) -> std::string {
+    return base::StrCat({cookie_name, "=", cookie_value,
+                         "; expires=", base::TimeFormatHTTP(expiry)});
+  };
+
+  GURL url("https://www.foo.com");
+  std::string cookie_name = "A";
+  std::string cookie_value = "B";
+  base::Time expiry = base::Time::Now() + base::Days(1);
+
+  // 1. Insert a new cookie A = B with expiry = now + 1 day, there should be
+  // only one `CookieChangeCause::INSERTED`.
+  auto cookie = CanonicalCookie::CreateForTesting(
+      url, format_cookie_line(cookie_name, cookie_value, expiry),
+      base::Time::Now());
+  ASSERT_TRUE(cookie);
+  this->SetCanonicalCookie(cookie_monster.get(), std::move(cookie), url,
+                           /*can_modify_httponly=*/true);
+  CookieMonsterTestTraits::DeliverChangeNotifications();
+
+  ASSERT_EQ(1u, changes.size());
+  EXPECT_EQ(CookieChangeCause::INSERTED, changes[0].cause);
+  EXPECT_EQ(cookie_name, changes[0].cookie.Name());
+  EXPECT_EQ(cookie_value, changes[0].cookie.Value());
+  changes.clear();
+
+  // 2. Overwrite with the exact same cookie, there should be two
+  // `CookieChangeCause`s: `OVERWRITE` followed by
+  // `ISNERTED_NO_CHANGE_OVERWRITE`.
+  cookie = CanonicalCookie::CreateForTesting(
+      url, format_cookie_line(cookie_name, cookie_value, expiry),
+      base::Time::Now());
+  ASSERT_TRUE(cookie);
+  this->SetCanonicalCookie(cookie_monster.get(), std::move(cookie), url,
+                           /*can_modify_httponly=*/true);
+  CookieMonsterTestTraits::DeliverChangeNotifications();
+
+  ASSERT_EQ(2u, changes.size());
+  EXPECT_EQ(CookieChangeCause::OVERWRITE, changes[0].cause);
+  EXPECT_EQ(CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE, changes[1].cause);
+  EXPECT_EQ(cookie_name, changes[0].cookie.Name());
+  EXPECT_EQ(cookie_name, changes[1].cookie.Name());
+  EXPECT_EQ(cookie_value, changes[1].cookie.Value());
+  changes.clear();
+
+  // 3. Overwrite with same value but different expiry, there should be two
+  // `CookieChangeCause`s: `OVERWRITE` followed by
+  // `INSERTED_NO_VALUE_CHANGE_OVERWRITE`.
+  base::Time new_expiry = base::Time::Now() + base::Days(2);
+  cookie = CanonicalCookie::CreateForTesting(
+      url, format_cookie_line(cookie_name, cookie_value, new_expiry),
+      base::Time::Now());
+  ASSERT_TRUE(cookie);
+  this->SetCanonicalCookie(cookie_monster.get(), std::move(cookie), url,
+                           /*can_modify_httponly=*/true);
+  CookieMonsterTestTraits::DeliverChangeNotifications();
+
+  ASSERT_EQ(2u, changes.size());
+  EXPECT_EQ(CookieChangeCause::OVERWRITE, changes[0].cause);
+  EXPECT_EQ(CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE,
+            changes[1].cause);
+  EXPECT_EQ(cookie_name, changes[0].cookie.Name());
+  EXPECT_EQ(cookie_name, changes[1].cookie.Name());
+  EXPECT_EQ(cookie_value, changes[1].cookie.Value());
+  changes.clear();
+
+  // 4. Overwrite with a different value, there should be two
+  // `CookieChangeCause`s: `OVERWRITE` followed by `INSERTED`.
+  std::string new_cookie_value = "C";
+  cookie = CanonicalCookie::CreateForTesting(
+      url, format_cookie_line(cookie_name, new_cookie_value, new_expiry),
+      base::Time::Now());
+  ASSERT_TRUE(cookie);
+  this->SetCanonicalCookie(cookie_monster.get(), std::move(cookie), url,
+                           /*can_modify_httponly=*/true);
+  CookieMonsterTestTraits::DeliverChangeNotifications();
+
+  ASSERT_EQ(2u, changes.size());
+  EXPECT_EQ(CookieChangeCause::OVERWRITE, changes[0].cause);
+  EXPECT_EQ(CookieChangeCause::INSERTED, changes[1].cause);
+  EXPECT_EQ(cookie_name, changes[0].cookie.Name());
+  EXPECT_EQ(cookie_name, changes[1].cookie.Name());
+  EXPECT_EQ(new_cookie_value, changes[1].cookie.Value());
+  changes.clear();
 }
 
 class CookieMonsterNotificationTest : public CookieMonsterTest {

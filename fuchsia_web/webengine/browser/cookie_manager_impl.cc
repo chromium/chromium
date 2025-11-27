@@ -29,6 +29,7 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
   cookie.set_id(std::move(id));
   switch (cause) {
     case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
       cookie.set_value(canonical_cookie.Value());
       break;
     case net::CookieChangeCause::EXPLICIT:

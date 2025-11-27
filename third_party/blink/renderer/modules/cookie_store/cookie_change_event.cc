@@ -130,7 +130,9 @@ void CookieChangeEvent::ToEventInfo(
     HeapVector<Member<CookieListItem>>& changed,
     HeapVector<Member<CookieListItem>>& deleted) {
   switch (change_info->cause) {
-    case ::network::mojom::CookieChangeCause::INSERTED: {
+    case ::network::mojom::CookieChangeCause::INSERTED:
+    case ::network::mojom::CookieChangeCause::
+        INSERTED_NO_VALUE_CHANGE_OVERWRITE: {
       CookieListItem* cookie = ToCookieListItem(
           change_info->cookie, change_info->access_result->effective_same_site,
           false /* is_deleted */);

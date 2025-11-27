@@ -83,6 +83,10 @@ specific_include_rules = {
   ".*test\.cc": [
     "+third_party/fuzztest",
   ],
+
+  "cookie_monster_unittest.cc": [
+    "+base/i18n/time_formatting.h",
+  ],
 }
 
 skip_child_includes = [

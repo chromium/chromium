@@ -203,7 +203,8 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
 
   switch (change.cause) {
     case net::CookieChangeCause::INSERTED:
-    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE: {
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE: {
       bridge_->AddOrUpdateCookie(cookie);
       break;
     }

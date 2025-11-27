@@ -343,8 +343,9 @@ TEST_F(UserSecuritySignalsServiceTest,
   CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
                              /*expect_using_cookie=*/true);
 
-  // Fake that various cookie change events were triggered, none with "INSERT".
-  // This means no additional report should be triggered.
+  // Fake that various cookie change events were triggered, none with "INSERT" /
+  // "INSERTED_NO_VALUE_CHANGE_OVERWRITE". This means no additional report
+  // should be triggered.
   const auto kCases = std::to_array<net::CookieChangeCause>({
       net::CookieChangeCause::EXPLICIT,
       net::CookieChangeCause::UNKNOWN_DELETION,

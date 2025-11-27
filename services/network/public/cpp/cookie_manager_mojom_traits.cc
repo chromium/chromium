@@ -550,6 +550,9 @@ EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
       return network::mojom::CookieChangeCause::EXPIRED_OVERWRITE;
     case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       return network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE;
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+      return network::mojom::CookieChangeCause::
+          INSERTED_NO_VALUE_CHANGE_OVERWRITE;
     default:
       break;
   }
@@ -583,6 +586,9 @@ bool EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::
       return true;
     case network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       *output = net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE;
+      return true;
+    case network::mojom::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+      *output = net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE;
       return true;
     default:
       break;

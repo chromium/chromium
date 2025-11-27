@@ -40,8 +40,11 @@ enum class CookieChangeCause {
   // The newly inserted cookie overwrote a cookie but did not result in any
   // change.
   INSERTED_NO_CHANGE_OVERWRITE,
+  // The newly inserted cookie overwrote a cookie but did not result in any
+  // value change, but it's web observable (e.g. updates the expiry).
+  INSERTED_NO_VALUE_CHANGE_OVERWRITE,
 
-  kMaxValue = INSERTED_NO_CHANGE_OVERWRITE,
+  kMaxValue = INSERTED_NO_VALUE_CHANGE_OVERWRITE,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:CookieChangeCause)
 
