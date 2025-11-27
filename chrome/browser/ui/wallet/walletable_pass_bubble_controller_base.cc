@@ -48,6 +48,13 @@ bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 
+void WalletablePassBubbleControllerBase::OnBubbleDiscarded() {
+  CHECK(base::FeatureList::IsEnabled(
+      autofill::features::kAutofillShowBubblesBasedOnPriorities));
+  std::move(callback_).Run(
+      WalletablePassClient::WalletablePassBubbleResult::kDiscarded);
+}
+
 void WalletablePassBubbleControllerBase::HideBubble(
     bool initiated_by_bubble_manager) {
   if (IsShowingBubble()) {

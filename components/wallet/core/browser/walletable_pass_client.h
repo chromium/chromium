@@ -45,7 +45,8 @@ class WalletablePassClient {
     kClosed = 2,
     kAccepted = 3,
     kDeclined = 4,
-    kMaxValue = kDeclined
+    kDiscarded = 5,
+    kMaxValue = kDiscarded
   };
 
   using WalletablePassBubbleResultCallback =

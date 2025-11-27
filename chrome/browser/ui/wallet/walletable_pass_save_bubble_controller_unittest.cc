@@ -190,4 +190,27 @@ TEST_F(WalletablePassSaveBubbleControllerTest,
   EXPECT_FALSE(controller()->IsShowingBubble());
 }
 
+// Tests that the callback is run with kDiscarded when the bubble is discarded
+// by the BubbleManager.
+TEST_F(WalletablePassSaveBubbleControllerTest, OnBubbleDiscardedRunsCallback) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillShowBubblesBasedOnPriorities};
+
+  MockBubbleManager& bubble_manager = *static_cast<MockBubbleManager*>(
+      tab_features().SetBubbleManagerForTesting(
+          std::make_unique<NiceMock<MockBubbleManager>>()));
+
+  ON_CALL(bubble_manager, RequestShowController)
+      .WillByDefault([](autofill::BubbleControllerBase& controller, bool) {
+        controller.ShowBubble();
+      });
+
+  base::test::TestFuture<WalletablePassBubbleResult> future;
+
+  EXPECT_CALL(bubble_manager, RequestShowController);
+  controller()->SetUpAndShowSaveBubble({}, future.GetCallback());
+  controller()->OnBubbleDiscarded();
+  EXPECT_EQ(future.Get(), WalletablePassBubbleResult::kDiscarded);
+}
+
 }  // namespace wallet

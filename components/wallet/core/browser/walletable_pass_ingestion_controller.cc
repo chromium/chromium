@@ -10,6 +10,7 @@
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"
+#include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "url/gurl.h"
 
@@ -136,6 +137,7 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
       break;
     case kLostFocus:
     case kUnknown:
+    case kDiscarded:
       consent_strike_db_->AddStrike();
       // TODO(crbug.com/452779539): Report other outcomes to UMA.
       break;
@@ -252,6 +254,7 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
       break;
     case kLostFocus:
     case kUnknown:
+    case kDiscarded:
       // TODO(crbug.com/452779539): Report other outcomes to UMA.
       break;
   }
