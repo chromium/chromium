@@ -88,6 +88,7 @@ BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kCacheIdentityListInChrome, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableACPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

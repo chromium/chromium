@@ -492,6 +492,10 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
+const char kEnableACPrefetchName[] = "Enable AC Prefetch";
+const char kEnableACPrefetchDescription[] =
+    "Ensures that account capabilities are prefetched and cached.";
+
 const char kEnableASWebAuthenticationSessionName[] =
     "Enable ASWebAuthenticationSession";
 const char kEnableASWebAuthenticationSessionDescription[] =

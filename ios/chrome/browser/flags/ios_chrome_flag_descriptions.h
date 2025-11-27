@@ -293,6 +293,9 @@ extern const char kDownloadServiceForegroundSessionDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
+extern const char kEnableACPrefetchName[];
+extern const char kEnableACPrefetchDescription[];
+
 extern const char kEnableASWebAuthenticationSessionName[];
 extern const char kEnableASWebAuthenticationSessionDescription[];
 

@@ -75,6 +75,9 @@ BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
 // Feature flag to enable caching identities in ios_internal.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kCacheIdentityListInChrome);
+// Feature flag to prefetch and cache account capabilities.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableACPrefetch);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
