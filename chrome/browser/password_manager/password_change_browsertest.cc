@@ -407,8 +407,16 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   base::WeakPtrFactory<PasswordChangeBrowserTest> weak_ptr_factory_{this};
 };
 
+// Flaky: crbug.com/456247817
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ChangePasswordFormIsFilledAutomatically \
+  DISABLED_ChangePasswordFormIsFilledAutomatically
+#else
+#define MAYBE_ChangePasswordFormIsFilledAutomatically \
+  ChangePasswordFormIsFilledAutomatically
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       ChangePasswordFormIsFilledAutomatically) {
+                       MAYBE_ChangePasswordFormIsFilledAutomatically) {
   SetPrivacyNoticeAcceptedPref();
   SetChangePasswordUrl("/password/update_form_empty_fields_no_submit.html");
 
