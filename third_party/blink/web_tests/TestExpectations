@@ -9937,3 +9937,6 @@ crbug.com/414792736 http/tests/devtools/unit/filtered-list-widget-providers.js [
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
+
+# Gardener 2025-11-27
+crbug.com/464191951 [ Mac ] http/tests/devtools/elements/inspect-pointer-events-none.js [ Failure Pass ]
