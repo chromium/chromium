@@ -76,12 +76,35 @@ public class ChromeBasePreference extends Preference implements ContainmentItem 
 
     /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
+        setManagedPreferenceDelegate(delegate, /* allowManagedIcon= */ true, mHasCustomLayout);
+    }
+
+    /**
+     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
+     *
+     * @param delegate The delegate that checks if the preference is managed.
+     * @param allowManagedIcon Whether to show an icon if the preference is managed.
+     * @param hasCustomLayout Whether the preference has a custom layout.
+     */
+    protected void setManagedPreferenceDelegate(
+            @Nullable ManagedPreferenceDelegate delegate,
+            boolean allowManagedIcon,
+            boolean hasCustomLayout) {
         mManagedPrefDelegate = delegate;
         ManagedPreferencesUtils.initPreference(
-                mManagedPrefDelegate,
-                this,
-                /* allowManagedIcon= */ true,
-                /* hasCustomLayout= */ mHasCustomLayout);
+                mManagedPrefDelegate, this, allowManagedIcon, hasCustomLayout);
+    }
+
+    /**
+     * If a {@link ManagedPreferenceDelegate} has been set, check if this preference is managed.
+     *
+     * @return True if the preference is managed.
+     */
+    public boolean isManaged() {
+        if (mManagedPrefDelegate == null) return false;
+
+        return mManagedPrefDelegate.isPreferenceControlledByPolicy(this)
+                || mManagedPrefDelegate.isPreferenceControlledByCustodian(this);
     }
 
     @Override

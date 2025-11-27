@@ -178,8 +178,8 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ASK" desc="Summary text explaining that Chrome will ask the user before allowing a site to use a certain permission, e.g. JavaScript: ask first.">
     Ask first
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_BLOCKED" desc="Summary text explaining that a permission is blocked, e.g. JavaScript: blocked.">
-    Blocked
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOT_ALLOWED" desc="Summary text explaining that a permission is not allowed (blocked), e.g. Notifications: not allowed.">
+    Not allowed
   </message>
 
   <!-- Site settings supplemental global toggle settings -->
@@ -1001,7 +1001,12 @@
   <message name="IDS_WEBSITE_SETTINGS_NOTIFICATIONS_BLOCK" desc="Primary text corresponding to the block button in the notifications permission radio buttons group.">
     Don't allow sites to send notifications
   </message>
-
+  <message name="IDS_NOTIFICATIONS_PERMISSION_SUBSCRIBE" desc="The message displayed on a button inside PageInfo Notifications row. Taping on the button results in subscribing to notifications from this site.">
+    Subscribe
+  </message>
+  <message name="IDS_NOTIFICATIONS_PERMISSION_SUBSCRIBE_A11Y" desc="Accessibility string for the subscribe for notifications button">
+    Subscribe for notifications from this site
+  </message>
   <!-- Pop-ups and redirects -->
 
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_POPUPS_REDIRECTS_BLOCKED" desc="Summary text explaining that sites are blocked from showing popups/redirects and that it is the recommended setting.">

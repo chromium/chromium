@@ -35,6 +35,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
+import org.chromium.components.browser_ui.settings.ChromeButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -821,31 +822,42 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         boolean isBeingRequested =
                 getArguments().getBoolean(EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION, false);
 
-        // `isBeingRequested` indicates that the notification permission is currently being
-        // requested, as it is not technically allowed yet, we should display the "BLOCK" state.
-        // Because a requested permissoin's state is ASK, `mSite` will not contain a value for this
-        // permission.
         final @ContentSetting @Nullable Integer value =
-                isBeingRequested
-                        ? (Integer) ContentSetting.BLOCK
-                        : mSite.getContentSetting(getBrowserContextHandle(), notificationType);
+                mSite.getContentSetting(getBrowserContextHandle(), notificationType);
         if (setupAppDelegatePreference(
                 preference, R.string.website_notification_settings, notificationType, value)) {
             return;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // `isBeingRequested` indicates that the notification permission is currently being
+            // requested, as it is not technically allowed yet, we should display the "BLOCK" state.
+            // Because the requested permissoin's state is ASK, `mSite` will not contain a value for
+            // this permission.
+            if (isBeingRequested) {
+                String overrideSummary =
+                        getString(
+                                ContentSettingsResources.getCategorySummary(
+                                        ContentSetting.BLOCK, isOneTime(notificationType)));
+                ChromeButtonPreference buttonPreference =
+                        replaceWithReadOnlyButtonPreference(preference, overrideSummary, value);
+                buttonPreference.setButton(
+                        R.string.notifications_permission_subscribe,
+                        R.string.notifications_permission_subscribe_a11y,
+                        view -> {
+                            // TODO(crbug.com/458351800): Resolve the permission request as
+                            // granted.
+                        });
+                return;
+            }
+
             if (value == null || (value != ContentSetting.ALLOW && value != ContentSetting.BLOCK)) {
                 // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
-                // values
-                // that are non-null, but not ALLOW or BLOCK either. (In
+                // values that are non-null, but not ALLOW or BLOCK either. (In
                 // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
                 // are simply not adding it.)
                 return;
             }
-
-            // TODO(crbug.com/458351800): Instead of ChromeImageViewPreference, use a "Subscribe"
-            // button as per mocks.
 
             String overrideSummary =
                     isEmbargoed
@@ -860,7 +872,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     createReadOnlyCopyOf(preference, overrideSummary, value);
             newPreference.setImageView(
                     R.drawable.permission_popups,
-                    0,
+                    R.string.website_notification_settings,
                     unused -> launchOsChannelSettingsFromPreference(preference));
             newPreference.setImageColor(R.color.default_icon_color_secondary_tint_list);
             newPreference.setDefaultValue(value);
@@ -874,6 +886,30 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             setupContentSettingsPreference(
                     preference, value, isEmbargoed, isOneTime(notificationType));
         }
+    }
+
+    /**
+     * Replaces a Preference with a read-only copy. The new Preference retains its key and the order
+     * within the preference screen, but gets a new summary and (intentionally) loses its click
+     * handler.
+     *
+     * @return A read-only copy of the preference passed in as |oldPreference|.
+     */
+    @RequiresNonNull({"mSite"})
+    private ChromeButtonPreference replaceWithReadOnlyButtonPreference(
+            Preference oldPreference, String newSummary, @ContentSetting @Nullable Integer value) {
+        ChromeButtonPreference newPreference =
+                new ChromeButtonPreference(oldPreference.getContext(), null);
+        newPreference.setKey(oldPreference.getKey());
+        setUpPreferenceCommon(newPreference, value);
+        newPreference.setSummary(newSummary);
+        @ContentSettingsType.EnumType
+        int contentType = getContentSettingsTypeFromPreferenceKey(newPreference.getKey());
+        if (contentType == mHighlightedPermission) {
+            newPreference.setBackgroundColor(mHighlightColor);
+        }
+
+        return newPreference;
     }
 
     // This is implemented as a public utility function to better facilitate testing.

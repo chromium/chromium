@@ -890,7 +890,7 @@ public class ContentSettingsResources {
                         : R.string.website_settings_category_allowed;
 
             case ContentSetting.BLOCK:
-                return R.string.website_settings_category_blocked;
+                return R.string.website_settings_category_not_allowed;
             case ContentSetting.ASK:
                 return R.string.website_settings_category_ask;
             default:

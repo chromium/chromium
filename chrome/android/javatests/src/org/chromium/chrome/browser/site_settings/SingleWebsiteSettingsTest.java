@@ -178,7 +178,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
         GeolocationSetting blockSetting =
                 new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK);
-        runGeolocationTest(allowSetting, blockSetting, "Allowed • Precise", "Blocked");
+        runGeolocationTest(allowSetting, blockSetting, "Allowed • Precise", "Not allowed");
     }
 
     @Test
@@ -189,7 +189,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
         GeolocationSetting blockSetting =
                 new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK);
-        runGeolocationTest(allowSetting, blockSetting, "Allowed • Approximate", "Blocked");
+        runGeolocationTest(allowSetting, blockSetting, "Allowed • Approximate", "Not allowed");
     }
 
     private static void runGeolocationTest(
