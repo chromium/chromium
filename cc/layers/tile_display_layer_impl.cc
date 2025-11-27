@@ -209,8 +209,7 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     }
   }
 
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+  const float ideal_scale_key = GetIdealContentsScaleKey();
   const gfx::Rect scaled_recorded_bounds =
       gfx::ScaleToEnclosingRect(recorded_bounds_, max_contents_scale);
 
@@ -366,11 +365,8 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   const float max_contents_scale = tilings_.front()->contents_scale_key();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
-
   auto iter = TilingSetCoverageIterator<TileDisplayLayerTiling>(
-      tilings_, content_rect, max_contents_scale, ideal_scale_key);
+      tilings_, content_rect, max_contents_scale, GetIdealContentsScaleKey());
 
   // We cannot do anything if the mask resource was not provided.
   if (!iter || !*iter || !iter->resource()) {
@@ -429,6 +425,11 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
   return safe_to_delete_scales;
 }
 
+float TileDisplayLayerImpl::GetIdealContentsScaleKey() const {
+  const auto ideal_scale = GetIdealContentsScale();
+  return std::max(ideal_scale.x(), ideal_scale.y());
+}
+
 void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
@@ -452,8 +453,7 @@ TilingSetCoverageIterator<TileDisplayLayerTiling> TileDisplayLayerImpl::Cover(
 TileBasedLayerImpl<TileDisplayLayerTiling>::TilingResolution
 TileDisplayLayerImpl::GetTilingResolutionForDebugBorders(
     const TileDisplayLayerTiling* tiling) const {
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+  const float ideal_scale_key = GetIdealContentsScaleKey();
   if (MathUtil::IsFloatNearlyTheSame(tiling->contents_scale_key(),
                                      ideal_scale_key)) {
     // NOTE: The above check is not exactly the same computation as is

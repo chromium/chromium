@@ -91,6 +91,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       float coverage_scale,
       float ideal_contents_scale) = 0;
 
+  virtual float GetIdealContentsScaleKey() const = 0;
+
   // Appends a solid-color quad with color `color`.
   void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                        AppendQuadsData* append_quads_data,

@@ -290,7 +290,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
 
   if (ShowDebugBorders(DebugBorderType::LAYER)) {
     for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
-                           max_contents_scale, ideal_contents_scale_key());
+                           max_contents_scale, GetIdealContentsScaleKey());
          iter; ++iter) {
       SkColor4f color;
       float width;
@@ -391,7 +391,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
-                         max_contents_scale, ideal_contents_scale_key());
+                         max_contents_scale, GetIdealContentsScaleKey());
        iter; ++iter) {
     gfx::Rect geometry_rect = iter.geometry_rect();
     if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
@@ -438,7 +438,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
           // better. Note that PLTS::CoverageIterator prefers the _smallest_
           // scale that is >= ideal, which may be < raster_contents_scale_.
           if (iter->contents_scale_key() != raster_contents_scale_key() &&
-              iter->contents_scale_key() < ideal_contents_scale_key() &&
+              iter->contents_scale_key() < GetIdealContentsScaleKey() &&
               geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
             append_quads_data->checkerboarded_needs_raster = true;
           }
@@ -608,7 +608,7 @@ bool PictureLayerImpl::UpdateTiles() {
   // they are the same space in picture layer, as contents scale is always 1.
   bool updated = tilings_->UpdateTilePriorities(
       viewport_rect_for_tile_priority_in_content_space_,
-      ideal_contents_scale_key(), current_frame_time_in_seconds,
+      GetIdealContentsScaleKey(), current_frame_time_in_seconds,
       occlusion_in_content_space, can_require_tiles_for_activation);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
@@ -1107,7 +1107,7 @@ void PictureLayerImpl::GetContentsResourceId(
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), dest_scale);
   auto iter =
-      tilings_->Cover(content_rect, dest_scale, ideal_contents_scale_key());
+      tilings_->Cover(content_rect, dest_scale, GetIdealContentsScaleKey());
 
   // Mask resource not ready yet.
   if (!iter || !*iter) {
@@ -1548,7 +1548,7 @@ void PictureLayerImpl::RecalculateRasterScales() {
     bool zooming_out = old_raster_page_scale > ideal_page_scale_;
     float desired_contents_scale =
         std::max(old_raster_contents_scale.x(), old_raster_contents_scale.y());
-    float ideal_scale = ideal_contents_scale_key();
+    float ideal_scale = GetIdealContentsScaleKey();
     if (zooming_out) {
       while (desired_contents_scale > ideal_scale)
         desired_contents_scale /= kMaxScaleRatioDuringPinch;
@@ -1642,18 +1642,18 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
   }
 
   float min_acceptable_high_res_scale =
-      std::min(raster_contents_scale_key(), ideal_contents_scale_key());
+      std::min(raster_contents_scale_key(), GetIdealContentsScaleKey());
   float max_acceptable_high_res_scale =
-      std::max(raster_contents_scale_key(), ideal_contents_scale_key());
+      std::max(raster_contents_scale_key(), GetIdealContentsScaleKey());
 
   PictureLayerImpl* twin = GetPendingOrActiveTwinLayer();
   if (twin && twin->CanHaveTilings()) {
     min_acceptable_high_res_scale = std::min(
         {min_acceptable_high_res_scale, twin->raster_contents_scale_key(),
-         twin->ideal_contents_scale_key()});
+         twin->GetIdealContentsScaleKey()});
     max_acceptable_high_res_scale = std::max(
         {max_acceptable_high_res_scale, twin->raster_contents_scale_key(),
-         twin->ideal_contents_scale_key()});
+         twin->GetIdealContentsScaleKey()});
   }
 
   // TODO(crbug.com/7107398): Ideally |last_append_quads_tilings_| here should
@@ -1702,7 +1702,7 @@ float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
     const {
   DCHECK(AffectedByWillChangeTransformHint());
   float native_scale = ideal_device_scale_ * ideal_page_scale_;
-  float ideal_scale = ideal_contents_scale_key();
+  float ideal_scale = GetIdealContentsScaleKey();
   // We want to use the same raster scale as much as possible during the
   // lifetime of a will-change:transform layer to avoid rerasterization.
   // Normally, we clamp the raster scale to be at least the native scale, to
@@ -1936,7 +1936,7 @@ void PictureLayerImpl::GetAllPrioritizedTilesForTracing(
 void PictureLayerImpl::AsValueInto(
     base::trace_event::TracedValue* state) const {
   LayerImpl::AsValueInto(state);
-  state->SetDouble("ideal_contents_scale", ideal_contents_scale_key());
+  state->SetDouble("ideal_contents_scale", GetIdealContentsScaleKey());
   state->SetDouble("geometry_contents_scale", MaximumTilingContentsScale());
   state->BeginArray("tilings");
   tilings_->AsValueInto(state);
@@ -1962,7 +1962,7 @@ void PictureLayerImpl::AsValueInto(
   state->BeginArray("coverage_tiles");
   for (auto iter =
            tilings_->Cover(gfx::Rect(bounds()), MaximumTilingContentsScale(),
-                           ideal_contents_scale_key());
+                           GetIdealContentsScaleKey());
        iter; ++iter) {
     state->BeginDictionary();
 
@@ -2275,6 +2275,10 @@ TilingSetCoverageIterator<PictureLayerTiling> PictureLayerImpl::Cover(
     float coverage_scale,
     float ideal_contents_scale) {
   return tilings_->Cover(coverage_rect, coverage_scale, ideal_contents_scale);
+}
+
+float PictureLayerImpl::GetIdealContentsScaleKey() const {
+  return std::max(ideal_contents_scale_.x(), ideal_contents_scale_.y());
 }
 
 }  // namespace cc
