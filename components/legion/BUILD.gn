@@ -16,6 +16,14 @@ proto_extras("proto_extras") {
   deps = [ ":proto" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("legion") {
   sources = [
     "attestation_handler.h",
@@ -24,8 +32,6 @@ source_set("legion") {
     "client.cc",
     "client.h",
     "error_code.h",
-    "features.cc",
-    "features.h",
     "legion_common.h",
     "secure_channel.h",
     "secure_channel_impl.cc",
@@ -37,11 +43,13 @@ source_set("legion") {
     "websocket_client.cc",
     "websocket_client.h",
   ]
+  public_deps = [ ":features" ]
   deps = [
     ":proto",
     ":proto_extras",
     "//base",
     "//components/legion/crypto",
+    "//components/legion/phosphor",
     "//crypto",
     "//mojo/public/cpp/system",
     "//net",
@@ -69,6 +77,7 @@ source_set("unit_tests") {
     "//components/legion/crypto",
     "//components/legion/crypto:test_support",
     "//components/legion/crypto:unit_tests",
+    "//components/legion/phosphor:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/oak:oak_proto",

@@ -19,6 +19,18 @@ extern const base::FeatureParam<std::string> kLegionApiKey;
 // Endpoint for Legion
 extern const base::FeatureParam<std::string> kLegionUrl;
 
+// Sets the name of the Legion auth token server.
+extern const base::FeatureParam<std::string> kLegionTokenServerUrl;
+
+// Sets the path component of the Legion auth token server URL used for
+// getting initial token signing data.
+extern const base::FeatureParam<std::string>
+    kLegionTokenServerGetInitialDataPath;
+
+// Sets the path component of the Legion auth token server URL used for
+// getting blind-signed tokens.
+extern const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath;
+
 }  // namespace legion
 
 #endif  // COMPONENTS_LEGION_FEATURES_H_
