@@ -1160,7 +1160,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // which to save state and on slower devices we can fail to save tab state/flush UMA
         // records to disk/etc. In order to give ourselves more time to save state in case the
         // user swipes our task away, save state immediately upon entering the app switcher.
-        if (mNativeInitialized
+        //
+        // In Android U this behaviour was fixed to give applications 1 second to run
+        // onPause/onStop/onDestroy before killing the process and so this mitigation is no longer
+        // needed.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && mNativeInitialized
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)
                 && !hasFocus
                 && mIsTopResumedActivity) {
@@ -1168,11 +1173,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 for (View view : WindowInspector.getGlobalWindowViews()) {
                     ViewGroup.LayoutParams params = view.getLayoutParams();
-                    // Activities will be of type BASE_APPLICATION, other windows are of type
-                    // APPLICATION.
+                    // Activities will be of type BASE_APPLICATION, so check if we have any
+                    // non-Activity windows.
                     if (params instanceof WindowManager.LayoutParams
                             && ((WindowManager.LayoutParams) params).type
-                                    == WindowManager.LayoutParams.TYPE_APPLICATION) {
+                                    != WindowManager.LayoutParams.TYPE_BASE_APPLICATION) {
                         isShowingDialogWindow = true;
                         break;
                     }
