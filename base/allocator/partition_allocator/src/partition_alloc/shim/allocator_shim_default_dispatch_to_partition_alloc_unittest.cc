@@ -107,6 +107,12 @@ TEST(PartitionAllocAsMalloc, Simple) {
   PartitionAllocFunctions::Free(data, nullptr);
 }
 
+TEST(PartitionAllocAsMalloc, SimpleWithSize) {
+  void* data = PartitionAllocFunctions::Malloc(10, nullptr);
+  EXPECT_TRUE(data);
+  PartitionAllocFunctions::FreeWithSize(data, 10, nullptr);
+}
+
 TEST(PartitionAllocAsMalloc, MallocUnchecked) {
   void* data = PartitionAllocFunctions::MallocUnchecked(10, nullptr);
   EXPECT_TRUE(data);

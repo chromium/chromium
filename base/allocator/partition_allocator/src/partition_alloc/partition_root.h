@@ -95,6 +95,13 @@ struct AllocInfo {
   } allocs[kAllocInfoSize] = {};
 };
 
+// Represents the detailed size information for a given requested allocation
+// size.
+struct BucketSizeDetails {
+  uint16_t bucket_index;
+  size_t slot_size;
+};
+
 #if PA_BUILDFLAG(RECORD_ALLOC_INFO)
 extern AllocInfo g_allocs;
 
@@ -555,7 +562,17 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     FreeInline<flags>(object);
   }
   template <FreeFlags flags = FreeFlags::kNone>
+  PA_NOINLINE void FreeWithSize(void* object, size_t size) {
+    FreeWithSizeInline<flags>(object, size);
+  }
+
+  template <FreeFlags flags = FreeFlags::kNone>
   PA_ALWAYS_INLINE void FreeInline(void* object);
+  template <FreeFlags flags = FreeFlags::kNone>
+  PA_ALWAYS_INLINE void FreeWithSizeInline(void* object, size_t size);
+  // |object| must be a non-null pointer.
+  PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
+  GetSlotStartAndSlotSpanFromAddress(void* object);
 
   template <FreeFlags flags = FreeFlags::kNone>
   PA_NOINLINE static void FreeInUnknownRoot(void* object) {
@@ -563,12 +580,28 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
   template <FreeFlags flags = FreeFlags::kNone>
   PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object);
+  template <FreeFlags flags = FreeFlags::kNone>
+  PA_ALWAYS_INLINE static void FreeWithSizeInlineInUnknownRoot(void* object,
+                                                               size_t size);
+  // |object| must be a non-null pointer.
+  PA_ALWAYS_INLINE static PartitionRoot* GetRootFromAddressInFirstSuperpage(
+      void* object);
 
-  // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
-  // beginning of the slot that contains |object|.
   template <FreeFlags flags>
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(internal::SlotStart slot_start,
                                              SlotSpanMetadata* slot_span);
+  template <FreeFlags flags>
+  PA_ALWAYS_INLINE void FreeWithSizeNoHooksImmediate(
+      internal::SlotStart slot_start,
+      SlotSpanMetadata* slot_span,
+      size_t size);
+  // Immediately frees the pointer bypassing the quarantine. `slot_start` is the
+  // beginning of the slot that contains `object`.
+  template <FreeFlags flags>
+  PA_ALWAYS_INLINE void FreeNoHooksImmediateInternal(
+      internal::SlotStart slot_start,
+      SlotSpanMetadata* slot_span,
+      const internal::BucketSizeDetails& size_details);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   // Actual free operation on BRP dequarantine.
@@ -580,6 +613,13 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE size_t GetSlotUsableSize(const SlotSpanMetadata* slot_span) {
     return AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize());
   }
+
+  // This function attempts to compute the slot_span's usable size without
+  // touching `slot_span`, but if it fails it will fall back on
+  // GetSlotUsableSize(slot_span).
+  PA_ALWAYS_INLINE size_t
+  GetSlotUsableSize(const internal::BucketSizeDetails& size_details,
+                    SlotSpanMetadata* slot_span);
 
   PA_ALWAYS_INLINE static size_t GetUsableSize(const void* ptr);
 
@@ -642,6 +682,13 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   static uint16_t SizeToBucketIndex(size_t size,
                                     BucketDistribution bucket_distribution);
 
+  PA_ALWAYS_INLINE internal::BucketSizeDetails SlotSpanToBucketSizeDetails(
+      SlotSpanMetadata* slot_span) const;
+
+  PA_ALWAYS_INLINE internal::BucketSizeDetails SizeToBucketSizeDetails(
+      size_t requested_size,
+      SlotSpanMetadata* slot_span) const;
+
   PA_ALWAYS_INLINE void FreeInSlotSpan(internal::UntaggedSlotStart slot_start,
                                        SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
@@ -651,8 +698,15 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                 SlotSpanMetadata* slot_span)
       PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
 
+  // TODO(ayumiohno): Remove this once FreeAfterBRPQuarantine creates
+  // `size_details` and uses RawFreeWithThreadCacheWithSize.
   PA_ALWAYS_INLINE void RawFreeWithThreadCache(internal::SlotStart slot_start,
                                                SlotSpanMetadata* slot_span);
+
+  PA_ALWAYS_INLINE void RawFreeWithThreadCacheWithSize(
+      internal::SlotStart slot_start,
+      const internal::BucketSizeDetails& size_details,
+      SlotSpanMetadata* slot_span);
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   // Sets a new MTE tag on the slot. This must not be called when an object
@@ -1297,18 +1351,19 @@ template <FreeFlags flags>
 PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
                                                 const PartitionRoot* root) {
   static_assert(AreValidFlags(flags));
-  if constexpr (ContainsFlags(flags, FreeFlags::kNoHooks)) {
-    return false;
-  }
-
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if constexpr (!ContainsFlags(flags, FreeFlags::kNoMemoryToolOverride)) {
     free(object);
     return true;
   }
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
   if (!object) [[unlikely]] {
     return true;
+  }
+
+  if constexpr (ContainsFlags(flags, FreeFlags::kNoHooks)) {
+    return false;
   }
 
   if (PartitionAllocHooks::AreHooksEnabled()) {
@@ -1354,17 +1409,9 @@ PartitionRoot::memory_tagging_reporting_mode() const {
 }
 
 // static
-template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
-  bool early_return = FreeProlog<flags>(object, nullptr);
-  if (early_return) {
-    return;
-  }
-
-  if (!object) [[unlikely]] {
-    return;
-  }
-
+PA_ALWAYS_INLINE PartitionRoot*
+PartitionRoot::GetRootFromAddressInFirstSuperpage(void* object) {
+  PA_DCHECK(object);
   // Fetch the root from the address, and not SlotSpanMetadata. This is
   // important, as obtaining it from SlotSpanMetadata is a slow operation
   // (looking into the metadata area, and following a pointer), which can induce
@@ -1376,25 +1423,42 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
   // 2. object -> slot_span (inside FreeInline)
   uintptr_t object_addr =
       internal::SlotStart::Unchecked(object).Untag().value();
-  auto* root = FromAddrInFirstSuperpage(object_addr);
-  root->FreeInline<flags | FreeFlags::kNoHooks>(object);
+  return FromAddrInFirstSuperpage(object_addr);
 }
 
+// static
 template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
-  // The correct PartitionRoot might not be deducible if the |object| originates
-  // from an override hook.
-  bool early_return = FreeProlog<flags>(object, this);
+PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
+  bool early_return = FreeProlog<flags>(object, nullptr);
   if (early_return) {
     return;
   }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
 
-  if (!object) [[unlikely]] {
+  auto* root = GetRootFromAddressInFirstSuperpage(object);
+  root->FreeInline<flags | FreeFlags::kNoHooks>(object);
+}
+
+// static
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInlineInUnknownRoot(
+    void* object,
+    size_t size) {
+  bool early_return = FreeProlog<flags>(object, nullptr);
+  if (early_return) {
     return;
   }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
 
-  // Almost all calls to FreeNoNooks() will end up writing to |*object|.
-  PA_PREFETCH_FOR_WRITE(object);
+  auto* root = GetRootFromAddressInFirstSuperpage(object);
+  root->FreeWithSizeInline<flags | FreeFlags::kNoHooks>(object, size);
+}
+
+PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
+PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
+  PA_DCHECK(object);
 
   // On Android, malloc() interception is more fragile than on other
   // platforms, as we use wrapped symbols. However, the pools allow us to
@@ -1420,22 +1484,52 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   PA_DCHECK(slot_span ==
             SlotSpanMetadata::FromSlotStart(slot_start.Untag(), this));
 
-  // We are going to read from |*slot_span| in all branches, but haven't done it
-  // yet.
-  //
-  // TODO(crbug.com/40181250): It would be much better to avoid touching
-  // |*slot_span| at all on the fast path, or at least to separate its read-only
-  // parts (i.e. bucket pointer) from the rest. Indeed, every thread cache miss
-  // (or batch fill) will *write* to |slot_span->freelist_head|, leading to
-  // cacheline ping-pong.
+  return {slot_start, slot_span};
+}
+
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
+  // The correct PartitionRoot might not be deducible if the |object| originates
+  // from an override hook.
+  bool early_return = FreeProlog<flags>(object, this);
+  if (early_return) {
+    return;
+  }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
+
+  // Almost all calls to FreeNoNooks() will end up writing to |*object|.
+  PA_PREFETCH_FOR_WRITE(object);
+  auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
+  // We are going to read from |*slot_span| in all branches, but haven't
+  // done it yet.
   PA_PREFETCH(slot_span);
   FreeNoHooksImmediate<flags>(slot_start, slot_span);
 }
 
 template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
+PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInline(void* object,
+                                                        size_t size) {
+  // The correct PartitionRoot might not be deducible if the |object| originates
+  // from an override hook.
+  bool early_return = FreeProlog<flags>(object, this);
+  if (early_return) {
+    return;
+  }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
+
+  // Almost all calls to FreeWithSizeNoHooks() will end up writing to |*object|.
+  PA_PREFETCH_FOR_WRITE(object);
+  auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
+  FreeWithSizeNoHooksImmediate<flags>(slot_start, slot_span, size);
+}
+
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
     internal::SlotStart slot_start,
-    SlotSpanMetadata* slot_span) {
+    SlotSpanMetadata* slot_span,
+    const internal::BucketSizeDetails& size_details) {
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/in-slot metadata management
   // - Before the "raw" allocator.
@@ -1447,7 +1541,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   //   b. Otherwise, call the "raw" allocator <-- Locking
   PA_DCHECK(slot_start);
   PA_DCHECK(slot_span);
-  PA_CHECK(DeducedRootIsValid(slot_span));
+  PA_DCHECK(DeducedRootIsValid(slot_span));
 
   // Layout inside the slot:
   //   |...object...|[empty]|[cookie]|[unused]|[metadata]|
@@ -1467,7 +1561,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   if (settings.use_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
-    const size_t usable_size = GetSlotUsableSize(slot_span);
+    const size_t usable_size = GetSlotUsableSize(size_details, slot_span);
     internal::PartitionCookieCheckValue(slot_start.ToObject() + usable_size,
                                         usable_size);
   }
@@ -1476,7 +1570,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
     auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-        slot_start.Untag(), slot_span->bucket->slot_size);
+        slot_start.Untag(), size_details.slot_size);
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes. Zapping must
@@ -1519,22 +1613,40 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     ThreadCache* thread_cache = GetThreadCache();
     if (ThreadCache::IsValid(thread_cache)) [[likely]] {
-      thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(slot_start,
-                                                                  slot_span);
+      thread_cache->GetSchedulerLoopQuarantineBranch().QuarantineWithSize(
+          slot_start, slot_span, size_details);
     } else {
-      scheduler_loop_quarantine.Quarantine(slot_start, slot_span);
+      scheduler_loop_quarantine.QuarantineWithSize(slot_start, slot_span,
+                                                   size_details);
     }
     return;
   } else if constexpr (
       ContainsFlags(
           flags,
           FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks)) {
-    scheduler_loop_quarantine_for_advanced_memory_safety_checks.Quarantine(
-        slot_start, slot_span);
+    scheduler_loop_quarantine_for_advanced_memory_safety_checks
+        .QuarantineWithSize(slot_start, slot_span, size_details);
     return;
   }
 
-  RawFreeWithThreadCache(slot_start, slot_span);
+  RawFreeWithThreadCacheWithSize(slot_start, size_details, slot_span);
+}
+
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
+    internal::SlotStart slot_start,
+    SlotSpanMetadata* slot_span) {
+  auto size_details = SlotSpanToBucketSizeDetails(slot_span);
+  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
+}
+
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeNoHooksImmediate(
+    internal::SlotStart slot_start,
+    SlotSpanMetadata* slot_span,
+    size_t size) {
+  auto size_details = SizeToBucketSizeDetails(size, slot_span);
+  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
 }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1695,8 +1807,16 @@ PA_ALWAYS_INLINE void PartitionRoot::RetagSlotIfNeeded(
 PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
     internal::SlotStart slot_start,
     SlotSpanMetadata* slot_span) {
+  auto size_details = SlotSpanToBucketSizeDetails(slot_span);
+  RawFreeWithThreadCacheWithSize(slot_start, size_details, slot_span);
+}
+
+PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCacheWithSize(
+    internal::SlotStart slot_start,
+    const internal::BucketSizeDetails& size_details,
+    SlotSpanMetadata* slot_span) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  RetagSlotIfNeeded(slot_start.Untag(), slot_span->bucket->slot_size);
+  RetagSlotIfNeeded(slot_start.Untag(), size_details.slot_size);
   slot_start = slot_start.Untag().Tag();
 #endif
 
@@ -1704,11 +1824,11 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
   // direct-mapped allocations are uncommon.
   ThreadCache* thread_cache = GetThreadCache();
   if (ThreadCache::IsValid(thread_cache) &&
-      !IsDirectMappedBucket(slot_span->bucket)) [[likely]] {
-    size_t bucket_index =
-        static_cast<size_t>(slot_span->bucket - this->buckets);
-    std::optional<size_t> slot_size =
-        thread_cache->MaybePutInCache(slot_start.Untag(), bucket_index);
+      (size_details.slot_size <= BucketIndexLookup::kMaxBucketSize))
+      [[likely]] {
+    PA_DCHECK(!IsDirectMappedBucket(slot_span->bucket));
+    std::optional<size_t> slot_size = thread_cache->MaybePutInCache(
+        slot_start.Untag(), size_details.bucket_index);
     if (slot_size.has_value()) [[likely]] {
       // This is a fast path, avoid calling GetSlotUsableSize() in Release
       // builds as it is costlier. Copy its small bucket path instead.
@@ -1902,6 +2022,18 @@ bool PartitionRoot::TryRecommitSystemPagesForDataLocked(
       address, length, accessibility_disposition, request_tagging);
 }
 
+PA_ALWAYS_INLINE size_t PartitionRoot::GetSlotUsableSize(
+    const internal::BucketSizeDetails& size_details,
+    SlotSpanMetadata* slot_span) {
+  if (size_details.slot_size <= kThreadCacheLargeSizeThreshold) [[likely]] {
+    PA_DCHECK(!slot_span->CanStoreRawSize());
+    auto usable_size = AdjustSizeForExtrasSubtract(size_details.slot_size);
+    PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
+    return usable_size;
+  }
+  return GetSlotUsableSize(slot_span);
+}
+
 // static
 //
 // Returns the size available to the app. It can be equal or higher than the
@@ -1995,6 +2127,38 @@ PartitionRoot::SizeToBucketIndex(size_t size,
     case BucketDistribution::kDenser:
       return BucketIndexLookup::GetIndexForDenserBuckets(size);
   }
+}
+
+PA_ALWAYS_INLINE internal::BucketSizeDetails
+PartitionRoot::SlotSpanToBucketSizeDetails(SlotSpanMetadata* slot_span) const {
+  return internal::BucketSizeDetails{
+      .bucket_index = static_cast<uint16_t>(slot_span->bucket - this->buckets),
+      .slot_size = slot_span->bucket->slot_size,
+  };
+}
+
+PA_ALWAYS_INLINE internal::BucketSizeDetails
+PartitionRoot::SizeToBucketSizeDetails(size_t requested_size,
+                                       SlotSpanMetadata* slot_span) const {
+  auto raw_size = AdjustSizeForExtrasAdd(requested_size);
+  if (raw_size <= BucketIndexLookup::kMaxBucketSize) [[likely]] {
+    // For non-direct-mapped allocations, `bucket_index` and `slot_size` are
+    // determined without using `slot_span`.
+    auto bucket_index =
+        SizeToBucketIndex(raw_size, this->GetBucketDistribution());
+    PA_DCHECK(bucket_index ==
+              static_cast<uint16_t>(slot_span->bucket - this->buckets));
+    auto slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+    PA_DCHECK(slot_size == slot_span->bucket->slot_size);
+    return internal::BucketSizeDetails{
+        .bucket_index = bucket_index,
+        .slot_size = slot_size,
+    };
+  }
+  // For direct-mapped allocations, `slot_size` is derived from `slot_span`.
+  // `bucket_index` is also populated from `slot_span` although its value is
+  // invalid and SHOULD NOT be used.
+  return SlotSpanToBucketSizeDetails(slot_span);
 }
 
 template <AllocFlags flags>

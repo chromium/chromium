@@ -210,23 +210,30 @@ const size_t kTestSizes[] = {
     1 << 21,
 };
 constexpr size_t kTestSizesCount = std::size(kTestSizes);
+// A lambda function for unit tests to try both Free and FreeWithSize. It always
+// takes a size_t argument, but ignores it for the regular Free.
+using FreeFunction = void (*)(partition_alloc::PartitionRoot*, void*, size_t);
 
 template <
     partition_alloc::AllocFlags alloc_flags,
     partition_alloc::FreeFlags free_flags = partition_alloc::FreeFlags::kNone>
-void AllocateRandomly(partition_alloc::PartitionRoot* root, size_t count) {
+void AllocateRandomly(partition_alloc::PartitionRoot* root,
+                      size_t count,
+                      FreeFunction free_func) {
   std::vector<void*> allocations(count, nullptr);
+  std::vector<size_t> sizes(count, 0);
   for (size_t i = 0; i < count; ++i) {
     const size_t size =
         kTestSizes[partition_alloc::internal::base::RandGenerator(
             kTestSizesCount)];
     allocations[i] = root->Alloc<alloc_flags>(size);
+    sizes[i] = size;
     EXPECT_NE(nullptr, allocations[i]) << " size: " << size << " i: " << i;
   }
 
   for (size_t i = 0; i < count; ++i) {
     if (allocations[i]) {
-      root->Free(allocations[i]);
+      free_func(root, allocations[i], sizes[i]);
     }
   }
 }
@@ -304,22 +311,39 @@ void SetDistributionForPartitionRoot(PartitionRoot* root,
 struct PartitionAllocTestParam {
   BucketDistribution bucket_distribution;
   bool use_pkey_pool;
+  FreeFunction free_func;
 };
 
 const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
   std::vector<PartitionAllocTestParam> params;
+  auto free_func = [](PartitionRoot* root, void* ptr, size_t size) {
+    root->FreeInline(ptr);
+  };
   params.emplace_back(
-      PartitionAllocTestParam{BucketDistribution::kNeutral, false});
+      PartitionAllocTestParam{BucketDistribution::kNeutral, false, free_func});
   params.emplace_back(
-      PartitionAllocTestParam{BucketDistribution::kDenser, false});
+      PartitionAllocTestParam{BucketDistribution::kDenser, false, free_func});
 #if PA_BUILDFLAG(ENABLE_PKEYS)
   if (CPUHasPkeySupport()) {
     params.emplace_back(
-        PartitionAllocTestParam{BucketDistribution::kNeutral, true});
+        PartitionAllocTestParam{BucketDistribution::kNeutral, true, free_func});
     params.emplace_back(
-        PartitionAllocTestParam{BucketDistribution::kDenser, true});
+        PartitionAllocTestParam{BucketDistribution::kDenser, true, free_func});
   }
 #endif
+  return params;
+}
+
+const std::vector<PartitionAllocTestParam>
+GetPartitionAllocWithSizedFreeTestParams() {
+  auto params = GetPartitionAllocTestParams();
+  auto free_with_size_func = [](PartitionRoot* root, void* ptr, size_t size) {
+    root->FreeWithSizeInline(ptr, size);
+  };
+  params.emplace_back(PartitionAllocTestParam{BucketDistribution::kNeutral,
+                                              false, free_with_size_func});
+  params.emplace_back(PartitionAllocTestParam{BucketDistribution::kDenser,
+                                              false, free_with_size_func});
   return params;
 }
 
@@ -832,15 +856,26 @@ INSTANTIATE_TEST_SUITE_P(AlternateTestParams,
                          PartitionAllocTest,
                          testing::ValuesIn(GetPartitionAllocTestParams()));
 
+class PartitionAllocWithSizedFreeTest : public PartitionAllocTest {
+ public:
+  void FreePtr(void* ptr, size_t size) {
+    GetParam().free_func(allocator.root(), ptr, size);
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    AlternateTestParams,
+    PartitionAllocWithSizedFreeTest,
+    testing::ValuesIn(GetPartitionAllocWithSizedFreeTestParams()));
+
 // Check that the most basic of allocate / free pairs work.
-TEST_P(PartitionAllocTest, Basic) {
+TEST_P(PartitionAllocWithSizedFreeTest, Basic) {
   PartitionRoot::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
-  auto* seed_slot_span = SlotSpan::get_sentinel_slot_span();
+  auto* sent_slot_span = SlotSpan::get_sentinel_slot_span();
 
   EXPECT_FALSE(bucket->empty_slot_spans_head);
   EXPECT_FALSE(bucket->decommitted_slot_spans_head);
-  EXPECT_EQ(seed_slot_span, bucket->active_slot_spans_head);
+  EXPECT_EQ(sent_slot_span, bucket->active_slot_spans_head);
   EXPECT_EQ(nullptr, bucket->active_slot_spans_head->next_slot_span);
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -850,7 +885,7 @@ TEST_P(PartitionAllocTest, Basic) {
   EXPECT_EQ(PartitionPageSize() + kPointerOffset,
             UntagPtr(ptr) & kSuperPageOffsetMask);
 
-  allocator.root()->Free(ptr);
+  FreePtr(ptr, kTestAllocSize);
   // Expect that the last active slot span gets noticed as empty but doesn't get
   // decommitted.
   EXPECT_TRUE(bucket->empty_slot_spans_head);
@@ -1289,11 +1324,11 @@ TEST_P(PartitionAllocTest, Alloc) {
 
 // Test the generic allocation functions can handle some specific sizes of
 // interest.
-TEST_P(PartitionAllocTest, AllocSizes) {
+TEST_P(PartitionAllocWithSizedFreeTest, AllocSizes) {
   {
     void* ptr = allocator.root()->Alloc(0, type_name);
     EXPECT_TRUE(ptr);
-    allocator.root()->Free(ptr);
+    FreePtr(ptr, 0);
   }
 
   {
@@ -1304,12 +1339,12 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     EXPECT_TRUE(ptr);
     void* ptr2 = allocator.root()->Alloc(size, type_name);
     EXPECT_TRUE(ptr2);
-    allocator.root()->Free(ptr);
+    FreePtr(ptr, size);
     // Should be freeable at this point.
     auto* slot_span = SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(),
                                               allocator.root());
     EXPECT_TRUE(slot_span->in_empty_cache());
-    allocator.root()->Free(ptr2);
+    FreePtr(ptr2, size);
   }
 
   // TODO(casey.smalley@arm.com): test expects a single slot-span for each
@@ -1338,9 +1373,9 @@ TEST_P(PartitionAllocTest, AllocSizes) {
         SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr3).Untag());
     EXPECT_NE(slot_span, slot_span2);
 
-    allocator.root()->Free(ptr);
-    allocator.root()->Free(ptr3);
-    allocator.root()->Free(ptr2);
+    FreePtr(ptr, size);
+    FreePtr(ptr3, size);
+    FreePtr(ptr2, size);
     // Should be freeable at this point.
     EXPECT_TRUE(slot_span->in_empty_cache());
     EXPECT_EQ(0u, slot_span->num_allocated_slots);
@@ -1350,9 +1385,9 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     void* new_ptr_2 = allocator.root()->Alloc(size, type_name);
     PA_EXPECT_PTR_EQ(ptr3, new_ptr_2);
 
-    allocator.root()->Free(new_ptr_1);
-    allocator.root()->Free(new_ptr_2);
-    allocator.root()->Free(ptr4);
+    FreePtr(new_ptr_1, size);
+    FreePtr(new_ptr_2, size);
+    FreePtr(ptr4, size);
 
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
     // |SlotSpan::Free| must poison the slot's contents with
@@ -1368,8 +1403,9 @@ TEST_P(PartitionAllocTest, AllocSizes) {
   // Test this only if the device has enough memory or it might fail due
   // to OOM.
   if (IsLargeMemoryDevice()) {
-    void* ptr = allocator.root()->Alloc(128 * 1024 * 1024 + 1, type_name);
-    allocator.root()->Free(ptr);
+    constexpr size_t kSize = 128 * 1024 * 1024 + 1;
+    void* ptr = allocator.root()->Alloc(kSize, type_name);
+    FreePtr(ptr, kSize);
   }
 
   {
@@ -1382,10 +1418,10 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     void* ptr = allocator.root()->Alloc(size, type_name);
     char* char_ptr = static_cast<char*>(ptr);
     *(char_ptr + (size - 1)) = 'A';
-    allocator.root()->Free(ptr);
+    FreePtr(ptr, size);
 
     // Can we free null?
-    allocator.root()->Free(nullptr);
+    FreePtr(nullptr, size);
 
     // Do we correctly get a null for a failed allocation?
     EXPECT_EQ(nullptr, allocator.root()->Alloc<AllocFlags::kReturnNull>(
@@ -3886,11 +3922,12 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 
   for (int i = 0; i < 10; ++i) {
     SCOPED_TRACE(i);
-    AllocateRandomly<AllocFlags::kZeroFill>(allocator.root(), 250);
+    AllocateRandomly<AllocFlags::kZeroFill>(allocator.root(), 250,
+                                            GetParam().free_func);
   }
 }
 
-TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
+TEST_P(PartitionAllocWithSizedFreeTest, SchedulerLoopQuarantine) {
   internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
       allocator.root());
 
@@ -3913,7 +3950,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
   for (int i = 0; i < 10; ++i) {
     SCOPED_TRACE(i);
     AllocateRandomly<AllocFlags::kNone, FreeFlags::kSchedulerLoopQuarantine>(
-        allocator.root(), 250);
+        allocator.root(), 250, GetParam().free_func);
   }
 
   branch.Purge();

@@ -415,14 +415,15 @@ void __real_free(void*);
 }       // extern "C"
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-// static
-template <partition_alloc::AllocFlags base_alloc_flags,
-          partition_alloc::FreeFlags base_free_flags>
-PA_ALWAYS_INLINE void
-PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
-    void* object,
-    void* context) {
-  partition_alloc::ScopedDisallowAllocations guard{};
+constexpr bool MightNeedToHandleSystemDeallocation() {
+#if PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_CAST_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
+PA_ALWAYS_INLINE bool MaybeHandleSystemDeallocation(void* object) {
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -431,7 +432,8 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
-    return free(object);
+    free(object);
+    return true;
   }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
@@ -446,10 +448,28 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
-    return __real_free(object);
+    __real_free(object);
+    return true;
   }
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
+  return false;
+}
 
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+    void* object,
+    void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  // We create separate constexpr branch just to optimize this path on platforms
+  // where we don't need to check MaybeHandleSystemDeallocation.
+  if constexpr (MightNeedToHandleSystemDeallocation()) {
+    if (MaybeHandleSystemDeallocation(object)) [[unlikely]] {
+      return;
+    }
+  }
   partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
       object);
 }
@@ -462,10 +482,16 @@ PartitionAllocFunctionsInternal<base_alloc_flags,
                                 base_free_flags>::FreeWithSize(void* object,
                                                                size_t size,
                                                                void* context) {
-  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
-  // still useful though, as we avoid double-checking that the address is owned.
-  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
-      object, context);
+  partition_alloc::ScopedDisallowAllocations guard{};
+  // We create separate constexpr branch just to optimize this path on platforms
+  // where we don't need to check MaybeHandleSystemDeallocation.
+  if constexpr (MightNeedToHandleSystemDeallocation()) {
+    if (MaybeHandleSystemDeallocation(object)) [[unlikely]] {
+      return;
+    }
+  }
+  partition_alloc::PartitionRoot::FreeWithSizeInlineInUnknownRoot<
+      base_free_flags>(object, size);
 }
 
 // static
@@ -702,15 +728,9 @@ void ConfigurePartitions(
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
-  // Now switch traffic to the new partition.
-  g_original_root = current_root;
-  g_root.Replace(new_root);
-
-  // Purge memory, now that the traffic to the original partition is cut off.
-  current_root->PurgeMemory(
-      partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
-      partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
-
+  // Ensure that we switch `new_root` before directing new traffic to it, this
+  // ensures that a BucketDistribution is consistent over the life of an
+  // allocation.
   switch (distribution) {
     case BucketDistribution::kNeutral:
       // We start in the 'default' case.
@@ -719,6 +739,15 @@ void ConfigurePartitions(
       new_root->SwitchToDenserBucketDistribution();
       break;
   }
+
+  // Now switch traffic to the new partition.
+  g_original_root = current_root;
+  g_root.Replace(new_root);
+
+  // Purge memory, now that the traffic to the original partition is cut off.
+  current_root->PurgeMemory(
+      partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
+      partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
 
   PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
 }

@@ -86,6 +86,8 @@ struct SchedulerLoopQuarantineConfig {
   char branch_name[32] = "";
 };
 
+struct BucketSizeDetails;
+
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {
  public:
   explicit SchedulerLoopQuarantineRoot(PartitionRoot& allocator_root)
@@ -158,7 +160,14 @@ class SchedulerLoopQuarantineBranch {
   // requirement.
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
+  // TODO(ayumiohno): Remove this once FreeAfterBRPQuarantine creates
+  // `size_details` and uses QuarantineWithSize.
   void Quarantine(SlotStart slot_start, SlotSpanMetadata* slot_span)
+      PA_LOCKS_EXCLUDED(lock_);
+
+  void QuarantineWithSize(SlotStart slot_start,
+                          SlotSpanMetadata* slot_span,
+                          const internal::BucketSizeDetails& size_details)
       PA_LOCKS_EXCLUDED(lock_);
 
   void AllowScanlessPurge();
