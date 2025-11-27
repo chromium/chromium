@@ -603,7 +603,6 @@ public class OmahaBase {
                 | IndexOutOfBoundsException
                 | IllegalArgumentException e) {
             // IndexOutOfBoundsException is thought to be triggered by a bug in okio.
-            // TODO(crbug.com/40709132): Record IndexOutOfBoundsException specifically.
             // IllegalArgumentException is triggered by a bug in okio. crbug.com/1149863.
             throw new RequestFailureException(
                     "Failed to write request to server: ",
