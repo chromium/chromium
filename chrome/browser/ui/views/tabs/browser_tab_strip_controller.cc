@@ -789,6 +789,10 @@ void BrowserTabStripController::OnTabStripModelChanged(
         hover_tab_selector_.CancelTabTransition();
         tabstrip_->RemoveTabAt(contents.contents, contents.index,
                                contents.contents == selection.old_contents);
+        if (contents.remove_reason ==
+            TabStripModelChange::RemoveReason::kInsertedIntoSidePanel) {
+          tabstrip_->StopAnimating();
+        }
       }
       break;
     }
@@ -969,8 +973,8 @@ void BrowserTabStripController::OnSplitTabChanged(
     tabstrip_->OnSplitCreated(split_indices, change.split_id);
 
     // Stop animating if we are updating an active split.
-    if (change.GetAddedChange()->reason() !=
-        SplitTabChange::SplitTabAddReason::kNewSplitTabAdded) {
+    if (change.GetAddedChange()->reason() ==
+        SplitTabChange::SplitTabAddReason::kSplitTabUpdated) {
       tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kRemoved) {
@@ -984,8 +988,8 @@ void BrowserTabStripController::OnSplitTabChanged(
     tabstrip_->OnSplitRemoved(split_indices);
 
     // Stop animating if we are updating an active split.
-    if (change.GetRemovedChange()->reason() !=
-        SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved) {
+    if (change.GetRemovedChange()->reason() ==
+        SplitTabChange::SplitTabRemoveReason::kSplitTabUpdated) {
       tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kContentsChanged) {
