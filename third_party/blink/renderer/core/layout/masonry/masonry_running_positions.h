@@ -190,11 +190,6 @@ class CORE_EXPORT MasonryRunningPositions {
   // For each track span of size `span_size` in `running_positions_`, compute
   // its max-position and return a vector where the index corresponds to the
   // track number and the value corresponds to the max-position for that track.
-  // When we are calling `GetMaxPositionsForAllTracks` to place a multi-span
-  // item, the vector we create only needs to have entries for the tracks with
-  // starting lines that can accommodate the multi-span item. This means that
-  // the size of the vector we create will have a size of "number of tracks -
-  // `span_size`".
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(wtf_size_t span_size) const;
 
   // Calculate the total size of the tracks across the given span.
