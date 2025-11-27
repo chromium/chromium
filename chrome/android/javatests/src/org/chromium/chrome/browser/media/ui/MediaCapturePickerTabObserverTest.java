@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -14,17 +15,18 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
 import org.chromium.chrome.browser.media.MediaCapturePickerTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 
@@ -38,7 +40,7 @@ import org.chromium.content_public.browser.WebContents;
 public class MediaCapturePickerTabObserverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AllTabObserver.Observer mObserverDelegate;
+    @Mock private MediaCapturePickerTabObserver.Delegate mObserverDelegate;
     @Mock private MediaCapturePickerManager.Delegate mFilterDelegate;
 
     private static class ParamsBuilder {
@@ -87,9 +89,11 @@ public class MediaCapturePickerTabObserverTest {
         final Tab tab = createMockTab(params.webContents, /* isNative= */ false);
         observer.onTabAdded(tab);
         verify(mObserverDelegate).onTabAdded(tab);
+        verify(tab).addObserver(any());
 
         observer.onTabRemoved(tab);
         verify(mObserverDelegate).onTabRemoved(tab);
+        verify(tab).removeObserver(any());
     }
 
     @Test
@@ -102,8 +106,11 @@ public class MediaCapturePickerTabObserverTest {
         final Tab tab = createMockTab(/* webContents= */ null, /* isNative= */ true);
         observer.onTabAdded(tab);
         verify(mObserverDelegate, never()).onTabAdded(tab);
+        verify(tab).addObserver(any());
+
         observer.onTabRemoved(tab);
         verify(mObserverDelegate, never()).onTabRemoved(tab);
+        verify(tab).removeObserver(any());
     }
 
     @Test
@@ -120,15 +127,19 @@ public class MediaCapturePickerTabObserverTest {
 
         observer.onTabAdded(thisTab);
         verify(mObserverDelegate).onTabAdded(thisTab);
+        verify(thisTab).addObserver(any());
 
         observer.onTabAdded(anotherTab);
         verify(mObserverDelegate, never()).onTabAdded(anotherTab);
+        verify(anotherTab).addObserver(any());
 
         observer.onTabRemoved(thisTab);
         verify(mObserverDelegate).onTabRemoved(thisTab);
+        verify(thisTab).removeObserver(any());
 
         observer.onTabRemoved(anotherTab);
         verify(mObserverDelegate, never()).onTabRemoved(anotherTab);
+        verify(anotherTab).removeObserver(any());
     }
 
     @Test
@@ -146,6 +157,7 @@ public class MediaCapturePickerTabObserverTest {
 
         observer.onTabAdded(filteredTab);
         verify(mObserverDelegate, never()).onTabAdded(filteredTab);
+        verify(filteredTab).addObserver(any());
 
         // Tab that should not be filtered.
         final WebContents allowedWebContents = mock(WebContents.class);
@@ -154,5 +166,26 @@ public class MediaCapturePickerTabObserverTest {
 
         observer.onTabAdded(allowedTab);
         verify(mObserverDelegate).onTabAdded(allowedTab);
+        verify(allowedTab).addObserver(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabUpdate() {
+        final var params = new ParamsBuilder().build();
+        final var observer =
+                new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
+
+        final Tab tab = createMockTab(params.webContents, /* isNative= */ false);
+        final ArgumentCaptor<TabObserver> tabObserverCaptor =
+                ArgumentCaptor.forClass(TabObserver.class);
+
+        observer.onTabAdded(tab);
+        verify(mObserverDelegate).onTabAdded(tab);
+        verify(tab).addObserver(tabObserverCaptor.capture());
+
+        final TabObserver tabObserver = tabObserverCaptor.getValue();
+        tabObserver.onTitleUpdated(tab);
+        verify(mObserverDelegate).onTabUpdated(tab);
     }
 }

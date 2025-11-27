@@ -42,7 +42,7 @@ import java.util.Map;
 
 /** Dialog for selecting a media source for media capture. */
 @NullMarked
-public class MediaCapturePickerDialog implements AllTabObserver.Observer {
+public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.Delegate {
     // This web contents is the one that is receiving the shared content.
     private final ModalDialogManager mModalDialogManager;
     private final MediaCapturePickerManager.Params mParams;
@@ -82,6 +82,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
             mModel.set(MediaCapturePickerItemProperties.SELECTED, true);
             mPositiveButton.setEnabled(true);
             mLastSelectedTabItemState = this;
+        }
+
+        void update() {
+            mModel.set(MediaCapturePickerItemProperties.TAB_NAME, mTab.getTitle());
         }
 
         void destroy() {
@@ -162,6 +166,13 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         removed.destroy();
     }
 
+    @Override
+    public void onTabUpdated(Tab tab) {
+        final var state = mTabItemStateMap.get(tab);
+        assert state != null;
+        state.update();
+    }
+
     private void startAndroidCapturePrompt() {
         var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
         assumeNonNull(fragment);
@@ -193,9 +204,9 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     }
 
     void show() {
-        var allTabObserver =
-                new AllTabObserver(
-                        new MediaCapturePickerTabObserver(this, mParams, assumeNonNull(mDelegate)));
+        final var observer =
+                new MediaCapturePickerTabObserver(this, mParams, assumeNonNull(mDelegate));
+        final var allTabObserver = new AllTabObserver(observer);
 
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -228,6 +239,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                             mDelegate = null;
                         }
                         allTabObserver.destroy();
+                        observer.destroy();
                     }
                 };
 
