@@ -142,6 +142,7 @@ class ProductSpecificationsEntryPointController;
 }  // namespace commerce
 
 namespace contextual_tasks {
+class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
 }  // namespace contextual_tasks
 
@@ -244,6 +245,11 @@ class BrowserWindowFeatures {
 
   ChromeLabsCoordinator* chrome_labs_coordinator() {
     return chrome_labs_coordinator_.get();
+  }
+
+  contextual_tasks::ActiveTaskContextProvider*
+  contextual_tasks_active_task_context_provider() {
+    return contextual_tasks_active_task_context_provider_.get();
   }
 
   media_router::CastBrowserController* cast_browser_controller() {
@@ -649,6 +655,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<contextual_tasks::ContextualTasksSidePanelCoordinator>
       contextual_tasks_side_panel_coordinator_;
+
+  std::unique_ptr<contextual_tasks::ActiveTaskContextProvider>
+      contextual_tasks_active_task_context_provider_;
 
   std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
       most_recent_shared_tab_update_store_;

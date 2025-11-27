@@ -15,12 +15,17 @@ source_set("contextual_tasks") {
 
   if (!is_android) {
     sources += [
+      "active_task_context_provider.h",
+      "active_task_context_provider_impl.h",
       "contextual_tasks_context_service.h",
       "contextual_tasks_context_service_factory.h",
     ]
   }
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/tabs:public",
+  ]
 
   public_deps = [
     "//chrome/browser/profiles:profile",
@@ -52,6 +57,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
+      "active_task_context_provider_impl.cc",
       "contextual_tasks_context_service.cc",
       "contextual_tasks_context_service_factory.cc",
       "contextual_tasks_signal_utils.cc",
