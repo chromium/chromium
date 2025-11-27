@@ -520,7 +520,8 @@ class BocaAppPageHandlerTest : public testing::Test {
          ash::features::kBocaScreenSharingTeacher},
         // TODO:crbug.com/424867979 - Re-enable feature flag after adding unit
         // tests.
-        /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
+        /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester,
+                               ash::features::kAnnotatorMode});
     // Set up UserManager related modules.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     ash::boca_util::RegisterPrefs(local_state_.registry());

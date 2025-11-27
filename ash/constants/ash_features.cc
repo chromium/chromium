@@ -55,7 +55,7 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
 BASE_FEATURE(kAllowApnModificationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the annotator feature is enabled in ChromeOS.
-BASE_FEATURE(kAnnotatorMode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAnnotatorMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApnRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
