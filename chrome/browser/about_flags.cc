@@ -1155,6 +1155,7 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"collaboration_messaging", "true"},
     {"discounts", "true"},
     {"file_system_access", "true"},
+    {"filled_card_information", "true"},
     {"find", "true"},
     {"intent_picker", "true"},
     {"lens_overlay", "true"},
@@ -1167,8 +1168,10 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"price_tracking", "true"},
     {"pwa_install", "true"},
     {"reading_mode", "true"},
+    {"save_payments", "true"},
     {"sharing_hub", "true"},
     {"translate", "true"},
+    {"virtual_card", "true"},
     {"zoom", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
