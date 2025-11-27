@@ -48,6 +48,16 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
         return mXmlRes;
     }
 
+    /**
+     * Returns the unique id for a child pref.
+     *
+     * @param childPrefName The name of the child pref.
+     * @return The unique id for that child pref.
+     */
+    public String getUniqueId(String childPrefName) {
+        return PreferenceParser.createUniqueId(mPrefFragment, childPrefName);
+    }
+
     /** Returns the name of the associated {@link PreferenceFragment}. */
     @Override
     public String getPrefFragmentName() {

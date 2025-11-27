@@ -136,6 +136,7 @@ public class PreferenceParser {
             indexData.addEntry(
                     uniqueId,
                     new SettingsIndexData.Entry.Builder(uniqueId, key, title, prefFragment)
+                            .setHeader(bundle.getString(METADATA_HEADER))
                             .setSummary(bundle.getString(METADATA_SUMMARY))
                             .setFragment(bundle.getString(METADATA_FRAGMENT))
                             .build());

@@ -296,10 +296,13 @@ public class SettingsIndexData {
         List<String> entriesToRemove = new ArrayList<>();
 
         for (Entry entry : mEntries.values()) {
-            // Root entries have their own title as the header.
+            // Root entries have their own title as the header if they do not inherit one from the
+            // XML.
             if (entry.parentFragment.equals(rootFragmentName)) {
-                Entry updatedEntry = new Entry.Builder(entry).setHeader(entry.title).build();
-                updateEntry(entry.id, updatedEntry);
+                if (TextUtils.isEmpty(entry.header)) {
+                    Entry updatedEntry = new Entry.Builder(entry).setHeader(entry.title).build();
+                    updateEntry(entry.id, updatedEntry);
+                }
                 continue;
             }
 
