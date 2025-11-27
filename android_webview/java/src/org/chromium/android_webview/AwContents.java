@@ -1052,8 +1052,7 @@ public class AwContents implements SmartClipProvider {
                             () -> mBrowserContext.getCookieManager().acceptCookie());
             mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
             mDisplayObserver = new AwDisplayAndroidObserver();
-            mPasswordEchoSettingController =
-                    new AwPasswordEchoSettingController(mSettings, mContext);
+            mPasswordEchoSettingController = new AwPasswordEchoSettingController(mSettings);
             mUpdateVisibilityRunnable = () -> updateWebContentsVisibility();
 
             AwSettings.ZoomSupportChangeListener zoomListener =

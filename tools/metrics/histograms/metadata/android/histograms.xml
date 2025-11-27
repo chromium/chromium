@@ -4576,6 +4576,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PasswordEcho.SettingReadTime.{SettingType}"
+    units="microseconds" expires_after="2026-09-30">
+  <owner>shahinmd@google.com</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <summary>
+    Records the time taken to read the password echo setting(s) from the system
+    server during initialization. The {SettingType} token specifies the type of
+    setting read.
+
+    Only emitted once when the embedding application's instance of
+    PasswordEchoSettingState is created. The metric recorded (either the split
+    or the legacy setting) depends on the state of the Aconfig feature flag for
+    splitting the password echo settings.
+
+    This is recorded only on Android, where the timer is always high-resolution.
+  </summary>
+  <token key="SettingType">
+    <variant name="Legacy"/>
+    <variant name="Split"/>
+  </token>
+</histogram>
+
+<histogram name="Android.PasswordEcho.SettingStateInitializationTime"
+    units="microseconds" expires_after="2026-09-30">
+  <owner>shahinmd@google.com</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <summary>
+    Records the total time taken for the PasswordEchoSettingState class to
+    complete its initialization. This time includes operations like reading the
+    Aconfig feature flag state, registering the necessary ContentObserver(s) for
+    monitoring setting changes, and the initial read of the relevant system
+    setting value(s).
+
+    Only emitted once when the embedding application's instance of
+    PasswordEchoSettingState is created.
+
+    This is recorded only on Android, where the timer is always high-resolution.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.AssistContent.GetAssistantPackageResult"
     enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>salg@google.com</owner>

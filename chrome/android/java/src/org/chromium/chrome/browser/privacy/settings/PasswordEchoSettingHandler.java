@@ -4,44 +4,31 @@
 
 package org.chromium.chrome.browser.privacy.settings;
 
-import android.database.ContentObserver;
-import android.net.Uri;
-import android.os.Handler;
-import android.provider.Settings;
-
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.embedder_support.util.PasswordEchoSettingObserver;
+import org.chromium.components.embedder_support.util.PasswordEchoSettingState;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Manages the password echo (show last typed character) feature state for a given profile. */
 @NullMarked
-public class PasswordEchoSettingHandler implements Destroyable {
+public class PasswordEchoSettingHandler implements Destroyable, PasswordEchoSettingObserver {
     private final BrowserContextHandle mBrowserContextHandle;
-    private final PasswordEchoSettingObserver mPasswordEchoSettingObserver;
+    private final PasswordEchoSettingState mState;
 
     public PasswordEchoSettingHandler(BrowserContextHandle browserContextHandle) {
         mBrowserContextHandle = browserContextHandle;
 
-        mPasswordEchoSettingObserver = new PasswordEchoSettingObserver();
-        ContextUtils.getApplicationContext()
-                .getContentResolver()
-                .registerContentObserver(
-                        Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD),
-                        false,
-                        mPasswordEchoSettingObserver);
+        mState = PasswordEchoSettingState.getInstance();
+        mState.registerObserver(this);
     }
 
     @Override
     public void destroy() {
-        ContextUtils.getApplicationContext()
-                .getContentResolver()
-                .unregisterContentObserver(mPasswordEchoSettingObserver);
+        mState.unregisterObserver(this);
+        updatePasswordEchoState();
     }
 
     /**
@@ -49,38 +36,18 @@ public class PasswordEchoSettingHandler implements Destroyable {
      * period of time.
      */
     public void updatePasswordEchoState() {
-        boolean systemEnabled =
-                Settings.System.getInt(
-                                ContextUtils.getApplicationContext().getContentResolver(),
-                                Settings.System.TEXT_SHOW_PASSWORD,
-                                1)
-                        == 1;
-        // TODO(b/463580423): Read the split password echo settings and assign to corresponding
-        // preferences.
         UserPrefs.get(mBrowserContextHandle)
-                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL, systemEnabled);
+                .setBoolean(
+                        Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL,
+                        mState.getPasswordEchoEnabledPhysical());
         UserPrefs.get(mBrowserContextHandle)
-                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH, systemEnabled);
+                .setBoolean(
+                        Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH,
+                        mState.getPasswordEchoEnabledTouch());
     }
 
-    private class PasswordEchoSettingObserver extends ContentObserver {
-        public PasswordEchoSettingObserver() {
-            super(new Handler());
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, @Nullable Uri uri) {
-            updatePasswordEchoState();
-        }
-    }
-
-    @VisibleForTesting
-    ContentObserver getPasswordEchoSettingObserver() {
-        return mPasswordEchoSettingObserver;
+    @Override
+    public void onSettingChange() {
+        updatePasswordEchoState();
     }
 }

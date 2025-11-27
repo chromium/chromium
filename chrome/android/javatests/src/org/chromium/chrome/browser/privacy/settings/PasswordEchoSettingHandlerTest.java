@@ -13,6 +13,7 @@ import androidx.test.uiautomator.UiDevice;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.embedder_support.util.PasswordEchoSettingState;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.io.IOException;
@@ -39,6 +41,15 @@ public class PasswordEchoSettingHandlerTest {
     private PasswordEchoSettingHandler mPasswordEchoSettingHandler;
     private UiDevice mDevice;
     private String mInitialShowPasswordValue;
+
+    @BeforeClass
+    public static void setUpClass() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Disable setting split feature.
+                    PasswordEchoSettingState.setInstanceForTests(false);
+                });
+    }
 
     @Before
     public void setUp() throws ExecutionException, IOException {
@@ -55,7 +66,9 @@ public class PasswordEchoSettingHandlerTest {
 
     @After
     public void tearDown() throws IOException {
-        if (!mInitialShowPasswordValue.equals("null")) {
+        if (mInitialShowPasswordValue.equals("null")) {
+            mDevice.executeShellCommand("settings delete system show_password");
+        } else {
             mDevice.executeShellCommand(
                     "settings put system show_password " + mInitialShowPasswordValue);
         }
@@ -78,12 +91,13 @@ public class PasswordEchoSettingHandlerTest {
         mDevice.executeShellCommand("settings put system show_password " + (enabled ? "1" : "0"));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPasswordEchoSettingHandler.getPasswordEchoSettingObserver().onChange(true);
+                    PasswordEchoSettingState.getInstance()
+                            .getSettingObserver()
+                            .onChange(true, Settings.System.getUriFor("show_password"));
                 });
     }
 
-    // The physical and touch preference must hold the same value before the pref integration with
-    // the new split settings is implemented. The work is tracked in b/463580423.
+    // The physical and touch preference must hold the same value when setting split is disabled.
     @Test
     @SmallTest
     public void testPhysicalAndTouchPreferencesAreEqual() throws ExecutionException, IOException {
@@ -103,7 +117,7 @@ public class PasswordEchoSettingHandlerTest {
         return Settings.System.getInt(
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.System.TEXT_SHOW_PASSWORD,
-                        1)
+                        0)
                 == 1;
     }
 

@@ -57,6 +57,8 @@ android_library("util_java") {
     "java/src/org/chromium/components/embedder_support/util/ExtensionUrlUtil.java",
     "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
     "java/src/org/chromium/components/embedder_support/util/Origin.java",
+    "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingObserver.java",
+    "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingState.java",
     "java/src/org/chromium/components/embedder_support/util/UrlConstants.java",
     "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
     "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",

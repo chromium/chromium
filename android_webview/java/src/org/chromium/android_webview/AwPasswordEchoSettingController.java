@@ -4,63 +4,44 @@
 
 package org.chromium.android_webview;
 
-import android.content.Context;
-import android.database.ContentObserver;
-import android.net.Uri;
-import android.os.Handler;
-import android.provider.Settings;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.util.PasswordEchoSettingObserver;
+import org.chromium.components.embedder_support.util.PasswordEchoSettingState;
 
 /**
  * Password echo setting controller for Webview.
  *
- * <p>The password echo setting (aka. "Show passwords" setting) is an Android setting that controls
- * whether the last character typed in a password field is momentarily visible before being replaced
- * by a mask (dot or asterisk).
+ * <p>Password echoing is the process of making the last character typed in a password field
+ * momentarily visible before it is replaced by a mask (dot or asterisk).
  *
- * <p>This class syncs the Android setting with Webview's setting.
+ * <p>This class syncs Android's password echo setting(s) with Webview's setting(s).
  */
 @NullMarked
-public class AwPasswordEchoSettingController extends ContentObserver {
+public class AwPasswordEchoSettingController implements PasswordEchoSettingObserver {
     private final AwSettings mSettings;
-    private final Context mContext;
+    private final PasswordEchoSettingState mState;
 
-    public AwPasswordEchoSettingController(AwSettings settings, Context context) {
-        super(new Handler());
+    public AwPasswordEchoSettingController(AwSettings settings) {
         mSettings = settings;
-        mContext = context;
-    }
-
-    @Override
-    public void onChange(boolean selfChange) {
-        onChange(selfChange, null);
-    }
-
-    @Override
-    public void onChange(boolean selfChange, @Nullable Uri uri) {
-        updatePasswordEchoState();
+        mState = PasswordEchoSettingState.getInstance();
     }
 
     public void onAttachedToWindow() {
-        mContext.getContentResolver()
-                .registerContentObserver(
-                        Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD), false, this);
+        mState.registerObserver(this);
         updatePasswordEchoState();
     }
 
     public void onDetachedFromWindow() {
-        mContext.getContentResolver().unregisterContentObserver(this);
+        mState.unregisterObserver(this);
     }
 
     private void updatePasswordEchoState() {
-        boolean enabled =
-                Settings.System.getInt(
-                                mContext.getContentResolver(),
-                                Settings.System.TEXT_SHOW_PASSWORD,
-                                1)
-                        == 1;
-        mSettings.setPasswordEchoEnabled(enabled);
+        mSettings.setPasswordEchoEnabled(
+                mState.getPasswordEchoEnabledPhysical(), mState.getPasswordEchoEnabledTouch());
+    }
+
+    @Override
+    public void onSettingChange() {
+        updatePasswordEchoState();
     }
 }
