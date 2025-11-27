@@ -9,6 +9,7 @@
 
 #import <string>
 
+enum class CredentialImportStage;
 @class ImportDataItem;
 @class ImportDataItemTableView;
 
@@ -20,13 +21,8 @@
 // Sets the email of the signed-in user's account.
 - (void)setUserEmail:(const std::string&)userEmail;
 
-// Notifies the consumer that the importing process started and the view should
-// be updated by removing any buttons and updating table view status.
-- (void)importStarted;
-
-// Notifies the consumer that the importing process finished and the view should
-// be updated by enabling the primary button and updating its label.
-- (void)importFinished;
+// Updates the UI based on the provided `importStage`.
+- (void)transitionToImportStage:(CredentialImportStage)importStage;
 
 @end
 

@@ -8,6 +8,7 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
+#import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
@@ -65,7 +66,8 @@
 
 - (void)startImportingCredentialsWithSecurityDomainSecrets:
     (NSArray<NSData*>*)securityDomainSecrets {
-  [_consumer importStarted];
+  self.importStage = CredentialImportStage::kImporting;
+  [_consumer transitionToImportStage:self.importStage];
   [_credentialImporter
       startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
 }
@@ -114,7 +116,8 @@
 }
 
 - (void)onImportFinished {
-  [_consumer importFinished];
+  self.importStage = CredentialImportStage::kImported;
+  [_consumer transitionToImportStage:self.importStage];
 }
 
 #pragma mark - DataImportCredentialConflictMutator

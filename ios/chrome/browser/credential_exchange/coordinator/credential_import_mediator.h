@@ -21,6 +21,7 @@ class PasskeyModel;
 }  // namespace webauthn
 
 @protocol CredentialImportConsumer;
+enum class CredentialImportStage;
 @class PasswordImportItem;
 
 // Delegate for CredentialImportMediator.
@@ -44,6 +45,9 @@ class PasskeyModel;
 
 // Whether passkeys are present on the import credential list.
 @property(nonatomic, assign) BOOL importingPasskeys;
+
+// Current stage of import.
+@property(nonatomic, assign) CredentialImportStage importStage;
 
 // `UUID` is a token received from the OS during app launch, required to be
 // passed back to the OS to receive the credential data.

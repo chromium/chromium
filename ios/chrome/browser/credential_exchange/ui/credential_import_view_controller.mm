@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
 
+#import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/data_import/ui/import_data_item_table_view.h"
@@ -55,17 +57,22 @@ constexpr int kExpectedItemCount = 2;
                               base::UTF8ToUTF16(userEmail));
 }
 
-- (void)importStarted {
-  self.navigationItem.rightBarButtonItem = nil;
-  self.configuration.primaryActionEnabled = NO;
-  [self reloadConfiguration];
-  [_tableView notifyImportStart];
-}
-
-- (void)importFinished {
-  self.configuration.primaryActionString = l10n_util::GetNSString(IDS_DONE);
-  self.configuration.primaryActionEnabled = YES;
-  [self reloadConfiguration];
+- (void)transitionToImportStage:(CredentialImportStage)importStage {
+  switch (importStage) {
+    case CredentialImportStage::kNotStarted:
+      NOTREACHED();
+    case CredentialImportStage::kImporting:
+      self.navigationItem.rightBarButtonItem = nil;
+      self.configuration.primaryActionEnabled = NO;
+      [self reloadConfiguration];
+      [_tableView notifyImportStart];
+      break;
+    case CredentialImportStage::kImported:
+      self.configuration.primaryActionString = l10n_util::GetNSString(IDS_DONE);
+      self.configuration.primaryActionEnabled = YES;
+      [self reloadConfiguration];
+      break;
+  }
 }
 
 #pragma mark - Actions

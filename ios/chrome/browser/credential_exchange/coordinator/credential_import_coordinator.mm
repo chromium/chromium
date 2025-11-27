@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
+#import "base/notreached.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -13,6 +14,7 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
+#import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
@@ -124,37 +126,48 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // If no passkeys are being imported, there is no point in fetching the
-  // security domain secret. Proceed to start the importing process.
-  if (!_mediator.importingPasskeys) {
-    [_mediator startImportingCredentialsWithSecurityDomainSecrets:nil];
-    return;
+  switch (_mediator.importStage) {
+    case CredentialImportStage::kNotStarted: {
+      // If no passkeys are being imported, there is no point in fetching the
+      // security domain secret. Proceed to start the importing process.
+      if (!_mediator.importingPasskeys) {
+        [_mediator startImportingCredentialsWithSecurityDomainSecrets:nil];
+        break;
+      }
+
+      bool metricsReportingEnabled =
+          GetApplicationContext()->GetLocalState()->GetBoolean(
+              metrics::prefs::kMetricsReportingEnabled);
+      _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
+            initWithEnableLogging:metricsReportingEnabled
+             navigationController:_navigationController
+          navigationItemTitleView:
+              password_manager::CreatePasswordManagerTitleView(
+                  l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER))];
+      _passkeyKeychainProviderBridge.delegate = self;
+
+      CoreAccountInfo account =
+          IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      __weak __typeof(self) weakSelf = self;
+      [_passkeyKeychainProviderBridge
+          fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
+                                credential:nil
+                                   purpose:webauthn::ReauthenticatePurpose::
+                                               kEncrypt
+                                completion:^(
+                                    NSArray<NSData*>* securityDomainSecrets) {
+                                  [weakSelf onSecurityDomainSecretsFetched:
+                                                securityDomainSecrets];
+                                }];
+      break;
+    }
+    case CredentialImportStage::kImporting:
+      NOTREACHED() << "Primary action button should be disabled";
+    case CredentialImportStage::kImported:
+      // TODO(crbug.com/450982128): Dismiss coordinator.
+      break;
   }
-
-  bool metricsReportingEnabled =
-      GetApplicationContext()->GetLocalState()->GetBoolean(
-          metrics::prefs::kMetricsReportingEnabled);
-  _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
-        initWithEnableLogging:metricsReportingEnabled
-         navigationController:_navigationController
-      navigationItemTitleView:password_manager::CreatePasswordManagerTitleView(
-                                  l10n_util::GetNSString(
-                                      IDS_IOS_PASSWORD_MANAGER))];
-  _passkeyKeychainProviderBridge.delegate = self;
-
-  CoreAccountInfo account =
-      IdentityManagerFactory::GetForProfile(self.profile)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  __weak __typeof(self) weakSelf = self;
-  [_passkeyKeychainProviderBridge
-      fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
-                            credential:nil
-                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
-                            completion:^(
-                                NSArray<NSData*>* securityDomainSecrets) {
-                              [weakSelf onSecurityDomainSecretsFetched:
-                                            securityDomainSecrets];
-                            }];
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
