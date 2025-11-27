@@ -142,8 +142,7 @@ PositionInFlatTree NextWordPositionInternal(
           // behavior. This enables stopping at punctuation after whitespace
           // (e.g., "word ..." stops at "...") while preserving normal behavior
           // for punctuation without whitespace (e.g., "word.more")
-          if (RuntimeEnabledFeatures::AsymmetricWordBoundaryFixEnabled() &&
-              platform_word_behavior_ ==
+          if (platform_word_behavior_ ==
                   PlatformWordBehavior::kWordSkipSpaces &&
               punct_runner == -1 && runner > 0 &&
               IsWhitespace(text[runner - 1])) {
@@ -156,8 +155,7 @@ PositionInFlatTree NextWordPositionInternal(
         // preceded by whitespace. This fixes asymmetric word navigation where
         // forward/backward movement would stop at different positions for
         // patterns like "word ..." or "word !!!"
-        if (RuntimeEnabledFeatures::AsymmetricWordBoundaryFixEnabled() &&
-            platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces &&
+        if (platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces &&
             punct_runner >= 0 && found_space_before_punct) {
           return SkipWhitespaceIfNeeded(text, punct_runner);
         }
