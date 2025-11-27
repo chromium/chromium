@@ -8426,6 +8426,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/waap:unit_tests",
+      "//chrome/browser/ui/wallet:unit_tests",
       "//chrome/browser/ui/webauthn:unit_tests",
       "//chrome/browser/ui/webid:unit_tests",
       "//chrome/browser/ui/webui:webui_util",
