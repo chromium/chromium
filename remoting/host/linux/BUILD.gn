@@ -196,6 +196,8 @@ source_set("platform_impls") {
     "pipewire_mouse_cursor_capturer.h",
     "pipewire_mouse_cursor_monitor.cc",
     "pipewire_mouse_cursor_monitor.h",
+    "portal_capture_stream_manager.cc",
+    "portal_capture_stream_manager.h",
     "portal_utils.cc",
     "portal_utils.h",
     "scoped_portal_request.cc",
