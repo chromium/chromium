@@ -127,7 +127,7 @@ SkBitmap ReadBitmap(FileUtilsWrapper* utils, const base::FilePath& file_path) {
 }
 
 base::span<const int> GetIconSizes() {
-  return UNSAFE_TODO(base::span<const int>(kIconSizes, std::size(kIconSizes)));
+  return kIconSizes;
 }
 
 bool ContainsOneIconOfEachSize(
