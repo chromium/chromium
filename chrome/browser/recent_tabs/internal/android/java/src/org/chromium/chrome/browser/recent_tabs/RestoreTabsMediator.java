@@ -408,7 +408,7 @@ public class RestoreTabsMediator {
         assumeNonNull(mDelegate);
         int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
 
-        // TODO(crbug.com/40261552): Consider adding a spinner if restoring the tabs becomes
+        // TODO(crbug.com/464253696): Consider adding a spinner if restoring the tabs becomes
         // a batched process.
         assert tabs.size() > 0 && mForeignSessionHelper != null;
         mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
