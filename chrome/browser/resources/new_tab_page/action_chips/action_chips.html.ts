@@ -13,21 +13,25 @@ export function getHtml(this: ActionChipsElement) {
     <div class="action-chips-container">
     ${
       this.actionChips_.map(
-          (chip: ActionChip) => html`
-      <button id="${this.getId_(chip) || nothing}"
-        class="action-chip"
+          (chip: ActionChip, index: number) => html`
+      <button id="${this.getId_(chip, index) || nothing}"
+        class="action-chip ${
+              this.isDeepDiveChip_(chip) ? 'deep-dive-chip' : ''}"
         @click="${() => this.handleClick_(chip)}">
         <div class="action-chip-icon-container ${
               this.getAdditionalIconClasses_(chip)}">
           ${
-              this.getId_(chip) === 'tab-context' ?
+              this.isRecentTabChip_(chip) ?
                   html`<img class='action-chip-recent-tab-favicon'
                 src="${this.getMostRecentTabFaviconUrl_(chip)}">` :
                   ''}
         </div>
         <div class="action-chip-text-container">
-          <span class="chip-title">${chip.title}</span>
-          <span class="chip-body">${chip.suggestion}</span>
+          ${
+              !this.isDeepDiveChip_(chip) ?
+                  html`<span class="chip-title">${chip.title}</span>` :
+                  ''}
+          <span title="${chip.suggestion}" class="chip-body">${chip.suggestion}</span>
         </div>
       </button>`)}
     </div>

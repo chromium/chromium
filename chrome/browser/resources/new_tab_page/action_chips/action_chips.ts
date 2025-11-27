@@ -87,12 +87,14 @@ export class ActionChipsElement extends CrLitElement {
         return 'banana';
       case ChipType.kDeepSearch:
         return 'deep-search';
+      case ChipType.kDeepDive:
+        return 'deep-dive';
       default:
         return '';
     }
   }
 
-  protected getId_(chip: ActionChip): string|null {
+  protected getId_(chip: ActionChip, index: number): string|null {
     switch (chip.type) {
       case ChipType.kImage:
         return 'nano-banana';
@@ -100,6 +102,8 @@ export class ActionChipsElement extends CrLitElement {
         return 'deep-search';
       case ChipType.kRecentTab:
         return 'tab-context';
+      case ChipType.kDeepDive:
+        return `deep-dive-${index}`;
       default:
         return null;
     }
@@ -205,6 +209,14 @@ export class ActionChipsElement extends CrLitElement {
   private onActionChipClick_(
       query: string, contextFiles: ContextualUpload[], mode: ComposeboxMode) {
     this.fire('action-chip-click', {searchboxText: query, contextFiles, mode});
+  }
+
+  protected isDeepDiveChip_(chip: ActionChip) {
+    return chip.type === ChipType.kDeepDive;
+  }
+
+  protected isRecentTabChip_(chip: ActionChip) {
+    return chip.type === ChipType.kRecentTab;
   }
 }
 
