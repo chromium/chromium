@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -60,15 +62,23 @@ std::string ComputeDialogSubtitle(
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      CHECK_GT(unsynced_data_count, 0u);
-      return l10n_util::GetPluralStringFUTF8(
-          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY,
-          unsynced_data_count);
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        CHECK_GT(unsynced_data_count, 0u);
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY_WITH_COUNT,
+            unsynced_data_count);
+      }
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      CHECK_GT(unsynced_data_count, 0u);
-      return l10n_util::GetPluralStringFUTF8(
-          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY,
-          unsynced_data_count);
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        CHECK_GT(unsynced_data_count, 0u);
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY_WITH_COUNT,
+            unsynced_data_count);
+      }
+      return l10n_util::GetStringUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY);
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY);
