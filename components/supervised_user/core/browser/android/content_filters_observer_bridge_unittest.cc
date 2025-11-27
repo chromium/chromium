@@ -24,9 +24,9 @@ TEST_F(ContentFiltersObserverBridgeTest,
       "test_setting", base::BindRepeating([]() {
         CHECK(false) << "Callback called when feature is disabled";
       }),
-      base::BindRepeating([]() {
-        CHECK(false) << "Callback called when feature is disabled";
-      }));
+      base::BindRepeating(
+          []() { CHECK(false) << "Callback called when feature is disabled"; }),
+      base::BindRepeating([]() { return false; }));
 
   bridge.Init();
   bridge.Shutdown();

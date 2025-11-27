@@ -107,6 +107,8 @@ BASE_FEATURE(kSupervisedUserInterstitialWithoutApprovals,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserLocalSupervisionPreview,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>
     kSupervisedUserLocalSupervisionPreviewBuildVersionMajor{

@@ -90,12 +90,14 @@ void SetManualFilter(std::string_view content_pack_setting,
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<ContentFiltersObserverBridge>
-CreateFakeContentFiltersObserverBridge(InitialSupervisionState initial_state,
-                                       std::string_view setting_name,
-                                       base::RepeatingClosure on_enabled,
-                                       base::RepeatingClosure on_disabled) {
+CreateFakeContentFiltersObserverBridge(
+    InitialSupervisionState initial_state,
+    std::string_view setting_name,
+    base::RepeatingClosure on_enabled,
+    base::RepeatingClosure on_disabled,
+    base::RepeatingCallback<bool()> is_subject_to_parental_controls) {
   return std::make_unique<FakeContentFiltersObserverBridge>(
-      setting_name, on_enabled, on_disabled,
+      setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
       /*enabled=*/initial_state ==
           InitialSupervisionState::kSupervisedWithAllContentFilters);
 }
@@ -168,12 +170,12 @@ void SupervisedUserPrefStoreTestEnvironment::ConfigureInitialValues(
     case InitialSupervisionState::kFamilyLinkAllowAllSites:
       EnableParentalControls(*syncable_pref_service_);
       settings_service_.SetLocalSetting(supervised_user::kSafeSitesEnabled,
-                                       base::Value(false));
+                                        base::Value(false));
       break;
     case InitialSupervisionState::kFamilyLinkCertainSites:
       EnableParentalControls(*syncable_pref_service_);
       settings_service_.SetLocalSetting(supervised_user::kSafeSitesEnabled,
-                                       base::Value(false));
+                                        base::Value(false));
       settings_service_.SetLocalSetting(
           supervised_user::kContentPackDefaultFilteringBehavior,
           base::Value(
@@ -352,8 +354,12 @@ FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,
     base::RepeatingClosure on_disabled,
+    base::RepeatingCallback<bool()> is_subject_to_parental_controls,
     bool initial_value)
-    : ContentFiltersObserverBridge(setting_name, on_enabled, on_disabled) {
+    : ContentFiltersObserverBridge(setting_name,
+                                   on_enabled,
+                                   on_disabled,
+                                   is_subject_to_parental_controls) {
   initial_value_ = initial_value;
 }
 
@@ -391,6 +397,36 @@ MetricsServiceAccessorDelegateMock::MetricsServiceAccessorDelegateMock() =
     default;
 MetricsServiceAccessorDelegateMock::~MetricsServiceAccessorDelegateMock() =
     default;
+
+TestSupervisedUserService::TestSupervisedUserService(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService& user_prefs,
+    SupervisedUserSettingsService& settings_service,
+    SupervisedUserContentFiltersService* content_filters_service,
+    syncer::SyncService* sync_service,
+    std::unique_ptr<SupervisedUserURLFilter> url_filter,
+    std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    ContentFiltersObserverBridge::Factory
+        content_filters_observer_bridge_factory
+#endif
+    )
+    : SupervisedUserService(identity_manager,
+                            url_loader_factory,
+                            user_prefs,
+                            settings_service,
+                            content_filters_service,
+                            sync_service,
+                            std::move(url_filter),
+                            std::move(platform_delegate)
+#if BUILDFLAG(IS_ANDROID)
+                                ,
+                            content_filters_observer_bridge_factory
+#endif
+      ) {
+}
 
 TestSupervisedUserService::TestSupervisedUserService(
     signin::IdentityManager* identity_manager,

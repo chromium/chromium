@@ -22,26 +22,30 @@ class ContentFiltersObserverBridge {
  public:
   // Factory for creating ContentFiltersObserverBridge instances. They should
   // accept the setting name, two callbacks to be called when the setting is
-  // enabled or disabled.
+  // enabled or disabled and the user prefs.
   using Factory =
       base::RepeatingCallback<std::unique_ptr<ContentFiltersObserverBridge>(
           std::string_view,
           base::RepeatingClosure,
-          base::RepeatingClosure)>;
+          base::RepeatingClosure,
+          base::RepeatingCallback<bool()>)>;
 
   // Creates a ContentFiltersObserverBridge instance.
   static std::unique_ptr<ContentFiltersObserverBridge> Create(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled);
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls);
 
-  ContentFiltersObserverBridge(std::string_view setting_name,
-                               base::RepeatingClosure on_enabled,
-                               base::RepeatingClosure on_disabled);
+  ContentFiltersObserverBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls);
 
   ContentFiltersObserverBridge(const ContentFiltersObserverBridge&) = delete;
-  ContentFiltersObserverBridge& operator=(
-      const ContentFiltersObserverBridge&) = delete;
+  ContentFiltersObserverBridge& operator=(const ContentFiltersObserverBridge&) =
+      delete;
   virtual ~ContentFiltersObserverBridge();
 
   // Initializes and shuts down the java class.
@@ -65,6 +69,7 @@ class ContentFiltersObserverBridge {
   std::string setting_name_;
   base::RepeatingClosure on_enabled_;
   base::RepeatingClosure on_disabled_;
+  base::RepeatingCallback<bool()> is_subject_to_parental_controls_;
   base::android::ScopedJavaGlobalRef<jobject> bridge_;
 };
 }  // namespace supervised_user

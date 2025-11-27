@@ -932,6 +932,18 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.FamilyLinkSupervisionConflict"
+    enum="BooleanHasConflict" expires_after="2026-05-17">
+  <owner>tju@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded each time when Family Link supervision is detected for a user that
+    already has local supervision enabled.
+
+    Recorded only for Android clients.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ParentPermissionDialog"
     enum="SupervisedUserParentPermissionDialog" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>

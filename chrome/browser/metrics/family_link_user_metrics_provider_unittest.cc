@@ -90,8 +90,8 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (is_subject_to_parental_controls) {
-      // Set Family Link `Permissions` switch (and its dependencies) to the default value.
-      // Mimics the assignment by the `SupervisedUserPrefStore`.
+      // Set Family Link `Permissions` switch (and its dependencies) to the
+      // default value. Mimics the assignment by the `SupervisedUserPrefStore`.
       supervised_user_test_util::
           SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, true);
     }
@@ -559,10 +559,12 @@ class FamilyLinkUserMetricsProviderWithContentFiltersTest
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) {
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls) {
     std::unique_ptr<FakeContentFiltersObserverBridge> bridge =
         std::make_unique<FakeContentFiltersObserverBridge>(
-            setting_name, on_enabled, on_disabled);
+            setting_name, on_enabled, on_disabled,
+            is_subject_to_parental_controls);
     if (setting_name == kBrowserContentFiltersSettingName) {
       browser_content_filters_observers_.push_back(bridge.get());
     } else if (setting_name == kSearchContentFiltersSettingName) {

@@ -67,6 +67,11 @@ BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 // kSupervisedUserSearchContentFiltersKillSwitch are subswitches of
 // kPropagateDeviceContentFiltersToSupervisedUser that control individual
 // content filter settings.
+// - kSupervisedUserOverrideLocalSupervision is a convenience feature that will
+// disable effects of Android Parental Controls if the user is a Family Link
+// account. With the flag disabled, the browser strictly expects that at most
+// only of of Family Link or Android Parental Controls apply, and terminates the
+// browser otherwise.
 
 BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
 BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
@@ -74,6 +79,8 @@ BASE_DECLARE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch);
 BASE_DECLARE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch);
 BASE_DECLARE_FEATURE(kSupervisedUserInterstitialWithoutApprovals);
 BASE_DECLARE_FEATURE(kSupervisedUserLocalSupervisionPreview);
+BASE_DECLARE_FEATURE(
+    kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts);
 
 // The major version of the build that supports local supervision.
 extern const base::FeatureParam<std::string>

@@ -122,10 +122,12 @@ class FakeContentFiltersObserverBridge final
   // Matching constructor of ContentFiltersObserverBridge. Setting the initial
   // value to true helps to test scenarios when the browser is started with the
   // setting already enabled.
-  FakeContentFiltersObserverBridge(std::string_view setting_name,
-                                   base::RepeatingClosure on_enabled,
-                                   base::RepeatingClosure on_disabled,
-                                   bool initial_value = false);
+  FakeContentFiltersObserverBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls,
+      bool initial_value = false);
   FakeContentFiltersObserverBridge(const FakeContentFiltersObserverBridge&) =
       delete;
   FakeContentFiltersObserverBridge& operator=(
@@ -162,10 +164,26 @@ class TestSupervisedUserService : public SupervisedUserService {
       SupervisedUserContentFiltersService* content_filters_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
+      std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      ContentFiltersObserverBridge::Factory
+          content_filters_observer_bridge_factory
+#endif
+  );
+
+  // Constructor that takes the initial state of supervision.
+  TestSupervisedUserService(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService& user_prefs,
+      SupervisedUserSettingsService& settings_service,
+      SupervisedUserContentFiltersService* content_filters_service,
+      syncer::SyncService* sync_service,
+      std::unique_ptr<SupervisedUserURLFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate,
-      InitialSupervisionState initial_state =
-          InitialSupervisionState::kUnsupervised);
+      InitialSupervisionState initial_state);
 
 #if BUILDFLAG(IS_ANDROID)
   base::WeakPtr<FakeContentFiltersObserverBridge>

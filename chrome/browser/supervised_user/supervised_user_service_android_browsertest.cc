@@ -67,7 +67,8 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
   virtual std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) = 0;
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls) = 0;
 
   // Called just before supervised user service is created. Much like
   // SetUpLocalStatePrefService, but called after prefs are registered.
@@ -78,6 +79,11 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
   }
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  TestSupervisedUserService* GetTestSupervisedUserService() {
+    return static_cast<TestSupervisedUserService*>(
+        SupervisedUserServiceFactory::GetForProfile(GetProfile()));
+  }
 
  private:
   void SetUpBrowserContextKeyedServices(
@@ -130,7 +136,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
         std::make_unique<MockUrlCheckerClient>();
     url_checker_client_ = url_checker_client.get();
 
-    return std::make_unique<SupervisedUserService>(
+    return std::make_unique<TestSupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
@@ -190,9 +196,11 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) override {
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
+      override {
     return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled,
+        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
         GetParam().ResolveInitialValueForFilter(setting_name));
   }
 };
@@ -302,6 +310,30 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
 }
 
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       FamilyLinkOverridesLocalSupervision) {
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(GetProfile());
+  bool is_initiall_supervised_locally =
+      GetParam().initial_browser_content_filters_value ||
+      GetParam().initial_search_content_filters_value;
+
+  // Local supervision is initially enabled/disabled based on the test case, but
+  // Family Link supervision is always disabled.
+  ASSERT_EQ(service->IsSupervisedLocally(), is_initiall_supervised_locally);
+  ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
+
+  EnableParentalControls(*GetProfile()->GetPrefs());
+
+  // Finally, local supervision is always disabled, Family Link supervision is
+  // always enabled, and if there was a conflict, it's recorded.
+  histogram_tester().ExpectBucketCount(
+      "SupervisedUsers.FamilyLinkSupervisionConflict", 1,
+      is_initiall_supervised_locally ? 1 : 0);
+  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
+}
+
 const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
     {.test_name = "AllFiltersDisabled",
      .initial_browser_content_filters_value = false,
@@ -332,9 +364,12 @@ class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) override {
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
+      override {
     return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled, /*initial_value=*/false);
+        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
+        /*initial_value=*/false);
   }
 
   void SetUpPrefs(PrefService* local_state) override {
@@ -383,6 +418,35 @@ IN_PROC_BROWSER_TEST_F(
       "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
+    FamilyLinkIsImmuneToLocalSupervision) {
+  TestSupervisedUserService* service = GetTestSupervisedUserService();
+
+  // Local supervision is initially disabled and Family Link supervision is
+  // initially enabled.
+  ASSERT_FALSE(service->IsSupervisedLocally());
+  ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
+
+  // Try turning the knob on the local supervision (browser filtering).
+  service->browser_content_filters_observer_weak_ptr()->OnChange(
+      /*env=*/nullptr,
+      /*enabled=*/true);
+  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
+  histogram_tester().ExpectBucketCount(
+      "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
+
+  // Try turning the knob on the local supervision (search filtering).
+  service->search_content_filters_observer_weak_ptr()->OnChange(
+      /*env=*/nullptr,
+      /*enabled=*/true);
+  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
+  histogram_tester().ExpectBucketCount(
+      "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);
+}
+
 // Tests the aspect where the Family Link supervision is disabled and the
 // content filters are not set.
 class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
@@ -391,9 +455,12 @@ class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) override {
+      base::RepeatingClosure on_disabled,
+      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
+      override {
     return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled, /*initial_value=*/false);
+        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
+        /*initial_value=*/false);
   }
 };
 

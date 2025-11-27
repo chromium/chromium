@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -19,6 +20,14 @@
 namespace supervised_user {
 
 namespace {
+const char kSupervisionConflictHistogramName[] =
+    "SupervisedUsers.FamilyLinkSupervisionConflict";
+enum class SupervisionHasConflict : int {
+  kNoConflict = 0,
+  kHasConflict = 1,
+  kMaxValue = kHasConflict,
+};
+
 // Each of the content filters have their own kill switch. This function
 // returns true if the feature is enabled for the given setting.
 bool IsFeatureEnabledForSetting(std::string_view setting_name) {
@@ -39,20 +48,24 @@ bool IsFeatureEnabledForSetting(std::string_view setting_name) {
 }  // namespace
 
 std::unique_ptr<ContentFiltersObserverBridge>
-ContentFiltersObserverBridge::Create(std::string_view setting_name,
-                                     base::RepeatingClosure on_enabled,
-                                     base::RepeatingClosure on_disabled) {
+ContentFiltersObserverBridge::Create(
+    std::string_view setting_name,
+    base::RepeatingClosure on_enabled,
+    base::RepeatingClosure on_disabled,
+    base::RepeatingCallback<bool()> is_subject_to_parental_controls) {
   return std::make_unique<ContentFiltersObserverBridge>(
-      setting_name, on_enabled, on_disabled);
+      setting_name, on_enabled, on_disabled, is_subject_to_parental_controls);
 }
 
 ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,
-    base::RepeatingClosure on_disabled)
+    base::RepeatingClosure on_disabled,
+    base::RepeatingCallback<bool()> is_subject_to_parental_controls)
     : setting_name_(setting_name),
       on_enabled_(on_enabled),
-      on_disabled_(on_disabled) {}
+      on_disabled_(on_disabled),
+      is_subject_to_parental_controls_(is_subject_to_parental_controls) {}
 
 ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
   if (bridge_) {
@@ -63,12 +76,26 @@ ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
 }
 
 void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
+  // Warning: callsites can pass env=nullptr. Update them before utilizing *env.
+
   LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
             << setting_name_ << " with value "
             << (enabled ? "enabled" : "disabled");
   if (!IsFeatureEnabledForSetting(setting_name_)) {
     LOG(INFO)
         << "ContentFiltersObserverBridge change ignored: feature disabled";
+    return;
+  }
+
+  // This prevents the content filters from being enabled for family link
+  // accounts.
+  if (base::FeatureList::IsEnabled(
+          kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
+      is_subject_to_parental_controls_.Run() && enabled) {
+    base::UmaHistogramEnumeration(kSupervisionConflictHistogramName,
+                                  SupervisionHasConflict::kHasConflict);
+    LOG(INFO)
+        << "ContentFiltersObserverBridge change ignored: family link user";
     return;
   }
 

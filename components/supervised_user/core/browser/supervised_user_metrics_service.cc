@@ -69,8 +69,10 @@ std::string GetWebFilterTypeHistogramName(bool is_family_link,
                                           bool is_locally_supervised) {
   CHECK(is_family_link || is_locally_supervised)
       << "Callsite should assume at least one supervision type";
-  CHECK_NE(is_family_link, is_locally_supervised, base::NotFatalUntil::M150)
-      << "Two supervision types are mutually exclusive.";
+  // When the system is recovering from two supervision types available at the
+  // same time to settle in "Family Link", it will record in the target
+  // "FamilyLink" histogram.
+
   // LINT.IfChange(supervised_user_web_filter_type_user_type)
   return base::StrCat({kSupervisedUserWebFilterTypeHistogramBaseName,
                        is_family_link ? ".FamilyLink" : ".LocallySupervised"});
