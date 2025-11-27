@@ -68,7 +68,8 @@ void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
 #pragma mark - ReaderModeTabHelper::Observer
 
 void ReaderModePanelItemConfiguration::ReaderModeTabHelperDestroyed(
-    ReaderModeTabHelper* tab_helper) {
+    ReaderModeTabHelper* tab_helper,
+    web::WebState* web_state) {
   reader_mode_tab_helper_observation_.Reset();
 }
 

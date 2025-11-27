@@ -43,8 +43,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
         ReaderModeTabHelper* tab_helper) = 0;
 
     // Called when the ReaderModeTabHelper is destroyed.
-    virtual void ReaderModeTabHelperDestroyed(
-        ReaderModeTabHelper* tab_helper) = 0;
+    virtual void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper,
+                                              web::WebState* web_state) = 0;
 
    protected:
     ~Observer() override = default;

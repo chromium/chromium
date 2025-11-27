@@ -210,6 +210,8 @@ source_set("dependency_installer") {
     "tabs_dependency_installer.mm",
     "tabs_dependency_installer_bridge.h",
     "tabs_dependency_installer_bridge.mm",
+    "tabs_dependency_installer_manager.h",
+    "tabs_dependency_installer_manager.mm",
   ]
   deps = [
     "//base",
@@ -229,6 +231,7 @@ source_set("unit_tests") {
     "tab_title_util_unittest.mm",
     "tabs_closer_unittest.mm",
     "tabs_dependency_installer_bridge_unittest.mm",
+    "tabs_dependency_installer_manager_unittest.mm",
     "tabs_dependency_installer_unittest.mm",
   ]
   deps = [

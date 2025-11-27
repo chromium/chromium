@@ -18,7 +18,10 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -28,7 +31,17 @@
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
+  return std::make_unique<FakeSafeBrowsingClient>(
+      GetApplicationContext()->GetLocalState());
+}
+
+}  // namespace
+
 ReaderModeTest::ReaderModeTest() = default;
+
 ReaderModeTest::~ReaderModeTest() = default;
 
 void ReaderModeTest::SetUp() {
@@ -43,6 +56,8 @@ void ReaderModeTest::SetUp() {
   builder.AddTestingFactory(
       OptimizationGuideServiceFactory::GetInstance(),
       OptimizationGuideServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SafeBrowsingClientFactory::GetInstance(),
+                            base::BindOnce(&BuildSafeBrowsingClient));
   profile_ = std::move(builder).Build();
 
   web::test::OverrideJavaScriptFeatures(

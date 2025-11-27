@@ -25,7 +25,8 @@ class ReaderModePanelItemConfiguration
   void DidTransitionToSmallEntrypoint() override;
 
   // ReaderModeTabHelper::Observer
-  void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper,
+                                    web::WebState* web_state) override;
   void ReaderModeWebStateDidLoadContent(ReaderModeTabHelper* tab_helper,
                                         web::WebState* web_state) override;
   void ReaderModeWebStateWillBecomeUnavailable(

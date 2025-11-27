@@ -99,7 +99,7 @@ ReaderModeTabHelper::~ReaderModeTabHelper() {
   DeactivateReader(
       ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
   for (auto& observer : observers_) {
-    observer.ReaderModeTabHelperDestroyed(this);
+    observer.ReaderModeTabHelperDestroyed(this, reader_mode_web_state_.get());
   }
 }
 

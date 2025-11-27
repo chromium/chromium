@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -238,6 +239,11 @@ TabsDependencyInstaller::~TabsDependencyInstaller() {
 void TabsDependencyInstaller::StartObserving(Browser* browser, Policy policy) {
   installation_helper_ = std::make_unique<TabsDependencyInstallationHelper>(
       CHECK_DEREF(browser->GetWebStateList()), *this, policy);
+  TabsDependencyInstallerManager* manager =
+      TabsDependencyInstallerManager::FromBrowser(browser);
+  if (manager) {
+    manager->AddInstaller(this);
+  }
 }
 
 void TabsDependencyInstaller::StopObserving() {

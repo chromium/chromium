@@ -307,8 +307,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       attacher.IsNotInTabHelperFilter() &&
       IsLensOverlayAvailable(profile->GetPrefs()));
   attacher
-      .CreateDeferredWhen<AppLauncherTabHelper>(
-          attacher.IsNotInTabHelperFilter())
+      .CreateDeferredWhen<AppLauncherTabHelper>(!attacher.IsForLensOverlay() &&
+                                                !attacher.IsForPrerender())
       .With([&]() { return [[AppLauncherAbuseDetector alloc] init]; },
             [&]() { return attacher.IsOffTheRecord(); });
   attacher
@@ -333,16 +333,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher.Create<AnnotationsTabHelper>();
 
-  // Safe Browsing helpers are not created for reader mode.
-  attacher
-      .CreateDeferredWhen<SafeBrowsingQueryManager>(!attacher.IsForReaderMode())
-      .WithFactory<SafeBrowsingClientFactory>(profile);
-  attacher
-      .CreateDeferredWhen<SafeBrowsingTabHelper>(!attacher.IsForReaderMode())
-      .WithFactory<SafeBrowsingClientFactory>(profile);
-  attacher.CreateWhen<SafeBrowsingUrlAllowList>(!attacher.IsForReaderMode());
-  attacher.CreateWhen<SafeBrowsingUnsafeResourceContainer>(
-      !attacher.IsForReaderMode());
+  SafeBrowsingClient* client =
+      SafeBrowsingClientFactory::GetForProfile(profile);
+  attacher.Create<SafeBrowsingQueryManager>(client);
+  attacher.Create<SafeBrowsingTabHelper>(client);
+  attacher.Create<SafeBrowsingUrlAllowList>();
+  attacher.Create<SafeBrowsingUnsafeResourceContainer>();
 
   attacher.Create<TailoredSecurityTabHelper>(
       TailoredSecurityServiceFactory::GetForProfile(profile));
@@ -386,13 +382,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // tab helpers for historical reasons. For the moment, AttachTabHelpers
   // allows to inhibit the creation of some of them.
   attacher.CreateWhen<SadTabTabHelper>(
-      attacher.IsNotInTabHelperFilter(),
+      !attacher.IsForLensOverlay() && !attacher.IsForPrerender(),
       SadTabTabHelper::kDefaultRepeatFailureInterval);
-  attacher.CreateWhen<SnapshotTabHelper>(attacher.IsNotInTabHelperFilter());
-  attacher.CreateWhen<SnapshotSourceTabHelper>(
-      attacher.IsNotInTabHelperFilter());
-  attacher.CreateWhen<PagePlaceholderTabHelper>(
-      attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<SnapshotTabHelper>(!attacher.IsForLensOverlay() &&
+                                         !attacher.IsForPrerender());
+  attacher.CreateWhen<SnapshotSourceTabHelper>(!attacher.IsForLensOverlay() &&
+                                               !attacher.IsForPrerender());
+  attacher.CreateWhen<PagePlaceholderTabHelper>(!attacher.IsForLensOverlay() &&
+                                                !attacher.IsForPrerender());
   attacher.CreateWhen<PasswordTabHelper>(attacher.IsNotInTabHelperFilter());
   attacher.CreateWhen<AutofillBottomSheetTabHelper>(
       attacher.IsNotInTabHelperFilter());

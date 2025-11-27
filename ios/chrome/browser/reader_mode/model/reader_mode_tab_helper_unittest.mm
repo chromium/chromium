@@ -58,7 +58,7 @@ class MockReaderModeTabHelperObserver : public ReaderModeTabHelper::Observer {
               (override));
   MOCK_METHOD(void,
               ReaderModeTabHelperDestroyed,
-              (ReaderModeTabHelper * tab_helper),
+              (ReaderModeTabHelper * tab_helper, web::WebState* web_state),
               (override));
 };
 
@@ -442,8 +442,9 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserverOfDestruction) {
   // When the tab helper is destroyed, ReaderModeTabHelperDestroyed should be
   // called.
   EXPECT_CALL(mock_observer,
-              ReaderModeTabHelperDestroyed(reader_mode_tab_helper()))
-      .WillOnce([&mock_observer](ReaderModeTabHelper* tab_helper) {
+              ReaderModeTabHelperDestroyed(reader_mode_tab_helper(), _))
+      .WillOnce([&mock_observer](ReaderModeTabHelper* tab_helper,
+                                 web::WebState* web_state) {
         tab_helper->RemoveObserver(&mock_observer);
       });
   ReaderModeTabHelper::RemoveFromWebState(web_state_.get());

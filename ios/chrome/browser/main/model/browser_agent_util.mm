@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -78,6 +79,10 @@ void AttachBrowserAgentsForInactiveBrowser(Browser* browser) {
   // DO NOT ADD NEW BROWSER AGENTS HERE.
   //
   // Add new agents to AttachBrowserAgentsForActiveBrowser(...) instead.
+
+  // The tabs dependency installation management must be created before all
+  // browser agents to correctly monitor the registration of web state changes.
+  TabsDependencyInstallerManager::CreateForBrowser(browser);
 
   SnapshotBrowserAgent::CreateForBrowser(browser);
   SyncedWindowDelegateBrowserAgent::CreateForBrowser(browser);
