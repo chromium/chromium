@@ -20,6 +20,46 @@ using autofill::test::CreateTestFormField;
 using autofill::test::MakeFormRendererId;
 using password_manager::PasswordForm;
 
+optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+CreateExpectedFormDetails(const PasswordForm& form) {
+  optimization_guide::proto::ActorLoginQuality_ParsedFormDetails details;
+  auto* form_data_proto = details.mutable_form_data();
+
+  form_data_proto->set_form_signature(
+      autofill::CalculateFormSignature(form.form_data).value());
+
+  for (const auto& field : form.form_data.fields()) {
+    optimization_guide::proto::ActorLoginQuality_FormData_FieldData field_data;
+    field_data.set_signature(
+        autofill::CalculateFieldSignatureForField(field).value());
+
+    if (field.renderer_id() == form.username_element_renderer_id) {
+      field_data.set_field_type(
+          optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
+              USERNAME);
+    } else if (field.renderer_id() == form.password_element_renderer_id) {
+      field_data.set_field_type(
+          optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
+              PASSWORD);
+    } else if (field.renderer_id() == form.new_password_element_renderer_id) {
+      field_data.set_field_type(
+          optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
+              NEW_PASSWORD);
+    } else if (field.renderer_id() ==
+               form.confirmation_password_element_renderer_id) {
+      field_data.set_field_type(
+          optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
+              CONFIRMATION_PASSWORD);
+    } else {
+      field_data.set_field_type(
+          optimization_guide::proto::ActorLoginQuality_FormData_FieldData::
+              UNKNOWN);
+    }
+    *form_data_proto->add_field_data() = field_data;
+  }
+  return details;
+}
+
 Credential CreateTestCredential(const std::u16string& username,
                                 const GURL& url,
                                 const url::Origin& request_origin) {

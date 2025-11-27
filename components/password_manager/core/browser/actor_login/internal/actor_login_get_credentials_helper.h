@@ -11,6 +11,7 @@
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -45,7 +46,7 @@ class ActorLoginGetCredentialsHelper
 
  private:
   void OnEligibleLoginFormManagersRetrieved(
-      std::vector<password_manager::PasswordFormManager*> eligible_managers);
+      FormFinderResult form_finder_result);
 
   // password_manager::FormFetcher::Consumer:
   void OnFetchCompleted() override;
