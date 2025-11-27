@@ -1176,6 +1176,20 @@
           other {<ph name="ITEMS_COUNT_MANY">%1$d<ex>8</ex></ph> selected}
         }
       </message>
+
+      <!-- Tab group media indicator accessibility strings -->
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_AUDIBLE" desc="Accessibility description for a tab group that contains a tab that is playing audio.">
+        Playing audio
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_MUTED" desc="Accessibility description for a tab group that contains a tab that is playing audio but has been muted.">
+        Muted audio
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_RECORDING" desc="Accessibility description for a tab group that contains a tab that is recording media.">
+        Recording media
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_SHARING" desc="Accessibility description for a tab group that contains a tab that is sharing its screen.">
+        Sharing tab screen
+      </message>
     </messages>
   </release>
 </grit>

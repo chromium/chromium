@@ -630,7 +630,9 @@ class TabListMediator implements TabListNotificationHandler {
 
                     @Nullable PropertyModel model;
                     Tab representativeTab = updatedTab;
-                    if (mActionsOnAllRelatedTabs && isTabInTabGroup(updatedTab)) {
+                    boolean isTabGroupTabGrid =
+                            mActionsOnAllRelatedTabs && isTabInTabGroup(updatedTab);
+                    if (isTabGroupTabGrid) {
                         Token tabGroupId = updatedTab.getTabGroupId();
                         assumeNonNull(tabGroupId);
                         @Nullable Pair<Integer, Tab> indexAndTab =
@@ -648,6 +650,9 @@ class TabListMediator implements TabListNotificationHandler {
                     model.set(
                             TabProperties.MEDIA_INDICATOR,
                             getTabGridMediaIndicator(representativeTab));
+                    if (isTabGroupTabGrid) {
+                        updateDescriptionString(representativeTab, model);
+                    }
                 }
 
                 @Override
@@ -2353,6 +2358,7 @@ class TabListMediator implements TabListNotificationHandler {
                             TabGroupColorPickerUtils
                                     .getTabGroupColorPickerItemColorAccessibilityString(colorId);
                     String colorDesc = res.getString(colorDescRes);
+                    String description;
                     if (TabUiUtils.isDataSharingFunctionalityEnabled() && hasCollaboration(tab)) {
                         TabCardLabelData tabCardLabelData =
                                 model.get(TabProperties.TAB_CARD_LABEL_DATA);
@@ -2363,53 +2369,61 @@ class TabListMediator implements TabListNotificationHandler {
                                             context);
                         }
                         if (TextUtils.isEmpty(tabCardLabelDesc)) {
-                            return TextUtils.isEmpty(title)
-                                    ? res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_color,
-                                            numOfRelatedTabs,
-                                            numOfRelatedTabs,
-                                            colorDesc)
-                                    : res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color,
-                                            numOfRelatedTabs,
-                                            title,
-                                            numOfRelatedTabs,
-                                            colorDesc);
+                            description =
+                                    TextUtils.isEmpty(title)
+                                            ? res.getQuantityString(
+                                                    R.plurals
+                                                            .accessibility_expand_shared_tab_group_with_color,
+                                                    numOfRelatedTabs,
+                                                    numOfRelatedTabs,
+                                                    colorDesc)
+                                            : res.getQuantityString(
+                                                    R.plurals
+                                                            .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                                                    numOfRelatedTabs,
+                                                    title,
+                                                    numOfRelatedTabs,
+                                                    colorDesc);
                         } else {
-                            return TextUtils.isEmpty(title)
-                                    ? res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_color_with_card_label,
-                                            numOfRelatedTabs,
-                                            numOfRelatedTabs,
-                                            colorDesc,
-                                            tabCardLabelDesc)
-                                    : res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color_with_card_label,
-                                            numOfRelatedTabs,
-                                            title,
-                                            numOfRelatedTabs,
-                                            colorDesc,
-                                            tabCardLabelDesc);
+                            description =
+                                    TextUtils.isEmpty(title)
+                                            ? res.getQuantityString(
+                                                    R.plurals
+                                                            .accessibility_expand_shared_tab_group_with_color_with_card_label,
+                                                    numOfRelatedTabs,
+                                                    numOfRelatedTabs,
+                                                    colorDesc,
+                                                    tabCardLabelDesc)
+                                            : res.getQuantityString(
+                                                    R.plurals
+                                                            .accessibility_expand_shared_tab_group_with_group_name_with_color_with_card_label,
+                                                    numOfRelatedTabs,
+                                                    title,
+                                                    numOfRelatedTabs,
+                                                    colorDesc,
+                                                    tabCardLabelDesc);
                         }
                     } else {
-                        return TextUtils.isEmpty(title)
-                                ? res.getQuantityString(
-                                        R.plurals.accessibility_expand_tab_group_with_color,
-                                        numOfRelatedTabs,
-                                        numOfRelatedTabs,
-                                        colorDesc)
-                                : res.getQuantityString(
-                                        R.plurals
-                                                .accessibility_expand_tab_group_with_group_name_with_color,
-                                        numOfRelatedTabs,
-                                        title,
-                                        numOfRelatedTabs,
-                                        colorDesc);
+                        description =
+                                TextUtils.isEmpty(title)
+                                        ? res.getQuantityString(
+                                                R.plurals.accessibility_expand_tab_group_with_color,
+                                                numOfRelatedTabs,
+                                                numOfRelatedTabs,
+                                                colorDesc)
+                                        : res.getQuantityString(
+                                                R.plurals
+                                                        .accessibility_expand_tab_group_with_group_name_with_color,
+                                                numOfRelatedTabs,
+                                                title,
+                                                numOfRelatedTabs,
+                                                colorDesc);
                     }
+                    String mediaStateString = getMediaStateAccessibilityString(tab, res);
+                    if (!TextUtils.isEmpty(mediaStateString)) {
+                        description += " " + mediaStateString;
+                    }
+                    return description;
                 };
         model.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, contentDescriptionResolver);
     }
@@ -3422,6 +3436,22 @@ class TabListMediator implements TabListNotificationHandler {
     private void dismissLimitSnackbar() {
         if (mSnackbarManager == null) return;
         mSnackbarManager.dismissAllSnackbars();
+    }
+
+    private String getMediaStateAccessibilityString(Tab tab, Resources res) {
+        @MediaState int mediaState = getTabGridMediaIndicator(tab);
+        switch (mediaState) {
+            case MediaState.AUDIBLE:
+                return res.getString(R.string.accessibility_tab_group_audible);
+            case MediaState.MUTED:
+                return res.getString(R.string.accessibility_tab_group_muted);
+            case MediaState.RECORDING:
+                return res.getString(R.string.accessibility_tab_group_recording);
+            case MediaState.SHARING:
+                return res.getString(R.string.accessibility_tab_group_sharing);
+            default:
+                return "";
+        }
     }
 
     View.AccessibilityDelegate getAccessibilityDelegateForTesting() {

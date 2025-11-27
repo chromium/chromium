@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
@@ -145,16 +146,25 @@ class TabGridViewBinder {
             PropertyModel model,
             ViewLookupCachingFrameLayout view,
             @Nullable PropertyKey propertyKey) {
-        if (TabProperties.TITLE == propertyKey || TabProperties.IS_PINNED == propertyKey) {
+        if (TabProperties.TITLE == propertyKey
+                || TabProperties.IS_PINNED == propertyKey
+                || TabProperties.MEDIA_INDICATOR == propertyKey) {
             String title = model.get(TabProperties.TITLE);
             TextView tabTitleView = view.fastFindViewById(R.id.tab_title);
-            tabTitleView.setText(title);
-            final @StringRes int contentDescriptionStringId;
-            if (model.containsKey(TabProperties.IS_PINNED) && model.get(TabProperties.IS_PINNED)) {
-                contentDescriptionStringId = R.string.accessibility_tabstrip_tab_pinned;
-            } else {
-                contentDescriptionStringId = R.string.accessibility_tabstrip_tab;
+            if (TabProperties.TITLE == propertyKey) tabTitleView.setText(title);
+            if (TabProperties.MEDIA_INDICATOR == propertyKey) {
+                ((TabGridView) view).setMediaIndicator(model.get(TabProperties.MEDIA_INDICATOR));
             }
+            boolean isPinned =
+                    model.containsKey(TabProperties.IS_PINNED)
+                            && model.get(TabProperties.IS_PINNED);
+            @MediaState
+            int mediaState =
+                    model.containsKey(TabProperties.MEDIA_INDICATOR)
+                            ? model.get(TabProperties.MEDIA_INDICATOR)
+                            : MediaState.NONE;
+            @StringRes
+            int contentDescriptionStringId = getTabContentDescriptionStringId(isPinned, mediaState);
             tabTitleView.setContentDescription(
                     view.getResources().getString(contentDescriptionStringId, title));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
@@ -231,8 +241,6 @@ class TabGridViewBinder {
         } else if (TabProperties.TAB_CONTEXT_CLICK_LISTENER == propertyKey) {
             setNullableContextClickListener(
                     model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER), view, model);
-        } else if (TabProperties.MEDIA_INDICATOR == propertyKey) {
-            ((TabGridView) view).setMediaIndicator(model.get(TabProperties.MEDIA_INDICATOR));
         }
     }
 
@@ -637,6 +645,33 @@ class TabGridViewBinder {
             labelView = rootView.fastFindViewById(R.id.tab_card_label);
         }
         labelView.setData(tabCardLabelData);
+    }
+
+    private static @StringRes int getTabContentDescriptionStringId(
+            boolean isPinned, @MediaState int mediaState) {
+        switch (mediaState) {
+            case MediaState.MUTED:
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_muted
+                        : R.string.accessibility_tabstrip_tab_muted;
+            case MediaState.AUDIBLE:
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_audible
+                        : R.string.accessibility_tabstrip_tab_audible;
+            case MediaState.RECORDING:
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_recording
+                        : R.string.accessibility_tabstrip_tab_recording;
+            case MediaState.SHARING:
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_sharing
+                        : R.string.accessibility_tabstrip_tab_sharing;
+            case MediaState.NONE:
+            default:
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned
+                        : R.string.accessibility_tabstrip_tab;
+        }
     }
 
     static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {
