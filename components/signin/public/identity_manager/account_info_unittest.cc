@@ -39,23 +39,22 @@ TEST_F(AccountInfoTest, IsEmpty) {
   }
 }
 
-// Tests that IsValid() returns true only when all mandatory fields are
-// non-empty.
+TEST_F(AccountInfoTest, DefaultIsInvalid) {
+  AccountInfo empty_info;
+  EXPECT_EQ(signin::Tribool::kUnknown, empty_info.is_child_account);
+  EXPECT_FALSE(empty_info.IsValid());
+}
+
+// Tests that IsValid() returns true when all mandatory fields are non-empty.
 TEST_F(AccountInfoTest, IsValid) {
-  AccountInfo info;
-  EXPECT_EQ(signin::Tribool::kUnknown, info.is_child_account);
-  EXPECT_FALSE(info.IsValid());
-
-  info.gaia = GaiaId("test_id");
-  info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId(info.gaia);
-  EXPECT_FALSE(info.IsValid());
-
-  info.full_name = info.given_name = "test_name";
-  info.hosted_domain = "test_domain";
-  AccountCapabilitiesTestMutator(&info.capabilities)
-      .set_is_subject_to_enterprise_features(true);
-  info.picture_url = "test_picture_url";
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test_id")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetFullName("test_name")
+          .SetGivenName("test_name")
+          .SetHostedDomain("test_domain")
+          .SetAvatarUrl("test_picture_url")
+          .Build();
   EXPECT_TRUE(info.IsValid());
 }
 
@@ -157,7 +156,7 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValues) {
           .Build();
 
   EXPECT_TRUE(info.UpdateWith(other));
-  EXPECT_EQ(kNoHostedDomainFound, info.hosted_domain);
+  EXPECT_EQ(info.GetHostedDomain(), "");
   EXPECT_EQ(kNoPictureURLFound, info.picture_url);
 }
 
@@ -181,8 +180,8 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
           .Build();
 
   EXPECT_FALSE(info.UpdateWith(other));
-  EXPECT_EQ("test_domain", info.hosted_domain);
-  EXPECT_EQ("test_url", info.picture_url);
+  EXPECT_EQ(info.GetHostedDomain(), "test_domain");
+  EXPECT_EQ(info.picture_url, "test_url");
 }
 
 TEST_F(AccountInfoTest, BuilderPopulatesCoreAccountInfoFields) {

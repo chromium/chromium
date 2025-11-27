@@ -11,6 +11,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -176,7 +177,14 @@ void signin::AccountInfoSerializer::SerializeAccountInfoToDict(
     const AccountInfo& account_info) {
   dict.Set(kAccountEmailKey, account_info.email);
   dict.Set(kAccountGaiaKey, account_info.gaia.ToString());
-  dict.Set(kAccountHostedDomainKey, account_info.hosted_domain);
+  std::string hosted_domain_to_set;
+  if (std::optional<std::string_view> hosted_domain =
+          account_info.GetHostedDomain()) {
+    hosted_domain_to_set = hosted_domain->empty()
+                               ? signin::constants::kNoHostedDomainFound
+                               : std::string(*hosted_domain);
+  }
+  dict.Set(kAccountHostedDomainKey, hosted_domain_to_set);
   dict.Set(kAccountFullNameKey, account_info.full_name);
   dict.Set(kAccountGivenNameKey, account_info.given_name);
   dict.Set(kAccountLocaleKey, account_info.locale);

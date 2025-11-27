@@ -590,15 +590,14 @@ AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
   CHECK(!given_name.empty())
       << "A given name is needed to generate the Gaia info.";
 
-  AccountInfo extended_account_info = base_account_info;
-
-  extended_account_info.given_name = given_name;
-  extended_account_info.full_name = base::StrCat({given_name, " FullName"});
-
-  extended_account_info.picture_url =
-      "https://chromium.org/examples/account_picture.jpg";
-  extended_account_info.hosted_domain = kNoHostedDomainFound;
-  extended_account_info.locale = "en";
+  AccountInfo extended_account_info =
+      AccountInfo::Builder(base_account_info)
+          .SetFullName(base::StrCat({given_name, " FullName"}))
+          .SetGivenName(given_name)
+          .SetHostedDomain(std::string())
+          .SetAvatarUrl("https://chromium.org/examples/account_picture.jpg")
+          .SetLocale("en")
+          .Build();
 
   CHECK(extended_account_info.IsValid());
 

@@ -406,13 +406,16 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info) {
   CHECK(!account_info.IsEmpty());
-  // Empty domain means that the management status is unknown, which is
+  // Null domain means that the management status is unknown, which is
   // represented by `null` hostedDomain on the Java side.
+  std::optional<std::string_view> maybe_hosted_domain =
+      account_info.GetHostedDomain();
   base::android::ScopedJavaLocalRef<jstring> hosted_domain =
-      account_info.hosted_domain.empty()
-          ? nullptr
-          : base::android::ConvertUTF8ToJavaString(env,
-                                                   account_info.hosted_domain);
+      maybe_hosted_domain.has_value()
+          ? base::android::ConvertUTF8ToJavaString(
+                env, maybe_hosted_domain->empty() ? kNoHostedDomainFound
+                                                  : *maybe_hosted_domain)
+          : nullptr;
   base::android::ScopedJavaLocalRef<jobject> account_image =
       account_info.account_image.IsEmpty()
           ? nullptr
@@ -443,17 +446,30 @@ AccountInfo ConvertFromJavaAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_account_info) {
   CHECK(j_account_info);
-  AccountInfo account;
-  account.account_id = signin::Java_CoreAccountInfo_getId(env, j_account_info);
-  account.gaia = signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info);
-  account.email = signin::Java_CoreAccountInfo_getEmail(env, j_account_info);
-  account.full_name = signin::Java_AccountInfo_getFullName(env, j_account_info);
-  account.given_name =
-      signin::Java_AccountInfo_getGivenName(env, j_account_info);
-  account.hosted_domain = base::android::ConvertJavaStringToUTF8(
-      signin::Java_AccountInfo_getRawHostedDomain(env, j_account_info));
   // TODO(crbug.com/348373729): Marshal account image & capabilities from Java.
-  return account;
+  AccountInfo::Builder builder(
+      signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info),
+      signin::Java_CoreAccountInfo_getEmail(env, j_account_info));
+  builder.SetAccountId(signin::Java_CoreAccountInfo_getId(env, j_account_info));
+  if (std::string full_name =
+          signin::Java_AccountInfo_getFullName(env, j_account_info);
+      !full_name.empty()) {
+    builder.SetFullName(full_name);
+  }
+  if (std::string given_name =
+          signin::Java_AccountInfo_getGivenName(env, j_account_info);
+      !given_name.empty()) {
+    builder.SetFullName(given_name);
+  }
+  // Unknown hosted domain is represented by a null Java string which is
+  // converted to an empty std::string. Do not call `SetHostedDomain()` in this
+  // case.
+  if (std::string hosted_domain = base::android::ConvertJavaStringToUTF8(
+          signin::Java_AccountInfo_getRawHostedDomain(env, j_account_info));
+      !hosted_domain.empty()) {
+    builder.SetHostedDomain(hosted_domain);
+  }
+  return builder.Build();
 }
 
 #endif

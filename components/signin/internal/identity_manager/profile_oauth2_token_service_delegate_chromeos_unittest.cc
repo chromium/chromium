@@ -178,19 +178,20 @@ AccountInfo CreateAccountInfoTestFixture(
     const AccountTrackerService& account_tracker_service,
     const GaiaId& gaia_id,
     const std::string& email) {
-  AccountInfo account_info;
-
-  account_info.gaia = gaia_id;
-  account_info.email = email;
-  account_info.full_name = "name";
-  account_info.given_name = "name";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  account_info.account_id = account_tracker_service.PickAccountIdForAccount(
-      account_info.gaia, account_info.email);
-  AccountCapabilitiesTestMutator(&account_info.capabilities)
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator(&capabilities)
       .set_is_subject_to_enterprise_features(true);
+  AccountInfo account_info =
+      AccountInfo::Builder(gaia_id, email)
+          .SetAccountId(
+              account_tracker_service.PickAccountIdForAccount(gaia_id, email))
+          .SetFullName("name")
+          .SetGivenName("name")
+          .SetHostedDomain("example.com")
+          .SetLocale("en")
+          .SetAvatarUrl("https://example.com")
+          .UpdateAccountCapabilitiesWith(capabilities)
+          .Build();
 
   // Cannot use |ASSERT_TRUE| due to a |void| return type in an |ASSERT_TRUE|
   // branch.

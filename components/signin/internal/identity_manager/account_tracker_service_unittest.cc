@@ -258,7 +258,7 @@ class AccountTrackerServiceTest : public testing::Test {
     EXPECT_EQ(AccountKeyToAccountId(account_key), info.account_id);
     EXPECT_EQ(AccountKeyToGaiaId(account_key), info.gaia);
     EXPECT_EQ(AccountKeyToEmail(account_key), info.email);
-    EXPECT_EQ(kNoHostedDomainFound, info.hosted_domain);
+    EXPECT_EQ(std::string(), info.GetHostedDomain());
     EXPECT_EQ(AccountKeyToFullName(account_key), info.full_name);
     EXPECT_EQ(AccountKeyToGivenName(account_key), info.given_name);
     EXPECT_EQ(AccountKeyToLocale(account_key), info.locale);
@@ -1074,11 +1074,12 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
 }
 
 TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
-  AccountInfo info;
-  info.gaia = AccountKeyToGaiaId(kAccountKeyAlpha);
-  info.email = AccountKeyToEmail(kAccountKeyAlpha);
-  info.full_name = AccountKeyToFullName(kAccountKeyAlpha);
-  info.account_id = account_tracker()->SeedAccountInfo(info);
+  AccountInfo info = AccountInfo::Builder(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                          AccountKeyToEmail(kAccountKeyAlpha))
+                         .SetFullName(AccountKeyToFullName(kAccountKeyAlpha))
+                         .Build();
+  CoreAccountId account_id = account_tracker()->SeedAccountInfo(info);
+  info = AccountInfo::Builder(info).SetAccountId(account_id).Build();
 
   // Validate that seeding an unexisting account works and sends a
   // notification.
@@ -1092,10 +1093,12 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
 
   // Validate that seeding new full informations to an existing account works
   // and sends a notification.
-  info.given_name = AccountKeyToGivenName(kAccountKeyAlpha);
-  info.hosted_domain = kNoHostedDomainFound;
-  info.locale = AccountKeyToLocale(kAccountKeyAlpha);
-  info.picture_url = AccountKeyToPictureURL(kAccountKeyAlpha);
+  info = AccountInfo::Builder(info)
+             .SetGivenName(AccountKeyToGivenName(kAccountKeyAlpha))
+             .SetHostedDomain(kNoHostedDomainFound)
+             .SetLocale(AccountKeyToLocale(kAccountKeyAlpha))
+             .SetAvatarUrl(AccountKeyToPictureURL(kAccountKeyAlpha))
+             .Build();
   account_tracker()->SeedAccountInfo(info);
   stored_info = account_tracker()->GetAccountInfo(info.account_id);
   EXPECT_EQ(info.gaia, stored_info.gaia);
