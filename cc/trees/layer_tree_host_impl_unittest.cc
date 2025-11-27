@@ -10758,6 +10758,17 @@ TEST_P(LayerTreeHostImplTest, LayersFreeTextures) {
 
   // Kill the layer tree.
   ClearLayersAndPropertyTrees(host_impl_->active_tree());
+
+  // The FakeLayerTreeFrameSink holds the last frame, which holds the
+  // TransferableResources, which hold the ClientSharedImages. We need to
+  // release them to drop the ref count.
+  auto* fake_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  fake_sink->ReturnResourcesHeldByParent();
+  if (fake_sink->last_sent_frame()) {
+    fake_sink->last_sent_frame()->resource_list.clear();
+  }
+
   // There should be no textures left in use after.
   EXPECT_EQ(0u, sii->shared_image_count());
 }
