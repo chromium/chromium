@@ -34,7 +34,7 @@ const char
              "TimeToFirstInteractionContentfulPaint";
 
 const char
-    kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName
+    kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName
         [] = "Actor.RendererPaintStability."
              "TimeBetweenInteractionContentfulPaints";
 

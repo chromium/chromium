@@ -39,7 +39,7 @@ extern char const
     kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName
         [];
 extern char const
-    kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName
+    kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName
         [];
 extern char const
     kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName

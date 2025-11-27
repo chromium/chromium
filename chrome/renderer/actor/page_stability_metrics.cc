@@ -167,7 +167,7 @@ void PageStabilityMetrics::Flush() {
 
   if (subsequent_contentful_paint_count_ > 0) {
     base::UmaHistogramTimes(
-        kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+        kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName,
         total_time_between_interaction_contentful_paints_ /
             subsequent_contentful_paint_count_);
     base::UmaHistogramCounts100(

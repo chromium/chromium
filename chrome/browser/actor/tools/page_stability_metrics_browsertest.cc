@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       1);
   histogram_tester.ExpectTotalCount(
-      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName,
       0);
 
   Respond("NETWORK DONE");
@@ -248,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
 
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
-      {kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      {kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName,
        kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName}));
   histogram_tester.ExpectTotalCount(
-      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName,
       1);
   histogram_tester.ExpectUniqueSample(
       kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName,
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       0);
   histogram_tester.ExpectTotalCount(
-      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      kActorRendererPaintStabilityTimeBetweenInteractionContentfulPaintsMetricName,
       0);
 }
 
