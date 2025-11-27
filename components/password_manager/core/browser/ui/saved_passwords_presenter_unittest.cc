@@ -1903,178 +1903,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SingleSite_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
-  form_1.actor_login_approved = true;
-
-  PasswordForm form_2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
-
-  store().AddLogins({form_1, form_2});
-  RunUntilIdle();
-
-  EXPECT_THAT(presenter().GetActorLoginPermissions(),
-              UnorderedElementsAre(ActorLoginPermission(
-                  form_1.url, /*human_readable_name=*/"",
-                  /*signon_realm=*/"", form_1.username_value)));
-}
-
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_Deduplicates_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form_1.actor_login_approved = true;
-
-  PasswordForm form_2 = form_1;
-  store().AddLogins({form_1, form_2});
-  RunUntilIdle();
-
-  EXPECT_THAT(presenter().GetActorLoginPermissions(),
-              UnorderedElementsAre(ActorLoginPermission(
-                  form_1.url,
-                  /*human_readable_name=*/"",
-                  /*signon_realm=*/"", form_1.username_value)));
-}
-
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SiteAndAppDifferentCredentials_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form_1.actor_login_approved = true;
-
-  PasswordForm form_2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
-  form_2.signon_realm = "android://hash@com.app.name/";
-  form_2.url = GURL();
-  form_2.app_display_name = "App Name";
-  form_2.actor_login_approved = true;
-  store().AddLogins({form_1, form_2});
-  RunUntilIdle();
-
-  EXPECT_THAT(
-      presenter().GetActorLoginPermissions(),
-      UnorderedElementsAre(
-          ActorLoginPermission(form_1.url,
-                               /*human_readable_name=*/"",
-                               /*signon_realm=*/"", form_1.username_value),
-          ActorLoginPermission(form_2.url, /*human_readable_name=*/"",
-                               /*signon_realm=*/"", form_2.username_value)));
-}
-
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SameUsernameDifferentURLs_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form_1.actor_login_approved = true;
-  form_1.username_value = u"shared_user";
-
-  PasswordForm form_2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
-  form_2.actor_login_approved = true;
-  form_2.username_value = u"shared_user";
-  store().AddLogins({form_1, form_2});
-  RunUntilIdle();
-
-  EXPECT_THAT(
-      presenter().GetActorLoginPermissions(),
-      UnorderedElementsAre(
-          ActorLoginPermission(form_1.url,
-                               /*human_readable_name=*/"",
-                               /*signon_realm=*/"", form_1.username_value),
-          ActorLoginPermission(form_2.url,
-                               /*human_readable_name=*/"",
-                               /*signon_realm=*/"", form_2.username_value)));
-}
-
-TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form.actor_login_approved = true;
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  presenter().RevokeActorLoginPermission(
-      ActorLoginPermission(form.url, /*human_readable_name=*/"",
-                           /*signon_realm=*/"", form.username_value));
-  RunUntilIdle();
-
-  form.actor_login_approved = false;
-  EXPECT_THAT(store().stored_passwords(),
-              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
-}
-
-TEST_F(SavedPasswordsPresenterTest,
-       RevokeActorLoginPermissionHandlesDuplicates_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form_1.actor_login_approved = true;
-  form_1.password_element = u"pwd1";
-  PasswordForm form_2 = form_1;
-  form_2.password_element = u"pwd2";
-  store().AddLogin(form_1);
-  store().AddLogin(form_2);
-  RunUntilIdle();
-
-  presenter().RevokeActorLoginPermission(
-      ActorLoginPermission(form_1.url,
-                           /*human_readable_name=*/"",
-                           /*signon_realm=*/"", form_1.username_value));
-  RunUntilIdle();
-
-  form_1.actor_login_approved = false;
-  form_2.actor_login_approved = false;
-  EXPECT_THAT(
-      store().stored_passwords(),
-      ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
-}
-TEST_F(SavedPasswordsPresenterTest,
-       RevokeActorLoginPermissionHandlesAndroidApps_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
-  PasswordForm form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form_1.signon_realm = "android://cert=@app.name";
-  form_1.url = GURL();
-  form_1.app_display_name = "App Name";
-  store().AddLogin(form_1);
-  RunUntilIdle();
-
-  presenter().RevokeActorLoginPermission(
-      ActorLoginPermission(form_1.url,
-                           /*human_readable_name=*/"",
-                           /*signon_realm=*/"", form_1.username_value));
-  RunUntilIdle();
-
-  form_1.actor_login_approved = false;
-  EXPECT_THAT(store().stored_passwords(),
-              ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
-}
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SingleSite_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
   form_1.actor_login_approved = true;
@@ -2092,11 +1921,7 @@ TEST_F(SavedPasswordsPresenterTest,
                   form_1.username_value)));
 }
 
-TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_Deduplicates_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form_1.actor_login_approved = true;
@@ -2113,10 +1938,7 @@ TEST_F(SavedPasswordsPresenterTest,
 }
 
 TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SiteAndAppDifferentCredentials_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+       GetAllowedActorLoginSites_SiteAndAppDifferentCredentials) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form_1.actor_login_approved = true;
@@ -2143,10 +1965,7 @@ TEST_F(SavedPasswordsPresenterTest,
 }
 
 TEST_F(SavedPasswordsPresenterTest,
-       GetAllowedActorLoginSites_SameUsernameDifferentURLs_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+       GetAllowedActorLoginSites_SameUsernameDifferentURLs) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form_1.actor_login_approved = true;
@@ -2170,10 +1989,7 @@ TEST_F(SavedPasswordsPresenterTest,
                                form_2.signon_realm, form_2.username_value)));
 }
 
-TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.actor_login_approved = true;
@@ -2191,10 +2007,7 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission_FlagOn) {
 }
 
 TEST_F(SavedPasswordsPresenterTest,
-       RevokeActorLoginPermissionHandlesDuplicates_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+       RevokeActorLoginPermissionHandlesDuplicates) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form_1.actor_login_approved = true;
@@ -2218,10 +2031,7 @@ TEST_F(SavedPasswordsPresenterTest,
       ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
 }
 TEST_F(SavedPasswordsPresenterTest,
-       RevokeActorLoginPermissionHandlesAndroidApps_FlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsForAndroid);
+       RevokeActorLoginPermissionHandlesAndroidApps) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form_1.signon_realm = "android://cert=@app.name";

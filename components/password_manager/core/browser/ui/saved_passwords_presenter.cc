@@ -444,31 +444,25 @@ base::flat_set<ActorLoginPermission>
 SavedPasswordsPresenter::GetActorLoginPermissions() const {
   std::vector<ActorLoginPermission> permissions;
   for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kActorLoginPermissionsForAndroid)) {
-      std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
-          credential.GetAffiliatedDomains();
-      for (const auto& form : GetCorrespondingPasswordForms(credential)) {
-        if (form.actor_login_approved) {
-          auto form_domain_info_it = std::ranges::find_if(
-              affiliated_domains.begin(), affiliated_domains.end(),
-              [&form](const CredentialUIEntry::DomainInfo& domain_info) {
-                return form.signon_realm == domain_info.signon_realm;
-              });
-          if (form_domain_info_it == affiliated_domains.end()) {
-            continue;
-          }
-          permissions.emplace_back(
-              form_domain_info_it->url, form_domain_info_it->name,
-              form_domain_info_it->signon_realm, form.username_value);
+    std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
+        credential.GetAffiliatedDomains();
+    for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+      if (form.actor_login_approved) {
+        auto form_domain_info_it = std::ranges::find_if(
+            affiliated_domains.begin(), affiliated_domains.end(),
+            [&form](const CredentialUIEntry::DomainInfo& domain_info) {
+              return form.signon_realm == domain_info.signon_realm;
+            });
+        // This can happen if a user has credentials stored for 2 app versions
+        // with the same app package name. Affiliated domains are unique per
+        // URL, which in the case of such 2 versions of an app, would be
+        // identical.
+        if (form_domain_info_it == affiliated_domains.end()) {
+          continue;
         }
-      }
-    } else {
-      for (const auto& form : GetCorrespondingPasswordForms(credential)) {
-        if (form.actor_login_approved) {
-          permissions.emplace_back(form.url, /*human_readable_name=*/"",
-                                   /*signon_realm=*/"", form.username_value);
-        }
+        permissions.emplace_back(
+            form_domain_info_it->url, form_domain_info_it->name,
+            form_domain_info_it->signon_realm, form.username_value);
       }
     }
   }
@@ -479,15 +473,8 @@ void SavedPasswordsPresenter::RevokeActorLoginPermission(
     const ActorLoginPermission& site) {
   for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
     for (const auto& form : GetCorrespondingPasswordForms(credential)) {
-      bool match = false;
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kActorLoginPermissionsForAndroid)) {
-        match = form.signon_realm == site.signon_realm &&
-                form.username_value == site.username;
-      } else {
-        match = form.url == site.url && form.username_value == site.username;
-      }
-      if (match) {
+      if (form.signon_realm == site.signon_realm &&
+          form.username_value == site.username) {
         PasswordForm updated_form = form;
         updated_form.actor_login_approved = false;
         GetStoreFor(updated_form).UpdateLogin(updated_form);
