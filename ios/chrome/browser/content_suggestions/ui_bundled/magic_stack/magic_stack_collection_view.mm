@@ -392,8 +392,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                intoSectionWithIdentifier:kMagicStackEditSectionIdentifier];
   }
 
-  [self.diffableDataSource applySnapshot:snapshot
-                    animatingDifferences:!isPlaceholder];
+  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 }
 
 // Determines the final page offset given the scroll `offset` and the `velocity`
