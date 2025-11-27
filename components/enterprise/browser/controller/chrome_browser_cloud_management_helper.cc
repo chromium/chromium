@@ -29,7 +29,8 @@ namespace policy {
 namespace {
 
 void OnPolicyFetchCompleted(bool success) {
-  VLOG(1) << "Policy fetch " << (success ? "succeeded" : "failed");
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "Policy fetch " << (success ? "succeeded" : "failed");
 }
 
 }  // namespace

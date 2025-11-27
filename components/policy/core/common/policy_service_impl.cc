@@ -589,7 +589,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
 
 void PolicyServiceImpl::CheckRefreshComplete() {
   if (refresh_pending_.empty()) {
-    VLOG(2) << "Policy refresh complete";
+    VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh complete";
   }
 
   // Invoke all the callbacks if a refresh has just fully completed.

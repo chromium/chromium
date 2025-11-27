@@ -268,7 +268,8 @@ Value::Dict ChromePolicyConversionsClient::GetIdentityFields() {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector) {
-    LOG(ERROR) << "Cannot dump identity fields, no policy connector";
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot dump identity fields, no policy connector";
     return Value::Dict();
   }
   if (connector->IsDeviceEnterpriseManaged()) {
