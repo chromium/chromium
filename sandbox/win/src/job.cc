@@ -10,7 +10,7 @@
 
 #include <utility>
 
-#include "sandbox/win/src/restricted_token.h"
+#include "sandbox/win/src/security_level.h"
 
 namespace sandbox {
 
