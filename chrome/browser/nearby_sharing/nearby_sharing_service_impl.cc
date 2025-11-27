@@ -4215,8 +4215,6 @@ void NearbySharingServiceImpl::OnFrameRead(
 void NearbySharingServiceImpl::HandleCertificateInfoFrame(
     const sharing::mojom::CertificateInfoFramePtr& certificate_frame) {
   DCHECK(certificate_frame);
-
-  // TODO(crbug.com/1113858): Allow saving certificates from remote devices.
 }
 
 void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
