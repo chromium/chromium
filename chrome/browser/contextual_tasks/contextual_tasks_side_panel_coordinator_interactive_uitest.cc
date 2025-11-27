@@ -506,4 +506,64 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
 }
 
+class TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest
+    : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
+ public:
+  TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kContextualTasksContext, {{"TaskScopedSidePanel", "false"}});
+  }
+  ~TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    SwitchTabChangeSidePanelWebContents) {
+  SetUpTasks();
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify the first side panel WebContents is created for the first tab.
+        content::WebContents* side_panel_web_contents1 =
+            coordinator->GetActiveWebContentsForTesting();
+        ASSERT_NE(nullptr, side_panel_web_contents1);
+        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+        // Activate the second tab, verify the second side panel WebContents is
+        // created for the second tab.
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        content::WebContents* side_panel_web_contents2 =
+            coordinator->GetActiveWebContentsForTesting();
+        ASSERT_NE(nullptr, side_panel_web_contents2);
+        ASSERT_NE(side_panel_web_contents1, side_panel_web_contents2);
+        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+        // Activate the third tab, verify the active side panel WebContents is
+        // swapped back.
+        browser()->tab_strip_model()->ActivateTabAt(2);
+        ASSERT_EQ(side_panel_web_contents1,
+                  coordinator->GetActiveWebContentsForTesting());
+        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+        // Close the side panel for the third tab.
+        coordinator->Close();
+        EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+
+        // Switch back to first tab, verify the side panel is still open because
+        // the open state is tab scoped.
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+      }));
+}
+
 }  // namespace contextual_tasks

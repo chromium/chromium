@@ -5142,6 +5142,17 @@ const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
     {"page action chip", kContextualTaskPageAction,
      std::size(kContextualTaskPageAction), nullptr}};
 
+const FeatureEntry::FeatureParam kTaskScopedSidePanel[] = {
+    {"TaskScopedSidePanel", "true"}};
+const FeatureEntry::FeatureParam kTabScopedSidePanel[] = {
+    {"TaskScopedSidePanel", "false"}};
+
+const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
+    {" - Task scoped side panel", kTaskScopedSidePanel,
+     std::size(kTaskScopedSidePanel), nullptr},
+    {" - Tab scoped side panel", kTabScopedSidePanel,
+     std::size(kTabScopedSidePanel), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13183,7 +13194,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-tasks-context",
      contextual_tasks::flag_descriptions::kContextualTasksContextName,
      contextual_tasks::flag_descriptions::kContextualTasksContextDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksContext)},
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasksContext,
+                                    kContextualTaskContextVariations,
+                                    "ContextualTasks")},
 
     {"contextual-tasks-suggestions-enabled",
      contextual_tasks::flag_descriptions::
