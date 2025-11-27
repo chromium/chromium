@@ -37,9 +37,16 @@ using sessions_helper::OpenTabAtIndex;
 using sessions_helper::ScopedWindowMap;
 using sessions_helper::SyncedSessionVector;
 
-class TwoClientSessionsSyncTest : public SyncTest {
+class TwoClientSessionsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   TwoClientSessionsSyncTest(const TwoClientSessionsSyncTest&) = delete;
   TwoClientSessionsSyncTest& operator=(const TwoClientSessionsSyncTest&) =
@@ -50,7 +57,19 @@ class TwoClientSessionsSyncTest : public SyncTest {
   bool WaitForForeignSessionsToSync(int local_index, int non_local_index) {
     return ForeignSessionsMatchChecker(non_local_index, local_index).Wait();
   }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSessionsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 constexpr char kURL1[] = "data:text/html,<html><title>Test</title></html>";
 constexpr char kURL2[] = "data:text/html,<html><title>Test2</title></html>";
@@ -59,11 +78,7 @@ constexpr char kURL4[] = "data:text/html,<html><title>Test4</title></html>";
 constexpr char kURLTemplate[] =
     "data:text/html,<html><title>Test%s</title></html>";
 
-// TODO(zea): Test each individual session command we care about separately.
-// (as well as multi-window). We're currently only checking basic single-window/
-// single-tab functionality.
-
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest,
                        E2E_ENABLED(SingleClientChanged)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -77,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, SingleClientClosed) {
   ASSERT_TRUE(SetupSync());
 
   // Open two tabs on client 0.
@@ -97,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
   EXPECT_EQ(3U, entities.size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
@@ -122,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, BothChanged) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, BothChanged) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -139,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, BothChanged) {
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteIdleSession) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -159,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
   EXPECT_FALSE(GetSessionData(1, &sessions1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteActiveSession) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -184,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
   EXPECT_TRUE(GetSessionData(1, &sessions1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -212,7 +227,12 @@ class TwoClientSessionsWithoutDestroyProfileSyncTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithoutDestroyProfileSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSessionsWithoutDestroyProfileSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsWithoutDestroyProfileSyncTest,
                        ShouldSyncAllClosedTabs) {
   ASSERT_TRUE(SetupSync());
 
