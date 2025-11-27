@@ -113,6 +113,10 @@
                                    count:passkeysImported]];
 }
 
+- (void)onImportFinished {
+  [_consumer importFinished];
+}
+
 #pragma mark - DataImportCredentialConflictMutator
 
 - (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {

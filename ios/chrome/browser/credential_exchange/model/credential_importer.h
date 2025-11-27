@@ -39,6 +39,9 @@ class SavedPasswordsPresenter;
 // Updates the status of the passkey import in the UI.
 - (void)onPasskeysImported:(int)passkeysImported;
 
+// Updates the status of the UI after importing all credential types finished.
+- (void)onImportFinished;
+
 @end
 
 // Handles importing credentials using the Credential Exchange Format

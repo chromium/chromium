@@ -24,6 +24,10 @@
 // be updated by removing any buttons and updating table view status.
 - (void)importStarted;
 
+// Notifies the consumer that the importing process finished and the view should
+// be updated by enabling the primary button and updating its label.
+- (void)importFinished;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_UI_CREDENTIAL_IMPORT_CONSUMER_H_

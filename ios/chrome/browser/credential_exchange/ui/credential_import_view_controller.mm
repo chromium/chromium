@@ -62,6 +62,12 @@ constexpr int kExpectedItemCount = 2;
   [_tableView notifyImportStart];
 }
 
+- (void)importFinished {
+  self.configuration.primaryActionString = l10n_util::GetNSString(IDS_DONE);
+  self.configuration.primaryActionEnabled = YES;
+  [self reloadConfiguration];
+}
+
 #pragma mark - Actions
 
 // Invoked when the user taps the "Cancel" button.
