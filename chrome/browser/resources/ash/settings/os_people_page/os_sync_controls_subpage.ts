@@ -47,7 +47,6 @@ const SyncPrefsIndividualDataTypes: Array<keyof OsSyncPrefs> = [
 ];
 
 /**
- * TODO(https://crbug.com/1294178): Consider merging this with sync_controls.
  * @fileoverview
  * 'os-sync-controls-subpage' contains all OS sync data type controls.
  */
