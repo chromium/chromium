@@ -35,11 +35,14 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 // Damping ratio of animating a change to the displayed badge.
 const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
-// Height multiplier for the divider relative to the view height.
-CGFloat const kDividerHeightMultiplier = 0.35;
-
 // Width of the divider between badges.
 CGFloat const kDividerWidthConstant = 1;
+
+// Corner radius of the divider between badges.
+CGFloat const kPSFSeparatorCornerRadius = 0.5;
+
+// Vertical padding for separator.
+CGFloat const kDividerVerticalPadding = 12.0;
 
 }  // namespace
 
@@ -310,15 +313,17 @@ CGFloat const kDividerWidthConstant = 1;
   UIView* separator = [[UIView alloc] init];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   separator.isAccessibilityElement = NO;
-  separator.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  separator.backgroundColor = [UIColor colorNamed:kGrey300Color];
+  separator.layer.cornerRadius = kPSFSeparatorCornerRadius;
 
   [self.view addSubview:separator];
   [_separatorViews addObject:separator];
 
   [NSLayoutConstraint activateConstraints:@[
     [separator.widthAnchor constraintEqualToConstant:kDividerWidthConstant],
-    [separator.heightAnchor constraintEqualToAnchor:self.stackView.heightAnchor
-                                         multiplier:kDividerHeightMultiplier],
+    [separator.heightAnchor
+        constraintEqualToAnchor:self.stackView.heightAnchor
+                       constant:-(kDividerVerticalPadding * 2)],
     [separator.centerXAnchor
         constraintEqualToAnchor:self.stackView.centerXAnchor],
     [separator.centerYAnchor
