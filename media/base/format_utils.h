@@ -10,12 +10,8 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace media {
-
-MEDIA_EXPORT std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
-    VideoPixelFormat pixel_format);
 
 MEDIA_EXPORT std::optional<VideoPixelFormat>
 SharedImageFormatToVideoPixelFormat(viz::SharedImageFormat format);

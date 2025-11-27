@@ -7,45 +7,6 @@
 
 namespace media {
 
-std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
-    VideoPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case PIXEL_FORMAT_ARGB:
-      return gfx::BufferFormat::BGRA_8888;
-
-    case PIXEL_FORMAT_XRGB:
-      return gfx::BufferFormat::BGRX_8888;
-
-    case PIXEL_FORMAT_YV12:
-      return gfx::BufferFormat::YVU_420;
-
-    case PIXEL_FORMAT_NV12:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
-
-    case PIXEL_FORMAT_NV12A:
-      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-
-    case PIXEL_FORMAT_ABGR:
-      return gfx::BufferFormat::RGBA_8888;
-
-    case PIXEL_FORMAT_XBGR:
-      return gfx::BufferFormat::RGBX_8888;
-
-    case PIXEL_FORMAT_P010LE:
-      return gfx::BufferFormat::P010;
-
-    case PIXEL_FORMAT_XR30:
-      return gfx::BufferFormat::RGBA_1010102;
-
-    case PIXEL_FORMAT_RGBAF16:
-      return gfx::BufferFormat::RGBA_F16;
-
-    default:
-      DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;
-      return std::nullopt;
-  }
-}
-
 std::optional<VideoPixelFormat> SharedImageFormatToVideoPixelFormat(
     viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kBGRX_8888) {
