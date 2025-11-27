@@ -680,6 +680,10 @@ const char kGeminiOnboardingCardsName[] = "GeminiOnboardingCards";
 const char kGeminiOnboardingCardsDescription[] =
     "Enables the discovery onboarding cards for new Gemini users.";
 
+const char kGeminiPersonalizationName[] = "GeminiPersonalization";
+const char kGeminiPersonalizationDescription[] =
+    "Enables the GeminiPersonalization feature.";
+
 const char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 const char kHandleMdmErrorsForDasherAccountsDescription[] =

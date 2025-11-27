@@ -291,3 +291,9 @@ BASE_FEATURE(kGeminiLive, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiLiveEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLive);
 }
+
+BASE_FEATURE(kGeminiPersonalization, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiPersonalizationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiPersonalization);
+}

@@ -5550,6 +5550,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "gemini-personalization",
+    "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "geolocation-element",
     "owners": [
       "andy@chromium.org",

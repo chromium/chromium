@@ -227,4 +227,8 @@ bool IsGeminiEligibilityAblationEnabled();
 BASE_DECLARE_FEATURE(kGeminiLive);
 bool IsGeminiLiveEnabled();
 
+// Feature flag for Gemini Personalization.
+BASE_DECLARE_FEATURE(kGeminiPersonalization);
+bool IsGeminiPersonalizationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
