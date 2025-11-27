@@ -22,6 +22,10 @@ public class NtpCustomizationMetricsUtils {
     static final String HISTOGRAM_NTP_CUSTOMIZATION_PREFIX = "NewTabPage.Customization";
 
     @VisibleForTesting
+    static final String HISTOGRAM_NTP_CUSTOMIZATION_ALL_CARDS_ENABLED =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".AllCardsEnabled";
+
+    @VisibleForTesting
     static final String HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED =
             HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".MvtEnabled";
 
@@ -133,6 +137,16 @@ public class NtpCustomizationMetricsUtils {
                 HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + name,
                 moduleType,
                 ModuleDelegate.ModuleType.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the visibility of all NTP cards as controlled by the toggle in the bottom sheet.
+     *
+     * @param isEnabled True if all cards are enabled (visible).
+     */
+    public static void recordAllCardsToggledInConfiguration(boolean isEnabled) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_NTP_CUSTOMIZATION_ALL_CARDS_ENABLED, isEnabled);
     }
 
     /**

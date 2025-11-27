@@ -61,7 +61,7 @@ public class MaterialSwitchWithTextListContainerView extends LinearLayout
     }
 
     /** Enables/disables interactivity of the module switches. */
-    void setAllModuleSwitchesEnabled(boolean isEnabled) {
+    public void setAllModuleSwitchesEnabled(boolean isEnabled) {
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             if (child instanceof MaterialSwitchWithText childSwitch) {

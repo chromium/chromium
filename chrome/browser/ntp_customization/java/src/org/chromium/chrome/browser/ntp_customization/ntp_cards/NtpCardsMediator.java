@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getTitleForModuleType;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.updateBooleanUserPrefs;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 
@@ -53,15 +55,18 @@ public class NtpCardsMediator {
 
     private final PropertyModel mContainerPropertyModel;
     private final PropertyModel mBottomSheetPropertyModel;
+    private final PropertyModel mNtpCardsPropertyModel;
     private final Supplier<@Nullable Profile> mProfileSupplier;
 
     public NtpCardsMediator(
             PropertyModel containerPropertyModel,
             PropertyModel bottomSheetPropertyModel,
+            PropertyModel ntpCardsPropertyModel,
             BottomSheetDelegate delegate,
             Supplier<@Nullable Profile> profileSupplier) {
         mContainerPropertyModel = containerPropertyModel;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
+        mNtpCardsPropertyModel = ntpCardsPropertyModel;
         mProfileSupplier = profileSupplier;
 
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
@@ -69,6 +74,17 @@ public class NtpCardsMediator {
         mBottomSheetPropertyModel.set(
                 BACK_PRESS_HANDLER,
                 delegate.shouldShowAlone() ? null : v -> delegate.backPressOnCurrentBottomSheet());
+
+        mNtpCardsPropertyModel.set(
+                ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER,
+                (compoundButton, isChecked) -> {
+                    NtpCustomizationMetricsUtils.recordAllCardsToggledInConfiguration(isChecked);
+                    HomeModulesConfigManager.getInstance().setPrefAllCardsEnabled(isChecked);
+                });
+
+        mNtpCardsPropertyModel.set(
+                ARE_CARD_SWITCHES_ENABLED,
+                HomeModulesConfigManager.getInstance().getPrefAllCardsEnabled());
     }
 
     /** Returns {@link ListContainerViewDelegate} that defines the content of each list item. */
@@ -137,6 +153,11 @@ public class NtpCardsMediator {
                     assumeNonNull(MODULE_TYPE_TO_USER_PREFS_KEY.get(moduleType)),
                     profile);
         }
+    }
+
+    /** Reacts to a configuration change of the "all NTP cards" toggle. */
+    void onAllCardsConfigChanged(boolean isEnabled) {
+        mNtpCardsPropertyModel.set(ARE_CARD_SWITCHES_ENABLED, isEnabled);
     }
 
     /** Clears the back press handler and click listeners of NTP cards bottom sheet. */
