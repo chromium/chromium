@@ -1403,6 +1403,9 @@
         =1 {Add up to 1 file, tab, or image}
         other {Add up to {COUNT} files, tabs, or images}}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_TITLE" desc="Title for the contextual menu, the menu allows the user to attach images, tabs, files to their query. [iOS only].">
+        Ask Google about tabs and more
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION" desc="The contextual menu option for opening the tab picker for selection. [iOS only].">
         Tabs
       </message>

@@ -58,3 +58,9 @@ bool IsComposeboxAIMNudgeEnabled() {
   // Reminder to also check AIM availability.
   return base::FeatureList::IsEnabled(kComposeboxAIMNudge);
 }
+
+BASE_FEATURE(kComposeboxMenuTitle, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxMenuTitleEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxMenuTitle);
+}

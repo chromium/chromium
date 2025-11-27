@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_cell.h"
@@ -858,22 +859,31 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                         handler:^(UIAction* action){
                         }];
 
-  NSMutableArray* menuItems = [[NSMutableArray alloc] init];
+  NSMutableArray* attachmentMenuItems = [[NSMutableArray alloc] init];
   if (_canAttachCurrentTab) {
-    [menuItems addObject:attachCurrentTabAction];
+    [attachmentMenuItems addObject:attachCurrentTabAction];
   }
-  [menuItems addObjectsFromArray:@[
+  [attachmentMenuItems addObjectsFromArray:@[
     selectTabsAction, cameraAction, galleryAction, fileAction
   ]];
 
-  UIMenu* submenu = [UIMenu menuWithTitle:@""
-                                    image:nil
-                               identifier:nil
-                                  options:UIMenuOptionsDisplayInline
-                                 children:@[ aimAction, createImageAction ]];
-  [menuItems addObject:submenu];
+  UIMenu* attachmentMenu = [UIMenu menuWithTitle:@""
+                                           image:nil
+                                      identifier:nil
+                                         options:UIMenuOptionsDisplayInline
+                                        children:attachmentMenuItems];
 
-  _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
+  UIMenu* modeMenu = [UIMenu menuWithTitle:@""
+                                     image:nil
+                                identifier:nil
+                                   options:UIMenuOptionsDisplayInline
+                                  children:@[ aimAction, createImageAction ]];
+
+  _plusButton.menu = [UIMenu
+      menuWithTitle:IsComposeboxMenuTitleEnabled()
+                        ? l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TITLE)
+                        : @""
+           children:@[ attachmentMenu, modeMenu ]];
   _plusButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
 }

@@ -203,6 +203,9 @@ extern const char kComposeboxIOSDescription[];
 extern const char kComposeboxImmersiveSRPName[];
 extern const char kComposeboxImmersiveSRPDescription[];
 
+extern const char kComposeboxMenuTitleName[];
+extern const char kComposeboxMenuTitleDescription[];
+
 extern const char kComposeboxTabPickerVariationName[];
 extern const char kComposeboxTabPickerVariationDescription[];
 

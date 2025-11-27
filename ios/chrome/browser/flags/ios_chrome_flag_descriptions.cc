@@ -339,6 +339,10 @@ const char kComposeboxImmersiveSRPName[] =
 const char kComposeboxImmersiveSRPDescription[] =
     "When enabled, the composebox will open SRPs in an embedded web view.";
 
+const char kComposeboxMenuTitleName[] = "ComposeboxMenuTitle";
+const char kComposeboxMenuTitleDescription[] =
+    "Enables the ComposeboxMenuTitle feature.";
+
 const char kComposeboxTabPickerVariationName[] =
     "Enable tab picker variation in the composebox";
 const char kComposeboxTabPickerVariationDescription[] =

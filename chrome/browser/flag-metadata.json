@@ -1954,6 +1954,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "composebox-menu-title",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name":"composebox-tab-picker-variation",
     "owners": ["ameurhosni@google.com","alionadangla@google.com","radunitescu@google.com"],
     "expiry_milestone": 145

@@ -42,4 +42,10 @@ BASE_DECLARE_FEATURE(kComposeboxForceTop);
 // Used to enable the AIM nudge button in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxAIMNudge);
 
+// Used to show the title in the + button menu of the composebox.
+BASE_DECLARE_FEATURE(kComposeboxMenuTitle);
+
+// Whether the composebox + menu should show the title.
+bool IsComposeboxMenuTitleEnabled();
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_
