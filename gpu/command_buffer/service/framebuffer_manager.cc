@@ -870,20 +870,14 @@ GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
   return UNSAFE_TODO(draw_buffers_[index]);
 }
 
-void Framebuffer::SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
-                                 base::span<const GLenum> bufs) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(static_cast<size_t>(spanification_suspected_redundant_n) == bufs.size(),
-        base::NotFatalUntil::M143);
-  DCHECK(spanification_suspected_redundant_n <=
+void Framebuffer::SetDrawBuffers(base::span<const GLenum> bufs) {
+  DCHECK(static_cast<GLsizei>(bufs.size()) <=
          static_cast<GLsizei>(manager_->max_draw_buffers_));
-  for (GLsizei ii = 0; ii < spanification_suspected_redundant_n; ++ii) {
+  for (size_t ii = 0; ii < bufs.size(); ++ii) {
     UNSAFE_TODO(draw_buffers_[ii]) = bufs[ii];
     UNSAFE_TODO(adjusted_draw_buffers_[ii]) = bufs[ii];
   }
-  for (uint32_t ii = spanification_suspected_redundant_n;
-       ii < manager_->max_draw_buffers_; ++ii) {
+  for (uint32_t ii = bufs.size(); ii < manager_->max_draw_buffers_; ++ii) {
     UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
     UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
   }

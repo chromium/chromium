@@ -188,8 +188,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
 
   GLenum GetDrawBuffer(GLenum draw_buffer) const;
 
-  void SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
-                      base::span<const GLenum> bufs);
+  void SetDrawBuffers(base::span<const GLenum> bufs);
 
   // If a color buffer is attached to GL_COLOR_ATTACHMENTi, enable that
   // draw buffer for glClear().
