@@ -626,41 +626,9 @@ void BucketContext::DeleteDatabase(
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "BucketContext::DeleteDatabase");
-  std::string force_close_message = "The database is deleted.";
-  auto on_deletion_complete =
-      base::BindOnce(delegate().on_files_written, /*flushed=*/true);
-
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
       std::move(pending_factory_client));
 
-  // First, check the databases that are already represented by
-  // `Database` objects. If one exists, schedule it to be deleted and
-  // we're done.
-  auto delete_database = [&]() {
-    auto it = databases_.find(name);
-    if (it == databases_.end()) {
-      return false;
-    }
-    CHECK(backing_store_);
-    it->second->ScheduleDeleteDatabase(std::move(factory_client),
-                                       std::move(on_deletion_complete));
-    if (force_close) {
-      std::unique_ptr<Database> database = std::move(it->second);
-      databases_.erase(it);
-      Status status = std::move(*database).ForceClose(force_close_message);
-      if (!status.ok() && !ShouldUseSqlite()) {
-        OnDatabaseError(nullptr, status, "Error aborting transactions.");
-      }
-    }
-
-    return true;
-  };
-  if (delete_database()) {
-    return;
-  }
-
-  // Otherwise, initialize the backing store and verify that a database with the
-  // given name exists in the backing store. If not, report success.
   if (!backing_store_) {
     Status s;
     DatabaseError error;
@@ -670,6 +638,8 @@ void BucketContext::DeleteDatabase(
         /*create_if_missing=*/false);
     if (!s.ok()) {
       if (s.IsNotFound()) {
+        // The spec requires oldVersion to be 0 if the database does not exist:
+        // https://w3c.github.io/IndexedDB/#delete-a-database.
         std::move(factory_client)->DeleteSuccess(/*old_version=*/0);
         return;
       }
@@ -682,28 +652,23 @@ void BucketContext::DeleteDatabase(
     }
   }
 
-  StatusOr<bool> exists = backing_store()->DatabaseExists(name);
-  if (!exists.has_value()) {
-    std::string error_message =
-        "Internal error opening backing store for indexedDB.deleteDatabase.";
-    std::move(factory_client)
-        ->Error(blink::mojom::IDBException::kUnknownError,
-                base::ASCIIToUTF16(error_message));
-    if (exists.error().IsCorruption()) {
-      HandleBackingStoreCorruption(error_message);
+  if (!base::Contains(databases_, name)) {
+    // This adds `Database` in an uninitialized state.
+    CreateAndAddDatabase(name);
+  }
+  auto it = databases_.find(name);
+  it->second->ScheduleDeleteDatabase(
+      std::move(factory_client),
+      /*on_deletion_complete=*/base::BindOnce(delegate().on_files_written,
+                                              /*flushed=*/true));
+  if (force_close) {
+    std::unique_ptr<Database> database = std::move(it->second);
+    databases_.erase(it);
+    Status status = std::move(*database).ForceClose("The database is deleted.");
+    if (!status.ok() && !ShouldUseSqlite()) {
+      OnDatabaseError(nullptr, status, "Error aborting transactions.");
     }
-    return;
   }
-
-  if (!*exists) {
-    std::move(factory_client)->DeleteSuccess(/*old_version=*/0);
-    return;
-  }
-
-  // If it exists but does not already have a `Database` object,
-  // create it and initiate deletion.
-  CreateAndAddDatabase(name);
-  CHECK(delete_database());
 }
 
 storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(

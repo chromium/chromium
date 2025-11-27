@@ -251,11 +251,10 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   EXPECT_CALL(request3, DeleteSuccess)
       .WillOnce(::base::test::RunClosure(delete_success_loop.QuitClosure()));
   EXPECT_CALL(request3, Blocked).Times(0);
-  base::RunLoop run_loop;
   db_->ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
           std::move(non_associated3)),
-      run_loop.QuitClosure());
+      /*on_deletion_complete=*/base::DoNothing());
   RunPostedTasks();
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
@@ -263,9 +262,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
   db_ = nullptr;
 
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
   bucket_context_->ForceClose(false, kTestForceCloseMessage);
-  run_loop.Run();
   delete_success_loop.Run();
 
   // Wait for various mock expectations.

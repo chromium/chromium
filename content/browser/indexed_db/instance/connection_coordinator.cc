@@ -498,6 +498,28 @@ class ConnectionCoordinator::DeleteRequest
     base::AutoReset suspend_callback(&tasks_available_callback_,
                                      base::DoNothing());
 
+    CHECK(db_->backing_store());
+    StatusOr<bool> exists = db_->backing_store()->DatabaseExists(db_->name());
+    if (!exists.has_value()) {
+      std::string error_message =
+          "Internal error opening backing store for indexedDB.deleteDatabase.";
+      std::move(factory_client_)
+          ->Error(blink::mojom::IDBException::kUnknownError,
+                  base::ASCIIToUTF16(error_message));
+      state_ = RequestState::kError;
+      if (exists.error().IsCorruption()) {
+        bucket_context_handle_->HandleBackingStoreCorruption(error_message);
+      }
+      return;
+    }
+    if (!*exists) {
+      // The spec requires oldVersion to be 0 if the database does not exist:
+      // https://w3c.github.io/IndexedDB/#delete-a-database.
+      std::move(factory_client_)->DeleteSuccess(/*old_version=*/0);
+      state_ = RequestState::kDone;
+      return;
+    }
+
     if (!db_->IsInitialized()) {
       ContinueAfterAcquiringLocks(
           base::BindOnce(&ConnectionCoordinator::DeleteRequest::InitDatabase,

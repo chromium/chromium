@@ -2124,7 +2124,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
-    EXPECT_CALL(client, DeleteSuccess)
+    EXPECT_CALL(client, DeleteSuccess(0))
         .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
@@ -2157,7 +2157,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
-    EXPECT_CALL(client, DeleteSuccess)
+    EXPECT_CALL(client, DeleteSuccess(0))
         .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
@@ -2236,7 +2236,7 @@ TEST_P(IndexedDBTest, DeleteDatabase_Cold) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
-    EXPECT_CALL(client, DeleteSuccess)
+    EXPECT_CALL(client, DeleteSuccess(1))
         .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
@@ -2253,6 +2253,82 @@ TEST_P(IndexedDBTest, DeleteDatabase_Cold) {
         "IndexedDB.BackingStore.DeleteDatabase.OnDisk", 0 /*Status::Type::kOk*/,
         1);
   }
+}
+
+// Verifies the behavior when several delete requests for the same database are
+// queued together.
+TEST_P(IndexedDBTest, DeleteDatabase_DuplicateRequests) {
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  BucketLocator bucket_locator = BucketLocator();
+  bucket_locator.storage_key = storage_key;
+
+  // Bind the IDBFactory.
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote.BindNewPipeAndPassReceiver(),
+              ToBucketInfo(bucket_locator));
+
+  // Open (create) a database.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection;
+  {
+    MockMojoFactoryClient client;
+    MockMojoDatabaseCallbacks database_callbacks;
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+    base::RunLoop upgrade_run_loop;
+    EXPECT_CALL(client, MockedUpgradeNeeded)
+        .WillOnce(testing::DoAll(
+            MoveArgPointee<0>(&pending_database),
+            ::base::test::RunClosure(upgrade_run_loop.QuitClosure())));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    factory_remote->Open(
+        client.CreateInterfacePtrAndBind(),
+        database_callbacks.CreateInterfacePtrAndBind(), kDatabaseName,
+        /*version=*/1, transaction_remote.BindNewEndpointAndPassReceiver(),
+        /*transaction_id=*/1, /*priority=*/0);
+    upgrade_run_loop.Run();
+
+    // Commit the versionchange transaction so the database gets persisted.
+    connection.Bind(std::move(pending_database));
+    transaction_remote->Commit(0);
+    EXPECT_CALL(database_callbacks, Complete);
+
+    base::RunLoop success_run_loop;
+    EXPECT_CALL(client, MockedOpenSuccess)
+        .WillOnce(::base::test::RunClosure(success_run_loop.QuitClosure()));
+    success_run_loop.Run();
+  }
+
+  // Issue two delete requests in succession. The first one should really delete
+  // the database, while the second should find the database non-existent.
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+
+  MockMojoFactoryClient first_client;
+  EXPECT_CALL(first_client, DeleteSuccess(1));
+  MockMojoFactoryClient second_client;
+  EXPECT_CALL(second_client, DeleteSuccess(0))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  factory_remote->DeleteDatabase(first_client.CreateInterfacePtrAndBind(),
+                                 kDatabaseName,
+                                 /*force_close=*/false);
+  factory_remote->DeleteDatabase(second_client.CreateInterfacePtrAndBind(),
+                                 kDatabaseName,
+                                 /*force_close=*/false);
+  connection.reset();
+  run_loop.Run();
+
+  // The first delete request should find the database already open, and the
+  // second one should not attempt to create it.
+  histogram_tester.ExpectTotalCount(
+      "IndexedDB.BackingStore.CreateOrOpenDatabase.OnDisk", 0);
+  // Only the first request should call into the backing store.
+  histogram_tester.ExpectUniqueSample(
+      "IndexedDB.BackingStore.DeleteDatabase.OnDisk", 0 /*Status::Type::kOk*/,
+      1);
 }
 
 TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {

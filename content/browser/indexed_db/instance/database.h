@@ -105,6 +105,8 @@ class CONTENT_EXPORT Database {
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 
+  // `on_deletion_complete` is called only if the database existed and was
+  // actually deleted.
   void ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
       base::OnceClosure on_deletion_complete);
