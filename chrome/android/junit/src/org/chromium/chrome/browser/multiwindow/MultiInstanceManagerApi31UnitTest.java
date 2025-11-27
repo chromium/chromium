@@ -928,6 +928,14 @@ public class MultiInstanceManagerApi31UnitTest {
                 otrInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
         assertTrue(otrIds.containsAll(Arrays.asList(1, 3)));
 
+        // Test PersistedInstanceType.REGULAR
+        List<InstanceInfo> regularInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.REGULAR);
+        assertEquals("REGULAR should return 2 instances", 2, regularInstances.size());
+        Set<Integer> regularIds =
+                regularInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
+        assertTrue(regularIds.containsAll(Arrays.asList(0, 2)));
+
         // Test combined filter: ACTIVE and OFF_THE_RECORD
         List<InstanceInfo> activeOtrInstances =
                 mMultiInstanceManager.getInstanceInfo(
@@ -935,6 +943,13 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "ACTIVE | OFF_THE_RECORD should return 1 instance", 1, activeOtrInstances.size());
         assertEquals(1, activeOtrInstances.get(0).instanceId);
+
+        // Test combined filter: ACTIVE and REGULAR
+        List<InstanceInfo> activeRegularInstances =
+                mMultiInstanceManager.getInstanceInfo(
+                        PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
+        assertEquals("ACTIVE | REGULAR should return 1 instance", 1, activeRegularInstances.size());
+        assertEquals(0, activeRegularInstances.get(0).instanceId);
     }
 
     @Test

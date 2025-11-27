@@ -991,6 +991,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         Pattern pattern = Pattern.compile("(\\d+)$");
         boolean includeAny = type == PersistedInstanceType.ANY;
         boolean includeOtr = (type & PersistedInstanceType.OFF_THE_RECORD) != 0;
+        boolean includeRegular = (type & PersistedInstanceType.REGULAR) != 0;
         boolean includeActive = (type & PersistedInstanceType.ACTIVE) != 0;
         boolean includeInactive = (type & PersistedInstanceType.INACTIVE) != 0;
         assert !includeActive || !includeInactive
@@ -1012,6 +1013,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // Exclude ids not satisfying requirements.
             int profileType = readProfileType(id);
             if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
+            if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;
             if (includeActive && !activeTaskIds.contains(taskIdFromMap)) continue;
             if (includeInactive && activeTaskIds.contains(taskIdFromMap)) continue;
 

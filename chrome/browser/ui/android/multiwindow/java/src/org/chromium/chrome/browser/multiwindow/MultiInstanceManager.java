@@ -439,7 +439,8 @@ public abstract class MultiInstanceManager {
                 PersistedInstanceType.ANY,
                 PersistedInstanceType.ACTIVE,
                 PersistedInstanceType.INACTIVE,
-                PersistedInstanceType.OFF_THE_RECORD
+                PersistedInstanceType.OFF_THE_RECORD,
+                PersistedInstanceType.REGULAR
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PersistedInstanceType {
@@ -454,5 +455,8 @@ public abstract class MultiInstanceManager {
 
         // Represents an instance for an incognito-only window.
         int OFF_THE_RECORD = 1 << 2;
+
+        // Represents an instance for a regular window that does not hold incognito tabs.
+        int REGULAR = 1 << 3;
     }
 }
