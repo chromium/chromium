@@ -1409,7 +1409,7 @@ TEST_F(ChromePasswordManagerClientTest,
           test_web_contents.get());
   ON_CALL(*client, GetMainFrameCertStatus()).WillByDefault(Return(0));
   EXPECT_CALL(*client->password_protection_service(),
-              MaybeStartPasswordFieldOnFocusRequest(_, _, _, _, _))
+              MaybeStartPasswordFieldOnFocusRequest)
       .Times(1);
   PasswordManagerClient* mojom_client = client;
   mojom_client->CheckSafeBrowsingReputation(GURL("http://foo.com/submit"),

@@ -1226,7 +1226,7 @@ void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
   if (pps) {
     pps->MaybeStartPasswordFieldOnFocusRequest(
         web_contents(), web_contents()->GetLastCommittedURL(), form_action,
-        frame_url, pps->GetAccountInfo().hosted_domain);
+        frame_url);
   }
 }
 #endif  // defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
