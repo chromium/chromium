@@ -68,11 +68,16 @@ void BrowserViewLayoutImpl::ProposedLayout::ApplyLayout(
     SetViewVisibility set_view_visibility) && {
   for (auto& child : root->children()) {
     if (const auto it = children.find(child); it != children.end()) {
+      // Need to tail-recurse here because otherwise, when we set the bounds of
+      // the immediate child, this will automatically trigger a layout on all
+      // of its children, which have not been properly arranged yet. This
+      // results in a potential double-layout, or in extreme cases, bugs like
+      // https://crbug.com/464220949
+      std::move(it->second).ApplyLayout(child, set_view_visibility);
+      child->SetBoundsRect(it->second.bounds);
       if (it->second.visibility) {
         set_view_visibility(child, *it->second.visibility);
       }
-      child->SetBoundsRect(it->second.bounds);
-      std::move(it->second).ApplyLayout(child, set_view_visibility);
       children.erase(it);
     }
   }
