@@ -55,8 +55,6 @@ class ExternalCacheImpl : public ExternalCache,
   // to time (about very 5 hours, as per kDefaultUpdateFrequencySeconds).
   // Currently it's only enabled for Chrome App Kiosk, see description of the
   // KioskCRXManifestUpdateURLIgnored policy for details.
-  // TODO(https://crbug.com/1262158) Postpone starting new update check when the
-  // previous one is not finished yet.
   ExternalCacheImpl(
       const base::FilePath& cache_dir,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
