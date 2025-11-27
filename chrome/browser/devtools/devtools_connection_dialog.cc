@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -36,6 +37,10 @@ DevToolsConnectionDialog::DevToolsConnectionDialog(
     RunCallbackAndDie(
         content::DevToolsManagerDelegate::AcceptConnectionResult::kDeny);
     return;
+  }
+
+  if (browser->window()) {
+    browser->window()->Activate();
   }
 
   views::Widget* widget = chrome::ShowBrowserModal(
