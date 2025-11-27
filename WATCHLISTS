@@ -959,7 +959,9 @@
     },
     'compose': {
       'filepath':
-        'components/compose|chrome/browser/compose|chrome/browser/resources/compose',
+        '^components/compose/|'\
+        '^chrome/browser/compose/|'\
+        '^chrome/browser/resources/compose/',
     },
     'compositor_animator': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/animation/',
