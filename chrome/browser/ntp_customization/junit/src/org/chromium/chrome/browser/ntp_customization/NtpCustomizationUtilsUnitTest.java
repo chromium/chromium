@@ -745,4 +745,20 @@ public class NtpCustomizationUtilsUnitTest {
         assertNotNull(info.portraitMatrix);
         assertNotNull(info.landscapeMatrix);
     }
+
+    @Test
+    public void testSetAndGetIsChromeColorDailyRefreshEnabledToSharedPreference() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        assertTrue(NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(false);
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+    }
 }

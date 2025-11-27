@@ -586,6 +586,24 @@ public class NtpCustomizationUtils {
     }
 
     /**
+     * Sets whether daily refresh for Chrome Color is enabled to the SharedPreference.
+     *
+     * @param enabled Whether daily refresh should be enabled.
+     */
+    public static void setIsChromeColorDailyRefreshEnabledToSharedPreference(boolean enabled) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeBoolean(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, enabled);
+    }
+
+    /** Gets whether daily refresh for Chrome Color is enabled from the SharedPreference. */
+    public static boolean getIsChromeColorDailyRefreshEnabledFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readBoolean(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false);
+    }
+
+    /**
      * Returns an instance of ColorStateList which is used to tint icon buttons.
      *
      * @param context Used to get the ColorStateList.
