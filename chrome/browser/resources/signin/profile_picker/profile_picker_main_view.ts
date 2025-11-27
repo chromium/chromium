@@ -299,7 +299,6 @@ export class ProfilePickerMainViewElement extends
     const index = this.profilesList_.findIndex(
         profile => profile.profilePath === profilePath);
     assert(index !== -1);
-    // TODO(crbug.com/40123459): Add animation.
     this.profilesList_.splice(index, 1);
     this.requestUpdate();
   }
