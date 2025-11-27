@@ -23,6 +23,8 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
@@ -37,11 +39,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -97,13 +94,13 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
 
   profile_list_.push_back(owner->profile());
 
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (ui::BaseWindow* const window = browser->GetWindow();
-            window && window->GetNativeWindow()) {
-          observed_windows_.AddObservation(window->GetNativeWindow());
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (aura::Window* window = browser.GetNativeWindow(); window) {
+          observed_windows_.AddObservation(window);
         }
-        return true;
+        return ash::BrowserController::kContinueIteration;
       });
 }
 

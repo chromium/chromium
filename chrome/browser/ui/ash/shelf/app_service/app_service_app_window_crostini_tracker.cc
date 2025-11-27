@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_force_close_watcher.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -28,8 +29,6 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -96,9 +95,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     return;
   }
 
-  // Handle browser windows.
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
+  if (ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     return;
   }
 
@@ -227,9 +224,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     return std::string();
   }
 
-  // Handle browser windows.
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
+  if (ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     return std::string();
   }
 

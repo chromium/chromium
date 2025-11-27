@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -88,8 +87,9 @@ void ShowAndActivateBrowser(bool move_to_current_desktop,
 // performed by activating the content.
 ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
                                            content::WebContents* content) {
-  Browser* browser = chrome::FindBrowserWithTab(content);
-  TabStripModel* tab_strip = browser->tab_strip_model();
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(content);
+  TabStripModel* tab_strip = browser->GetBrowser().tab_strip_model();
   int index = tab_strip->GetIndexOfWebContents(content);
   DCHECK_NE(TabStripModel::kNoTab, index);
 
@@ -98,7 +98,7 @@ ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
     tab_strip->ActivateTabAt(index);
   }
   return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-      browser->window(), index == old_index && allow_minimize);
+      browser->GetBrowser().window(), index == old_index && allow_minimize);
 }
 
 // Advance to the next window of an app if possible. |items| is the list of
@@ -472,8 +472,10 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
     // invalid pointer cached in |app_menu_web_contents_| should yield a null
     // browser or kNoTab.
     content::WebContents* web_contents = app_menu_web_contents_[command_id];
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
-    TabStripModel* tab_strip = browser ? browser->tab_strip_model() : nullptr;
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetBrowserForTab(web_contents);
+    TabStripModel* tab_strip =
+        browser ? browser->GetBrowser().tab_strip_model() : nullptr;
     const int index = tab_strip ? tab_strip->GetIndexOfWebContents(web_contents)
                                 : TabStripModel::kNoTab;
     if (index != TabStripModel::kNoTab) {
@@ -481,9 +483,7 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
         tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
       } else {
         tab_strip->ActivateTabAt(index);
-        ShowAndActivateBrowser(
-            /*move_to_current_desktop=*/true,
-            ash::BrowserController::GetInstance()->GetDelegate(browser));
+        ShowAndActivateBrowser(/*move_to_current_desktop=*/true, browser);
       }
     }
   }
@@ -499,13 +499,12 @@ void AppShortcutShelfItemController::Close() {
     }
   } else {
     for (content::WebContents* item : GetAppWebContents(base::NullCallback())) {
-      Browser* browser = chrome::FindBrowserWithTab(item);
-      ash::BrowserDelegate* delegate =
-          ash::BrowserController::GetInstance()->GetDelegate(browser);
-      if (!delegate || delegate->GetAccountId() != GetActiveAccountId()) {
+      ash::BrowserDelegate* browser =
+          ash::BrowserController::GetInstance()->GetBrowserForTab(item);
+      if (!browser || browser->GetAccountId() != GetActiveAccountId()) {
         continue;
       }
-      TabStripModel* tab_strip = browser->tab_strip_model();
+      TabStripModel* tab_strip = browser->GetBrowser().tab_strip_model();
       int index = tab_strip->GetIndexOfWebContents(item);
       DCHECK(index != TabStripModel::kNoTab);
       tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
@@ -633,14 +632,17 @@ AppShortcutShelfItemController::AdvanceToNextApp(
                                        VectorExperimental>>& web_contents,
              aura::Window** out_window) -> content::WebContents* {
             for (content::WebContents* web_content : web_contents) {
-              Browser* browser = chrome::FindBrowserWithTab(web_content);
+              ash::BrowserDelegate* browser =
+                  ash::BrowserController::GetInstance()->GetBrowserForTab(
+                      web_content);
               // The active web contents is on the active browser, and matches
               // the index of the current active tab.
-              if (browser->window()->IsActive()) {
-                TabStripModel* tab_strip = browser->tab_strip_model();
+              if (browser && browser->IsActive()) {
+                TabStripModel* tab_strip =
+                    browser->GetBrowser().tab_strip_model();
                 int index = tab_strip->GetIndexOfWebContents(web_content);
                 if (tab_strip->active_index() == index) {
-                  *out_window = browser->window()->GetNativeWindow();
+                  *out_window = browser->GetNativeWindow();
                   return web_content;
                 }
               }

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -193,9 +193,10 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
   // It is possible to come here from Browser::SwapTabContent where the contents
   // cannot be associated with a browser. A removal however should be properly
   // processed.
-  Browser* browser = chrome::FindBrowserWithTab(contents);
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
   if (remove || (browser && multi_user_util::IsProfileFromActiveUser(
-                                browser->profile()))) {
+                                browser->GetBrowser().profile()))) {
     shelf_controller_->UpdateAppState(contents, remove);
   }
 }
@@ -370,15 +371,16 @@ bool BrowserStatusMonitor::IsAppBrowserInShelfWithAppId(
 void BrowserStatusMonitor::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  Browser* browser = nullptr;
   // Use |new_contents|. |old_contents| could be nullptr.
   DCHECK(new_contents);
-  browser = chrome::FindBrowserWithTab(new_contents);
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(new_contents);
 
   // Update immediately on a tab change.
   if (old_contents &&
       (TabStripModel::kNoTab !=
-       browser->tab_strip_model()->GetIndexOfWebContents(old_contents))) {
+       browser->GetBrowser().tab_strip_model()->GetIndexOfWebContents(
+           old_contents))) {
     UpdateAppItemState(old_contents, false /*remove*/);
   }
 
@@ -397,8 +399,10 @@ void BrowserStatusMonitor::OnActiveTabChanged(
 void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
                                          content::WebContents* old_contents,
                                          content::WebContents* new_contents) {
-  DCHECK(old_contents && new_contents);
-  Browser* browser = chrome::FindBrowserWithTab(new_contents);
+  DCHECK(old_contents);
+  DCHECK(new_contents);
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(new_contents);
 
   UpdateAppItemState(old_contents, true /*remove*/);
   RemoveWebContentsObserver(old_contents);
@@ -406,11 +410,11 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
   UpdateAppItemState(new_contents, false /*remove*/);
   UpdateBrowserItemState();
 
-  if (browser && IsAppBrowserInShelf(browser) &&
-      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    shelf_controller_->SetAppStatus(
-        web_app::GetAppIdFromApplicationName(browser->app_name()),
-        ash::STATUS_RUNNING);
+  if (browser && IsAppBrowserInShelf(&browser->GetBrowser()) &&
+      multi_user_util::IsProfileFromActiveUser(
+          browser->GetBrowser().profile())) {
+    shelf_controller_->SetAppStatus(browser->GetAppId().value_or(std::string()),
+                                    ash::STATUS_RUNNING);
   }
 
   if (tab_strip_model->GetActiveWebContents() == new_contents) {
@@ -432,7 +436,8 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
   // (done by the web contents observer added by AddWebContentsObserver()).
   if (tab_strip_model->GetActiveWebContents() == contents &&
       !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
-    Browser* browser = chrome::FindBrowserWithTab(contents);
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
     SetShelfIDForBrowserWindowContents(browser, contents);
   }
 
@@ -464,9 +469,9 @@ void BrowserStatusMonitor::OnTabNavigationFinished(
   UpdateBrowserItemState();
 
   // Navigating may change the ShelfID associated with the WebContents.
-  Browser* browser = chrome::FindBrowserWithTab(contents);
-  if (browser &&
-      browser->tab_strip_model()->GetActiveWebContents() == contents) {
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
+  if (browser && browser->GetActiveWebContents() == contents) {
     SetShelfIDForBrowserWindowContents(browser, contents);
   }
 }
@@ -488,11 +493,9 @@ void BrowserStatusMonitor::RemoveWebContentsObserver(
 }
 
 void BrowserStatusMonitor::SetShelfIDForBrowserWindowContents(
-    Browser* browser,
+    ash::BrowserDelegate* browser,
     content::WebContents* web_contents) {
-  shelf_controller_->SetShelfIDForBrowserWindowContents(
-      ash::BrowserController::GetInstance()->GetDelegate(browser),
-      web_contents);
+  shelf_controller_->SetShelfIDForBrowserWindowContents(browser, web_contents);
 
   if (app_service_instance_helper_) {
     app_service_instance_helper_->OnSetShelfIDForBrowserWindowContents(
