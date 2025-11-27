@@ -82,7 +82,6 @@ function prepareGlobalValues(): void {
   window.MultiTapDetector = MultiTapDetector;
   window.Oobe = Oobe;
 
-  // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
   if (window.cr === undefined) {
     window.cr = {};
   }
