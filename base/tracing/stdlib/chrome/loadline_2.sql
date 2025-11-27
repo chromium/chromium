@@ -7,8 +7,8 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- Gets the presentation time of the first frame committed after ts
 -- in the renderer process with pid.
 CREATE PERFETTO FUNCTION _chrome_get_next_presentation_time_by_pid(
-    ts INT, pid INT)
-RETURNS INT
+    ts TIMESTAMP, pid LONG)
+RETURNS TIMESTAMP
 AS
 SELECT MIN(a.ts + a.dur) AS ts
 FROM process_slice s, ancestor_slice(s.id) a
