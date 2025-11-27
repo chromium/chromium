@@ -264,7 +264,8 @@ const CGFloat kFeatureRowIconSize = 20;
   return base::SysUTF8ToNSString(url.GetHost());
 }
 
-- (void)revokePermission:(PageActionMenuFeatureType)featureType {
+- (void)updatePermission:(BOOL)granted
+              forFeature:(PageActionMenuFeatureType)featureType {
   if (!_webState) {
     return;
   }
@@ -272,31 +273,20 @@ const CGFloat kFeatureRowIconSize = 20;
   web::Permission permission;
   switch (featureType) {
     case PageActionMenuCameraPermission:
-      RecordPageActionMenuFeatureRowUsed(
-          IOSPageActionMenuFeatureType::kCameraPermission);
       permission = web::PermissionCamera;
       break;
     case PageActionMenuMicrophonePermission:
-      RecordPageActionMenuFeatureRowUsed(
-          IOSPageActionMenuFeatureType::kMicrophonePermission);
       permission = web::PermissionMicrophone;
       break;
-    case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
-    case PageActionMenuPriceTracking:
-      CHECK(false)
-          << "revokePermission called with non-permission feature type: "
-          << featureType;
+    default:
+      return;
   }
 
-  _webState->SetStateForPermission(web::PermissionStateBlocked, permission);
-
-  // Post task to ensure WebState has processed the permission change.
-  __weak PageActionMenuMediator* weakSelf = self;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf.consumer updateFeatureRowsAvailability];
-      }));
+  if (granted) {
+    _webState->SetStateForPermission(web::PermissionStateAllowed, permission);
+  } else {
+    _webState->SetStateForPermission(web::PermissionStateBlocked, permission);
+  }
 }
 
 - (NSArray<PageActionMenuFeature*>*)activeFeatures {
@@ -355,7 +345,9 @@ const CGFloat kFeatureRowIconSize = 20;
                        icon:CustomSymbolWithPointSize(kCameraFillSymbol,
                                                       kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
-    cameraFeature.toggleState = YES;
+    web::PermissionState state =
+        _webState->GetStateForPermission(web::PermissionCamera);
+    cameraFeature.toggleState = (state == web::PermissionStateAllowed);
     [features addObject:cameraFeature];
   }
 
@@ -370,7 +362,9 @@ const CGFloat kFeatureRowIconSize = 20;
                        icon:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
                                                        kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
-    micFeature.toggleState = YES;
+    web::PermissionState state =
+        _webState->GetStateForPermission(web::PermissionMicrophone);
+    micFeature.toggleState = (state == web::PermissionStateAllowed);
     [features addObject:micFeature];
   }
   // Price tracking feature.
@@ -424,8 +418,6 @@ const CGFloat kFeatureRowIconSize = 20;
         ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
         CONTENT_SETTING_ALLOW);
   }
-
-  [self.consumer updateFeatureRowsAvailability];
 }
 
 - (void)revertTranslation {
@@ -444,8 +436,6 @@ const CGFloat kFeatureRowIconSize = 20;
   translateClient->GetTranslateManager()->RevertTranslation();
 
   [self updateTranslateInfobarAcceptedState:NO];
-
-  [self.consumer updateFeatureRowsAvailability];
 }
 
 #pragma mark - CRWWebStateObserver

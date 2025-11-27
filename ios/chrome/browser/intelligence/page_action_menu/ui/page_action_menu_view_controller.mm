@@ -91,9 +91,6 @@ const CGFloat kFeatureRowHorizontalPadding = 16;
 // The vertical padding within feature rows.
 const CGFloat kFeatureRowVerticalPadding = 12;
 
-// The animation duration for permissions feature row change.
-const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
-
 // The width for the veritical feature row divider.
 const CGFloat kDividerWidth = 1.0;
 
@@ -201,19 +198,6 @@ const CGFloat kDividerWidth = 1.0;
 
 - (void)pageLoadStatusChanged {
   [self updateButton:_BWGButton enabled:[self.mutator isGeminiAvailable]];
-}
-
-- (void)updateFeatureRowsAvailability {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
-  [self rebuildFeatureRows];
-
-  // Animate the layout change.
-  [self.view setNeedsLayout];
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kPermissionsFeatureAnimationDuration
-                   animations:^{
-                     [weakSelf.view layoutIfNeeded];
-                   }];
 }
 
 #pragma mark - Private
@@ -968,7 +952,7 @@ const CGFloat kDividerWidth = 1.0;
   PageActionMenuFeatureType featureType =
       (PageActionMenuFeatureType)toggleSwitch.tag;
 
-  [self.mutator revokePermission:featureType];
+  [self.mutator updatePermission:toggleSwitch.isOn forFeature:featureType];
 }
 
 // Handles button taps for action-based features like translate and popup

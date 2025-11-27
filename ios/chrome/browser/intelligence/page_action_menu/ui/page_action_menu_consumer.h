@@ -13,9 +13,6 @@
 // Notifies the consumer that the page load status has changed.
 - (void)pageLoadStatusChanged;
 
-// Notifies the consumer to refresh feature rows based on current availability.
-- (void)updateFeatureRowsAvailability;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_CONSUMER_H_
