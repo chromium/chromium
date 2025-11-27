@@ -74,6 +74,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   OmniboxPresentationContext _presentationContext;
   /// Whether to force disable the return key.
   BOOL _forceDisableReturnKey;
+  // The default and custom placeholder texts to be shown when there is no other
+  // text present.
+  NSString* _customPlaceholderText;
+  NSString* _defaultPlaceholderText;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -900,6 +904,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark - Private methods
 
+- (void)updatePlaceholder {
+  if (_customPlaceholderText) {
+    [self setPlaceholder:_customPlaceholderText];
+    return;
+  }
+
+  [self setPlaceholder:_defaultPlaceholderText];
+}
+
 #pragma mark Font
 
 /// Font to use in regular x regular size class. If not set, the regular font is
@@ -1134,6 +1147,21 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return self;
 }
 
+- (void)forceDisableReturnKey:(BOOL)forceDisable {
+  _forceDisableReturnKey = forceDisable;
+  [self reloadInputViews];
+}
+
+- (void)setDefaultPlaceholderText:(NSString*)defaultPlaceholderText {
+  _defaultPlaceholderText = [defaultPlaceholderText copy];
+  [self updatePlaceholder];
+}
+
+- (void)setCustomPlaceholderText:(NSString*)customPlaceholderText {
+  _customPlaceholderText = [customPlaceholderText copy];
+  [self updatePlaceholder];
+}
+
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidChange:(id)sender {
@@ -1166,11 +1194,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];
-}
-
-- (void)forceDisableReturnKey:(BOOL)forceDisable {
-  _forceDisableReturnKey = forceDisable;
-  [self reloadInputViews];
 }
 
 @end

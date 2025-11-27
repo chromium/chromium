@@ -1386,6 +1386,9 @@
       <message name="IDS_IOS_COMPOSEBOX_AIM_ACTION" desc="The contextual menu option for starting AI Mode. [iOS only].">
         AI Mode
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER" desc="The placeholder to show when AIM is enabled and no user text was added.">
+        Ask Google anything
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_CAMERA_ACTION" desc="The contextual menu option for opening the camera. [iOS only].">
         Camera
       </message>

@@ -371,7 +371,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     return;
   }
   _placeholderText = placeholderText;
-  self.omnibox.textInput.placeholder = placeholderText;
+  [self.omnibox.textInput setDefaultPlaceholderText:placeholderText];
   self.searchHintLabel.text = placeholderText;
 }
 
@@ -394,7 +394,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
             textInputTint:color
                  iconTint:color
       presentationContext:OmniboxPresentationContext::kNTPHeader];
-  omnibox.textInput.placeholder = self.placeholderText;
+  [omnibox.textInput setDefaultPlaceholderText:self.placeholderText];
   [omnibox.textInput setText:@""];
   omnibox.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:omnibox];

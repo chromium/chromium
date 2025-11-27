@@ -131,7 +131,7 @@ using base::UserMetricsAction;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.textInput.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 
   [_clearButton addTarget:self
                    action:@selector(clearButtonPressed)
@@ -232,12 +232,12 @@ using base::UserMetricsAction;
 
 - (void)prepareOmniboxForScribble {
   [self.mutator prepareForScribble];
-  self.textInput.placeholder = nil;
+  [self.textInput setDefaultPlaceholderText:nil];
 }
 
 - (void)cleanupOmniboxAfterScribble {
   [self.mutator cleanupAfterScribble];
-  self.textInput.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
 #pragma mark - OmniboxTextInputDelegate
@@ -456,7 +456,7 @@ using base::UserMetricsAction;
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
   self.view.thumbnailButton.selected = NO;
-  self.textInput.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
   [self updateReturnKeyAvailability];
 }
 
@@ -473,7 +473,7 @@ using base::UserMetricsAction;
   }
   _searchOrTypeURLPlaceholderText = [placeholderText copy];
 
-  self.textInput.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
 - (void)setSearchOnlyPlaceholderText:(NSString*)placeholderText {
@@ -481,7 +481,7 @@ using base::UserMetricsAction;
     return;
   }
   _searchOnlyPlaceholderText = [placeholderText copy];
-  self.textInput.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
 #pragma mark - EditViewAnimatee

@@ -337,6 +337,10 @@ UIButton* CreateClearButton() {
   [_textInputView forceDisableReturnKey:forceDisable];
 }
 
+- (void)setCustomPlaceholderText:(NSString*)customPlaceholderText {
+  [_textInputView setCustomPlaceholderText:[customPlaceholderText copy]];
+}
+
 - (void)updateLeadingConstraint {
   _textInputViewLeadingConstraint.active = NO;
 

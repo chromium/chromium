@@ -514,6 +514,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
     return;
   }
   _AIModeEnabled = AIModeEnabled;
+  [self updatePlaceholderText];
   [self updateAIMButtonAppearance];
   [self updatePlusButtonItems];
   [self.mutator setAIModeEnabled:_AIModeEnabled];
@@ -635,6 +636,18 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   } else {
     [_aimButtonXIndicator removeFromSuperview];
     _aimButtonXIndicator = nil;
+  }
+}
+
+// Updates the placeholder text based on the current operating mode of the
+// composebox.
+- (void)updatePlaceholderText {
+  if (_AIModeEnabled) {
+    [_editView
+        setCustomPlaceholderText:
+            l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER)];
+  } else {
+    [_editView setCustomPlaceholderText:nil];
   }
 }
 

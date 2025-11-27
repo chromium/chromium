@@ -70,6 +70,11 @@ using enum OmniboxKeyboardAction;
 
   /// Whether to force disable the return key.
   BOOL _forceDisableReturnKey;
+
+  // The default and custom placeholder texts to be shown when there is no other
+  // text present.
+  NSString* _customPlaceholderText;
+  NSString* _defaultPlaceholderText;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -487,10 +492,6 @@ using enum OmniboxKeyboardAction;
   [super setAttributedText:mutableText];
 }
 
-- (void)setPlaceholder:(NSString*)placeholder {
-  self.placeholderLabel.text = placeholder;
-}
-
 - (void)setText:(NSString*)text {
   NSAttributedString* as = [[NSAttributedString alloc] initWithString:text];
   [self setTextInternal:as autocompleteLength:0];
@@ -906,6 +907,15 @@ using enum OmniboxKeyboardAction;
 
 #pragma mark - Private methods
 
+- (void)updatePlaceholder {
+  if (_customPlaceholderText) {
+    self.placeholderLabel.text = _customPlaceholderText;
+    return;
+  }
+
+  self.placeholderLabel.text = _defaultPlaceholderText;
+}
+
 #pragma mark Font
 
 /// Font to use in regular x regular size class. If not set, the regular font is
@@ -1149,6 +1159,21 @@ using enum OmniboxKeyboardAction;
   return self.placeholderLabel.text;
 }
 
+- (void)forceDisableReturnKey:(BOOL)forceDisable {
+  _forceDisableReturnKey = forceDisable;
+  [self reloadInputViews];
+}
+
+- (void)setDefaultPlaceholderText:(NSString*)defaultPlaceholderText {
+  _defaultPlaceholderText = [defaultPlaceholderText copy];
+  [self updatePlaceholder];
+}
+
+- (void)setCustomPlaceholderText:(NSString*)customPlaceholderText {
+  _customPlaceholderText = [customPlaceholderText copy];
+  [self updatePlaceholder];
+}
+
 #pragma mark - UITextViewDelegate
 
 - (void)textViewDidChange:(UITextView*)textView {
@@ -1193,11 +1218,6 @@ using enum OmniboxKeyboardAction;
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];
-}
-
-- (void)forceDisableReturnKey:(BOOL)forceDisable {
-  _forceDisableReturnKey = forceDisable;
-  [self reloadInputViews];
 }
 
 @end
