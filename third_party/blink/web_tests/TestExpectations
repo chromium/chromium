@@ -9933,6 +9933,7 @@ crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
 
 crbug.com/414792736 http/tests/devtools/components/utilities-highlight-results.js [ Failure Pass ]
+crbug.com/414792736 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
