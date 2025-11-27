@@ -7,8 +7,22 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class CredentialImportCoordinator;
+
+// Delegate for CredentialImportCoordinator.
+@protocol CredentialImportCoordinatorDelegate
+
+// Called when the import coordinator should be stopped.
+- (void)credentialImportCoordinatorDidFinish:
+    (CredentialImportCoordinator*)coordinator;
+
+@end
+
 // Coordinator for the credential exchange import flow.
 @interface CredentialImportCoordinator : ChromeCoordinator
+
+// Delegate for this coordinator.
+@property(nonatomic, weak) id<CredentialImportCoordinatorDelegate> delegate;
 
 // `UUID` is a token received from the OS during app launch, required to be
 // passed back to the OS to receive the credential data.

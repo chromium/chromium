@@ -79,7 +79,7 @@ constexpr int kExpectedItemCount = 2;
 
 // Invoked when the user taps the "Cancel" button.
 - (void)cancelButtonTapped {
-  // TODO(crbug.com/450982128): Handle button taps.
+  [self.delegate didTapDismissButton];
 }
 
 #pragma mark - Private

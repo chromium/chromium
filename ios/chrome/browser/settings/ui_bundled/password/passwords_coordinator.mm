@@ -54,6 +54,7 @@
 
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
+    CredentialImportCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordCheckupCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
@@ -142,6 +143,7 @@
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             UUID:UUID];
+  _credentialImportCoordinator.delegate = self;
   [_credentialImportCoordinator start];
 }
 
@@ -235,8 +237,7 @@
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
 
-  [_credentialImportCoordinator stop];
-  _credentialImportCoordinator = nil;
+  [self dismissCredentialImportCoordinator];
 
   [self.reauthCoordinator stop];
   self.reauthCoordinator.delegate = nil;
@@ -546,6 +547,14 @@
   [self dismissTrustedVaultReauthenticationCoordinator];
 }
 
+#pragma mark - CredentialImportCoordinatorDelegate
+
+- (void)credentialImportCoordinatorDidFinish:
+    (CredentialImportCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _credentialImportCoordinator);
+  [self dismissCredentialImportCoordinator];
+}
+
 #pragma mark - Private
 
 // Returns a coordinator that displays the Trusted Vault reauthentication
@@ -629,6 +638,13 @@
   [_trustedVaultReauthenticationCoordinator stop];
   _trustedVaultReauthenticationCoordinator.delegate = nil;
   _trustedVaultReauthenticationCoordinator = nil;
+}
+
+// Stops the credential import coordinator.
+- (void)dismissCredentialImportCoordinator {
+  [_credentialImportCoordinator stop];
+  _credentialImportCoordinator.delegate = nil;
+  _credentialImportCoordinator = nil;
 }
 
 @end

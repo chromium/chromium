@@ -99,6 +99,14 @@
   _navigationController.navigationBarHidden = NO;
 }
 
+- (void)stop {
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _mediator = nil;
+  _navigationController = nil;
+  _viewController = nil;
+}
+
 #pragma mark - CredentialImportMediatorDelegate
 
 - (void)showImportScreen {
@@ -165,9 +173,13 @@
     case CredentialImportStage::kImporting:
       NOTREACHED() << "Primary action button should be disabled";
     case CredentialImportStage::kImported:
-      // TODO(crbug.com/450982128): Dismiss coordinator.
+      [self.delegate credentialImportCoordinatorDidFinish:self];
       break;
   }
+}
+
+- (void)didTapDismissButton {
+  [self.delegate credentialImportCoordinatorDidFinish:self];
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
