@@ -199,8 +199,6 @@ class KeywordsConsumer
 }  // namespace
 
 // TemplateURLServiceSyncTest -------------------------------------------------
-// TODO(crbug.com/40276119): Remove this test when the default search provider
-// preference stops being synced.
 class TemplateURLServiceSyncTest : public testing::Test {
  public:
   typedef TemplateURLService::SyncDataMap SyncDataMap;
