@@ -5,7 +5,10 @@
 #include "chrome/browser/devtools/remote_debugging_server.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/common/pref_names.h"
@@ -20,6 +23,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,11 +56,6 @@ class RemoteDebuggingServerTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
     base::CommandLine::ForCurrentProcess()->InitFromArgv({});
   }
 
@@ -64,7 +63,6 @@ class RemoteDebuggingServerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList feature_list_;
-  NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 TEST_F(RemoteDebuggingServerTest, StartsAndStopsWithPref) {
@@ -76,14 +74,21 @@ TEST_F(RemoteDebuggingServerTest, StartsAndStopsWithPref) {
   server->StartHttpServerInApprovalMode(local_state);
   testing::Mock::VerifyAndClearExpectations(server.get());
 
-  EXPECT_CALL(*server, StartHttpServer).Times(1);
+  base::RunLoop start_run_loop;
+  EXPECT_CALL(*server, StartHttpServer)
+      .WillOnce(testing::WithoutArgs(
+          testing::Invoke(&start_run_loop, &base::RunLoop::Quit)));
   local_state->SetUserPref(prefs::kDevToolsRemoteDebuggingEnabled,
                            std::make_unique<base::Value>(true));
+  start_run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(server.get());
 
-  EXPECT_CALL(*server, StopHttpServer).Times(1);
+  base::RunLoop stop_run_loop;
+  EXPECT_CALL(*server, StopHttpServer)
+      .WillOnce(testing::Invoke(&stop_run_loop, &base::RunLoop::Quit));
   local_state->SetUserPref(prefs::kDevToolsRemoteDebuggingEnabled,
                            std::make_unique<base::Value>(false));
+  stop_run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(server.get());
 }
 
@@ -99,6 +104,11 @@ TEST_F(RemoteDebuggingServerTest, DoesNotStartWhenFeatureDisabled) {
 }
 
 TEST_F(RemoteDebuggingServerTest, DoesNotStartWhenDisallowedByPolicy) {
+  NiceMock<policy::MockConfigurationPolicyProvider> policy_provider;
+  policy_provider.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
+  policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&policy_provider);
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   local_state->SetManagedPref(prefs::kDevToolsRemoteDebuggingAllowed,
@@ -106,4 +116,52 @@ TEST_F(RemoteDebuggingServerTest, DoesNotStartWhenDisallowedByPolicy) {
   auto server = RemoteDebuggingServer::GetInstance(local_state);
   EXPECT_EQ(server.error(),
             RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy);
+  policy::BrowserPolicyConnector::SetPolicyProviderForTesting(nullptr);
+}
+
+TEST_F(RemoteDebuggingServerTest, GetPortFromUserDataDir) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath active_port_file =
+      temp_dir.GetPath().Append(content::kDevToolsActivePortFileName);
+
+  // Test with a valid port file.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "12345"));
+  EXPECT_EQ(12345,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with an empty port file.
+  ASSERT_TRUE(base::WriteFile(active_port_file, ""));
+  EXPECT_EQ(RemoteDebuggingServer::kDefaultDevToolsPort,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with a malformed port file.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "hello"));
+  EXPECT_EQ(RemoteDebuggingServer::kDefaultDevToolsPort,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with a port file that has extra content.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "12345\nfoo"));
+  EXPECT_EQ(12345,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with a negative port.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "-1"));
+  EXPECT_EQ(RemoteDebuggingServer::kDefaultDevToolsPort,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with a valid port at the upper boundary.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "65535"));
+  EXPECT_EQ(65535,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with an out of bounds port.
+  ASSERT_TRUE(base::WriteFile(active_port_file, "65536"));
+  EXPECT_EQ(RemoteDebuggingServer::kDefaultDevToolsPort,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
+
+  // Test with no port file.
+  ASSERT_TRUE(base::DeleteFile(active_port_file));
+  EXPECT_EQ(RemoteDebuggingServer::kDefaultDevToolsPort,
+            RemoteDebuggingServer::GetPortFromUserDataDir(temp_dir.GetPath()));
 }

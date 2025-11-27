@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -74,6 +75,12 @@ CONTENT_EXPORT extern const int kPluginOomScore;
 // by res/ directories. E.g.: res/values-sw600dp/values.xml
 CONTENT_EXPORT extern const int kAndroidMinimumTabletWidthDp;
 #endif
+
+// The name of the well-known file in the user data directory that contains the
+// port number of the remote debugging server for automation tools
+// such as ChromeDriver or Telemetry to read.
+CONTENT_EXPORT extern const base::FilePath::CharType
+    kDevToolsActivePortFileName[];
 
 }  // namespace content
 

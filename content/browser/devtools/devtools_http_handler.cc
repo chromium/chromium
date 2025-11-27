@@ -46,6 +46,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/io_buffer.h"
@@ -70,9 +71,6 @@ extern const int kCcompressedProtocolJSON;
 namespace content {
 
 namespace {
-
-const base::FilePath::CharType kDevToolsActivePortFileName[] =
-    FILE_PATH_LITERAL("DevToolsActivePort");
 
 const char kDevToolsHandlerThreadName[] = "Chrome_DevToolsHandlerThread";
 

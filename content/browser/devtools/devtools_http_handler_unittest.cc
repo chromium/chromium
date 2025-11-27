@@ -32,6 +32,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_devtools_agent_host.h"
@@ -57,8 +58,6 @@ using ::testing::Not;
 using ::testing::Return;
 
 const uint16_t kDummyPort = 4321;
-const base::FilePath::CharType kDevToolsActivePortFileName[] =
-    FILE_PATH_LITERAL("DevToolsActivePort");
 
 class DummyServerSocket : public net::ServerSocket {
  public:
