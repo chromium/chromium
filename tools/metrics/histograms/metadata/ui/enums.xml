@@ -103,6 +103,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other Mode is Default"/>
 </enum>
 
+<!-- LINT.IfChange(DefaultBrowserStateValidationResult) -->
+
+<enum name="DefaultBrowserStateValidationResult">
+  <summary>
+    The result of comparing a secondary browser state checker's result to the
+    standard API used for determing default browser state.
+  </summary>
+  <int value="0" label="TruePositive"/>
+  <int value="1" label="TrueNegative"/>
+  <int value="2" label="FalsePositive"/>
+  <int value="3" label="FalseNegative"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_manager.cc:DefaultBrowserStateValidationResult) -->
+
 <!-- LINT.IfChange(DefaultBrowserUserInteraction) -->
 
 <enum name="DefaultBrowserUserInteraction">

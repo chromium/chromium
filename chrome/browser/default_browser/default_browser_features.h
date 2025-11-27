@@ -14,6 +14,10 @@ bool IsDefaultBrowserFrameworkEnabled();
 
 BASE_DECLARE_FEATURE(kDefaultBrowserFramework);
 
+// Enables the framework to perform additional checks when detecting default
+// browser.
+BASE_DECLARE_FEATURE(kPerformDefaultBrowserCheckValidations);
+
 }  // namespace default_browser
 
 #endif  // CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_FEATURES_H_

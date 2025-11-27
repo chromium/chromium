@@ -12,4 +12,7 @@ bool IsDefaultBrowserFrameworkEnabled() {
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace default_browser

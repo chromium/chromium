@@ -18621,6 +18621,21 @@
             ]
         }
     ],
+    "PerformDefaultBrowserCheckValidations": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PerformDefaultBrowserCheckValidations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PerformanceControlsHatsStudy": [
         {
             "platforms": [

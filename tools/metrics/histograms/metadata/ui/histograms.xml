@@ -363,6 +363,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.{DefaultBrowserStateValidator}Result"
+    enum="DefaultBrowserStateValidationResult" expires_after="2026-11-25">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Only logged on Windows.
+
+    Logs a comparison of the default browser state check result using the
+    standard Win API compared to {DefaultBrowserStateValidator}. Results are
+    relative to the Win API checker; e.g., a false-positive means the Win API
+    detected the default browser but the alternative validator did not.
+  </summary>
+  <token key="DefaultBrowserStateValidator">
+    <variant name="HttpProgIdAssocValidation"
+        summary="AssocQueryString to get the HTTP default client's program ID"/>
+  </token>
+</histogram>
+
 <histogram
     name="InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintIn{VisibleMode}"
     units="ms" expires_after="2026-04-30">

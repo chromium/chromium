@@ -111,7 +111,8 @@ void GlobalFeatures::InitCoreFeatures() {
   whats_new_registry_ = CreateWhatsNewRegistry();
 
   default_browser_manager_ =
-      std::make_unique<default_browser::DefaultBrowserManager>();
+      std::make_unique<default_browser::DefaultBrowserManager>(
+          default_browser::DefaultBrowserManager::CreateDefaultDelegate());
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();

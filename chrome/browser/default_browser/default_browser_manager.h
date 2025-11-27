@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_MANAGER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -24,11 +25,31 @@ using DefaultBrowserCheckCompletionCallback =
 // default-browser utilities.
 class DefaultBrowserManager {
  public:
-  DefaultBrowserManager();
+  // Delegate for performing shell-dependent operations.
+  class ShellDelegate {
+   public:
+    virtual ~ShellDelegate() = 0;
+
+    // Asynchronously checks whether the browser is the default.
+    virtual void StartCheckIsDefault(
+        shell_integration::DefaultWebClientWorkerCallback callback) = 0;
+
+#if BUILDFLAG(IS_WIN)
+    // Asynchronously fetches the program ID of the default client for the
+    // given `scheme`.
+    virtual void StartCheckDefaultClientProgId(
+        const std::string& scheme,
+        base::OnceCallback<void(const std::u16string&)> callback) = 0;
+#endif  // BUILDFLAG(IS_WIN)
+  };
+
+  explicit DefaultBrowserManager(std::unique_ptr<ShellDelegate> shell_delegate);
   ~DefaultBrowserManager();
 
   DefaultBrowserManager(const DefaultBrowserManager&) = delete;
   DefaultBrowserManager& operator=(const DefaultBrowserManager&) = delete;
+
+  static std::unique_ptr<ShellDelegate> CreateDefaultDelegate();
 
   // Selects an appropriate setter, and create and returns a unique pointer to a
   // controller instance.
@@ -36,8 +57,7 @@ class DefaultBrowserManager {
       DefaultBrowserEntrypointType ui_entrypoint);
 
   // Utility method to check the current default browser state asynchronously.
-  static void GetDefaultBrowserState(
-      DefaultBrowserCheckCompletionCallback callback);
+  void GetDefaultBrowserState(DefaultBrowserCheckCompletionCallback callback);
 
   // Registers a callback that will be invoked on the manager thread whenever
   // the system's default browser for HTTP/HTTPS protocols changes. The returned
@@ -50,6 +70,14 @@ class DefaultBrowserManager {
       base::RepeatingClosure callback);
 
  private:
+  void OnDefaultBrowserCheckResult(
+      default_browser::DefaultBrowserCheckCompletionCallback callback,
+      default_browser::DefaultBrowserState default_state);
+
+  // Delegate for handling shell operations, such as checking and setting
+  // default browser.
+  const std::unique_ptr<ShellDelegate> shell_delegate_;
+
   // The platform default browser change monitor that handles the low-level
   // logic for detecting when the system's default browser has changed.
   std::unique_ptr<DefaultBrowserMonitor> monitor_;
