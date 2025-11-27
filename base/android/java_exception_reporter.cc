@@ -109,4 +109,4 @@ static void JNI_JavaExceptionReporter_ReportJavaStackTrace(
 }  // namespace android
 }  // namespace base
 
-DEFINE_JNI_FOR_JavaExceptionReporter()
+DEFINE_JNI(JavaExceptionReporter)

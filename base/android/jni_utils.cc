@@ -45,4 +45,4 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
 }  // namespace android
 }  // namespace base
 
-DEFINE_JNI_FOR_JNIUtils()
+DEFINE_JNI(JNIUtils)

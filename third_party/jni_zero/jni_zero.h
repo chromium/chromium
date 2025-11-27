@@ -28,6 +28,9 @@ extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jstring>
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject>
     g_empty_list;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject> g_empty_map;
+
+#define DEFINE_JNI(className) DEFINE_JNI_FOR_##className()
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_JNI_ZERO_H_

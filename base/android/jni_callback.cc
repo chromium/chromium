@@ -142,4 +142,4 @@ static void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
 
 }  // namespace base::android
 
-DEFINE_JNI_FOR_JniCallbackImpl()
+DEFINE_JNI(JniCallbackImpl)

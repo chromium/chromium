@@ -55,4 +55,4 @@ AutofillAddressEditorUiInfoAndroid::FromJavaAutofillAddressEditorUIInfo(
 
 }  // namespace autofill
 
-DEFINE_JNI_FOR_AutofillAddressEditorUiInfo()
+DEFINE_JNI(AutofillAddressEditorUiInfo)

@@ -38,4 +38,4 @@ PasswordCredentialResponse::FromJavaPasswordCredentialResponse(
 
 }  // namespace credential_management
 
-DEFINE_JNI_FOR_PasswordCredentialResponse()
+DEFINE_JNI(PasswordCredentialResponse)
