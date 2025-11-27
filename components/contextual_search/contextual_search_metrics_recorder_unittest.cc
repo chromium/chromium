@@ -398,6 +398,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      FileUploadStatus::kUploadFailed),
                      testing::Values(lens::MimeType::kPdf,
                                      lens::MimeType::kImage,
+                                     lens::MimeType::kAnnotatedPageContent,
                                      lens::MimeType::kUnknown)));
 
 class MetricsRecorderFileValidationTest
@@ -453,6 +454,7 @@ INSTANTIATE_TEST_SUITE_P(
                         FileUploadErrorType::kImageProcessingError),
         testing::Values(lens::MimeType::kPdf,
                         lens::MimeType::kImage,
+                        lens::MimeType::kAnnotatedPageContent,
                         lens::MimeType::kUnknown)));
 
 class MetricsRecorderFileDeletionTest
@@ -495,6 +497,7 @@ INSTANTIATE_TEST_SUITE_P(
     MetricsRecorderFileDeletionTest,
     testing::Combine(testing::Values(lens::MimeType::kPdf,
                                      lens::MimeType::kImage,
+                                     lens::MimeType::kAnnotatedPageContent,
                                      lens::MimeType::kUnknown),
                      testing::Values(FileUploadStatus::kNotUploaded,
                                      FileUploadStatus::kProcessing,

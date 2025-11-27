@@ -135,6 +135,28 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
     return;
   }
 
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    auto mime_type = contextual_input_data->primary_content_type.value_or(
+        lens::MimeType::kUnknown);
+    size_t content_size = 0;
+    if (contextual_input_data->context_input.has_value()) {
+      for (const auto& input : *contextual_input_data->context_input) {
+        content_size += input.bytes_.size();
+      }
+    }
+
+    if (contextual_input_data->viewport_screenshot_bytes.has_value()) {
+      content_size += contextual_input_data->viewport_screenshot_bytes->size();
+    }
+
+    if (contextual_input_data->viewport_screenshot.has_value()) {
+      content_size +=
+          contextual_input_data->viewport_screenshot->computeByteSize();
+    }
+
+    metrics_recorder->RecordFileSizeMetric(mime_type, content_size);
+  }
+
   if (auto* controller = GetController()) {
     controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), image_options);
