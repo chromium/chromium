@@ -829,8 +829,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Not enrolled"/>
   <int value="6" label="Security update required"/>
   <int value="7" label="(obsolete) Android version not supported"/>
-  <int value="8" label="Biometric auth is mandatory"/>
-  <int value="9" label="Biometric auth is mandatory, but has an error"/>
+  <int value="8" label="(obsolete) Biometric auth is mandatory"/>
+  <int value="9"
+      label="(obsolete) Biometric auth is mandatory, but has an error"/>
 </enum>
 
 <enum name="BooleanGranted">

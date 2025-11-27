@@ -474,7 +474,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &notifications::features::kUseChimeAndroidSdk,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &paint_preview::kPaintPreviewDemo,
-    &password_manager::features::kBiometricAuthIdentityCheck,
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kPasswordFormGroupedAffiliations,
     &payments::facilitated::kFacilitatedPaymentsEnableA2APayment,

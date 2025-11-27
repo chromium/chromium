@@ -1168,21 +1168,6 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
 
-// Test that `IsReauthBeforeFillingRequired` always returns true for mandatory
-// biometric auth.
-TEST_F(ChromePasswordManagerClientTest, MandatoryBiometricEnabled) {
-  // Authentication is always available for automotive.
-  if (base::android::device_info::is_automotive()) {
-    GTEST_SKIP();
-  }
-  base::test::ScopedFeatureList enabled_features(
-      password_manager::features::kBiometricAuthIdentityCheck);
-  device_reauth::MockDeviceAuthenticator authenticator;
-  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
-      .WillByDefault(Return(BiometricStatus::kRequired));
-  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
-}
-
 #else
 // Test that authentication is not possible on other platforms.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuth) {

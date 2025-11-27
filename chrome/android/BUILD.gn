@@ -1100,7 +1100,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/data_sharing:junit",
       "//chrome/browser/data_sharing:recent_activity_junit_tests",
       "//chrome/browser/device:junit",
-      "//chrome/browser/device_reauth/android:junit",
       "//chrome/browser/download/android:junit_tests",
       "//chrome/browser/download/internal/android:junit",
       "//chrome/browser/educational_tip:junit",

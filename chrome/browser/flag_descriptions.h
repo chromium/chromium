@@ -5247,13 +5247,6 @@ inline constexpr char kBackgroundNotPerceptibleBindingDescription[] =
     "If enabled, not perceptible binding put processes to the background cpu "
     "cgroup";
 
-inline constexpr char kBiometricAuthIdentityCheckName[] =
-    "Enables android identity check for eligible features";
-inline constexpr char kBiometricAuthIdentityCheckDescription[] =
-    "The feature makes biometric reauthentication mandatory before passwords "
-    "filling or before other actions that are or should be protected by "
-    "biometric checks.";
-
 inline constexpr char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 inline constexpr char kBoardingPassDetectorDescription[] =
     "Enable Boarding Pass Detector";

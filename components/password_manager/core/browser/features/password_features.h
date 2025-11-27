@@ -202,12 +202,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
-#if BUILDFLAG(IS_ANDROID)
-// The feature flag for the Identity Check feature. The feature makes biometric
-// authentication mandatory before password filling in untrusted locations.
-BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Improves PSL matching capabilities by utilizing PSL-extension list from
 // affiliation service. It fixes problem with incorrect password suggestions on
 // websites like slack.com.

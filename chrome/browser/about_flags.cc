@@ -11518,14 +11518,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"biometric-auth-identity-check",
-     flag_descriptions::kBiometricAuthIdentityCheckName,
-     flag_descriptions::kBiometricAuthIdentityCheckDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kBiometricAuthIdentityCheck)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
      flag_descriptions::
          kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName,

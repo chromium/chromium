@@ -271,7 +271,6 @@ MandatoryReauthManager::GetAuthenticationMethod() {
   }
 #if BUILDFLAG(IS_ANDROID)
   switch (device_authenticator_->GetBiometricAvailabilityStatus()) {
-    case BiometricStatus::kRequired:
     case BiometricStatus::kBiometricsAvailable:
       return MandatoryReauthAuthenticationMethod::kBiometric;
     case BiometricStatus::kOnlyLskfAvailable:

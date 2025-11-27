@@ -723,8 +723,6 @@ bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
       "CanAuthenticateWithBiometricOrScreenLock",
       biometric_status != device_reauth::BiometricStatus::kUnavailable);
   switch (biometric_status) {
-    case device_reauth::BiometricStatus::kRequired:
-      return true;
     case device_reauth::BiometricStatus::kBiometricsAvailable:
     case device_reauth::BiometricStatus::kOnlyLskfAvailable:
       return base::FeatureList::IsEnabled(

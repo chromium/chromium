@@ -175,10 +175,6 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kBiometricAuthIdentityCheck, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kMarkAllCredentialsAsLeaked, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

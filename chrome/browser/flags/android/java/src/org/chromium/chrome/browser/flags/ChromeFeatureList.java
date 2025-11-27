@@ -305,7 +305,6 @@ public abstract class ChromeFeatureList {
             "BackgroundThreadPoolFieldTrial";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BCIV_BOTTOM_CONTROLS = "AndroidBcivBottomControls";
-    public static final String BIOMETRIC_AUTH_IDENTITY_CHECK = "BiometricAuthIdentityCheck";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
