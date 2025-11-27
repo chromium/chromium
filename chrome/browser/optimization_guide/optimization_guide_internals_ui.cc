@@ -99,7 +99,6 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
 
   // Get the client ids for the compose and tab organization feature for the
   // past 28 days to show on chrome://optimization-guide-internals.
-  // TODO(b/308642692): Add other features client id as requested.
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
   // Initialize time outside to have it change when generating the client ids
