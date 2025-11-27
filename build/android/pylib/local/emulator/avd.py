@@ -1357,7 +1357,8 @@ def _EnsureSystemSettings(device):
 
   # There is a change in soft keyboard behavior since Android 16.
   # See https://crbug.com/443782461 for more details.
-  if device.build_version_sdk >= version_codes.BAKLAVA:
+  # In Android 15, GBoard also shows the stylus onboarding.
+  if device.build_version_sdk >= version_codes.VANILLA_ICE_CREAM:
     logging.info('Update Gboard preferences.')
     with device.GboardPreferences() as gboard_prefs:
       # Disable the stylus.
