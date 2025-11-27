@@ -19,6 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
@@ -296,12 +298,16 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
   const GURL& options_page_url = ime->options_page_url();
   if (!options_page_url.is_empty()) {
     content::WebContents* web_contents = GetSenderWebContents();
-    if (web_contents) {
-      Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    ash::BrowserDelegate* browser =
+        web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                           web_contents)
+                     : nullptr;
+    if (browser) {
       content::OpenURLParams url_params(options_page_url, content::Referrer(),
                                         WindowOpenDisposition::SINGLETON_TAB,
                                         ui::PAGE_TRANSITION_LINK, false);
-      browser->OpenURL(url_params, /*navigation_handle_callback=*/{});
+      browser->GetBrowser().OpenURL(url_params,
+                                    /*navigation_handle_callback=*/{});
     }
   }
   return RespondNow(NoArguments());

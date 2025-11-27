@@ -7,11 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -82,15 +81,13 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
     // trigger a refresh of their WebKit preferences.
     tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
     tab_strip_tracker_->Init();
-  } else {
+  } else if (ash::BrowserController::GetInstance()) {
     // Manually trigger a refresh for the existing webcontents' preferences.
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [](BrowserWindowInterface* browser_window_interface) {
-          TabStripModel* const tab_strip_model =
-              browser_window_interface->GetTabStripModel();
-          for (int i = 0; i < tab_strip_model->count(); ++i) {
-            content::WebContents* web_contents =
-                tab_strip_model->GetWebContentsAt(i);
+    ash::BrowserController::GetInstance()->ForEachBrowser(
+        ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+        [&](ash::BrowserDelegate& browser) {
+          for (size_t i = 0; i < browser.GetWebContentsCount(); ++i) {
+            content::WebContents* web_contents = browser.GetWebContentsAt(i);
             DCHECK(web_contents);
 
             web_contents->NotifyPreferencesChanged();
@@ -111,7 +108,7 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
               controller.LoadOriginalRequestURL();
             }
           }
-          return true;
+          return ash::BrowserController::kContinueIteration;
         });
     tab_strip_tracker_ = nullptr;
   }
