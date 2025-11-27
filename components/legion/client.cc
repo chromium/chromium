@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -133,8 +134,12 @@ void Client::SendRequest(int32_t request_id,
                          base::TimeDelta timeout) {
   DVLOG(1) << "SendRequest started.";
 
+  auto wrapped_callback =
+      base::BindOnce(&Client::OnRequestCompleted, weak_factory_.GetWeakPtr(),
+                     std::move(callback), base::TimeTicks::Now());
+
   if (secure_channel_->Write(std::move(request))) {
-    pending_requests_.emplace(request_id, std::move(callback));
+    pending_requests_.emplace(request_id, std::move(wrapped_callback));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&Client::OnRequestTimeout, weak_factory_.GetWeakPtr(),
@@ -143,7 +148,7 @@ void Client::SendRequest(int32_t request_id,
   } else {
     // The channel is in a permanent failure state, so fail the current request.
     DVLOG(1) << "Secure channel write failed.";
-    std::move(callback).Run(base::unexpected(ErrorCode::kError));
+    std::move(wrapped_callback).Run(base::unexpected(ErrorCode::kError));
   }
 }
 
@@ -252,6 +257,24 @@ void Client::OnResponseReceived(
   auto callback = std::move(it->second);
   pending_requests_.erase(it);
 
+  std::move(callback).Run(std::move(result));
+}
+
+void Client::OnRequestCompleted(
+    OnRequestCompletedCallback callback,
+    base::TimeTicks start_time,
+    base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
+  const auto latency = base::TimeTicks::Now() - start_time;
+
+  if (result.has_value()) {
+    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Success",
+                                  latency);
+  } else if (result.error() == ErrorCode::kTimeout) {
+    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Timeout",
+                                  latency);
+  } else {
+    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Error", latency);
+  }
   std::move(callback).Run(std::move(result));
 }
 

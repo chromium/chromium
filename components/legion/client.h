@@ -38,8 +38,8 @@ class Client {
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
   // response. Otherwise, it will contain an `ErrorCode` error.
-  using OnRequestCompletedCallback =
-      base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
+  using OnRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
 
   // Callback for when a `SendTextRequest` operation completes.
   using OnTextRequestCompletedCallback =
@@ -97,6 +97,12 @@ class Client {
 
   // Handles responses from the secure channel.
   void OnResponseReceived(
+      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
+
+  // Wraps a request callback to record latency metrics upon completion.
+  void OnRequestCompleted(
+      OnRequestCompletedCallback callback,
+      base::TimeTicks start_time,
       base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
 
   // Handles a request timeout.

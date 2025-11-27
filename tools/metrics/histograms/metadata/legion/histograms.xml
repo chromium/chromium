@@ -17,6 +17,28 @@ reviewer.
 
 <histogram-configuration>
 
-<histograms/>
+<histograms>
+
+<histogram name="Legion.Client.RequestLatency.{Status}" units="ms"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of a request sent from the Legion Client. This is the
+    time from when the request is sent to when the response is received or the
+    request times out. Recorded for every request. The suffix on the histogram
+    name indicates the outcome: {Status}
+  </summary>
+  <token key="Status">
+    <variant name="Error" summary="The request failed with an error."/>
+    <variant name="Success" summary="The request was successful."/>
+    <variant name="Timeout" summary="The request timed out."/>
+  </token>
+</histogram>
+
+</histograms>
 
 </histogram-configuration>

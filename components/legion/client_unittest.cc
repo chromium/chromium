@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -118,6 +119,7 @@ class ClientTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Client> client_;
   FakeSecureChannelFactory factory_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test the successful request flow.
@@ -148,6 +150,9 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), kExpectedResponseText);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 1);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
 }
 
 // Test that SendRequest fails if SecureChannel::Write fails.
@@ -162,6 +167,9 @@ TEST_F(ClientTest, SendTextRequestWriteFails) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kError);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
 }
 
 // Test that a response with an unknown request_id is ignored.
@@ -197,6 +205,9 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
 
   // The future should not have been completed.
   EXPECT_FALSE(future.IsReady());
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
 }
 
 // Test that the secure channel is recreated after a permanent failure.
@@ -218,6 +229,7 @@ TEST_F(ClientTest, SecureChannelRecreation) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
 
   // A new channel should have been created.
   auto second_channel = factory_.secure_channel_;
@@ -249,6 +261,8 @@ TEST_F(ClientTest, SecureChannelRecreation) {
   const auto& second_result = second_future.Get();
   ASSERT_TRUE(second_result.has_value());
   EXPECT_EQ(second_result.value(), kExpectedResponseText);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 1);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
 }
 
 // Test that a request times out correctly.
@@ -270,6 +284,9 @@ TEST_F(ClientTest, SendTextRequestTimeout) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 1);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
 }
 
 // Test that a response received after a timeout is ignored.
@@ -312,6 +329,10 @@ TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
   // To ensure the task runner has a chance to run the callback (which should be
   // a no-op), we can run until idle.
   task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 1);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
 }
 
 // Test fixture for error conditions in SendTextRequest where the
@@ -337,6 +358,9 @@ TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), error_code);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -363,6 +387,19 @@ TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), param.expected_error);
+
+  // ErrorCode::kNoContent is a success from the client's perspective, but the
+  // response processing fails.
+  if (param.expected_error == ErrorCode::kNoContent) {
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
+                                       1);
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  } else {
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
+                                       0);
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+  }
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -418,6 +455,19 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), param.expected_error);
+
+  // ErrorCode::kNoResponse is a success from the client's perspective, but the
+  // response processing fails.
+  if (param.expected_error == ErrorCode::kNoResponse) {
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
+                                       1);
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+  } else {
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success",
+                                       0);
+    histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 1);
+  }
+  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
