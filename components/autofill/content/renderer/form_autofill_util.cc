@@ -2282,7 +2282,7 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
   return IsTextAreaElement(element) || IsTextInput(element);
 }
 
-bool IsAccessible(const blink::WebNode& node) {
+bool IsAccessible(const WebNode& node) {
   return node.IsConnected() && !node.IsInUserAgentShadowRoot();  // nocheck
 }
 
@@ -2899,7 +2899,7 @@ void TraverseDomForFourDigitCombinations(
 }
 
 std::string ExtractFinalCheckoutAmountFromDom(
-    const blink::WebDocument& document,
+    const WebDocument& document,
     std::string_view price_regex,
     std::string_view label_regex,
     size_t number_of_ancestor_levels_to_search) {
@@ -3029,15 +3029,14 @@ std::u16string GetAriaDescriptionForTesting(  // IN-TEST
 }
 
 void InferLabelForElementsForTesting(  // IN-TEST
-    base::span<const blink::WebFormControlElement> control_elements,
+    base::span<const WebFormControlElement> control_elements,
     std::vector<FormFieldData>& fields) {
   InferLabelForElements(control_elements, fields);
 }
 
-std::vector<blink::WebFormControlElement>
-GetOwnedFormControlsForTesting(  // IN-TEST
-    const blink::WebDocument& document,
-    const blink::WebFormElement& form_element) {
+std::vector<WebFormControlElement> GetOwnedFormControlsForTesting(  // IN-TEST
+    const WebDocument& document,
+    const WebFormElement& form_element) {
   return GetOwnedFormControls(document, form_element);
 }
 
