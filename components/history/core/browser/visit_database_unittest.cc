@@ -57,6 +57,7 @@ namespace {
       Field("consider_for_ntp_most_visited",
             &VisitRow::consider_for_ntp_most_visited,
             Eq(expected.consider_for_ntp_most_visited)),
+      Field("source", &VisitRow::source, Eq(expected.source)),
       Field("app_id", &VisitRow::app_id, Eq(expected.app_id)));
 }
 
@@ -1186,6 +1187,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
                                 ui::PAGE_TRANSITION_CHAIN_END),
       0, false, 0);
   ASSERT_TRUE(AddVisit(&visit_browsed, SOURCE_BROWSED));
+  visit_browsed.source = SOURCE_BROWSED;
 
   VisitRow visit_actor(
       kUrlId1, Time::Now() + base::Seconds(1), 0,
@@ -1194,6 +1196,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
                                 ui::PAGE_TRANSITION_CHAIN_END),
       0, false, 0);
   EXPECT_TRUE(AddVisit(&visit_actor, SOURCE_ACTOR));
+  visit_actor.source = SOURCE_ACTOR;
 
   QueryOptions options;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
@@ -1225,6 +1228,81 @@ TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
   ASSERT_EQ(2U, results.size());
   EXPECT_THAT(results[0], MatchesVisitInfo(visit_actor));
   EXPECT_THAT(results[1], MatchesVisitInfo(visit_browsed));
+}
+
+TEST_F(VisitDatabaseTest, GetVisibleVisits_SeparateBySource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
+
+  const URLID kUrlId = 1U;
+  const Time kDay = Time::Now().LocalMidnight() + base::Hours(1);
+
+  // 1. Add first user visit.
+  VisitRow visit_user1(kUrlId, kDay + base::Seconds(1), 0,
+                       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                                 ui::PAGE_TRANSITION_CHAIN_END),
+                       0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_user1, SOURCE_BROWSED));
+  visit_user1.source = SOURCE_BROWSED;
+
+  // 2. Add second user visit (duplicate for the day). Should be dropped.
+  VisitRow visit_user2(kUrlId, kDay + base::Seconds(2), 0,
+                       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                                 ui::PAGE_TRANSITION_CHAIN_END),
+                       0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_user2, SOURCE_BROWSED));
+  visit_user2.source = SOURCE_BROWSED;
+
+  // 3. Add first actor visit.
+  VisitRow visit_actor1(
+      kUrlId, kDay + base::Seconds(3), 0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_actor1, SOURCE_ACTOR));
+  visit_actor1.source = SOURCE_ACTOR;
+
+  // 4. Add second actor visit (duplicate for the day). Should be dropped.
+  VisitRow visit_actor2(
+      kUrlId, kDay + base::Seconds(4), 0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_actor2, SOURCE_ACTOR));
+  visit_actor2.source = SOURCE_ACTOR;
+
+  // 5. Add a different user visit on a different URL on the same day.
+  VisitRow visit_user_other_url(
+      2U, kDay + base::Seconds(5), 0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_user_other_url, SOURCE_BROWSED));
+  visit_user_other_url.source = SOURCE_BROWSED;
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+  options.include_actor_visits = true;
+  options.begin_time = kDay;
+  options.end_time = kDay + base::Days(1);
+
+  VisitVector results;
+  GetVisibleVisitsInRange(options, &results);
+
+  // Expected result count:
+  // - 1 unique actor visit (visit_actor2, oldest one dropped)
+  // - 1 unique user visit (visit_user2, oldest one dropped)
+  // - 1 unique other URL user visit.
+  // Total: 3 visits.
+  ASSERT_EQ(3U, results.size());
+  //
+  // Ordering of Kept Visits in output (Time DESC):
+  // 1. ID 5 (Time + 5s) - visit_user_other_url
+  // 2. ID 4 (Time + 4s) - visit_actor2
+  // 3. ID 2 (Time + 2s) - visit_user2
+  EXPECT_THAT(results, ElementsAre(MatchesVisitInfo(visit_user_other_url),
+                                   MatchesVisitInfo(visit_actor2),
+                                   MatchesVisitInfo(visit_user2)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

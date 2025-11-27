@@ -283,6 +283,9 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   if (!app_id.empty()) {
     visit->app_id = app_id;
   }
+  if (statement.ColumnCount() > 18) {
+    visit->source = VisitSourceFromInt(statement.ColumnInt(18));
+  }
 }
 
 // static
@@ -304,7 +307,8 @@ bool VisitDatabase::FillVisitVector(sql::Statement& statement,
 bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
                                                const QueryOptions& options,
                                                VisitVector* visits) {
-  std::map<URLID, VisitRow> found_urls;
+  using DedupeKey = std::pair<URLID, bool>;
+  std::map<DedupeKey, VisitRow> found_urls;
 
   // Keeps track of the day that `found_urls` is holding the URLs for, in order
   // to handle removing per-day duplicates.
@@ -324,24 +328,36 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
         found_urls.clear();
         found_urls_midnight = visit.visit_time.LocalMidnight();
       }
-      // Make sure the URL this visit corresponds to is unique.
-      auto it = found_urls.find(visit.url_id);
+
+      bool is_actor_visit = false;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+        is_actor_visit = (visit.source == SOURCE_ACTOR);
+      }
+#endif
+
+      // Make sure the (URLID, is_actor_visit) is unique.
+      DedupeKey key = std::make_pair(visit.url_id, is_actor_visit);
+      auto it = found_urls.find(key);
+
       if (it != found_urls.end()) {
 #if defined(ANDROID)
         // The visit with app ID is preferred. Replace the already added visit
         // with a new one if it doesn't have an app ID but the new one does.
         VisitRow& ov = it->second;
         if (!ov.app_id && visit.app_id) {
-          auto is_matched = [ov](VisitRow v) { return ov.url_id == v.url_id; };
+          auto is_matched = [ov](VisitRow v) {
+            return ov.url_id == v.url_id && ov.source == v.source;
+          };
           auto pos = std::find_if(visits->begin(), visits->end(), is_matched);
           CHECK(pos != visits->end());
           *pos = visit;
-          found_urls[visit.url_id] = visit;
+          found_urls[key] = visit;
         }
 #endif
         continue;
       }
-      found_urls[visit.url_id] = visit;
+      found_urls[key] = visit;
     }
 
     if (static_cast<int>(visits->size()) >= options.EffectiveMaxCount())
@@ -567,13 +583,22 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
                                            VisitVector* visits) {
   visits->clear();
 
-  std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits ";
+  std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+    sql += ", IFNULL(visit_source.source,1)";
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  sql += " FROM visits";
+
   std::vector<std::string> where_clauses;
 
   if (options.policy_for_404_visits == VisitQuery404sPolicy::kExclude404s) {
     sql +=
-        "LEFT OUTER JOIN context_annotations "
-        "ON visits.id = context_annotations.visit_id ";
+        " LEFT OUTER JOIN context_annotations "
+        "ON visits.id = context_annotations.visit_id";
     where_clauses.push_back(
         "(context_annotations.response_code IS NULL "
         "OR context_annotations.response_code != 404)");
@@ -582,11 +607,14 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
 // TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
 // rolled out.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
-      !options.include_actor_visits) {
-    sql += "LEFT JOIN visit_source ON visits.id = visit_source.id ";
-    where_clauses.push_back(
-        "(visit_source.source IS NULL OR visit_source.source != ?)");
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+    // Only join and select the source if the feature is enabled.
+    sql += " LEFT JOIN visit_source ON visits.id = visit_source.id";
+
+    if (!options.include_actor_visits) {
+      where_clauses.push_back(
+          "(visit_source.source IS NULL OR visit_source.source!=?)");
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -605,8 +633,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
   }
 
   CHECK(!where_clauses.empty());
-
-  sql += "WHERE " + base::JoinString(where_clauses, " AND ") + " ";
+  sql += " WHERE " + base::JoinString(where_clauses, " AND ") + " ";
 
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
     sql += "ORDER BY visits.visit_time DESC ";
@@ -755,27 +782,37 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
 bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
                                             VisitVector* visits) {
   visits->clear();
-  // The visit_time values can be duplicated in a redirect chain, so we sort
-  // by id too, to ensure a consistent ordering just in case.
 
-  std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits ";
+  std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+    sql += ", IFNULL(visit_source.source,1)";
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  sql += " FROM visits";
+
   std::vector<std::string> where_clauses;
 
   if (options.policy_for_404_visits == VisitQuery404sPolicy::kExclude404s) {
     sql +=
-        "LEFT OUTER JOIN context_annotations "
-        "ON visits.id = context_annotations.visit_id ";
+        " LEFT OUTER JOIN context_annotations "
+        "ON visits.id=context_annotations.visit_id";
     where_clauses.push_back(
         "(context_annotations.response_code IS NULL "
-        "OR context_annotations.response_code != 404)");
+        "OR context_annotations.response_code!=404)");
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
-      !options.include_actor_visits) {
-    sql += "LEFT JOIN visit_source ON visits.id = visit_source.id ";
-    where_clauses.push_back(
-        "(visit_source.source IS NULL OR visit_source.source != ?)");
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+    // Only join and select the source if the feature is enabled.
+    sql += " LEFT JOIN visit_source ON visits.id=visit_source.id";
+
+    if (!options.include_actor_visits) {
+      where_clauses.push_back(
+          "(visit_source.source IS NULL OR visit_source.source!=?)");
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -793,7 +830,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
 
   CHECK(!where_clauses.empty());
 
-  sql += "WHERE " + base::JoinString(where_clauses, " AND ") + " ";
+  sql += " WHERE " + base::JoinString(where_clauses, " AND ") + " ";
 
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
     sql += "ORDER BY visits.visit_time DESC, visits.id DESC ";
