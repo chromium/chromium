@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 
+#include <atomic>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/to_string.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -154,6 +157,55 @@ bool IsAudible(const AudioBus* rendered_data) {
 }
 
 }  // namespace
+
+// Helper class that decides if the AudioPlayoutStats should be updated.
+// It implements Privacy & Security mitigations as described here:
+// https://wicg.github.io/audio-context-playout-stats/#mitigations
+class AudioContext::StatsUpdateRestrictor {
+ public:
+  StatsUpdateRestrictor() : clock_(base::DefaultTickClock::GetInstance()) {}
+
+  // Should only be called from the audio thread.
+  bool StatUpdateAllowed() {
+    // Stats should only be updated if the page is visible or the application
+    // has audio capture permission.
+    if (!(visible_.load(std::memory_order_relaxed) ||
+          has_capture_permission_.load(std::memory_order_relaxed))) {
+      return false;
+    }
+
+    static const base::TimeDelta kMinTimeBetweenStatUpdates = base::Seconds(1);
+    base::TimeTicks now_time = clock_->NowTicks();
+    if (now_time - last_update_time_ < kMinTimeBetweenStatUpdates) {
+      return false;
+    }
+
+    last_update_time_ = now_time;
+    return true;
+  }
+
+  void SetVisible(bool visible) {
+    visible_.store(visible, std::memory_order_relaxed);
+  }
+
+  void SetCapturePermission(mojom::blink::PermissionStatus status) {
+    has_capture_permission_.store(
+        status == mojom::blink::PermissionStatus::GRANTED,
+        std::memory_order_relaxed);
+  }
+
+  void SetClockForTesting(const base::TickClock* clock) { clock_ = clock; }
+
+ private:
+  // Only accessed on the audio thread.
+  base::TimeTicks last_update_time_;
+  raw_ptr<const base::TickClock> clock_;
+
+  // `visible_` and `has_capture_permission_` are read on the audio thread and
+  // set on the main thread, so they need to be atomic.
+  std::atomic<bool> visible_ = false;
+  std::atomic<bool> has_capture_permission_ = false;
+};
 
 AudioContext::SetSinkIdResolver::SetSinkIdResolver(
     ScriptState* script_state,
@@ -464,6 +516,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                        ContextType::kRealtimeContext,
                        render_quantum_frames),
       FrameVisibilityObserver(GetLocalFrame()),
+      PageVisibilityObserver(GetPageFromFrame()),
       context_id_(context_id++),
       audio_context_manager_(&window),
       permission_service_(&window),
@@ -477,7 +530,8 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       player_id_(GetNextMediaPlayerId()),
       media_player_host_(&window),
       media_player_receiver_(this, &window),
-      media_player_observer_(&window) {
+      media_player_observer_(&window),
+      stats_update_restrictor_(std::make_unique<StatsUpdateRestrictor>()) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
 
@@ -571,6 +625,8 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextCreated(context_id_);
   }
+
+  stats_update_restrictor_->SetVisible(GetPage() && GetPage()->IsPageVisible());
 }
 
 void AudioContext::Uninitialize() {
@@ -629,6 +685,7 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(media_player_observer_);
   BaseAudioContext::Trace(visitor);
   FrameVisibilityObserver::Trace(visitor);
+  PageVisibilityObserver::Trace(visitor);
 }
 
 ScriptPromise<IDLUndefined> AudioContext::suspendContext(
@@ -1151,7 +1208,9 @@ bool AudioContext::HandlePreRenderTasks(
 
     callback_metric_ = *metric;
 
-    audio_frame_stats_.Absorb(pending_audio_frame_stats_);
+    if (stats_update_restrictor_->StatUpdateAllowed()) {
+      audio_frame_stats_.Absorb(pending_audio_frame_stats_);
+    }
 
     unlock();
   }
@@ -1302,6 +1361,7 @@ void AudioContext::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
+  stats_update_restrictor_->SetCapturePermission(status);
   microphone_permission_status_ = status;
   if (is_media_device_service_initialized_) {
     CHECK_LT(pending_device_list_updates_, std::numeric_limits<int>::max());
@@ -1326,6 +1386,7 @@ void AudioContext::DidInitialPermissionCheck(
     // avoids listening the future permission change in this AudioContext's
     // lifetime. This is acceptable because the current UI pattern asks to
     // reload the page when the permission is taken away.
+    stats_update_restrictor_->SetCapturePermission(status);
     microphone_permission_status_ = status;
     permission_receiver_.reset();
     return;
@@ -1529,6 +1590,11 @@ void AudioContext::FrameVisibilityChanged(
   }
 }
 
+void AudioContext::PageVisibilityChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  stats_update_restrictor_->SetVisible(GetPage() && GetPage()->IsPageVisible());
+}
+
 void AudioContext::UninitializeMediaDeviceService() {
   if (media_device_service_.is_bound()) {
     media_device_service_.reset();
@@ -1680,6 +1746,10 @@ void AudioContext::invoke_onrendererror_from_platform_for_testing() {
       .invoke_onrendererror_from_platform_for_testing();
 }
 
+void AudioContext::set_clock_for_testing(const base::TickClock* clock) {
+  stats_update_restrictor_->SetClockForTesting(clock);
+}
+
 void AudioContext::SendLogMessage(const char* const function_name,
                                   const String& message) {
   WebRtcLogMessage(base::StrCat(
@@ -1695,6 +1765,15 @@ LocalFrame* AudioContext::GetLocalFrame() const {
   }
 
   return window->GetFrame();
+}
+
+Page* AudioContext::GetPageFromFrame() const {
+  LocalFrame* frame = GetLocalFrame();
+  if (!frame) {
+    return nullptr;
+  }
+
+  return frame->GetPage();
 }
 
 void AudioContext::EnsureMediaPlayerConnection() {
