@@ -830,8 +830,14 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   VerifyResultState(MediaStreamRequestResult::OK, true, true);
 }
 
+// TODO(https://crbug.com/464174735): Consistently failing.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PepperRequestInsecure DISABLED_PepperRequestInsecure
+#else
+#define MAYBE_PepperRequestInsecure PepperRequestInsecure
+#endif
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       PepperRequestInsecure) {
+                       MAYBE_PepperRequestInsecure) {
   InitWithUrl(GURL("http://www.example.com"));
 
   prompt_factory()->set_response_type(
