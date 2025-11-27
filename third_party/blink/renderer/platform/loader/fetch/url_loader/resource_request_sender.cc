@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -491,6 +492,13 @@ void ResourceRequestSender::OnReceivedResponse(
     cached_metadata =
         code_cache_fetcher_->TakeCodeCacheForResponse(*response_head);
   }
+
+  // OnReceivedResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "response_url",
+                              request_info_->response_url.GetString().Utf8());
+  CHECK(!response_sent_to_client_);
+  response_sent_to_client_ = true;
 
   request_info_->client->OnReceivedResponse(
       response_head.Clone(), std::move(body), std::move(cached_metadata));

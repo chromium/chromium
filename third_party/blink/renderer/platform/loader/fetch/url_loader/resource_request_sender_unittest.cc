@@ -2242,22 +2242,34 @@ TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
   base::HistogramTester histogram_tester;
 
   // Define URLs that support the webui bundled code cache.
-  const GURL test_url_1("chrome://example/script_1.js");
-  const GURL test_url_2("chrome://example/script_2.js");
+  const GURL test_url("chrome://example/script.js");
 
   // Configure the platform to serve webui code cache for only one of the test
   // URLs.
-  platform_->set_webui_bundled_code_cache_url(test_url_1);
-  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url_1));
-  EXPECT_FALSE(platform_->GetWebUIBundledCodeCacheResourceId(test_url_2));
+  platform_->set_webui_bundled_code_cache_url(test_url);
+  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
 
   // Assert code cache is fetched for the URL for which the webui bundled code
   // cache is available.
-  LoadResourceAndCheck(test_url_1, /*expect_code_cache=*/true);
-  LoadResourceAndCheck(test_url_2, /*expect_code_cache=*/false);
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/true);
   histogram_tester.ExpectUniqueSample(
       "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
       true, 1);
+}
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       FetchesCodeCacheFromPlatformWhenUnavailable) {
+  base::HistogramTester histogram_tester;
+
+  // Define URLs that doesn't support the webui bundled code cache.
+  const GURL test_url("chrome://example/script.js");
+
+  EXPECT_FALSE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true, 0);
 }
 
 TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,

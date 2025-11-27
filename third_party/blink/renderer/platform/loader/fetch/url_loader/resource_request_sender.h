@@ -248,6 +248,10 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   bool latency_critical_operation_deferred_ = false;
   bool used_code_cache_fetcher_ = false;
 
+  // Set to true when OnReceivedResponse of the client is called.
+  // This is used to prevent OnReceivedResponse from being called twice.
+  bool response_sent_to_client_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
 
   // `pending_tasks_` are queued while waiting for the response from the
