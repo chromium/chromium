@@ -243,6 +243,6 @@ public class TabListEditorPinActionUnitTest {
 
     @Test
     public void testShouldHideEditorAfterAction() {
-        assertFalse(mAction.shouldHideEditorAfterAction());
+        assertTrue(mAction.shouldHideEditorAfterAction());
     }
 }
