@@ -274,6 +274,17 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
+  // Check file size.
+  NSURL* nsURL = net::NSURLWithGURL(PDFFileURL);
+  NSError* error = nil;
+  NSNumber* fileSize =
+      [[nsURL resourceValuesForKeys:@[ NSURLFileSizeKey ]
+                              error:&error] objectForKey:NSURLFileSizeKey];
+  if (fileSize && [fileSize unsignedLongLongValue] > kMaxPDFFileSize) {
+    [self.delegate showSnackbarForItemUploadDidFail];
+    return;
+  }
+
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeFile
