@@ -611,9 +611,6 @@ extern const char kLensUnaryApiSalientTextEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
-extern const char kLensUnaryClientDataHeaderEnabledName[];
-extern const char kLensUnaryClientDataHeaderEnabledDescription[];
-
 extern const char kLensUnaryHttpTransportEnabledName[];
 extern const char kLensUnaryHttpTransportEnabledDescription[];
 

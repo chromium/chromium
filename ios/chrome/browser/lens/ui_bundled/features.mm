@@ -42,9 +42,6 @@ BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
 BASE_FEATURE(kLensGestureTextSelectionDisabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensUnaryClientDataHeaderEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
