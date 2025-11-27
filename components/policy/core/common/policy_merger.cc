@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -19,7 +20,8 @@ namespace policy {
 
 namespace {
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && (!BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_DESKTOP_ANDROID))
 constexpr const char* kDictionaryPoliciesToMerge[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     key::kExtensionSettings,       key::kDeviceLoginScreenPowerManagement,
@@ -29,8 +31,8 @@ constexpr const char* kDictionaryPoliciesToMerge[] = {
     key::kExtensionSettings,
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 };
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) &&
+        // (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID))
 
 }  // namespace
 
@@ -187,7 +189,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 
 PolicyDictionaryMerger::PolicyDictionaryMerger(
     base::flat_set<std::string> policies_to_merge)
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID))
     : policies_to_merge_(std::move(policies_to_merge)){}
 #else
     : policies_to_merge_(std::move(policies_to_merge)),
