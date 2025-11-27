@@ -1044,8 +1044,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
 // Do not run in debug or ASAN builds to avoid timeouts due to multiple
 // navigations. https://crbug.com/1106485
-// Also failing on ChromeOS.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DiscardTabsWithOccludedWindow \
   DISABLED_DiscardTabsWithOccludedWindow
 #else
