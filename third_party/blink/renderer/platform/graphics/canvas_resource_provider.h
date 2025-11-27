@@ -468,7 +468,9 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
                    const void* pixels,
                    size_t row_bytes,
                    int x,
-                   int y) override;
+                   int y) override {
+    NOTREACHED();
+  }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     // Production of CanvasResources is used with direct compositing, which is
