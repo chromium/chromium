@@ -22,13 +22,32 @@ using webauthn_credentials_helper::AwaitAllModelsMatch;
 using webauthn_credentials_helper::GetModel;
 using webauthn_credentials_helper::NewPasskey;
 
-class TwoClientWebAuthnCredentialsSyncTest : public SyncTest {
+class TwoClientWebAuthnCredentialsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientWebAuthnCredentialsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientWebAuthnCredentialsSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~TwoClientWebAuthnCredentialsSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientWebAuthnCredentialsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientWebAuthnCredentialsSyncTest,
                        E2E_ENABLED(AddAndDelete)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
