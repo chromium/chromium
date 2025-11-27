@@ -748,8 +748,6 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   // These values are all non-default values so we can tell they are propagated.
   gfx::Size size(100, 101);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   ResourcePool::InUsePoolResource resource =
