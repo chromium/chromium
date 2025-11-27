@@ -334,6 +334,9 @@ public class FuseboxMediator {
         // tabIds will be null when the activity finishes with cancel using the back button.
         if (tabIds == null) return;
         updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
+        if (mModelList.size() != 0) {
+            maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
+        }
     }
 
     /**

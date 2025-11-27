@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -209,6 +210,15 @@ public class FuseboxMediatorUnitTest {
         when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
         when(mComposeBoxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
         return tab;
+    }
+
+    private Intent createTabPickerResultIntent(List<Integer> tabIds) {
+        Intent data = mock(Intent.class);
+        Bundle extras = mock(Bundle.class);
+        when(data.getExtras()).thenReturn(extras);
+        when(data.getIntegerArrayListExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS))
+                .thenReturn(new ArrayList<>(tabIds));
+        return data;
     }
 
     private Set<Integer> getCurrentlyAttachedIdsFromModel() {
@@ -723,5 +733,34 @@ public class FuseboxMediatorUnitTest {
         assertEquals(2, preselectedIds.size());
         assertTrue(preselectedIds.contains(101));
         assertTrue(preselectedIds.contains(102));
+    }
+
+    @Test
+    public void testOnTabPickerResult_modelListNotEmpty_activatesAiMode() {
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101, 102));
+        Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
+
+        // Add tabs as attachments
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertEquals(new HashSet<>(selectedTabIds), getCurrentlyAttachedIdsFromModel());
+
+        // Verify AutocompleteRequestType is AI Mode.
+        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
+    }
+
+    @Test
+    public void testOnTabPickerResult_modelListEmpty_doesNotActivateAiMode() {
+        Intent resultIntent = createTabPickerResultIntent(new ArrayList<>());
+
+        // Set a non-AI mode starting state
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertEquals(new HashSet<>(), getCurrentlyAttachedIdsFromModel());
+
+        // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
+        assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
     }
 }
