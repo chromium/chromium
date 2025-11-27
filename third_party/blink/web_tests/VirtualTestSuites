@@ -4146,8 +4146,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes",
-      "--disable-features=Prerender2FallbackPrefetchSpecRules"
+      "--enable-features=Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,Prerender2CrossOriginIframes"
     ],
     "owners": [
       "nhiroki@chromium.org",
