@@ -55,8 +55,12 @@ public class PasswordEchoSettingHandler implements Destroyable {
                                 Settings.System.TEXT_SHOW_PASSWORD,
                                 1)
                         == 1;
+        // TODO(b/463580423): Read the split password echo settings and assign to corresponding
+        // preferences.
         UserPrefs.get(mBrowserContextHandle)
-                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED, systemEnabled);
+                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL, systemEnabled);
+        UserPrefs.get(mBrowserContextHandle)
+                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH, systemEnabled);
     }
 
     private class PasswordEchoSettingObserver extends ContentObserver {

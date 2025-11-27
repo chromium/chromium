@@ -108,7 +108,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->strictly_block_blockable_mixed_content =
       data.strictly_block_blockable_mixed_content();
   out->block_mixed_plugin_content = data.block_mixed_plugin_content();
-  out->password_echo_enabled = data.password_echo_enabled();
+  out->password_echo_enabled_physical = data.password_echo_enabled_physical();
+  out->password_echo_enabled_touch = data.password_echo_enabled_touch();
   out->disable_reading_from_canvas = data.disable_reading_from_canvas();
   out->should_clear_document_background =
       data.should_clear_document_background();

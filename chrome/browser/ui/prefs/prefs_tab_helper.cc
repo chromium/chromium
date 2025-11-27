@@ -385,8 +385,10 @@ void PrefsTabHelper::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kAccessibilityTextSizeContrastFactor, 0);
   registry->RegisterBooleanPref(prefs::kAccessibilityForceEnableZoom,
                                 pref_defaults.force_enable_zoom);
-  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
-                                pref_defaults.password_echo_enabled);
+  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabledPhysical,
+                                pref_defaults.password_echo_enabled_physical);
+  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabledTouch,
+                                pref_defaults.password_echo_enabled_touch);
   registry->RegisterIntegerPref(prefs::kAccessibilityFontWeightAdjustment, 0);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityTouchpadOverscrollHistoryNavigation,

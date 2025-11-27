@@ -85,7 +85,8 @@ function init(tests)
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
         if (window.internals) {
-            internals.settings.setPasswordEchoEnabled(true);
+            internals.settings.setPasswordEchoEnabledPhysical(true);
+            internals.settings.setPasswordEchoEnabledTouch(true);
             internals.settings.setPasswordEchoDurationInSeconds(0.1);
             testnode = document.getElementById('testnode');
             run(tests, -1);

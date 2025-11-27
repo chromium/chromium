@@ -113,7 +113,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Disallow user opt-in for blockable mixed content.
   bool strictly_block_blockable_mixed_content = false;
   bool block_mixed_plugin_content = false;
-  bool password_echo_enabled = false;
+  bool password_echo_enabled_physical = false;
+  bool password_echo_enabled_touch = false;
   bool should_print_backgrounds = false;
   bool should_clear_document_background = true;
   bool enable_scroll_animator = false;

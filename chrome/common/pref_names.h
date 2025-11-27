@@ -319,8 +319,10 @@ inline constexpr char kWebkitTabsToLinks[] = "webkit.webprefs.tabs_to_links";
 inline constexpr char kWebKitAllowRunningInsecureContent[] =
     "webkit.webprefs.allow_running_insecure_content";
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr char kWebKitPasswordEchoEnabled[] =
-    "webkit.webprefs.password_echo_enabled";
+inline constexpr char kWebKitPasswordEchoEnabledPhysical[] =
+    "webkit.webprefs.password_echo_enabled_physical";
+inline constexpr char kWebKitPasswordEchoEnabledTouch[] =
+    "webkit.webprefs.password_echo_enabled_touch";
 #endif
 inline constexpr char kWebKitForceDarkModeEnabled[] =
     "webkit.webprefs.force_dark_mode_enabled";

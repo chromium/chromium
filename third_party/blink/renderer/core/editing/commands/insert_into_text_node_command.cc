@@ -48,9 +48,10 @@ InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(Text* node,
 }
 
 void InsertIntoTextNodeCommand::DoApply(EditingState*) {
-  bool password_echo_enabled =
+  const bool password_echo_enabled =
       GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabled();
+      GetDocument().GetSettings()->GetPasswordEchoEnabledPhysical() &&
+      GetDocument().GetSettings()->GetPasswordEchoEnabledTouch();
   if (password_echo_enabled) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   }

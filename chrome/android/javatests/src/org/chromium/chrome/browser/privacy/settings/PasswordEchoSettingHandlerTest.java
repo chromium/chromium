@@ -61,9 +61,42 @@ public class PasswordEchoSettingHandlerTest {
         }
     }
 
-    private boolean isPasswordEchoEnabledInPrefService() throws ExecutionException {
+    private boolean isPasswordEchoPhysicalEnabledInPrefService() throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> UserPrefs.get(mProfile).getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED));
+                () ->
+                        UserPrefs.get(mProfile)
+                                .getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL));
+    }
+
+    private boolean isPasswordEchoTouchEnabledInPrefService() throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH));
+    }
+
+    private void setSystemPasswordEchoState(boolean enabled)
+            throws ExecutionException, IOException {
+        mDevice.executeShellCommand("settings put system show_password " + (enabled ? "1" : "0"));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPasswordEchoSettingHandler.getPasswordEchoSettingObserver().onChange(true);
+                });
+    }
+
+    // The physical and touch preference must hold the same value before the pref integration with
+    // the new split settings is implemented. The work is tracked in b/463580423.
+    @Test
+    @SmallTest
+    public void testPhysicalAndTouchPreferencesAreEqual() throws ExecutionException, IOException {
+        boolean[] systemSettingsStates = {
+            false, true, false,
+        };
+
+        for (boolean systemEnabled : systemSettingsStates) {
+            setSystemPasswordEchoState(systemEnabled);
+            Assert.assertEquals(
+                    isPasswordEchoPhysicalEnabledInPrefService(),
+                    isPasswordEchoTouchEnabledInPrefService());
+        }
     }
 
     private boolean isPasswordEchoEnabledInSystemSettings() {
@@ -83,27 +116,22 @@ public class PasswordEchoSettingHandlerTest {
                             .updatePasswordEchoState();
                 });
         Assert.assertEquals(
-                isPasswordEchoEnabledInPrefService(), isPasswordEchoEnabledInSystemSettings());
-    }
-
-    private void setSystemPasswordEchoAndAssertState(boolean enabled)
-            throws ExecutionException, IOException {
-        mDevice.executeShellCommand("settings put system show_password " + (enabled ? "1" : "0"));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPasswordEchoSettingHandler.getPasswordEchoSettingObserver().onChange(true);
-                });
-        Assert.assertEquals(
-                isPasswordEchoEnabledInPrefService(), isPasswordEchoEnabledInSystemSettings());
+                isPasswordEchoPhysicalEnabledInPrefService(),
+                isPasswordEchoEnabledInSystemSettings());
     }
 
     @Test
     @SmallTest
     public void testSettingChangeIsObserved() throws ExecutionException, IOException {
-        setSystemPasswordEchoAndAssertState(false);
+        boolean[] systemSettingsStates = {
+            false, true, false,
+        };
 
-        setSystemPasswordEchoAndAssertState(true);
-
-        setSystemPasswordEchoAndAssertState(false);
+        for (boolean systemEnabled : systemSettingsStates) {
+            setSystemPasswordEchoState(systemEnabled);
+            Assert.assertEquals(
+                    isPasswordEchoPhysicalEnabledInPrefService(),
+                    isPasswordEchoEnabledInSystemSettings());
+        }
     }
 }

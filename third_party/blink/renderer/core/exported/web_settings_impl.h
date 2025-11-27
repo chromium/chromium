@@ -130,7 +130,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetHideScrollbars(bool) override;
   void SetPrefersDefaultScrollbarStyles(bool) override;
   void SetPasswordEchoDurationInSeconds(double) override;
-  void SetPasswordEchoEnabled(bool) override;
+  void SetPasswordEchoEnabledPhysical(bool) override;
+  void SetPasswordEchoEnabledTouch(bool) override;
   void SetPluginsEnabled(bool) override;
   void SetAvailablePointerTypes(int) override;
   void SetPrimaryPointerType(mojom::blink::PointerType) override;

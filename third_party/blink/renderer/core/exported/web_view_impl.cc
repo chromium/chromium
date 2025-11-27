@@ -1692,7 +1692,9 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.strict_powerful_feature_restrictions);
   settings->SetAllowGeolocationOnInsecureOrigins(
       prefs.allow_geolocation_on_insecure_origins);
-  settings->SetPasswordEchoEnabled(prefs.password_echo_enabled);
+  settings->SetPasswordEchoEnabledPhysical(
+      prefs.password_echo_enabled_physical);
+  settings->SetPasswordEchoEnabledTouch(prefs.password_echo_enabled_touch);
   settings->SetShouldPrintBackgrounds(prefs.should_print_backgrounds);
   settings->SetShouldClearDocumentBackground(
       prefs.should_clear_document_background);

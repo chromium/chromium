@@ -69,7 +69,8 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kAccessibilityForceEnableZoom,
     prefs::kAccessibilityFontWeightAdjustment,
     prefs::kAccessibilityTouchpadOverscrollHistoryNavigation,
-    prefs::kWebKitPasswordEchoEnabled,
+    prefs::kWebKitPasswordEchoEnabledPhysical,
+    prefs::kWebKitPasswordEchoEnabledTouch,
 #endif
     prefs::kWebKitForceDarkModeEnabled,
     prefs::kWebKitJavascriptEnabled,
