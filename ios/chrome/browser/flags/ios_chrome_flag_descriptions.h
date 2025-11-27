@@ -903,9 +903,6 @@ extern const char kSetUpListShortenedDurationDescription[];
 extern const char kShareExtensionForMultiprofileName[];
 extern const char kShareExtensionForMultiprofileDescription[];
 
-extern const char kShareInWebContextMenuIOSName[];
-extern const char kShareInWebContextMenuIOSDescription[];
-
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 

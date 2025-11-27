@@ -221,8 +221,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     contextMenuContentPreviewProviderForWebState:(web::WebState*)webState
                                           params:
                                               (web::ContextMenuParams)params {
-  if (!base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) ||
-      !params.src_url.is_valid() || params.link_url.is_valid()) {
+  if (!params.src_url.is_valid() || params.link_url.is_valid()) {
     return nil;
   }
 
@@ -276,25 +275,18 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
     if (!IsImageTitle(params) &&
         menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
-        // "Show URL action" at the top of the context menu.
-        __weak __typeof(self) weakSelf = self;
-        BrowserActionFactory* actionFactory =
-            [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                                 scenario:menuScenario];
-        showFullURL = [actionFactory
-            actionToShowFullURL:menuTitle
-                          block:^{
-                            [weakSelf showFullURLPopUp:params
-                                             URLString:menuTitle];
-                          }];
-        menuTitle = nil;
-      } else {
-        // Truncate context menu titles that originate from URLs, leaving text
-        // titles untruncated.
-        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-            stringByAppendingString:kContextMenuEllipsis];
-      }
+      // "Show URL action" at the top of the context menu.
+      __weak __typeof(self) weakSelf = self;
+      BrowserActionFactory* actionFactory =
+          [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                               scenario:menuScenario];
+      showFullURL =
+          [actionFactory actionToShowFullURL:menuTitle
+                                       block:^{
+                                         [weakSelf showFullURLPopUp:params
+                                                          URLString:menuTitle];
+                                       }];
+      menuTitle = nil;
     }
   }
 
@@ -380,8 +372,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   NSMutableArray<UIMenuElement*>* linkOpeningElements =
       [[NSMutableArray alloc] init];
 
-  if (showFullURLAction &&
-      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+  if (showFullURLAction) {
     [linkOpeningElements addObject:showFullURLAction];
   }
 
@@ -1043,8 +1034,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 - (BOOL)isSharingAllowed {
   // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
   // share sheet is not presented in `baseViewController`.
-  if (_isLensOverlay ||
-      !base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+  if (_isLensOverlay) {
     return NO;
   }
 

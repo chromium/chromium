@@ -240,9 +240,6 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
 // Test that the "Share" action is added to the context
 // menu if enough conditions are met.
 TEST_F(ContextMenuConfigurationProviderTest, HasShareInWebContextMenuElement) {
-  // Enable the Share in web context menu flag.
-  base::test::ScopedFeatureList feature_list(kShareInWebContextMenuIOS);
-
   // Get menu with params containing url.
   web::ContextMenuParams params_with_link =
       GetContextMenuParamsWithLinkURL(kLinkUrl, CGPointMake(0, 0));

@@ -9374,11 +9374,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "share-in-web-context-menu-ios",
-    "owners": [ "aliaaborhamy@google.com", "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 150

@@ -142,9 +142,6 @@ enum class TipsSafeBrowsingExperimentType {
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
-// Feature flag to enable Share button in web context menu in iOS.
-BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
-
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
