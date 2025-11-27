@@ -69,16 +69,14 @@ std::vector<uint8_t> ReadFromPipe(base::PlatformFile file_out, size_t size) {
 
 #if BUILDFLAG(IS_POSIX)
 int WriteToPipeNoBestEffort(base::PlatformFile file_out,
-                            const char* buffer,
-                            int size) {
-  return HANDLE_EINTR(write(file_out, buffer, size));
+                            base::span<const char> buffer) {
+  return HANDLE_EINTR(write(file_out, buffer.data(), buffer.size()));
 }
 #elif BUILDFLAG(IS_WIN)
 int WriteToPipeNoBestEffort(base::PlatformFile file_out,
-                            const char* buffer,
-                            int size) {
+                            base::span<const char> buffer) {
   unsigned long written = 0;
-  if (!::WriteFile(file_out, buffer, size, &written, nullptr)) {
+  if (!::WriteFile(file_out, buffer.data(), buffer.size(), &written, nullptr)) {
     return -1;
   }
   return static_cast<int>(written);
@@ -86,17 +84,16 @@ int WriteToPipeNoBestEffort(base::PlatformFile file_out,
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
-int WriteToPipe(base::PlatformFile file_out, const char* buffer, int size) {
-  int offset = 0;
+int WriteToPipe(base::PlatformFile file_out, base::span<const char> buffer) {
+  size_t offset = 0;
   int rv = 0;
-  for (; offset < size; offset += rv) {
-    rv = WriteToPipeNoBestEffort(file_out, UNSAFE_TODO(buffer + offset),
-                                 size - offset);
+  for (; offset < buffer.size(); offset += rv) {
+    rv = WriteToPipeNoBestEffort(file_out, buffer.subspan(offset));
     if (rv < 0) {
       return rv;
     }
   }
-  return offset;
+  return static_cast<int>(offset);
 }
 #endif
 
@@ -176,7 +173,10 @@ class PipeConnectionTest : public testing::Test {
   }
 
   void SendResponse(base::PlatformFile pipe, const std::string& message) {
-    WriteToPipe(pipe, message.c_str(), message.size() + 1);
+    // SAFETY: std::string is guaranteed to be null-terminated.
+    UNSAFE_BUFFERS(base::span<const char> message_with_terminator(
+        message.c_str(), message.size() + 1));
+    WriteToPipe(pipe, message_with_terminator);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -429,8 +429,8 @@ TEST_F(PipeConnectionTest, CloseOnReceive) {
   EXPECT_TRUE(connection->IsConnected());
   std::string message;
   const std::string message_part = "part of...";
-  // No trailing \0, thereofre the text must be discarded
-  WriteToPipe(write_pipe.get(), message_part.data(), message_part.size());
+  // No trailing \0, therefore the text must be discarded.
+  WriteToPipe(write_pipe.get(), message_part);
   write_pipe = base::ScopedPlatformFile();
   EXPECT_EQ(SyncWebSocket::StatusCode::kDisconnected,
             connection->ReceiveNextMessage(&message, long_timeout()));

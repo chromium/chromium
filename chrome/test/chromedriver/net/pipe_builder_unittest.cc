@@ -96,16 +96,14 @@ int ReadFromPipeNoBestEffort(base::PlatformFile file_in,
 
 #if BUILDFLAG(IS_POSIX)
 int WriteToPipeNoBestEffort(base::PlatformFile file_out,
-                            const char* buffer,
-                            int size) {
-  return HANDLE_EINTR(write(file_out, buffer, size));
+                            base::span<const char> buffer) {
+  return HANDLE_EINTR(write(file_out, buffer.data(), buffer.size()));
 }
 #elif BUILDFLAG(IS_WIN)
 int WriteToPipeNoBestEffort(base::PlatformFile file_out,
-                            const char* buffer,
-                            int size) {
+                            base::span<const char> buffer) {
   unsigned long written = 0;
-  if (!::WriteFile(file_out, buffer, size, &written, nullptr)) {
+  if (!::WriteFile(file_out, buffer.data(), buffer.size(), &written, nullptr)) {
     return -1;
   }
   return static_cast<int>(written);
@@ -113,17 +111,16 @@ int WriteToPipeNoBestEffort(base::PlatformFile file_out,
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
-int WriteToPipe(base::PlatformFile file_out, const char* buffer, int size) {
-  int offset = 0;
+int WriteToPipe(base::PlatformFile file_out, base::span<const char> buffer) {
+  size_t offset = 0;
   int rv = 0;
-  for (; offset < size; offset += rv) {
-    rv = WriteToPipeNoBestEffort(file_out, UNSAFE_TODO(buffer + offset),
-                                 size - offset);
+  for (; offset < buffer.size(); offset += rv) {
+    rv = WriteToPipeNoBestEffort(file_out, buffer.subspan(offset));
     if (rv < 0) {
       return rv;
     }
   }
-  return offset;
+  return static_cast<int>(offset);
 }
 #endif
 
@@ -185,7 +182,9 @@ MULTIPROCESS_TEST_MAIN(PipeEchoProcess) {
       // EOF
       break;
     }
-    int bytes_written = WriteToPipe(file_out.get(), buffer.data(), bytes_read);
+    int bytes_written =
+        WriteToPipe(file_out.get(),
+                    base::span(buffer).first(static_cast<size_t>(bytes_read)));
     if (bytes_written < 0) {
       return kWriteError;
     }
