@@ -27,6 +27,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -196,10 +197,28 @@ Study::Channel ConvertProductChannelToStudyChannel(
 void MaybeActivateMetricsNoopTrial() {
   if (base::FieldTrial* trial =
           base::FieldTrialList::Find("MetricsNoopRegressionAutoAdvance")) {
+    // The original plan was to randomly activate the field trial half the time,
+    // but the rand() function was not seeded resulting in none of the Enabled
+    // group was activated. Nevertheles, this is an interesting edge case for
+    // us to test so keep this around for now. The replacement is
+    // MetricsNoopRegressionAutoAdvance2 below.
+    if (trial->GetGroupNameWithoutActivation() == "Enabled") {
+      if (rand() % 2 == 0) {
+        trial->Activate();
+      }
+    } else {
+      trial->Activate();
+    }
+  }
+}
+
+void MaybeActivateMetricsNoopTrial2() {
+  if (base::FieldTrial* trial =
+          base::FieldTrialList::Find("MetricsNoopRegressionAutoAdvance2")) {
     // If the user is in the Enabled group, we want to randomly activate the
     // field trial half the time.
     if (trial->GetGroupNameWithoutActivation() == "Enabled") {
-      if (rand() % 2 == 0) {
+      if (base::RandBool()) {
         trial->Activate();
       }
     } else {
@@ -369,8 +388,9 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     base::Process::TerminateCurrentProcessImmediately(0x7E57C0D3);
   }
 
-  // TODO(crbug.com/458408055): Remove this once the experiment is over.
+  // TODO(crbug.com/458408055): Remove these once the experiments are over.
   MaybeActivateMetricsNoopTrial();
+  MaybeActivateMetricsNoopTrial2();
 
   // This must be called after |local_state_| is initialized.
   platform_field_trials->OnVariationsSetupComplete();
