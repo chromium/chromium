@@ -429,6 +429,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.AllCardsEnabled"
+    enum="BooleanEnabled" expires_after="2026-12-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Android: Records when the all cards switch is toggled on or off. The
+    histogram is logged each time a user clicks the toggle switch in the NTP
+    customization bottom sheet. Each press of the toggle switch is counted as a
+    separate count.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.BottomSheet.Shown"
     enum="NtpCustomizationBottomSheetType" expires_after="2026-04-26">
   <owner>hanxi@chromium.org</owner>
