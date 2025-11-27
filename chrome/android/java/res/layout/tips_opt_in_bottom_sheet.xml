@@ -13,6 +13,13 @@ found in the LICENSE file.
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="20dp">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/tips_notifications_promo_logo_height"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/tips_opt_in_logo"/>
+
     <LinearLayout
         android:accessibilityHeading="true"
         android:layout_width="match_parent"

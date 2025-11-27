@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.provider.Settings;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
@@ -68,6 +69,7 @@ public class TipsUtils {
         final @StringRes int positiveButtonTextRes;
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
+        final @DrawableRes int mainPageLogoViewRes;
         final @StringRes int detailPageTitleRes;
         final List<String> detailPageSteps = new ArrayList<>();
 
@@ -76,6 +78,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_esb;
+                mainPageLogoViewRes = R.drawable.tips_promo_esb_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_esb));
@@ -88,6 +91,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
+                mainPageLogoViewRes = R.drawable.tips_promo_quick_delete_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 detailPageSteps.add(
                         context.getString(
@@ -103,6 +107,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_lens;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_lens;
+                mainPageLogoViewRes = R.drawable.tips_promo_lens_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_lens));
@@ -116,6 +121,7 @@ public class TipsUtils {
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox;
                 mainPageDescriptionRes =
                         R.string.tips_promo_bottom_sheet_description_bottom_omnibox;
+                mainPageLogoViewRes = R.drawable.tips_promo_bottom_omnibox_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox_short;
                 detailPageSteps.add(
                         context.getString(
@@ -133,6 +139,7 @@ public class TipsUtils {
                 positiveButtonTextRes = Resources.ID_NULL;
                 mainPageTitleRes = Resources.ID_NULL;
                 mainPageDescriptionRes = Resources.ID_NULL;
+                mainPageLogoViewRes = Resources.ID_NULL;
                 detailPageTitleRes = Resources.ID_NULL;
         }
 
@@ -140,6 +147,7 @@ public class TipsUtils {
                 context.getString(positiveButtonTextRes),
                 context.getString(mainPageTitleRes),
                 context.getString(mainPageDescriptionRes),
+                mainPageLogoViewRes,
                 context.getString(detailPageTitleRes),
                 detailPageSteps);
     }
