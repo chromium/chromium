@@ -134,44 +134,12 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [_scrollView flashScrollIndicators];
+  [self updateGradientVisibility];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-
-  // Determine if the gradient should be visible.
-  BOOL scrollable =
-      _scrollView.contentSize.height > _scrollView.bounds.size.height;
-  CGFloat effectiveGradientHeight =
-      kGradientHeight - _scrollView.contentInset.bottom;
-  BOOL shouldShowGradient =
-      _showsGradientView && scrollable && (effectiveGradientHeight > 0);
-
-  if (!shouldShowGradient) {
-    _scrollContainerView.layer.mask = nil;
-    return;
-  }
-
-  // Create mask if it doesn't exist.
-  if (!_gradientMask) {
-    _gradientMask = [CAGradientLayer layer];
-    _gradientMask.endPoint = CGPointMake(0.0, 1.0);
-    UIColor* bottomColor =
-        BlendColors([UIColor clearColor], self.view.backgroundColor,
-                    _scrollView.contentInset.bottom / kGradientHeight);
-    _gradientMask.colors =
-        @[ (id)self.view.backgroundColor.CGColor, (id)bottomColor.CGColor ];
-  }
-
-  // Apply mask and calculate geometry.
-  _scrollContainerView.layer.mask = _gradientMask;
-  _gradientMask.frame = _scrollContainerView.bounds;
-
-  CGFloat startY =
-      (effectiveGradientHeight >= _gradientMask.frame.size.height)
-          ? 0.0
-          : 1.0 - (effectiveGradientHeight / _gradientMask.frame.size.height);
-  _gradientMask.startPoint = CGPointMake(0.0, startY);
+  [self updateGradientVisibility];
 }
 
 #pragma mark - Public
@@ -180,14 +148,14 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   CGFloat scrollPosition =
       _scrollView.contentOffset.y + _scrollView.frame.size.height;
   CGFloat scrollLimit =
-      _scrollView.contentSize.height + _scrollView.contentInset.bottom;
+      _scrollView.contentSize.height + _scrollView.adjustedContentInset.bottom;
   return scrollPosition >= scrollLimit;
 }
 
 - (void)scrollToBottom {
   CGFloat scrollLimit = _scrollView.contentSize.height -
                         _scrollView.bounds.size.height +
-                        _scrollView.contentInset.bottom;
+                        _scrollView.adjustedContentInset.bottom;
   [_scrollView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
 }
 
@@ -226,6 +194,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
           withHorizontalFittingPriority:UILayoutPriorityRequired
                 verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
           .height;
+  height += _scrollView.adjustedContentInset.bottom;
 
   // Add the height of the button stack.
   height += [self buttonStackHeight];
@@ -292,12 +261,18 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
 - (void)setShowsGradientView:(BOOL)showsGradientView {
   _showsGradientView = showsGradientView;
-  _scrollContainerView.layer.mask = _showsGradientView ? _gradientMask : nil;
+  [self updateGradientVisibility];
 }
 
 - (void)setActionStackBottomMargin:(CGFloat)actionStackBottomMargin {
   _actionStackBottomMargin = actionStackBottomMargin;
   [self reconfigureBottomConstraint];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self updateGradientVisibility];
 }
 
 #pragma mark - Private
@@ -309,9 +284,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
       [_actionStackView
           systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
-  if (stackHeight > 0) {
-    stackHeight += [self contentViewBottomInset];
-  }
   return stackHeight + self.actionStackBottomMargin;
 }
 
@@ -343,6 +315,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   scrollView.scrollEnabled = self.scrollEnabled;
   scrollView.showsVerticalScrollIndicator = self.showsVerticalScrollIndicator;
   scrollView.delegate = self;
+  scrollView.contentInset =
+      UIEdgeInsetsMake(0, 0, [self contentViewBottomInset], 0);
   return scrollView;
 }
 
@@ -518,8 +492,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     [_scrollContainerView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
     [_scrollContainerView.bottomAnchor
-        constraintEqualToAnchor:_actionStackView.topAnchor
-                       constant:-[self contentViewBottomInset]],
+        constraintEqualToAnchor:_actionStackView.topAnchor],
     _scrollContainerBottomToSafeAreaBottomConstraint,
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);
@@ -539,7 +512,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   // Ensures the content view either fills the scroll view (for short content)
   // or expands to enable scrolling (for long content).
   NSLayoutConstraint* contentViewHeightConstraint = [_contentView.heightAnchor
-      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor];
+      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor
+                                  constant:-[self contentViewBottomInset]];
   contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
   _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
@@ -623,6 +597,42 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   height = MIN(height, kMaxDetentMultiplier * context.maximumDetentValue);
   height = MAX(height, kMinDetentMultiplier * context.maximumDetentValue);
   return height;
+}
+
+// Updates the visibility of the gradient view based on scroll position.
+- (void)updateGradientVisibility {
+  // Determine if the gradient should be visible.
+  BOOL scrollable =
+      _scrollView.contentSize.height >
+      _scrollView.bounds.size.height + _scrollView.adjustedContentInset.bottom;
+  CGFloat effectiveGradientHeight =
+      kGradientHeight - _scrollView.adjustedContentInset.bottom;
+  BOOL shouldShowGradient =
+      _showsGradientView && scrollable && (effectiveGradientHeight > 0);
+
+  if (!shouldShowGradient) {
+    _scrollContainerView.layer.mask = nil;
+    return;
+  }
+
+  // Create mask if it doesn't exist.
+  if (!_gradientMask) {
+    _gradientMask = [CAGradientLayer layer];
+    _gradientMask.endPoint = CGPointMake(0.0, 1.0);
+    _gradientMask.colors = @[
+      (id)self.view.backgroundColor.CGColor, (id)UIColor.clearColor.CGColor
+    ];
+  }
+
+  // Apply mask and calculate geometry.
+  _scrollContainerView.layer.mask = _gradientMask;
+  _gradientMask.frame = _scrollContainerView.bounds;
+
+  CGFloat startY =
+      (effectiveGradientHeight >= _gradientMask.frame.size.height)
+          ? 0.0
+          : 1.0 - (effectiveGradientHeight / _gradientMask.frame.size.height);
+  _gradientMask.startPoint = CGPointMake(0.0, startY);
 }
 
 @end
