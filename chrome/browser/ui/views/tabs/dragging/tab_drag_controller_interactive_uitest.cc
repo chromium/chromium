@@ -2004,6 +2004,55 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
+// Wayland-chrome doesn't cancel tab dragging on esc.
+#if !BUILDFLAG(IS_OZONE_WAYLAND)
+
+// Canceling tab dragging while the detached tab is reattached should
+// not cause dangling ptr. (crbug.com/459242414)
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DetachAndAttachThenCancel) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+
+  Tab* tab = tab_strip->tab_at(0);
+  ASSERT_TRUE(PressInputAtCenter(tab));
+  // Move to the first tab and drag it enough so that it detaches, but not
+  // enough that it attaches to browser2.
+  ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
+      tab,
+      base::BindOnce(&DragToSeparateWindowStep2, this, browser(), browser2),
+      gfx::Vector2d(0, GetDetachY(tab_strip))));
+
+  // Wait for the browser containing the dragged tabs to be removed when
+  // attaching to browser2.
+  test::BrowserChangeWaiter(test::BrowserChangeWaiter::ChangeType::kRemoved)
+      .Wait(base::BindLambdaForTesting([=, this]() {
+        StopAnimating(tab_strip2);
+        ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
+
+        // Should now be attached to tab_strip2.
+        EXPECT_EQ("100 0", IDString(browser2->tab_strip_model()));
+        EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
+        ASSERT_TRUE(TabDragController::IsActive());
+
+        // Press escape to cancel drag.
+        EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+            browser()->GetWindow()->GetNativeWindow(), ui::VKEY_ESCAPE, false,
+            false, false, false));
+      }));
+
+  ASSERT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ("100", IDString(browser2->tab_strip_model()));
+  EXPECT_EQ("0 1", IDString(browser()->tab_strip_model()));
+}
+
+#endif  // !BUILDFLAG(IS_OZONE_WAYLAND)
+
 #if BUILDFLAG(IS_WIN)
 
 // Create two browsers, with the second one occluded, and drag from first over

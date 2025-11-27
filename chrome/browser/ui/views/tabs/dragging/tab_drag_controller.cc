@@ -1783,6 +1783,8 @@ void TabDragController::RevertDrag() {
   CHECK(attached_context_);
   CHECK(source_context_);
 
+  dragging_tabs_session_ = nullptr;
+
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
