@@ -1641,11 +1641,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mRootUiCoordinator.getDesktopWindowStateManager(),
                 mInstanceAllocationType,
                 !mFromResumption);
-
-        TipsUtils.performNotificationSchedulerSteps(
-                getProfileProviderSupplier(),
-                /* chromeActivityNativeDelegate= */ this,
-                getWindowAndroid());
     }
 
     @Override
@@ -3559,6 +3554,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             NtpCustomizationMetricsUtils.recordNtpThemeType();
             NtpCustomizationMetricsUtils.recordMvtUserEngagement();
         }
+
+        TipsUtils.performNotificationSchedulerSteps(
+                getProfileProviderSupplier(), getWindowAndroid());
     }
 
     @Override

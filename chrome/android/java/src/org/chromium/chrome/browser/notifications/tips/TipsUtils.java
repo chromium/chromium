@@ -20,12 +20,10 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
-import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.scheduler.TipsAgent;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
@@ -159,13 +157,10 @@ public class TipsUtils {
      * pending notifications are cancelled on either app startup or flag toggle.
      *
      * @param profileProviderSupplier The supplier for the current {@link ProfileProvider}.
-     * @param chromeActivityNativeDelegate The current {@link ChromeActivityNativeDelegate}.
      * @param windowAndroid The current {@link WindowAndroid}.
      */
     public static void performNotificationSchedulerSteps(
-            OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            ChromeActivityNativeDelegate chromeActivityNativeDelegate,
-            WindowAndroid windowAndroid) {
+            OneshotSupplier<ProfileProvider> profileProviderSupplier, WindowAndroid windowAndroid) {
         profileProviderSupplier.onAvailable(
                 (provider) -> {
                     Profile profile = provider.getOriginalProfile();
@@ -177,16 +172,7 @@ public class TipsUtils {
                             clearFeatureTipShownPrefs(profile);
                         }
 
-                        DeferredStartupHandler.getInstance()
-                                .addDeferredTask(
-                                        () -> {
-                                            if (chromeActivityNativeDelegate
-                                                    .isActivityFinishingOrDestroyed()) {
-                                                return;
-                                            }
-
-                                            maybeScheduleTipsNotification(profile, windowAndroid);
-                                        });
+                        maybeScheduleTipsNotification(profile, windowAndroid);
                     } else {
                         TipsAgent.removePendingNotifications(profile);
                     }
