@@ -186,40 +186,47 @@ public class NtpChromeColorsCoordinatorUnitTest {
     }
 
     @Test
-    public void testColorGridView_onMeasure() {
-        NtpChromeColorGridRecyclerView gridView =
+    public void testColorGridRecyclerView() {
+        NtpChromeColorGridRecyclerView gridRecyclerView =
+                new NtpChromeColorGridRecyclerView(mContext, null);
+        assertNull(gridRecyclerView.getItemAnimator());
+    }
+
+    @Test
+    public void testColorGridRecyclerView_onMeasure() {
+        NtpChromeColorGridRecyclerView gridRecyclerView =
                 new NtpChromeColorGridRecyclerView(mContext, null);
         GridLayoutManager layoutManager = spy(new GridLayoutManager(mContext, 1));
-        gridView.setLayoutManager(layoutManager);
+        gridRecyclerView.setLayoutManager(layoutManager);
 
         int itemWidth = 50;
         int spacing = 10;
-        gridView.setItemWidth(itemWidth);
-        gridView.setSpacing(spacing);
+        gridRecyclerView.setItemWidth(itemWidth);
+        gridRecyclerView.setSpacing(spacing);
 
         // Test case 1: width allows for exactly 3 items
         int width1 = 3 * (itemWidth + spacing);
-        gridView.measure(
+        gridRecyclerView.measure(
                 MeasureSpec.makeMeasureSpec(width1, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
         verify(layoutManager).setSpanCount(eq(3));
 
         // Test case 2: width allows for 2.5 items, should round down to 2
         int width2 = 2 * (itemWidth + spacing) + (itemWidth / 2);
-        gridView.measure(
+        gridRecyclerView.measure(
                 MeasureSpec.makeMeasureSpec(width2, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
         verify(layoutManager).setSpanCount(eq(2));
 
         // Test case 3: width allows for less than 1 item, should be 1
         int width3 = itemWidth / 2;
-        gridView.measure(
+        gridRecyclerView.measure(
                 MeasureSpec.makeMeasureSpec(width3, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
         verify(layoutManager).setSpanCount(eq(1));
 
         // Test case 4: width is same as before, should not change span count.
-        gridView.measure(
+        gridRecyclerView.measure(
                 MeasureSpec.makeMeasureSpec(width3, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
         verify(layoutManager).setSpanCount(eq(1));
@@ -227,9 +234,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
     @Test
     public void testAdapter_callsCallback() {
-        NtpChromeColorGridRecyclerView gridView =
+        NtpChromeColorGridRecyclerView gridRecyclerView =
                 mBottomSheetView.findViewById(R.id.chrome_colors_recycler_view);
-        NtpChromeColorsAdapter adapter = (NtpChromeColorsAdapter) gridView.getAdapter();
+        NtpChromeColorsAdapter adapter = (NtpChromeColorsAdapter) gridRecyclerView.getAdapter();
         assertNotNull(adapter);
 
         // Click the first item.

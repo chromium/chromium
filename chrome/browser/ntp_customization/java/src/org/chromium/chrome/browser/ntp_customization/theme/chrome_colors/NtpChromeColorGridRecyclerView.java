@@ -28,6 +28,8 @@ public class NtpChromeColorGridRecyclerView extends RecyclerView {
 
     public NtpChromeColorGridRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        setItemAnimator(null);
     }
 
     @Override
