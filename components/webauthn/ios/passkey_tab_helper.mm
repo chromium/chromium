@@ -275,6 +275,7 @@ void PasskeyTabHelper::AddNewPasskey(
     sync_pb::WebauthnCredentialSpecifics& passkey) {
   ScopedAllowPasskeyCreationInfobar scopedAllowPasskeyCreationInfobar(
       client_.get());
+  CHECK(passkey_model_utils::IsGpmPasskeyValid(passkey));
   passkey_model_->CreatePasskey(passkey);
 }
 

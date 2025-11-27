@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/features.h"
@@ -314,6 +315,7 @@ void GPMEnclaveTransaction::HandlePINValidationResult(
 
 void GPMEnclaveTransaction::OnPasskeyCreated(
     sync_pb::WebauthnCredentialSpecifics passkey) {
+  CHECK(webauthn::passkey_model_utils::IsGpmPasskeyValid(passkey));
   passkey_model_->CreatePasskey(passkey);
   delegate_->OnPasskeyCreated(passkey);
 }
