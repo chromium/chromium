@@ -287,6 +287,9 @@ class TabFeatures {
     return autofill_bubble_manager_.get();
   }
 
+  autofill::BubbleManager* SetBubbleManagerForTesting(
+      std::unique_ptr<autofill::BubbleManager> bubble_manager);
+
   AskBeforeHttpDialogController* ask_before_http_dialog_controller() {
     return ask_before_http_dialog_controller_.get();
   }
