@@ -58,7 +58,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         super.before();
 
         mActivityStart.customMainActivityStart();
-        mHelper = new DownloadTestHelper(this::getActivity);
+        mHelper = DownloadTestHelper.create(this::getActivity);
     }
 
     @Override

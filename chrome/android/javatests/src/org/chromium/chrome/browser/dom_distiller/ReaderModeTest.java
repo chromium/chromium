@@ -183,7 +183,8 @@ public class ReaderModeTest {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        try (DownloadTestHelper helper = new DownloadTestHelper(mActivityTestRule::getActivity)) {
+        try (DownloadTestHelper helper =
+                DownloadTestHelper.create(mActivityTestRule::getActivity)) {
             downloadAndOpenOfflinePage(helper);
 
             ThreadUtils.runOnUiThreadBlocking(

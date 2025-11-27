@@ -47,9 +47,20 @@ public class DownloadTestHelper implements AutoCloseable {
     private final Supplier<ChromeTabbedActivity> mActivitySupplier;
     private List<DownloadItem> mAllDownloads;
 
-    public DownloadTestHelper(Supplier<ChromeTabbedActivity> activitySupplier) {
+    private DownloadTestHelper(Supplier<ChromeTabbedActivity> activitySupplier) {
         mActivitySupplier = activitySupplier;
-        open();
+    }
+
+    /**
+     * Create a {@link DownloadTestHelper}, perform clean up, and attach download observers.
+     *
+     * @return an instance of {@link DownloadTestHelper} which should be closed to clean up after
+     *     the test and detach observers.
+     */
+    public static DownloadTestHelper create(Supplier<ChromeTabbedActivity> activitySupplier) {
+        DownloadTestHelper helper = new DownloadTestHelper(activitySupplier);
+        helper.open();
+        return helper;
     }
 
     private void open() {
