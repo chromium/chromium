@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing autofill, and this should restart the counter.
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(sync_service->IsSyncFeatureActive());
+  ASSERT_TRUE(sync_service->GetTransportState() ==
+              syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL));
   WaitForCounting();
   EXPECT_TRUE(IsSyncEnabled());
@@ -193,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing passwords, and this should restart the counter.
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(sync_service->IsSyncFeatureActive());
+  ASSERT_TRUE(sync_service->GetTransportState() ==
+              syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPasswords));
   WaitForCounting();
@@ -267,7 +269,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing history deletion, and this should restart the counter.
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(sync_service->IsSyncFeatureActive());
+  ASSERT_TRUE(sync_service->GetTransportState() ==
+              syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
   ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(

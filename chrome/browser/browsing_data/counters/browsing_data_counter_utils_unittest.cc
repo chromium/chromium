@@ -27,6 +27,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -336,6 +337,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     kImplicitSignin,  // Legacy Dice automatic signin.
     kExplicitSignin,
     kSigninPending,
+    // TODO(crbug.com/417950948): Remove sync-related states.
     kSyncing,
     kSyncPaused
   };
@@ -463,11 +465,15 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                               testing_profile->GetPrefs());
         break;
       case SigninState::kSyncing:
+        CHECK(!base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos));
         SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
                          test_sync_service, testing_profile->GetPrefs(),
                          /*explicit_signin=*/true);
         break;
       case SigninState::kSyncPaused:
+        CHECK(!base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos));
         SetSyncPausedState(identity_test_env, test_sync_service,
                            testing_profile->GetPrefs());
         break;
@@ -495,21 +501,27 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
   // Test the output for various forms of cookie results.
-  const struct TestCase kTestCases[] = {
+  std::vector<TestCase> test_cases = {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
       {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
       {/*num_sites= */ 1, SigninState::kExplicitSignin,
        "From 1 site (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
   };
 
-  for (const TestCase& test_case : kTestCases) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    test_cases.push_back(
+        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
+    test_cases.push_back(
+        {/*num_sites= */ 42, SigninState::kSyncing,
+         "From 42 sites (you'll stay signed in to your Google Account)"});
+    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
+  }
+
+  for (const TestCase& test_case : test_cases) {
     VerifyTestCase(test_case);
   }
 }
@@ -522,26 +534,33 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
   // Test the output for various forms of cookie results.
-  const struct TestCase kTestCases[] = {
+  std::vector<TestCase> test_cases = {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
       {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
       {/*num_sites= */ 1, SigninState::kExplicitSignin,
        "From 1 site. To delete Google cookies from this device, <a href=\"#\" "
        "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites. To delete Google cookies from this device, <a "
-       "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
-       "Chrome</a>."},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
-      {/*num_sites= */ 42, SigninState::kSyncing, "From 42 sites",
-       /*signout_allowed= */ false},
   };
 
-  for (const TestCase& test_case : kTestCases) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    test_cases.push_back(
+        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
+    test_cases.push_back(
+        {/*num_sites= */ 42, SigninState::kSyncing,
+         "From 42 sites. To delete Google cookies from this device, <a "
+         "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
+         "Chrome</a>."});
+    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
+    test_cases.push_back({/*num_sites= */ 42, SigninState::kSyncing,
+                          "From 42 sites",
+                          /*signout_allowed= */ false});
+  }
+
+  for (const TestCase& test_case : test_cases) {
     VerifyTestCase(test_case);
   }
 }
