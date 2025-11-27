@@ -1426,9 +1426,7 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
   BlinkTransferableMessage msg = std::move(event->message);
   GCedMessagePortArray* ports =
       MessagePort::EntanglePorts(*this, std::move(msg.ports));
-  String origin;
-  if (!event->source_origin->IsOpaque())
-    origin = event->source_origin->ToString();
+  scoped_refptr<const SecurityOrigin> origin = std::move(event->source_origin);
   WaitUntilObserver* observer = nullptr;
   Event* event_to_dispatch = nullptr;
 
