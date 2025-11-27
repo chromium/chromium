@@ -114,6 +114,7 @@ int GetVerifierPasswordCount(
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
+// TODO(crbug.com/353425612): Remove the default value for `store`.
 password_manager::PasswordForm CreateTestPasswordForm(
     int index,
     password_manager::PasswordForm::Store store =
@@ -206,6 +207,7 @@ class SamePasswordFormsAsVerifierChecker
 // Checker to block until specified profile contains the given password forms.
 class PasswordFormsChecker : public SingleClientStatusChangeChecker {
  public:
+  // TODO(crbug.com/353425612): Remove the default value for `store`.
   PasswordFormsChecker(
       int index,
       const std::vector<password_manager::PasswordForm>& expected_forms,
