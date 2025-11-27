@@ -40,6 +40,8 @@ class AttemptFormFillingTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   tabs::TabHandle GetTargetTab() const override;
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              ToolCallback callback) const override;
 
  private:
   void OnSuggestionsRetrieved(

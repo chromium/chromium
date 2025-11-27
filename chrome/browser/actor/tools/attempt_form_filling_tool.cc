@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_switches.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service.h"
@@ -221,6 +222,12 @@ AttemptFormFillingTool::GetObservationDelayer(
 
 tabs::TabHandle AttemptFormFillingTool::GetTargetTab() const {
   return tab_handle_;
+}
+
+void AttemptFormFillingTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    ToolCallback callback) const {
+  task.AddTab(tab_handle_, std::move(callback));
 }
 
 void AttemptFormFillingTool::OnSuggestionsRetrieved(
