@@ -444,6 +444,18 @@ TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
   return image;
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage) {
+  return CreateSharedImage(
+      si_info, surface_handle, buffer_usage,
+      CreatePixmapHandle(si_info.meta.size, si_info.meta.format));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {
   base::AutoLock locked(lock_);
