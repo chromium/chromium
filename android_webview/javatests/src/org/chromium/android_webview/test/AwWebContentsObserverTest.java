@@ -351,7 +351,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 awNavigationStart.didCommitErrorPage());
         Assert.assertNull("onNavigationStarted should have null page", awNavigationStart.getPage());
 
-        @Nullable Page page = isSameDocument ? null : Page.createForTesting();
+        @Nullable Page page = Page.createForTesting();
         navigation.didFinish(
                 gurl,
                 isErrorPage,
@@ -400,7 +400,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "The page passed in didFinish should equal the one in AwNavigation",
                 page,
-                (page == null) ? null : awNavigationComplete.getPage().getInternalPageForTesting());
+                awNavigationComplete.getPage().getInternalPageForTesting());
 
         // onNavigationRedirected should not be called.
         Assert.assertNull(mNavigationListener.getLastRedirectedNavigation());

@@ -208,7 +208,7 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mIsPdf = isPdf;
         mMimeType = mimeType;
-        if (mHasCommitted && !mIsSameDocument && mIsInPrimaryMainFrame) {
+        if (mHasCommitted && mIsInPrimaryMainFrame) {
             mCommittedPage = currentPage;
         }
     }
