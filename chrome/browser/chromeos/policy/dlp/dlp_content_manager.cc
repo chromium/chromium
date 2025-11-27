@@ -932,7 +932,6 @@ void DlpContentManager::OnDlpWarnDialogReply(
 void DlpContentManager::MaybeReportEvent(
     const RestrictionLevelAndUrl& restriction_info,
     DlpRulesManager::Restriction restriction) {
-  // TODO(crbug.com/1260302): Add reporting and metrics for WARN restrictions.
   if (IsReported(restriction_info) && reporting_manager_) {
     ReportEvent(restriction_info.url, restriction, restriction_info.level,
                 reporting_manager_);
