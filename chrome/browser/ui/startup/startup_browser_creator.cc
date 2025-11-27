@@ -1,7 +1,12 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+#include "base/path_service.h"
+#include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/common/chrome_paths.h"
+#include "extensions/browser/extension_system.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 
 #include <stddef.h>
@@ -831,6 +836,10 @@ void StartupBrowserCreator::LaunchBrowser(
   DCHECK(!command_line.HasSwitch(credential_provider::kGcpwSigninSwitch));
   DCHECK(!command_line.HasSwitch(switches::kNotificationLaunchId));
 #endif  // BUILDFLAG(IS_WIN)
+
+  in_synchronous_profile_launch_ = false;
+  profile_launch_observer.Get().AddLaunched(profile);
+
   in_synchronous_profile_launch_ =
       process_startup == chrome::startup::IsProcessStartup::kYes;
 

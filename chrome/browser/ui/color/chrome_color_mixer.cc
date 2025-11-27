@@ -958,10 +958,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::PickGoogleColor(gfx::kGoogleBlue300,
                           kColorReadAnythingBackgroundLowContrast,
                           color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorReadAnythingFocusRingBackgroundHighContrast] =
-      ui::PickGoogleColor(gfx::kGoogleBlue300,
-                          kColorReadAnythingBackgroundLowContrast,
-                          color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorReadAnythingFocusRingBackgroundSepiaLight] = ui::PickGoogleColor(
       gfx::kGoogleBlue500, kColorReadAnythingBackgroundSepiaLight,
       color_utils::kMinimumVisibleContrastRatio);
@@ -976,11 +972,11 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] = {kColorToolbarText};
-  mixer[kColorToolbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorToolbar] = {SkColorSetRGB(76, 141, 246)};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarText};
   mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : SK_ColorBLACK};
   mixer[kColorToolbarTopSeparatorFrameActive] = {dark_mode ? SK_ColorDKGRAY
                                                            : SK_ColorLTGRAY};
-  mixer[ui::kColorFrameActive] = {SK_ColorDKGRAY};
-  mixer[ui::kColorFrameInactive] = {SK_ColorGRAY};
+  mixer[ui::kColorFrameActive] = {SkColorSetRGB(76, 141, 246)};
+  mixer[ui::kColorFrameInactive] = {SkColorSetRGB(48, 52, 47)};
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2014 The Chromium Authors
+# Copyright 2014 SupKittyMeow
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ sys.path.insert(
 import pefile
 
 def reorder_imports(input_dir, output_dir, architecture):
-  """Swap chrome_elf.dll to be the first import of chrome.exe.
+  """Swap chrome_elf.dll to be the first import of goobium.exe.
   Also copy over any related files that might be needed
   (pdbs, manifests etc.).
   """
@@ -24,8 +24,8 @@ def reorder_imports(input_dir, output_dir, architecture):
   # correct executable in the first place, so that this script
   # only needs to verify that and not write a whole new exe.
 
-  input_image = os.path.join(input_dir, 'chrome.exe')
-  output_image = os.path.join(output_dir, 'chrome.exe')
+  input_image = os.path.join(input_dir, 'goobium.exe')
+  output_image = os.path.join(output_dir, 'goobium.exe')
 
   # pefile mmap()s the whole executable, and then parses parts of
   # it into python data structures for ease of processing.
@@ -73,7 +73,7 @@ def reorder_imports(input_dir, output_dir, architecture):
 
   pe.write(filename=output_image)
 
-  for fname in glob.iglob(os.path.join(input_dir, 'chrome.exe.*')):
+  for fname in glob.iglob(os.path.join(input_dir, 'goobium.exe.*')):
     shutil.copy(fname, os.path.join(output_dir, os.path.basename(fname)))
   return 0
 

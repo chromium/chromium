@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors
+# Copyright 2015 SupKittyMeow
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -147,7 +147,7 @@ action("mini_installer_archive") {
   inputs = [
     "$root_out_dir/chrome.dll",
     "$root_out_dir/chrome_elf.dll",
-    "$root_out_dir/chrome.exe",
+    "$root_out_dir/goobium.exe",
     "$root_out_dir/locales/en-US.pak",
     "$root_out_dir/setup.exe",
     "//chrome/tools/build/win/makecab.py",

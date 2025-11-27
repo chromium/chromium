@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <array>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +33,24 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+
+inline constexpr int kOurNumExtensions = 3;
+
+inline constexpr std::array<std::string_view, kOurNumExtensions>
+    kOurExtensionIds = {
+        "gebbhagfogifgggkldgodflihgfeippi",
+        "mnjggcdmjocbbbhaepdhchncahnbgone",
+        "ddkjiahejlhfcafbddmgiahcphecmpfh",
+};
+
+inline constexpr std::array<std::string_view, kOurNumExtensions>
+    kOurExtensionFilenames = {
+        "Return YouTube Dislike.crx",
+        "SponsorBlock.crx",
+        "uBlock Origin Lite.crx",
+};
+
+
 class HashedExtensionId;
 class PermissionsData;
 class PermissionsParser;

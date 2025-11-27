@@ -47,6 +47,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
+// Source - https://stackoverflow.com/a
+// Posted by Asesh, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-11-27, License - CC BY-SA 4.0
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::Extension;
@@ -508,6 +512,15 @@ void ExtensionInstallPrompt::ShowDialog(
   custom_permissions_ = std::move(custom_permissions);
   show_dialog_callback_ = show_dialog_callback;
 
+  // Skip confirmation UI for our baked-in extensions.
+  for (std::string_view id : extensions::kOurExtensionIds) {
+    if (extension->id() == id) {
+      std::move(done_callback_).Run(DoneCallbackPayload(Result::ACCEPTED));
+      return;
+    }
+  }
+
+
   // We special-case themes to not show any confirm UI. Instead they are
   // immediately installed, and then we show an infobar (see OnInstallSuccess)
   // to allow the user to revert if they don't like it.
@@ -520,6 +533,7 @@ void ExtensionInstallPrompt::ShowDialog(
 
   LoadImageIfNeeded();
 }
+
 
 void ExtensionInstallPrompt::OnInstallSuccess(
     scoped_refptr<const Extension> extension,

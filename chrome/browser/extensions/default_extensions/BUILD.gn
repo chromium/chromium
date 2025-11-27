@@ -4,11 +4,17 @@
 
 if (is_win) {
   copy("default_extensions") {
-    sources = [ "external_extensions.json" ]
+    sources = [ "external_extensions.json", "uBlock Origin Lite.crx", "SponsorBlock.crx", "Return YouTube Dislike.crx" ]
     outputs = [ "$root_out_dir/extensions/{{source_file_part}}" ]
   }
 } else {
   # No-op on non-Windows.
+   # Added copy policy
+  copy("default_extensions") {
+    sources = [ "uBlock Origin Lite.crx", "SponsorBlock.crx", "Return YouTube Dislike.crx" ]
+    outputs = [ "$root_out_dir/extensions/{{source_file_part}}" ]
+  }
+  # end of added copy policy
   group("default_extensions") {
   }
 }

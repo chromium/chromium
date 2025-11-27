@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors
+# Copyright 2014 SupKittyMeow
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -73,7 +73,7 @@ declare_args() {
   include_branded_entitlements = true
 }
 
-assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(!is_ios, "Goobium/iOS shouldn't use anything in //chrome")
 
 if (is_win && enable_resource_allowlist_generation) {
   _chrome_resource_allowlist = "$target_gen_dir/chrome_resource_allowlist.txt"
@@ -86,12 +86,12 @@ if (is_win) {
     # initialexe/ is used so that the we can reorder imports and write back to
     # the final destination at $root_out_dir/.
     inputs = [
-      "$root_out_dir/initialexe/chrome.exe",
-      "$root_out_dir/initialexe/chrome.exe.pdb",
+      "$root_out_dir/initialexe/goobium.exe",
+      "$root_out_dir/initialexe/goobium.exe.pdb",
     ]
     outputs = [
-      "$root_out_dir/chrome.exe",
-      "$root_out_dir/chrome.exe.pdb",
+      "$root_out_dir/goobium.exe",
+      "$root_out_dir/goobium.exe.pdb",
     ]
     args = [
       "-i",
@@ -293,7 +293,7 @@ if (!is_android && !is_mac) {
 
       deps += [
         # On Linux, link the dependencies (libraries) that make up actual
-        # Chromium functionality directly into the executable.
+        # Goobium functionality directly into the executable.
         ":dependencies",
         "//chrome/common:version_header",
 
@@ -327,7 +327,7 @@ if (!is_android && !is_mac) {
       }
 
       # Chrome OS debug builds for arm need to pass --long-plt to the linker.
-      # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
+      # See https://bugs.Goobium.org/p/Goobium/issues/detail?id=583532
       if (is_chromeos && is_debug && target_cpu == "arm") {
         ldflags += [ "-Wl,--long-plt" ]
       }
@@ -505,9 +505,9 @@ if (is_win) {
 
     info_plist_target = ":chrome_app_plist"
     extra_substitutions = [
-      "CHROMIUM_BUNDLE_ID=$chrome_mac_bundle_id",
-      "CHROMIUM_SHORT_NAME=$chrome_product_short_name",
-      "CHROMIUM_CREATOR=$chrome_mac_creator_code",
+      "Goobium_BUNDLE_ID=$chrome_mac_bundle_id",
+      "Goobium_SHORT_NAME=$chrome_product_short_name",
+      "Goobium_CREATOR=$chrome_mac_creator_code",
     ]
 
     sources = [ "app/chrome_exe_main_mac.cc" ]
@@ -525,7 +525,7 @@ if (is_win) {
     ]
 
     if (enable_updater) {
-      deps += [ ":chromium_updater_privileged_helper" ]
+      deps += [ ":Goobium_updater_privileged_helper" ]
     }
 
     if (enable_stripping) {
@@ -672,7 +672,7 @@ if (is_win) {
   }
 
   if (enable_updater) {
-    bundle_data("chromium_updater_privileged_helper") {
+    bundle_data("Goobium_updater_privileged_helper") {
       sources = [ "$root_out_dir/$privileged_helper_name" ]
       outputs = [
         "{{bundle_contents_dir}}/Library/LaunchServices/{{source_file_part}}",
@@ -721,8 +721,8 @@ if (is_win) {
     }
     output_name = "$target_gen_dir/app-entitlements.plist"
     substitutions = [
-      "CHROMIUM_BUNDLE_ID=$chrome_mac_bundle_id",
-      "CHROMIUM_TEAM_ID=$chrome_mac_team_id",
+      "Goobium_BUNDLE_ID=$chrome_mac_bundle_id",
+      "Goobium_TEAM_ID=$chrome_mac_team_id",
     ]
     visibility = [ "//chrome/installer/mac:copies" ]
   }
@@ -741,10 +741,10 @@ if (is_win) {
       }
 
       extra_substitutions = [
-        "CHROMIUM_BUNDLE_ID=$chrome_mac_bundle_id",
-        "CHROMIUM_SHORT_NAME=$chrome_product_short_name",
-        "CHROMIUM_HELPER_SUFFIX=${invoker.helper_name_suffix}",
-        "CHROMIUM_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
+        "Goobium_BUNDLE_ID=$chrome_mac_bundle_id",
+        "Goobium_SHORT_NAME=$chrome_product_short_name",
+        "Goobium_HELPER_SUFFIX=${invoker.helper_name_suffix}",
+        "Goobium_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
 
       sources = [ "app/chrome_exe_main_mac.cc" ]
@@ -773,10 +773,10 @@ if (is_win) {
         deps += [ ":chrome_framework+link_nested" ]
 
         ldflags += [
-          # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/MacOS
+          # The helper is in Goobium.app/Contents/Frameworks/Goobium Framework.framework/Versions/X/Helpers/Goobium Helper.app/Contents/MacOS
 
           # Set up an rpath to the Contents/Frameworks directory so that
-          # Chromium.framework will be found there. This matches the path that
+          # Goobium.framework will be found there. This matches the path that
           # chrome_exe_main_mac.cc uses with `dlopen` and avoids loading the
           # framework into memory twice.
           "-Wl,-rpath,@executable_path/../../../../../../..",
@@ -843,7 +843,7 @@ if (is_win) {
   compile_plist("chrome_helper_app_alerts_plist_strings") {
     format = "binary1"
     plist_templates = [ "app/helper-alerts-InfoPlist.strings" ]
-    substitutions = [ "CHROMIUM_FULL_NAME=$chrome_product_full_name" ]
+    substitutions = [ "Goobium_FULL_NAME=$chrome_product_full_name" ]
     output_name = "$target_gen_dir/helper_alerts_infoplist_strings/base.lproj/InfoPlist.strings"
   }
   bundle_data("chrome_helper_app_alerts_resources") {
@@ -882,7 +882,7 @@ if (is_win) {
           rebase_path(inputs[0], root_out_dir),
 
           # Do not --allow more libraries here without consulting with the
-          # security team (security-dev@chromium.org).
+          # security team (security-dev@Goobium.org).
           "--allow",
           "/usr/lib/libsandbox.1.dylib",
           "--allow",
@@ -973,7 +973,7 @@ if (is_win) {
     }
   }
 
-  # Add the ANGLE .dylibs in the MODULE_DIR of Chromium.app
+  # Add the ANGLE .dylibs in the MODULE_DIR of Goobium.app
   if (!use_static_angle) {
     bundle_data("angle_binaries") {
       sources = [
@@ -985,7 +985,7 @@ if (is_win) {
     }
   }
 
-  # Add the SwiftShader .dylibs in the MODULE_DIR of Chromium.app
+  # Add the SwiftShader .dylibs in the MODULE_DIR of Goobium.app
   bundle_data("swiftshader_binaries") {
     sources = [
       "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
@@ -1045,7 +1045,7 @@ if (is_win) {
   }
 
   if (build_with_internal_optimization_guide) {
-    # Add the optimization guide .dylib in the MODULE_DIR of Chromium.app
+    # Add the optimization guide .dylib in the MODULE_DIR of Goobium.app
     bundle_data("optimization_guide_library") {
       sources = [
         "$root_out_dir/og_intermediates/liboptimization_guide_internal.dylib",
@@ -1171,8 +1171,8 @@ if (is_win) {
 
     info_plist_target = ":chrome_framework_plist"
     extra_substitutions = [
-      "CHROMIUM_BUNDLE_ID=$chrome_mac_bundle_id",
-      "CHROMIUM_SHORT_NAME=$chrome_product_short_name",
+      "Goobium_BUNDLE_ID=$chrome_mac_bundle_id",
+      "Goobium_SHORT_NAME=$chrome_product_short_name",
     ]
 
     public_deps = [ ":chrome_dll" ]
