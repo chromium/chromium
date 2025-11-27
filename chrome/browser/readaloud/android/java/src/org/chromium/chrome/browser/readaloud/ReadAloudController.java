@@ -2057,8 +2057,6 @@ public class ReadAloudController
     }
 
     /**
-     * TODO(crbug.com/305737581): finish implementation.
-     *
      * @param content Selected word and surrounding content
      * @param beginOffset index of where the selected word starts within the content
      * @param endOffset index of where the selected word ends within the content
