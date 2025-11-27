@@ -65,7 +65,7 @@ ValuableMetadataSyncBridge::~ValuableMetadataSyncBridge() = default;
 void ValuableMetadataSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillValuableMetadataSyncBridgeUserDataKey,
       std::make_unique<ValuableMetadataSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -78,7 +78,7 @@ void ValuableMetadataSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* ValuableMetadataSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<ValuableMetadataSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillValuableMetadataSyncBridgeUserDataKey));
 }
 

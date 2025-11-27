@@ -79,7 +79,7 @@ ContactInfoSyncBridge::~ContactInfoSyncBridge() = default;
 void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kContactInfoSyncBridgeUserDataKey,
       std::make_unique<ContactInfoSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -92,7 +92,7 @@ void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<ContactInfoSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kContactInfoSyncBridgeUserDataKey));
 }
 
