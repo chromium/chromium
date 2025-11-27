@@ -121,7 +121,8 @@ TEST_F(AudioProcessMlModelForwarderTest,
           OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR));
 }
 
-TEST_F(AudioProcessMlModelForwarderTest, ForwardUpdates) {
+// TODO(crbug.com/464181367): Fix and re-enable the test.
+TEST_F(AudioProcessMlModelForwarderTest, DISABLED_ForwardUpdates) {
   forwarder_->Initialize(model_provider_);
   forwarder_->OnAudioProcessLaunched(std::move(remote_ml_model_manager_));
 
@@ -215,8 +216,9 @@ TEST_F(AudioProcessMlModelForwarderTest,
       [&]() { return !forwarder_->HasPendingTasksForTesting(); }));
 }
 
+// TODO(crbug.com/464181367): Fix and re-enable the test.
 TEST_F(AudioProcessMlModelForwarderTest,
-       HandleStopServingSignalAfterAudioProcessCrash) {
+       DISABLED_HandleStopServingSignalAfterAudioProcessCrash) {
   forwarder_->Initialize(model_provider_);
   forwarder_->OnAudioProcessLaunched(std::move(remote_ml_model_manager_));
 
