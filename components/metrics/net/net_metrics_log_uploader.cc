@@ -157,7 +157,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
   }
 
   if (service_type == metrics::MetricsLogUploader::PRIVATE_METRICS) {
-    return net::DefineNetworkTrafficAnnotation(  //
+    return net::DefineNetworkTrafficAnnotation(
         "metrics_report_private_metrics",
         R"(
       semantics {
