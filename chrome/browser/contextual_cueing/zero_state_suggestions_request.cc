@@ -159,7 +159,7 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
       pending_base_request_,
-      /*execution_timeout=*/std::nullopt,
+      /*options=*/{},
       base::BindOnce(&ZeroStateSuggestionsRequest::OnModelExecutionResponse,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }

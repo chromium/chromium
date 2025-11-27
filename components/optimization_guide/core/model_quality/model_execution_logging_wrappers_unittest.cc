@@ -49,7 +49,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
       .WillOnce([&response, &model_execution_info](
                     ModelBasedCapabilityKey feature,
                     const google::protobuf::MessageLite& request_metadata,
-                    const std::optional<base::TimeDelta>& execution_timeout,
+                    const ModelExecutionOptions& options,
                     OptimizationGuideModelExecutionResultCallback callback) {
         std::move(callback).Run(OptimizationGuideModelExecutionResult(
                                     AnyWrapProto(response),
@@ -86,7 +86,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                            An<OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce([](ModelBasedCapabilityKey feature,
                    const google::protobuf::MessageLite& request_metadata,
-                   const std::optional<base::TimeDelta>& execution_timeout,
+                   const ModelExecutionOptions& options,
                    OptimizationGuideModelExecutionResultCallback callback) {
         std::move(callback).Run(
             OptimizationGuideModelExecutionResult(

@@ -481,7 +481,7 @@ OptimizationGuideKeyedService::StartSession(
 void OptimizationGuideKeyedService::ExecuteModel(
     optimization_guide::ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
-    const std::optional<base::TimeDelta>& execution_timeout,
+    const optimization_guide::ModelExecutionOptions& options,
     optimization_guide::OptimizationGuideModelExecutionResultCallback
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -499,9 +499,8 @@ void OptimizationGuideKeyedService::ExecuteModel(
     return;
   }
   model_execution_manager_->ExecuteModel(
-      feature, request_metadata, execution_timeout,
-      /*log_ai_data_request=*/nullptr,
-      optimization_guide::ModelExecutionServiceType::kDefault,
+      feature, request_metadata, options.execution_timeout,
+      /*log_ai_data_request=*/nullptr, options.service_type,
       std::move(callback));
 }
 

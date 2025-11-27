@@ -76,7 +76,8 @@ void ExecuteModelWithLogging(
                                     std::move(model_execution_proto));
           },
           std::move(callback), std::move(model_execution_proto));
-  executor->ExecuteModel(feature, request, execution_timeout,
+  executor->ExecuteModel(feature, request,
+                         {.execution_timeout = execution_timeout},
                          std::move(internal_callback));
 }
 

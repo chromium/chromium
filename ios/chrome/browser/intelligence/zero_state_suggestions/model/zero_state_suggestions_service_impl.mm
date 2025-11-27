@@ -132,7 +132,8 @@ void ZeroStateSuggestionsServiceImpl::OnPageContextGenerated(
 
   service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      request, kModelExecutionTimeout, std::move(result_callback));
+      request, {.execution_timeout = kModelExecutionTimeout},
+      std::move(result_callback));
 }
 
 void ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse(

@@ -22,7 +22,7 @@ class MockRemoteModelExecutor : public RemoteModelExecutor {
               ExecuteModel,
               (ModelBasedCapabilityKey feature,
                const google::protobuf::MessageLite& request_metadata,
-               const std::optional<base::TimeDelta>& execution_timeout,
+               const ModelExecutionOptions& options,
                OptimizationGuideModelExecutionResultCallback callback),
               (override));
 };

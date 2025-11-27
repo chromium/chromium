@@ -138,7 +138,7 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
   VLOG(1) << "Executing server query";
   service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kTest, request,
-      /*execution_timeout=*/std::nullopt,
+      /*options=*/{},
       base::BindOnce(&OnDeviceLlmInternalsHandler::OnServerModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 #endif  // Server inference

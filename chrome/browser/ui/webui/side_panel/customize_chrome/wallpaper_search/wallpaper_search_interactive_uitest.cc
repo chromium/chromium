@@ -289,7 +289,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
           .WillOnce(
               [](optimization_guide::ModelBasedCapabilityKey feature_arg,
                  const google::protobuf::MessageLite& request_arg,
-                 const std::optional<base::TimeDelta>& execution_timeout,
+                 const optimization_guide::ModelExecutionOptions& options,
                  optimization_guide::
                      OptimizationGuideModelExecutionResultCallback
                          done_callback_arg) {

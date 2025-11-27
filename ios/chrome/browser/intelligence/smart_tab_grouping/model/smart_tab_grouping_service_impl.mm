@@ -104,7 +104,8 @@ void SmartTabGroupingServiceImpl::OnRequestWrapperCompleted(
 
   optimization_guide_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kIosSmartTabGrouping,
-      std::move(*request), kSmartTabGroupingRequestTimeout,
+      std::move(*request),
+      {.execution_timeout = kSmartTabGroupingRequestTimeout},
       base::BindOnce(&SmartTabGroupingServiceImpl::OnSmartTabGroupingResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

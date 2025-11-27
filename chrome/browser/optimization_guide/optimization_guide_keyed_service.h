@@ -145,7 +145,7 @@ class OptimizationGuideKeyedService
   void ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
-      const std::optional<base::TimeDelta>& execution_timeout,
+      const optimization_guide::ModelExecutionOptions& options,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
 

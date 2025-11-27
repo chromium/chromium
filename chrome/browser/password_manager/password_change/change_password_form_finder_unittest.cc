@@ -321,7 +321,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
           [test_url, test_title](
               optimization_guide::ModelBasedCapabilityKey feature,
               const google::protobuf::MessageLite& request_metadata,
-              std::optional<base::TimeDelta> execution_timeout,
+              const optimization_guide::ModelExecutionOptions& options,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             const auto& request = static_cast<

@@ -54,6 +54,15 @@ using OptimizationGuideModelExecutionResultCallback =
                             // TODO(372535824): remove this parameter.
                             std::unique_ptr<ModelQualityLogEntry>)>;
 
+// Optional parameters for RemoteModelExecutor::ExecuteModel.
+struct ModelExecutionOptions {
+  bool operator==(const ModelExecutionOptions& other) const = default;
+
+  const std::optional<base::TimeDelta> execution_timeout;
+  const ModelExecutionServiceType service_type =
+      ModelExecutionServiceType::kDefault;
+};
+
 // Interface for remote model execution.
 class RemoteModelExecutor {
  public:
@@ -64,7 +73,7 @@ class RemoteModelExecutor {
   virtual void ExecuteModel(
       ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
-      const std::optional<base::TimeDelta>& execution_timeout,
+      const ModelExecutionOptions& options,
       OptimizationGuideModelExecutionResultCallback callback) = 0;
 };
 

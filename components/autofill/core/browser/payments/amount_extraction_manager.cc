@@ -208,7 +208,8 @@ void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
 
   autofill_manager_->client().GetRemoteModelExecutor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
-      std::move(request), kAiBasedAmountExtractionWaitTime,
+      std::move(request),
+      {.execution_timeout = kAiBasedAmountExtractionWaitTime},
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,
                      weak_ptr_factory_.GetWeakPtr()));
 }

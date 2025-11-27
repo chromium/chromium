@@ -105,7 +105,7 @@ class ScopedSetMetricsConsent {
 class OptimizationGuideConsumerWebContentsObserver
     : public content::WebContentsObserver {
  public:
-  OptimizationGuideConsumerWebContentsObserver(
+  explicit OptimizationGuideConsumerWebContentsObserver(
       content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
   ~OptimizationGuideConsumerWebContentsObserver() override = default;

@@ -51,7 +51,7 @@ void TabOrganizationServiceImpl::ExecuteGroupTabs(
   service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
       proto_request,
-      /*execution_timeout*/ std::nullopt, std::move(result_callback));
+      /*options=*/{}, std::move(result_callback));
 }
 
 std::string TabOrganizationServiceImpl::OnGroupTabsResponse(

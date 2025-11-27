@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/amount_extraction.pb.h"
@@ -1051,6 +1052,10 @@ TEST_F(AmountExtractionManagerTest, ShouldCallExecuteModel) {
   *expected_request.mutable_annotated_page_content() =
       optimization_guide::proto::AnnotatedPageContent();
 
+  optimization_guide::ModelExecutionOptions expected_options{
+      .execution_timeout =
+          AmountExtractionManager::kAiBasedAmountExtractionWaitTime};
+
   optimization_guide::proto::AmountExtractionResponse response;
   response.set_final_checkout_amount(123.45);
   response.set_currency("USD");
@@ -1060,8 +1065,7 @@ TEST_F(AmountExtractionManagerTest, ShouldCallExecuteModel) {
       *model_executor(),
       ExecuteModel(
           optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
-          EqualsProto(expected_request),
-          Eq(AmountExtractionManager::kAiBasedAmountExtractionWaitTime),
+          EqualsProto(expected_request), Eq(expected_options),
           A<ModelExecutionCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
           optimization_guide::OptimizationGuideModelExecutionResult(

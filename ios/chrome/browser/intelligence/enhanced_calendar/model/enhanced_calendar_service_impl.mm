@@ -135,7 +135,7 @@ void EnhancedCalendarServiceImpl::OnPageContextGenerated(
 
   service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kEnhancedCalendar, request,
-      kEnhancedCalendarRequestTimeout,
+      {.execution_timeout = kEnhancedCalendarRequestTimeout},
       base::BindOnce(&EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

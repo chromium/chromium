@@ -173,7 +173,7 @@ void WalletablePassIngestionController::ExtractWalletablePass(
   client_->GetRemoteModelExecutor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction,
       std::move(request),
-      /*execution_timeout=*/std::nullopt,
+      /*options=*/{},
       base::BindOnce(
           &WalletablePassIngestionController::OnExtractWalletablePass,
           weak_ptr_factory_.GetWeakPtr(), url));
