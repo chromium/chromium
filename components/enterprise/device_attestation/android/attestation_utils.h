@@ -12,8 +12,12 @@
 
 namespace enterprise {
 
-// Generates the blob with content binding
-BlobGenerationResult GenerateAttestationBlob(std::string_view report_request,
+// Generates an attestation blob with the following request configuration:
+// - `flow_name` as the work flow name
+// - A content binding with the `request_payload` acting as the payload and both
+// `timestamp` and `nonce` as the salt.
+BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
+                                             std::string_view request_payload,
                                              std::string_view timestamp,
                                              std::string_view nonce);
 
