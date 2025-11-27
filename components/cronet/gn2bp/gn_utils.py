@@ -593,10 +593,10 @@ class GnParser:
         'action', 'action_foreach'
         # GN's copy is translated to Soong by making it look like a GN's action
         # with a special //cp script. This works well for its only usage:
-        # //base:build_date. As the list of supported copy target grows, we might
+        # //base:build_date_header. As the list of supported copy target grows, we might
         # need to revisit this decision.
     ]) or (desc['type'] == 'copy' and target.name
-           in ['//base:build_date', '//base:build_date__testing']):
+           in ['//base:build_date_header', '//base:build_date_header__testing']):
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
       outs = [_remove_out_prefix(x) for x in desc['outputs']]
