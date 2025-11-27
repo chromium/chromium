@@ -923,9 +923,11 @@ void RuleSet::AddPropertyRule(StyleRuleProperty* rule,
   property_rules_.push_back(CascadeLayered<StyleRuleProperty>(rule, layer));
 }
 
-void RuleSet::AddCounterStyleRule(StyleRuleCounterStyle* rule) {
+void RuleSet::AddCounterStyleRule(StyleRuleCounterStyle* rule,
+                                  const CascadeLayer* layer) {
   need_compaction_ = true;
-  counter_style_rules_.push_back(rule);
+  counter_style_rules_.push_back(
+      CascadeLayered<StyleRuleCounterStyle>(rule, layer));
 }
 
 void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
@@ -1000,8 +1002,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       AddPropertyRule(property_rule, cascade_layer);
     } else if (auto* counter_style_rule =
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
-      counter_style_rule->SetCascadeLayer(cascade_layer);
-      AddCounterStyleRule(counter_style_rule);
+      AddCounterStyleRule(counter_style_rule, cascade_layer);
     } else if (auto* view_transition_rule =
                    DynamicTo<StyleRuleViewTransition>(rule)) {
       view_transition_rule->SetCascadeLayer(cascade_layer);

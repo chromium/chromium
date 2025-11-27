@@ -1698,6 +1698,40 @@ TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_LayeredPropertyRules) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(StyleResolverTest, CreateUnconnectedRuleSets_CounterStyleRules) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @layer foo, bar;
+    </style>
+    <style id=style></style>
+    <style>
+      @layer bar {
+        @counter-style cs {
+          system: fixed;
+          symbols: A B C;
+          suffix: " ";
+        }
+      }
+      @layer foo {
+        @counter-style cs {
+          system: fixed;
+          symbols: X Y Z;
+          suffix: " ";
+        }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+  // This should have no side effects:
+  CreateUnconnectedRuleSets(scoped_resolver->GetActiveStyleSheets());
+  // Add a layer that causes a rebuild of the CascadeLayer map:
+  SetInnerText("#style", "@layer { div {} }");
+  // Don't crash:
+  UpdateAllLifecyclePhasesForTest();
+}
+
 TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

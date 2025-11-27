@@ -524,7 +524,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<CascadeLayered<StyleRuleProperty>>& PropertyRules() const {
     return property_rules_;
   }
-  const HeapVector<Member<StyleRuleCounterStyle>>& CounterStyleRules() const {
+  const HeapVector<CascadeLayered<StyleRuleCounterStyle>>& CounterStyleRules()
+      const {
     return counter_style_rules_;
   }
   const HeapVector<Member<StyleRuleFontPaletteValues>>& FontPaletteValuesRules()
@@ -673,7 +674,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddFontFaceRule(StyleRuleFontFace*, const CascadeLayer*);
   void AddKeyframesRule(StyleRuleKeyframes*, const CascadeLayer*);
   void AddPropertyRule(StyleRuleProperty*, const CascadeLayer*);
-  void AddCounterStyleRule(StyleRuleCounterStyle*);
+  void AddCounterStyleRule(StyleRuleCounterStyle*, const CascadeLayer*);
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*,
                                 const CascadeLayer*);
@@ -806,7 +807,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleViewTransition>> view_transition_rules_;
   HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<CascadeLayered<StyleRuleProperty>> property_rules_;
-  HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
+  HeapVector<CascadeLayered<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRulePositionTry>> position_try_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
   HeapVector<Member<StyleRuleFunction>> function_rules_;
