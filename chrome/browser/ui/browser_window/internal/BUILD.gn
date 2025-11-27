@@ -32,6 +32,7 @@ source_set("internal") {
     ]
   } else {
     sources += [
+      "browser_collection.cc",
       "browser_window_features.cc",
       "browser_window_interface_iterator_non_android.cc",
       "create_browser_window_non_android.cc",

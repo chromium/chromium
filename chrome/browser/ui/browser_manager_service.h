@@ -39,10 +39,6 @@ class BrowserManagerService : public KeyedService,
   void DeleteBrowser(Browser* browser);
 
  private:
-  // ProfileBrowserCollection:
-  void AddObserver(BrowserCollectionObserver* observer) override;
-  void RemoveObserver(BrowserCollectionObserver* observer) override;
-
   // Called when a browser in this profile became active.
   void OnBrowserActivated(BrowserWindowInterface* browser);
 
@@ -59,10 +55,6 @@ class BrowserManagerService : public KeyedService,
                 std::pair<base::CallbackListSubscription,
                           base::CallbackListSubscription>>;
   std::vector<BrowserAndSubscriptions> browsers_and_subscriptions_;
-
-  // A list of observers which will be notified of every browser addition and
-  // removal across all browsers in this profile.
-  base::ObserverList<BrowserCollectionObserver> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_MANAGER_SERVICE_H_

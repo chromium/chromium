@@ -32,7 +32,7 @@ void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
 
   base::WeakPtr<BrowserWindowInterface> browser_weak_ptr =
       browsers_and_subscriptions_.back().first->GetWeakPtr();
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     if (browser_weak_ptr) {
       observer.OnBrowserCreated(browser_weak_ptr.get());
     }
@@ -55,30 +55,21 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
     return;
   }
 
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserClosed(target_browser_and_subscriptions->first.get());
   }
 }
 
 void BrowserManagerService::OnBrowserActivated(
     BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserActivated(browser);
   }
 }
 
 void BrowserManagerService::OnBrowserDeactivated(
     BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserDeactivated(browser);
   }
-}
-
-void BrowserManagerService::AddObserver(BrowserCollectionObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void BrowserManagerService::RemoveObserver(
-    BrowserCollectionObserver* observer) {
-  observers_.RemoveObserver(observer);
 }

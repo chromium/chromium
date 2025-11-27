@@ -18,36 +18,27 @@ GlobalBrowserCollection::~GlobalBrowserCollection() = default;
 
 void GlobalBrowserCollection::OnBrowserCreated(
     BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserCreated(browser);
   }
 }
 
 void GlobalBrowserCollection::OnBrowserClosed(BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserClosed(browser);
   }
 }
 
 void GlobalBrowserCollection::OnBrowserActivated(
     BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserActivated(browser);
   }
 }
 
 void GlobalBrowserCollection::OnBrowserDeactivated(
     BrowserWindowInterface* browser) {
-  for (BrowserCollectionObserver& observer : observers_) {
+  for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserDeactivated(browser);
   }
-}
-
-void GlobalBrowserCollection::AddObserver(BrowserCollectionObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void GlobalBrowserCollection::RemoveObserver(
-    BrowserCollectionObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
