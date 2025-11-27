@@ -335,7 +335,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
 
     // Even if there are suggestions, don't show on textareas.
     case FocusedFieldType::kFillableTextArea:
-      return false;  // TODO(crbug.com/40628376): true on long-press.
+      return false;
 
     // Sometimes autocomplete entries may be set when the focus is on an unknown
     // or unfillable field.
