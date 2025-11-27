@@ -229,6 +229,7 @@ class MockTeacherScreenPresenter : public TeacherScreenPresenter {
   MOCK_METHOD(void,
               Start,
               (std::string_view,
+               std::string_view,
                ::boca::UserIdentity,
                bool,
                base::OnceCallback<void(bool)>,

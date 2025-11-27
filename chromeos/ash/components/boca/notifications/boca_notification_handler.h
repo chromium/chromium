@@ -11,10 +11,10 @@ namespace ash::boca {
 // Handles Class hub notifications.
 class BocaNotificationHandler {
  public:
-  inline static constexpr char kSessionNotificationId[] =
-      "school-tools-session";
-  inline static constexpr char kCaptionNotificationId[] =
-      "school-tools-caption";
+  inline static constexpr char kSessionNotificationId[] = "class-tools-session";
+  inline static constexpr char kCaptionNotificationId[] = "class-tools-caption";
+  inline static constexpr char kScreenShareNotificationId[] =
+      "class-tools-caption";
 
   // Handle session started notification.
   void HandleSessionStartedNotification(
@@ -26,6 +26,13 @@ class BocaNotificationHandler {
   void HandleCaptionNotification(message_center::MessageCenter* message_center,
                                  bool is_local_caption_enabled,
                                  bool is_session_caption_enabled);
+  // Handle screen share started notification.
+  void HandleScreenShareStartedNotification(
+      message_center::MessageCenter* message_center,
+      std::string receiver_id);
+  // Handle screen share ended notification.
+  void HandleScreenShareEndedNotification(
+      message_center::MessageCenter* message_center);
 
  private:
   bool is_local_caption_enabled_ = false;
