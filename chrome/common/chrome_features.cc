@@ -941,10 +941,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Minutes(1));
 
 BASE_FEATURE(kActorFormFillingServiceEnableAddress,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kActorFormFillingServiceEnableCreditCard,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 

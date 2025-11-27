@@ -10145,8 +10145,6 @@ from previous Chrome versions.
   <int value="-1433087548" label="enable-app-install-alerts"/>
   <int value="-1432685039" label="AndroidMinimalUiLargeScreen:disabled"/>
   <int value="-1432246303" label="FilesZipPack:enabled"/>
-  <int value="-1431862192"
-      label="ActorFormFillingServiceEnableCreditCard:enabled"/>
   <int value="-1431722713" label="TabFreeze:disabled"/>
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
   <int value="-1431510203" label="HistoryPaneAndroid:enabled"/>
@@ -11009,8 +11007,6 @@ from previous Chrome versions.
   <int value="-1133983181" label="AccessibilityManifestV3BrailleIme:disabled"/>
   <int value="-1133442631" label="FwupdDeveloperMode:enabled"/>
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
-  <int value="-1132999210"
-      label="ActorFormFillingServiceEnableAddress:enabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1132486267" label="ProductSpecificationsMultiSpecifics:enabled"/>
   <int value="-1132119678" label="NtpMobilePromo:disabled"/>
@@ -14147,8 +14143,6 @@ from previous Chrome versions.
       label="NTPArticleSuggestionsExpandableHeader:disabled"/>
   <int value="-23772747" label="NoWakeUpsForCanceledTasks:enabled"/>
   <int value="-23659994" label="SafetyHubHaTSOneOffSurvey:enabled"/>
-  <int value="-23441144"
-      label="ActorFormFillingServiceEnableCreditCard:disabled"/>
   <int value="-23090520" label="disable-search-button-in-omnibox"/>
   <int value="-22544408" label="enable-video-player-chromecast-support"/>
   <int value="-22506564" label="OptimizeDataUrls:disabled"/>
@@ -18778,8 +18772,6 @@ from previous Chrome versions.
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
   <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
   <int value="1592642621" label="TabletToolbarReordering:disabled"/>
-  <int value="1592803303"
-      label="ActorFormFillingServiceEnableAddress:disabled"/>
   <int value="1592843279" label="WebXrSharedBuffers:enabled"/>
   <int value="1593315881" label="EnableSnackbarInSettings:disabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
