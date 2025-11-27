@@ -40,9 +40,8 @@ std::string DrmCodeToString(uint32_t drm_format) {
                      static_cast<char>(drm_format >> 24), 0};
 }
 
-std::string DrmCodeToBufferFormatString(int32_t drm_format) {
-  return gfx::BufferFormatToString(
-      ui::GetBufferFormatFromFourCCFormat(drm_format));
+std::string DrmCodeToSharedImageFormatString(int32_t drm_format) {
+  return ui::GetSharedImageFormatFromFourCCFormat(drm_format).ToString();
 }
 
 std::string DrmModifiersToString(std::vector<uint64_t> drm_modifiers) {
@@ -108,8 +107,8 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
                                  std::back_inserter(supported_usage_strings),
                                  gfx::BufferUsageToString);
           LOG(INFO) << "Successfully used buffer with format drm: "
-                    << DrmCodeToString(format) << " gfx::BufferFormat: "
-                    << DrmCodeToBufferFormatString(format)
+                    << DrmCodeToString(format) << " viz::SharedImageFormat: "
+                    << DrmCodeToSharedImageFormatString(format)
                     << " gfx::BufferUsages: ["
                     << base::JoinString(supported_usage_strings, ", ") << "]";
           return supported_usages.size();
@@ -124,16 +123,16 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
             /*y_invert=*/false);
         if (!current_buffer) {
           LOG(ERROR) << "Unable to create buffer for drm: "
-                     << DrmCodeToString(format) << " gfx::BufferFormat: "
-                     << DrmCodeToBufferFormatString(format)
+                     << DrmCodeToString(format) << " viz::SharedImageFormat: "
+                     << DrmCodeToSharedImageFormatString(format)
                      << " gfx::BufferUsage "
                      << gfx::BufferUsageToString(current_usage);
         }
       } while (current_buffer == nullptr);
 
       LOG(INFO) << "Attempting to use buffer with format drm: "
-                << DrmCodeToString(format)
-                << " gfx::BufferFormat: " << DrmCodeToBufferFormatString(format)
+                << DrmCodeToString(format) << " viz::SharedImageFormat: "
+                << DrmCodeToSharedImageFormatString(format)
                 << " gfx::BufferUsage "
                 << gfx::BufferUsageToString(current_usage);
 
@@ -174,8 +173,8 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
         LOG(INFO) << "Successfully used buffer with drm format: "
                   << DrmCodeToString(format)
                   << " drm modifiers: " << DrmModifiersToString(modifiers)
-                  << " gfx::BufferFormat: "
-                  << DrmCodeToBufferFormatString(format);
+                  << " viz::SharedImageFormat: "
+                  << DrmCodeToSharedImageFormatString(format);
         return 1;
       }
 
@@ -200,16 +199,16 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
         LOG(ERROR) << "Unable to create buffer for drm format: "
                    << DrmCodeToString(format)
                    << " drm modifiers: " << DrmModifiersToString(modifiers)
-                   << " gfx::BufferFormat: "
-                   << DrmCodeToBufferFormatString(format);
+                   << " viz::SharedImageFormat: "
+                   << DrmCodeToSharedImageFormatString(format);
         return 0;
       }
 
       LOG(INFO) << "Attempting to use buffer with format drm format: "
                 << DrmCodeToString(format)
                 << " drm modifiers: " << DrmModifiersToString(modifiers)
-                << " gfx::BufferFormat: "
-                << DrmCodeToBufferFormatString(format);
+                << " viz::SharedImageFormat: "
+                << DrmCodeToSharedImageFormatString(format);
 
       wl_surface_damage(surface_.get(), 0, 0, surface_size_.width(),
                         surface_size_.height());
@@ -459,12 +458,12 @@ void PrintReportedFormats(std::vector<uint32_t>& formats) {
   std::vector<std::string> buffer_names;
   for (auto format : formats) {
     drm_names.push_back(DrmCodeToString(format));
-    buffer_names.push_back(DrmCodeToBufferFormatString(format));
+    buffer_names.push_back(DrmCodeToSharedImageFormatString(format));
   }
   LOG(INFO) << "zwp_linux_dmabuf_v1 reported supported DRM formats: "
              << base::JoinString(drm_names, ", ");
-  LOG(INFO) << "zwp_linux_dmabuf_v1 reported supported gfx::BufferFormats: "
-             << base::JoinString(buffer_names, ", ");
+  LOG(INFO) << "zwp_linux_dmabuf_v1 reported supported SharedImageFormats: "
+            << base::JoinString(buffer_names, ", ");
 }
 
 TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferFormatsLegacy) {
