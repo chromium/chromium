@@ -16,13 +16,13 @@ namespace net {
 
 namespace {
 
-base::flat_set<url::Origin> origins = {
+const base::flat_set<url::Origin> origins = {
     url::Origin::Create(GURL("http://www.origin1.com:8080")),
     url::Origin::Create(GURL("http://www.origin2.com:80")),
     url::Origin::Create(GURL("http://www.origin3.com:80")),
     url::Origin::Create(GURL("http://www.origin4.com:80"))};
-base::flat_set<std::string> domains = {"domain1.com", "domain2.com",
-                                       "domain3.com", "domain4.com"};
+const base::flat_set<std::string> domains = {"domain1.com", "domain2.com",
+                                             "domain3.com", "domain4.com"};
 
 using DoesUrlMatchFilterTest = testing::Test;
 
@@ -129,6 +129,54 @@ TEST_F(DoesUrlMatchFilterTest, BareHostnameMatches) {
   // A url that matches a kTrueIfMatches filter shall be removed
   EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, {},
                                  bare_hostname, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, BlobUrlMatchesOrigin) {
+  const GURL match_with_origin(
+      "blob:http://www.origin3.com/550e8400-e29b-41d4-a716-446655440000");
+
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                 domains, match_with_origin));
+}
+
+TEST_F(DoesUrlMatchFilterTest, BlobUrlMatchesDomain) {
+  const GURL match_with_domain(
+      "blob:http://a.domain2.com/550e8400-e29b-41d4-a716-446655440000");
+
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                 domains, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, BlobUrlMismatch) {
+  const GURL nomatch(
+      "blob:http://mismatch.example/550e8400-e29b-41d4-a716-446655440000");
+
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                  domains, nomatch));
+}
+
+TEST_F(DoesUrlMatchFilterTest, FilesystemUrlMatchesOrigin) {
+  const GURL match_with_origin(
+      "filesystem:http://www.origin2.com/temporary/test-file.txt");
+
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                 domains, match_with_origin));
+}
+
+TEST_F(DoesUrlMatchFilterTest, FilesystemUrlMatchesDomain) {
+  const GURL match_with_domain(
+      "filesystem:http://any.domain3.com/temporary/test-file.txt");
+
+  EXPECT_TRUE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                 domains, match_with_domain));
+}
+
+TEST_F(DoesUrlMatchFilterTest, FilesystemUrlMismatch) {
+  const GURL nomatch(
+      "filesystem:http://mismatch.example/temporary/test-file.txt");
+
+  EXPECT_FALSE(DoesUrlMatchFilter(UrlFilterType::kTrueIfMatches, origins,
+                                  domains, nomatch));
 }
 
 }  // namespace
