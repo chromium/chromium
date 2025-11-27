@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
@@ -9,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -42,9 +44,16 @@ const base::Time kArbitraryDefaultTime =
 const base::Time kLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
 const base::Time kEvenLaterTime = base::Time::FromSecondsSinceUnixEpoch(6000);
 
-class TwoClientWalletSyncTest : public SyncTest {
+class TwoClientWalletSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientWalletSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientWalletSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   TwoClientWalletSyncTest(const TwoClientWalletSyncTest&) = delete;
   TwoClientWalletSyncTest& operator=(const TwoClientWalletSyncTest&) = delete;
@@ -55,6 +64,10 @@ class TwoClientWalletSyncTest : public SyncTest {
     return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
                ? wallet_helper::StoreType::kAccountStore
                : wallet_helper::StoreType::kProfileStore;
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   // Needed for AwaitQuiescence().
@@ -74,9 +87,16 @@ class TwoClientWalletSyncTest : public SyncTest {
 
  private:
   autofill::TestAutofillClock test_clock_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    TwoClientWalletSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
@@ -108,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
   EXPECT_EQ(kLaterTime, credit_cards[0]->usage_history().use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWhileNotSyncing) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
@@ -149,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kLaterTime, credit_cards[0]->usage_history().use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataConflictsWhileNotSyncing) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
@@ -197,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kEvenLaterTime, credit_cards[0]->usage_history().use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWithNewBillingAddressId) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
@@ -226,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kDefaultBillingAddressID, credit_cards[0]->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWithChangedBillingAddressId) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
@@ -255,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kDifferentBillingAddressId, credit_cards[0]->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     TwoClientWalletSyncTest,
     UpdateCreditCardMetadataWithChangedBillingAddressId_RemoteToLocal) {
   GetFakeServer()->SetWalletData(
@@ -286,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kLocalBillingAddressId, credit_cards[0]->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     TwoClientWalletSyncTest,
     UpdateCreditCardMetadataWithChangedBillingAddressId_RemoteToLocalConflict) {
   GetFakeServer()->SetWalletData(
