@@ -18,8 +18,20 @@ class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
   SyncEngineStoppedChecker& operator=(const SyncEngineStoppedChecker&) = delete;
   ~SyncEngineStoppedChecker() override = default;
 
+  // A snapshot of the SyncStatus from the point in time where the engine was
+  // stopped Meant to be called after Wait() has returned.
+  // This is useful because the SyncService may immediately start up again,
+  // which clears the SyncStatus there.
+  const syncer::SyncStatus& status_on_engine_stopped() const {
+    return status_on_engine_stopped_;
+  }
+
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
+  void WaitDone() override;
+
+ private:
+  syncer::SyncStatus status_on_engine_stopped_;
 };
 
 }  // namespace syncer
