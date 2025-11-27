@@ -1114,6 +1114,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<PasswordSuggestionRequest> password_request) {
+  base::TimeTicks suggestion_generation_start_time = base::TimeTicks::Now();
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1189,7 +1191,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // TODO(crbug.com/409962888): Cleanup once the new logic is launched.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillNewSuggestionGeneration)) {
-    GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source);
+    GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source,
+                                            suggestion_generation_start_time);
     return;
   }
 
@@ -1203,7 +1206,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       suggestion_generators_.size(),
       base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
                      weak_ptr_factory_.GetWeakPtr(), form, field,
-                     trigger_source, context));
+                     trigger_source, context,
+                     suggestion_generation_start_time));
 
   for (const auto& suggestion_generator : suggestion_generators_) {
     suggestion_generator->FetchSuggestionData(form, field, form_structure,
@@ -1217,6 +1221,7 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
+    base::TimeTicks suggestion_generation_start_time,
     std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
                           std::vector<SuggestionGenerator::SuggestionData>>>
         suggestion_data) {
@@ -1227,7 +1232,8 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
           base::BindOnce(
               &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
               weak_ptr_factory_.GetWeakPtr(), form.global_id(),
-              field.global_id(), trigger_source, context));
+              field.global_id(), trigger_source, context,
+              suggestion_generation_start_time));
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1269,6 +1275,7 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
+    base::TimeTicks suggestion_generation_start_time,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
   // TODO(crbug.com/409962888): Add logic to discard/merge
@@ -1281,7 +1288,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   }
 
   OnGenerateSuggestionsComplete(form_id, field_id, trigger_source, context,
-                                true, suggestions);
+                                suggestion_generation_start_time,
+                                /*show_suggestions=*/true, suggestions);
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
@@ -1290,7 +1298,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    base::TimeTicks suggestion_generation_start_time) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1305,7 +1314,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
-      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
+      suggestion_generation_start_time);
 
   if (auto* delegate = client().GetPlusAddressDelegate()) {
     // The `generate_suggestions_and_maybe_show_ui_phase2` has to be wrapped
@@ -1340,6 +1350,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
+    base::TimeTicks suggestion_generation_start_time,
     std::vector<std::string> plus_addresses) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1353,7 +1364,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   auto generate_suggestions_and_maybe_show_ui_phase3 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
-      std::move(plus_addresses));
+      suggestion_generation_start_time, std::move(plus_addresses));
 
   // `otp_manager_` may not be instantiated on all platforms. If a focused field
   // is not classified, `autofill_field` is null but the field may be filled by
@@ -1374,12 +1385,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
+    base::TimeTicks suggestion_generation_start_time,
     std::vector<std::string> plus_addresses,
     std::vector<std::string> one_time_passwords) {
-  OnGenerateSuggestionsCallback callback =
-      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form.global_id(),
-                     field.global_id(), trigger_source, context);
+  OnGenerateSuggestionsCallback callback = base::BindOnce(
+      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
+      weak_ptr_factory_.GetWeakPtr(), form.global_id(), field.global_id(),
+      trigger_source, context, suggestion_generation_start_time);
 
   // If this is a mixed content form, we show a warning message and don't offer
   // autofill. The warning is shown even if there are no autofill suggestions
@@ -1670,8 +1682,13 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source,
     const SuggestionsContext& context,
+    base::TimeTicks suggestion_generation_start_time,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
+  base::UmaHistogramTimes(
+      "Autofill.Timing.SuggestionGeneration",
+      base::TimeTicks::Now() - suggestion_generation_start_time);
+
   LogSuggestionsCount(context, suggestions);
   // When focusing on a field, log whether there is a suggestion for the user
   // and whether the suggestion is shown.

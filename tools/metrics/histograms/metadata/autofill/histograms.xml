@@ -7890,6 +7890,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Timing.SuggestionGeneration" units="ms"
+    expires_after="2026-03-01">
+  <owner>jihadghanna@google.com</owner>
+  <owner>kuchyn@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The time in milliseconds, elapsed between the start of a suggestion query
+    (OnAskForValuesToFillImpl) and the point where suggestions are ready to be
+    shown (OnGenerateSuggestionsComplete). This measures the total latency of
+    the suggestion generation logic.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Timing.{AutofillTimedFunction}" units="ms"
     expires_after="2026-12-12">
   <owner>schwering@google.com</owner>

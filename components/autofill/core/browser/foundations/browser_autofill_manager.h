@@ -503,6 +503,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
+      base::TimeTicks suggestion_generation_start_time,
       std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>>
           suggestion_data);
@@ -515,6 +516,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
+      base::TimeTicks suggestion_generation_start_time,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions);
 
@@ -540,18 +542,21 @@ class BrowserAutofillManager : public AutofillManager {
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source);
+      AutofillSuggestionTriggerSource trigger_source,
+      base::TimeTicks suggestion_generator_start_time);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
+      base::TimeTicks suggestion_generator_start_time,
       std::vector<std::string> plus_addresses);
   void GenerateSuggestionsAndMaybeShowUIPhase3(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
+      base::TimeTicks suggestion_generator_start_time,
       std::vector<std::string> plus_addresses,
       std::vector<std::string> one_time_passwords);
 
@@ -583,6 +588,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       const SuggestionsContext& context,
+      base::TimeTicks suggestion_generation_start_time,
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 

@@ -4235,6 +4235,23 @@ TEST_F(BrowserAutofillManagerTest,
                      SuggestionType::kSaveAndFillCreditCardEntry);
 }
 
+TEST_F(BrowserAutofillManagerTest, SuggestionGenerationTimingMetric) {
+  base::HistogramTester histogram_tester;
+
+  personal_data().test_address_data_manager().AddProfile(
+      test::GetFullProfile());
+  FormData form = test::CreateTestAddressFormData();
+  FormsSeen({form});
+
+  autofill_manager().OnAskForValuesToFill(
+      form, form.fields()[0].global_id(), gfx::Rect(),
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      std::nullopt);
+
+  // Verify the metric was recorded exactly once.
+  histogram_tester.ExpectTotalCount("Autofill.Timing.SuggestionGeneration", 1);
+}
+
 // Test the field log events at the form submission.
 // TODO(crbug.com/40100455): Move those tests out of this file.
 class BrowserAutofillManagerWithLogEventsTest
