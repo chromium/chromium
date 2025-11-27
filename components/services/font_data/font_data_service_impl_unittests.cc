@@ -68,21 +68,37 @@ mojom::TypefaceStylePtr CreateTypefaceStyle(int weight,
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
   mojom::MatchFamilyNameResultPtr out_result;
+#if BUILDFLAG(IS_WIN)
   std::string family_name = "Segoe UI";
+#else
+  std::string family_name = "Arimo";
+#endif
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
 
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
       &out_result);
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
+#else
+  // For now, on Linux we always hit the memory region fallback, and therefore
+  // also adds to the cache.
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
+  EXPECT_TRUE(out_result->typeface_data->is_region());
+  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+#endif
 }
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   mojom::MatchFamilyNameResultPtr out_result;
+#if BUILDFLAG(IS_WIN)
   std::string family_name = "Segoe UI";
+#else
+  std::string family_name = "Arimo";
+#endif
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
   impl_.set_use_memory_fallback(true);
 
@@ -101,13 +117,22 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
 
   // Call with a different family name. Cache should increase.
+#if BUILDFLAG(IS_WIN)
   // Bahnschrift is a font with 2 variations. Check result for 2 coordinates.
+  family_name = "Bahnschrift";
+#else
+  family_name = "Tinos";
+#endif
   font_service_->MatchFamilyName(
-      "Bahnschrift", CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
       &out_result);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 2u);
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/462090356): Find an available font in Linux with multiples
+  // axes.
   EXPECT_EQ(out_result->variation_position->coordinateCount, 2u);
   EXPECT_EQ(out_result->variation_position->coordinates.size(), 2u);
+#endif
 
   // Call with a different font style. Cache should increase.
   font_service_->MatchFamilyName(
@@ -124,6 +149,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   EXPECT_EQ(out_result.get(), nullptr);
 }
 
+// The linux SkFontMgr doesn't support MatchFamilyStyleCharacter().
+#if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
   mojom::MatchFamilyNameResultPtr out_result;
   std::string family_name = "Segoe UI";
@@ -138,7 +165,10 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
+#endif
 
+// The linux SkFontMgr doesn't support MatchFamilyStyleCharacter().
+#if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
   mojom::MatchFamilyNameResultPtr out_result;
   std::string family_name = "Segoe UI";
@@ -153,7 +183,10 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
+#endif
 
+// The linux SkFontMgr doesn't support countFamilies().
+#if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
   std::vector<std::string> out_result;
   font_service_->GetAllFamilyNames(&out_result);
@@ -167,6 +200,7 @@ TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
     EXPECT_GT(family_name.size(), 0UL);
   }
 }
+#endif
 
 TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
   mojom::MatchFamilyNameResultPtr out_result;
@@ -175,9 +209,15 @@ TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
   font_service_->LegacyMakeTypeface(
       std::nullopt, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
       &out_result);
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
+#else
+  // For now, on Linux we always hit the memory region fallback.
+  EXPECT_TRUE(out_result->typeface_data->is_region());
+  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+#endif
 }
 
 }  // namespace

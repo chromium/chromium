@@ -161,7 +161,12 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
   int32_t last_match_family_character_call_character_;
   size_t legacy_make_typeface_call_count_ = 0;
   base::MappedReadOnlyRegion memory_map_region_;
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, only the shared memory fallback is supported.
+  bool use_memory_fallback_ = true;
+#else
   bool use_memory_fallback_ = false;
+#endif
   std::map<base::FilePath, size_t> unique_path_ids_;
 };
 
@@ -218,7 +223,11 @@ class FontDataManagerUnitTest : public testing::Test {
 
 TEST_F(FontDataManagerUnitTest, MatchFamilyStyle) {
   SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+#if BUILDFLAG(IS_WIN)
   base::cstring_view family_name = "Segoe UI";
+#else
+  base::cstring_view family_name = "Arimo";
+#endif
   sk_sp<SkTypeface> expected_typeface =
       skia::MakeTypefaceFromName(family_name.data(), style);
 
@@ -241,13 +250,17 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyle) {
             mapped_files_count_before);
 
   // Test with a different style.
-  SkFontStyle bold_style(600, 5, SkFontStyle::kUpright_Slant);
+  SkFontStyle bold_style(700, 5, SkFontStyle::kUpright_Slant);
   result = skia_font_manager_->matchFamilyStyle(family_name.data(), bold_style);
   EXPECT_EQ(result->fontStyle(), bold_style);
   EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 2u);
 
   // Test with a different family name and legacy method.
+#if BUILDFLAG(IS_WIN)
   family_name = "Arial";
+#else
+  family_name = "Tinos";
+#endif
   result = skia_font_manager_->legacyMakeTypeface(family_name.data(), style);
   result->getFamilyName(&result_family_name);
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
@@ -275,7 +288,11 @@ TEST_F(FontDataManagerUnitTest, LegacyMakeTypefaceNullFamilyName) {
 TEST_F(FontDataManagerUnitTest, MatchFamilyStyleWithMemoryRegion) {
   test_font_data_service_app_.set_use_memory_fallback(true);
   SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+#if BUILDFLAG(IS_WIN)
   base::cstring_view family_name = "Segoe UI";
+#else
+  base::cstring_view family_name = "Arimo";
+#endif
   sk_sp<SkTypeface> expected_typeface =
       skia::MakeTypefaceFromName(family_name.data(), style);
 
@@ -289,6 +306,9 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyleWithMemoryRegion) {
   EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
 }
 
+// TODO(crbug.com/462090356): Find an available font in Linux with multiples
+// axes.
+#if BUILDFLAG(IS_WIN)
 TEST_F(FontDataManagerUnitTest, FontArgumentTest) {
   // Bahnschrift is a font family with 2 axes hence coordinate count should
   // be 2.
@@ -306,10 +326,15 @@ TEST_F(FontDataManagerUnitTest, FontArgumentTest) {
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
   EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
 }
+#endif
 
 TEST_F(FontDataManagerUnitTest, MakeFromData) {
   SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
-  constexpr base::cstring_view family_name = "Segoe UI";
+#if BUILDFLAG(IS_WIN)
+  base::cstring_view family_name = "Segoe UI";
+#else
+  base::cstring_view family_name = "Arimo";
+#endif
   int ttc_index = 0;
   sk_sp<SkTypeface> typeface =
       skia::MakeTypefaceFromName(family_name.data(), style);
@@ -325,7 +350,11 @@ TEST_F(FontDataManagerUnitTest, MakeFromData) {
 TEST_F(FontDataManagerUnitTest, MatchFamilyStyleCharacter) {
   SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
   SkUnichar uni_char = 0x0041;  // 'A'
+#if BUILDFLAG(IS_WIN)
   base::cstring_view family_name = "Segoe UI";
+#else
+  base::cstring_view family_name = "Arimo";
+#endif
   sk_sp<SkTypeface> expected_typeface =
       skia::MakeTypefaceFromName(family_name.data(), style);
 

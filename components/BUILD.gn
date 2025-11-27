@@ -815,11 +815,12 @@ test("components_unittests") {
     ]
   }
 
+  if (is_win || is_linux) {
+    deps += [ "//components/services/font_data:unit_tests" ]
+  }
+
   if (is_win) {
-    deps += [
-      "//components/services/font_data:unit_tests",
-      "//components/winhttp:unit_tests",
-    ]
+    deps += [ "//components/winhttp:unit_tests" ]
   }
 
   if (enterprise_watermark) {

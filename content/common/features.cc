@@ -262,6 +262,50 @@ const base::FeatureParam<double>
         &kFledgeBidderWorkletThreadPool,
         "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 2};
 
+// This feature controls whether the renderer should use FontDataManager to
+// fetch fonts from the Browser's FontDataService. It is currently scoped to
+// Windows and Linux (via separate features and experiments). See
+// crbug.com/335680565.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<FontDataServiceTypefaceType>::Option
+    font_data_service_typeface[] = {
+        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
+        {FontDataServiceTypefaceType::kFreetype, "Freetype"},
+        {FontDataServiceTypefaceType::kFontations, "Fontations"}};
+BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
+                        kFontDataServiceTypefaceType,
+                        &kFontDataServiceAllWebContents,
+                        "typeface",
+                        FontDataServiceTypefaceType::kDwrite,
+                        &font_data_service_typeface);
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kFontDataServiceLinux, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<FontDataServiceTypefaceType>::Option
+    font_data_service_typeface[] = {
+        {FontDataServiceTypefaceType::kFreetype, "Freetype"},
+        {FontDataServiceTypefaceType::kFontations, "Fontations"}};
+BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
+                        kFontDataServiceTypefaceType,
+                        &kFontDataServiceLinux,
+                        "typeface",
+                        FontDataServiceTypefaceType::kFontations,
+                        &font_data_service_typeface);
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+bool IsFontDataServiceEnabled() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kFontDataServiceAllWebContents);
+#elif BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(features::kFontDataServiceLinux);
+#else
+  return false;
+#endif
+}
+#endif
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

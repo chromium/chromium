@@ -1002,22 +1002,6 @@ const base::FeatureParam<base::TimeDelta>
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::Days(7)};
 
-// This feature controls whether the renderer should use FontDataManager to
-// fetch fonts from the Browser's FontDataService. It is currently scoped to
-// just Windows. See crbug.com/335680565.
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<FontDataServiceTypefaceType>::Option
-    font_data_service_typeface[] = {
-        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
-        {FontDataServiceTypefaceType::kFreetype, "Freetype"},
-        {FontDataServiceTypefaceType::kFontations, "Fontations"}};
-const base::FeatureParam<FontDataServiceTypefaceType>
-    kFontDataServiceTypefaceType{&kFontDataServiceAllWebContents, "typeface",
-                                 FontDataServiceTypefaceType::kDwrite,
-                                 &font_data_service_typeface};
-#endif  // BUILDFLAG(IS_WIN)
-
 // When enabled, OOPIFs will not try to reuse compatible processes from
 // unrelated tabs.
 BASE_FEATURE(kDisableProcessReuse, base::FEATURE_DISABLED_BY_DEFAULT);

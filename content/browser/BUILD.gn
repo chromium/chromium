@@ -2644,10 +2644,11 @@ source_set("browser") {
   }
 
   if (is_win) {
-    deps += [
-      "//components/services/font_data:lib",
-      "//components/stylus_handwriting/win",
-    ]
+    deps += [ "//components/stylus_handwriting/win" ]
+  }
+
+  if (is_win || is_linux) {
+    deps += [ "//components/services/font_data:lib" ]
   }
 
   if (allow_oop_video_decoder) {

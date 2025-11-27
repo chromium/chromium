@@ -96,6 +96,30 @@ CONTENT_EXPORT extern const base::FeatureParam<double>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeAndroidWorkletOffMainThread);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataServiceAllWebContents);
+enum class FontDataServiceTypefaceType {
+  kDwrite,
+  kFreetype,
+  kFontations,
+};
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(FontDataServiceTypefaceType,
+                                          kFontDataServiceTypefaceType);
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataServiceLinux);
+enum class FontDataServiceTypefaceType {
+  kFreetype,
+  kFontations,
+};
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(FontDataServiceTypefaceType,
+                                          kFontDataServiceTypefaceType);
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+bool IsFontDataServiceEnabled();
+#endif
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFrameRoutingCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
