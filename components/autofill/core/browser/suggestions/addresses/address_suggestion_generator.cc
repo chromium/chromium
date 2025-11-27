@@ -553,6 +553,10 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
                     return trigger_field.value() == profile.text;
                   });
     if (profiles_to_suggest_copy.empty()) {
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_size",
+                              field_types.size());
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_contains",
+                              field_types.contains(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_type",
                               base::to_underlying(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "size_before_filter",
