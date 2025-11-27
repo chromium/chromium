@@ -62,7 +62,7 @@ public class TabStateStore implements TabPersistentStore {
     private final Map<Token, CollectionSaveForwarder> mGroupForwarderMap = new HashMap<>();
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
-    private @Nullable TabGroupModelFilter mFilter;
+    // TODO(https://crbug.com/451614469): This synchronizer is only for incognito right now.
     private @Nullable StorageCollectionSynchronizer mSynchronizer;
     private int mRestoredTabCount;
     private boolean mIsDestroyed;
@@ -165,16 +165,10 @@ public class TabStateStore implements TabPersistentStore {
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
                 new InnerRegistrationObserver());
 
-        mFilter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
-
-        initVisualDataTracking();
-
         // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
         // things are fully functional, do not write any incognito data to avoid regressing on
         // privacy.
+        initVisualDataTracking(false);
     }
 
     @Override
@@ -259,8 +253,10 @@ public class TabStateStore implements TabPersistentStore {
         for (CollectionSaveForwarder forwarder : mGroupForwarderMap.values()) {
             forwarder.destroy();
         }
-        if (mFilter != null) {
-            mFilter.removeTabGroupObserver(mVisualDataUpdateObserver);
+        // TODO(https://crbug.com/451614469): Remove incognito observer.
+        TabGroupModelFilter filter = getFilter(/* incognito= */ false);
+        if (filter != null) {
+            filter.removeTabGroupObserver(mVisualDataUpdateObserver);
         }
 
         if (mSynchronizer != null) {
@@ -517,66 +513,72 @@ public class TabStateStore implements TabPersistentStore {
         forwarder.savePayload();
     }
 
-    private void initVisualDataTracking() {
-        assert mFilter != null;
-
-        TabStripCollection collection = mFilter.getTabModel().getTabStripCollection();
-        assert collection != null;
-
-        Profile profile = mFilter.getTabModel().getProfile();
-        assert profile != null;
+    private void initVisualDataTracking(boolean incognito) {
+        var profileAndCollection = getProfileAndCollection(incognito);
+        TabGroupModelFilter filter = getFilter(incognito);
+        assert filter != null;
 
         // Add forwarders for untracked groups.
-        for (Token groupId : mFilter.getAllTabGroupIds()) {
+        for (Token groupId : filter.getAllTabGroupIds()) {
             CollectionSaveForwarder forwarder =
-                    CollectionSaveForwarder.createForTabGroup(profile, groupId, collection);
+                    CollectionSaveForwarder.createForTabGroup(
+                            profileAndCollection.profile, groupId, profileAndCollection.collection);
             mGroupForwarderMap.put(groupId, forwarder);
         }
 
-        mFilter.addTabGroupObserver(mVisualDataUpdateObserver);
+        filter.addTabGroupObserver(mVisualDataUpdateObserver);
     }
 
     @EnsuresNonNull("mSynchronizer")
-    private void maybeInitSynchronizer() {
+    private void maybeInitSynchronizer(ProfileAndCollection profileAndCollection) {
         if (mSynchronizer != null) return;
 
-        // TODO(https://crbug.com/451614469): Watch for incognito as well, eventually.
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-
-        TabStripCollection tabStripCollection = tabModel.getTabStripCollection();
-        assert tabStripCollection != null;
-
-        Profile profile = tabModel.getProfile();
-        assert profile != null;
-
-        mSynchronizer = new StorageCollectionSynchronizer(profile, tabStripCollection);
+        mSynchronizer =
+                new StorageCollectionSynchronizer(
+                        profileAndCollection.profile, profileAndCollection.collection);
     }
 
     private void initRestoreOrchestrator(StorageLoadedData data) {
-        maybeInitSynchronizer();
-
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-
-        Profile profile = tabModel.getProfile();
-        assert profile != null;
-
-        TabStripCollection tabStripCollection = tabModel.getTabStripCollection();
-        assert tabStripCollection != null;
+        // TODO(https://crbug.com/451614469): Watch for incognito as well, eventually.
+        var profileAndCollection = getProfileAndCollection(/* incognito= */ false);
+        maybeInitSynchronizer(profileAndCollection);
 
         StorageRestoreOrchestratorFactory factory =
-                new StorageRestoreOrchestratorFactory(profile, tabStripCollection, data);
+                new StorageRestoreOrchestratorFactory(
+                        profileAndCollection.profile, profileAndCollection.collection, data);
         mSynchronizer.consumeRestoreOrchestratorFactory(factory);
     }
 
     private void initCollectionTracking() {
-        maybeInitSynchronizer();
+        // TODO(https://crbug.com/451614469): Watch for incognito as well, eventually.
+        var profileAndCollection = getProfileAndCollection(/* incognito= */ false);
+        maybeInitSynchronizer(profileAndCollection);
 
-        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        CollectionStorageObserverFactory factory =
+                new CollectionStorageObserverFactory(profileAndCollection.profile);
+        mSynchronizer.consumeCollectionObserverFactory(factory);
+    }
 
+    private static class ProfileAndCollection {
+        public final Profile profile;
+        public final TabStripCollection collection;
+
+        public ProfileAndCollection(Profile profile, TabStripCollection collection) {
+            this.profile = profile;
+            this.collection = collection;
+        }
+    }
+
+    private ProfileAndCollection getProfileAndCollection(boolean incognito) {
+        TabModel tabModel = mTabModelSelector.getModel(incognito);
         Profile profile = tabModel.getProfile();
         assert profile != null;
+        TabStripCollection tabStripCollection = tabModel.getTabStripCollection();
+        assert tabStripCollection != null;
+        return new ProfileAndCollection(profile, tabStripCollection);
+    }
 
-        CollectionStorageObserverFactory factory = new CollectionStorageObserverFactory(profile);
-        mSynchronizer.consumeCollectionObserverFactory(factory);
+    private @Nullable TabGroupModelFilter getFilter(boolean incognito) {
+        return mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(incognito);
     }
 }
