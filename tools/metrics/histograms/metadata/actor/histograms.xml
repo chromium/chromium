@@ -602,6 +602,32 @@ chromium-metrics-reviews@google.com.
   <summary>The reason the task was stopped.</summary>
 </histogram>
 
+<histogram name="Actor.Task.SubsequentWaits" units="count"
+    expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Counts the total number of subsequent Waits per task. A subsequent wait is a
+    solitary Wait action that follows a successful act sequence since the task
+    was created or last resumed. Recorded once at the end of a task's life.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Task.SubsequentWaits.{ToolRequest}" units="count"
+    expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Counts the number of subsequent Waits that occurred after a specific tool
+    per task. A subsequent wait is a solitary Wait action that follows a
+    successful act sequence where {ToolRequest} was the last tool. Recorded once
+    at the end of a task's life.
+  </summary>
+  <token key="ToolRequest" variants="ToolRequest"/>
+</histogram>
+
 <histogram name="Actor.Tools.ExecutionDuration.{ToolRequest}" units="ms"
     expires_after="2026-09-17">
   <owner>dtapuska@google.com</owner>

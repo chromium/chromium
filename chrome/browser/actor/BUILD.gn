@@ -78,6 +78,8 @@ source_set("actor") {
 
 source_set("impl") {
   sources = [
+    "action_tracker_for_metrics.cc",
+    "action_tracker_for_metrics.h",
     "actor_features.cc",
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
@@ -363,6 +365,7 @@ source_set("browser_tests") {
       "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
+      "tools/action_tracker_for_metrics_browsertest.cc",
       "tools/attempt_form_filling_tool_browsertest.cc",
       "tools/attempt_login_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
