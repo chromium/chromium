@@ -1497,6 +1497,25 @@ source_set("platform_browser_tests") {
     }
   }
 
+  if (is_win || is_linux || is_mac || is_android) {
+    sources +=
+        [ "../browser/enterprise/reporting/security_reporting_browsertest.cc" ]
+
+    deps += [
+      "////components/enterprise/browser/identifiers",
+      "//chrome/browser/enterprise/reporting/test:test_support",
+      "//chrome/browser/enterprise/test:test_support",
+      "//components/device_signals/core/browser",
+    ]
+
+    if (is_android) {
+      deps += [
+        "//components/safe_browsing/android:safe_browsing_api_handler",
+        "//components/safe_browsing/android:safe_browsing_api_handler_util",
+      ]
+    }
+  }
+
   if (is_android) {
     deps += [
       "//chrome/browser/ui/android/tab_model:test_support",
@@ -4886,10 +4905,6 @@ if (!is_android) {
       }
 
       if (is_win || is_linux || is_mac) {
-        sources += [
-          "../browser/enterprise/reporting/security_reporting_browsertest.cc",
-        ]
-
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",

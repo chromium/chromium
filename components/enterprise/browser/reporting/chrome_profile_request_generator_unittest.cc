@@ -48,6 +48,13 @@ const char kFakeFirstHotfix[] = "hotfix_1";
 const char kFakeSecondHotfix[] = "hotfix_2";
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+const bool kFakeHasHarmfulApps = false;
+const bool kFakeVerifiedAppsEnabled = true;
+
+const int64_t kFakeSecurityPatchLevel = 1735689600000;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 const base::FilePath::CharType kProfilePath[] =
@@ -91,6 +98,12 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
   os_signals.mac_addresses = {kFakeSignalMacAddr1, kFakeSignalMacAddr2,
                               kFakeSignalMacAddr3};
 
+#if BUILDFLAG(IS_ANDROID)
+  os_signals.has_potentially_harmful_apps = kFakeHasHarmfulApps;
+  os_signals.verified_apps_enabled = kFakeVerifiedAppsEnabled;
+  os_signals.security_patch_ms = kFakeSecurityPatchLevel;
+#endif
+
   response.os_signals_response = os_signals;
 
   device_signals::AgentSignalsResponse agent_signals;
@@ -109,7 +122,7 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
   hotfix_response.hotfixes.push_back({kFakeFirstHotfix});
   hotfix_response.hotfixes.push_back({kFakeSecondHotfix});
   response.hotfix_signal_response = hotfix_response;
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 
   device_signals::ProfileSignalsResponse profile_signals;
   profile_signals.built_in_dns_client_enabled = true;
@@ -201,6 +214,12 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.mac_addresses(0), kFakeSignalMacAddr1);
       EXPECT_EQ(os_report.mac_addresses(1), kFakeSignalMacAddr2);
       EXPECT_EQ(os_report.mac_addresses(2), kFakeSignalMacAddr3);
+
+#if BUILDFLAG(IS_ANDROID)
+      EXPECT_EQ(os_report.has_potentially_harmful_apps(), kFakeHasHarmfulApps);
+      EXPECT_EQ(os_report.verified_apps_enabled(), kFakeVerifiedAppsEnabled);
+      EXPECT_EQ(os_report.security_patch_ms(), kFakeSecurityPatchLevel);
+#endif
 
       if (detected_agent_signal_collection_enabled) {
         EXPECT_EQ(os_report.detected_agents(0), em::Agent::CROWDSTRIKE_FALCON);

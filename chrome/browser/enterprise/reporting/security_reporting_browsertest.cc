@@ -9,22 +9,21 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/reporting/test/test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/common/platform_utils.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/report_util.h"
@@ -34,7 +33,6 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -44,6 +42,14 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using ManagementContextMixin = enterprise::test::ManagementContextMixin;
 using ManagementContext = enterprise::test::ManagementContext;
@@ -84,25 +90,17 @@ std::string GetSetCookiesPath(std::string_view cookie_value) {
       {kSetCookiePath, "?", CreateFakeSerializedAuthCookie(cookie_value)});
 }
 
-// Helper function to deal with when a signal with std::nullopt gets converted
-// into an empty string in the report.
-void CheckReportMatchSignal(std::string report_value,
-                            std::optional<std::string> signal_value) {
-  if (signal_value == std::nullopt) {
-    ASSERT_TRUE(report_value.empty());
-    return;
-  }
-
-  EXPECT_EQ(signal_value.value(), report_value);
-}
-
 }  // namespace
 
 class SecurityReportingBrowserTest
-    : public MixinBasedInProcessBrowserTest,
+    : public MixinBasedPlatformBrowserTest,
       public testing::WithParamInterface<testing::tuple<bool, bool>> {
  protected:
   SecurityReportingBrowserTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{enterprise_signals::features::kProfileSignalsReportingEnabled,
+          true}});
+
     management_mixin_ = ManagementContextMixin::Create(
         &mixin_host_, this,
         {
@@ -113,12 +111,14 @@ class SecurityReportingBrowserTest
   }
 
   void SetUp() override {
+    SetFakeSignalsValues();
+
     embedded_https_test_server().SetCertHostnames(
         {"m.google.com", "accounts.google.com", "google.com"});
     net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
 
     CHECK(embedded_https_test_server().InitializeAndListen());
-    MixinBasedInProcessBrowserTest::SetUp();
+    MixinBasedPlatformBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -131,7 +131,7 @@ class SecurityReportingBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
@@ -141,7 +141,7 @@ class SecurityReportingBrowserTest
 
     embedded_https_test_server().StartAcceptingConnections();
 
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    MixinBasedPlatformBrowserTest::SetUpOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -209,26 +209,14 @@ class SecurityReportingBrowserTest
     if (expect_signals_override_value) {
       auto browser_device_identifier =
           profile_report_request.browser_device_identifier();
-      EXPECT_EQ(
-          browser_device_identifier.computer_name(),
-          can_collect_pii_signals() ? policy::GetDeviceName() : std::string());
-      EXPECT_EQ(browser_device_identifier.host_name(),
-                can_collect_pii_signals() ? device_signals::GetHostName()
-                                          : std::string());
-      base::RunLoop run_loop;
-
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(
-              &SecurityReportingBrowserTest::VerifyDeviceIdentifierAsyncSignal,
-              base::Unretained(this), std::ref(browser_device_identifier),
-              run_loop.QuitClosure()));
-      run_loop.Run();
+      VerifyDeviceIdentifier(std::ref(browser_device_identifier),
+                             can_collect_pii_signals());
     }
 
     ASSERT_TRUE(profile_report_request.has_os_report());
-    VerifyOsReport(profile_report_request.os_report(),
-                   expect_signals_override_value);
+    VerifyOsReportSignals(profile_report_request.os_report(),
+                          expect_signals_override_value,
+                          can_collect_pii_signals());
 
     ASSERT_TRUE(profile_report_request.has_browser_report());
     auto browser_report = profile_report_request.browser_report();
@@ -247,98 +235,14 @@ class SecurityReportingBrowserTest
     }
 
     VerifyProfileSignalsReport(
-        chrome_user_profile_info.profile_signals_report());
+        chrome_user_profile_info.profile_signals_report(), GetProfile());
 
     ASSERT_FALSE(chrome_user_profile_info.profile_id().empty());
-    EXPECT_EQ(
-        chrome_user_profile_info.profile_id(),
-        enterprise::ProfileIdServiceFactory::GetForProfile(browser()->profile())
-            ->GetProfileId()
-            .value());
-  }
 
-  void VerifyDeviceIdentifierAsyncSignal(
-      em::BrowserDeviceIdentifier& browser_device_identifier,
-      base::OnceCallback<void()> done_closure) {
-    EXPECT_EQ(browser_device_identifier.serial_number(),
-              can_collect_pii_signals() ? device_signals::GetSerialNumber()
-                                        : std::string());
-    std::move(done_closure).Run();
-  }
-
-  void VerifyOsReport(const em::OSReport& os_report,
-                      bool expect_signals_override_value) {
-    EXPECT_EQ(os_report.name(), policy::GetOSPlatform());
-    EXPECT_EQ(os_report.arch(), policy::GetOSArchitecture());
-    if (expect_signals_override_value) {
-      EXPECT_EQ(os_report.version(), device_signals::GetOsVersion());
-      EXPECT_EQ(os_report.screen_lock_secured(),
-                TranslateSettingValue(device_signals::GetScreenlockSecured()));
-#if BUILDFLAG(IS_WIN)
-      EXPECT_EQ(os_report.secure_boot_mode(),
-                TranslateSettingValue(device_signals::GetSecureBootEnabled()));
-      CheckReportMatchSignal(os_report.windows_machine_domain(),
-                             device_signals::GetWindowsMachineDomain());
-      CheckReportMatchSignal(os_report.windows_user_domain(),
-                             device_signals::GetWindowsUserDomain());
-      CheckReportMatchSignal(os_report.machine_guid(),
-                             can_collect_pii_signals()
-                                 ? device_signals::GetMachineGuid()
-                                 : std::nullopt);
-#endif  // BUILDFLAG(IS_WIN)
-      base::RunLoop run_loop;
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(
-              &SecurityReportingBrowserTest::VerifyOsReportAsyncSignal,
-              base::Unretained(this), os_report, run_loop.QuitClosure()));
-      run_loop.Run();
-    } else {
-      EXPECT_EQ(os_report.version(), policy::GetOSVersion());
-
-      // Signals report only fields should not be written
-      ASSERT_FALSE(os_report.has_device_enrollment_domain());
-      ASSERT_FALSE(os_report.has_screen_lock_secured());
-
-      EXPECT_EQ(0, os_report.mac_addresses_size());
-#if BUILDFLAG(IS_WIN)
-      EXPECT_EQ(0, os_report.antivirus_info_size());
-      EXPECT_EQ(0, os_report.hotfixes_size());
-#endif  // BUILDFLAG(IS_WIN)
-    }
-  }
-
-  void VerifyOsReportAsyncSignal(const em::OSReport& os_report,
-                                 base::OnceCallback<void()> done_closure) {
-    EXPECT_EQ(os_report.disk_encryption(),
-              TranslateSettingValue(device_signals::GetDiskEncrypted()));
-    EXPECT_EQ(os_report.os_firewall(),
-              TranslateSettingValue(device_signals::GetOSFirewall()));
-    std::move(done_closure).Run();
-  }
-
-  void VerifyProfileSignalsReport(
-      const em::ProfileSignalsReport& profile_signals_report) {
-    EXPECT_EQ(profile_signals_report.built_in_dns_client_enabled(),
-              g_browser_process->local_state()->GetBoolean(
-                  prefs::kBuiltInDnsClientEnabled));
-    EXPECT_EQ(profile_signals_report.chrome_remote_desktop_app_blocked(),
-              device_signals::GetChromeRemoteDesktopAppBlocked(
-                  ChromePolicyBlocklistServiceFactory::GetForProfile(
-                      browser()->profile())));
-    EXPECT_EQ(profile_signals_report.password_protection_warning_trigger(),
-              TranslatePasswordProtectionTrigger(
-                  device_signals::GetPasswordProtectionWarningTrigger(
-                      browser()->profile()->GetPrefs())));
-    CheckReportMatchSignal(profile_signals_report.profile_enrollment_domain(),
-                           device_signals::TryGetEnrollmentDomain(
-                               browser()->profile()->GetCloudPolicyManager()));
-    EXPECT_EQ(profile_signals_report.safe_browsing_protection_level(),
-              TranslateSafeBrowsingLevel(
-                  device_signals::GetSafeBrowsingProtectionLevel(
-                      browser()->profile()->GetPrefs())));
-    EXPECT_EQ(profile_signals_report.site_isolation_enabled(),
-              device_signals::GetSiteIsolationEnabled());
+    EXPECT_EQ(chrome_user_profile_info.profile_id(),
+              enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
+                  ->GetProfileId()
+                  .value());
   }
 
   bool is_device_managed() { return testing::get<0>(GetParam()); }
@@ -355,13 +259,21 @@ class SecurityReportingBrowserTest
   base::OnceCallback<void(CapturedProfileReportRequest)> pending_capture_;
 
   void SetFakeCookieValue(std::string_view cookie_value) {
+#if BUILDFLAG(IS_ANDROID)
+    ASSERT_TRUE(content::NavigateToURL(
+        chrome_test_utils::GetActiveWebContents(this),
+        embedded_https_test_server().GetURL("accounts.google.com",
+                                            GetSetCookiesPath(cookie_value))));
+#else
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_https_test_server().GetURL("accounts.google.com",
                                             GetSetCookiesPath(cookie_value))));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
 };

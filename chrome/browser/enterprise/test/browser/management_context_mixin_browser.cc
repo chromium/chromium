@@ -19,6 +19,10 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace enterprise::test {
 
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
@@ -33,6 +37,10 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     management_context_.is_cloud_machine_managed = true;
     browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
     browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
+#if BUILDFLAG(IS_ANDROID)
+    policy::android::SaveDmTokenInSharedPreferences(
+        std::string(kBrowserDmToken));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -62,7 +70,6 @@ void ManagementContextMixinBrowser::ManageCloudUser() {
 void ManagementContextMixinBrowser::SetUpOnMainThread() {
   ManagementContextMixin::SetUpOnMainThread();
 
-#if !BUILDFLAG(IS_ANDROID)
   if (management_context_.is_cloud_machine_managed) {
     auto browser_policy_data =
         std::make_unique<enterprise_management::PolicyData>();
@@ -75,7 +82,6 @@ void ManagementContextMixinBrowser::SetUpOnMainThread() {
     browser_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(browser_policy_data));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (management_context_.is_cloud_user_managed) {
     ManageCloudUser();
