@@ -18,7 +18,6 @@
 #include "chrome/grit/signin_signout_confirmation_resources_map.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 SignoutConfirmationUI::SignoutConfirmationUI(content::WebUI* web_ui)
@@ -64,13 +63,6 @@ void SignoutConfirmationUI::Initialize(
   initialize_handler_callback_ = base::BindOnce(
       &SignoutConfirmationUI::OnMojoHandlersReady, base::Unretained(this),
       browser, variant, unsynced_data_count, std::move(callback));
-}
-
-void SignoutConfirmationUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void SignoutConfirmationUI::BindInterface(

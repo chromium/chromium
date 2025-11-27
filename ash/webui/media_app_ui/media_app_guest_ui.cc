@@ -266,12 +266,6 @@ void MediaAppGuestUI::StartFontDataRequestAfterPathExists(
 }
 
 void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedServiceFactory>
         receiver) {
   if (untrusted_service_factory_.is_bound()) {

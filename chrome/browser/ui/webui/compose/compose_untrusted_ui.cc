@@ -27,7 +27,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
@@ -158,13 +157,6 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
 }
 
 ComposeUntrustedUI::~ComposeUntrustedUI() = default;
-
-void ComposeUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void ComposeUntrustedUI::BindInterface(
     mojo::PendingReceiver<

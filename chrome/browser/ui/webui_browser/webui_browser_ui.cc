@@ -175,12 +175,6 @@ void WebUIBrowserUI::BindInterface(
       GetKnownElementIdentifiers());
 }
 
-void WebUIBrowserUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
 base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

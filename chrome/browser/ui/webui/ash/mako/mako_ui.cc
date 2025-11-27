@@ -135,12 +135,6 @@ void MakoUntrustedUI::BindInterface(
 }
 
 void MakoUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
         pending_receiver) {
   if (!ash::features::IsLobsterEnabled()) {

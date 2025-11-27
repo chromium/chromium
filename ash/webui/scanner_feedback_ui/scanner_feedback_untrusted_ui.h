@@ -13,14 +13,9 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
-}
-
-namespace ui {
-class ColorChangeHandler;
 }
 
 namespace ash {
@@ -50,17 +45,9 @@ class ScannerFeedbackUntrustedUI : public ui::WebDialogUI {
   ScannerFeedbackPageHandler& page_handler() { return page_handler_; }
 
   void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
-  void BindInterface(
       mojo::PendingReceiver<mojom::scanner_feedback_ui::PageHandler> receiver);
 
  private:
-  // The color change handler notifies the WebUI when the color provider
-  // changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-
   ScannerFeedbackPageHandler page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

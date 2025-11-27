@@ -24,7 +24,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -112,12 +111,6 @@ void BocaUI::BindInterface(
     mojo::PendingReceiver<boca::mojom::BocaPageHandlerFactory> factory) {
   receiver_.reset();
   receiver_.Bind(std::move(factory));
-}
-
-void BocaUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void BocaUI::Create(

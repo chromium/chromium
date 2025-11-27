@@ -341,11 +341,5 @@ void ShortcutCustomizationAppUI::BindInterface(
   search_handler->BindInterface(std::move(receiver));
 }
 
-void ShortcutCustomizationAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
 WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)
 }  // namespace ash

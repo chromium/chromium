@@ -36,12 +36,6 @@ RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
 
 RemoteMaintenanceCurtainUI::~RemoteMaintenanceCurtainUI() = default;
 
-void RemoteMaintenanceCurtainUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
 WEB_UI_CONTROLLER_TYPE_IMPL(RemoteMaintenanceCurtainUI)
 
 }  // namespace ash

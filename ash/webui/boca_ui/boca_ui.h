@@ -18,16 +18,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace content {
 class WebUIDataSource;
 }  // namespace content
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace ash::boca {
 class BocaUI;
@@ -56,12 +51,6 @@ class BocaUI : public ui::UntrustedWebUIController,
   void BindInterface(
       mojo::PendingReceiver<boca::mojom::BocaPageHandlerFactory> factory);
 
-  // This handler grabs a reference to the page and pushes a colorChangeEvent
-  // to the untrusted JS running there when the OS color scheme has changed.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // ash::boca::mojom ::BocaPageHandlerFactory:
   void Create(mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
               mojo::PendingRemote<boca::mojom::Page> page) override;
@@ -71,8 +60,6 @@ class BocaUI : public ui::UntrustedWebUIController,
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;
   SpotlightService spotlight_service_;
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

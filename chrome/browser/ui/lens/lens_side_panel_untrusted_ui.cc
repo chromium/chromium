@@ -32,7 +32,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/webui_util.h"
 
@@ -279,12 +278,6 @@ void LensSidePanelUntrustedUI::BindInterface(
         receiver) {
   lens_ghost_loader_page_factory_receiver_.reset();
   lens_ghost_loader_page_factory_receiver_.Bind(std::move(receiver));
-}
-
-void LensSidePanelUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(

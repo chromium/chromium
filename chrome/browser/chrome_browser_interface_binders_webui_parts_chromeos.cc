@@ -594,32 +594,24 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsCros(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
   registry.ForWebUI<ash::RecorderAppUI>()
       .Add<ash::recorder_app::mojom::PageHandler>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<crosapi::mojom::StructuredMetricsService>();
 
   registry.ForWebUI<ash::CameraAppUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<cros::mojom::CameraAppDeviceProvider>()
       .Add<ash::camera_app::mojom::CameraAppHelper>();
   registry.ForWebUI<ash::ColorInternalsUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::color_internals::mojom::WallpaperColorsHandler>();
   registry.ForWebUI<ash::FilesInternalsUI>()
       .Add<ash::mojom::files_internals::PageHandler>();
-  registry.ForWebUI<ash::file_manager::FileManagerUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
-  registry.ForWebUI<ash::smb_dialog::SmbShareDialogUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
-  registry.ForWebUI<ash::smb_dialog::SmbCredentialsDialogUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
-  registry.ForWebUI<FeedbackUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
+  registry.ForWebUI<ash::file_manager::FileManagerUI>();
+  registry.ForWebUI<ash::smb_dialog::SmbShareDialogUI>();
+  registry.ForWebUI<ash::smb_dialog::SmbCredentialsDialogUI>();
+  registry.ForWebUI<FeedbackUI>();
   registry.ForWebUI<ash::MallUI>().Add<ash::mall::mojom::PageHandler>();
 
 #if !defined(OFFICIAL_BUILD)
   registry.ForWebUI<ash::SampleSystemWebAppUI>()
-      .Add<ash::mojom::sample_swa::PageHandlerFactory>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<ash::mojom::sample_swa::PageHandlerFactory>();
 
   registry.ForWebUI<ash::StatusAreaInternalsUI>()
       .Add<ash::mojom::status_area_internals::PageHandler>();
@@ -629,8 +621,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsCros(
 void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsCros(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
   registry.ForWebUI<ash::boca::BocaUI>()
-      .Add<ash::boca::mojom::BocaPageHandlerFactory>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<ash::boca::mojom::BocaPageHandlerFactory>();
 
   registry.ForWebUI<ash::BocaReceiverUntrustedUI>()
       .Add<ash::boca_receiver::mojom::UntrustedPageHandlerFactory>();
@@ -649,21 +640,16 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsCros(
       .Add<ash::annotator::mojom::UntrustedAnnotatorPageHandlerFactory>();
 
   registry.ForWebUI<ash::UntrustedProjectorUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::projector::mojom::UntrustedProjectorPageHandlerFactory>();
 
-  registry.ForWebUI<ash::feedback::OsFeedbackUntrustedUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
+  registry.ForWebUI<ash::feedback::OsFeedbackUntrustedUI>();
 
   registry.ForWebUI<ash::MediaAppGuestUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::media_app_ui::mojom::UntrustedServiceFactory>();
 
-  registry.ForWebUI<ash::HelpAppUntrustedUI>()
-      .Add<color_change_listener::mojom::PageHandler>();
+  registry.ForWebUI<ash::HelpAppUntrustedUI>();
 
   registry.ForWebUI<ash::ScannerFeedbackUntrustedUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::mojom::scanner_feedback_ui::PageHandler>();
 
 #if !defined(OFFICIAL_BUILD)

@@ -18,14 +18,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace color_change_listener::mojom {
-class PageHandler;
-}  // namespace color_change_listener::mojom
-
-namespace ui {
-class ColorChangeHandler;
-}  //  namespace ui
-
 namespace ash {
 
 class BluetoothPairingDialog : public SystemWebDialogDelegate {
@@ -88,15 +80,7 @@ class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
       mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
           receiver);
 
-  // Instantiates the implementor of the mojom::PageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
  private:
-  std::unique_ptr<ui::ColorChangeHandler> color_change_handler_;
-
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

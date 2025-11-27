@@ -33,7 +33,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
@@ -98,13 +97,6 @@ void ReadingListUI::CreatePageHandler(
   DCHECK(page);
   page_handler_ = std::make_unique<ReadingListPageHandler>(
       std::move(receiver), std::move(page), this, web_ui());
-}
-
-void ReadingListUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void ReadingListUI::BindInterface(

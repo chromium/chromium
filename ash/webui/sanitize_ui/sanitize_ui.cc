@@ -174,12 +174,6 @@ SanitizeDialogUI::SanitizeDialogUI(
 SanitizeDialogUI::~SanitizeDialogUI() {}
 
 void SanitizeDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void SanitizeDialogUI::BindInterface(
     mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
   sanitize_settings_resetter_->BindInterface(std::move(receiver));
 }

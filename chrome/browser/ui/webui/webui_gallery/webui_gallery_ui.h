@@ -8,14 +8,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace content {
 class WebUI;
-}
-
-namespace ui {
-class ColorChangeHandler;
 }
 
 class WebuiGalleryUI;
@@ -36,13 +31,7 @@ class WebuiGalleryUI : public ui::MojoWebUIController {
   WebuiGalleryUI(const WebuiGalleryUI&) = delete;
   WebuiGalleryUI& operator=(const WebuiGalleryUI&) = delete;
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
-
  private:
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

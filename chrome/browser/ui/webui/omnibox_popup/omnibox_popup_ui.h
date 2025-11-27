@@ -20,15 +20,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class Profile;
 class WebuiOmniboxHandler;
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 class ComposeboxHandler;
 class OmniboxPopupAimHandler;
@@ -67,11 +62,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void BindInterface(content::RenderFrameHost* host,
                      mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
-  // Instantiates the implementor of color_change_listener::mojom::PageHandler
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
 
   // Instantiates the implementor of the
   // composebox::mojom::PageHandlerFactory mojo interface passing the
@@ -104,7 +94,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
  private:
   std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<OmniboxPopupAimHandler> popup_aim_handler_;

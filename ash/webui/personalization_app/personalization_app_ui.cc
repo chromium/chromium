@@ -41,7 +41,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 
@@ -515,12 +514,6 @@ void PersonalizationAppUI::BindInterface(
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::UserProvider> receiver) {
   user_provider_->BindInterface(std::move(receiver));
-}
-
-void PersonalizationAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
