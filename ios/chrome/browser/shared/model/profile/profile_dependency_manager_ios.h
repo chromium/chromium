@@ -62,11 +62,6 @@ class ProfileDependencyManagerIOS final : public DependencyManager {
  private:
   // Helper function used by CreateProfileServices[ForTest].
   void DoCreateProfileServices(ProfileIOS* profile, bool is_testing_profile);
-
-#ifndef NDEBUG
-  // DependencyManager implementation:
-  void DumpContextDependencies(void* context) const final {}
-#endif
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_DEPENDENCY_MANAGER_IOS_H_

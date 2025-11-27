@@ -20,12 +20,6 @@
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 
-#ifndef NDEBUG
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/task/thread_pool.h"
-#endif  // NDEBUG
-
 namespace {
 
 // An ordered container of pointers to DependencyNode. The order depends
@@ -122,10 +116,6 @@ void DependencyManager::CreateContextServices(void* context,
 
   const OrderedFactories construction_order = GetConstructionOrder();
 
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
-
   for (KeyedServiceBaseFactory* factory : construction_order) {
     factory->ContextInitialized(context, is_testing_context);
   }
@@ -139,10 +129,6 @@ void DependencyManager::CreateContextServices(void* context,
 
 void DependencyManager::DestroyContextServices(void* context) {
   const OrderedFactories destruction_order = GetDestructionOrder();
-
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
 
   ShutdownFactoriesInOrder(context, destruction_order);
   MarkContextDead(context);
@@ -167,11 +153,6 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
       dependency_manager1->GetDestructionOrder();
   const OrderedFactories destruction_order2 =
       dependency_manager2->GetDestructionOrder();
-
-#ifndef NDEBUG
-  dependency_manager1->DumpContextDependencies(context1);
-  dependency_manager2->DumpContextDependencies(context2);
-#endif
 
   ShutdownFactoriesInOrder(context1, destruction_order1);
   ShutdownFactoriesInOrder(context2, destruction_order2);
@@ -238,10 +219,6 @@ void DependencyManager::MarkContextLive(void* context) {
 
   const OrderedFactories construction_order = GetConstructionOrder();
 
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
-
   for (KeyedServiceBaseFactory* factory : construction_order) {
     factory->ContextCreated(context);
   }
@@ -257,34 +234,6 @@ void DependencyManager::MarkContextDead(void* context) {
 #endif
 #endif
 }
-
-#ifndef NDEBUG
-namespace {
-
-std::string KeyedServiceBaseFactoryGetNodeName(DependencyNode* node) {
-  return static_cast<KeyedServiceBaseFactory*>(node)->name();
-}
-
-}  // namespace
-
-void DependencyManager::DumpDependenciesAsGraphviz(
-    const std::string& top_level_name,
-    const base::FilePath& dot_file) const {
-  DCHECK(!dot_file.empty());
-  std::string contents = dependency_graph_.DumpAsGraphviz(
-      top_level_name, base::BindRepeating(&KeyedServiceBaseFactoryGetNodeName));
-
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(
-          [](const base::FilePath& dot_file, const std::string& contents) {
-            base::WriteFile(dot_file, contents);
-          },
-          dot_file, contents));
-}
-#endif  // NDEBUG
 
 DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {
   return dependency_graph_;
