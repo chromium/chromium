@@ -25,6 +25,7 @@ class InfoBarInternalsHandler;
 class InfobarInternalsUIConfig final
     : public content::DefaultInternalWebUIConfig<InfoBarInternalsUI> {
  public:
+  // NOLINTNEXTLINE(modernize-use-equals-default)
   InfobarInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIInfobarInternalsHost) {}
 };
