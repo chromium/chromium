@@ -149,20 +149,6 @@ CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              delegate) {}
 
-CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
-    ResourceProviderType type,
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space)
-    : CanvasResourceProvider(type,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             /*context_provider_wrapper=*/nullptr,
-                             /*delegate=*/nullptr) {}
-
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
@@ -174,11 +160,19 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space)
-    : CanvasResourceProviderBitmap(kExternalBitmap,
-                                   size,
-                                   format,
-                                   alpha_type,
-                                   color_space) {}
+    : CanvasResourceProvider(kExternalBitmap,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             /*delegate=*/nullptr) {}
+
+scoped_refptr<StaticBitmapImage> CanvasResourceProviderExternalBitmap::Snapshot(
+    ImageOrientation orientation) {
+  TRACE_EVENT0("blink", "CanvasResourceProviderExternalBitmap::Snapshot");
+  return UnacceleratedSnapshot(orientation);
+}
 
 scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
@@ -258,6 +252,29 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
   DCHECK(!paint_image.IsTextureBacked());
   return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                                 orientation);
+}
+
+sk_sp<SkSurface> CanvasResourceProviderExternalBitmap::CreateSkSurface() const {
+  TRACE_EVENT0("blink",
+               "CanvasResourceProviderExternalBitmap::CreateSkSurface");
+
+  const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+  const auto props = GetSkSurfaceProps();
+  return SkSurfaces::Raster(info, &props);
+}
+
+void CanvasResourceProviderExternalBitmap::RasterRecord(
+    cc::PaintRecord last_recording) {
+  return UnacceleratedRasterRecord(last_recording);
+}
+
+bool CanvasResourceProviderExternalBitmap::WritePixels(
+    const SkImageInfo& orig_info,
+    const void* pixels,
+    size_t row_bytes,
+    int x,
+    int y) {
+  return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {

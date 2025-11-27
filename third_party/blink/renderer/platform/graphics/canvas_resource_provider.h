@@ -447,7 +447,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
 // * Renders to a Skia RAM-backed bitmap via an external (client-supplied) draw.
 // * Mailboxing is not supported : cannot be directly composited.
 class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
-    : public CanvasResourceProviderBitmap {
+    : public CanvasResourceProvider {
  public:
   CanvasResourceProviderExternalBitmap(gfx::Size size,
                                        viz::SharedImageFormat format,
@@ -456,6 +456,26 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
 
   ~CanvasResourceProviderExternalBitmap() override = default;
 
+  bool IsValid() const override { return GetSkSurface(); }
+  bool IsAccelerated() const override { return false; }
+  bool SupportsDirectCompositing() const override { return false; }
+  bool IsSingleBuffered() const override { return false; }
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      ImageOrientation = ImageOrientationEnum::kDefault) override;
+
+  void RasterRecord(cc::PaintRecord last_recording) override;
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
+
+  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
+    // Production of CanvasResources is used with direct compositing, which is
+    // not supported by this class.
+    return nullptr;
+  }
+  sk_sp<SkSurface> CreateSkSurface() const override;
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override;
