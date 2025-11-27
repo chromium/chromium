@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -159,6 +161,23 @@ void TabUnderlineViewControllerImpl::OnPinnedTabsChanged(
   }
   UpdateUnderlineView(
       UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet);
+}
+
+void TabUnderlineViewControllerImpl::OnContextTabsChanged(
+    const std::set<tabs::TabHandle>& context_tabs) {
+  auto tab_interface = GetTabInterface();
+  if (!tab_interface) {
+    // If the TabInterface is invalid at this point, there is no relevant UI
+    // to handle.
+    return;
+  }
+
+  bool should_underline =
+      base::Contains(context_tabs, tab_interface->GetHandle());
+  UpdateUnderlineView(
+      should_underline
+          ? UpdateUnderlineReason::kContextualTask_TabInContext
+          : UpdateUnderlineReason::kContextualTask_TabNotInContext);
 }
 
 void TabUnderlineViewControllerImpl::PanelStateChanged(
@@ -319,6 +338,14 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
         AnimateUnderline();
       }
       break;
+    case UpdateUnderlineReason::kContextualTask_TabInContext:
+      if (!underline_view_->IsShowing()) {
+        ShowAndAnimateUnderline();
+      }
+      break;
+    case UpdateUnderlineReason::kContextualTask_TabNotInContext:
+      HideUnderline();
+      break;
   }
 }
 
@@ -396,6 +423,10 @@ std::string TabUnderlineViewControllerImpl::UpdateReasonToString(
       return "TabInPinnedSet";
     case UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet:
       return "TabNotInPinnedSet";
+    case UpdateUnderlineReason::kContextualTask_TabInContext:
+      return "TabInContext";
+    case UpdateUnderlineReason::kContextualTask_TabNotInContext:
+      return "TabNotInContext";
     case UpdateUnderlineReason::kPanelStateChanged_PanelShowing:
       return "PanelShowing";
     case UpdateUnderlineReason::kPanelStateChanged_PanelHidden:
