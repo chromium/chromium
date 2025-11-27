@@ -5,13 +5,17 @@
 #ifndef CC_LAYERS_TILE_BASED_LAYER_IMPL_H_
 #define CC_LAYERS_TILE_BASED_LAYER_IMPL_H_
 
+#include <algorithm>
+
 #include "cc/base/math_util.h"
 #include "cc/cc_export.h"
+#include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/common/quads/debug_border_draw_quad.h"
 
 namespace cc {
 
@@ -182,6 +186,58 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   debug_border_rect.Offset(quad_offset);
   AppendDebugBorderQuad(render_pass, debug_border_rect, shared_quad_state,
                         append_quads_data);
+
+  const float device_scale_factor = layer_tree_impl()->device_scale_factor();
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
+  const float ideal_scale_key = GetIdealContentsScaleKey();
+
+  // Append debug borders for the quads in this layer.
+  if (ShowDebugBorders(DebugBorderType::LAYER)) {
+    for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
+                           max_contents_scale, ideal_scale_key);
+         iter; ++iter) {
+      SkColor4f color;
+      float width;
+      if (*iter && iter->IsReadyToDraw()) {
+        TileDrawInfo::Mode mode = iter->draw_mode();
+        if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
+          color = DebugColors::SolidColorTileBorderColor();
+          width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
+        } else if (mode == TileDrawInfo::OOM_MODE) {
+          color = DebugColors::OOMTileBorderColor();
+          width = DebugColors::OOMTileBorderWidth(device_scale_factor);
+        } else {
+          switch (GetTilingResolutionForDebugBorders(iter.CurrentTiling())) {
+            case TilingResolution::kHigh:
+              color = DebugColors::HighResTileBorderColor();
+              width = DebugColors::HighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kAboveHigh:
+              color = DebugColors::AboveHighResTileBorderColor();
+              width =
+                  DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kBelowHigh:
+              color = DebugColors::BelowHighResTileBorderColor();
+              width =
+                  DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
+              break;
+          }
+        }
+      } else {
+        color = DebugColors::MissingTileBorderColor();
+        width = DebugColors::MissingTileBorderWidth(device_scale_factor);
+      }
+
+      auto* debug_border_quad =
+          render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
+      gfx::Rect geometry_rect = iter.geometry_rect();
+      geometry_rect.Offset(quad_offset);
+      gfx::Rect visible_geometry_rect = geometry_rect;
+      debug_border_quad->SetNew(shared_quad_state, geometry_rect,
+                                visible_geometry_rect, color, width);
+    }
+  }
 
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
                             shared_quad_state, scaled_occlusion, quad_offset);

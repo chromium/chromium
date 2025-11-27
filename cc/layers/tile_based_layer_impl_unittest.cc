@@ -94,10 +94,14 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
       float coverage_scale,
       float ideal_contents_scale) override {
     return TilingSetCoverageIterator<FakeTiling>(
-        std::vector<std::unique_ptr<FakeTiling>>(), coverage_rect,
-        coverage_scale, ideal_contents_scale);
+        empty_tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
   }
   float GetIdealContentsScaleKey() const override { return 1.f; }
+
+  // Note: TilingSetCoverageIterator stores its passed-in container as a const
+  // ref, so it's necessary to pass in an object that outlives the
+  // TilingSetCoverageIterator instance.
+  std::vector<std::unique_ptr<FakeTiling>> empty_tilings_;
 };
 
 FakeTiling::CoverageIterator FakeTiling::Cover(const gfx::Rect& coverage_rect,
