@@ -66,7 +66,7 @@ class SingleClientUserEventsSyncTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          SingleClientUserEventsSyncTest,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
