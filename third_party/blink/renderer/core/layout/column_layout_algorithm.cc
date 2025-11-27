@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/multicol_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
@@ -294,10 +295,17 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
       std::max(intrinsic_block_size_, BorderScrollbarPadding().block_start);
 
   if (!Style().HasAutoColumnHeight()) {
+    // Use all of column-height on the last row as well, but don't let that
+    // overflow the outer fragmentainer, if nested.
     LayoutUnit remaining_column_height =
         RemainingRowHeightAtOffset(intrinsic_block_size_);
+    if (GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      remaining_column_height =
+          std::min(remaining_column_height,
+                   FragmentainerSpaceLeftForChildren() - intrinsic_block_size_);
+      remaining_column_height = remaining_column_height.ClampNegativeToZero();
+    }
     if (remaining_column_height < RowHeight()) {
-      // Use all of column-height on the last row as well.
       intrinsic_block_size_ += remaining_column_height;
     }
   }
@@ -709,6 +717,13 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
         (ShouldWrapColumns() && HasRowHeight() && RowHeight() > LayoutUnit() &&
          RemainingRowHeightAtOffset(line_offset) <= LayoutUnit())) {
       line_offset += OffsetToNextRow(line_offset);
+
+      if (GetConstraintSpace().HasKnownFragmentainerBlockSize() &&
+          !is_first_row && HasRowHeight() &&
+          RowHeight() > FragmentainerSpaceLeftForChildren() - line_offset) {
+        // Another row doesn't fit in the outer fragmentainer. Break.
+        return result;
+      }
     }
 
     const LayoutResult* new_result =
@@ -725,6 +740,18 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     next_column_token =
         To<BlockBreakToken>(result->GetPhysicalFragment().GetBreakToken());
 
+    if (ShouldWrapColumns() && HasRowHeight() && is_first_row &&
+        GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      LayoutUnit overflow = RemainingRowHeightAtOffset(line_offset) -
+                            (FragmentainerSpaceLeftForChildren() - line_offset);
+      if (overflow > LayoutUnit()) {
+        // There wasn't even enough room for one row in the outer
+        // fragmentainer. Resume the row in the next fragmentainer.
+        container_builder_.SetBreakTokenData(
+            MakeGarbageCollected<MulticolBreakTokenData>(RowHeight() -
+                                                         overflow));
+      }
+    }
     is_first_row = false;
   } while (next_column_token && ShouldWrapColumns() &&
            !result->GetColumnSpannerPath());
@@ -1330,6 +1357,18 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
       }
 
       intrinsic_block_size_ += row_gap_size_;
+
+      if (GetConstraintSpace().HasKnownFragmentainerBlockSize() &&
+          HasRowHeight() &&
+          RowHeight() >
+              FragmentainerSpaceLeftForChildren() - intrinsic_block_size_) {
+        // The new row doesn't fit in the outer fragmentainer. Push the spanner
+        // (along with the row) to the next outer fragmentainer.
+        container_builder_.AddBreakBeforeChild(
+            spanner_node, kBreakAppealPerfect, /*is_forced_break=*/false);
+        return BreakStatus::kBrokeBefore;
+      }
+
       result = layout();
     }
   }
@@ -1864,6 +1903,15 @@ LayoutUnit ColumnLayoutAlgorithm::OffsetInCurrentRow(
     // Zero row height, no gap.
     return LayoutUnit();
   }
+
+  if (GetBreakToken()) {
+    if (const auto* data =
+            DynamicTo<MulticolBreakTokenData>(GetBreakToken()->TokenData())) {
+      // Add row progress from previous outer fragmentainers.
+      line_offset += data->consumed_row_block_size;
+    }
+  }
+
   return CurrentContentBlockOffset(line_offset) % row_stride;
 }
 

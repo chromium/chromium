@@ -19,7 +19,8 @@ struct BreakTokenAlgorithmData
     kFlexData,
     kGridData,
     kTableData,
-    kTableRowData
+    kTableRowData,
+    kMulticolData,
     // When adding new values, ensure |type| below has enough bits.
   };
   DataType Type() const { return static_cast<DataType>(type); }
@@ -36,6 +37,7 @@ struct BreakTokenAlgorithmData
   bool IsGridType() const { return Type() == kGridData; }
   bool IsTableType() const { return Type() == kTableData; }
   bool IsTableRowType() const { return Type() == kTableRowData; }
+  bool IsMulticolType() const { return Type() == kMulticolData; }
 
   virtual void Trace(Visitor* visitor) const {}
 
