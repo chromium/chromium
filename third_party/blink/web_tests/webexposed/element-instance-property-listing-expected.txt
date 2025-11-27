@@ -1257,6 +1257,15 @@ html element u
 html element ul
     property compact
     property type
+html element usermedia
+    property initialPermissionStatus
+    property invalidReason
+    property isValid
+    property onpromptaction
+    property onpromptdismiss
+    property onvalidationstatuschange
+    property permissionStatus
+    property type
 html element var
 html element video
     property HAVE_CURRENT_DATA

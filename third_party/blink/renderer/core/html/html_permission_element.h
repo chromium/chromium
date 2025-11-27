@@ -151,6 +151,9 @@ class CORE_EXPORT HTMLPermissionElement
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
+  virtual Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
+      const AtomicString& type);
+
   bool HasPendingPermissionRequest() const {
     return pending_request_created_.has_value();
   }

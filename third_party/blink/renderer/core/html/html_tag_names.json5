@@ -560,6 +560,13 @@
       interfaceName: "HTMLUListElement",
     },
     {
+      name: "usermedia",
+      interfaceName: "HTMLUserMediaElement",
+      runtimeEnabled: "UserMediaElement",
+      runtimeFlagHasOriginTrial: true,
+      noTypeHelpers: true,
+    },
+    {
       name: "var",
       interfaceName: "HTMLElement",
     },

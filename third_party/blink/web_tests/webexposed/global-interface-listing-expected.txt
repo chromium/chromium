@@ -5319,6 +5319,21 @@ interface HTMLUListElement : HTMLElement
 interface HTMLUnknownElement : HTMLElement
     attribute @@toStringTag
     method constructor
+interface HTMLUserMediaElement : HTMLElement
+    attribute @@toStringTag
+    getter initialPermissionStatus
+    getter invalidReason
+    getter isValid
+    getter onpromptaction
+    getter onpromptdismiss
+    getter onvalidationstatuschange
+    getter permissionStatus
+    getter type
+    method constructor
+    setter onpromptaction
+    setter onpromptdismiss
+    setter onvalidationstatuschange
+    setter type
 interface HTMLVideoElement : HTMLMediaElement
     attribute @@toStringTag
     getter disablePictureInPicture

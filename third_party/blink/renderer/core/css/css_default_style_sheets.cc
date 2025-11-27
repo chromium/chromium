@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -360,6 +361,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
     CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
               element.GetExecutionContext()) ||
+          (RuntimeEnabledFeatures::UserMediaElementEnabled(
+               element.GetExecutionContext()) &&
+           IsA<HTMLUserMediaElement>(element)) ||
           (RuntimeEnabledFeatures::GeolocationElementEnabled(
                element.GetExecutionContext()) &&
            IsA<HTMLGeolocationElement>(element)));

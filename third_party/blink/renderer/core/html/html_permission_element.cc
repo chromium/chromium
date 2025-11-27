@@ -360,6 +360,8 @@ HTMLPermissionElement::HTMLPermissionElement(
   CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
             document.GetExecutionContext()) ||
         RuntimeEnabledFeatures::GeolocationElementEnabled(
+            document.GetExecutionContext()) ||
+        RuntimeEnabledFeatures::UserMediaElementEnabled(
             document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
@@ -541,7 +543,7 @@ void HTMLPermissionElement::setType(const AtomicString& type) {
   type_ = type;
 
   CHECK(permission_descriptors_.empty());
-  permission_descriptors_ = ParsePermissionDescriptorsFromString(GetType());
+  permission_descriptors_ = ParseType(GetType());
   if (permission_descriptors_.empty()) {
     AuditsIssue::ReportPermissionElementIssue(
         GetExecutionContext(), GetDomNodeId(),
@@ -1677,6 +1679,11 @@ void HTMLPermissionElement::DidFinishLifecycleUpdate(
   } else {
     EnsureUnregisterPageEmbeddedPermissionControl();
   }
+}
+
+Vector<PermissionDescriptorPtr> HTMLPermissionElement::ParseType(
+    const AtomicString& type) {
+  return ParsePermissionDescriptorsFromString(type);
 }
 
 gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(

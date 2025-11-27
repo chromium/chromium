@@ -75,6 +75,7 @@ class EmbeddedPermissionPromptInteractiveTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
+         blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {});
   }
@@ -1260,6 +1261,7 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
             {blink::features::kBypassPepcSecurityForTesting, {}},

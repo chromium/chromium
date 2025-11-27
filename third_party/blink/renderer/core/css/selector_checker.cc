@@ -2752,6 +2752,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
                 element.GetExecutionContext()) ||
             RuntimeEnabledFeatures::GeolocationElementEnabled(
+                element.GetExecutionContext()) ||
+            RuntimeEnabledFeatures::UserMediaElementEnabled(
                 element.GetExecutionContext()));
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();

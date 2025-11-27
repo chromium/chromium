@@ -161,6 +161,7 @@ class PermissionElementBrowserTest : public PermissionElementBrowserTestBase {
   PermissionElementBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
+         blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {permissions::features::kPermissionElementPromptPositioning});
   }
@@ -409,7 +410,9 @@ class PermissionElementWithSecurityBrowserTest
     : public PermissionElementBrowserTestBase {
  public:
   PermissionElementWithSecurityBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kPermissionElement}, {});
+    feature_list_.InitWithFeatures({blink::features::kPermissionElement,
+                                    blink::features::kUserMediaElement},
+                                   {});
   }
 };
 
@@ -461,12 +464,14 @@ class PermissionElementStandardizedBrowserZoomTest
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {blink::features::kPermissionElement,
+           blink::features::kUserMediaElement,
            blink::features::kBypassPepcSecurityForTesting,
            blink::features::kStandardizedBrowserZoom},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {blink::features::kPermissionElement,
+           blink::features::kUserMediaElement,
            blink::features::kBypassPepcSecurityForTesting},
           {blink::features::kStandardizedBrowserZoom});
     }
@@ -510,6 +515,7 @@ class PermissionElementNearElementBrowserTest
   PermissionElementNearElementBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPermissionElement, {}},
+         {blink::features::kUserMediaElement, {}},
          {blink::features::kBypassPepcSecurityForTesting, {}},
          {permissions::features::kPermissionElementPromptPositioning,
           {{"PermissionElementPromptPositioningParam", "near_element"}}}},
@@ -523,6 +529,7 @@ class PermissionElementWindowMiddleBrowserTest
   PermissionElementWindowMiddleBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPermissionElement, {}},
+         {blink::features::kUserMediaElement, {}},
          {blink::features::kBypassPepcSecurityForTesting, {}},
          {permissions::features::kPermissionElementPromptPositioning,
           {{"PermissionElementPromptPositioningParam", "window_middle"}}}},
@@ -536,6 +543,7 @@ class PermissionElementLegacyPromptBrowserTest
   PermissionElementLegacyPromptBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPermissionElement, {}},
+         {blink::features::kUserMediaElement, {}},
          {blink::features::kBypassPepcSecurityForTesting, {}},
          {permissions::features::kPermissionElementPromptPositioning,
           {{"PermissionElementPromptPositioningParam", "legacy_prompt"}}}},
@@ -574,6 +582,7 @@ class MiscellaneousElementBrowserTest
   MiscellaneousElementBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
+         blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {permissions::features::kPermissionElementPromptPositioning});
   }

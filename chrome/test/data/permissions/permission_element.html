@@ -2,7 +2,7 @@
 <html>
 <head>
   <style>
-    permission {
+    permission, usermedia {
       font-size: xxx-large;
       margin: 0px;
       border: 0px;
@@ -17,7 +17,7 @@
     <permission id="microphone" type="microphone"></permission>
     <permission id="camera" type="camera"></permission>
     <permission id="invalid" type="invalid microphone"></permission>
-    <permission id="camera-microphone" type="camera microphone"></permission>
+    <usermedia id="camera-microphone" type="camera microphone"></usermedia>
   </div>
   <script>
     document.getElementById('parent').addEventListener('promptaction', (event) => {

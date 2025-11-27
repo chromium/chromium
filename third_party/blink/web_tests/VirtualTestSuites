@@ -4744,6 +4744,22 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "usermedia-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [],
+    "args": [
+      "--disable-features=UserMediaElement"
+    ],
+    "owners": [
+      "permissions-core@google.com"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "unload-allowed",
     "platforms": [
       "Linux",
