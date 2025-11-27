@@ -265,6 +265,14 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
+       IsPasswordManagerPinAvailable_CallsDelegate) {
+  base::test::TestFuture<bool> future;
+  handler().IsPasswordManagerPinAvailable(future.GetCallback());
+  // The TestPasswordsPrivateDelegate hardcodes the response to false.
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
        IsAccountStorageEnabled_ReturnsCorrectValue) {
   // Set the delegate to return true.
   test_delegate().SetAccountStorageEnabled(true);

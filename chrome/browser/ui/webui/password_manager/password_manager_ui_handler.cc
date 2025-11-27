@@ -82,6 +82,12 @@ void PasswordManagerUIHandler::ChangePasswordManagerPin(
                                                         std::move(callback));
 }
 
+void PasswordManagerUIHandler::IsPasswordManagerPinAvailable(
+    IsPasswordManagerPinAvailableCallback callback) {
+  passwords_private_delegate_->IsPasswordManagerPinAvailable(
+      web_contents_, std::move(callback));
+}
+
 void PasswordManagerUIHandler::ShowAddShortcutDialog() {
   passwords_private_delegate_->ShowAddShortcutDialog(web_contents_);
 }

@@ -736,7 +736,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   isPasswordManagerPinAvailable() {
-    return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
+    }
+    return this.handler.isPasswordManagerPinAvailable().then(
+        result => result.isAvailable);
   }
 
   disconnectCloudAuthenticator() {
