@@ -854,6 +854,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   bool use_gpu_raster_ = false;
   bool use_passthrough_ = false;
+  bool performed_raster_ = false;
 
   // The current decoder error communicates the decoder error through command
   // processing functions that do not return the error value. Should be set
@@ -1475,6 +1476,8 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
   int process_pos = 0;
   CommandId command = static_cast<CommandId>(0);
 
+  performed_raster_ = false;
+
   while (process_pos < num_entries && result == error::kNoError &&
          commands_to_process_--) {
     const unsigned int size = cmd_data->value_header.size;
@@ -1571,8 +1574,9 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
                << GetCommandName(command);
   }
 
-  if (use_gpu_raster_)
+  if (performed_raster_) {
     client()->ScheduleGrContextCleanup();
+  }
 
   return result;
 }
@@ -2778,6 +2782,9 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
                        "No chromium raster support");
     return;
   }
+
+  performed_raster_ = true;
+
   if (sk_surface_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
                        "BeginRasterCHROMIUM without EndRasterCHROMIUM");
