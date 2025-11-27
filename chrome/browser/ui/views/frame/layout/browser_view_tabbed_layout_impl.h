@@ -51,6 +51,11 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
   TabStripType GetTabStripType() const;
 
+  // Returns whether the shadow overlay (with its attendant margin) around the
+  // main area is visible. This is usually tied to the presence of the
+  // toolbar-height side panel, but may not be in some browser states.
+  bool ShadowOverlayVisible() const;
+
   // Returns the type of top separator.
   enum class TopSeparatorType {
     kNone,

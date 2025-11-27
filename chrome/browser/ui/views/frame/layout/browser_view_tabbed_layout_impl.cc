@@ -54,12 +54,6 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
     return TopSeparatorType::kLoadingBar;
   }
 
-  // If there is no multi-contents view, there's nowhere else to put the
-  // separator, so it goes in the top container.
-  if (!views().multi_contents_view) {
-    return TopSeparatorType::kTopContainer;
-  }
-
   // In immersive mode, when the top container is visually separate, the
   // separator goes with the container to the overlay.
   bool top_container_is_visually_separate =
@@ -72,10 +66,20 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   if (top_container_is_visually_separate &&
       fullscreen_utils::IsAlwaysShowToolbarEnabled(browser()) &&
       !fullscreen_utils::IsInContentFullscreen(browser())) {
+    // If there is a shadow box, it serves as a separator, so none is needed.
+    if (ShadowOverlayVisible()) {
+      return TopSeparatorType::kNone;
+    }
     top_container_is_visually_separate = false;
   }
 #endif
   if (top_container_is_visually_separate) {
+    return TopSeparatorType::kTopContainer;
+  }
+
+  // If there is no multi-contents view, there's nowhere else to put the
+  // separator, so it goes in the top container.
+  if (!views().multi_contents_view) {
     return TopSeparatorType::kTopContainer;
   }
 
@@ -146,6 +150,13 @@ BrowserViewTabbedLayoutImpl::GetTabStripType() const {
   }
   return delegate().ShouldDrawTabStrip() ? TabStripType::kHorizontal
                                          : TabStripType::kNone;
+}
+
+bool BrowserViewTabbedLayoutImpl::ShadowOverlayVisible() const {
+  if (!views().toolbar_height_side_panel) {
+    return false;
+  }
+  return views().toolbar_height_side_panel->GetAnimationValue() > 0.0;
 }
 
 gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
@@ -339,19 +350,23 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     params.InsetHorizontal(visible_width, toolbar_height_side_panel_leading);
   }
 
-  // As the toolbar height side panel animates in, the main panel shrinks and
-  // moves over to accommodate the panel.
-  const int scaled_main_area_padding = base::ClampRound(
-      toolbar_height_side_panel_reveal_amount * container_inset_padding);
-  params.Inset(gfx::Insets::TLBR(
-      scaled_main_area_padding,
-      toolbar_height_side_panel_leading ? 0 : scaled_main_area_padding,
-      scaled_main_area_padding,
-      toolbar_height_side_panel_leading ? scaled_main_area_padding : 0));
+  // Lay out the shadow overlay.
+  const bool show_shadow_overlay = ShadowOverlayVisible();
+  if (show_shadow_overlay) {
+    // As the toolbar height side panel animates in, the main panel shrinks and
+    // moves over to accommodate the panel.
+    const int scaled_main_area_padding = base::ClampRound(
+        toolbar_height_side_panel_reveal_amount * container_inset_padding);
+    params.Inset(gfx::Insets::TLBR(
+        scaled_main_area_padding,
+        toolbar_height_side_panel_leading ? 0 : scaled_main_area_padding,
+        scaled_main_area_padding,
+        toolbar_height_side_panel_leading ? scaled_main_area_padding : 0));
+  }
 
   // Lay out the remainder of the main container.
   layout.AddChild(views().main_shadow_overlay, params.visual_client_area,
-                  has_toolbar_height_side_panel);
+                  show_shadow_overlay);
 
   // Lay out top container.
   if (IsParentedTo(views().top_container, views().browser_view)) {
@@ -370,14 +385,18 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     gfx::Rect infobar_bounds;
     const bool infobar_visible = delegate().IsInfobarVisible();
     if (infobar_visible) {
-      infobar_bounds = gfx::Rect(
-          params.visual_client_area.x(),
-          // Infobar needs to get down out of the way of immersive mode elements
-          // in some cases.
-          params.visual_client_area.y() + delegate().GetExtraInfobarOffset(),
-          params.visual_client_area.width(),
-          // This returns zero for empty infobar.
-          views().infobar_container->GetPreferredSize().height());
+      // Infobars slide down with top container reveal, but not when they're in
+      // the toolbar-height side panel shadow box. This is because they only
+      // slide down when they are visually adjacent to the toolbar/bookmarks
+      // bar.
+      const int additional_offset =
+          show_shadow_overlay ? 0 : delegate().GetExtraInfobarOffset();
+      infobar_bounds =
+          gfx::Rect(params.visual_client_area.x(),
+                    params.visual_client_area.y() + additional_offset,
+                    params.visual_client_area.width(),
+                    // This returns zero for empty infobar.
+                    views().infobar_container->GetPreferredSize().height());
       params.SetTop(infobar_bounds.bottom());
     }
     layout.AddChild(views().infobar_container, infobar_bounds, infobar_visible);
