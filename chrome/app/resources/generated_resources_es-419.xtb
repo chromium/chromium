@@ -10173,7 +10173,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 archivo en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} archivos en <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8039525676147630657">Esta app de Chrome dejará de funcionar después de que se actualice la versión de ChromeOS. Guarda los datos de la app que quieras conservar. Para obtener más información sobre tus opciones, comunícate con el desarrollador de apps o con el equipo de asistencia de TI.</translation>
-<translation id="8041089156583427627">Enviar comentario</translation>
+<translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8041093619605951337">Felicidad</translation>
 <translation id="8041267120753677077">Transmitir las apps de tu teléfono</translation>
 <translation id="8042142357103597104">Opacidad del texto</translation>
