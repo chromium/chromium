@@ -19,6 +19,8 @@
 
 using base::android::JavaParamRef;
 
+int MediaCapturePickerManagerBridge::next_fake_id_ = 1;
+
 MediaCapturePickerManagerBridge::MediaCapturePickerManagerBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_MediaCapturePickerManagerBridge_create(
@@ -68,13 +70,13 @@ void MediaCapturePickerManagerBridge::OnPickTab(
 
 void MediaCapturePickerManagerBridge::OnPickWindow(JNIEnv* env) {
   auto desktop_media_id = content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_WINDOW, content::DesktopMediaID::kNullId);
+      content::DesktopMediaID::TYPE_WINDOW, next_fake_id_++);
   std::move(callback_).Run(desktop_media_id);
 }
 
 void MediaCapturePickerManagerBridge::OnPickScreen(JNIEnv* env) {
   auto desktop_media_id = content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_SCREEN, content::DesktopMediaID::kNullId);
+      content::DesktopMediaID::TYPE_SCREEN, next_fake_id_++);
   std::move(callback_).Run(desktop_media_id);
 }
 
