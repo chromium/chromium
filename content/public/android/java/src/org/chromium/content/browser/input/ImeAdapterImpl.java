@@ -1414,23 +1414,39 @@ public class ImeAdapterImpl
             mRestartInputOnNextStateUpdate = true;
         }
 
-        if (mWebContents.getStylusWritingHandler() == null) {
-            return;
-        }
+        View containerView = getContainerView();
+
         // Update edit bounds to stylus writing service.
-        Rect editableNodeBounds = new Rect();
-        if (isEditable) {
-            editableNodeBounds.set(nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip);
+        if (mWebContents.getStylusWritingHandler() != null) {
+            RenderCoordinatesImpl coords = mWebContents.getRenderCoordinates();
+            Rect editableNodeBounds = new Rect();
+            if (isEditable) {
+                editableNodeBounds.set(nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip);
+            }
+            mWebContents
+                    .getStylusWritingHandler()
+                    .onFocusedNodeChanged(
+                            editableNodeBounds,
+                            isEditable,
+                            containerView,
+                            coords.getDeviceScaleFactor(),
+                            coords.getContentOffsetYPixInt());
         }
-        float deviceScale = mWebContents.getRenderCoordinates().getDeviceScaleFactor();
-        mWebContents
-                .getStylusWritingHandler()
-                .onFocusedNodeChanged(
-                        editableNodeBounds,
-                        isEditable,
-                        assumeNonNull(mViewDelegate.getContainerView()),
-                        deviceScale,
-                        mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
+
+        // Request view system keeps focused element on screen.
+        if (ContentFeatureList.sAccessibilityMagnificationFollowsFocus.isEnabled()) {
+            Rect nodePix = fromCssToDevicePix(nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip);
+            if (!nodePix.isEmpty()) {
+                // TODO(crbug.com/464269649): when Baklava 36.1 support lands in Clank, remove
+                // delegate indirection and inline `requestInputFocusOnScreen()` call.
+                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                if (delegate != null) {
+                    delegate.requestInputFocusOnScreen(containerView, nodePix);
+                }
+                // Do nothing if new 36.1 `requestRectangleOnScreen()` API with request source
+                // parameter is unavailable.
+            }
+        }
     }
 
     @CalledByNative
@@ -1636,7 +1652,7 @@ public class ImeAdapterImpl
                             caretCss.x + caretCss.width,
                             caretCss.y + caretCss.height);
 
-            // TODO(crbug.com/450540343): when Baklava 36.1 support lands in Clank, remove delegate
+            // TODO(crbug.com/464269649): when Baklava 36.1 support lands in Clank, remove delegate
             // indirection and inline `requestRectangleOnScreen()` call.
             AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
             if (delegate != null && delegate.requestTextCursorOnScreen(containerView, caretPix)) {

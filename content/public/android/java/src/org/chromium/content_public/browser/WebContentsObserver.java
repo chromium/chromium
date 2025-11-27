@@ -7,7 +7,6 @@ package org.chromium.content_public.browser;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.TerminationStatus;
-import org.chromium.blink.mojom.FocusType;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -293,29 +292,6 @@ public abstract class WebContentsObserver {
      * RenderWidgetHosts within the same WebContents.
      */
     public void onWebContentsLostFocus() {}
-
-    /**
-     * This method is invoked when a RenderFrameHost inside this WebContents has updated its focused
-     * element. Note that, unlike the C++ {@code WebContentsObserver} interface, this Java interface
-     * does not pass bounds in screen coordinates in addition to view coordinates, as no current
-     * Java client requires screen coordinates.
-     *
-     * @param isEditableNode is the new focused element editable?
-     * @param leftInView the left X coordinate of the new focused element relative to the root view
-     * @param topInView the top Y coordinate of the new focused element relative to the root view
-     * @param rightInView the right X coordinate of the new focused element relative to the root
-     *     view
-     * @param bottomInView the bottom Y coordinate of the new focused element relative to the root
-     *     view
-     * @param focusType the source of the focus change
-     */
-    public void onFocusChangedInPage(
-            boolean isEditableNode,
-            int leftInView,
-            int topInView,
-            int rightInView,
-            int bottomInView,
-            @FocusType.EnumType int focusType) {}
 
     /** Called when the top level WindowAndroid changes. */
     public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {}
