@@ -1521,12 +1521,6 @@ const char kSetUpListShortenedDurationName[] = "Set Up List Shortened Duration";
 const char kSetUpListShortenedDurationDescription[] =
     "Reduces the Set Up List duration in the NTP to the selected parameter.";
 
-const char kShareExtensionForMultiprofileName[] =
-    "Enable Share Extension for multiprofile";
-const char kShareExtensionForMultiprofileDescription[] =
-    "When enabled, returning users will see the new per-account share "
-    "extension implementation";
-
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "

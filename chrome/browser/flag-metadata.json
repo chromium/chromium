@@ -9384,11 +9384,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "share-extension-for-multiprofile",
-    "owners": [ "erahmaoui@google.com", "olivierrobin@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 150
