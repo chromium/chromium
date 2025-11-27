@@ -164,14 +164,14 @@ INSTANTIATE_TEST_SUITE_P(,
 IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
   ASSERT_TRUE(SetupSync());
 
-  PasswordForm form = CreateTestPasswordForm(0);
+  PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
   GetVerifierPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount());
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(ProfileContainsSamePasswordFormsAsVerifier(0));
+  ASSERT_TRUE(ProfileContainsSamePasswordFormsAsVerifier(0, GetStoreType()));
   ASSERT_EQ(1, GetPasswordCount());
 }
 
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
                        CommitWithoutCustomPassphrase) {
   ASSERT_TRUE(SetupSync());
 
-  PasswordForm form = CreateTestPasswordForm(0);
+  PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
   GetVerifierPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(form);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
   ASSERT_TRUE(SetupSync());
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
-  PasswordForm form = CreateTestPasswordForm(0);
+  PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
   GetVerifierPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(form);
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
       ServerPassphraseTypeChecker(syncer::PassphraseType::kKeystorePassphrase)
           .Wait());
 
-  PasswordForm form = CreateTestPasswordForm(0);
+  PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
   GetVerifierPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(form);
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
 IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   ASSERT_TRUE(SetupClients());
-  PasswordForm form = CreateTestPasswordForm(0);
+  PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
   GetPasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount());
   // Setup sync, wait for its completion, and make sure changes were synced.
@@ -587,10 +587,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        SyncPaused) {
-  // Setup Sync with 2 passwords.
+  // Setup Sync with 2 local passwords.
   ASSERT_TRUE(SetupClients());
-  PasswordForm form0 = CreateTestPasswordForm(0);
-  PasswordForm form1 = CreateTestPasswordForm(1);
+  PasswordForm form0 =
+      CreateTestPasswordForm(0, PasswordForm::Store::kProfileStore);
+  PasswordForm form1 =
+      CreateTestPasswordForm(1, PasswordForm::Store::kProfileStore);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
@@ -642,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Add one local password.
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(
-      CreateTestPasswordForm(0));
+      CreateTestPasswordForm(0, PasswordForm::Store::kProfileStore));
 
   // Set up sync in transport mode.
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
@@ -677,8 +679,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add two local passwords.
-  PasswordForm form1 = CreateTestPasswordForm(1);
-  PasswordForm form2 = CreateTestPasswordForm(2);
+  PasswordForm form1 =
+      CreateTestPasswordForm(1, PasswordForm::Store::kProfileStore);
+  PasswordForm form2 =
+      CreateTestPasswordForm(2, PasswordForm::Store::kProfileStore);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form1);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form2);
 
@@ -725,8 +729,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add two local passwords.
-  PasswordForm form1 = CreateTestPasswordForm(1);
-  PasswordForm form2 = CreateTestPasswordForm(2);
+  PasswordForm form1 =
+      CreateTestPasswordForm(1, PasswordForm::Store::kProfileStore);
+  PasswordForm form2 =
+      CreateTestPasswordForm(2, PasswordForm::Store::kProfileStore);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form1);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form2);
 
@@ -801,7 +807,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   // update. Otherwise, calling count match could finish before the local update
   // actually goes through (as there is already 1 password entity on the
   // server).
-  GetPasswordStoreInterface()->AddLogin(CreateTestPasswordForm(2));
+  GetPasswordStoreInterface()->AddLogin(
+      CreateTestPasswordForm(2, GetStoreType()));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
 
   // Check that the password was updated and the commit preserved the data for
@@ -861,13 +868,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   form.password_value = u"password";
   form.notes.emplace_back(u"new note value",
                           /*date_created=*/base::Time::Now());
+  form.in_store = GetStoreType();
   GetPasswordStoreInterface()->UpdateLogin(form);
 
   // Add an obsolete password to make sure that the server has received the
   // update. Otherwise, calling count match could finish before the local update
   // actually goes through (as there is already 1 password entity on the
   // server).
-  GetPasswordStoreInterface()->AddLogin(CreateTestPasswordForm(2));
+  GetPasswordStoreInterface()->AddLogin(
+      CreateTestPasswordForm(2, GetStoreType()));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
 
   // Check that the password note was updated and the commit preserved the data
@@ -959,7 +968,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest, Delete) {
   ASSERT_TRUE(SetupClients());
 
-  const PasswordForm form0 = CreateTestPasswordForm(0);
+  const PasswordForm form0 = CreateTestPasswordForm(0, GetStoreType());
   GetPasswordStoreInterface()->AddLogin(form0);
 
   ASSERT_TRUE(SetupSync());
