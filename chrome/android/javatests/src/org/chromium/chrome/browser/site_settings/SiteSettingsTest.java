@@ -174,9 +174,11 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
+// TODO(https://crbug.com/464016211): these tests could be flaky because of AnimatedProgressBar.
 @DisableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
     ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {

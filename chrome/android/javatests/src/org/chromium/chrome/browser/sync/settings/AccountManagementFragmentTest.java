@@ -61,7 +61,11 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+// TODO(https://crbug.com/464015738): these tests could be flaky because of AnimatedProgressBar.
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
+})
 public class AccountManagementFragmentTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
     private static final int RENDER_TEST_REVISION = 2;
