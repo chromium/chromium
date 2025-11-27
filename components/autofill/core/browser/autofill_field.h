@@ -136,6 +136,8 @@ struct AutofillFormatString final {
   AutofillFormatString& operator=(AutofillFormatString&&);
   ~AutofillFormatString();
 
+  static bool IsValid(std::u16string_view value, FormatString_Type type);
+
   friend bool operator==(const AutofillFormatString&,
                          const AutofillFormatString&) = default;
 

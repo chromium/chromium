@@ -419,20 +419,7 @@ AutofillFormatString::AutofillFormatString() = default;
 AutofillFormatString::AutofillFormatString(std::u16string v,
                                            FormatString_Type type)
     : value(std::move(v)), type(type) {
-  DCHECK([&]() {
-    switch (type) {
-      case FormatString_Type_DATE:
-        return data_util::IsValidDateFormat(value);
-      case FormatString_Type_AFFIX:
-        return data_util::IsValidAffixFormat(value);
-      case FormatString_Type_FLIGHT_NUMBER:
-        return data_util::IsValidFlightNumberFormat(value);
-      case FormatString_Type_ICU_DATE:
-        // TODO(crbug.com/464004123): Add validation for ICU date format strings.
-        return true;
-    }
-    return false;
-  }());
+  DCHECK(IsValid(value, type));
 }
 
 AutofillFormatString::AutofillFormatString(const AutofillFormatString&) =
@@ -447,6 +434,24 @@ AutofillFormatString& AutofillFormatString::operator=(AutofillFormatString&&) =
     default;
 
 AutofillFormatString::~AutofillFormatString() = default;
+
+// static
+bool AutofillFormatString::IsValid(std::u16string_view value,
+                                   FormatString_Type type) {
+  switch (type) {
+    case FormatString_Type_DATE:
+      return data_util::IsValidDateFormat(value);
+    case FormatString_Type_AFFIX:
+      return data_util::IsValidAffixFormat(value);
+    case FormatString_Type_FLIGHT_NUMBER:
+      return data_util::IsValidFlightNumberFormat(value);
+    case FormatString_Type_ICU_DATE:
+      // TODO(crbug.com/464004123): Add validation for ICU date format strings.
+      return true;
+  }
+  // Graceful catch-all because the `type` may come from the server.
+  return false;
+}
 
 AutofillField::AutofillField() {
   local_type_predictions_.fill(NO_SERVER_DATA);

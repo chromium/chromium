@@ -81,22 +81,6 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
   return result;
 }
 
-[[nodiscard]] bool IsValidFormatString(FormatString_Type type,
-                                       std::u16string_view value) {
-  switch (type) {
-    case FormatString_Type_DATE:
-      return data_util::IsValidDateFormat(value);
-    case FormatString_Type_AFFIX:
-      return data_util::IsValidAffixFormat(value);
-    case FormatString_Type_FLIGHT_NUMBER:
-      return data_util::IsValidFlightNumberFormat(value);
-    case FormatString_Type_ICU_DATE:
-      // TODO(crbug.com/464004123): Add validation for ICU date format strings.
-      return true;
-  }
-  return false;
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Merges manual and server type predictions.
 //
@@ -485,7 +469,7 @@ void EncodeFormFieldsForUpload(
 
     if (field_options) {
       for (const auto& [type, string] : field_options->format_strings) {
-        DCHECK(IsValidFormatString(type, string));
+        DCHECK(AutofillFormatString::IsValid(string, type));
         auto* added_format_string = added_field->add_format_string();
         added_format_string->set_type(type);
         added_format_string->set_format_string(base::UTF16ToUTF8(string));
@@ -1063,8 +1047,9 @@ void ProcessServerPredictionsQueryResponse(
       if (field_suggestion->has_format_string()) {
         std::u16string format_string_value = base::UTF8ToUTF16(
             field_suggestion->format_string().format_string());
-        if (IsValidFormatString(field_suggestion->format_string().type(),
-                                format_string_value)) {
+        if (AutofillFormatString::IsValid(
+                format_string_value,
+                field_suggestion->format_string().type())) {
           field->set_format_string_unless_overruled(
               AutofillFormatString(format_string_value,
                                    field_suggestion->format_string().type()),
