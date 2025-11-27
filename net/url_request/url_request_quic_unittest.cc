@@ -119,7 +119,7 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
     // Allow ephemeral ports to be used with alt services stored in
     // HttpServerProperties, so tests can test alt service behavior.
     params.enable_user_alternate_protocol_ports = true;
-    context_builder_->set_host_resolver(std::move(host_resolver_));
+    context_builder_->set_host_resolver(MakeMappedHostResolver());
     context_builder_->set_http_network_session_params(params);
     context_builder_->SetCertVerifier(std::move(cert_verifier));
     context_builder_->set_net_log(NetLog::Get());
@@ -135,8 +135,7 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
   URLRequestContextBuilder* context_builder() { return context_builder_.get(); }
 
   std::unique_ptr<URLRequestContext> BuildContext() {
-    auto context = context_builder_->Build();
-    return context;
+    return context_builder_->Build();
   }
 
   static std::unique_ptr<URLRequest> CreateRequest(
@@ -147,22 +146,9 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
-  unsigned int GetRstErrorCountReceivedByServer(
-      quic::QuicRstStreamErrorCode error_code) const {
-    return (static_cast<quic::QuicSimpleDispatcher*>(server_->dispatcher()))
-        ->GetRstErrorCount(error_code);
-  }
-
-  static const NetLogEntry* FindEndBySource(
-      const std::vector<NetLogEntry>& entries,
-      const NetLogSource& source) {
-    for (const auto& entry : entries) {
-      if (entry.phase == NetLogEventPhase::END &&
-          entry.source.type == source.type && entry.source.id == source.id)
-        return &entry;
-    }
-    return nullptr;
-  }
+  // Returns the port that `server_` is listening on. `server_` must be non-null
+  // and have been started.
+  uint16_t server_port() const { return server_->server_address().port(); }
 
   quic::ParsedQuicVersion version() const {
     return std::get<quic::ParsedQuicVersion>(GetParam());
@@ -171,10 +157,11 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
   bool happy_eyeballs_v3_enabled() const { return std::get<bool>(GetParam()); }
 
  protected:
-  // Returns a fully-qualified URL for |path| on the test server.
-  std::string UrlFromPath(std::string_view path) {
-    return std::string("https://") + std::string(kTestServerHost) +
-           std::string(path);
+  // Returns a fully-qualified URL for `path` on the test server.
+  GURL UrlFromPath(std::string_view path) {
+    GURL url(base::StrCat({"https://", kTestServerHost, path}));
+    CHECK(url.is_valid());
+    return url;
   }
 
   void SetDelay(std::string_view host,
@@ -201,23 +188,27 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
     int rv =
         server_->Listen(net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0));
     EXPECT_GE(rv, 0) << "Quic server fails to start";
+  }
 
+  // Creates a HostResolver that resolves `test.example.com` to 127.0.0.1, and
+  // rewrites the port of requests to that host to the port of `server_`.
+  std::unique_ptr<HostResolver> MakeMappedHostResolver() const {
     auto resolver = std::make_unique<MockHostResolver>(
         /*default_result=*/ERR_NAME_NOT_RESOLVED);
     resolver->rules()->AddRule("test.example.com", "127.0.0.1");
-    host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
+    auto host_resolver =
+        std::make_unique<MappedHostResolver>(std::move(resolver));
     // Use a mapped host resolver so that request for test.example.com
     // reach the server running on localhost.
-    std::string map_rule =
-        "MAP test.example.com test.example.com:" +
-        base::NumberToString(server_->server_address().port());
-    EXPECT_TRUE(host_resolver_->AddRuleFromString(map_rule));
+    std::string map_rule = "MAP test.example.com test.example.com:" +
+                           base::NumberToString(server_port());
+    EXPECT_TRUE(host_resolver->AddRuleFromString(map_rule));
+    return host_resolver;
   }
 
   const bool force_quic_;
   base::test::ScopedFeatureList feature_list_;
 
-  std::unique_ptr<MappedHostResolver> host_resolver_;
   std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
   std::unique_ptr<URLRequestContextBuilder> context_builder_;
@@ -232,14 +223,14 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
   // test production code behavior.
   URLRequestQuicWithTcpTest() : URLRequestQuicTest(/*force_quic=*/false) {
     // Replace the HostResolver, configuring an HTTPS record for
-    // `endpoint_result`.
+    // `kTestServerHost`.
     auto host_resolver = std::make_unique<MockHostResolver>(
         /*default_result=*/ERR_NAME_NOT_RESOLVED);
 
     // Set up HTTPS record for `kTestServerHost`.
     HostResolverEndpointResult endpoint_result;
-    endpoint_result.ip_endpoints = {IPEndPoint(
-        IPAddress::IPv4Localhost(), server_->server_address().port())};
+    endpoint_result.ip_endpoints = {
+        IPEndPoint(IPAddress::IPv4Localhost(), server_port())};
     endpoint_result.metadata.supported_protocol_alpns = {
         quic::AlpnForVersion(version())};
     std::vector<HostResolverEndpointResult> endpoints;
@@ -261,8 +252,7 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
     url::SchemeHostPort alt_server(OtherHostUrlFromPath("/"));
     base::Time expiration = base::Time::Now() + base::Days(1);
     AlternativeService alternative_service(
-        NextProto::kProtoQUIC,
-        HostPortPair(kTestServerHost, server_->server_address().port()));
+        NextProto::kProtoQUIC, HostPortPair(kTestServerHost, server_port()));
     context.http_server_properties()->SetQuicAlternativeService(
         alt_server, NetworkAnonymizationKey(), alternative_service, expiration,
         {version()});
@@ -297,11 +287,10 @@ class URLRequestQuicWithTcpTest : public URLRequestQuicTest {
   // records).
   // See https://crbug.com/455891789
   GURL UrlFromPathWithPort(std::string_view path) {
-    GURL url = GURL(UrlFromPath(path));
     GURL::Replacements replacements;
-    std::string port = base::ToString(server_->server_address().port());
+    std::string port = base::ToString(server_port());
     replacements.SetPortStr(port);
-    url = url.ReplaceComponents(replacements);
+    GURL url = UrlFromPath(path).ReplaceComponents(replacements);
     CHECK(url.is_valid());
     return url;
   }
@@ -404,7 +393,7 @@ TEST_P(URLRequestQuicTest, TestGetRequest) {
   auto context = BuildContext();
   CheckLoadTimingDelegate delegate(false);
   std::unique_ptr<URLRequest> request =
-      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
+      CreateRequest(context.get(), UrlFromPath(kHelloPath), &delegate);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -424,7 +413,7 @@ TEST_P(URLRequestQuicTest, TestTwoRequests) {
           run_loop.QuitClosure(), /*num_expected_requests=*/2));
   auto context = BuildContext();
 
-  GURL url = GURL(UrlFromPath(kHelloPath));
+  GURL url = UrlFromPath(kHelloPath);
   auto isolation_info =
       IsolationInfo::CreateForInternalRequest(url::Origin::Create(url));
 
@@ -460,7 +449,7 @@ TEST_P(URLRequestQuicTest, RequestHeadersCallback) {
   extra_headers.SetHeader("X-Foo", "bar");
 
   std::unique_ptr<URLRequest> request =
-      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
+      CreateRequest(context.get(), UrlFromPath(kHelloPath), &delegate);
 
   request->SetExtraRequestHeaders(extra_headers);
   request->SetRequestHeadersCallback(
@@ -492,7 +481,7 @@ TEST_P(URLRequestQuicTest, DelayedResponseStart) {
   auto context = BuildContext();
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
+      CreateRequest(context.get(), UrlFromPath(kHelloPath), &delegate);
 
   constexpr auto delay = base::Milliseconds(300);
 
