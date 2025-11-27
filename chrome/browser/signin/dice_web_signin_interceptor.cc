@@ -1252,7 +1252,6 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     if (dismiss_count >= kMaxChromeSigninInterceptionDismissCount) {
       // Proceed with the result treated as declined since we reached the max
       // dismissal count, or the user is in the always ask mode.
-      // TODO(crbug.com/319396084): Should we record something here?
       processed_result = SigninInterceptionResult::kDeclined;
     } else {
       // Max dismiss count not reached yet, proceed with a simple dismiss.
