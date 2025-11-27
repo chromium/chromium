@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapps;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ public class AddToHomescreenMediatorTest {
     @Mock private AddToHomescreenMediator.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private WebContents mWebContents;
+    @Mock private Runnable mOnFlowCompleted;
 
     private final PropertyModel mPropertyModel =
             new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
@@ -50,7 +52,8 @@ public class AddToHomescreenMediatorTest {
     @Feature({"Webapp"})
     public void testNativeApp() {
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid, mWebContents);
+                new AddToHomescreenMediator(
+                        mPropertyModel, mWindowAndroid, mWebContents, mOnFlowCompleted);
 
         // Prepare test parameters.
         Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -77,19 +80,52 @@ public class AddToHomescreenMediatorTest {
     @Feature({"Webapp"})
     public void testWebApp() {
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid, mWebContents);
+                new AddToHomescreenMediator(
+                        mPropertyModel, mWindowAndroid, mWebContents, mOnFlowCompleted);
 
         // Prepare test parameters.
         Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         addToHomescreenMediator.setWebAppInfo("Title", "google.com", AppType.SHORTCUT);
         addToHomescreenMediator.setIcon(icon, true);
 
-        // Assert #setWebAppInfoWithIcon assigns the correct properties to the model.
+        // Assert #setWebAppInfo and #setIcon assign the correct properties to the model.
         Assert.assertEquals("Title", mPropertyModel.get(AddToHomescreenProperties.TITLE));
         Assert.assertEquals("google.com", mPropertyModel.get(AddToHomescreenProperties.URL));
         Assert.assertEquals(AppType.SHORTCUT, mPropertyModel.get(AddToHomescreenProperties.TYPE));
         Assert.assertNotEquals(icon, mPropertyModel.get(AddToHomescreenProperties.ICON).first);
         Assert.assertTrue(mPropertyModel.get(AddToHomescreenProperties.ICON).second);
         Assert.assertEquals(true, mPropertyModel.get(AddToHomescreenProperties.CAN_SUBMIT));
+    }
+
+    @Test
+    @Feature({"Webapp"})
+    public void testOnAddToHomescreen() {
+        AddToHomescreenMediator addToHomescreenMediator =
+                new AddToHomescreenMediator(
+                        mPropertyModel, mWindowAndroid, mWebContents, mOnFlowCompleted);
+
+        addToHomescreenMediator.onAddToHomescreen("Title", AppType.WEBAPK);
+
+        verify(mNativeMock).addToHomescreen(NATIVE_POINTER, "Title", AppType.WEBAPK);
+
+        // Verify that the native mediator is destroyed and the callback runs.
+        verify(mNativeMock).destroy(NATIVE_POINTER);
+        verify(mOnFlowCompleted).run();
+    }
+
+    @Test
+    @Feature({"Webapp"})
+    public void testOnViewDismissed() {
+        AddToHomescreenMediator addToHomescreenMediator =
+                new AddToHomescreenMediator(
+                        mPropertyModel, mWindowAndroid, mWebContents, mOnFlowCompleted);
+
+        addToHomescreenMediator.onViewDismissed();
+
+        verify(mNativeMock).onUiDismissed(NATIVE_POINTER);
+
+        // Verify that the native mediator is destroyed and the callback runs.
+        verify(mNativeMock).destroy(NATIVE_POINTER);
+        verify(mOnFlowCompleted).run();
     }
 }

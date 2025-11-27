@@ -10,11 +10,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
-#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -25,7 +24,6 @@ class WebContents;
 
 namespace webapps {
 
-struct ShortcutInfo;
 class AddToHomescreenInstaller;
 
 using AppType = AddToHomescreenParams::AppType;
@@ -34,12 +32,12 @@ using AppType = AddToHomescreenParams::AppType;
 // org.chromium.components.webapps.addtohomescreen.AddToHomescreenMediator
 // in Java. It uses AddToHomescreenInstaller for installing the current app.
 // This class is owned, constructed, and destroyed by its Java counter-part.
-class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
+class AddToHomescreenMediator {
  public:
   // Initializes the mediator for a given reference to the Java side object and
   // for a given WebContent.
-  // After initialization, either StartForAppBanner or StartForAppMenu should be
-  // called to update the UI accordingly.
+  // After initialization, SetWebAppInfo and SetIcon should be called to update
+  // the UI accordingly.
   AddToHomescreenMediator(
       const base::android::JavaParamRef<jobject>& java_ref,
       const base::android::JavaParamRef<jobject>& java_web_contents);
@@ -50,7 +48,12 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
                                    const AddToHomescreenParams&)>
           event_callback);
 
-  void StartForAppMenu(JNIEnv* env, int app_menu_type);
+  // These 2 methods are called from the coordinator when the current flow
+  // started with startForAppMenu.
+  void OnAppMetadataAvailable(const std::u16string& user_title,
+                              const GURL& url,
+                              AddToHomescreenParams::AppType app_type);
+  void OnFullAppDataAvailable(std::unique_ptr<AddToHomescreenParams> params);
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
@@ -68,7 +71,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   void Destroy(JNIEnv* env);
 
  private:
-  ~AddToHomescreenMediator() override;
+  ~AddToHomescreenMediator();
 
   // Called immediatedly after |params_| is available. Displays |display_icon|
   // in the installation UI.
@@ -79,16 +82,6 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
                      const GURL& url,
                      AddToHomescreenParams::AppType app_type);
 
-  // AddToHomescreenDataFetcher::Observer:
-  void OnUserTitleAvailable(const std::u16string& user_title,
-                            const GURL& url,
-                            AddToHomescreenParams::AppType app_type) override;
-
-  void OnDataAvailable(const ShortcutInfo& info,
-                       const SkBitmap& display_icon,
-                       AddToHomescreenParams::AppType app_type,
-                       InstallableStatusCode status_code) override;
-
   void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
                              const AddToHomescreenParams& a2hs_params);
 
@@ -97,16 +90,11 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
 
   base::WeakPtr<content::WebContents> web_contents_;
 
-  // Fetches data required to add a shortcut.
-  std::unique_ptr<AddToHomescreenDataFetcher> data_fetcher_;
-
   std::unique_ptr<AddToHomescreenParams> params_;
 
   base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                const AddToHomescreenParams&)>
       event_callback_;
-
-  int app_menu_type_ = AppBannerSettingsHelper::APP_MENU_OPTION_UNKNOWN;
 
   AddToHomescreenMediator(const AddToHomescreenMediator&) = delete;
   AddToHomescreenMediator& operator=(const AddToHomescreenMediator&) = delete;

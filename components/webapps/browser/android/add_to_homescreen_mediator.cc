@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/features.h"
@@ -25,14 +26,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace webapps {
-
-namespace {
-
-// The length of time to allow the add to homescreen data fetcher to run before
-// timing out and generating an icon.
-const int kDataTimeoutInMilliseconds = 8000;
-
-}  // namespace
 
 // static
 static jlong JNI_AddToHomescreenMediator_Initialize(
@@ -76,17 +69,30 @@ void AddToHomescreenMediator::StartForAppBanner(
   SetIcon(params_->primary_icon);
 }
 
-void AddToHomescreenMediator::StartForAppMenu(JNIEnv* env, int app_menu_type) {
-  app_menu_type_ = app_menu_type;
-  data_fetcher_ = std::make_unique<AddToHomescreenDataFetcher>(
-      web_contents_.get(), kDataTimeoutInMilliseconds, this);
-
+void AddToHomescreenMediator::OnAppMetadataAvailable(
+    const std::u16string& user_title,
+    const GURL& url,
+    AddToHomescreenParams::AppType app_type) {
   // base::Unretained() is safe because the lifetime of this object is
   // controlled by its Java counterpart. It will be destroyed when the add to
   // home screen prompt is dismissed, which occurs after the last time
   // RecordEventForAppMenu() can be called.
   event_callback_ = base::BindRepeating(
       &AddToHomescreenMediator::RecordEventForAppMenu, base::Unretained(this));
+
+  SetWebAppInfo(user_title, url, app_type);
+}
+
+void AddToHomescreenMediator::OnFullAppDataAvailable(
+    std::unique_ptr<AddToHomescreenParams> params) {
+  params_ = std::move(params);
+
+  SetIcon(params_->primary_icon);
+
+  if (params_->IsWebApk()) {
+    webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(
+        web_contents_.get());
+  }
 }
 
 void AddToHomescreenMediator::AddToHomescreen(
@@ -162,40 +168,8 @@ void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
       env, url_formatter::FormatUrlForSecurityDisplay(
                url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
-  if (app_menu_type_ ==
-      AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN) {
-    // The user triggered this flow via the Universal Install dialog and
-    // explicitly requested Add a shortcut (not Install). Therefore we must ask
-    // the Java install dialog to treat this as a shortcut and not a webapp.
-    app_type = AppType::SHORTCUT;
-  }
   Java_AddToHomescreenMediator_setWebAppInfo(env, java_ref_, j_user_title,
                                              j_url, static_cast<int>(app_type));
-}
-
-void AddToHomescreenMediator::OnUserTitleAvailable(
-    const std::u16string& user_title,
-    const GURL& url,
-    AppType app_type) {
-  SetWebAppInfo(user_title, url, app_type);
-}
-
-void AddToHomescreenMediator::OnDataAvailable(
-    const ShortcutInfo& info,
-    const SkBitmap& display_icon,
-    AppType app_type,
-    const InstallableStatusCode status_code) {
-  params_ = std::make_unique<AddToHomescreenParams>(
-      app_type, std::make_unique<ShortcutInfo>(info), display_icon, status_code,
-      InstallableMetrics::GetInstallSource(web_contents_.get(),
-                                           InstallTrigger::MENU));
-
-  SetIcon(display_icon);
-
-  if (params_->IsWebApk()) {
-    webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(
-        web_contents_.get());
-  }
 }
 
 void AddToHomescreenMediator::RecordEventForAppMenu(
