@@ -4799,10 +4799,11 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DEV_TOOLS_CONNECTION_DIALOG_TITLE" desc="Title of dialog asking user to confirm allowing a debugging connection to this browser instance.">
         Allow remote debugging?
       </message>
-      <message name="IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE" desc="Message displayed in the dialog asking user to confirm allowing a debugging connection to this browser instance.">
+      <message name="IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE_PART_1" desc="Message displayed in the dialog asking user to confirm allowing a debugging connection to this browser instance.">
         An external app wants full control over this Chrome session to debug it. This includes access to your saved data, cookies and site data, and the ability to navigate to any URL.
-
-Only web developers should turn on this feature, and only use it with trusted apps.
+      </message>
+      <message name="IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE_PART_2" desc="Message displayed in the dialog asking user to confirm allowing a debugging connection to this browser instance.">
+        Only web developers should turn on this feature, and only use it with trusted apps.
       </message>
       <message name="IDS_DEV_TOOLS_CONNECTION_DIALOG_ALLOW_TEXT" desc="Text for the button to allow a debugging connection to this browser instance.">
         Allow
