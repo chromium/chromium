@@ -396,6 +396,10 @@ const CGFloat kSnackbarBottomMargin = 10;
   [self showMaxAttachmentSnackbarError];
 }
 
+- (void)showSnackbarForItemUploadDidFail {
+  [self showUnableToAddAttachmentSnackbarError];
+}
+
 #pragma mark - LocationBarURLLoader
 
 - (void)loadGURLFromLocationBar:(const GURL&)url
@@ -488,6 +492,17 @@ const CGFloat kSnackbarBottomMargin = 10;
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [snackbar showAttachmentLimitSnackbarWithBottomOffset:offset];
+}
+
+/// Displays a snackbar error indicating that attachment failed to be added.
+- (void)showUnableToAddAttachmentSnackbarError {
+  ComposeboxSnackbarPresenter* snackbar =
+      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+  CGFloat offset = _viewController.keyboardHeight;
+  if (!_theme.isTopInputPlate) {
+    offset += _viewController.inputHeight + kSnackbarBottomMargin;
+  }
+  [snackbar showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
 }
 
 @end

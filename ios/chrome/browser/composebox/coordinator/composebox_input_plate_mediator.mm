@@ -639,6 +639,8 @@ CreateInputDataFromAnnotatedPageContent(
     case contextual_search::FileUploadStatus::kValidationFailed:
     case contextual_search::FileUploadStatus::kUploadExpired:
       item.state = ComposeboxInputItemState::kError;
+      [self.delegate showSnackbarForItemUploadDidFail];
+      [self removeItem:item];
       break;
     case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
       [self.delegate reloadAutocompleteSuggestions];

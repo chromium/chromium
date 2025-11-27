@@ -31,6 +31,8 @@ class WebStateList;
 - (void)reloadAutocompleteSuggestions;
 // Informs the delegate that adding an attachment failed due to limit.
 - (void)showAttachmentLimitError;
+// Informs the delegate that item upload has failed.
+- (void)showSnackbarForItemUploadDidFail;
 @end
 
 // Mediator for the composebox composebox.

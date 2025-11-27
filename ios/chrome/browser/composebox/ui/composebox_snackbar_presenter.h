@@ -18,6 +18,9 @@ class Browser;
 // Shows a snackbar with the attachment limit message with a bottom offset.
 - (void)showAttachmentLimitSnackbarWithBottomOffset:(CGFloat)bottomOffset;
 
+// Shows a snackbar with a generic error message with a bottom offset.
+- (void)showUnableToAddAttachmentSnackbarWithBottomOffset:(CGFloat)bottomOffset;
+
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
