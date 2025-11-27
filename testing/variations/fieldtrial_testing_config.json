@@ -11123,6 +11123,33 @@
             ]
         }
     ],
+    "FontDataServiceLinux": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Fontations_Enabled",
+                    "params": {
+                        "typeface": "Fontations"
+                    },
+                    "enable_features": [
+                        "FontDataServiceLinux"
+                    ]
+                },
+                {
+                    "name": "Freetype_Enabled",
+                    "params": {
+                        "typeface": "Freetype"
+                    },
+                    "enable_features": [
+                        "FontDataServiceLinux"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForceMigrateSyncingUserToSignedInAndroid": [
         {
             "platforms": [
