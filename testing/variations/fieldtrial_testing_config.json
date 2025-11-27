@@ -16312,6 +16312,22 @@
             ]
         }
     ],
+    "NTPPopularSites": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Version7",
+                    "params": {
+                        "version": "7"
+                    }
+                }
+            ]
+        }
+    ],
     "NavigationThrottleRegistryAttributeCache": [
         {
             "platforms": [
