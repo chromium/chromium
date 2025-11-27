@@ -181,4 +181,35 @@ TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
   EXPECT_EQ(forms[0].in_store, PasswordForm::Store::kAccountStore);
 }
 
+TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
+  CredentialExchangePassword* passwordWithoutUrl =
+      [[CredentialExchangePassword alloc] initWithURL:nil
+                                             username:@"username"
+                                             password:@"password"
+                                                 note:@"note"];
+  [importer_ onCredentialsTranslatedWithPasswords:@[
+    passwordWithoutUrl, CreateTestPassword(@"example.com")
+  ]
+                                         passkeys:@[]];
+
+  FakePasswordStoreObserver observer;
+  GetAccountStore().AddObserver(&observer);
+
+  [importer_ startImportingCredentialsWithSecurityDomainSecrets:nil];
+
+  ASSERT_TRUE(observer.WaitForLoginsChanged());
+  GetAccountStore().RemoveObserver(&observer);
+
+  EXPECT_TRUE(GetProfileStore().IsEmpty());
+  ASSERT_THAT(GetAccountStore().stored_passwords(), SizeIs(1));
+  std::vector<PasswordForm> forms =
+      GetAccountStore().stored_passwords().begin()->second;
+  ASSERT_THAT(forms, SizeIs(1));
+  EXPECT_EQ(forms[0].url.spec(), "https://example.com/");
+  EXPECT_EQ(forms[0].username_value, u"username");
+  EXPECT_EQ(forms[0].password_value, u"password");
+  EXPECT_EQ(forms[0].GetNoteWithEmptyUniqueDisplayName(), u"note");
+  EXPECT_EQ(forms[0].in_store, PasswordForm::Store::kAccountStore);
+}
+
 }  // namespace
