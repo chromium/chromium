@@ -462,6 +462,7 @@ class PermissionRequestManager
 
   void OnPermissionUiSelectorDone(size_t selector_index,
                                   const UiDecision& decision);
+  std::optional<UiDecision> TakePermissionUiDecisionIfReady();
 
   PermissionPromptDisposition DetermineCurrentRequestUIDisposition();
   PermissionPromptDispositionReason

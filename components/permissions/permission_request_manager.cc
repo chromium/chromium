@@ -858,8 +858,7 @@ const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
   return view_.get();
 }
 
-void PermissionRequestManager::SetPromptOptions(
-    PromptOptions prompt_options) {
+void PermissionRequestManager::SetPromptOptions(PromptOptions prompt_options) {
   for (auto& request : requests_) {
     request->SetPromptOptions(prompt_options);
   }
@@ -1531,9 +1530,59 @@ void PermissionRequestManager::StorePermissionActionForUMA(
   }
 }
 
+std::optional<PermissionRequestManager::UiDecision>
+PermissionRequestManager::TakePermissionUiDecisionIfReady() {
+  for (size_t i = 0; i < selector_decisions_.size(); i++) {
+    const std::optional<UiDecision>& decision = selector_decisions_[i];
+    const std::unique_ptr<PermissionUiSelector>& selector =
+        permission_ui_selectors_[i];
+
+    if (!decision.has_value()) {
+      // We should wait for all higher priority selectors before taking a
+      // decision.
+      return std::nullopt;
+    }
+
+    if (selector->IsPermissionRequestSupported(
+            requests_.front()->request_type())) {
+      if (!prediction_grant_likelihood_.has_value()) {
+        prediction_grant_likelihood_ =
+            selector->PredictedGrantLikelihoodForUKM();
+      }
+
+      if (!permission_request_relevance_.has_value()) {
+        permission_request_relevance_ =
+            selector->PermissionRequestRelevanceForUKM();
+      }
+
+      if (!permission_ai_relevance_model_.has_value()) {
+        permission_ai_relevance_model_ =
+            selector->PermissionAiRelevanceModelForUKM();
+      }
+
+      if (!was_decision_held_back_.has_value()) {
+        was_decision_held_back_ = selector->WasSelectorDecisionHeldback();
+      }
+    }
+
+    if (decision->quiet_ui_reason.has_value()) {
+      // If all higher priority selectors are done, we select the first quiet UI
+      // decision.
+      return decision;
+    }
+  }
+  // If all selectors are done and none was conclusive, show a normal UI.
+  return UiDecision::UseNormalUiAndShowNoWarning();
+}
+
 void PermissionRequestManager::OnPermissionUiSelectorDone(
     size_t selector_index,
     const UiDecision& decision) {
+  if (current_request_ui_to_use_.has_value()) {
+    // We have already made a decision - nothing to do.
+    return;
+  }
+
   if (decision.warning_reason) {
     switch (*(decision.warning_reason)) {
       case WarningReason::kAbusiveRequests:
@@ -1547,61 +1596,12 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
     }
   }
 
-  // We have already made a decision because of a higher priority selector
-  // therefore this selector's decision can be discarded.
-  if (current_request_ui_to_use_.has_value()) {
-    return;
-  }
-
   CHECK_LT(selector_index, selector_decisions_.size());
   selector_decisions_[selector_index] = decision;
 
-  size_t decision_index = 0;
-  while (decision_index < selector_decisions_.size() &&
-         selector_decisions_[decision_index].has_value()) {
-    const UiDecision& current_decision =
-        selector_decisions_[decision_index].value();
-
-    if (permission_ui_selectors_[decision_index]->IsPermissionRequestSupported(
-            requests_.front()->request_type())) {
-      if (!prediction_grant_likelihood_.has_value()) {
-        prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
-                                           ->PredictedGrantLikelihoodForUKM();
-      }
-
-      if (!permission_request_relevance_.has_value()) {
-        permission_request_relevance_ =
-            permission_ui_selectors_[decision_index]
-                ->PermissionRequestRelevanceForUKM();
-      }
-
-      if (!permission_ai_relevance_model_.has_value()) {
-        permission_ai_relevance_model_ =
-            permission_ui_selectors_[decision_index]
-                ->PermissionAiRelevanceModelForUKM();
-      }
-
-      if (!was_decision_held_back_.has_value()) {
-        was_decision_held_back_ = permission_ui_selectors_[decision_index]
-                                      ->WasSelectorDecisionHeldback();
-      }
-    }
-
-    if (current_decision.quiet_ui_reason.has_value()) {
-      current_request_ui_to_use_ = current_decision;
-      break;
-    }
-
-    ++decision_index;
-  }
-
-  // All decisions have been considered and none was conclusive.
-  if (decision_index == selector_decisions_.size() &&
-      !current_request_ui_to_use_.has_value()) {
-    current_request_ui_to_use_ = UiDecision::UseNormalUiAndShowNoWarning();
-  }
-
-  if (current_request_ui_to_use_.has_value()) {
+  if (std::optional<UiDecision> final_decision =
+          TakePermissionUiDecisionIfReady()) {
+    current_request_ui_to_use_ = *final_decision;
     ShowPrompt();
   }
 }

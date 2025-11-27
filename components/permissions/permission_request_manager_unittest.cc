@@ -1267,21 +1267,34 @@ TEST_F(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
   const struct {
     std::vector<bool> enable_quiet_uis;
     std::vector<std::optional<PredictionLikelihood>> prediction_likelihoods;
+    std::vector<bool> simulate_delayed_decision;
     std::optional<PredictionLikelihood> expected_prediction_likelihood;
   } kTests[] = {
       // Sanity check: prediction likelihood is populated correctly.
-      {{true}, {VeryLikely}, VeryLikely},
-      {{false}, {Neutral}, Neutral},
+      {{true}, {VeryLikely}, {false}, VeryLikely},
+      {{false}, {Neutral}, {false}, Neutral},
 
       // Prediction likelihood is populated only if the selector was considered.
-      {{true, true}, {std::nullopt, VeryLikely}, std::nullopt},
-      {{false, true}, {std::nullopt, VeryLikely}, VeryLikely},
-      {{false, false}, {std::nullopt, VeryLikely}, VeryLikely},
+      {{true, true}, {std::nullopt, VeryLikely}, {false, false}, std::nullopt},
+      {{false, true}, {std::nullopt, VeryLikely}, {false, false}, VeryLikely},
+      {{false, false}, {std::nullopt, VeryLikely}, {false, false}, VeryLikely},
+
+      // Prediction likelihood is populated only if the selector was considered,
+      // even if the second selector returns first.
+      {{true, true}, {std::nullopt, VeryLikely}, {true, false}, std::nullopt},
+      {{false, true}, {std::nullopt, VeryLikely}, {true, false}, VeryLikely},
+      {{false, false}, {std::nullopt, VeryLikely}, {true, false}, VeryLikely},
 
       // First considered selector is preserved.
-      {{true, true}, {Neutral, VeryLikely}, Neutral},
-      {{false, true}, {Neutral, VeryLikely}, Neutral},
-      {{false, false}, {Neutral, VeryLikely}, Neutral},
+      {{true, true}, {Neutral, VeryLikely}, {false, false}, Neutral},
+      {{false, true}, {Neutral, VeryLikely}, {false, false}, Neutral},
+      {{false, false}, {Neutral, VeryLikely}, {false, false}, Neutral},
+
+      // First considered selector is preserved, even if the second selector
+      // returns first.
+      {{true, true}, {Neutral, VeryLikely}, {true, false}, Neutral},
+      {{false, true}, {Neutral, VeryLikely}, {true, false}, Neutral},
+      {{false, false}, {Neutral, VeryLikely}, {true, false}, Neutral},
   };
 
   for (const auto& test : kTests) {
@@ -1292,7 +1305,10 @@ TEST_F(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
           test.enable_quiet_uis[i]
               ? std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)
               : std::nullopt,
-          std::nullopt /* async_delay */, test.prediction_likelihoods[i]);
+          test.simulate_delayed_decision[i]
+              ? std::make_optional<base::TimeDelta>()
+              : std::nullopt,
+          test.prediction_likelihoods[i]);
     }
 
     MockPermissionRequest::MockPermissionRequestState request_state;
