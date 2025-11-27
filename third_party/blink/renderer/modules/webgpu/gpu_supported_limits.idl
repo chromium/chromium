@@ -39,6 +39,7 @@
     readonly attribute unsigned long maxComputeWorkgroupSizeY;
     readonly attribute unsigned long maxComputeWorkgroupSizeZ;
     readonly attribute unsigned long maxComputeWorkgroupsPerDimension;
+    [RuntimeEnabled=WebGPUImmediatesFeature] readonly attribute unsigned long maxImmediateSize;
     [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
     [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
     [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInVertexStage;

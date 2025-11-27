@@ -24,10 +24,10 @@ GPUPipelineLayout* GPUPipelineLayout::Create(
       bind_group_layout_count != 0 ? AsDawnType(webgpu_desc->bindGroupLayouts())
                                    : nullptr;
 
-  // TODO(crbug.com/366291600): Add support for immediateSize conversion.
   wgpu::PipelineLayoutDescriptor dawn_desc = {
       .bindGroupLayoutCount = bind_group_layout_count,
       .bindGroupLayouts = bind_group_layouts.get(),
+      .immediateSize = webgpu_desc->immediateSize(),
   };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {

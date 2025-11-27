@@ -18,7 +18,7 @@ interface mixin GPUProgrammablePassEncoder {
     [NoAllocDirectCall] void popDebugGroup();
     void insertDebugMarker(USVString markerLabel);
 
-    [RuntimeEnabled=WebGPUExperimentalFeatures, RaisesException, NoAllocDirectCall]
+    [RuntimeEnabled=WebGPUImmediatesFeature, RaisesException, NoAllocDirectCall]
     void setImmediates(
         GPUSize32 rangeOffset,
         [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] BufferSource data,

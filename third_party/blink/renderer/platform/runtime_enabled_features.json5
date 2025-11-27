@@ -5820,6 +5820,12 @@
       public: true,
     },
     {
+      name: "WebGPUImmediatesFeature",
+      status: "experimental",
+      public: true,
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       // https://chromestatus.com/feature/5110223547269120
       name: "WebGPUTextureComponentSwizzle",
       status: "stable",

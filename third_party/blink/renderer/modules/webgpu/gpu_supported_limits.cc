@@ -48,7 +48,8 @@
   X(maxStorageBuffersInFragmentStage)          \
   X(maxStorageTexturesInFragmentStage)         \
   X(maxStorageBuffersInVertexStage)            \
-  X(maxStorageTexturesInVertexStage)
+  X(maxStorageTexturesInVertexStage)           \
+  X(maxImmediateSize)
 
 namespace blink {
 
