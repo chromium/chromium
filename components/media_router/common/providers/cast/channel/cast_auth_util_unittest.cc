@@ -149,20 +149,6 @@ TEST_F(CastAuthUtilTest, VerifyEmptySignature) {
   EXPECT_EQ(kFlagsAcceptedWithMissingCRL, result.flags);
 }
 
-TEST_F(CastAuthUtilTest, VerifyUnsupportedDigest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceSHA256Checking);
-  std::string signed_data;
-  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA1);
-  base::Time now = base::Time::Now();
-  AuthResult result = VerifyCredentialsForTest(
-      auth_response, signed_data, cast_certificate::CRLPolicy::CRL_OPTIONAL,
-      nullptr, now);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_DIGEST_UNSUPPORTED, result.error_type);
-  EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
-}
-
 TEST_F(CastAuthUtilTest, VerifyBackwardsCompatibleDigest) {
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA1);

@@ -24,14 +24,6 @@
 
 namespace cast_channel {
 
-// Enforce the use of SHA256 digest for signatures.
-// If disabled, the device may respond with a signature with SHA1 digest even
-// though a signature with SHA256 digest was requested in the challenge. This
-// allows for backwards compatibility with legacy Cast receivers.
-BASE_FEATURE(kEnforceSHA256Checking,
-             "CastSHA256Enforced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 const char kParseErrorPrefix[] = "Failed to parse auth message: ";
@@ -273,13 +265,7 @@ AuthResult VerifyAndMapDigestAlgorithm(
     case openscreen::cast::proto::SHA1:
       RecordSignatureStatus(CastSignatureStatus::kAlgorithmUnsupported);
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
-      if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
-        return AuthResult("Unsupported digest algorithm.",
-                          AuthResult::ERROR_DIGEST_UNSUPPORTED,
-                          CastChannelFlag::kSha1DigestAlgorithm);
-      } else {
-        success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
-      }
+      success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
       break;
     case openscreen::cast::proto::SHA256:
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;

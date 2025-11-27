@@ -29,8 +29,6 @@ namespace cast_channel {
 using ::openscreen::cast::proto::AuthResponse;
 using ::openscreen::cast::proto::CastMessage;
 
-BASE_DECLARE_FEATURE(kEnforceSHA256Checking);
-
 struct AuthResult {
  public:
   enum ErrorType {
