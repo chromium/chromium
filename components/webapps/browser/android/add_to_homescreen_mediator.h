@@ -57,9 +57,9 @@ class AddToHomescreenMediator {
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
-  void AddToHomescreen(JNIEnv* env,
-                       const base::android::JavaParamRef<jstring>& j_user_title,
-                       jint j_app_type);
+  void AddToHomescreen(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_user_title);
 
   // Called from the Java side when the installation UI is dismissed.
   void OnUiDismissed(JNIEnv* env);

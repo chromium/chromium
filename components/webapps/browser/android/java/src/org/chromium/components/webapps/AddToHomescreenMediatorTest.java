@@ -104,9 +104,9 @@ public class AddToHomescreenMediatorTest {
                 new AddToHomescreenMediator(
                         mPropertyModel, mWindowAndroid, mWebContents, mOnFlowCompleted);
 
-        addToHomescreenMediator.onAddToHomescreen("Title", AppType.WEBAPK);
+        addToHomescreenMediator.onAddToHomescreen("Title");
 
-        verify(mNativeMock).addToHomescreen(NATIVE_POINTER, "Title", AppType.WEBAPK);
+        verify(mNativeMock).addToHomescreen(NATIVE_POINTER, "Title");
 
         // Verify that the native mediator is destroyed and the callback runs.
         verify(mNativeMock).destroy(NATIVE_POINTER);

@@ -189,7 +189,7 @@ public class AddToHomescreenAddShortcutTest {
                             getPropertyModelForTesting().get(AddToHomescreenProperties.TYPE));
 
                     // Submit the dialog.
-                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle, AppType.SHORTCUT));
+                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle));
                 }
             };
         }

@@ -334,7 +334,7 @@ public class AddToHomescreenDialogView
         int dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             String title = getAppNameView().getText().toString();
-            mDelegate.onAddToHomescreen(title, mAppType);
+            mDelegate.onAddToHomescreen(title);
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         }
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);

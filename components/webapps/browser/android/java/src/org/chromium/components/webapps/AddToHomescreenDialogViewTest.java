@@ -80,7 +80,7 @@ public class AddToHomescreenDialogViewTest {
                         mModalDialogManager,
                         new AddToHomescreenViewDelegate() {
                             @Override
-                            public void onAddToHomescreen(String title, @AppType int type) {
+                            public void onAddToHomescreen(String title) {
                                 mAddCallback.notifyCalled();
                             }
 

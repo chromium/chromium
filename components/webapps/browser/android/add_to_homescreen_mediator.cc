@@ -97,15 +97,9 @@ void AddToHomescreenMediator::OnFullAppDataAvailable(
 
 void AddToHomescreenMediator::AddToHomescreen(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_user_title,
-    jint j_app_type) {
+    const JavaParamRef<jstring>& j_user_title) {
   if (!params_ || !web_contents_) {
     return;
-  }
-  AppType selected_app_type = static_cast<AppType>(j_app_type);
-  if (params_->app_type != selected_app_type) {
-    CHECK(selected_app_type == AppType::SHORTCUT && params_->IsWebApk());
-    params_->app_type = selected_app_type;
   }
 
   if (params_->app_type == AppType::SHORTCUT ||
