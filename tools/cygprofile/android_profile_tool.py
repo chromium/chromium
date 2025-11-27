@@ -352,6 +352,7 @@ class AndroidProfileTool:
 
     if len(files) == 0:
       raise NoProfileDataError('No profile data was collected')
+    logging.info('Pulled profile files: %s', '\n'.join(files))
 
     return files
 
