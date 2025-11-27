@@ -168,7 +168,6 @@
   </template>
 
   <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
-    <!-- TODO: crbug.com/404069127 - Add a learn more link. -->
     <!-- \`restamp\` is needed to ensure that deep links work correctly if
          \`isScannerAllowedByEnterprisePolicy_\` changes. -->
     <template is="dom-if" restamp if="[[!isScannerAllowedByEnterprisePolicy_]]">
