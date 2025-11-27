@@ -18,6 +18,7 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 #include "net/disk_cache/cache_encryption_delegate.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cache_encryption_provider.mojom.h"
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   ~OSCryptCacheEncryptionDelegate() override;
 
   // net::CacheEncryptionDelegate implementation:
-  void Init(base::OnceClosure callback) override;
+  void Init(base::OnceCallback<void(net::Error)> callback) override;
 
   // Encrypts the given `plaintext` using OSCrypt. The resulting `ciphertext`
   // contains all necessary information for decryption, including the
@@ -75,7 +76,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceCallbackList<void(net::Error)> callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
 
   SEQUENCE_CHECKER(sequence_checker_);

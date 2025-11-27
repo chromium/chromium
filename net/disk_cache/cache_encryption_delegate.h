@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -20,9 +21,10 @@ class NET_EXPORT CacheEncryptionDelegate {
 
   virtual ~CacheEncryptionDelegate() = default;
 
-  // Async init. Don't call any other methods before |callback| is called with
-  // success. If already initialized, should run the callback immediately.
-  virtual void Init(base::OnceClosure callback) = 0;
+  // Async init. Don't call any other methods before |callback| is called. The
+  // callback will be run with net::OK on success, or an error code on failure.
+  // If already initialized, should run the callback immediately.
+  virtual void Init(base::OnceCallback<void(Error)> callback) = 0;
 
   virtual bool EncryptData(base::span<const uint8_t> plaintext,
                            std::vector<uint8_t>* ciphertext) = 0;

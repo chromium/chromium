@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 
 namespace enterprise_encryption {
 
@@ -59,12 +60,14 @@ void OSCryptCacheEncryptionDelegate::OnDisconnect() {
   state_ = State::kUninitialized;
   instance_.reset();
   remote_.reset();
+  callbacks_.Notify(net::ERR_CONNECTION_CLOSED);
 }
 
-void OSCryptCacheEncryptionDelegate::Init(base::OnceClosure callback) {
+void OSCryptCacheEncryptionDelegate::Init(
+    base::OnceCallback<void(net::Error)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kInitialized) {
-    std::move(callback).Run();
+    std::move(callback).Run(net::OK);
     return;
   }
 
@@ -88,9 +91,20 @@ void OSCryptCacheEncryptionDelegate::Init(base::OnceClosure callback) {
 void OSCryptCacheEncryptionDelegate::InitCallback(
     os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != State::kInitializing) {
+    // OnDisconnect() was called during initialization. Callbacks have been
+    // notified of failure already.
+    return;
+  }
   instance_.emplace(std::move(encryptor));
+  if (!instance_->IsEncryptionAvailable()) {
+    state_ = State::kUninitialized;
+    instance_.reset();
+    callbacks_.Notify(net::ERR_FAILED);
+    return;
+  }
   state_ = State::kInitialized;
-  callbacks_.Notify();
+  callbacks_.Notify(net::OK);
 }
 
 }  // namespace enterprise_encryption
