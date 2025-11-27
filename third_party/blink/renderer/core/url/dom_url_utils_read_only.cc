@@ -49,7 +49,7 @@ String DOMURLUtilsReadOnly::host(const KURL& kurl) {
     return kurl.Host().ToString();
   if (IsDefaultPortForProtocol(kurl.Port(), kurl.Protocol()))
     return kurl.Host().ToString();
-  return String(kurl.Host() + ":" + String::Number(kurl.Port()));
+  return StrCat({kurl.Host(), ":", String::Number(kurl.Port())});
 }
 
 String DOMURLUtilsReadOnly::port(const KURL& kurl) {

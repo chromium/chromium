@@ -134,8 +134,8 @@ void ApplyInit(const URLPatternInit* init,
   if (init->hasBaseURL()) {
     base_url = KURL(init->baseURL());
     if (!base_url.IsValid() || base_url.IsEmpty()) {
-      exception_state.ThrowTypeError("Invalid baseURL '" + init->baseURL() +
-                                     "'.");
+      exception_state.ThrowTypeError(
+          StrCat({"Invalid baseURL '", init->baseURL(), "'."}));
       return;
     }
 
@@ -235,7 +235,8 @@ void ApplyInit(const URLPatternInit* init,
       if (slash_index != kNotFound) {
         // Extract the baseURL path up to and including the first slash.  Append
         // the relative init pathname to it.
-        pathname = base_path.Substring(0, slash_index + 1) + pathname;
+        pathname =
+            StrCat({StringView(base_path, 0, slash_index + 1), pathname});
       }
     }
     pathname = url_pattern::CanonicalizePathname(protocol, pathname, type,
@@ -377,9 +378,9 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (input->GetContentType() ==
       V8URLPatternInput::ContentType::kURLPatternInit) {
     exception_state.ThrowTypeError(
-        "Invalid second argument baseURL '" + base_url +
-        "' provided with a URLPatternInit input. Use the "
-        "URLPatternInit.baseURL property instead.");
+        StrCat({"Invalid second argument baseURL '", base_url,
+                "' provided with a URLPatternInit input. Use the "
+                "URLPatternInit.baseURL property instead."}));
     return nullptr;
   }
 
@@ -409,8 +410,9 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
     return nullptr;
   }
   if (!status.ok()) {
-    exception_state.ThrowTypeError("Invalid input string '" + input_string +
-                                   "'. It unexpectedly fails to tokenize.");
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid input string '", input_string,
+                "'. It unexpectedly fails to tokenize."}));
     return nullptr;
   }
   URLPatternInit* init =
@@ -418,8 +420,8 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
 
   if (!base_url && !init->hasProtocol()) {
     exception_state.ThrowTypeError(
-        "Relative constructor string '" + input_string +
-        "' must have a base URL passed as the second argument.");
+        StrCat({"Relative constructor string '", input_string,
+                "' must have a base URL passed as the second argument."}));
     return nullptr;
   }
 
@@ -697,17 +699,17 @@ std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
   String components_with_regexp;
   for (auto&& [component, name] : ComponentsWithNames()) {
     if (component->HasRegExpGroups()) {
-      components_with_regexp = components_with_regexp +
-                               (components_with_regexp.IsNull() ? "" : ", ") +
-                               name + " (" +
-                               component->GeneratePatternString() + ")";
+      components_with_regexp =
+          StrCat({components_with_regexp,
+                  (components_with_regexp.IsNull() ? "" : ", "), name, " (",
+                  component->GeneratePatternString(), ")"});
     }
   }
   if (!components_with_regexp.IsNull()) {
     exception_state.ThrowTypeError(
-        "The pattern cannot contain regexp groups, but did in the following "
-        "components: " +
-        components_with_regexp);
+        StrCat({"The pattern cannot contain regexp groups, but did in the "
+                "following components: ",
+                components_with_regexp}));
     return std::nullopt;
   }
   CHECK(!hasRegExpGroups());
@@ -772,9 +774,9 @@ bool URLPattern::Match(v8::Isolate* isolate,
     case V8URLPatternInput::ContentType::kURLPatternInit: {
       if (base_url) {
         exception_state.ThrowTypeError(
-            "Invalid second argument baseURL '" + base_url +
-            "' provided with a URLPatternInit input. Use the "
-            "URLPatternInit.baseURL property instead.");
+            StrCat({"Invalid second argument baseURL '", base_url,
+                    "' provided with a URLPatternInit input. Use the "
+                    "URLPatternInit.baseURL property instead."}));
         return false;
       }
 
