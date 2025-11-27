@@ -44,6 +44,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
@@ -188,7 +189,9 @@ public class TabStateStore implements TabPersistentStore {
     @Override
     public void loadState(boolean ignoreIncognitoFiles) {
         // TODO(https://crbug.com/458335579): Handle including or ignoring incognito tabs.
-        loadAllTabsFromService();
+        long loadStartTime = SystemClock.elapsedRealtime();
+        mTabStateStorageService.loadAllData(
+                mWindowTag, /* isOffTheRecord= */ false, data -> onDataLoaded(data, loadStartTime));
     }
 
     @Override
@@ -326,13 +329,6 @@ public class TabStateStore implements TabPersistentStore {
         // TODO(https://crbug.com/430996004): If closing, delete the tab record.
     }
 
-    private void loadAllTabsFromService() {
-        long loadStartTime = SystemClock.elapsedRealtime();
-        // TODO(crbug.com/458335579): Figure out incognito.
-        mTabStateStorageService.loadAllData(
-                mWindowTag, /* isOffTheRecord= */ false, data -> onDataLoaded(data, loadStartTime));
-    }
-
     private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
 
@@ -378,8 +374,9 @@ public class TabStateStore implements TabPersistentStore {
                                 && activeTabIndex < loadedTabStates.length)
                         ? activeTabIndex
                         : 0;
+        LoadedTabState activeTabState = loadedTabStates[restoredActiveTabIndex];
         restoreTab(
-                loadedTabStates[restoredActiveTabIndex],
+                activeTabState,
                 restoredActiveTabIndex,
                 /* isIncognito= */ false,
                 /* isActive= */ true);
@@ -393,7 +390,7 @@ public class TabStateStore implements TabPersistentStore {
                 () ->
                         restoreNextBatchOfTabs(
                                 data,
-                                restoredActiveTabIndex,
+                                List.of(activeTabState.tabId),
                                 /* startIndex= */ 0,
                                 /* batchSize= */ RESTORE_BATCH_SIZE));
     }
@@ -427,17 +424,16 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     /**
-     * Restores tabs in range {@code [startIndex, startIndex + batchSize)} from {@code data} or
-     * until data is exhausted. Will post a task to restore the next batch if there are more tabs to
-     * restore otherwise will signal the end of restoration.
+     * Restores the next batch of tabs from {@code data}. Will post a task to restore the next batch
+     * if there are more tabs to restore otherwise will signal the end of restoration.
      *
      * @param data The data to restore tabs from.
-     * @param restoredActiveTabIndex The index of the active tab that was restored already.
+     * @param tabIdsToIgnore The tab ids to ignore when restoring.
      * @param startIndex The index of the first tab to restore.
-     * @param batchSize The number of tabs to restore.
+     * @param batchSize The maximum number of tabs to restore in a single batch.
      */
     private void restoreNextBatchOfTabs(
-            StorageLoadedData data, int restoredActiveTabIndex, int startIndex, int batchSize) {
+            StorageLoadedData data, List<Integer> tabIdsToIgnore, int startIndex, int batchSize) {
         assert startIndex >= 0;
         assert batchSize > 0;
         if (mIsDestroyed) {
@@ -446,21 +442,26 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        int endIndex = Math.min(startIndex + batchSize, loadedTabStates.length);
+        int i = startIndex;
+        int finalIndex = loadedTabStates.length;
 
-        for (int i = startIndex; i < endIndex; i++) {
-            // Skip the active tab as it was already restored by {@link #restoreActiveTab}.
-            if (i == restoredActiveTabIndex) continue;
+        while (batchSize > 0 && i < finalIndex) {
+            LoadedTabState loadedTabState = loadedTabStates[i];
+            if (!tabIdsToIgnore.contains(loadedTabState.tabId)) {
+                restoreTab(loadedTabState, i, /* isIncognito= */ false, /* isActive= */ false);
+            }
 
-            restoreTab(loadedTabStates[i], i, /* isIncognito= */ false, /* isActive= */ false);
+            i++;
+            batchSize--;
         }
 
-        if (endIndex < loadedTabStates.length) {
+        int nextStartIndex = i;
+        if (nextStartIndex < finalIndex) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () ->
                             restoreNextBatchOfTabs(
-                                    data, restoredActiveTabIndex, endIndex, RESTORE_BATCH_SIZE));
+                                    data, tabIdsToIgnore, nextStartIndex, RESTORE_BATCH_SIZE));
         } else {
             PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onFinishedCreatingAllTabs(data));
         }
@@ -483,7 +484,7 @@ public class TabStateStore implements TabPersistentStore {
         }
     }
 
-    private void cleanupStorageLoadedData(StorageLoadedData data) {
+    private void deleteDbIfNonAuthoritative() {
         if (!ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             // When we aren't the authoritative source we don't trust ourselves to be correct.
             // Raze the db and rebuild from the loaded tab state to ensure we are in a known good
@@ -491,6 +492,10 @@ public class TabStateStore implements TabPersistentStore {
             // delta and if there is we need a less blunt mechanism to reconcile the difference.
             clearState();
         }
+    }
+
+    private void cleanupStorageLoadedData(StorageLoadedData data) {
+        deleteDbIfNonAuthoritative();
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             TabGroupVisualDataStore.removeCachedGroups(data.getGroupsData());
         }
