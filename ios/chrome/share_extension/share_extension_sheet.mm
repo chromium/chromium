@@ -104,12 +104,8 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
                            target:self
                            action:@selector(dismissSheet)];
 
-  if (app_group::MultiProfileShareExtensionEnabled()) {
-    self.mainBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.underTitleView = [self createUnderTitleViewWithMIM];
-  } else {
-    self.underTitleView = [self configureMainView];
-  }
+  self.mainBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.underTitleView = [self createUnderTitleViewWithMIM];
 
   [super viewDidLoad];
   [self setUpBottomSheetPresentationController];
@@ -135,8 +131,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
     }
   }
 
-  if (app_group::MultiProfileShareExtensionEnabled() &&
-      ![self isScrolledToBottom]) {
+  if (![self isScrolledToBottom]) {
     [self scrollToBottom];
   }
 }

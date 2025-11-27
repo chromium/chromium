@@ -159,7 +159,6 @@ void PutSearchImageCommandInNSUserDefaults(NSMutableDictionary* command,
 }
 
 - (void)executeInAppWithGaiaID:(NSString*)gaiaID {
-  CHECK(app_group::MultiProfileShareExtensionEnabled());
   if (NSURL* openURL = [self URLToOpenWithGaiaID:gaiaID]) {
     _opener(openURL);
   }
@@ -180,9 +179,7 @@ void PutSearchImageCommandInNSUserDefaults(NSMutableDictionary* command,
   urlComponents.path = [@"/"
       stringByAppendingString:base::SysUTF8ToNSString(
                                   app_group::kChromeAppGroupXCallbackCommand)];
-  if (gaiaID) {
-    CHECK(app_group::MultiProfileShareExtensionEnabled());
-    CHECK(gaiaID.length);
+  if (gaiaID && gaiaID.length) {
     urlComponents.queryItems = @[ [NSURLQueryItem
         queryItemWithName:base::SysUTF8ToNSString(
                               app_group::kGaiaIDQueryItemName)
