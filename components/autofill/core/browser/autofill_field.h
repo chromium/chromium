@@ -126,6 +126,12 @@ std::ostream& operator<<(std::ostream& os, const Section& section);
 
 // Describes formatting information for a field. Currently used only for
 // filling Autofill AI data.
+//
+// Currently, the following kinds of format stings are supported:
+// - Affix format strings: data_util::IsValidAffixFormat().
+// - Date format strings: data_util::IsValidDateFormat().
+// - Date format strings: ICU format.
+// - Flight number format strings (data_util::IsValidFlightNumberFormat().
 struct AutofillFormatString final {
   AutofillFormatString();
   AutofillFormatString(std::u16string value, FormatString_Type type);
@@ -354,14 +360,13 @@ class AutofillField : public FormFieldData {
     return password_requirements_;
   }
 
-  // The format of the value expected by the web document. Currently, the
-  // following kinds of format stings are supported:
-  // - Affix format strings (see data_util::IsValidAffixFormat()).
-  // - Date format strings (data_util::IsValidDateFormat()).
-  // - Flight number format strings (data_util::IsValidFlightNumberFormat()).
+  // The format of the value expected by the web document.
   //
   // Only one format string is stored at a time: the one with the
   // highest-ranking `AutofillFormatString::Source`.
+  //
+  // The server currently does not predict ICU-format dates
+  // (`FormatString_Type_ICU_DATE`).
   base::optional_ref<const AutofillFormatString> format_string() const
       LIFETIME_BOUND;
 

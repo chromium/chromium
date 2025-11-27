@@ -31,7 +31,7 @@ class DateInfo {
   //   GetDate(u"DD/MM/YYYY") == u"16/12/2022"
   void SetDate(std::u16string_view date, std::u16string_view format);
 
-  // For the grammar of format strings, see `AutofillField::format_string()`.
+  // For the grammar of format strings, see `data_util::IsValidDateFormat()`.
   std::u16string GetDate(std::u16string_view format) const;
 
   // Returns the date formatted according to `format` and `locale` using ICU.
