@@ -6,6 +6,9 @@
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -39,7 +42,7 @@ TEST_F(GLEXTSRGBTest, TexImageSRGBALPHAFormat) {
   static const uint8_t kImageColor[] = {255, 255, 255, 255};
   static const uint8_t kSubImageColor[] = {128, 128, 128, 128};
 
-  uint8_t pixels[kWidth * kHeight * 4];
+  std::array<uint8_t, kWidth * kHeight * 4> pixels;
 
   GLuint tex = 0;
   glGenTextures(1, &tex);
@@ -49,14 +52,15 @@ TEST_F(GLEXTSRGBTest, TexImageSRGBALPHAFormat) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  UNSAFE_TODO(memset(pixels, kImageColor[0], sizeof(pixels)));
+  std::ranges::fill(pixels, kImageColor[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA_EXT, kWidth, kHeight, 0,
-               GL_SRGB_ALPHA_EXT, GL_UNSIGNED_BYTE, pixels);
+               GL_SRGB_ALPHA_EXT, GL_UNSIGNED_BYTE, pixels.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
-  UNSAFE_TODO(memset(pixels, kSubImageColor[0], sizeof(pixels)));
+  std::ranges::fill(pixels, kSubImageColor[0]);
   glTexSubImage2D(GL_TEXTURE_2D, 0, kSubImageX, kSubImageY, kSubImageWidth,
-                  kSubImageHeight, GL_SRGB_ALPHA_EXT, GL_UNSIGNED_BYTE, pixels);
+                  kSubImageHeight, GL_SRGB_ALPHA_EXT, GL_UNSIGNED_BYTE,
+                  pixels.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   glBindTexture(GL_TEXTURE_2D, 0);
   GLuint fbo = 0;
