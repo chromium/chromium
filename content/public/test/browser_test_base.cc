@@ -103,6 +103,10 @@
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "ui/events/ozone/events_ozone.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
@@ -270,6 +274,13 @@ BrowserTestBase::BrowserTestBase() {
   g_instance_already_created = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // Events used in tests on CrOS are generated either at aura level, or ozone
+  // level, except for Crosier tests that run on a device.  Disable native
+  // events handling as they can cause unexpected behavior.
+  ui::DisableNativeUiEventDispatchForTest();
 #endif
 
 #if BUILDFLAG(IS_POSIX)
