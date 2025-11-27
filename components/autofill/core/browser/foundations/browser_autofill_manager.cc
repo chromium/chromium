@@ -866,7 +866,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
     return false;
   }
 
-  if (IsFormNonSecure(form)) {
+  if (IsFormOrClientNonSecure(client(), form)) {
     return false;
   }
 
@@ -1106,10 +1106,6 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     }
   }
   UpdateInitialInteractionTimestamp(timestamp);
-}
-
-bool BrowserAutofillManager::IsFormNonSecure(const FormStructure& form) const {
-  return IsFormOrClientNonSecure(client(), form);
 }
 
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
@@ -1686,7 +1682,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   if (form_structure &&
       context.filling_product == FillingProduct::kCreditCard) {
     AutofillMetrics::LogIsQueriedCreditCardFormSecure(
-        !IsFormNonSecure(*form_structure));
+        !IsFormOrClientNonSecure(client(), *form_structure));
   }
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
@@ -3240,7 +3236,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   // IsContextSecure).
   if (suggestions.empty() ||
       context.filling_product != FillingProduct::kCreditCard ||
-      !IsFormNonSecure(*form_structure)) {
+      !IsFormOrClientNonSecure(client(), *form_structure)) {
     return suggestions;
   }
 

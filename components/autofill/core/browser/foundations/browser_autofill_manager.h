@@ -464,10 +464,6 @@ class BrowserAutofillManager : public AutofillManager {
   bool ShouldShowScanCreditCard(const FormStructure& form,
                                 const AutofillField& trigger_field);
 
-  // Examines `form` and returns true if it is in a non-secure context or its
-  // action attribute targets a HTTP url.
-  bool IsFormNonSecure(const FormStructure& form) const;
-
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This
   // method should be called after we learned that JavaScript modified an
