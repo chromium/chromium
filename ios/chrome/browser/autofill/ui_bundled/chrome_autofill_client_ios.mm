@@ -408,7 +408,8 @@ void ChromeAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
                                           bool is_refill) {}
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {
-  return IsContextSecureForWebState(web_state());
+  return consider_as_secure_for_testing_ ||
+         IsContextSecureForWebState(web_state());
 }
 
 FormInteractionsFlowId

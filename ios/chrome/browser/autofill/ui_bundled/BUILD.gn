@@ -219,6 +219,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     ":common",
+    ":coordinator",
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",

@@ -81,12 +81,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->four_digit_combinations_in_dom_ = combinations;
   }
 
-  void SetConsiderFormAsSecureForTesting(
-      std::optional<bool> consider_form_as_secure_for_testing) {
-    manager_->consider_form_as_secure_for_testing_ =
-        consider_form_as_secure_for_testing;
-  }
-
   FormFiller& form_filler() { return *manager_->form_filler_; }
 
   void set_form_filler(std::unique_ptr<FormFiller> form_filler) {

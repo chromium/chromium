@@ -34,6 +34,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -646,15 +647,10 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)considerCreditCardFormSecureForTesting {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  web::WebFramesManager* frames_manager =
-      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state);
-  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-  test_api(autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state,
-                                                                main_frame)
-               ->GetAutofillManager())
-      .SetConsiderFormAsSecureForTesting(true);
+  static_cast<autofill::ChromeAutofillClientIOS&>(
+      *autofill::AutofillClientIOS::FromWebState(
+          chrome_test_util::GetCurrentWebState()))
+      .ConsiderAsSecureForTesting();
 }
 
 + (NSString*)paymentsRiskData {

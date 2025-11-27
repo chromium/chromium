@@ -161,6 +161,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Removes the save card infobar if it exists.
   virtual void RemoveAutofillSaveCardInfoBar();
 
+  void ConsiderAsSecureForTesting() { consider_as_secure_for_testing_ = true; }
+
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.
@@ -198,6 +200,10 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
+
+  // If this is true, we consider the form to be secure.
+  // Only use this for testing purposes!
+  bool consider_as_secure_for_testing_ = false;
 
   base::WeakPtrFactory<ChromeAutofillClientIOS> weak_ptr_factory_{this};
 };

@@ -1109,11 +1109,6 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormStructure& form) const {
-  // Check if testing override applies.
-  if (consider_form_as_secure_for_testing_.has_value() &&
-      consider_form_as_secure_for_testing_.value()) {
-    return false;
-  }
   return IsFormOrClientNonSecure(client(), form);
 }
 
@@ -2580,7 +2575,6 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
 // - No need to reset or recreate:
 //   - external_delegate_
 //   - fast_checkout_delegate_
-//   - consider_form_as_secure_for_testing_
 void BrowserAutofillManager::Reset() {
   // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {

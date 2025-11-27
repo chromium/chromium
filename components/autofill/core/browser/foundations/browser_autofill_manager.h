@@ -663,10 +663,6 @@ class BrowserAutofillManager : public AutofillManager {
   // This is always non-nullopt except very briefly during Reset().
   std::optional<MetricsState> metrics_ = std::make_optional<MetricsState>(this);
 
-  // If this is true, we consider the form to be secure. (Only use this for
-  // testing purposes).
-  std::optional<bool> consider_form_as_secure_for_testing_;
-
   // A copy of the currently interacted form data.
   std::optional<FormData> pending_form_data_;
 
