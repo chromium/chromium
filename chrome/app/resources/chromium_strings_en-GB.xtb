@@ -167,7 +167,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2847479871509788944">Remove from Chromium...</translation>
 <translation id="2850691299438350830">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in</translation>
-<translation id="2856481144859256719">Always show AI Mode in Google Search shortcut</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">About &amp;Chromium</translation>
 <translation id="2915996080311180594">Restart later</translation>
@@ -629,6 +628,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8359544530202147897">Update Chromium to keeping using the Chromium data in your Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="8362914115861174987">Translate to</translation>
+<translation id="8367705492654390392">Ask anything</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8372327902843331129">To get your passwords and more on all your devices, sign in to Chromium. This password will be saved in your Google Account after you sign in.</translation>
 <translation id="837460953767177950">You'll then need to restart Chromium.</translation>

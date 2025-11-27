@@ -168,7 +168,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2841525013647267359">Isalin mula sa</translation>
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2853415089995957805">Nagpi-preload ang Chrome ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
-<translation id="2856481144859256719">Palaging Ipakita ang AI Mode sa Shortcut ng Google Search</translation>
 <translation id="2857540653560290388">Inilulunsad ang Chrome...</translation>
 <translation id="286025080868315611">Alamin kung bakit bina-block ng Chrome ang ilang pag-download</translation>
 <translation id="2861074815332034794">Ina-update ang Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="835927394551949760">Magtanong sa Google</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
 <translation id="8366770919198174997">Pinapahina ang performance pero ginagawang mas matatag ang Chrome laban sa mga attack</translation>
+<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8377158135256176353">I-toggle ang Gemini sa Chrome Canary</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>

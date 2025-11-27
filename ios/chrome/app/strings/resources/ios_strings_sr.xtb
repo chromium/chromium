@@ -1284,6 +1284,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5902752768726620872">{count,plural, =1{{count} нова картица}one{{count} нова картица}few{{count} нове картице}other{{count} нових картица}}</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
 <translation id="5922999516621365983">Превуците картицу овде да бисте је закачили.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Додајте највише 1 фајл, картицу или слику}one{Додајте највише {COUNT} фајл, картицу или слику}few{Додајте највише {COUNT} фајла, картице или слике}other{Додајте највише {COUNT} фајлова, картица или слика}}</translation>
 <translation id="5936006948844852401">Управљај простором</translation>
 <translation id="5936065461722368675">Преведи целу страницу</translation>
 <translation id="5937560539988385583">Страница је преведена</translation>
@@ -1872,6 +1873,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8032569120109842252">Пратите</translation>
 <translation id="8035133914807600019">Нови фолдер...</translation>
 <translation id="8035412398498507358">Слике</translation>
+<translation id="8037713009824540257">Додај сајт</translation>
 <translation id="8040407350301524547">За опције руте додирните Прикажи путању.</translation>
 <translation id="804427445359061970">Овде ћете пронаћи картице са других уређаја</translation>
 <translation id="8058655154417507695">Година истека</translation>

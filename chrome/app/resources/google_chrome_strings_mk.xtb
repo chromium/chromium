@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">Преведи од</translation>
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2853415089995957805">Chrome вчитува страници однапред што е веројатно дека ќе ги отворите за да може да се вчитуваат побрзо кога ги отворате</translation>
-<translation id="2856481144859256719">Секогаш прикажувај ја кратенката за „AI-режим“ во „Пребарување на Google“</translation>
 <translation id="2857540653560290388">Се стартува Chrome…</translation>
 <translation id="286025080868315611">Дознајте зошто Chrome блокира некои преземања</translation>
 <translation id="2861074815332034794">Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="835927394551949760">Прашајте го Google</translation>
 <translation id="8362914115861174987">Преведи на</translation>
 <translation id="8366770919198174997">Ја намалува изведбата, но го прави Chrome поотпорен на напади</translation>
+<translation id="8367705492654390392">Прашајте што било</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="8377158135256176353">Вклучете/исклучете го Gemini во Chrome Canary</translation>
 <translation id="8387459386171870978">Продолжете да користите Chrome</translation>

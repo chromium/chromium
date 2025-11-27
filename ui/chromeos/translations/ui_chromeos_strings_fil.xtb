@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5602622065581044566">Bulgarian na may Phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">Nagtakda ang iyong admin ng mga panuntunan sa pag-override ng proxy bukod pa sa pagpapatupad ng sumusunod na proxy</translation>
 <translation id="5618330573454123917">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na gumagamit ng ChromeOS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Kapag inilipat ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="8545476925160229291">English (US)</translation>
 <translation id="854655314928502177">URL ng Web Proxy Auto Discovery:</translation>
+<translation id="8547747809824590510">Nagtakda ang iyong admin ng mga panuntunan sa pag-override ng proxy</translation>
 <translation id="8549186985808798022">Italian</translation>
 <translation id="8551494947769799688">Latvian</translation>
 <translation id="8560515948038859357">Cantonese</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Pumili ng ibang pangalan.</translation>
 <translation id="9046895021617826162">Nabigo ang pagkonekta</translation>
 <translation id="9065512565307033593">Kung hindi ka makakapag-verify, madi-disable ang iyong access sa network.</translation>
+<translation id="9079844694307518094">Ipinapatupad ng iyong admin ang sumusunod na proxy</translation>
 <translation id="908378762078012445">Russian na may Phonetic AATSEEL keyboard</translation>
 <translation id="9086302186042011942">Nagsi-sync</translation>
 <translation id="9099674669267916096">Bilang ng page</translation>

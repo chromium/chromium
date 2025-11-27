@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Oversett fra</translation>
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2853415089995957805">Chrome forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
-<translation id="2856481144859256719">Vis alltid snarveien til AI-modus i Google Søk</translation>
 <translation id="2857540653560290388">Starter Chrome ...</translation>
 <translation id="286025080868315611">Finn ut hvorfor Chrome blokkerer enkelte nedlastinger</translation>
 <translation id="2861074815332034794">Oppdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -660,6 +659,7 @@
 <translation id="835927394551949760">Spør Google</translation>
 <translation id="8362914115861174987">Oversett til</translation>
 <translation id="8366770919198174997">Reduserer ytelsen, men gjør Chrome mer motstandsdyktig mot angrep</translation>
+<translation id="8367705492654390392">Spør om hva som helst</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="8377158135256176353">Slå av/på Gemini i Chrome Canary</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>

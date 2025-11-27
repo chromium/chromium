@@ -1270,6 +1270,7 @@
 <translation id="184273675144259287">আপনার Linux অ্যাপ ও ফাইল পুরনো ব্যাক-আপ দিয়ে প্রতিস্থাপিত করুন</translation>
 <translation id="1842766183094193446">আপনি কি ডেমো মোড চালু করতে চান?</translation>
 <translation id="1843048149176045210">ডাউনলোড লিঙ্ক কপি করুন</translation>
+<translation id="1843347690926158494">Google Lens ব্যবহার করে এই ট্যাব সার্চ করুন</translation>
 <translation id="1845060436536902492">স্পিচ সিন্থেসাইজার অথবা ব্রেইল ডিসপ্লে দিয়ে স্ক্রিনে দেখানো টেক্সট পড়ার জন্য ChromeOS Flex, ChromeVox-এর স্ক্রিন রিডার মূলত দৃষ্টিশক্তিহীন অথবা কম দৃষ্টিশক্তি সম্পন্ন ব্যক্তিরা ব্যবহার করেন। ChromeVox চালু করতে স্পেস বার প্রেস করুন। ChromeVox চালু করা হলে, আপনি চট করে দেখে নিতে পারবেন।</translation>
 <translation id="1845727111305721124">সাউন্ড চালানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> চালানোর জন্য Control-ক্লিক করুন</translation>
@@ -1587,7 +1588,6 @@
 <translation id="2061589908388230480">Chromium পাবলিক হয়ে যাওয়া ডেটার মধ্যে আপনার পাসওয়ার্ডগুলির মধ্যে কোনও একটি খুঁজে পেলে, আপনি সাইন-ইন করার পর Google Password Manager আপনার পাসওয়ার্ড পরিবর্তন করার বিকল্প অফার করতে পারে। <ph name="BEGIN_LINK" />অটোমেটিক পাসওয়ার্ড পরিবর্তন হওয়া সম্পর্কে আরও তথ্য<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">ব্রাউজিং ইতিহাস সেভ না করেই ওয়েব ব্রাউজ করতে ছদ্মবেশী উইন্ডো ব্যবহার করুন</translation>
 <translation id="206308717637808771">আপনি যখন সমস্ত উইন্ডো বন্ধ করেন তখন ডেটা মুছুন। আপনি যে সাইটটি দেখছেন সেটির মতোই ডেটা ব্যবহার করা হয়</translation>
-<translation id="2065405795449409761">স্বয়ংক্রিয় পরীক্ষার সফ্টওয়্যার দ্বারা Chrome নিয়ন্ত্রিত হচ্ছে।</translation>
 <translation id="2066700471214517561">বিমফর্মিং মাইকের সাহায্যে, Chromebook ব্যবহারকারীর আওয়াজ স্পষ্ট শুনতে পাওয়া যায়।</translation>
 <translation id="206960706005837784"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে প্রিন্ট করা হয়েছে</translation>
 <translation id="2071393345806050157">কোনো স্থানীয় লগ ফাইল নেই।</translation>
@@ -3783,6 +3783,7 @@
 <translation id="3581861561942370740">ডাউনলোড ইতিহাস সার্চ করুন</translation>
 <translation id="3582057310199111521">এই পাসওয়ার্ড কোনও প্রতারণামূলক সাইটে ব্যবহার করা হয়েছিল এবং হ্যাক হওয়া ডেটাবেসেও এটা পাওয়া গেছে</translation>
 <translation id="3582299299336701326">লাইট স্ক্রিন ডার্ক ও ডার্ক স্ক্রিন লাইটে পরিণত করুন। 'কালার ইনভার্সন' চালু বা বন্ধ করতে, 'Search + Ctrl + H' কী প্রেস করুন।</translation>
+<translation id="358381413217813387">Google Lens ব্যবহার করে এই পৃষ্ঠাটি সার্চ করুন</translation>
 <translation id="3584169441612580296">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্য মিডিয়া পডুন এবং পরিবর্তন করুন</translation>
 <translation id="3586741240886978899">এই সাইট আপনি ব্যবহার করেছেন</translation>
 <translation id="3586806079541226322">এই ফাইল খোলা যাচ্ছে না</translation>
@@ -6901,6 +6902,7 @@
 <translation id="5750288053043553775">০</translation>
 <translation id="5751345516399502412">'টেথারিং রেডিনেস' চেক করুন</translation>
 <translation id="5753570386948603678">সার্চ ইতিহাস থেকে মুছে ফেলুন</translation>
+<translation id="5755101376452091923"><ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্ট <ph name="END_LINK" /> <ph name="USERNAME" /> থেকে নিজের নাম এডিট করতে পারবেন।</translation>
 <translation id="5756163054456765343">সহায়তা কেন্দ্র</translation>
 <translation id="5757187557809630523">পরবর্তী ট্র্যাক</translation>
 <translation id="5758631781033351321">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
@@ -7261,7 +7263,6 @@
 <translation id="5997337190805127100">সাইট অ্যাক্সেস সম্পর্কে আরও জানুন</translation>
 <translation id="5998458948782718639">'অটোফিল' ফিচার উন্নত করতে সাহায্য করুন</translation>
 <translation id="5998976983953384016">কনফার্ম করে চালু করুন</translation>
-<translation id="5999024481231496910">আপনি থার্ড-পার্টি কুকি ফেজআউট করার সুবিধা চালু করেছেন। এটি সেটিংস পৃষ্ঠা থেকে ওভাররাইড করা যাচ্ছে না। আপনি যদি থার্ড-পার্টি কুকি আবার চালু করতে চান তাহলে এই ফিচার বন্ধ করে Chrome আবার চালু করুন।</translation>
 <translation id="5999630716831179808">ভয়েসগুলি</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল</translation>
 <translation id="6001052984304731761">Chrome যাতে ট্যাব গ্রুপ সাজেস্ট করতে পারে তার জন্য সাইন-ইন করুন</translation>
@@ -7454,6 +7455,7 @@
 <translation id="6135826623269483856">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি নেই</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">আপনার নিরাপত্তা কী কোনও পিন দ্বারা সুরক্ষিত নেই। আঙ্গুলের ছাপ ম্যানেজ করতে, প্রথমে পিন তৈরি করুন।</translation>
+<translation id="6136637346277431354">ট্যাব ও আরও অনেক কিছু যোগ করুন</translation>
 <translation id="6138680304137685902">SHA-384 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6140948187512243695">বিশদ বিবরণ দেখান</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
@@ -7684,7 +7686,6 @@
 <translation id="628726841779494414">প্রিন্টারের সেটিংস থেকে আপনার প্রিন্টার ম্যানেজ করুন</translation>
 <translation id="6287288864483377583">কোনও একটি সার্টিফিকেটের ক্ষেত্রে শুধুমাত্র ইমপোর্ট করার সুবিধা কাজ করে</translation>
 <translation id="6287828400772161253">Android ফোন (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Google AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="6290613030083731160">শেয়ার করার মতো আশেপাশে কোনও ডিভাইস উপলভ্য নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">স্টোরেজের জায়গা নেই বলে ফিরিয়ে আনা যায়নি।</translation>
 <translation id="6291741848715722067">কনফার্মেশন কোড</translation>
@@ -9537,6 +9538,7 @@
 <translation id="760197030861754408">সংযোগের জন্য <ph name="LANDING_PAGE" /> এ যান।</translation>
 <translation id="7602079150116086782">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="7602173054665172958">প্রিন্ট করার কাজকর্মের ম্যানেজমেন্ট</translation>
+<translation id="7602868996817972616">এই পৃষ্ঠা সম্পর্কে Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="7603785829538808504">নিচের তালিকাভুক্ত সাইটগুলির একটি কাস্টম সেটিং আছে</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{১টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}one{{NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}other{{NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}}</translation>
 <translation id="7605163396341021431">এই Chromebook-এ Android অ্যাপগুলিকে USB ডিভাইস কন্ট্রোল করতে দিন</translation>

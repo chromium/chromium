@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">Курсив</translation>
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Показват се в произволен ред. Можете да промените основния си избор по всяко време.</translation>
 <translation id="2137891579555018930">Чака се разрешение...</translation>
 <translation id="213826338245044447">Мобилни отметки</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">Не успях да помогна с това. Опитайте отново.</translation>
 <translation id="2453045048779611513">Организацията ви ограничава възможността ви да запазвате данни</translation>
 <translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Приложени правила за браузърите (правила на ниво устройство и потребителски профил).</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ви предоставя централизиран инструмент за конфигуриране на правилата за браузъра от облака</translation>
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2462932596748424101">Социални мрежи</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">Връзката е шифрована и удостоверена посредством <ph name="CIPHER" /> и използва <ph name="KX" /> като механизъм за обмен на ключове.</translation>
 <translation id="2833637280516285136">Дискусионни радиопредавания</translation>
 <translation id="2835170189407361413">Изчистване на формуляра</translation>
+<translation id="2835907903001172712">Обща информация за браузърите.</translation>
 <translation id="2837891525090413132">Може да поиска да заключи и използва клавиатурата ви</translation>
 <translation id="2839032553903800133">Известията са блокирани</translation>
 <translation id="2839501879576190149">Внимание: фалшив сайт</translation>
@@ -1557,6 +1560,7 @@
 <translation id="3543935938072367282">По-бързо плащане с автоматично попълване</translation>
 <translation id="3547442767634383572">обща информация за служебния потребителски профил;</translation>
 <translation id="3547746132308051926">20 x 24 инча</translation>
+<translation id="3549904448933807997">Информация за браузърите и потребителските профили (включително личните и служебните потребителски профили).</translation>
 <translation id="3552155506104542239">Предупреждение: Това правило е в конфликт с правилото <ph name="POLICY_NAME" /> и няма да има ефект върху приложенията за Android. Иначе то работи нормално.</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
@@ -2398,6 +2402,7 @@
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да изтриете историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="4892518386797173871">Заден</translation>
+<translation id="4894390983254799375">Например идентификатор и име на устройството, версия на операционната система и потребителско име в операционната система.</translation>
 <translation id="4895019427244614047">Изтриване на адреса</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийски игри</translation>
@@ -2835,6 +2840,7 @@
 <translation id="5593349413089863479">Връзката не е напълно защитена</translation>
 <translation id="5593640815048812868">Лаптопи и ноутбуци</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
+<translation id="5596627076506792578">Още опции</translation>
 <translation id="5596939519753369075">2 x 3,5 инча</translation>
 <translation id="5597254438174353289">синьо 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
@@ -2933,6 +2939,7 @@
 <translation id="5764920692828389743">Изпращане до <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
+<translation id="5773286975255318081">Например потребителски имена за потребителските профили и версии на браузърите.</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="577804500166306874">Резултатът се зарежда</translation>
 <translation id="5781136890105823427">Експериментът е активиран</translation>
@@ -3239,7 +3246,6 @@
 <translation id="6284449872909111707">SMS и незабавни съобщения</translation>
 <translation id="6284517535531159884">Тип на началното число за вариантите</translation>
 <translation id="6287197303017372967">Получавайте упътвания до дестинацията си с указания отсечка по отсечка, като използвате функцията за навигация.</translation>
-<translation id="6288559570252410796">Попитайте режима с AI на Google</translation>
 <translation id="628877850550444614">Открита е отстъпка</translation>
 <translation id="6289939620939689042">Цвят на страницата</translation>
 <translation id="6292819926564202163">Вашата търсеща машина в Chrome</translation>
@@ -3547,6 +3553,7 @@
 <translation id="6772959465807028761">За да използвате YouTube, продължете с профила си в Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Използване на YouTube с избраните от родителя ви настройки</translation>
+<translation id="6779290995699117286">Администраторът ви има достъп до информацията за потребителските профили, браузърите и устройствата. Той може да вижда следното:</translation>
 <translation id="6779348349813025131">Google Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
 <translation id="6780449997190414928">Обикновено се свързвате с този сайт по сигурен начин, но този път Chrome не успя да използва защитена връзка. Възможно е хакер да се опитва да следи или промени връзката ви с мрежата. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Можете да промените търсещата машина по всяко време от настройките на Chrome.</translation>
@@ -3710,6 +3717,7 @@
 <translation id="7031646650991750659">Кои приложения от Google Play сте инсталирали</translation>
 <translation id="7035705295266423040">Банката иска да потвърди самоличността ви</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате настройките за поверителност за профила си в Google</translation>
+<translation id="7040230719604914234">Оператор</translation>
 <translation id="7042465939346919737">Google използва информация от страницата за плащане и други подходящи данни, за да предлага тези опции. За да скриете опциите за плащане по-късно, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Прецизиране на резултатите</translation>
 <translation id="7043552168914147882">Показалци</translation>
@@ -4393,6 +4401,7 @@
 <translation id="8135546115396015134">клавиш със стрелка за наляво</translation>
 <translation id="8137456439814903304">Електроенергия и комунални услуги</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Създадено преди 1 месец}other{Създадено преди {NUM_MONTHS} месеца}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, текуща основна търсеща машина. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версия:</translation>
 <translation id="8149426793427495338">Компютърът ви премина в спящ режим.</translation>
 <translation id="815036624016370447">Информацията от профила ви в Google <ph name="ACCOUNT" /> може да ви помогне да попълвате по-бързо формуляри в Chrome</translation>
@@ -4507,7 +4516,6 @@
 <translation id="831997045666694187">Вечерта</translation>
 <translation id="8321448084834652864">Можете да промените търсещата машина по всяко време от настройките на Chromium.</translation>
 <translation id="8321476692217554900">известия</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да задавате въпроси на режима с AI на Google</translation>
 <translation id="8322402665880479974">Легла и табли за легло</translation>
 <translation id="8323505966575306467">Защитете паролите си по-добре</translation>
 <translation id="832547548543012337">Изтриване на паспорта</translation>
@@ -4682,6 +4690,7 @@
 <translation id="8606988009912891950">Рекламните теми помагат на сайтовете да ви показват подходящи реклами, като същевременно защитават историята на сърфирането и самоличността ви. Chrome може да отбелязва темите, които ви интересуват, въз основа на скорошната ви история на сърфиране. По-късно посетен от вас сайт може да поиска от Chrome информация за подходящи теми, за да персонализира рекламите, които виждате.</translation>
 <translation id="8612919051706159390">Онлайн общности</translation>
 <translation id="8617269623452051934">използването на устройството ви</translation>
+<translation id="8619130384334725124">Текуща основна търсеща машина</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
 <translation id="8622864575115813231">Установява се връзка с финансовата ви институция...</translation>
 <translation id="8624354461147303341">Получаване на отстъпки</translation>
@@ -5070,7 +5079,6 @@
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>
 <translation id="955429569736351433">Разрешено е използването на VR</translation>
 <translation id="955627189349169688">Можете да се откажете от това правило от <ph name="BEGIN_LINK" />настройките за синхронизиране на Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Бутон за режима с AI. Активирайте го, за да задавате въпроси на режима с AI на Google</translation>
 <translation id="95721182352849470">жълто 2</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>

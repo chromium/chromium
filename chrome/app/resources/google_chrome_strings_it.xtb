@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Traduci da</translation>
 <translation id="2846251086934905009">Errore di installazione: il programma di installazione non è stato completato. L'installazione è stata interrotta.</translation>
 <translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
-<translation id="2856481144859256719">Mostra sempre la scorciatoia di AI Mode nella Ricerca Google</translation>
 <translation id="2857540653560290388">Avvio di Chrome...</translation>
 <translation id="286025080868315611">Scopri perché Chrome blocca alcuni download</translation>
 <translation id="2861074815332034794">Aggiornamento di Chrome in corso… (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">Chiedi a Google</translation>
 <translation id="8362914115861174987">Traduci in</translation>
 <translation id="8366770919198174997">Riduce le prestazioni, ma rende Chrome più resistente agli attacchi</translation>
+<translation id="8367705492654390392">Chiedi qualsiasi cosa</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
 <translation id="8377158135256176353">Attiva/disattiva Gemini in Chrome Canary</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>

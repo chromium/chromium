@@ -167,7 +167,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2841525013647267359">Traduire depuis</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
 <translation id="2853415089995957805">Chrome précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
-<translation id="2856481144859256719">Toujours afficher le raccourci vers le Mode IA dans la recherche Google</translation>
 <translation id="2857540653560290388">Lancement de Chrome…</translation>
 <translation id="286025080868315611">Découvrez pourquoi Chrome bloque certains téléchargements</translation>
 <translation id="2861074815332034794">Mise à jour de Chrome… (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="835927394551949760">Poser des questions à Google</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8366770919198174997">Réduit les performances, mais rend Chrome plus résistant aux attaques</translation>
+<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8377158135256176353">Activer/Désactiver Gemini dans Chrome Canary</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>

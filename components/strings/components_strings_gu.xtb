@@ -1047,7 +1047,7 @@
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2683195745483370038">અન્ય પરિણામો મળ્યા</translation>
-<translation id="2686919536310834199">'લખવામાં મારી સહાય કરો' સુવિધા માટે પ્રતિસાદ મોકલો.</translation>
+<translation id="2686919536310834199">લખવામાં મારી મદદ કરો સુવિધા માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="2687555958734450033">શ્રેષ્ઠ ફિટ</translation>
 <translation id="2688186765492306706">500 x 760 મિમી</translation>
 <translation id="2688969097326701645">હા, ચાલુ રાખો</translation>
@@ -2176,6 +2176,7 @@
 <translation id="4506599922270137252">સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરીને</translation>
 <translation id="450710068430902550">વ્યવસ્થાપક સાથે શેર કરવું</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate વડે આ પેજનો અનુવાદ કરવા માટે Tab પછી Enter દબાવો</translation>
+<translation id="4510703642214459906">સ્થળ</translation>
 <translation id="4515275063822566619">કાર્ડ અને સરનામા Chrome અને Google એકાઉન્ટ (<ph name="ACCOUNT_EMAIL" />)માંથી છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને મેનેજ કરી શકો છો.</translation>
 <translation id="4515847625438516456">માઇક્રોકાર અને સબકૉમ્પેક્ટ</translation>
 <translation id="451601984112574365">લીલો 3</translation>
@@ -2840,6 +2841,7 @@
 <translation id="5593349413089863479">કનેક્શન સંપૂર્ણ રીતે સુરક્ષિત નથી</translation>
 <translation id="5593640815048812868">લૅપટૉપ અને નોટબુક</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
+<translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5596939519753369075">2 x 3.5 ઇંચ</translation>
 <translation id="5597254438174353289">વાદળી 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> અથવા <ph name="ISSUER_2_NAME" /></translation>
@@ -3054,7 +3056,7 @@
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
 <translation id="5984570616552610254">ચેમ્બરમાં ભેજનું પ્રમાણ</translation>
-<translation id="598637245381783098">ચુકવણી ઍપ્લિકેશન ખોલી શકાતી નથી</translation>
+<translation id="598637245381783098">ચુકવણી ઍપ ખોલી શકાતી નથી</translation>
 <translation id="5989320800837274978">ફિક્સ્ડ પ્રૉક્સી સર્વર કે .pac સ્ક્રિપ્ટ URL, બેમાંથી કોઈનો પણ ઉલ્લેખ કરેલો નથી.</translation>
 <translation id="5989917734461988169">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. તેનાથી તમારું ઘરનું વર્તમાન સરનામું બદલાશે નહીં. તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવવામાં આવશે.</translation>
 <translation id="5992691462791905444">એન્જિનિયરિંગ Z-ફોલ્ડ</translation>
@@ -3245,7 +3247,6 @@
 <translation id="6284449872909111707">ટેક્સ્ટ અને ઇન્સ્ટન્ટ મેસેજિંગ</translation>
 <translation id="6284517535531159884">વૅરિએશન સીડનો પ્રકાર</translation>
 <translation id="6287197303017372967">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને દરેક વળાંક પર માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો.</translation>
-<translation id="6288559570252410796">Google AI મોડને પૂછો</translation>
 <translation id="628877850550444614">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="6289939620939689042">પેજનો રંગ</translation>
 <translation id="6292819926564202163">Chromeમાંનું તમારું શોધ એન્જિન</translation>
@@ -3717,6 +3718,7 @@
 <translation id="7031646650991750659">તમે કઈ Google Play ઍપ ઇન્સ્ટૉલ કરી છે</translation>
 <translation id="7035705295266423040">તમારી બેંકને આ તમે જ છો તે ચકાસવું છે</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગ મેનેજ કરવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
+<translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7042465939346919737">Google આ વિકલ્પો ઑફર કરવા માટે ચેકઆઉટ પેજ અને અન્ય સંબંધિત ડેટામાંથી મળતી માહિતીનો ઉપયોગ કરે છે. પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> પર જાઓ</translation>
 <translation id="7042616127917168121">પરિણામોને રિફાઇન કરો</translation>
 <translation id="7043552168914147882">ટૅબ સ્ટૉક</translation>
@@ -3944,7 +3946,7 @@
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">રમકડાં</translation>
 <translation id="7410852728357935715">કોઈ ડિવાઇસ પર કાસ્ટ કરો</translation>
-<translation id="741204030948306876">હા, હું સંમત છું</translation>
+<translation id="741204030948306876">હા, મને માન્ય છે</translation>
 <translation id="7416351320495623771">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="7416898721136759658">અનુદાન, શિષ્યવૃત્તિ અને નાણાકીય સહાય</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4371,6 +4373,7 @@
 <translation id="8077669823243888800">એન્વલપ ચાઇનીઝ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}one{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}other{શું ગોપનીય ફાઇલો અપલોડ કરીએ?}}</translation>
 <translation id="8079031581361219619">સાઇટ ફરીથી લોડ કરીએ?</translation>
+<translation id="8079591184016291275">ઇવેન્ટનું નામ</translation>
 <translation id="8079976827192572403">જોખમી સાઇટ</translation>
 <translation id="8081087320434522107">સીડાન</translation>
 <translation id="8086429410809447605">મહિલાઓના કપડાં</translation>
@@ -4515,7 +4518,6 @@
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321448084834652864">તમે Chromiumના સેટિંગમાં જઈને કોઈપણ સમયે તમારા શોધ એન્જિનમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI મોડને પૂછવા માટે Enter કી દબાવો</translation>
 <translation id="8322402665880479974">પથારી અને ઓશિકા</translation>
 <translation id="8323505966575306467">તમારા પાસવર્ડ માટે વધારે સંરક્ષણ ઉમેરો</translation>
 <translation id="832547548543012337">પાસપોર્ટ ડિલીટ કરો</translation>
@@ -4768,6 +4770,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">શામેલ કરેલું કન્ટેન્ટ</translation>
 <translation id="8757526089434340176">Google Pay ઑફર ઉપલબ્ધ છે</translation>
+<translation id="8758529215314160755">તમે તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" /> <ph name="ACCOUNT" />માં જઈને તમારા નામમાં ફેરફાર કરી શકો છો</translation>
 <translation id="8759274551635299824">આ કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="87601671197631245">આ સાઇટ હજી પણ જૂના સુરક્ષા કન્ફિગ્યુરેશનનો ઉપયોગ કરે છે, જેને લીધે તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, મેસેજ અથવા ક્રેડિટ કાર્ડ) જ્યારે આ સાઇટને મોકલવામાં આવે, ત્યારે તે જોખમમાં આવી શકે છે.</translation>
 <translation id="8763927697961133303">USB ઉપકરણ</translation>
@@ -5078,7 +5081,6 @@
 <translation id="950926967802086924">પાસકી • Google Password Manager</translation>
 <translation id="955429569736351433">VRને મંજૂરી આપવામાં આવી</translation>
 <translation id="955627189349169688">તમે <ph name="BEGIN_LINK" />Chrome સિંકના સેટિંગ<ph name="END_LINK" />માં જઈને આ પૉલિસીને નાપસંદ કરી શકો છો.</translation>
-<translation id="95676157383774931">AI મોડ બટન, Google AI મોડને પૂછવા માટે સક્રિય કરો</translation>
 <translation id="95721182352849470">પીળો 2</translation>
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>

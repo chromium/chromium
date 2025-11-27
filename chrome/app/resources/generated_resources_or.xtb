@@ -1257,6 +1257,7 @@
 <translation id="184273675144259287">ଆପଣଙ୍କର Linux ଆପ୍ସ ଏବଂ ଫାଇଲ୍‌ଗୁଡ଼ିକ ପୂର୍ବବର୍ତ୍ତୀ ବ୍ୟାକ୍‌ଅପ୍ ସହିତ ବଦଳାନ୍ତୁ</translation>
 <translation id="1842766183094193446">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ ଡେମୋ ମୋଡ୍‌ ସକ୍ଷମ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="1843048149176045210">ଡାଉନଲୋଡ ଲିଙ୍କ କପି କରନ୍ତୁ</translation>
+<translation id="1843347690926158494">Google Lens ମାଧ୍ୟମରେ ଏହି ଟାବକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1845060436536902492">ChromeOS Flex, ChromeVoxରେ ସ୍କ୍ରିନ ରିଡର ମୁଖ୍ୟତଃ ଦୃଷ୍ଟିହୀନ କିମ୍ବା କମ ଦେଖାଯାଉଥିବା ଲୋକଙ୍କ ଦ୍ୱାରା ସ୍କ୍ରିନରେ ଡିସପ୍ଲେ କରାଯାଇଥିବା ଟେକ୍ସଟକୁ ସ୍ପିଚ ସିନ୍ଥେସାଇଜର ବା ବ୍ରେଲି ଡିସପ୍ଲେ ମାଧ୍ୟମରେ ପଢ଼ିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଏ। ChromeVox ଚାଲୁ କରିବା ପାଇଁ ସ୍ପେସ ବାରକୁ ଦବାନ୍ତୁ। ChromeVox ସକ୍ରିୟ ହେଲେ ଏହା ବିଷୟରେ ଆପଣଙ୍କୁ ଏକ କୁଇକ ସୂଚନା ଦିଆଯିବ।</translation>
 <translation id="1845727111305721124">ସାଉଣ୍ଡ ଚଲାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />କୁ ଚଲାଇବା ପାଇଁ Controlକୁ ଦବାଇ ଧରି କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -1573,7 +1574,6 @@
 <translation id="2061589908388230480">ଯଦି Chromium ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଆପଣଙ୍କର କୌଣସି ପାସୱାର୍ଡ ପାଏ, ତେବେ ଆପଣ ସାଇନ ଇନ କରିଥିଲେ Google Password Manager ଆପଣଙ୍କ ପାଇଁ ଆପଣଙ୍କର ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବାକୁ ଅଫର କରିପାରେ। <ph name="BEGIN_LINK" />ସ୍ୱତଃ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ବିଷୟରେ ଅଧିକ<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ସେଭ୍ ନ କରି ୱେବର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="206308717637808771">ଆପଣ ସମସ୍ତ ୱିଣ୍ଡୋ ବନ୍ଦ କରିବା ସମୟରେ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ। ଆପଣ ଦେଖୁଥିବା ସାଇଟ ପରି ସମାନ ଢଙ୍ଗରେ ଡାଟାକୁ ବିଚାର କରାଯାଏ</translation>
-<translation id="2065405795449409761">Chrome ସ୍ୱୟଂଚାଳିତ ପରୀକ୍ଷଣ ସଫ୍ଟୱେର୍ ଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହେଉଛି।</translation>
 <translation id="2066700471214517561">ବିମଫର୍ମିଂ ମାଇକ, ଯାହା ଫଳରେ Chromebook ବ୍ୟବହାର କରୁଥିବା ବ୍ୟକ୍ତିଙ୍କ ସାଉଣ୍ଡ ସ୍ପଷ୍ଟ ଭାବରେ ଶୁଣାଯାଇପାରିବ।</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" />ରେ ପ୍ରିଣ୍ଟ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିଛି</translation>
 <translation id="2071393345806050157">କୌଣସି ସ୍ଥାନୀୟ ଲଗ୍‌ ଫାଇଲ୍‌ ନାହିଁ।</translation>
@@ -1639,6 +1639,7 @@
 <translation id="2104166991923847969">ସ୍ୱଚାଳିତ ଭାବେ ହଟସ୍ପଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ଲୁଚାଯାଇଛି</translation>
 <translation id="2106439768713835453">ଆପ୍ଲିକେସନ ଅଡିଓକୁ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>
+<translation id="2107359546799360577">JavaScript ଅପ୍ଟିମାଇଜେସନକୁ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ପୂର୍ବରୁ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ଫୋନ୍ ନମ୍ବର}other{#ଟି ଫୋନ୍ ନମ୍ବର}}</translation>
 <translation id="2109384632594340939">ପ୍ରୋଫାଇଲ ଛବି</translation>
@@ -2056,6 +2057,7 @@
 <translation id="2390782873446084770">Wi-Fi ସିଙ୍କ୍</translation>
 <translation id="2391419135980381625">ସାଧାରଣ ଫଣ୍ଟ</translation>
 <translation id="2391805183137601570">Steam ଖୋଲନ୍ତୁ</translation>
+<translation id="239185270194776190">ଆପଣଙ୍କ Gemini ବାର୍ତ୍ତାଳାପ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋରେ ଅଛି। ଏହି ସାଇଡ ପେନେଲକୁ ଏଠାକୁ ମୁଭ କରିବା ପାଇଁ ଏହାର ଯେ କୌଣସି ସ୍ଥାନରେ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="2392369802118427583">ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="2393136602862631930">ଆପଣଙ୍କ Chromebookରେ <ph name="APP_NAME" /> ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="2393313392064891208">Google ChromeOS Flexର ସର୍ତ୍ତାବଳୀ ବିଷୟବସ୍ତୁ</translation>
@@ -3765,6 +3767,7 @@
 <translation id="3581861561942370740">ଡାଉନଲୋଡ ଇତିହାସ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3582057310199111521">ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଲେଖାଯାଇଛି ଏବଂ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି</translation>
 <translation id="3582299299336701326">ଲାଇଟ ସ୍କ୍ରିନକୁ ଡାର୍କରେ ଏବଂ ଡାର୍କ ସ୍କ୍ରିନକୁ ଲାଇଟରେ ପରିଣତ କରନ୍ତୁ। ରଙ୍ଗ ଇନଭର୍ସନକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Search + Ctrl + H ଦବାନ୍ତୁ।</translation>
+<translation id="358381413217813387">Google Lens ମାଧ୍ୟମରେ ଏହି ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3584169441612580296">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3586741240886978899">ଆପଣ ଏହି ସାଇଟରେ ବ୍ୟବହାର କରିଛନ୍ତି</translation>
 <translation id="3586806079541226322">ଏହି ଫାଇଲ୍‌କୁ ଖୋଲାଯାଇ ପାରିବ ନାହିଁ</translation>
@@ -4264,6 +4267,7 @@
 <translation id="3893536212201235195">ଆପଣଙ୍କର ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3893630138897523026">ChromeVox (କଥିତ ମତାମତ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ବୁକମାର୍କଗୁଡ଼ିକୁ ସେଭ କରିବା ପାଇଁ ଆପଣଙ୍କର ଅବ୍ୟବହୃତ ବୁକମାର୍କଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="3894427358181296146">ଫୋଲ୍ଡର୍‍‍ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3895076768659607631">ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକୁ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="3895090224522145010">Kerberos ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
@@ -4988,6 +4992,7 @@
 <translation id="4405781821077215583">ଟେକ୍ସଟ ସମେତ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଛୋଟ କିମ୍ବା ବଡ଼ କରନ୍ତୁ</translation>
 <translation id="4406308048672435032">ସମ୍ପୂର୍ଣ୍ଣ ତାଲିକା ପୁଣି ଦେଖିବାକୁ ଆପଣ ଏହି ଟାବକୁ ନିଷ୍କ୍ରିୟ କରିପାରିବେ କିମ୍ବା ଏହାକୁ ରିଫ୍ରେସ କରିପାରିବେ</translation>
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
+<translation id="4406963243402726564">ସେଭ ହୋଇନଥିବା ଡାଟା</translation>
 <translation id="4408599188496843485">ସହାୟତା</translation>
 <translation id="4409271659088619928">ଆପଣଙ୍କ ସନ୍ଧାନ ଇଞ୍ଜିନ୍ ହେଉଛି <ph name="DSE" />। ଯଦି ଲାଗୁ ହୁଏ, ତେବେ ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସକୁ ଡିଲିଟ୍ କରିବା ପାଇଁ ସେଗୁଡ଼ିକର ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ।}=2{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ଏବଂ <ph name="APP1_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ।}=3{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ 1 ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ।}other{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ # ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ।}}</translation>
@@ -6876,6 +6881,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ଟିଥରିଂର ରେଡିନେସକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5753570386948603678">ଇତିହାସରୁ ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="5755101376452091923">ଆପଣ ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" /> <ph name="USERNAME" />ରେ ଆପଣଙ୍କ ନାମକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="5756163054456765343">ସ&amp;ହାୟତା କେନ୍ଦ୍ର</translation>
 <translation id="5757187557809630523">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="5758631781033351321">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ପାଇବେ</translation>
@@ -7235,7 +7241,6 @@
 <translation id="5997337190805127100">ସାଇଟ୍ ଆକ୍ସେସ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5998458948782718639">ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="5998976983953384016">ସୁନିଶ୍ଚିତ କରି ଚାଲୁ କରନ୍ତୁ</translation>
-<translation id="5999024481231496910">ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀର ପ୍ରତ୍ୟାହାରର ପରୀକ୍ଷଣକୁ ସକ୍ଷମ କରିଛନ୍ତି। ଏହାକୁ ସେଟିଂସ ପୃଷ୍ଠା ଦ୍ୱାରା ଓଭରରାଇଡ କରାଯାଇପାରିବ ନାହିଁ। ଯଦି ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ପୁଣି-ସକ୍ଷମ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଏହି ଫିଚରକୁ ଅକ୍ଷମ କରି Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5999630716831179808">ଭଏସ୍</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' ପାଇଁ <ph name="RESULT_COUNT" />ଟି ପରିଣାମ</translation>
 <translation id="6001052984304731761">Chromeକୁ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ପରାମର୍ଶ ଦେବା ପାଇଁ ଅନୁମତି ଦେବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -7428,6 +7433,7 @@
 <translation id="6135826623269483856">ଆପଣଙ୍କ ସମସ୍ତ ଡିସପ୍ଲେରେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6136287496450963112">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ ଏକ PIN ଦ୍ୱାରା ସୁରକ୍ଷିତ ନୁହେଁ। ଟିପଚିହ୍ନଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ପ୍ରଥମେ ଏକ PIN ତିଆରି କରନ୍ତୁ।</translation>
+<translation id="6136637346277431354">ଟାବ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6138680304137685902">SHA-384 ସହିତ X9.62 ECDSAର ସ୍ଵାକ୍ଷର</translation>
 <translation id="6140948187512243695">ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="6141988275892716286">ଡାଉନ୍‌ଲୋଡ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -7658,7 +7664,6 @@
 <translation id="628726841779494414">ପ୍ରିଣ୍ଟର ସେଟିଂସରେ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6287288864483377583">ଇମ୍ପୋର୍ଟ କେବଳ ଗୋଟିଏ ସାର୍ଟିଫିକେଟକୁ ସପୋର୍ଟ କରେ</translation>
 <translation id="6287828400772161253">Android ଫୋନ (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Google AI Modeକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="6290613030083731160">ଆଖପାଖର କୌଣସି ସେୟାର୍ କରୁଥିବା ଡିଭାଇସ୍ ଉପଲବ୍ଧ ନାହିଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ଷ୍ଟୋରେଜ ସ୍ପେସ ଅଭାବ ଯୋଗୁଁ ରିଷ୍ଟୋର କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="6291741848715722067">ସୁନିଶ୍ଚିତକରଣ କୋଡ୍</translation>
@@ -9510,6 +9515,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="760197030861754408">ସଂଯୋଗ କରିବାକୁ <ph name="LANDING_PAGE" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7602079150116086782">ଅନ୍ୟ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରୁ କୌଣସି ଟାବ୍‌ ନାହିଁ</translation>
 <translation id="7602173054665172958">ପ୍ରିଣ୍ଟ ପରିଚାଳନା</translation>
+<translation id="7602868996817972616">ଏହି ପୃଷ୍ଠା ବିଷୟରେ Googleକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7603785829538808504">ନିମ୍ନସ୍ଥ ତାଲିକାଭୁକ୍ତ ସାଇଟଗୁଡ଼ିକ ଏକ କଷ୍ଟମ୍ ସେଟିଂକୁ ଅନୁସରଣ କରେ</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1ଟି ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ}other{{NUM_PASSWORDS}ଟି ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ}}</translation>
 <translation id="7605163396341021431">ଏହି Chromebookରେ Android ଆପ୍ସକୁ USB ଡିଭାଇସଗୁଡ଼ିକର ନିୟନ୍ତ୍ରଣ ଦିଅନ୍ତୁ</translation>

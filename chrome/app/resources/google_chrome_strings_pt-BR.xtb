@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Traduzir do</translation>
 <translation id="2846251086934905009">Erro de instalação: a instalação não foi concluída. A instalação foi cancelada.</translation>
 <translation id="2853415089995957805">O Chrome pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas.</translation>
-<translation id="2856481144859256719">Sempre mostrar o Modo IA no atalho da Pesquisa Google</translation>
 <translation id="2857540653560290388">Iniciando o Chrome…</translation>
 <translation id="286025080868315611">Saiba por que o Chrome bloqueia alguns downloads</translation>
 <translation id="2861074815332034794">Atualizando o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -660,6 +659,7 @@
 <translation id="835927394551949760">Pergunte ao Google</translation>
 <translation id="8362914115861174987">Traduzir para </translation>
 <translation id="8366770919198174997">Reduz o desempenho, mas torna o Chrome mais resistente a ataques</translation>
+<translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8377158135256176353">Ativar/desativar o Gemini no Chrome Canary</translation>
 <translation id="8387459386171870978">Continuar usando o Chrome</translation>

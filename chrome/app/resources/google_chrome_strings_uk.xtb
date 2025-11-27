@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Перекласти з такої мови:</translation>
 <translation id="2846251086934905009">Сталася помилка. Не вдалося завершити встановлення. Процес було скасовано.</translation>
 <translation id="2853415089995957805">Chrome попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
-<translation id="2856481144859256719">Завжди показувати ярлик режиму ШІ в Пошуку Google</translation>
 <translation id="2857540653560290388">Запускається Chrome…</translation>
 <translation id="286025080868315611">Дізнайтеся, чому Chrome блокує деякі завантаження</translation>
 <translation id="2861074815332034794">Оновлення Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -660,6 +659,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="835927394551949760">Запитання до Google</translation>
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
 <translation id="8366770919198174997">Знижує продуктивність, але робить вебпереглядач Chrome стійкішим до атак</translation>
+<translation id="8367705492654390392">Поставте запитання</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="8377158135256176353">Увімкнути або вимкнути Gemini у Chrome Canary</translation>
 <translation id="8387459386171870978">Продовжити використовувати Chrome</translation>

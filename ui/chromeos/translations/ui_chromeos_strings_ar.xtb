@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
+<translation id="560739212255190568">وضَعَ المشرف قواعد تجاوز الخادم الوكيل بالإضافة إلى فرض الخادم الوكيل التالي</translation>
 <translation id="5618330573454123917">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="8545476925160229291">الإنجليزية (الولايات المتحدة)</translation>
 <translation id="854655314928502177">‏عنوان URL لاكتشاف الخادم الوكيل للويب تلقائيًا:</translation>
+<translation id="8547747809824590510">وضَعَ المشرف قواعد لتجاوز الخادم الوكيل</translation>
 <translation id="8549186985808798022">الإيطالية</translation>
 <translation id="8551494947769799688">اللاتفية</translation>
 <translation id="8560515948038859357">الكانتونية</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
+<translation id="9079844694307518094">يفرض المشرف استخدام الخادم الوكيل التالي</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>

@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zapri element}one{Zapri elemente}two{Zapri elemente}few{Zapri elemente}other{Zapri elemente}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Sličica za predogled deljenega lista.</translation>
+<translation id="3776329373944672717">Naslov skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Odpni zavihek}one{Odpni zavihke}two{Odpni zavihke}few{Odpni zavihke}other{Odpni zavihke}}</translation>
 <translation id="3940195383040445971">Spremljanje cen na zavihkih</translation>

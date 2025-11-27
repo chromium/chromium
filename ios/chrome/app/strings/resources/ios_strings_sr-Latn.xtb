@@ -1284,6 +1284,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5902752768726620872">{count,plural, =1{{count} nova kartica}one{{count} nova kartica}few{{count} nove kartice}other{{count} novih kartica}}</translation>
 <translation id="5911030830365207728">Google prevodilac</translation>
 <translation id="5922999516621365983">Prevucite karticu ovde da biste je zakačili.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Dodajte najviše 1 fajl, karticu ili sliku}one{Dodajte najviše {COUNT} fajl, karticu ili sliku}few{Dodajte najviše {COUNT} fajla, kartice ili slike}other{Dodajte najviše {COUNT} fajlova, kartica ili slika}}</translation>
 <translation id="5936006948844852401">Upravljaj prostorom</translation>
 <translation id="5936065461722368675">Prevedi celu stranicu</translation>
 <translation id="5937560539988385583">Stranica je prevedena</translation>
@@ -1872,6 +1873,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8035133914807600019">Novi folder...</translation>
 <translation id="8035412398498507358">Slike</translation>
+<translation id="8037713009824540257">Dodaj sajt</translation>
 <translation id="8040407350301524547">Za opcije rute dodirnite Prikaži putanju.</translation>
 <translation id="804427445359061970">Ovde ćete pronaći kartice sa drugih uređaja</translation>
 <translation id="8058655154417507695">Godina isteka</translation>

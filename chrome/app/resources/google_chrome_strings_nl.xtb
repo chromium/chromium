@@ -168,7 +168,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2841525013647267359">Vertalen uit het</translation>
 <translation id="2846251086934905009">Installatiefout: Het installatieprogramma is niet afgerond. De installatie is afgebroken.</translation>
 <translation id="2853415089995957805">Chrome laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt</translation>
-<translation id="2856481144859256719">Snelkoppeling voor AI-modus in Google Zoeken altijd tonen</translation>
 <translation id="2857540653560290388">Chrome starten…</translation>
 <translation id="286025080868315611">Meer informatie over waarom Chrome bepaalde downloads blokkeert</translation>
 <translation id="2861074815332034794">Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -665,6 +664,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="835927394551949760">Vragen stellen aan Google</translation>
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8366770919198174997">Vermindert de prestaties maar maakt Chrome beter bestand tegen aanvallen</translation>
+<translation id="8367705492654390392">Vraag iets</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary aan-/uitzetten</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>

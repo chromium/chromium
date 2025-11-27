@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
 <translation id="2847479871509788944">Remover do Chromium...</translation>
 <translation id="2850691299438350830">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
-<translation id="2856481144859256719">Mostrar sempre o atalho do Modo IA na Pesquisa Google</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2910007522516064972">Acerca do &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>
@@ -627,6 +626,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8359544530202147897">Atualize o Chromium para continuar a usar os dados do Chromium na sua Conta Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.</translation>
 <translation id="8362914115861174987">Traduzir para</translation>
+<translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8372327902843331129">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Esta palavra-passe é guardada na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="837460953767177950">Em seguida, tem de reiniciar o Chromium.</translation>

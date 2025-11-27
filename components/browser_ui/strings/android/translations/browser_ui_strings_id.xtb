@@ -225,6 +225,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3368138297038111198">Membagikan jendela</translation>
 <translation id="3386292677130313581">Minta izin sebelum mengizinkan situs mengetahui lokasi Anda (disarankan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="3435896845095436175">Aktifkan</translation>
 <translation id="344449859752187052">Cookie pihak ketiga diblokir</translation>
 <translation id="3448554387819310837">Jika diaktifkan, situs dapat meminta untuk menggunakan kamera Anda. Jika dinonaktifkan, situs tidak dapat menggunakan kamera Anda.</translation>
 <translation id="3491678231052507920">Situs biasanya menggunakan perangkat dan data virtual reality Anda agar Anda dapat masuk ke sesi VR</translation>
@@ -342,6 +343,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Ketuk Aplikasi browser, lalu ketuk Chrome</translation>
 <translation id="4676059169848868271">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan pelacakan tangan, aktifkan juga pelacakan tangan di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Mengelola kartu</translation>
 <translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Jika diaktifkan, situs dapat menampilkan iklan apa pun kepada Anda. Jika dinonaktifkan, situs tidak dapat menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="4779083564647765204">Zoom</translation>

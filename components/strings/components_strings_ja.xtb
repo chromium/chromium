@@ -2840,6 +2840,7 @@
 <translation id="5593349413089863479">接続は完全には保護されていません</translation>
 <translation id="5593640815048812868">ノートパソコン</translation>
 <translation id="5595485650161345191">住所の編集</translation>
+<translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5596939519753369075">2x3.5 インチ</translation>
 <translation id="5597254438174353289">青 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> または <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3246,6 @@
 <translation id="6284449872909111707">テキスト メッセージ、インスタント メッセージ</translation>
 <translation id="6284517535531159884">バリエーション シードタイプ</translation>
 <translation id="6287197303017372967">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内します。</translation>
-<translation id="6288559570252410796">Google AI モードに質問する</translation>
 <translation id="628877850550444614">割引が見つかりました</translation>
 <translation id="6289939620939689042">ページの色</translation>
 <translation id="6292819926564202163">Chrome で使用する検索サービス</translation>
@@ -3717,6 +3717,7 @@
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
 <translation id="7035705295266423040">カード発行会社が本人確認を求めています</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押して、Google アカウントのプライバシー設定を管理します</translation>
+<translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7042465939346919737">Google は、購入手続きページの情報やその他の関連データを使用して、これらのオプションを提供しています。後払いオプションを非表示にするには、<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> に移動してください</translation>
 <translation id="7042616127917168121">結果を絞り込む</translation>
 <translation id="7043552168914147882">タブストック</translation>
@@ -4516,7 +4517,6 @@
 <translation id="831997045666694187">夕方</translation>
 <translation id="8321448084834652864">検索エンジンは Chromium の設定でいつでも変更できます。</translation>
 <translation id="8321476692217554900">通知</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />。Enter キーを押すと、Google AI モードに質問できます</translation>
 <translation id="8322402665880479974">ベッド、ヘッドボード</translation>
 <translation id="8323505966575306467">パスワードの保護を強化</translation>
 <translation id="832547548543012337">パスポートの削除</translation>
@@ -5080,7 +5080,6 @@
 <translation id="950926967802086924">パスキー • Google パスワード マネージャー</translation>
 <translation id="955429569736351433">VR を許可しました</translation>
 <translation id="955627189349169688">このポリシーは <ph name="BEGIN_LINK" />Chrome 同期の設定<ph name="END_LINK" />で無効にできます。</translation>
-<translation id="95676157383774931">AI モードのボタン。有効にすると、Google AI モードに質問できます</translation>
 <translation id="95721182352849470">黄 2</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>

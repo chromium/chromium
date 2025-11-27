@@ -1284,6 +1284,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5902752768726620872">{count,plural, =1{{count} ny fane}other{{count} nye faner}}</translation>
 <translation id="5911030830365207728">Google Oversetter</translation>
 <translation id="5922999516621365983">Dra fanen hit for å feste den.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Legg til opptil 1 fil, fane eller bilde}other{Legg til opptil {COUNT} filer, faner eller bilder}}</translation>
 <translation id="5936006948844852401">Administrer lagring</translation>
 <translation id="5936065461722368675">Oversett hele siden</translation>
 <translation id="5937560539988385583">Siden er oversatt</translation>
@@ -1872,6 +1873,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035133914807600019">Ny mappe</translation>
 <translation id="8035412398498507358">Bilder</translation>
+<translation id="8037713009824540257">Legg til et nettsted</translation>
 <translation id="8040407350301524547">For å se rutealternativer, trykk på «Få veibeskrivelse».</translation>
 <translation id="804427445359061970">Her finner du fanene dine fra andre enheter</translation>
 <translation id="8058655154417507695">Utløpsår</translation>

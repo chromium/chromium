@@ -168,7 +168,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2841525013647267359">Translate from</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
-<translation id="2856481144859256719">Always show AI Mode in Google Search shortcut</translation>
 <translation id="2857540653560290388">Launching Chrome...</translation>
 <translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="835927394551949760">Ask Google</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8366770919198174997">Reduces performance but makes Chrome more resistant to attacks</translation>
+<translation id="8367705492654390392">Ask anything</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8377158135256176353">Toggle Gemini in Chrome Canary</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>

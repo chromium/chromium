@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">तिरपे</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode धोरण सेट केले नसल्यामुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ही रँडम क्रमाने दाखवली आहेत. तुम्ही तुमचे डीफॉल्ट शोध इंजीन कधीही बदलू शकता.</translation>
 <translation id="2137891579555018930">परवानगीची प्रतीक्षा करत आहे...</translation>
 <translation id="213826338245044447">Mobile बुकमार्क</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">त्याबाबतीत मदत करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="2453045048779611513">तुम्ही काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत</translation>
 <translation id="2456755709261364512">तुमची बॅटरी <ph name="REQUIRED_BATTERY_PRECENT" />% पेक्षा जास्त चार्ज असणे आवश्यक आहे</translation>
+<translation id="2459882793359532780">ब्राउझरवर लागू केलेली धोरणे (मशीन आणि प्रोफाइल यांसंबंधित धोरणे)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core तुम्हाला क्लाउडवरून ब्राउझर धोरणे कॉन्फिगर करण्यासाठी केंद्रीकृत टूल देते</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2462932596748424101">सोशल नेटवर्क</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">कनेक्शन <ph name="CIPHER" /> वापरून आणि महत्त्वाचे एक्स्चेंज तंत्र म्हणून <ph name="KX" /> वापर एंक्रिप्ट आणि ऑथेंटिकेट केले आहे.</translation>
 <translation id="2833637280516285136">टॉक रेडिओ</translation>
 <translation id="2835170189407361413">फॉर्म क्लिअर करा</translation>
+<translation id="2835907903001172712">ब्राउझरचे अवलोकन</translation>
 <translation id="2837891525090413132">लॉक करण्यासाठी आणि तुमचा कीबोर्ड वापरण्यासाठी विचारू शकते</translation>
 <translation id="2839032553903800133">सूचना ब्लॉक केल्या आहेत</translation>
 <translation id="2839501879576190149">पुढे बनावट साइट आहे</translation>
@@ -1556,6 +1559,7 @@
 <translation id="3543935938072367282">ऑटोफिलसह अधिक जलद चेक आउट करा</translation>
 <translation id="3547442767634383572">कार्य प्रोफाइलचे अवलोकन</translation>
 <translation id="3547746132308051926">२० x २४ इं</translation>
+<translation id="3549904448933807997">ब्राउझर आणि प्रोफाइल यांसंबंधित माहिती (वैयक्तिक व कार्य प्रोफाइल यांसह)</translation>
 <translation id="3552155506104542239">चेतावणी: हे धोरण <ph name="POLICY_NAME" /> सह विरोधाभासी आहे आणि Android ॲप्सवर त्याचा कोणताही परिणाम होणार नाही. अन्यथा, हे धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
@@ -2398,6 +2402,7 @@
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि आणखी बरेच काही हटवण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="4892518386797173871">मागील</translation>
+<translation id="4894390983254799375">जसे की डिव्हाइस आयडी, नाव, OS आवृत्ती आणि OS वापरकर्ता नाव</translation>
 <translation id="4895019427244614047">पत्ता हटवा</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ऑलिंपिक</translation>
@@ -2835,6 +2840,7 @@
 <translation id="5593349413089863479">कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
 <translation id="5593640815048812868">लॅपटॉप आणि नोटबुक</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
+<translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5596939519753369075">२ x ३.५ इं</translation>
 <translation id="5597254438174353289">निळा ३</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> किंवा <ph name="ISSUER_2_NAME" /></translation>
@@ -2933,6 +2939,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ला पाठवा</translation>
 <translation id="5765072501007116331">वितरण पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="57689295674415555">व्हर्च्युअल कार्ड नंबर भरला नाही का?</translation>
+<translation id="5773286975255318081">जसे की प्रोफाइलची वापरकर्ता नावे आणि ब्राउझरच्या आवृत्त्या</translation>
 <translation id="5776313857861697733">प्राधान्य</translation>
 <translation id="577804500166306874">परिणाम लोड करत आहे</translation>
 <translation id="5781136890105823427">प्रयोग सुरू केला आहे</translation>
@@ -3240,7 +3247,6 @@
 <translation id="6284449872909111707">एसएमएस आणि झटपट मेसेजिंग</translation>
 <translation id="6284517535531159884">व्हेरिएशन सीड प्रकार</translation>
 <translation id="6287197303017372967">नेव्हिगेशन वैशिष्ट्य वापरून टर्न-बाय-टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानासाठी दिशानिर्देश मिळवा.</translation>
-<translation id="6288559570252410796">Google AI मोड ला विचारा</translation>
 <translation id="628877850550444614">सवलत सापडली</translation>
 <translation id="6289939620939689042">पेजचा रंग</translation>
 <translation id="6292819926564202163">Chrome मधील तुमचे शोध इंजीन</translation>
@@ -3548,6 +3554,7 @@
 <translation id="6772959465807028761">YouTube वापरण्यासाठी, तुमचे Google खाते वापरून पुढे सुरू ठेवा</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">तुमच्या पालकाच्या निवडींसह YouTube वापरा</translation>
+<translation id="6779290995699117286">तुमच्या ॲडमिनिस्ट्रेटरला प्रोफाइल, ब्राउझर आणि डिव्हाइस यांची माहिती ॲक्सेस करता येईल. ते पुढील गोष्टी पाहू शकतात:</translation>
 <translation id="6779348349813025131">Google Password Manager साठी MacOS Keychain चा अ‍ॅक्सेस आवश्यक आहे</translation>
 <translation id="6780449997190414928">तुम्ही सामान्यपणे या साइटशी सुरक्षितपणे कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">तुम्ही तुमचे शोध इंजीन Chrome सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
@@ -3711,6 +3718,7 @@
 <translation id="7031646650991750659">तुम्ही कोणती Google Play ॲप्स इंस्टॉल केली आहेत</translation>
 <translation id="7035705295266423040">हे तुम्हीच याची तुमच्या बॅंकला पडताळणी करायची आहे</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते ची गोपनीयता सेटिंग्ज व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
+<translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7042465939346919737">हे पर्याय देऊ करण्यासाठी Google चेकआउट पेजवरील माहिती आणि इतर सुसंबद्ध डेटा वापरते. नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा</translation>
 <translation id="7042616127917168121">परिणाम सुधारित करा</translation>
 <translation id="7043552168914147882">टॅब स्टॉक</translation>
@@ -4395,6 +4403,7 @@
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा आणि सुविधा पुरवठादार</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिन्यापूर्वी तयार केला आहे}other{{NUM_MONTHS} महिन्यांपूर्वी तयार केला आहे}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, सद्य डीफॉल्ट. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
 <translation id="815036624016370447">तुमच्या Google खाते <ph name="ACCOUNT" /> मधील माहिती तुम्हाला Chrome मध्ये फॉर्म आणखी जलद भरण्यात मदत करू शकते</translation>
@@ -4509,7 +4518,6 @@
 <translation id="831997045666694187">संध्याकाळी</translation>
 <translation id="8321448084834652864">तुम्ही तुमचे शोध इंजीन Chromium च्या सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="8321476692217554900">सूचना</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI मोड ला विचारण्यासाठी एंटर प्रेस करा</translation>
 <translation id="8322402665880479974">बेड आणि हेडबोर्ड</translation>
 <translation id="8323505966575306467">तुमच्या पासवर्डवर आणखी संरक्षण जोडा</translation>
 <translation id="832547548543012337">पासपोर्ट हटवा</translation>
@@ -4684,6 +4692,7 @@
 <translation id="8606988009912891950">जाहिरातीचे विषय हे तुमचा ब्राउझिंग इतिहास आणि ओळख संरक्षित करून तुम्हाला उपयुक्त जाहिराती दाखवण्यात मदत करतात. Chrome हे तुमच्या अलीकडील ब्राउझिंग इतिहासावर आधारित नवीन विषयांची नोंद ठेवू शकते. त्यानंतर, तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यासाठी तुम्ही भेट देता ती साइट Chrome कडे उपयुक्त विषय मागू शकते.</translation>
 <translation id="8612919051706159390">ऑनलाइन समुदाय</translation>
 <translation id="8617269623452051934">तुमच्या डिव्हाइसचा वापर</translation>
+<translation id="8619130384334725124">सद्य डीफॉल्ट</translation>
 <translation id="8620276786115098679">एन्व्हलप काकू ७</translation>
 <translation id="8622864575115813231">तुमच्या आर्थिक संस्थेशी संपर्क साधत आहे...</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
@@ -4761,6 +4770,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">एंबेड केलेला आशय</translation>
 <translation id="8757526089434340176">Google Pay ऑफर उपलब्ध</translation>
+<translation id="8758529215314160755">तुम्ही तुमच्या <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> <ph name="ACCOUNT" /> मध्ये तुमचे नाव संपादित करू शकता</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट एक्सपायर झालेली सुरक्षितता कॉन्फिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>
 <translation id="8763927697961133303">USB डिव्हाइस</translation>
@@ -5071,7 +5081,6 @@
 <translation id="950926967802086924">पासकी • Google Password Manager</translation>
 <translation id="955429569736351433">VR ला अनुमती आहे</translation>
 <translation id="955627189349169688">तुम्ही <ph name="BEGIN_LINK" />Chrome सिंक सेटिंग्ज<ph name="END_LINK" /> मध्ये या धोरणाची निवड रद्द करू शकता.</translation>
-<translation id="95676157383774931">AI मोड बटण, Google AI मोड ला विचारण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="95721182352849470">पिवळा २</translation>
 <translation id="961663415146723894">बाइंड बॉटम</translation>
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>

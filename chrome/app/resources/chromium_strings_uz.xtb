@@ -164,7 +164,6 @@
 <translation id="2846251086934905009">Oʻrnatishda xato: Oʻrnatish vositasi tugallanmadi. Oʻrnatish bekor qilindi.</translation>
 <translation id="2847479871509788944">Chromium‘dan o‘chirish...</translation>
 <translation id="2850691299438350830">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
-<translation id="2856481144859256719">Google Qidiruv ichida AI rejimi yorligʻi doim chiqsin</translation>
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2910007522516064972">&amp;Chromium haqida</translation>
 <translation id="2915996080311180594">Keyinroq qayta ishga tushirish</translation>
@@ -624,6 +623,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google hisobingizdagi Chromium maʼlumotlaridan foydalanishda davom etish uchun Chromium brauzerini yangilang</translation>
 <translation id="8360718212975266891">Chromium yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 8.</translation>
 <translation id="8362914115861174987">Bu tilga tarjima qilish</translation>
+<translation id="8367705492654390392">Savol bering</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="8372327902843331129">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chromiumga kiring. Hisobga kirilgandan keyin bu parol Google hisobida saqlanadi.</translation>
 <translation id="837460953767177950">Keyin Chromium qayta ishga tushirilishi kerak.</translation>

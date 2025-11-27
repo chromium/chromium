@@ -166,7 +166,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2846251086934905009">Chyba inštalácie: inštalátor nebol dokončený. Inštalácia bola prerušená.</translation>
 <translation id="2847479871509788944">Odstrániť z prehliadača Chromium...</translation>
 <translation id="2850691299438350830">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
-<translation id="2856481144859256719">Vždy zobrazovať odkaz na režim AI v odkaze na Vyhľadávanie Google</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2910007522516064972">Informácie o prehliadači &amp;Chromium</translation>
 <translation id="2915996080311180594">Reštartovať neskôr</translation>
@@ -628,6 +627,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8359544530202147897">Aktualizujte Chromium, aby ste mohli naďalej používať údaje prehliadača Chromium vo svojom účte Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Chromium, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>
 <translation id="8362914115861174987">Preklad do jazyka</translation>
+<translation id="8367705492654390392">Spýtajte sa čokoľvek</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="8372327902843331129">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do prehliadača Chromium. Toto heslo bude uložené do vášho účtu Google, keď sa prihlásite.</translation>
 <translation id="837460953767177950">Potom budete musieť reštartovať Chromium.</translation>

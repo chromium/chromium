@@ -697,6 +697,7 @@
 <translation id="2127747486437921899">Շեղ</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ցուցադրվում են պատահական հերթականությամբ։ Ցանկացած ժամանակ կարող եք փոխել ձեր կանխադրվածը։</translation>
 <translation id="2137891579555018930">Սպասում ենք թույլտվության…</translation>
 <translation id="213826338245044447">Բջջային էջանիշներ</translation>
@@ -916,6 +917,7 @@
 <translation id="2452837234288608067">Չհաջողվեց կատարել այս հարցումը։ Նորից փորձեք։</translation>
 <translation id="2453045048779611513">Ձեր կազմակերպությունը թույլատրել է պահել ոչ բոլոր տվյալները</translation>
 <translation id="2456755709261364512">Ձեր մարտկոցի լիցքը պետք է <ph name="REQUIRED_BATTERY_PRECENT" />%-ից բարձր լինի</translation>
+<translation id="2459882793359532780">Դիտարկիչի գործող կանոններ (սարքին և պրոֆիլին վերաբերող կանոններ)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core-ը ձեզ տրամադրում է կենտրոնացված գործիք՝ ամպային սերվերից դիտարկիչի վերաբերյալ կանոնները կազմաձևելու համար</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2462932596748424101">Սոցիալական ցանցեր</translation>
@@ -1127,6 +1129,7 @@
 <translation id="2826760142808435982">Կապակցումը գաղտնագրված և ստուգված է <ph name="CIPHER" />-ի միջոցով: Որպես բանալիների փոխանակման մեխանիզմ օգտագործվում է <ph name="KX" />-ը:</translation>
 <translation id="2833637280516285136">Ռադիոյով թոք շոուներ</translation>
 <translation id="2835170189407361413">Մաքրել ձևաթուղթը</translation>
+<translation id="2835907903001172712">Դիտարկիչի մասին ընդհանուր տեղեկությունները</translation>
 <translation id="2837891525090413132">Կարող է խնդրել ձեր ստեղնաշարը կողպելու և օգտագործելու թույլտվություն</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2839501879576190149">Կայքը, որը պատրաստվում եք այցելել, կեղծ է</translation>
@@ -1563,6 +1566,7 @@
 <translation id="3543935938072367282">Ինքնալրացման շնորհիվ վճարեք ավելի արագ</translation>
 <translation id="3547442767634383572">Աշխատանքային պրոֆիլի մասին ընդհանուր տեղեկություններ</translation>
 <translation id="3547746132308051926">20 x 24 դյույմ</translation>
+<translation id="3549904448933807997">Դիտարկիչների և պրոֆիլների մասին տեղեկություններ (ներառյալ անձնական և աշխատանքային պրոֆիլները)</translation>
 <translation id="3552155506104542239">Նախազգուշացում. այս կանոնը հակասում է <ph name="POLICY_NAME" /> կանոնին և կիրառելի չէ Android-ի համար հավելվածների համար։ Այլ դեպքերում այս կանոնը պատշաճ կերպով աշխատում է։</translation>
 <translation id="3552297013052089404">Sans-serif տառատեսակ</translation>
 <translation id="3558573058928565255">Ցերեկ</translation>
@@ -2404,6 +2408,7 @@
 <translation id="4887406273302438710">Պաշտպանեք գաղտնաբառերը Windows Hello-ի միջոցով</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4892518386797173871">Հետևի կողմ</translation>
+<translation id="4894390983254799375">Օրինակ՝ սարքի ID-ն, անվանումը, օպերացիոն համակարգի տարբերակը և օպերացիոն համակարգի օգտանունը</translation>
 <translation id="4895019427244614047">Ջնջել հասցեն</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Օլիմպիական խաղեր</translation>
@@ -2844,6 +2849,7 @@
 <translation id="5593349413089863479">Կապը լիովին պաշտպանված չէ</translation>
 <translation id="5593640815048812868">Նոթբուքներ</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
+<translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5596939519753369075">2 x 3,5 դյույմ</translation>
 <translation id="5597254438174353289">Կապույտ 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> կամ <ph name="ISSUER_2_NAME" /></translation>
@@ -2942,6 +2948,7 @@
 <translation id="5764920692828389743">Ուղարկել <ph name="EMAIL_ADDRESS" /> հասցեին</translation>
 <translation id="5765072501007116331">Առաքման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="57689295674415555">Վիրտուալ քարտի համարը չի՞ լրացվել</translation>
+<translation id="5773286975255318081">Օրինակ՝ պրոֆիլների օգտանունները և դիտարկիչների տարբերակները</translation>
 <translation id="5776313857861697733">Առաջնահերթություն</translation>
 <translation id="577804500166306874">Արդյունքների բեռնում</translation>
 <translation id="5781136890105823427">Փորձարկումը միացված է</translation>
@@ -3248,7 +3255,6 @@
 <translation id="6284449872909111707">SMS-ներ և ակնթարթային հաղորդակցում</translation>
 <translation id="6284517535531159884">Տարբերակների նախնական տեսակ</translation>
 <translation id="6287197303017372967">Գծել երթուղիներ դեպի նպատակակետ քայլ առ քայլ ցուցումների միջոցով՝ օգտագործելով նավիգացիան։</translation>
-<translation id="6288559570252410796">Հարցնել Google-ի ԱԲ ռեժիմին</translation>
 <translation id="628877850550444614">Գտնվել է զեղչ</translation>
 <translation id="6289939620939689042">Էջի գույնը</translation>
 <translation id="6292819926564202163">Ձեր որոնողական համակարգը Chrome-ում</translation>
@@ -3556,6 +3562,7 @@
 <translation id="6772959465807028761">YouTube-ից օգտվելու համար մուտք գործեք Google հաշիվ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Օգտվեք YouTube-ից ձեր ծնողի կարգավորումներով</translation>
+<translation id="6779290995699117286">Ձեր ադմինիստրատորին հասանելի են պրոֆիլը, դիտարկիչը և սարքի տեղեկությունները։ Նա կարող է տեսնել՝</translation>
 <translation id="6779348349813025131">Google գաղտնաբառերի կառավարչին անհրաժեշտ է MacOS Keychain-ի հասանելիություն</translation>
 <translation id="6780449997190414928">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր որոնողական համակարգը Chrome-ի կարգավորումներում։</translation>
@@ -3719,6 +3726,7 @@
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>
 <translation id="7035705295266423040">Ձեր բանկը ցանկանում է հաստատել ձեր ինքնությունը</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Ձեր Google հաշվի գաղտնիության կարգավորումները կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="7040230719604914234">Օպերատոր</translation>
 <translation id="7042465939346919737">Google-ը օգտագործում է վճարման էջի տեղեկությունները և այլ համապատասխան տվյալներ՝ այս տարբերակներն առաջարկելու համար։ Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Որոնման պայմանների հստակեցում</translation>
 <translation id="7043552168914147882">Բաժանարար</translation>
@@ -4401,6 +4409,7 @@
 <translation id="8135546115396015134">ձախ ստեղն</translation>
 <translation id="8137456439814903304">Էներգիա մատակարարող և կոմունալ ծառայություն</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ստեղծվել է 1 ամիս առաջ}one{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}other{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ընթացիկ կանխադրված որոնողական համակարգ։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
 <translation id="8149426793427495338">Ձեր համակարգիչը մտել է քնի ռեժիմ:</translation>
 <translation id="815036624016370447">Ձեր <ph name="ACCOUNT" /> Google հաշվի տեղեկությունները կարող են օգնել ձեզ ավելի արագ լրացնել ձևերը Chrome-ում</translation>
@@ -4515,7 +4524,6 @@
 <translation id="831997045666694187">Մինչև երեկո</translation>
 <translation id="8321448084834652864">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր որոնողական համակարգը Chromium-ի կարգավորումներում։</translation>
 <translation id="8321476692217554900">ծանուցումներ</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, սեղմեք Enter՝ Google-ի ԱԲ ռեժիմին հարցնելու համար</translation>
 <translation id="8322402665880479974">Մահճակալներ և մահճակալների պարագաներ</translation>
 <translation id="8323505966575306467">Ուժեղացրեք ձեր գաղտնաբառերի պաշտպանությունը</translation>
 <translation id="832547548543012337">Ջնջել անձնագիրը</translation>
@@ -4690,6 +4698,7 @@
 <translation id="8606988009912891950">Գովազդի թեմաներն օգնում են կայքերին ցուցադրել ձեզ համապատասխան գովազդ՝ միաժամանակ գաղտնի պահելով այցելությունների ձեր պատմությունը և անձնական տվյալները։ Chrome-ը կարող է որոշել ձեզ հետաքրքրող թեմաները ձեր վերջին այցելությունների պատմության հիման վրա։ Հետագայում ձեր օգտագործած ցանկացած կայք կարող է այդ թեմաների մասին տեղեկություններ հայցել Chrome-ից՝ ձեզ ցուցադրվող գովազդն անհատականացնելու նպատակով։</translation>
 <translation id="8612919051706159390">Առցանց համայնքներ</translation>
 <translation id="8617269623452051934">սարքի օգտագործում</translation>
+<translation id="8619130384334725124">Օգտագործվում է ըստ կանխադրման</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">Կապի հաստատում ֆինանսական հաստատության հետ…</translation>
 <translation id="8624354461147303341">Ստանալ զեղչեր</translation>
@@ -5077,7 +5086,6 @@
 <translation id="950926967802086924">Մուտքի բանալի • Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="955429569736351433">Տրամադրվել է VR-ի օգտագործման թույլտվություն</translation>
 <translation id="955627189349169688">Դուք կարող եք անջատել այս գործառույթը <ph name="BEGIN_LINK" />Chrome Sync-ի կարգավորումներում<ph name="END_LINK" />։</translation>
-<translation id="95676157383774931">ԱԲ ռեժիմի կոճակ, ակտիվացրեք՝ Google-ի ԱԲ ռեժիմին հարցնելու համար</translation>
 <translation id="95721182352849470">Դեղին 2</translation>
 <translation id="961663415146723894">Ամրակար ներքևում</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>

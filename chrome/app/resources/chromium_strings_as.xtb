@@ -167,7 +167,6 @@
 <translation id="2846251086934905009">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে: ইনষ্টলাৰটোৱে সম্পূৰ্ণ কৰিব নোৱাৰিলে। ইনষ্টলেশ্বনটো বন্ধ কৰি দিয়া হৈছে।</translation>
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
 <translation id="2850691299438350830">আপোনাক Chromiumত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে</translation>
-<translation id="2856481144859256719">Google Searchৰ শ্বৰ্টকাটত সদায় AI ম’ড দেখুৱাওক</translation>
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromiumৰ বিষয়ে</translation>
 <translation id="2915996080311180594">পাছত ৰিষ্টাৰ্ট কৰক</translation>
@@ -629,6 +628,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8359544530202147897">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ কৰি থাকিবলৈ Chromium আপডে'ট কৰক, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক Windows 10 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে Windows 8 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="8362914115861174987">এই ভাষাটোলৈ অনুবাদ কৰক</translation>
+<translation id="8367705492654390392">যিকোনো প্ৰশ্ন সোধক</translation>
 <translation id="8370517070665726704">স্বত্বাধিকাৰ <ph name="YEAR" /> Google LLC। সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="8372327902843331129">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱৰ্ড আৰু অধিক পাবলৈ, Chromiumত ছাইন ইন কৰক। এই পাছৱৰ্ডটো আপোনাৰ Google একাউণ্টত আপুনি ছাইন ইন কৰাৰ পাছত ছেভ কৰা হ’ব।</translation>
 <translation id="837460953767177950">আপুনি তাৰ পাছত Chromium ৰিষ্টাৰ্ট কৰিব লাগিব।</translation>

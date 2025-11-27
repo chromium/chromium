@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>
 <translation id="2847479871509788944">Chromiumist eemaldamine ...</translation>
 <translation id="2850691299438350830">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
-<translation id="2856481144859256719">Kuva Google'i otsingus alati AI-režiimi otsetee</translation>
 <translation id="2885378588091291677">Tegumihaldur</translation>
 <translation id="2910007522516064972">Teave &amp;Chromiumi kohta</translation>
 <translation id="2915996080311180594">Taaskäivita hiljem</translation>
@@ -627,6 +626,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8359544530202147897">Värskendage Chromium, et jätkata Chromiumi andmete kasutamist oma Google'i kontol <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>
 <translation id="8362914115861174987">Tõlke sihtkeel</translation>
+<translation id="8367705492654390392">Küsige midagi</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8372327902843331129">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chromiumi. See parool salvestatakse pärast sisselogimist teie Google'i kontole.</translation>
 <translation id="837460953767177950">Seejärel peate Chromiumi taaskäivitama.</translation>

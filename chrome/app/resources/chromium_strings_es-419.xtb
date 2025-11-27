@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Error de instalación: No se completó el instalador. Se anuló la instalación.</translation>
 <translation id="2847479871509788944">Eliminar de Chromium…</translation>
 <translation id="2850691299438350830">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
-<translation id="2856481144859256719">Mostrar siempre el acceso directo al Modo IA en la Búsqueda de Google</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2910007522516064972">Acerca de &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
@@ -621,6 +620,7 @@
 <translation id="8359544530202147897">Actualiza Chromium para seguir usando los datos de Chromium en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para obtener las próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 8.</translation>
 <translation id="8362914115861174987">Traducir al</translation>
+<translation id="8367705492654390392">Haz una pregunta</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8372327902843331129">Para acceder a tus contraseñas y más en todos tus dispositivos, accede a Chromium. Esta contraseña se guardará en tu Cuenta de Google después de que accedas.</translation>
 <translation id="837460953767177950">Luego, deberás reiniciar Chromium.</translation>

@@ -8374,6 +8374,45 @@ Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usar
 <translation id="6412793408912788345">Mostrar a tela inicial do Gemini durante o login</translation>
 <translation id="6416506846917150119">Desativar a escrita preditiva do teclado físico quando os usuários digitarem</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
+<translation id="6417827417523888006">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjuntos de sites relacionados.
+
+Ela substitui a política <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Cada item na lista do navegador precisa atender aos requisitos de um conjunto de sites relacionados.
+O conjunto de sites relacionados precisa conter um site primário e um ou mais sites membros.
+Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
+Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como o <ph name="PRODUCT_NAME" /> usa conjuntos de sites relacionados.
+
+
+Todos os sites em um conjunto de sites relacionados precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto também precisa ser único,
+ou seja, um site não pode ser listado mais de uma vez em um conjunto de sites relacionados.
+
+Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos de sites relacionados.
+
+Para todos os sites em um conjunto de sites relacionados da lista <ph name="REPLACEMENTS" />, se o site também estiver presente
+em um dos conjuntos na lista do navegador, ele será removido desse conjunto.
+Em seguida, o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
+
+Para todos os sites de um conjunto de sites relacionados na lista <ph name="ADDITIONS" />, se o site também estiver presente
+em um conjunto na lista do navegador, esse conjunto será atualizado para que o
+novo conjunto de sites relacionados possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
+
+A lista de conjuntos de sites relacionados do navegador exige que nenhum dos sites na lista esteja em
+mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
+<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
+
+Caracteres curinga (*) não podem ser usados como valor da política, nem dentro de qualquer conjunto de sites relacionados nessas listas.
+
+Todos os conjuntos fornecidos pela política precisam ser conjuntos de sites relacionados válidos. Se não forem,
+um erro será gerado.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação dos conjuntos de sites relacionados.</translation>
 <translation id="6419001911253110938">Ativar a exibição da tela inicial para recursos de IA na sessão durante o fluxo de login</translation>
 <translation id="6421254653839955267">Ativar a política faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
 
@@ -11918,6 +11957,15 @@ o esquema https.</translation>
 <translation id="8734543507835977857">Iniciar atrasos no gerenciamento de energia e limites de duração da sessão no início dela</translation>
 <translation id="8736538322216687231">Aplicar o Modo restrito mínimo do YouTube</translation>
 <translation id="873800217865395140">Frequência (em milissegundos) de coleta da telemetria de uso do site.</translation>
+<translation id="8742596277791362306">Esta política permite controlar a ativação do recurso de conjuntos de sites relacionados.
+
+Ela substitui a política <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Quando a política for deixada sem definição ou for definida como verdadeira, o recurso de conjuntos de sites relacionados será ativado.
+
+Quando ela for definida como falsa, o recurso de conjuntos de sites relacionados será desativado.
+
+Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação dos conjuntos de sites relacionados.</translation>
 <translation id="8743149927570551353">Configurar a disponibilidade da ferramenta de transferência de conteúdo do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Permitir pesquisas da Navegação segura</translation>
 <translation id="8744844164152340112">Controla o tema usado para renderizar a interface na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).

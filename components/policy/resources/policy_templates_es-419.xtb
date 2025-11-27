@@ -8383,6 +8383,45 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 <translation id="6412793408912788345">Mostrar la pantalla de presentación de Gemini durante el acceso</translation>
 <translation id="6416506846917150119">Inhabilitar la escritura predictiva en el teclado físico cuando los usuarios escriben</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
+<translation id="6417827417523888006">Esta política proporciona una forma de anular la lista de conjuntos que el navegador usa para las funciones de Conjuntos de sitios web relacionados.
+
+Esta política anula la política <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Cada conjunto de la lista de Conjuntos de sitios web relacionados del navegador debe cumplir con los requisitos de un Conjunto de sitios web relacionados.
+Un Conjunto de sitios web relacionados debe contener un sitio principal y uno o más sitios miembros.
+Un conjunto también puede contener una lista de sitios de servicio de su propiedad, así como un mapa de un sitio a todas sus variantes de ccTLD.
+Consulta https://github.com/WICG/first-party-sets para obtener más información sobre la forma en que <ph name="PRODUCT_NAME" /> usa los Conjuntos de sitios web relacionados.
+
+
+Todos los sitios de un Conjunto de sitios web relacionados deben ser un dominio registrable de HTTPS. Además, cada sitio en un Conjunto de sitios web relacionados debe ser único.
+Esto quiere decir que un sitio no puede estar enumerado más de una vez en un Conjunto de sitios web relacionados.
+
+Cuando se proporciona un diccionario vacío a esta política, el navegador utiliza la lista pública de Conjuntos de sitios web relacionados.
+
+Para todos los sitios de un Conjunto de sitios web relacionados de la lista <ph name="REPLACEMENTS" />, si un sitio también está presente
+en un Conjunto de sitios web relacionados de la lista del navegador, ese sitio se quitará del conjunto.
+Luego, el Conjunto de sitios web relacionados de la política se agregará a la lista de Conjuntos de sitios web relacionados del navegador.
+
+Para todos los sitios de un Conjunto de sitios web relacionados de la lista <ph name="ADDITIONS" />, si el sitio también está
+en un Conjunto de sitios web relacionados de la lista del navegador, ese conjunto se actualizará para que
+el nuevo Conjunto de sitios web relacionados pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
+el Conjunto de sitios web relacionados de la política se agregará a la lista de Conjuntos de sitios web relacionados del navegador.
+
+La lista de Conjuntos de sitios web relacionados del navegador requiere que ningún sitio de la lista esté en
+más de un conjunto. Este también es un requisito para las listas <ph name="REPLACEMENTS" />
+y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
+las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
+
+Los comodines (*) no se admiten como valor de la política, ni en ningún Conjunto de sitios web relacionados en estas listas.
+
+Todos los conjuntos que brinda la política deben ser Conjuntos de sitios web relacionados válidos. De lo contrario, se
+producirá un error.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Esta política dejará de estar disponible a partir de la versión 144 de <ph name="PRODUCT_NAME" /> con la baja de los Conjuntos de sitios web relacionados.</translation>
 <translation id="6419001911253110938">Habilitar que se muestre la pantalla de presentación de las funciones basadas en IA en la sesión durante el flujo de acceso</translation>
 <translation id="6421254653839955267">Si habilitas la política, se omitirá la búsqueda de CNAME. Se usará el nombre del servidor tal como se haya introducido al generar el SPN de Kerberos.
 
@@ -11956,6 +11995,15 @@ el esquema https.</translation>
 <translation id="8734543507835977857">Iniciar los tiempos de espera para la administración de la energía y los límites de la extensión de la sesión al inicio de la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido mínimo en YouTube</translation>
 <translation id="873800217865395140">Tasa de recopilación de telemetría de sitios web en milisegundos</translation>
+<translation id="8742596277791362306">Esta política permite controlar la habilitación de la función Conjuntos de sitios web relacionados.
+
+Esta política anula la política <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Si no la estableces o la estableces como verdadera, se habilitará la función Conjuntos de sitios web relacionados.
+
+Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios web relacionados.
+
+Esta política dejará de estar disponible a partir de la versión 144 de <ph name="PRODUCT_NAME" /> con la baja de los Conjuntos de sitios web relacionados.</translation>
 <translation id="8743149927570551353">Configurar en qué momento estará disponible la herramienta Transferencia de contenido de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Permitir encuestas de Navegación segura</translation>
 <translation id="8744844164152340112">Controla el tema que se usa para renderizar la IU durante la OOBE y en la sesión (oscuro, claro o automático).

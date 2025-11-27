@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">源语言</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
 <translation id="2853415089995957805">Chrome 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
-<translation id="2856481144859256719">始终显示“Google 搜索中的 AI 模式”快捷方式</translation>
 <translation id="2857540653560290388">正在启动 Chrome…</translation>
 <translation id="286025080868315611">了解 Chrome 为何会拦截部分下载内容</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">询问 Google</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8366770919198174997">降低性能，但提高 Chrome 防范攻击的能力</translation>
+<translation id="8367705492654390392">请提出任何问题</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8377158135256176353">在 Chrome Canary 版中开启/关闭 Gemini</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>

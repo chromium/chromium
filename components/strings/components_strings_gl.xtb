@@ -693,6 +693,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Móstranse en orde aleatoria. Podes cambiar a túa opción predeterminada cando queiras.</translation>
 <translation id="2137891579555018930">Agardando polo permiso…</translation>
 <translation id="213826338245044447">Marcadores para móbiles</translation>
@@ -912,6 +913,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2452837234288608067">Non che puidemos axudar con iso. Téntao de novo.</translation>
 <translation id="2453045048779611513">A túa organización limita o que podes gardar</translation>
 <translation id="2456755709261364512">Debes cargar a batería máis dun <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2459882793359532780">Políticas do navegador aplicadas (políticas do dispositivo e do perfil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ofréceche unha ferramenta centralizada para configurar as políticas do navegador desde a nube</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Redes sociais</translation>
@@ -1123,6 +1125,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2826760142808435982">A conexión cífrase e autentícase con <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
 <translation id="2833637280516285136">Faladoiros radiofónicos</translation>
 <translation id="2835170189407361413">Borrar formulario</translation>
+<translation id="2835907903001172712">Vista xeral do navegador</translation>
 <translation id="2837891525090413132">Pode pedir permiso para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
 <translation id="2839501879576190149">O sitio ao que te dirixes é falso</translation>
@@ -1557,6 +1560,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3543935938072367282">Paga de xeito máis rápido coa función de autocompletar</translation>
 <translation id="3547442767634383572">A vista xeral do perfil de traballo</translation>
 <translation id="3547746132308051926">20 x 24 polgadas</translation>
+<translation id="3549904448933807997">Información dos navegadores e perfís (incluídos os persoais e de traballo)</translation>
 <translation id="3552155506104542239">Advertencia: Esta política está en conflito con <ph name="POLICY_NAME" />, polo que non terá ningún efecto nas aplicacións para Android. Polo resto, funciona do xeito previsto.</translation>
 <translation id="3552297013052089404">Tipo de letra sen serifas</translation>
 <translation id="3558573058928565255">Hora do día</translation>
@@ -2398,6 +2402,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4887406273302438710">Protexe os contrasinais con Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para eliminar o historial de navegación, as cookies, a memoria caché e outros datos desde a configuración de Chrome</translation>
 <translation id="4892518386797173871">Traseira</translation>
+<translation id="4894390983254799375">Por exemplo, o código e o nome do dispositivo, así como a versión e o nome de usuario do sistema operativo</translation>
 <translation id="4895019427244614047">Eliminar enderezo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Xogos Olímpicos</translation>
@@ -2835,6 +2840,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5593349413089863479">A conexión non é totalmente segura</translation>
 <translation id="5593640815048812868">Ordenadores portátiles e notebooks</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
+<translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5596939519753369075">2 x 3,5 polgadas</translation>
 <translation id="5597254438174353289">Azul 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
@@ -2933,6 +2939,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5764920692828389743">Envíanse a: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>
 <translation id="57689295674415555">Non se autocompletou o número da tarxeta virtual?</translation>
+<translation id="5773286975255318081">Por exemplo, os nomes de usuario dos perfís e as versións dos navegadores</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="577804500166306874">Cargando resultados</translation>
 <translation id="5781136890105823427">O experimento está activado</translation>
@@ -3239,7 +3246,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6284449872909111707">Mensaxaría instantánea e de texto</translation>
 <translation id="6284517535531159884">Tipo de orixe das variacións</translation>
 <translation id="6287197303017372967">Obter indicacións paso a paso ata o teu destino mediante a función de navegación.</translation>
-<translation id="6288559570252410796">Facer preguntas ao modo IA de Google</translation>
 <translation id="628877850550444614">Desconto atopado</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6292819926564202163">O teu buscador en Chrome</translation>
@@ -3547,6 +3553,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6772959465807028761">Para usar YouTube, continúa coa túa Conta de Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa YouTube coas opcións definidas por quen che supervisa a conta</translation>
+<translation id="6779290995699117286">Quen che administra a conta pode acceder ao perfil, ao navegador e á información do dispositivo. Pode ver o seguinte:</translation>
 <translation id="6779348349813025131">O xestor de contrasinais de Google necesita permiso para acceder a MacOS Keychain</translation>
 <translation id="6780449997190414928">Adoitas conectarte a este sitio de maneira segura, pero desta vez Chrome non puido usar unha conexión segura. É posible que un atacante estea tentando espiar ou modificar a túa conexión de rede. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Podes cambiar o buscador en calquera momento na configuración de Chrome.</translation>
@@ -3710,6 +3717,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7035705295266423040">O teu banco quere verificar a túa identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de privacidade da túa Conta de Google, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="7040230719604914234">Operador</translation>
 <translation id="7042465939346919737">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións de pago aprazado. Para ocultalas, vai á <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Filtrar os resultados</translation>
 <translation id="7043552168914147882">Separador con pestana</translation>
@@ -4392,6 +4400,7 @@ Detalles adicionais:
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creouse hai 1 mes}other{Creouse hai {NUM_MONTHS} meses}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, buscador predeterminado actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="815036624016370447">A información da túa Conta de Google (<ph name="ACCOUNT" />) pode axudarche a completar formularios máis rápido en Chrome</translation>
@@ -4506,7 +4515,6 @@ Detalles adicionais:
 <translation id="831997045666694187">Serán</translation>
 <translation id="8321448084834652864">Podes cambiar o buscador en calquera momento na configuración de Chromium.</translation>
 <translation id="8321476692217554900">notificacións</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer preguntas ao modo IA de Google</translation>
 <translation id="8322402665880479974">Camas e cabeceiras</translation>
 <translation id="8323505966575306467">Engade máis protección aos teus contrasinais</translation>
 <translation id="832547548543012337">Eliminar o pasaporte</translation>
@@ -4681,6 +4689,7 @@ Detalles adicionais:
 <translation id="8606988009912891950">Os temas de anuncios axudan a que os sitios che mostren anuncios relevantes protexendo o teu historial de navegación e a túa identidade. Chrome pode tomar nota dos temas de interese en función do teu historial de navegación recente. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre os temas relevantes para personalizar os anuncios que se che mostren.</translation>
 <translation id="8612919051706159390">Comunidades en liña</translation>
 <translation id="8617269623452051934">uso do dispositivo</translation>
+<translation id="8619130384334725124">Predeterminado actual</translation>
 <translation id="8620276786115098679">Sobre Kaku-7</translation>
 <translation id="8622864575115813231">Contactando coa túa entidade financeira...</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
@@ -4758,6 +4767,7 @@ Detalles adicionais:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">contido inserido</translation>
 <translation id="8757526089434340176">Hai unha oferta de Google Pay dispoñible</translation>
+<translation id="8758529215314160755">Podes editar o teu nome na túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Esta tarxeta caducou</translation>
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -5068,7 +5078,6 @@ Detalles adicionais:
 <translation id="950926967802086924">Clave de acceso • Xestor de contrasinais de Google</translation>
 <translation id="955429569736351433">RV permitida</translation>
 <translation id="955627189349169688">Podes desactivar esta política na <ph name="BEGIN_LINK" />configuración de Sincronización de Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Botón do modo IA, activar para facer preguntas ao modo IA de Google</translation>
 <translation id="95721182352849470">Amarelo 2</translation>
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>

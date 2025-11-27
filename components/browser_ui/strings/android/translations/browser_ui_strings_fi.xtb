@@ -225,6 +225,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3368138297038111198">Jaetaan ikkunaa</translation>
 <translation id="3386292677130313581">Pyydä lupaa, kun sivustot yrittävät käyttää sijaintiasi (suositus).</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="3435896845095436175">Ota käyttöön</translation>
 <translation id="344449859752187052">Kolmannen osapuolen evästeet estetty</translation>
 <translation id="3448554387819310837">Kun tämä on päällä, sivustot voivat pyytää lupaa kameran käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää kameraasi.</translation>
 <translation id="3491678231052507920">Sivustot käyttävät yleensä virtuaalitodellisuuslaitteita ja ‑dataa VR-käyttökertojen luomiseen</translation>
@@ -342,6 +343,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
 <translation id="4676059169848868271">Salli, että <ph name="APP_NAME" /> voi seurata käsien liikettä, laittamalla käsien liikkeen seuranta päälle myös <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Korttien ylläpito</translation>
 <translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
 <translation id="4755971844837804407">Kun tämä on päällä, sivustot voivat näyttää sinulle mitä tahansa mainoksia. Kun tämä on pois päältä, sivustoilla ei voi näkyä häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="4779083564647765204">Lähennä</translation>

@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">Перакласці з наступнай мовы:</translation>
 <translation id="2846251086934905009">Адбылася памылка. Усталёўшчык не завяршыў працу. Усталяванне перарвана.</translation>
 <translation id="2853415089995957805">Chrome перадзагружае старонкі, на якія вы з высокай імавернасцю можаце перайсці, каб яны адкрыліся хутчэй, калі вы іх наведаеце</translation>
-<translation id="2856481144859256719">Заўсёды паказваць ярлык "Рэжыму AI" ў Google Пошуку</translation>
 <translation id="2857540653560290388">Ідзе запуск Chrome...</translation>
 <translation id="286025080868315611">Даведацца, чаму Chrome блакіруе некаторыя спампоўкі</translation>
 <translation id="2861074815332034794">Ідзе абнаўленне браўзера Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@
 <translation id="835927394551949760">Запытацца ў Google</translation>
 <translation id="8362914115861174987">Мова перакладу:</translation>
 <translation id="8366770919198174997">Зніжае прадукцыйнасць, але павышае ўстойлівасць Chrome супраць атак</translation>
+<translation id="8367705492654390392">Задайце любое пытанне</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="8377158135256176353">Уключыць/выключыць Gemini ў Chrome Canary</translation>
 <translation id="8387459386171870978">Працягнуць работу ў Chrome</translation>

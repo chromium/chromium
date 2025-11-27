@@ -1260,6 +1260,7 @@
 <translation id="184273675144259287">以先前的備份取代你的 Linux 應用程式和檔案</translation>
 <translation id="1842766183094193446">確定要啟用展示模式嗎？</translation>
 <translation id="1843048149176045210">複製下載連結</translation>
+<translation id="1843347690926158494">使用 Google 智慧鏡頭搜尋這個分頁</translation>
 <translation id="1845060436536902492">ChromeVox 是 ChromeOS Flex 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="1845727111305721124">可以播放音效</translation>
 <translation id="1846308012215045257">按下 Ctrl 鍵並點選即可執行「<ph name="PLUGIN_NAME" />」</translation>
@@ -1576,7 +1577,6 @@
 <translation id="2061589908388230480">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動變更密碼的功能<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">如果不希望系統在你使用網路時儲存你的瀏覽記錄，請使用無痕視窗</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與目前瀏覽的網站相同</translation>
-<translation id="2065405795449409761">Chrome 目前受到自動測試軟體控制。</translation>
 <translation id="2066700471214517561">使用波束成形麥克風，讓 Chromebook 使用者的聲音清晰可辨。</translation>
 <translation id="206960706005837784">「<ph name="APP_NAME" />」已在「<ph name="PRINTER_NAME" />」完成列印</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
@@ -1642,6 +1642,7 @@
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2106439768713835453">一併分享應用程式音訊</translation>
+<translation id="2107359546799360577">JavaScript 最佳化功能已停用。</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
 <translation id="2109384632594340939">個人資料相片</translation>
@@ -2058,6 +2059,7 @@
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">標準字型</translation>
 <translation id="2391805183137601570">開啟 Steam</translation>
+<translation id="239185270194776190">Gemini 對話位於另一個視窗。點選這個側邊面板的任一處，即可將對話移到這裡。</translation>
 <translation id="2392369802118427583">啟用</translation>
 <translation id="2393136602862631930">在你的 Chromebook 上設定「<ph name="APP_NAME" />」</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 條款內容</translation>
@@ -3764,6 +3766,7 @@
 <translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
+<translation id="358381413217813387">使用 Google 智慧鏡頭搜尋這個頁面</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586741240886978899">你在這個網站上使用過</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
@@ -4263,6 +4266,7 @@
 <translation id="3893536212201235195">讀取及變更你的無障礙設定</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">如要將書籤儲存到帳戶，請刪除未使用的書籤</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3895076768659607631">管理搜尋引擎...(&amp;M)</translation>
 <translation id="3895090224522145010">Kerberos 使用者名稱</translation>
@@ -4987,6 +4991,7 @@
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406308048672435032">你可以將這個分頁設為閒置，或重新整理以便再次查看完整清單</translation>
 <translation id="4406883609789734330">即時字幕</translation>
+<translation id="4406963243402726564">資料未儲存</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理員可以使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面，開始錄製時，你會收到通知。}=2{管理員可以使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面，開始錄製時，你會收到通知。}=3{系統管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}other{管理員可以使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面，開始錄製時，你會收到通知。}}</translation>
@@ -6871,6 +6876,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網路共用完備性</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
+<translation id="5755101376452091923">你可以前往 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /> (<ph name="USERNAME" />) 編輯姓名</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>
@@ -7230,7 +7236,6 @@
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="5998458948782718639">協助改善自動填入功能</translation>
 <translation id="5998976983953384016">確認並啟用</translation>
-<translation id="5999024481231496910">你已啟用淘汰測試用第三方 Cookie 的功能，而且無法在「設定」頁面中覆寫這項功能的設定。如要重新啟用第三方 Cookie，請停用這項功能並重新啟動 Chrome。</translation>
 <translation id="5999630716831179808">語音</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6001052984304731761">登入帳戶，允許 Chrome 提供分頁群組建議</translation>
@@ -7422,6 +7427,7 @@
 <translation id="6135826623269483856">不允許管理所有螢幕上的視窗</translation>
 <translation id="6136285399872347291">Backspace 鍵</translation>
 <translation id="6136287496450963112">你的安全金鑰未設定 PIN 碼保護，如要管理指紋，請先建立 PIN 碼。</translation>
+<translation id="6136637346277431354">新增分頁和其他項目</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽章</translation>
 <translation id="6140948187512243695">顯示詳細資訊</translation>
 <translation id="6141988275892716286">確認下載</translation>
@@ -7652,7 +7658,6 @@
 <translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="6287288864483377583">僅支援匯入單一憑證</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">問問 Google AI 模式</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">儲存空間不足，因此無法復原。</translation>
 <translation id="6291741848715722067">確認碼</translation>
@@ -9502,6 +9507,7 @@
 <translation id="760197030861754408">如要連線，請前往 <ph name="LANDING_PAGE" />。</translation>
 <translation id="7602079150116086782">沒有在其他裝置上開啟的分頁</translation>
 <translation id="7602173054665172958">列印管理</translation>
+<translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
 <translation id="7603785829538808504">下列網站採用自訂設定</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{未匯入 1 組密碼}other{未匯入 {NUM_PASSWORDS} 組密碼}}</translation>
 <translation id="7605163396341021431">授權 Android 應用程式控制這台 Chromebook 上的 USB 裝置</translation>

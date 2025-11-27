@@ -2176,6 +2176,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4506599922270137252">Skontaktuj się z administratorem systemu</translation>
 <translation id="450710068430902550">Udostępnianie administratorowi</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by Tłumacz Google przetłumaczył tę stronę.</translation>
+<translation id="4510703642214459906">Obiekt</translation>
 <translation id="4515275063822566619">Karty i adresy pochodzą z Chrome i Twojego konta Google (<ph name="ACCOUNT_EMAIL" />). Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikrosamochody i samochody subkompaktowe</translation>
 <translation id="451601984112574365">Zielony 3</translation>
@@ -2840,6 +2841,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5593349413089863479">Połączenie nie jest całkiem bezpieczne</translation>
 <translation id="5593640815048812868">Laptopy i notebooki</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
+<translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5596939519753369075">2 x 3,5 cala</translation>
 <translation id="5597254438174353289">Niebieski 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> lub <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3247,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6284449872909111707">Wiadomości tekstowe i czat</translation>
 <translation id="6284517535531159884">Typ materiału wyjściowego dla odmian</translation>
 <translation id="6287197303017372967">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji.</translation>
-<translation id="6288559570252410796">Tryb AI od Google</translation>
 <translation id="628877850550444614">Znaleziono rabat</translation>
 <translation id="6289939620939689042">Kolor strony</translation>
 <translation id="6292819926564202163">Twoja wyszukiwarka w Chrome</translation>
@@ -3717,6 +3718,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
 <translation id="7035705295266423040">Bank chce zweryfikować Twoją tożsamość.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami prywatności konta Google, naciśnij Tab, a potem Enter</translation>
+<translation id="7040230719604914234">Operator</translation>
 <translation id="7042465939346919737">Aby oferować te opcje, Google używa informacji ze strony płatności i innych odpowiednich danych. Aby ukryć opcje płatności odroczonej, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Zawęź wyniki</translation>
 <translation id="7043552168914147882">Woskowany papier z naklejkami</translation>
@@ -4371,6 +4373,7 @@ Dodatkowe informacje:
 <translation id="8077669823243888800">Koperta chińska nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Przesłać poufny plik?}few{Przesłać poufne pliki?}many{Przesłać poufne pliki?}other{Przesłać poufne pliki?}}</translation>
 <translation id="8079031581361219619">Załadować ponownie stronę?</translation>
+<translation id="8079591184016291275">Nazwa zdarzenia</translation>
 <translation id="8079976827192572403">Niebezpieczna strona</translation>
 <translation id="8081087320434522107">Sedany</translation>
 <translation id="8086429410809447605">Odzież damska</translation>
@@ -4515,7 +4518,6 @@ Dodatkowe informacje:
 <translation id="831997045666694187">Wieczorem</translation>
 <translation id="8321448084834652864">W każdej chwili możesz zmienić wyszukiwarkę w Chromium.</translation>
 <translation id="8321476692217554900">powiadomienia</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Enter, aby zapytać w Trybie AI od Google</translation>
 <translation id="8322402665880479974">Łóżka i wezgłowia</translation>
 <translation id="8323505966575306467">Dodaj więcej zabezpieczeń do haseł</translation>
 <translation id="832547548543012337">Usuń paszport</translation>
@@ -5078,7 +5080,6 @@ Dodatkowe informacje:
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
 <translation id="955429569736351433">Przyznano dostęp do rzeczywistości wirtualnej</translation>
 <translation id="955627189349169688">Możesz zrezygnować z tej zasady w <ph name="BEGIN_LINK" />ustawieniach Synchronizacji Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Przycisk trybu AI; aktywuj, aby zapytać w Trybie AI od Google</translation>
 <translation id="95721182352849470">Żółty 2</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>

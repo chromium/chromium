@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
 <translation id="2850691299438350830">Štiti vas na Chromiumu i može se upotrebljavati za poboljšanje sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
-<translation id="2856481144859256719">Uvijek prikaži prečac za AI način na Google pretraživanju</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O pregledniku &amp;Chromium</translation>
 <translation id="2915996080311180594">Ponovo pokreni kasnije</translation>
@@ -627,6 +626,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8359544530202147897">Ažurirajte Chromium kako biste nastavili upotrebljavati podatke iz Chromiuma na svojem Google računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.</translation>
 <translation id="8362914115861174987">Jezik prijevoda</translation>
+<translation id="8367705492654390392">Pitajte bilo što</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="8372327902843331129">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chromium. Zaporka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
 <translation id="837460953767177950">Tada ćete morati ponovo pokrenuti Chromium.</translation>

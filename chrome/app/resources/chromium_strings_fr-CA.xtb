@@ -166,7 +166,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2846251086934905009">Erreur d'installation : le programme d'installation n'a pas été terminé. L'installation a été annulée.</translation>
 <translation id="2847479871509788944">Supprimer de Chromium...</translation>
 <translation id="2850691299438350830">Il vous protège dans Chromium et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
-<translation id="2856481144859256719">Toujours afficher le raccourci du mode IA dans Recherche Google</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2910007522516064972">À propos de &amp;Chromium</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
@@ -628,6 +627,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8359544530202147897">Mettez à jour Chromium pour continuer à utiliser les données Chromium dans votre compte Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Pour recevoir les futures mises à jour de Chromium, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.</translation>
 <translation id="8362914115861174987">Langue cible</translation>
+<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8372327902843331129">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chromium. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
 <translation id="837460953767177950">Vous devrez ensuite redémarrer Chromium.</translation>

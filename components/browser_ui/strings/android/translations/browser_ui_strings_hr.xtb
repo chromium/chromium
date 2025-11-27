@@ -225,6 +225,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3368138297038111198">Dijeljenje prozora</translation>
 <translation id="3386292677130313581">Web-lokacije moraju tražiti dopuštenje za pristup lokaciji (preporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="3435896845095436175">Omogući</translation>
 <translation id="344449859752187052">Blokirani su kolačići trećih strana</translation>
 <translation id="3448554387819310837">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu kamere. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati kameru.</translation>
 <translation id="3491678231052507920">Web-lokacije obično upotrebljavaju uređaje i podatke virtualne stvarnosti da bi vam omogućile pristup VR sesijama</translation>
@@ -679,6 +680,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="848952951823693243">Uvijek zahtijevaj web-lokaciju za mobilne uređaje</translation>
 <translation id="8492822722330266509">Web-lokacije mogu slati skočne prozore i upotrebljavati preusmjeravanja</translation>
+<translation id="8493548450030356203">Skočni prozor za zumiranje</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>
 <translation id="8514955299594277296">Web-lokacijama nije dopušteno spremati podatke na vaš uređaj (ne preporučuje se)</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>

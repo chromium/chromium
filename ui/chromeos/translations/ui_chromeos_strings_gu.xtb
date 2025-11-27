@@ -72,7 +72,7 @@
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1576937952766665062">બંગાળી (લિપ્યંતર)</translation>
 <translation id="1577977504532381335">ઍડમિન પૉલિસી રિવ્યૂ કરો</translation>
-<translation id="158849752021629804">હોમ નેટવર્કની આવશ્યકતા છે</translation>
+<translation id="158849752021629804">ઘરના નેટવર્કની આવશ્યકતા છે</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
 <translation id="5605830556594064952">યુએસ ડ્વોરેક</translation>
+<translation id="560739212255190568">તમારા ઍડમિને નીચેના પ્રૉક્સીને લાગુ કરવા ઉપરાંત પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કર્યા છે</translation>
 <translation id="5618330573454123917">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. ChromeOS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
@@ -801,7 +802,7 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ફાઇલના રૂપમાં સાચવો</translation>
-<translation id="7229570126336867161">EVDO ની જરૂર છે</translation>
+<translation id="7229570126336867161">EVDOની જરૂર છે</translation>
 <translation id="7230898482850090046">તમારા ઍડમિનિસ્ટ્રેટરે તમને "સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરવાની વિનંતી કરી છે</translation>
 <translation id="7238097264433196391">ડ્રાઇવનું નામ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, વિગતો</translation>
@@ -993,6 +994,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="8545476925160229291">અંગ્રેજી (યુએસ)</translation>
 <translation id="854655314928502177">વેબ પ્રૉક્સીની ઑટો ખોજ URL:</translation>
+<translation id="8547747809824590510">તમારા ઍડમિન દ્વારા પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કરવામાં આવ્યા છે</translation>
 <translation id="8549186985808798022">ઇટાલિયન</translation>
 <translation id="8551494947769799688">લાતવિયન</translation>
 <translation id="8560515948038859357">કેન્ટોનીઝ</translation>
@@ -1053,6 +1055,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
 <translation id="9065512565307033593">જો તમે ચકાસણી કરવામાં નિષ્ફળ રહ્યાં, તો તમારા નેટવર્કનો ઍક્સેસ બંધ થઈ જશે.</translation>
+<translation id="9079844694307518094">તમારા ઍડમિન નીચેના પ્રૉક્સીને લાગુ કરી રહ્યાં છે</translation>
 <translation id="908378762078012445">રશિયન, ફોનેટિક AATSEEL કીબોર્ડ સાથે</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>

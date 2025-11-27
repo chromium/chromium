@@ -168,7 +168,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2841525013647267359">Přeložit z jazyka</translation>
 <translation id="2846251086934905009">Chyba instalace: Instalační program nebyl dokončen. Instalace byla zrušena.</translation>
 <translation id="2853415089995957805">Chrome předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji.</translation>
-<translation id="2856481144859256719">Vždy zobrazovat zkratku režimu AI ve Vyhledávání Google</translation>
 <translation id="2857540653560290388">Spouštění Chromu...</translation>
 <translation id="286025080868315611">Přečtěte si, proč Chrome blokuje některá stahování</translation>
 <translation id="2861074815332034794">Aktualizace Chromu (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="835927394551949760">Zeptat se Googlu</translation>
 <translation id="8362914115861174987">Přeložit do jazyka</translation>
 <translation id="8366770919198174997">Snižuje výkon, ale zvyšuje odolnost Chromu proti útokům</translation>
+<translation id="8367705492654390392">Zeptejte se na cokoli</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8377158135256176353">Přepnout Gemini v Chromu Canary</translation>
 <translation id="8387459386171870978">Pokračovat v používání Chromu</translation>

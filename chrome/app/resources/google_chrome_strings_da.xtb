@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Oversæt fra</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
 <translation id="2853415089995957805">Chrome forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem</translation>
-<translation id="2856481144859256719">Vis altid genvejen til AI-tilstand i Google Søgning</translation>
 <translation id="2857540653560290388">Starter Chrome...</translation>
 <translation id="286025080868315611">Få flere oplysninger om, hvorfor Chrome blokerer visse downloads</translation>
 <translation id="2861074815332034794">Opdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -660,6 +659,7 @@
 <translation id="835927394551949760">Spørg Google</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8366770919198174997">Reducerer ydeevnen, men gør Chrome mere modstandsdygtig over for angreb</translation>
+<translation id="8367705492654390392">Stil et spørgsmål</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8377158135256176353">Slå Gemini i Chrome Canary til/fra</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>

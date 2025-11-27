@@ -2176,6 +2176,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4506599922270137252">kontakta systemadministratören</translation>
 <translation id="450710068430902550">Delad med en administratör</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill översätta den här sidan med Google Översätt</translation>
+<translation id="4510703642214459906">Scen</translation>
 <translation id="4515275063822566619">Kort och adresser har hämtats från Chrome och ditt Google-konto (<ph name="ACCOUNT_EMAIL" />). Du hanterar dessa under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikrobilar och mindre småbilar</translation>
 <translation id="451601984112574365">Grön 3</translation>
@@ -2840,6 +2841,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5593349413089863479">Anslutningen är inte helt säker</translation>
 <translation id="5593640815048812868">Laptops och notebook-datorer</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
+<translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5596939519753369075">2 x 3,5 tum</translation>
 <translation id="5597254438174353289">Blå 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> eller <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3247,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6284449872909111707">Sms och snabbmeddelanden</translation>
 <translation id="6284517535531159884">Typ av variantkälla</translation>
 <translation id="6287197303017372967">Få en detaljerad vägbeskrivning dit du ska med hjälp av navigeringsfunktionen.</translation>
-<translation id="6288559570252410796">Fråga Googles AI-läge</translation>
 <translation id="628877850550444614">En rabatt hittades</translation>
 <translation id="6289939620939689042">Sidfärg</translation>
 <translation id="6292819926564202163">Din sökmotor i Chrome</translation>
@@ -3717,6 +3718,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
 <translation id="7035705295266423040">Din bank vill verifiera din identitet</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Google-kontots integritetsinställningar</translation>
+<translation id="7040230719604914234">Operatör</translation>
 <translation id="7042465939346919737">Google använder information från kassasidan och annan relevant data för att erbjuda dessa alternativ. Gå till <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="7042616127917168121">Finjustera resultatet</translation>
 <translation id="7043552168914147882">Flikpapper</translation>
@@ -4371,6 +4373,7 @@ Mer information.
 <translation id="8077669823243888800">Kinesiskt nr 8-kuvert</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vill du ladda upp en konfidentiell fil?}other{Vill du ladda upp konfidentiella filer?}}</translation>
 <translation id="8079031581361219619">Vill du läsa in webbplatsen igen?</translation>
+<translation id="8079591184016291275">Evenemang</translation>
 <translation id="8079976827192572403">Farlig webbplats</translation>
 <translation id="8081087320434522107">Sedanbilar</translation>
 <translation id="8086429410809447605">Damkläder</translation>
@@ -4515,7 +4518,6 @@ Mer information.
 <translation id="831997045666694187">kvällen</translation>
 <translation id="8321448084834652864">Du kan när som helst ändra sökmotor i inställningarna för Chromium.</translation>
 <translation id="8321476692217554900">aviseringar</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Retur för att fråga Googles AI-läge</translation>
 <translation id="8322402665880479974">Sängar och huvudgavlar</translation>
 <translation id="8323505966575306467">Lägg till mer skydd för dina lösenord</translation>
 <translation id="832547548543012337">Radera pass</translation>
@@ -4769,6 +4771,7 @@ Mer information:
 <translation id="8755125092386286553">A4 x 9</translation>
 <translation id="875657606603537618">inbäddat innehåll</translation>
 <translation id="8757526089434340176">Ett Google Pay-erbjudande är tillgängligt</translation>
+<translation id="8758529215314160755">Du kan redigera ditt namn i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Kortets giltighetstid har löpt ut</translation>
 <translation id="87601671197631245">Den här webbplatsens säkerhetskonfiguration är inaktuell. Det kan leda till att dina uppgifter (t.ex. lösenord, meddelanden eller kreditkort) exponeras när de skickas till den här webbplatsen.</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
@@ -5079,7 +5082,6 @@ Mer information:
 <translation id="950926967802086924">Nyckel • Google Lösenordshantering</translation>
 <translation id="955429569736351433">VR tillåts</translation>
 <translation id="955627189349169688">Du kan välja bort denna princip i <ph name="BEGIN_LINK" />inställningarna för Chrome Sync<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Knapp för AI-läge, aktivera för att fråga Googles AI-läge</translation>
 <translation id="95721182352849470">Gul 2</translation>
 <translation id="961663415146723894">Bindning längst ned</translation>
 <translation id="961856697154696964">Radera webbinformation</translation>

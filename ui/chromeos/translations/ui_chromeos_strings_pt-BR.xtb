@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5602622065581044566">Búlgaro com teclado fonético</translation>
 <translation id="5605830556594064952">Dvorak americano</translation>
+<translation id="560739212255190568">Seu admin definiu regras de substituição de proxy além de aplicar o seguinte proxy</translation>
 <translation id="5618330573454123917">Esse arquivo foi criado para computadores que usam o software Macintosh. Ele não é compatível com seu dispositivo ChromeOS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no ChromeOS.</translation>
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se você mover esse item, ele será compartilhado com todos que podem ver a pasta compartilhada "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="8545476925160229291">Inglês (EUA)</translation>
 <translation id="854655314928502177">URL de descoberta automática de proxies da Web</translation>
+<translation id="8547747809824590510">Seu admin definiu regras de substituição de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letão</translation>
 <translation id="8560515948038859357">Cantonês</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">O arquivo chamado "<ph name="FILE_NAME" />" já existe. Escolha outro nome.</translation>
 <translation id="9046895021617826162">Falha na conexão</translation>
 <translation id="9065512565307033593">Se você não conseguir fazer a verificação, o acesso à rede será desativado.</translation>
+<translation id="9079844694307518094">Seu admin está aplicando o seguinte proxy</translation>
 <translation id="908378762078012445">Russo com teclado fonético AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

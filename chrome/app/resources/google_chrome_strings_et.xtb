@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">Tõlke lähtekeel</translation>
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>
 <translation id="2853415089995957805">Chrome eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
-<translation id="2856481144859256719">Kuva Google'i otsingus alati AI-režiimi otsetee</translation>
 <translation id="2857540653560290388">Chrome'i käivitamine …</translation>
 <translation id="286025080868315611">Vaadake, miks Chrome mõned allalaadimised blokeerib</translation>
 <translation id="2861074815332034794">Chrome’i värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -664,6 +663,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="835927394551949760">Google'ilt küsimine</translation>
 <translation id="8362914115861174987">Tõlke sihtkeel</translation>
 <translation id="8366770919198174997">Vähendab jõudlust, kuid muudab Chrome'i rünnakutele vastupidavamaks</translation>
+<translation id="8367705492654390392">Küsige midagi</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8377158135256176353">Gemini sisse- ja väljalülitamine Chrome Canarys</translation>
 <translation id="8387459386171870978">Jätkan Chrome'i kasutamist.</translation>

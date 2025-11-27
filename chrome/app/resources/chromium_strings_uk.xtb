@@ -165,7 +165,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2846251086934905009">Сталася помилка. Не вдалося завершити встановлення. Процес було скасовано.</translation>
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
 <translation id="2850691299438350830">Захищає вас у Chromium і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
-<translation id="2856481144859256719">Завжди показувати ярлик режиму ШІ в Пошуку Google</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
 <translation id="2915996080311180594">Перезапустити пізніше</translation>
@@ -627,6 +626,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8359544530202147897">Щоб і надалі використовувати дані Chromium в обліковому записі Google <ph name="ACCOUNT_EMAIL" />, оновіть вебпереглядач</translation>
 <translation id="8360718212975266891">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.</translation>
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
+<translation id="8367705492654390392">Поставте запитання</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="8372327902843331129">Щоб отримати доступ до паролів і інших даних на всіх пристроях, увійдіть у Chromium. Після входу цей пароль буде збережено в обліковому записі Google.</translation>
 <translation id="837460953767177950">Потім вам потрібно буде перезапустити Chromium.</translation>

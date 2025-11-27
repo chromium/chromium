@@ -1284,6 +1284,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5902752768726620872">{count,plural, =1{{count} bagong tab}one{{count} bagong tab}other{{count} na bagong tab}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Magdagdag nang hanggang 1 file, tab, o larawan}one{Magdagdag nang hanggang {COUNT} file, tab, o larawan}other{Magdagdag nang hanggang {COUNT} na file, tab, o larawan}}</translation>
 <translation id="5936006948844852401">Pamahalaan ang storage</translation>
 <translation id="5936065461722368675">Isalin ang buong page</translation>
 <translation id="5937560539988385583">Naisalin na ang page</translation>
@@ -1872,6 +1873,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8035133914807600019">Bagong folder…</translation>
 <translation id="8035412398498507358">Mga Larawan</translation>
+<translation id="8037713009824540257">Magdagdag ng Site</translation>
 <translation id="8040407350301524547">Para sa mga opsyon sa ruta, i-tap ang “Kumuha ng mga direksyon.”</translation>
 <translation id="804427445359061970">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="8058655154417507695">Taon ng pag-expire</translation>

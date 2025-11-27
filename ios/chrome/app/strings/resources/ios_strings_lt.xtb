@@ -1284,6 +1284,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5902752768726620872">{count,plural, =1{{count} naujas skirtukas}one{{count} naujas skirtukas}few{{count} nauji skirtukai}many{{count} naujo skirtuko}other{{count} naujų skirtukų}}</translation>
 <translation id="5911030830365207728">„Google“ vertėjas</translation>
 <translation id="5922999516621365983">Nuvilkite skirtuką čia, kad prisegtumėte.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Pridėkite ne daugiau kaip vieną failą, skirtuką arba vaizdą}one{Pridėkite ne daugiau kaip {COUNT} failą, skirtuką arba vaizdą}few{Pridėkite ne daugiau kaip {COUNT} failus, skirtukus arba vaizdus}many{Pridėkite ne daugiau kaip {COUNT} failo, skirtuko arba vaizdo}other{Pridėkite ne daugiau kaip {COUNT} failų, skirtukų arba vaizdų}}</translation>
 <translation id="5936006948844852401">Tvarkyti saugyklą</translation>
 <translation id="5936065461722368675">Versti visą puslapį</translation>
 <translation id="5937560539988385583">Puslapis išverstas</translation>
@@ -1872,6 +1873,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8032569120109842252">Stebima</translation>
 <translation id="8035133914807600019">Naujas aplankas…</translation>
 <translation id="8035412398498507358">Nuotraukos</translation>
+<translation id="8037713009824540257">Pridėti svetainę</translation>
 <translation id="8040407350301524547">Norėdami pamatyti maršruto parinktis, palieskite „Gauti nuorodų“.</translation>
 <translation id="804427445359061970">Čia bus rodomi skirtukai iš kitų įrenginių</translation>
 <translation id="8058655154417507695">Galiojimo laiko pabaigos metai</translation>

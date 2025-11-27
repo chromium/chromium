@@ -2836,6 +2836,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5593349413089863479">Aloqa butunlay xavfsiz emas</translation>
 <translation id="5593640815048812868">Laptoplar va noutbuklar</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
+<translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="5597254438174353289">Koʻk 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> yoki <ph name="ISSUER_2_NAME" /></translation>
@@ -3240,7 +3241,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6284449872909111707">Matnli va tezkor xabar almashish</translation>
 <translation id="6284517535531159884">Talqin turlari</translation>
 <translation id="6287197303017372967">Navigatsiya yordamida manzilgacha qadamli koʻrsatkichlarni oling.</translation>
-<translation id="6288559570252410796">Google AI rejimida soʻrash</translation>
 <translation id="628877850550444614">Chegirma mavjud</translation>
 <translation id="6289939620939689042">Sahifa rangi</translation>
 <translation id="6292819926564202163">Chrome brauzerida qidiruv vositasi</translation>
@@ -3712,6 +3712,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
 <translation id="7035705295266423040">Bankingiz shaxsingizni tasdiqlamoqchi</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobi maxfiylik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7040230719604914234">Operator</translation>
 <translation id="7042465939346919737">Google bu variantlarni taklif qilish uchun hisob-kitob sahifasidagi axborot va boshqa tegishli maʼlumotlardan foydalanadi. Keyinroq toʻlash usullarini berkitish uchun <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> sahifasini oching.</translation>
 <translation id="7042616127917168121">Natijalarni aniqlashtirish</translation>
 <translation id="7043552168914147882">Ajratkich</translation>
@@ -4510,7 +4511,6 @@ Batafsil axborot:
 <translation id="831997045666694187">Kechqurun</translation>
 <translation id="8321448084834652864">Qidiruv vositasini istalgan vaqt Chromium sozlamalari orqali almashtirishingiz mumkin.</translation>
 <translation id="8321476692217554900">bildirishnomalar</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI rejimida soʻrash uchun Enter tugmasini bosing</translation>
 <translation id="8322402665880479974">Yotoq va bosh tomon mebellar</translation>
 <translation id="8323505966575306467">Parollarni qoʻshimcha himoyalang</translation>
 <translation id="832547548543012337">Pasportni oʻchirish</translation>
@@ -5074,7 +5074,6 @@ Batafsil axborot:
 <translation id="950926967802086924">Kirish kaliti • Google Parollar menejeri</translation>
 <translation id="955429569736351433">VR ishlatishga ruxsat berildi</translation>
 <translation id="955627189349169688">Bu qoidani <ph name="BEGIN_LINK" />Chrome Sync sozlamalari<ph name="END_LINK" /> orqali rad etish mumkin.</translation>
-<translation id="95676157383774931">AI rejimi tugmasi, Google AI rejimida soʻrash uchun faollashtiring</translation>
 <translation id="95721182352849470">Sariq 2</translation>
 <translation id="961663415146723894">Quyi chekkasini belgilash</translation>
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>

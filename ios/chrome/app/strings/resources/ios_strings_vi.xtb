@@ -1284,6 +1284,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} thẻ mới}other{{count} thẻ mới}}</translation>
 <translation id="5911030830365207728">Google Dịch</translation>
 <translation id="5922999516621365983">Kéo thẻ vào đây để ghim.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Thêm tối đa 1 tệp, thẻ hoặc hình ảnh}other{Thêm tối đa {COUNT} tệp, thẻ hoặc hình ảnh}}</translation>
 <translation id="5936006948844852401">Quản lý bộ nhớ</translation>
 <translation id="5936065461722368675">Dịch toàn bộ trang</translation>
 <translation id="5937560539988385583">Đã dịch trang</translation>
@@ -1872,6 +1873,7 @@
 <translation id="8032569120109842252">Đang theo dõi</translation>
 <translation id="8035133914807600019">Thư mục mới...</translation>
 <translation id="8035412398498507358">Ảnh</translation>
+<translation id="8037713009824540257">Thêm trang web</translation>
 <translation id="8040407350301524547">Để biết các lựa chọn về tuyến đường, hãy nhấn vào "Xem đường đi".</translation>
 <translation id="804427445359061970">Tại đây, bạn sẽ thấy các thẻ mà bạn mở trên những thiết bị khác</translation>
 <translation id="8058655154417507695">Năm hết hạn</translation>

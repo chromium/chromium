@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5602622065581044566">ഫൊണറ്റിക് കീബോർഡ് ഉള്ള ബൾഗേറിയൻ</translation>
 <translation id="5605830556594064952">യുകെ ദ്വരോക്ക്</translation>
+<translation id="560739212255190568">ഇനിപ്പറയുന്ന പ്രോക്‌സി നടപ്പിലാക്കുന്നതിന് പുറമെ നിങ്ങളുടെ അഡ്‌മിൻ പ്രോക്‌സി അസാധുവാക്കൽ നയങ്ങളും സജ്ജീകരിച്ചു</translation>
 <translation id="5618330573454123917">Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന കമ്പ്യൂട്ടറിന് വേണ്ടി രൂപകൽപ്പന ചെയ്ത ഫയൽ ആണിത്. ChromeOS റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിൽ ഇതിന് പിന്തുണയില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 കീബോർഡ് ഉള്ള തമിഴ്</translation>
 <translation id="5633226425545095130">ഈ ഇനം നീക്കുന്നതിലൂടെ, '<ph name="DESTINATION_NAME" />' എന്ന പങ്കിട്ട ഫോൾഡർ കാണാനാകുന്ന എല്ലാവരുമായും അത് പങ്കിടും.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="8545476925160229291">ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="854655314928502177">വെബ് പ്രോക്‌സി സ്വയം കണ്ടെത്തൽ URL:</translation>
+<translation id="8547747809824590510">നിങ്ങളുടെ അഡ്‌മിൻ പ്രോക്‌സി അസാധുവാക്കൽ നയങ്ങൾ സജ്ജീകരിച്ചു</translation>
 <translation id="8549186985808798022">ഇറ്റാലിയൻ</translation>
 <translation id="8551494947769799688">ലാറ്റ്വിയന്‍</translation>
 <translation id="8560515948038859357">കന്റോണീസ്</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" എന്ന പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. മറ്റൊരു പേര് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="9046895021617826162">ബന്ധിപ്പിക്കല്‍ പരാജയപ്പെട്ടു</translation>
 <translation id="9065512565307033593">പരിശോധിച്ചുറപ്പിക്കാനായില്ലെങ്കിൽ, നിങ്ങളുടെ നെറ്റ്‌വർക്ക് ആക്‌സസ് പ്രവർത്തനരഹിതമാക്കും.</translation>
+<translation id="9079844694307518094">നിങ്ങളുടെ അഡ്‌മിൻ ഇനിപ്പറയുന്ന പ്രോക്‌സി നടപ്പിലാക്കുന്നു</translation>
 <translation id="908378762078012445">ഫൊണറ്റിക് AATSEEL കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="9086302186042011942">സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="9099674669267916096">പേജിന്റെ എണ്ണം</translation>

@@ -167,7 +167,6 @@
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2847479871509788944">Отстрани од Chromium</translation>
 <translation id="2850691299438350830">Ја чува вашата безбедност на Chromium и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
-<translation id="2856481144859256719">Секогаш прикажувај ја кратенката за „AI-режим“ во „Пребарување на Google“</translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2910007522516064972">За &amp;Chromium</translation>
 <translation id="2915996080311180594">Рестартирај подоцна</translation>
@@ -629,6 +628,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8359544530202147897">Ажурирајте го Chromium за да продолжите да ги користите податоците од Chromium во вашата сметка на Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.</translation>
 <translation id="8362914115861174987">Преведи на</translation>
+<translation id="8367705492654390392">Прашајте што било</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="8372327902843331129">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chromium. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
 <translation id="837460953767177950">Потоа ќе треба да го рестартирате Chromium.</translation>

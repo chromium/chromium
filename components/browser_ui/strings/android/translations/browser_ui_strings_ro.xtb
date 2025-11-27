@@ -225,6 +225,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3368138297038111198">Se permite accesul la o fereastră</translation>
 <translation id="3386292677130313581">Întreabă înainte de a permite site-urilor să afle locația (recomandat)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="3435896845095436175">Activează</translation>
 <translation id="344449859752187052">Cookie-urile terță parte au fost blocate</translation>
 <translation id="3448554387819310837">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi camera. Când opțiunea este dezactivată, site-urile nu pot folosi camera.</translation>
 <translation id="3491678231052507920">Site-urile folosesc de obicei dispozitivele de realitate virtuală și datele conexe pentru a-ți permite accesul la sesiuni RV</translation>
@@ -342,6 +343,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
 <translation id="4676059169848868271">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească urmărirea mâinilor, activează urmărirea mâinilor și în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Gestionează-ți cardurile</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4755971844837804407">Când opțiunea este activată, site-urile îți pot afișa orice anunț. Când opțiunea este dezactivată, site-urile nu pot afișa anunțuri deranjante sau înșelătoare.</translation>
 <translation id="4779083564647765204">Zoom</translation>

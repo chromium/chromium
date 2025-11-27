@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5602622065581044566">Болгарский, фонетическая раскладка</translation>
 <translation id="5605830556594064952">США (раскладка Дворака)</translation>
+<translation id="560739212255190568">Администратор настроил правила переопределения прокси-сервера и принудительное использование следующего прокси-сервера</translation>
 <translation id="5618330573454123917">Этот файл предназначен для компьютеров с ПО Macintosh и несовместим с Chrome OS на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="5625294776298156701">Тамильский, раскладка Tamil99</translation>
 <translation id="5633226425545095130">Если вы переместите этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="8545476925160229291">Английский (США)</translation>
 <translation id="854655314928502177">URL автоматического обнаружения прокси-сервера:</translation>
+<translation id="8547747809824590510">Администратор настроил правила переопределения прокси-сервера</translation>
 <translation id="8549186985808798022">Итальянский</translation>
 <translation id="8551494947769799688">Латвийский</translation>
 <translation id="8560515948038859357">Кантонский</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файл "<ph name="FILE_NAME" />" уже существует. Выберите другое название.</translation>
 <translation id="9046895021617826162">Сбой подключения</translation>
 <translation id="9065512565307033593">Если не пройти проверку, доступ к сети будет отключен.</translation>
+<translation id="9079844694307518094">Администратор настроил принудительное использование следующего прокси-сервера</translation>
 <translation id="908378762078012445">Русский, фонетическая раскладка AATSEEL</translation>
 <translation id="9086302186042011942">Выполняется синхронизация</translation>
 <translation id="9099674669267916096">Количество страниц</translation>

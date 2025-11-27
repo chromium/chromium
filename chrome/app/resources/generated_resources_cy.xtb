@@ -1072,7 +1072,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
     rydych yn cytuno y gall Google ddefnyddio adborth rydych yn ei ddarparu i wella
     unrhyw gynnyrch neu wasanaeth Google.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="170825127491242914">Cadw i storfa cwmwl</translation>
+<translation id="170825127491242914">Cadw i storfa'r cwmwl</translation>
 <translation id="1708291623166985230">Poethfan wedi'i analluogi</translation>
 <translation id="1708338024780164500">(Anweithredol)</translation>
 <translation id="1708563369218024896">Dim casglwr data wedi'i ddewis. Dewiswch o leiaf un casglwr data.</translation>
@@ -1272,6 +1272,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="184273675144259287">Disodli'ch apiau a'ch ffeiliau Linux gyda chopïau wrth gefn blaenorol</translation>
 <translation id="1842766183094193446">Ydych chi'n siŵr eich bod eisiau galluogi'r modd demo?</translation>
 <translation id="1843048149176045210">Copïo dolen lawrlwytho</translation>
+<translation id="1843347690926158494">Chwilio'r tab hwn gyda Google Lens</translation>
 <translation id="1845060436536902492">Mae'r darllenydd sgrîn ar ChromeOS Flex, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu arddangosfa braille. Pwyswch Space i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
 <translation id="1845727111305721124">Caniateir i chwarae sain</translation>
 <translation id="1846308012215045257">Pwyswch CTRL a chliciwch i redeg <ph name="PLUGIN_NAME" /></translation>
@@ -1589,7 +1590,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2061589908388230480">Os bydd Chromium yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus, gall Rheolwr Cyfrineiriau Google gynnig newid eich cyfrinair ar eich rhan os ydych chi wedi mewngofnodi. <ph name="BEGIN_LINK" />Rhagor am newid cyfrinair yn awtomatig<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Defnyddio'r we heb gadw eich hanes pori gyda ffenestr Anhysbys</translation>
 <translation id="206308717637808771">Dileu data pan fyddwch yn cau pob ffenestr. Mae data'n cael eu trin yr un peth â'r wefan rydych yn edrych arni</translation>
-<translation id="2065405795449409761">Mae Chrome yn cael ei reoli gan feddalwedd prawf awtomataidd.</translation>
 <translation id="2066700471214517561">Meic Beamforming fel bod y person sy'n defnyddio'r Chromebook yn swnio'n glir.</translation>
 <translation id="206960706005837784">Mae <ph name="APP_NAME" /> wedi gorffen argraffu i <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Dim ffeil cofnodion leol.</translation>
@@ -3785,6 +3785,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3581861561942370740">Chwilio hanes lawrlwytho</translation>
 <translation id="3582057310199111521">Wedi'i rhoi ar wefan dwyllodrus a'i ddarganfod mewn tor data</translation>
 <translation id="3582299299336701326">Troi sgriniau golau yn dywyll a sgriniau tywyll yn olau. Pwyswch Search + Ctrl + H i droi gwrthdroad lliw ymlaen a'i ddiffodd.</translation>
+<translation id="358381413217813387">Chwilio'r dudalen hon gyda Google Lens</translation>
 <translation id="3584169441612580296">Gallwch ddarllen a newid lluniau, cerddoriaeth a chyfryngau eraill o'ch cyfrifiadur</translation>
 <translation id="3586741240886978899">Gwnaethoch ddefnyddio ar y wefan hon</translation>
 <translation id="3586806079541226322">Methu ag agor y ffeil hon</translation>
@@ -7263,7 +7264,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5997337190805127100">Dysgu Rhagor Am Fynediad Gwefan</translation>
 <translation id="5998458948782718639">Helpwch i wella awtolenwi</translation>
 <translation id="5998976983953384016">Cadarnhau a throi ymlaen</translation>
-<translation id="5999024481231496910">Rydych wedi galluogi gorffen profi cwcis trydydd parti yn raddol. Ni all hyn gael ei ddiystyru gan y dudalen gosodiadau. Os ydych am ailalluogi cwcis trydydd parti, ail-lansiwch Chrome gyda'r nodwedd hon wedi'i hanalluogi.</translation>
 <translation id="5999630716831179808">Lleisiau</translation>
 <translation id="6000758707621254961">Mae <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001052984304731761">Mewngofnodwch i adael i Chrome awgrymu grwpiau tab</translation>
@@ -7456,6 +7456,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6135826623269483856">Ni chaniateir i reoli ffenestri ar eich holl sgriniau</translation>
 <translation id="6136285399872347291">ôl-nod</translation>
 <translation id="6136287496450963112">Nid yw eich allwedd ddiogelwch yn cael ei amddiffyn gan PIN. I reoli olion bysedd, crëwch PIN yn gyntaf.</translation>
+<translation id="6136637346277431354">Ychwanegu tabiau a rhagor</translation>
 <translation id="6138680304137685902">Llofnod X9.62 ECDSA â SHA-384</translation>
 <translation id="6140948187512243695">Dangos y manylion</translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
@@ -7686,7 +7687,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="628726841779494414">Rheoli eich argraffwyr yng ngosodiadau'r argraffydd</translation>
 <translation id="6287288864483377583">Dim ond ar gyfer un dystysgrif y cefnogir mewnforio</translation>
 <translation id="6287828400772161253">Ffôn Android (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Gofyn i Ddull AI Google</translation>
 <translation id="6290613030083731160">Nid oes unrhyw ddyfeisiau sy'n rhannu gerllaw ar gael. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ni ellir adfer oherwydd diffyg lle storio.</translation>
 <translation id="6291741848715722067">Cod cadarnhad</translation>
@@ -9544,6 +9544,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="760197030861754408">Ewch i <ph name="LANDING_PAGE" /> i gysylltu.</translation>
 <translation id="7602079150116086782">Dim tabiau o ddyfeisiau eraill</translation>
 <translation id="7602173054665172958">Rheoli argraffu</translation>
+<translation id="7602868996817972616">Gofyn i Google am y dudalen hon</translation>
 <translation id="7603785829538808504">Mae'r gwefannau a restrir isod yn dilyn gosodiad personol</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Ni chafodd 1 cyfrinair ei fewnforio}zero{Ni chafodd {NUM_PASSWORDS} cyfrinair eu mewnforio}two{Ni chafodd {NUM_PASSWORDS} gyfrinair eu mewnforio}few{Ni chafodd {NUM_PASSWORDS} chyfrinair eu mewnforio}many{Ni chafodd {NUM_PASSWORDS} chyfrinair eu mewnforio}other{Ni chafodd {NUM_PASSWORDS} cyfrinair eu mewnforio}}</translation>
 <translation id="7605163396341021431">Rhoi rheolaeth i apiau Android dros ddyfeisiau USB ar y Chromebook hwn</translation>
@@ -9612,7 +9613,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7647403192093989392">Dim gweithgareddau diweddar</translation>
 <translation id="7648023614017258011">Mae Chrome yn gwirio'r bwndel gosod</translation>
 <translation id="7648048654005891115">Arddull map bysellau</translation>
-<translation id="7648180062672842917">Mae gan y ffeil hon ddata sensitif neu beryglus. Bydd eich sefydliad yn gadael i chi ei gadw i storfa cwmwl neu ei daflu</translation>
+<translation id="7648180062672842917">Mae gan y ffeil hon ddata sensitif neu beryglus. Bydd eich sefydliad yn gadael i chi eu cadw i storfa'r cwmwl neu eu taflu</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7649954700951153978">Atgoffa fi ar iOS</translation>
 <translation id="7650141368285545431">Defnyddio cod pas o ddyfais arall</translation>

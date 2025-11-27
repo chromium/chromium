@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="5602622065581044566">Tiếng Bulgaria bằng bàn phím phiên âm</translation>
 <translation id="5605830556594064952">Dvorak Hoa Kỳ</translation>
+<translation id="560739212255190568">Quản trị viên của bạn đã thiết lập các quy tắc ghi đè proxy ngoài việc thiết lập proxy sau đây</translation>
 <translation id="5618330573454123917">Tệp này dành cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="8545476925160229291">Tiếng Anh (Mỹ)</translation>
 <translation id="854655314928502177">URL tự động phát hiện proxy web:</translation>
+<translation id="8547747809824590510">Quản trị viên của bạn đã thiết lập các quy tắc ghi đè proxy</translation>
 <translation id="8549186985808798022">Tiếng Ý</translation>
 <translation id="8551494947769799688">Tiếng Lát-vi-a</translation>
 <translation id="8560515948038859357">Tiếng Quảng Đông</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Tệp có tên "<ph name="FILE_NAME" />" đã tồn tại. Vui lòng chọn một tên khác.</translation>
 <translation id="9046895021617826162">Kết nối không thành công</translation>
 <translation id="9065512565307033593">Nếu không xác minh được, bạn sẽ không thể dùng mạng.</translation>
+<translation id="9079844694307518094">Quản trị viên của bạn đang thiết lập proxy sau đây</translation>
 <translation id="908378762078012445">Tiếng Nga bằng bàn phím phiên âm AATSEEL</translation>
 <translation id="9086302186042011942">Đang đồng bộ hóa</translation>
 <translation id="9099674669267916096">Số lượng trang</translation>

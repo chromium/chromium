@@ -8172,6 +8172,43 @@ Se la policy non viene configurata, significa che <ph name="PRODUCT_OS_NAME" /> 
 <translation id="6412793408912788345">Visualizza la schermata introduttiva di Gemini durante l'accesso</translation>
 <translation id="6416506846917150119">Disattiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
+<translation id="6417827417523888006">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
+
+Questa policy esegue l'override di <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Ogni insieme nell'elenco di insiemi di siti web correlati del browser deve soddisfare i requisiti di un insieme di siti web correlati.
+Un insieme di siti web correlati deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per maggiori informazioni su come <ph name="PRODUCT_NAME" /> utilizza gli insiemi di siti web correlati.
+
+
+Tutti i siti di un insieme di siti web correlati devono avere un dominio registrabile pubblicato tramite HTTPS. Inoltre, ogni sito di un insieme di siti web correlati deve essere univoco,
+ovvero non può essere elencato più di una volta in un insieme di siti web correlati.
+
+Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi di siti web correlati.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente
+anche in un insieme di siti web correlati nell'elenco del browser, quel sito verrà rimosso dall'insieme di siti web correlati del browser.
+Dopodiché, l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="ADDITIONS" />, se un sito è presente
+anche in un insieme di siti web correlati nell'elenco del browser, l'insieme di siti web correlati del browser verrà aggiornato in modo che
+il nuovo insieme di siti web correlati possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+L'elenco di insiemi di siti web correlati del browser richiede che nessuno dei siti al suo
+interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore della policy, né all'interno di alcun insieme di siti web correlati in questi elenchi.
+
+Tutti gli insiemi forniti dalla policy devono essere insiemi di siti web correlati validi. Qualora non lo fossero,
+verrà segnalato un errore appropriato.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro degli insiemi di siti web correlati.</translation>
 <translation id="6419001911253110938">Attiva la visualizzazione della schermata introduttiva per le funzionalità di AI all'interno della sessione durante il flusso di accesso</translation>
 <translation id="6421254653839955267">Impostando la policy su Attivata, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
 
@@ -11640,6 +11677,15 @@ lo schema HTTPS.</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
 <translation id="873800217865395140">Frequenza di raccolta della telemetria dei siti web in millisecondi.</translation>
+<translation id="8742596277791362306">Questa policy consente di controllare l'abilitazione della funzionalità di insiemi di siti web correlati.
+
+Questa policy esegue l'override di <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Se questa policy non viene configurata o se viene impostata su True, la funzionalità di insiemi di siti web correlati viene attivata.
+
+Se questa policy viene impostata su False, la funzionalità di insiemi di siti web correlati viene disattivata.
+
+Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro degli insiemi di siti web correlati.</translation>
 <translation id="8743149927570551353">Configura quando lo strumento Trasferimento dei contenuti di <ph name="PRODUCT_OS_NAME" /> è disponibile</translation>
 <translation id="8743902569031401303">Consenti sondaggi di Navigazione sicura</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.

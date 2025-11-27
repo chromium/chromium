@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">यामधून भाषांतर करा</translation>
 <translation id="2846251086934905009">इंस्टॉलसंबंधित एरर: इंस्टॉलर पूर्ण झाले नाही. इंस्टॉलेशन रद्द केले गेले आहे.</translation>
 <translation id="2853415089995957805">Chrome तुम्ही भेट देण्याची शक्यता असलेली पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
-<translation id="2856481144859256719">Google Search शॉर्टकटमध्ये नेहमी AI मोड दाखवा</translation>
 <translation id="2857540653560290388">Chrome लाँच करत आहे...</translation>
 <translation id="286025080868315611">Chrome काही डाउनलोड ब्लॉक का करते हे जाणून घ्या</translation>
 <translation id="2861074815332034794">Chrome अपडेट करत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -665,6 +664,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="835927394551949760">Google ला विचारा</translation>
 <translation id="8362914115861174987">यामध्ये भाषांतर करा</translation>
 <translation id="8366770919198174997">परफॉर्मन्स कमी करते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता वाढते</translation>
+<translation id="8367705492654390392">काहीही विचारा</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="8377158135256176353">Chrome कॅनरी मधील Gemini टॉगल करा</translation>
 <translation id="8387459386171870978">Chrome वापरणे पुढे सुरू ठेवा</translation>

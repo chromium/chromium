@@ -2177,6 +2177,7 @@
 <translation id="4506599922270137252">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন</translation>
 <translation id="450710068430902550">প্রশাসকের সাথে ভাগ করছে</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="4510703642214459906">স্থান</translation>
 <translation id="4515275063822566619">কার্ড ও ঠিকানাগুলি Chrome এবং আপনার Google অ্যাকাউন্ট (<ph name="ACCOUNT_EMAIL" />) থেকে এসেছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />এ গিয়ে সেগুলি পরিচালনা করতে পারবেন।</translation>
 <translation id="4515847625438516456">মাইক্রোকার এবং সাবকম্পোনেন্ট</translation>
 <translation id="451601984112574365">সবুজ ৩</translation>
@@ -2841,6 +2842,7 @@
 <translation id="5593349413089863479">কানেকশন সম্পূর্ণ সুরক্ষিত নয়</translation>
 <translation id="5593640815048812868">ল্যাপটপ ও নোটবুক</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
+<translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
 <translation id="5597254438174353289">নীল ৩</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> বা <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3247,6 @@
 <translation id="6284449872909111707">টেক্সট ও ইনস্ট্যান্ট মেসেজিং</translation>
 <translation id="6284517535531159884">ভ্যারিয়েশন সিডের ধরন</translation>
 <translation id="6287197303017372967">'নেভিগেশন' ফিচার ব্যবহার করে এক এক করে আপনার গন্তব্যের দিকনির্দেশ সংক্রান্ত নির্দেশিকা দেখুন।</translation>
-<translation id="6288559570252410796">Google AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="628877850550444614">প্রোডাক্টে ছাড় খুঁজে পাওয়া গেছে</translation>
 <translation id="6289939620939689042">পৃষ্ঠার রঙ</translation>
 <translation id="6292819926564202163">Chrome-এ আপনার সার্চ ইঞ্জিন</translation>
@@ -3717,6 +3718,7 @@
 <translation id="7031646650991750659">কোন কোন Google Play অ্যাপ আপনি ইনস্টল করেছেন</translation>
 <translation id="7035705295266423040">ব্যাঙ্ক আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের গোপনীয়তা সেটিংস ম্যানেজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
+<translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7042465939346919737">এইসব বিকল্প অফার করতে, Google চেক-আউট করার পৃষ্ঠা ও অন্যান্য প্রাসঙ্গিক ডেটা থেকে তথ্য ব্যবহার করে। পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />-এ যান</translation>
 <translation id="7042616127917168121">ফলাফল রিফাইন করুন</translation>
 <translation id="7043552168914147882">ট্যাব স্টক</translation>
@@ -4371,6 +4373,7 @@
 <translation id="8077669823243888800">এনভেলপ চিনা #৮</translation>
 <translation id="8078006011486731853">{0,plural, =1{গোপনীয় ফাইল আপলোড করবেন?}one{গোপনীয় ফাইল আপলোড করবেন?}other{গোপনীয় ফাইল আপলোড করবেন?}}</translation>
 <translation id="8079031581361219619">সাইটটি রিলোড করবেন?</translation>
+<translation id="8079591184016291275">ইভেন্টের নাম</translation>
 <translation id="8079976827192572403">বিপজ্জনক সাইট</translation>
 <translation id="8081087320434522107">সেডান</translation>
 <translation id="8086429410809447605">মহিলাদের পোশাক</translation>
@@ -4515,7 +4518,6 @@
 <translation id="831997045666694187">সন্ধ্যা</translation>
 <translation id="8321448084834652864">আপনি Chromium-এর সেটিংস থেকে সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন।</translation>
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI মোডকে জিজ্ঞাসা করতে Enter বোতাম প্রেস করুন</translation>
 <translation id="8322402665880479974">বেড ও হেডবোর্ড</translation>
 <translation id="8323505966575306467">আপনার পাসওয়ার্ড আরও সুরক্ষিত করুন</translation>
 <translation id="832547548543012337">পাসপোর্ট মুছে দিন</translation>
@@ -4768,6 +4770,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">এম্বেড করা কন্টেন্ট</translation>
 <translation id="8757526089434340176">Google Pay অফার উপলভ্য</translation>
+<translation id="8758529215314160755"><ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্ট <ph name="END_LINK" /> <ph name="ACCOUNT" />থেকে নিজের নাম এডিট করতে পারবেন।</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
@@ -5078,7 +5081,6 @@
 <translation id="950926967802086924">পাসকী • Google Password Manager</translation>
 <translation id="955429569736351433">ভিআর (VR) ব্যবহার করার অনুমতি রয়েছে</translation>
 <translation id="955627189349169688">আপনি <ph name="BEGIN_LINK" />Chrome সিঙ্ক সেটিংস<ph name="END_LINK" />-এ গিয়ে এই নীতি থেকে বেরিয়ে আসতে পারবেন।</translation>
-<translation id="95676157383774931">AI মোড বোতাম, Google AI মোডকে প্রশ্ন করার জন্য ট্যাপ করুন</translation>
 <translation id="95721182352849470">হলুদ ২</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>

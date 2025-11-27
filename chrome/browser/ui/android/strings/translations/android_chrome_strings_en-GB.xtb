@@ -335,6 +335,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2461822463642141190">Current</translation>
 <translation id="2466378451804467735"><ph name="TAB_TITLE" />, multi-selected muted tab</translation>
 <translation id="2468444275314013497">Your browser looks good</translation>
+<translation id="2471632347767899461">Try searching the Help Centre</translation>
 <translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
@@ -657,6 +658,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3870908470613821006">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices</translation>
 <translation id="3873174561423636563">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site. See this site's <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Copy text</translation>
+<translation id="3893858854379998374">To save bookmarks in your account, delete your unused bookmarks</translation>
 <translation id="3898498281932368596">Block and leave</translation>
 <translation id="3899682235662194879">Close all Incognito tabs</translation>
 <translation id="3900966090527141178">Export passwords</translation>
@@ -720,6 +722,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
 <translation id="4177222230309051052">Get all your bookmarks</translation>
 <translation id="4177501066905053472">Ad topics</translation>
+<translation id="417865198503699526">Search for a setting</translation>
 <translation id="4180726336228139707">Only on this device</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4188221736490993796">Sort by Z to A</translation>
@@ -1869,6 +1872,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Hidden</translation>
+<translation id="8849164661359544855"><ph name="URL" /> wants to enter picture-in-picture automatically</translation>
 <translation id="8854223127042600341">See your offline files</translation>
 <translation id="885480114717186641">You can request the desktop site for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Get descriptions</translation>

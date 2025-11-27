@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">Italique</translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ceux-ci sont présentés dans un ordre aléatoire. Vous pouvez modifier votre moteur de recherche par défaut à tout moment.</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris d'appareil mobile</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">Impossible de vous aider avec cette requête. Réessayez.</translation>
 <translation id="2453045048779611513">Votre organisation impose une limite quant à ce que vous pouvez enregistrer</translation>
 <translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2459882793359532780">Politiques de navigateur appliquées (politiques de machine et de profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vous offre un outil centralisé pour configurer les politiques de navigateur à partir du nuage</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2462932596748424101">Réseaux sociaux</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">La connexion est chiffrée et authentifiée avec la clé <ph name="CIPHER" />. La méthode d'échange de clés utilisée est <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Radio interactive</translation>
 <translation id="2835170189407361413">Effacer le contenu du formulaire</translation>
+<translation id="2835907903001172712">Aperçu du navigateur</translation>
 <translation id="2837891525090413132">Peut demander de verrouiller et d'utiliser votre clavier</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
 <translation id="2839501879576190149">Cette URL mène à un faux site</translation>
@@ -1557,6 +1560,7 @@
 <translation id="3543935938072367282">Payer plus vite grâce au remplissage automatique</translation>
 <translation id="3547442767634383572">L'aperçu du profil professionnel</translation>
 <translation id="3547746132308051926">20 po x 24 po</translation>
+<translation id="3549904448933807997">Informations sur les navigateurs et les profils (y compris les profils personnels et professionnels)</translation>
 <translation id="3552155506104542239">Avertissement : Cette politique entre en conflit avec la politique <ph name="POLICY_NAME" /> et n'aura aucun effet sur les applications Android. Sinon, cette politique fonctionne comme prévu.</translation>
 <translation id="3552297013052089404">Police sans empattement</translation>
 <translation id="3558573058928565255">Pendant la journée</translation>
@@ -2398,6 +2402,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4887406273302438710">Protégez vos mots de passe avec Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour supprimer votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>
 <translation id="4892518386797173871">Arrière</translation>
+<translation id="4894390983254799375">Comme l'identifiant de l'appareil, le nom, la version du système d'exploitation et le nom d'utilisateur du système d'exploitation</translation>
 <translation id="4895019427244614047">Supprimer l'adresse</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
@@ -2835,6 +2840,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5593349413089863479">La connexion n'est pas entièrement sécurisée</translation>
 <translation id="5593640815048812868">Ordinateurs portables</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
+<translation id="5596627076506792578">Autres options</translation>
 <translation id="5596939519753369075">2 po x 3,5 po</translation>
 <translation id="5597254438174353289">Bleu 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
@@ -2933,6 +2939,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5764920692828389743">Envoyer à <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
+<translation id="5773286975255318081">Comme les noms d'utilisateur de profil et les versions de navigateur</translation>
 <translation id="5776313857861697733">Priorité</translation>
 <translation id="577804500166306874">Chargement des résultats en cours…</translation>
 <translation id="5781136890105823427">Expérience activée</translation>
@@ -3239,7 +3246,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6284449872909111707">Messagerie texte et clavardage</translation>
 <translation id="6284517535531159884">Type d'élément de référence des variantes</translation>
 <translation id="6287197303017372967">Obtenez un itinéraire vers votre destination avec un guide d'itinéraire détaillé à l'aide de la fonction de navigation.</translation>
-<translation id="6288559570252410796">Demander au mode IA de Google</translation>
 <translation id="628877850550444614">Rabais trouvé</translation>
 <translation id="6289939620939689042">Couleur de la page</translation>
 <translation id="6292819926564202163">Votre moteur de recherche dans Chrome</translation>
@@ -3547,6 +3553,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6772959465807028761">Pour utiliser YouTube, continue avec ton compte Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Utilise YouTube selon les choix de tes parents</translation>
+<translation id="6779290995699117286">Les informations sur le profil, le navigateur et l'appareil sont accessibles à votre administrateur. Il peut voir les éléments suivants :</translation>
 <translation id="6779348349813025131">Le gestionnaire de mots de passe Google doit accéder au trousseau macOS</translation>
 <translation id="6780449997190414928">Vous vous connectez généralement à ce site en toute sécurité, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Un pirate peut essayer d'écouter ou de modifier votre connexion réseau. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Vous pouvez modifier votre moteur de recherche à tout moment dans les paramètres de Chrome.</translation>
@@ -3710,6 +3717,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
 <translation id="7035705295266423040">Votre banque veut confirmer votre identité</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les paramètres de confidentialité de votre compte Google</translation>
+<translation id="7040230719604914234">Opérateur</translation>
 <translation id="7042465939346919737">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options. Pour masquer les options de paiement différé, accédez à <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Affiner les résultats</translation>
 <translation id="7043552168914147882">Stock d'onglet</translation>
@@ -4392,6 +4400,7 @@ Détails supplémentaires :
 <translation id="8135546115396015134">touche de gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, Appli par défaut actuelle. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="815036624016370447">Les informations de votre compte Google <ph name="ACCOUNT" /> peuvent vous aider à remplir les formulaires plus rapidement dans Chrome</translation>
@@ -4506,7 +4515,6 @@ Détails supplémentaires :
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321448084834652864">Vous pouvez modifier votre moteur de recherche à tout moment dans les paramètres de Chromium.</translation>
 <translation id="8321476692217554900">Notifications</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour demander au mode IA de Google</translation>
 <translation id="8322402665880479974">Lits et têtes de lit</translation>
 <translation id="8323505966575306467">Ajouter plus de protection à vos mots de passe</translation>
 <translation id="832547548543012337">Supprimer le passeport</translation>
@@ -4681,6 +4689,7 @@ Détails supplémentaires :
 <translation id="8606988009912891950">Les sujets d'annonces permettent aux sites de vous montrer des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut enregistrer les sujets d'intérêt en fonction de votre historique de navigation récent. Par la suite, un site que vous visitez peut demander à Chrome de lui fournir les sujets qui vous intéressent pour personnaliser les annonces que vous voyez.</translation>
 <translation id="8612919051706159390">Communautés en ligne</translation>
 <translation id="8617269623452051934">votre utilisation de l'appareil</translation>
+<translation id="8619130384334725124">Appli par défaut actuelle</translation>
 <translation id="8620276786115098679">Enveloppe Kaku nᵒ 7</translation>
 <translation id="8622864575115813231">Communication avec votre institution financière en cours…</translation>
 <translation id="8624354461147303341">Obtenir des rabais</translation>
@@ -4758,6 +4767,7 @@ Détails supplémentaires :
 <translation id="8755125092386286553">A4 x 9</translation>
 <translation id="875657606603537618">contenu intégré</translation>
 <translation id="8757526089434340176">Offre Google Pay</translation>
+<translation id="8758529215314160755">Vous pouvez modifier votre nom dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Cette carte a expiré</translation>
 <translation id="87601671197631245">Ce site utilise une configuration de sécurité obsolète qui pourrait exposer vos données personnelles (par exemple, vos mots de passe, vos messages ou vos numéros de carte de crédit) lorsqu'elles sont envoyées à ce site.</translation>
 <translation id="8763927697961133303">Appareil USB</translation>
@@ -5067,7 +5077,6 @@ Détails supplémentaires :
 <translation id="950926967802086924">Clé d'accès • Gestionnaire de mots de passe Google</translation>
 <translation id="955429569736351433">RV autorisée</translation>
 <translation id="955627189349169688">Vous pouvez désactiver cette politique dans les <ph name="BEGIN_LINK" />paramètres Synchronisation Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Bouton du mode IA, activez-le pour demander au mode IA de Google</translation>
 <translation id="95721182352849470">Jaune 2</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>

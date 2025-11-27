@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">原文の言語</translation>
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
 <translation id="2853415089995957805">アクセスする可能性の高いページはプリロードされるので、実際にアクセスしたときの読み込み時間が短縮されます</translation>
-<translation id="2856481144859256719">Google 検索の AI モードのショートカットを常に表示する</translation>
 <translation id="2857540653560290388">Chrome を起動しています...</translation>
 <translation id="286025080868315611">Chrome で一部のダウンロードがブロックされる理由</translation>
 <translation id="2861074815332034794">Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">Google で調べる</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8366770919198174997">パフォーマンスは低下しますが、攻撃に対する Chrome の耐性が強化されます</translation>
+<translation id="8367705492654390392">質問する</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary を切り替える</translation>
 <translation id="8387459386171870978">Chrome を引き続き使用</translation>

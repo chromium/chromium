@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">原文語言</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
 <translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
-<translation id="2856481144859256719">一律在 Google 搜尋捷徑顯示 AI 模式</translation>
 <translation id="2857540653560290388">正在啟動 Chrome…</translation>
 <translation id="286025080868315611">瞭解 Chrome 封鎖某些下載內容的原因</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -661,6 +660,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="835927394551949760">向 Google 提問</translation>
 <translation id="8362914115861174987">譯文語言：</translation>
 <translation id="8366770919198174997">降低效能但提高 Chrome 防範攻擊的能力</translation>
+<translation id="8367705492654390392">提出問題</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8377158135256176353">開啟/關閉 Chrome Canary 內建的 Gemini</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>

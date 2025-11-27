@@ -164,7 +164,6 @@
 <translation id="2846251086934905009">Произошла ошибка. Не удалось завершить установку. Она была прервана.</translation>
 <translation id="2847479871509788944">Удалить из Chromium</translation>
 <translation id="2850691299438350830">Защищает вас в браузере Chromium и других приложениях Google, когда выполнен вход в аккаунт.</translation>
-<translation id="2856481144859256719">Всегда показывать ярлык режима ИИ в Google Поиске</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2910007522516064972">О &amp;Chromium</translation>
 <translation id="2915996080311180594">Перезапустить позже</translation>
@@ -622,6 +621,7 @@
 <translation id="8359544530202147897">Обновите Chromium, чтобы продолжать использовать данные Chromium в аккаунте Google <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="8360718212975266891">На вашем компьютере используется Windows 8. Чтобы получать обновления Chromium, установите на устройство Windows 10 или более поздней версии.</translation>
 <translation id="8362914115861174987">Перевести на</translation>
+<translation id="8367705492654390392">Задать вопрос</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="8372327902843331129">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите в Chromium. Затем этот пароль будет сохранен в аккаунте Google.</translation>
 <translation id="837460953767177950">Затем вам будет нужно перезапустить Chromium.</translation>

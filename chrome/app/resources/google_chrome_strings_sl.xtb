@@ -168,7 +168,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2841525013647267359">Prevedi iz jezika</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
 <translation id="2853415089995957805">Chrome vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
-<translation id="2856481144859256719">Vedno pokaži bližnjico do načina umetne inteligence v Iskanju Google</translation>
 <translation id="2857540653560290388">Zagon Chroma …</translation>
 <translation id="286025080868315611">Preberite, zakaj Chrome blokira nekatere prenose</translation>
 <translation id="2861074815332034794">Posodabljanje Chroma (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="835927394551949760">Postavljanje vprašanj Googlu</translation>
 <translation id="8362914115861174987">Prevedi v jezik</translation>
 <translation id="8366770919198174997">Zmanjša učinkovitost delovanja, vendar je Chrome odpornejši proti napadom</translation>
+<translation id="8367705492654390392">Vprašajte kar koli</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8377158135256176353">Preklop Geminija v Chromu Canary</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>

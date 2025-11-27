@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">ಈ ಭಾಷೆಯಿಂದ ಅನುವಾದಿಸಿ</translation>
 <translation id="2846251086934905009">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="2853415089995957805">ನೀವು ಭೇಟಿ ನೀಡುವ ಸಾಧ್ಯತೆಯಿರುವ ಪುಟಗಳನ್ನು Chrome ಪ್ರಿಲೋಡ್ ಮಾಡುತ್ತದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಭೇಟಿ ಮಾಡಿದಾಗ ಅವು ಹೆಚ್ಚು ವೇಗವಾಗಿ ಲೋಡ್ ಆಗುತ್ತವೆ</translation>
-<translation id="2856481144859256719">Google Search ಶಾರ್ಟ್‌ಕಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ AI ಮೋಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2857540653560290388">Chrome ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="286025080868315611">Chrome ಕೆಲವು ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಏಕೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
 <translation id="2861074815332034794">Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -662,6 +661,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="835927394551949760">Google ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="8362914115861174987">ಈ ಭಾಷೆಗೆ ಅನುವಾದಿಸಿ</translation>
 <translation id="8366770919198174997">ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ ಆದರೆ Chrome ಅನ್ನು ಅಸಿಮೆಟ್ರಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳ ವಿರುದ್ದ ಮತ್ತಷ್ಟು ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ</translation>
+<translation id="8367705492654390392">ಏನನ್ನಾದರೂ ಕೇಳಿ</translation>
 <translation id="8370517070665726704">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8377158135256176353">Chrome Canary ನಲ್ಲಿ Gemini ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="8387459386171870978">Chrome ಬಳಸಿಕೊಂಡು ಮುಂದುವರಿಯಿರಿ</translation>

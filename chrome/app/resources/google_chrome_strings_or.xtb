@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">ଏଠାରୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="2846251086934905009">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ସମ୍ପୂର୍ଣ୍ଣ ହୋଇନାହିଁ। ଇନଷ୍ଟଲେସନକୁ ରଦ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="2853415089995957805">ଆପଣ ଭିଜିଟ କରିବାର ସମ୍ଭାବନା ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ Chrome ପ୍ରିଲୋଡ କରେ, ଯାହା ଫଳରେ ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଭିଜିଟ କରିବା ବେଳେ ସେଗୁଡ଼ିକ ଖୁବ ଶୀଘ୍ର ଲୋଡ ହୁଏ</translation>
-<translation id="2856481144859256719">Google Search ସର୍ଟକଟରେ ସର୍ବଦା AI ମୋଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="2857540653560290388">Chrome ଲଞ୍ଚ ହେଉଛି...</translation>
 <translation id="286025080868315611">Chrome କାହିଁକି କିଛି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="2861074815332034794">Chrome ଅପଡେଟ୍ କରାଯାଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@
 <translation id="835927394551949760">Googleକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="8362914115861174987">ଏଥିକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="8366770919198174997">ପରଫରମାନ୍ସ କମ କରେ କିନ୍ତୁ Chromeକୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ</translation>
+<translation id="8367705492654390392">ଯେ କୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>
 <translation id="8370517070665726704">କପିରାଇଟ୍ <ph name="YEAR" /> Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="8377158135256176353">Chrome Canaryରେ Geminiକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8387459386171870978">Chrome ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>

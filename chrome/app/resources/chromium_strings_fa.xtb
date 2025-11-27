@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
 <translation id="2850691299438350830">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chromium حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
-<translation id="2856481144859256719">‏«حالت هوش مصنوعی» همیشه در «میان‌بر جستجوی Google» نشان داده شود</translation>
 <translation id="2885378588091291677">مدیر وظایف</translation>
 <translation id="2910007522516064972">‏درباره &amp;Chromium</translation>
 <translation id="2915996080311180594">بازراه‌اندازی در فرصتی دیگر</translation>
@@ -625,6 +624,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8359544530202147897">‏برای ادامه استفاده از داده‌های Chromium ذخیره‌شده در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />)،‏ Chromium را به‌روز کنید</translation>
 <translation id="8360718212975266891">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
 <translation id="8362914115861174987">ترجمه به</translation>
+<translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8372327902843331129">‏برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید. بعداز اینکه به سیستم وارد شدید، این گذرواژه در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="837460953767177950">‏سپس باید Chromium را بازراه‌اندازی کنید.</translation>

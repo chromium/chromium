@@ -225,6 +225,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3368138297038111198">Condivisione di una finestra in corso…</translation>
 <translation id="3386292677130313581">Chiedi conferma prima di consentire ai siti di conoscere la tua posizione (opzione consigliata)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="3435896845095436175">Abilita</translation>
 <translation id="344449859752187052">Cookie di terze parti bloccati</translation>
 <translation id="3448554387819310837">Quando l'opzione è attiva, i siti potrebbero chiederti di usare la videocamera. Quando l'opzione è disattivata, i siti non possono utilizzare la videocamera.</translation>
 <translation id="3491678231052507920">In genere, i siti usano dati e dispositivi per realtà virtuale per consentirti di avviare sessioni VR</translation>
@@ -342,6 +343,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4670064810192446073">Realtà virtuale</translation>
 <translation id="4672315773691449562">Tocca App browser, poi Chrome</translation>
 <translation id="4676059169848868271">Per consentire all'app <ph name="APP_NAME" /> di usare il tracciamento delle mani, attiva anche il tracciamento delle mani nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Gestisci le carte</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4755971844837804407">Quando l'opzione è attiva, i siti possono mostrarti qualsiasi annuncio. Quando l'opzione è disattivata, i siti non possono mostrare annunci invasivi o fuorvianti.</translation>
 <translation id="4779083564647765204">Zoom</translation>

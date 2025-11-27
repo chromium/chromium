@@ -1260,6 +1260,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="184273675144259287">Substituir as aplicações e os ficheiros do Linux pelo conteúdo de uma cópia de segurança anterior</translation>
 <translation id="1842766183094193446">Tem a certeza de que quer ativar o modo de demonstração?</translation>
 <translation id="1843048149176045210">Copiar link de transferência</translation>
+<translation id="1843347690926158494">Pesquisar este separador com o Google Lens</translation>
 <translation id="1845060436536902492">O leitor de ecrã no ChromeOS Flex, ChromeVox, é usado principalmente por pessoas cegas ou com visão reduzida para ler texto apresentado no ecrã com um sintetizador de voz ou um ecrã em braille. Prima a barra de espaço para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="1845727111305721124">Com autorização para reproduzir som</translation>
 <translation id="1846308012215045257">Clique e prima a tecla Ctrl em simultâneo para executar o <ph name="PLUGIN_NAME" /></translation>
@@ -1576,7 +1577,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2061589908388230480">Se o Chromium encontrar uma das suas palavras-passe numa violação de dados pública, o Gestor de Palavras-passe da Google pode oferecer-se para a alterar por si se tiver sessão iniciada. <ph name="BEGIN_LINK" />Mais informações sobre a alteração automática de palavras-passe<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Navegue na Web sem guardar o seu histórico de navegação com uma janela de navegação anónima</translation>
 <translation id="206308717637808771">Elimine dados quando fecha todas as janelas. Os dados são tratados da mesma forma que o site que está a ver</translation>
-<translation id="2065405795449409761">O Chrome está a ser controlado pelo software de teste automatizado.</translation>
 <translation id="2066700471214517561">Microfone com beamforming para que a voz da pessoa que usa o Chromebook seja nítida.</translation>
 <translation id="206960706005837784">A app <ph name="APP_NAME" /> concluiu a impressão na impressora <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nenhum ficheiro de registo local.</translation>
@@ -3770,6 +3770,7 @@ Quer pará-lo?</translation>
 <translation id="3581861561942370740">Pesquise o histórico de transferências</translation>
 <translation id="3582057310199111521">Acedeu a um site fraudulento e encontrado numa violação de dados.</translation>
 <translation id="3582299299336701326">Muda os ecrãs claros para escuros e os ecrãs escuros para claros. Prima Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
+<translation id="358381413217813387">Pesquise esta página com o Google Lens</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, música e outros elementos multimédia a partir do computador</translation>
 <translation id="3586741240886978899">Usada neste site</translation>
 <translation id="3586806079541226322">Não é possível abrir este ficheiro</translation>
@@ -7249,7 +7250,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5997337190805127100">Saiba mais acerca do acesso a sites</translation>
 <translation id="5998458948782718639">Ajudar a melhorar o preenchimento automático</translation>
 <translation id="5998976983953384016">Confirmar e ativar</translation>
-<translation id="5999024481231496910">Ativou os testes da descontinuação de cookies de terceiros. Isto não pode ser substituído pela página de definições. Se quiser reativar os cookies de terceiros, reinicie o Chrome com esta funcionalidade desativada.</translation>
 <translation id="5999630716831179808">Vozes</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001052984304731761">Iniciar sessão para permitir que o Chrome sugira grupos de separadores</translation>
@@ -7442,6 +7442,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6135826623269483856">Sem autorização para gerir janelas em todos os seus ecrãs</translation>
 <translation id="6136285399872347291">retrocesso</translation>
 <translation id="6136287496450963112">A sua chave de segurança não está protegida com um PIN. Para gerir impressões digitais, crie primeiro um PIN.</translation>
+<translation id="6136637346277431354">Adicione separadores e muito mais</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalhes</translation>
 <translation id="6141988275892716286">Confirmar transferência</translation>
@@ -7672,7 +7673,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6287288864483377583">Só é possível importar 1 certificado</translation>
 <translation id="6287828400772161253">Telemóvel Android (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Pedir ao Modo de IA da Google</translation>
 <translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6291741848715722067">Código de validação</translation>
@@ -9523,6 +9523,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="760197030861754408">Aceda a <ph name="LANDING_PAGE" /> para ligar.</translation>
 <translation id="7602079150116086782">Sem separadores de outros dispositivos</translation>
 <translation id="7602173054665172958">Gestão de impressões</translation>
+<translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
 <translation id="7603785829538808504">Os sites indicados abaixo seguem uma definição personalizada</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 palavra-passe não importada}other{{NUM_PASSWORDS} palavras-passe não importadas}}</translation>
 <translation id="7605163396341021431">Dê às apps Android controlo sobre dispositivos USB neste Chromebook</translation>

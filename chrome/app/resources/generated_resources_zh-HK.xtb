@@ -1268,6 +1268,7 @@
 <translation id="184273675144259287">以先前的備份取代您的 Linux 應用程式和檔案</translation>
 <translation id="1842766183094193446">您確定要啟用示範模式嗎？</translation>
 <translation id="1843048149176045210">複製下載連結</translation>
+<translation id="1843347690926158494">使用「Google 智能鏡頭」搜尋此分頁</translation>
 <translation id="1845060436536902492">ChromeOS Flex 的螢幕閱讀器 ChromeVox 主要供失明和低視力人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按一下空白鍵即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="1845727111305721124">已允許播放音效</translation>
 <translation id="1846308012215045257">按住 Ctrl 鍵並按一下即可執行 <ph name="PLUGIN_NAME" /></translation>
@@ -1586,7 +1587,6 @@
 <translation id="2061589908388230480">如果 Chromium 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與處理目前瀏覽網站的方式相同</translation>
-<translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
 <translation id="2066700471214517561">使用波束成型麥克風，讓 Chromebook 使用者的聲音清晰可辨。</translation>
 <translation id="206960706005837784">「<ph name="APP_NAME" />」已完成使用「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
@@ -3779,6 +3779,7 @@
 <translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
+<translation id="358381413217813387">使用「Google 智能鏡頭」搜尋此頁面</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586741240886978899">你曾用於此網站</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
@@ -6590,6 +6591,7 @@
 <translation id="5523532775593636291">你新增的網站將一律保持使用中的狀態，不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以使用字母、數字和特殊字元，且不可超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
+<translation id="5527211644528700597">使用裝置內置功能偵測威脅</translation>
 <translation id="5527463195266282916">試圖降級擴充功能。</translation>
 <translation id="5527474464531963247">您也可以選取其他網絡。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" /> 安裝緊</translation>
@@ -6783,6 +6785,7 @@
 <translation id="5663459693447872156">自動切換為半形</translation>
 <translation id="5663653125349867535">閱讀清單(&amp;R)</translation>
 <translation id="5663918299073387939">網站通常會要求控制 MIDI 裝置及將其重新編程，以便創作音樂、編輯音樂或更新裝置韌體</translation>
+<translation id="5666116074010586111">將網址和網頁內容傳送給 Google，以加快偵測威脅</translation>
 <translation id="5666911576871845853">新增設定檔(&amp;A)</translation>
 <translation id="5667293444945855280">惡意軟件</translation>
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
@@ -7249,7 +7252,6 @@
 <translation id="5997337190805127100">瞭解詳情網站存取權</translation>
 <translation id="5998458948782718639">協助改善「自動填入」功能</translation>
 <translation id="5998976983953384016">確認並開啟</translation>
-<translation id="5999024481231496910">你已啟用測試逐步淘汰第三方 Cookie 的功能。此功能並不可透過「設定」頁面覆寫。如要重新啟用第三方 Cookie，請停用此功能並重新啟動 Chrome。</translation>
 <translation id="5999630716831179808">語音</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6001052984304731761">登入帳戶就可以俾 Chrome 提供分頁群組建議</translation>
@@ -7442,6 +7444,7 @@
 <translation id="6135826623269483856">不允許在您所有的顯示屏上管理視窗</translation>
 <translation id="6136285399872347291">退格</translation>
 <translation id="6136287496450963112">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理指紋。</translation>
+<translation id="6136637346277431354">加入分頁和其他項目</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽名</translation>
 <translation id="6140948187512243695">顯示詳細資料</translation>
 <translation id="6141988275892716286">確認下載</translation>
@@ -7672,7 +7675,6 @@
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6287288864483377583">匯入功能只支援單一憑證</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">問 Google AI 模式</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">儲存空間不足，因此無法還原。</translation>
 <translation id="6291741848715722067">確認碼</translation>
@@ -7963,6 +7965,7 @@
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">請重新啟動 Chromebook，然後再試一次</translation>
 <translation id="6511827214781912955">建議刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
+<translation id="6512364354776355686">就所有不安全的連線發出警告</translation>
 <translation id="6512759338201777379">AI 生成的<ph name="SUBJECT" /> 圖片 <ph name="INDEX" />，情境係<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您沒有連線至其他網絡，Google Chrome 將使用流動數據網絡連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
@@ -9147,6 +9150,7 @@
 <translation id="7340179705876485790">如果要返回的頁數超過 1 頁，請點選並按住 [返回]。</translation>
 <translation id="7340650977506865820">網站正在分享您的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告、診斷和使用情況資料自動傳送給 Google</translation>
+<translation id="7340886226071938450">分頁列位置</translation>
 <translation id="734088800888587319">網絡數據</translation>
 <translation id="7341834142292923918">需要在此網站上執行</translation>
 <translation id="7343372807593926528">請在傳送意見前說明問題。</translation>
@@ -9522,6 +9526,7 @@
 <translation id="760197030861754408">前往 <ph name="LANDING_PAGE" /> 以連接裝置。</translation>
 <translation id="7602079150116086782">沒有其他裝置的分頁</translation>
 <translation id="7602173054665172958">列印管理</translation>
+<translation id="7602868996817972616">問 Google 關於此頁的問題</translation>
 <translation id="7603785829538808504">下列網站採用自訂設定</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 個未匯入的密碼}other{{NUM_PASSWORDS} 個未匯入的密碼}}</translation>
 <translation id="7605163396341021431">授權 Android 應用程式控制此 Chromebook 上的 USB 裝置</translation>
@@ -9873,6 +9878,7 @@
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="7831754656372780761">「<ph name="TAB_TITLE" />」<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>
+<translation id="7833725807105678871">優先考慮網站速度，而非強化安全功能</translation>
 <translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">您唔希望系統同網站分享呢啲主題，因此已經封鎖咗嘅主題清單</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
@@ -11145,6 +11151,7 @@
 <translation id="8690129572193755009">網站可要求處理通訊協定</translation>
 <translation id="869144235543261764">此分頁正在以畫中畫模式播放影片</translation>
 <translation id="869167754614449887">已從下載記錄中刪除「<ph name="FILE_NAME" />」</translation>
+<translation id="8691990641861252959">在公開互聯網上出現不安全的連線時發出警告</translation>
 <translation id="8692107307702113268">密碼超過 1000 個字元</translation>
 <translation id="8693862390730570097">不允許「幫我寫」自動開啟</translation>
 <translation id="8694596275649352090">在休眠或蓋上螢幕時鎖定</translation>
@@ -11342,6 +11349,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="8821647731831124007">沒有可用的熱點</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
+<translation id="8822690627597552656">讓某些不熟悉的網站減慢速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

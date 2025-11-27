@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Грешка при инсталирането: Инсталационната програма не завърши. Инсталирането е прекратено.</translation>
 <translation id="2847479871509788944">Премахване от Chromium...</translation>
 <translation id="2850691299438350830">Осигурява безопасността ви в Chromium и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
-<translation id="2856481144859256719">Прекият път към режима с AI в Google Търсене да се показва винаги</translation>
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2910007522516064972">Всичко за &amp;Chromium</translation>
 <translation id="2915996080311180594">Рестартиране по-късно</translation>
@@ -621,6 +620,7 @@
 <translation id="8359544530202147897">Актуализирайте Chromium, за да продължите да използвате данните от браузъра в профила си в Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8360718212975266891">За да получавате бъдещи актуализации на Chromium, трябва да използвате Windows 10 или по-нова версия. Компютърът ви работи с Windows 8.</translation>
 <translation id="8362914115861174987">Превод на</translation>
+<translation id="8367705492654390392">Попитайте каквото и да е</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="8372327902843331129">Влезте в Chromium, за да получите паролите си и др. на всичките си устройства. Тази парола ще бъде запазена в профила ви в Google, след като влезете в него.</translation>
 <translation id="837460953767177950">След това ще трябва да рестартирате Chromium.</translation>

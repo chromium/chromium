@@ -2840,6 +2840,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5593349413089863479">Ühendus pole täiesti turvaline</translation>
 <translation id="5593640815048812868">Sülearvutid</translation>
 <translation id="5595485650161345191">Muuda aadressi</translation>
+<translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5596939519753369075">2 × 3,5 tolli</translation>
 <translation id="5597254438174353289">Sinine 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> või <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3246,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6284449872909111707">Tekst- ja kiirsõnumside</translation>
 <translation id="6284517535531159884">Variantide algandmete tüüp</translation>
 <translation id="6287197303017372967">Hankige sihtkohta liikumise juhiseid, kasutades navigeerimisfunktsiooni täppisjuhiseid.</translation>
-<translation id="6288559570252410796">Küsi Google'i AI-režiimilt</translation>
 <translation id="628877850550444614">Leiti allahindlus</translation>
 <translation id="6289939620939689042">Lehe värv</translation>
 <translation id="6292819926564202163">Teie otsingumootor Chrome'is</translation>
@@ -3717,6 +3717,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7031646650991750659">Millised Google Play rakendused olete installinud</translation>
 <translation id="7035705295266423040">Teie pank soovib teie isikut kinnitada</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Google'i konto privaatsusseadete haldamiseks vajutage tabulaatorit ja siis sisestusklahvi.</translation>
+<translation id="7040230719604914234">Operaator</translation>
 <translation id="7042465939346919737">Google kasutab nende valikute pakkumiseks teavet kassalehelt ja muid asjakohaseid andmeid. Järelmaksuvalikute peitmiseks avage <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Otsingutulemuste täpsustamine</translation>
 <translation id="7043552168914147882">Registrilehed</translation>
@@ -4515,7 +4516,6 @@ Lisateave:
 <translation id="831997045666694187">Õhtu</translation>
 <translation id="8321448084834652864">Saate oma otsingumootorit Chromiumi seadetes alati muuta.</translation>
 <translation id="8321476692217554900">märguanded</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage sisestusklahvi, et Google'i AI-režiim aktiveerida</translation>
 <translation id="8322402665880479974">Voodid ja peatsilauad</translation>
 <translation id="8323505966575306467">Lisage paroolidele täiendav kaitse</translation>
 <translation id="832547548543012337">Kustuta pass</translation>
@@ -4768,6 +4768,7 @@ Lisateave:
 <translation id="8755125092386286553">A4 × 9</translation>
 <translation id="875657606603537618">manustatud sisu</translation>
 <translation id="8757526089434340176">Saadaval on Google Pay pakkumine</translation>
+<translation id="8758529215314160755">Nime saate muuta <ph name="BEGIN_LINK" />oma Google’i kontol<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">See kaart on aegunud</translation>
 <translation id="87601671197631245">See sait kasutab vananenud turvaseadistust, mis võib paljastada teie teabe (näiteks paroolid, sõnumid või krediitkaardid), kui see saadetakse sellele saidile.</translation>
 <translation id="8763927697961133303">USB-seade</translation>
@@ -5078,7 +5079,6 @@ Lisateave:
 <translation id="950926967802086924">Pääsuvõti • Google'i paroolihaldur</translation>
 <translation id="955429569736351433">VR on lubatud</translation>
 <translation id="955627189349169688">Saate sellest reeglist loobuda <ph name="BEGIN_LINK" />Chrome'i sünkroonimisseadetes<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">AI-režiimi nupp, vajutage Google'i AI-režiimi aktiveerimiseks</translation>
 <translation id="95721182352849470">Kollane 2</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>

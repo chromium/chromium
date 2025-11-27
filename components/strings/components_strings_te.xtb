@@ -2171,6 +2171,7 @@
 <translation id="4506599922270137252">సిస్టమ్ నిర్వాహకుడిని సంప్రదించడం</translation>
 <translation id="450710068430902550">నిర్వాహకుడితో షేర్‌</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translateతో ఈ పేజీని అనువదించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="4510703642214459906">వేదిక</translation>
 <translation id="4515275063822566619">కార్డ్‌లు, అడ్రస్‌లు- Chrome నుండి, మీ Google ఖాతా (<ph name="ACCOUNT_EMAIL" />) నుండి పొందినవి. మీరు <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" />లో వాటిని నిర్వహించవచ్చు.</translation>
 <translation id="4515847625438516456">మైక్రోకార్‌లు &amp; సబ్‌కాంపాక్ట్‌లు</translation>
 <translation id="451601984112574365">ఆకుపచ్చ రంగు 3</translation>
@@ -2835,6 +2836,7 @@
 <translation id="5593349413089863479">కనెక్షన్ పూర్తిగా సురక్షితమైనది కాదు</translation>
 <translation id="5593640815048812868">ల్యాప్‌టాప్‌లు &amp; నోట్‌బుక్‌లు</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
+<translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5596939519753369075">2 x 3.5 అంగుళాలు</translation>
 <translation id="5597254438174353289">నీలం రంగు 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> లేదా <ph name="ISSUER_2_NAME" /></translation>
@@ -3240,7 +3242,6 @@
 <translation id="6284449872909111707">టెక్స్ట్ &amp; ఇన్‌స్టంట్ మెసేజింగ్</translation>
 <translation id="6284517535531159884">వేరియేషన్‌ల సీడ్ రకం</translation>
 <translation id="6287197303017372967">నావిగేషన్ ఫీచర్‌ను ఉపయోగించి 'సులువైన దిశల' గైడెన్స్‌తో మీ గమ్యస్థానానికి దిశలను పొందండి.</translation>
-<translation id="6288559570252410796">Google AI మోడ్‌ను అడగండి</translation>
 <translation id="628877850550444614">డిస్కౌంట్ కనుగొనబడింది</translation>
 <translation id="6289939620939689042">పేజీ రంగు</translation>
 <translation id="6292819926564202163">Chromeలో మీ సెర్చ్ ఇంజిన్</translation>
@@ -3712,6 +3713,7 @@
 <translation id="7031646650991750659">ఏ Google Play యాప్‌లు మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="7035705295266423040">ఇది మీరేనని మీ బ్యాంక్ వెరిఫై చేయాలనుకుంటుంది</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="7040230719604914234">ఆపరేటర్</translation>
 <translation id="7042465939346919737">ఈ ఆప్షన్‌లను అందించడానికి Google చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది. 'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి</translation>
 <translation id="7042616127917168121">ఫలితాలను మెరుగుపరుస్తుంది</translation>
 <translation id="7043552168914147882">ట్యాబ్ స్టాక్</translation>
@@ -4366,6 +4368,7 @@
 <translation id="8077669823243888800">ఎన్వలప్ చైనీస్ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{గోప్యమైన ఫైల్‌ను అప్‌లోడ్ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను అప్‌లోడ్ చేయాలా?}}</translation>
 <translation id="8079031581361219619">సైట్‌ను తిరిగి లోడ్ చేయాలా?</translation>
+<translation id="8079591184016291275">ఈవెంట్ పేరు</translation>
 <translation id="8079976827192572403">హానికరమైన సైట్</translation>
 <translation id="8081087320434522107">సెడాన్‌లు</translation>
 <translation id="8086429410809447605">మహిళల దుస్తులు</translation>
@@ -4510,7 +4513,6 @@
 <translation id="831997045666694187">సాయంత్రం</translation>
 <translation id="8321448084834652864">మీ సెర్చ్ ఇంజిన్‌ను మీరు Chromium సెట్టింగ్‌లలో ఎప్పుడైనా సరే మార్చవచ్చు.</translation>
 <translation id="8321476692217554900">నోటిఫికేషన్‌లు</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI మోడ్‌ను అడగడానికి Enter కీని నొక్కండి</translation>
 <translation id="8322402665880479974">మంచాలు &amp; హెడ్ బోర్డ్‌లు</translation>
 <translation id="8323505966575306467">మీ పాస్‌వర్డ్‌లకు మరింత రక్షణను జోడించండి</translation>
 <translation id="832547548543012337">పాస్‌పోర్ట్‌ను తొలగించండి</translation>
@@ -4763,6 +4765,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">పొందుపరచబడిన కంటెంట్</translation>
 <translation id="8757526089434340176">Google Pay ఆఫర్ అందుబాటులో ఉంది</translation>
+<translation id="8758529215314160755">మీరు <ph name="BEGIN_LINK" />మీ Google ఖాతా<ph name="END_LINK" /> <ph name="ACCOUNT" />‌లో మీ పేరును ఎడిట్ చేయవచ్చు</translation>
 <translation id="8759274551635299824">ఈ కార్డ్ గడువు ముగిసింది</translation>
 <translation id="87601671197631245">ఈ సైట్ ఉపయోగిస్తున్న భద్రతా కాన్ఫిగరేషన్ గడువు ముగిసింది, దీని వలన మీరు మీ సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు లేదా క్రెడిట్ కార్డ్‌లు) ఈ సైట్‌కు పంపించినప్పుడు అది బహిర్గతం అవ్వవచ్చు.</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
@@ -5073,7 +5076,6 @@
 <translation id="950926967802086924">పాస్-కీ • Google Password Manager</translation>
 <translation id="955429569736351433">VRకు అనుమతి ఉంది</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome సింక్ సెట్టింగ్‌ల<ph name="END_LINK" />లో మీరు ఈ పాలసీకి సమ్మతిని నిలిపివేయవచ్చు.</translation>
-<translation id="95676157383774931">AI మోడ్ బటన్, Google AI మోడ్‌ను అడగడానికి, దాన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="95721182352849470">పసుపు రంగు 2</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

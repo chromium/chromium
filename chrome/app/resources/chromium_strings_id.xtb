@@ -165,7 +165,6 @@
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
 <translation id="2847479871509788944">Buang dari Chromium...</translation>
 <translation id="2850691299438350830">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login</translation>
-<translation id="2856481144859256719">Selalu Tampilkan Pintasan Mode AI di Google Penelusuran</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2910007522516064972">Tentang &amp;Chromium</translation>
 <translation id="2915996080311180594">Mulai Ulang Nanti</translation>
@@ -627,6 +626,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8359544530202147897">Update Chromium untuk terus menggunakan data Chromium di Akun Google Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Untuk mendapatkan update Chromium berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.</translation>
 <translation id="8362914115861174987">Terjemahkan ke</translation>
+<translation id="8367705492654390392">Tanyakan apa saja</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="8372327902843331129">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chromium. Sandi ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="837460953767177950">Kemudian, Anda harus memulai ulang Chromium.</translation>

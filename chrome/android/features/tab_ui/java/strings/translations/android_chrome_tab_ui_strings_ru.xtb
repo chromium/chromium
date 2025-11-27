@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Закрыть}one{Закрыть}few{Закрыть }many{Закрыть}other{Закрыть}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Значок для отпр. предпросм. листа</translation>
+<translation id="3776329373944672717">Название группы вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Открепить вкладку}one{Открепить вкладки}few{Открепить вкладки}many{Открепить вкладки}other{Открепить вкладки}}</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>

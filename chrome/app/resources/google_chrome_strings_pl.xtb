@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Tłumacz z</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
 <translation id="2853415089995957805">Chrome wstępnie wczytuje strony, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały</translation>
-<translation id="2856481144859256719">Zawsze pokazuj skrót do Trybu AI w wyszukiwarce Google</translation>
 <translation id="2857540653560290388">Uruchamiam Chrome…</translation>
 <translation id="286025080868315611">Dlaczego Chrome blokuje pobieranie niektórych plików</translation>
 <translation id="2861074815332034794">Aktualizuję Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">Zapytaj Google</translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8366770919198174997">Zmniejsza wydajność, ale sprawia, że przeglądarka Chrome jest bardziej odporna na ataki</translation>
+<translation id="8367705492654390392">Zapytaj, o co chcesz</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8377158135256176353">Włącz lub wyłącz Gemini w Chrome Canary</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>

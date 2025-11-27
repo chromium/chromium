@@ -167,7 +167,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2850691299438350830">Аккаунтуңузга киргенде Chromium'да жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат</translation>
-<translation id="2856481144859256719">Google Издөөдөгү ЖИ режиминин ыкчам баскычы ар дайым көрсөтүлсүн</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2910007522516064972">&amp;Chromium жөнүндө</translation>
 <translation id="2915996080311180594">Кийинчерээк өчүрүп күйгүзүү</translation>
@@ -629,6 +628,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8359544530202147897">Google аккаунтуңуздагы (<ph name="ACCOUNT_EMAIL" />) Chromium маалыматын колдоно берүү үчүн Chromium'ду жаңыртыңыз</translation>
 <translation id="8360718212975266891">Chromium жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8 версиясы колдонулууда.</translation>
 <translation id="8362914115861174987">Кайсы тилге:</translation>
+<translation id="8367705492654390392">Каалаган сурооңузду бериңиз</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
 <translation id="8372327902843331129">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chromium'га кириңиз. Киргенден кийин бул сырсөз Google аккаунтуңузда сакталат.</translation>
 <translation id="837460953767177950">Андан кийин Chromium'ду өчүрүп күйгүзүшүңүз керек болот.</translation>

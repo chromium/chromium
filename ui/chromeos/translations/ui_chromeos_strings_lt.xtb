@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5602622065581044566">Bulgarų k. su fonetine klaviatūra</translation>
 <translation id="5605830556594064952">JAV Dvorako</translation>
+<translation id="560739212255190568">Administratorius nustatė tarpinio serverio nepaisymo taisykles ir įgalino toliau nurodytą tarpinį serverį</translation>
 <translation id="5618330573454123917">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="5625294776298156701">Tamilų k. su „Tamil99“ klaviatūra</translation>
 <translation id="5633226425545095130">Perkėlus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="8545476925160229291">Anglų k. (JAV)</translation>
 <translation id="854655314928502177">Žiniatinklio tarpinio serverio automatinio aptikimo URL:</translation>
+<translation id="8547747809824590510">Administratorius nustatė tarpinio serverio nepaisymo taisykles</translation>
 <translation id="8549186985808798022">Italų k.</translation>
 <translation id="8551494947769799688">Latvių</translation>
 <translation id="8560515948038859357">Kantoniečių k.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
+<translation id="9079844694307518094">Administratorius įgalino toliau nurodytą tarpinį serverį</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

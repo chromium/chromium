@@ -1260,6 +1260,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="184273675144259287">Linux tətbiq və fayllarını əvvəlki yedəklənmə ilə əvəzləyin</translation>
 <translation id="1842766183094193446">Demo rejimini aktiv etmək istədiyinizə əminsiniz?</translation>
 <translation id="1843048149176045210">Endirmə linkini kopiyalayın</translation>
+<translation id="1843347690926158494">Bu tabı Google Linza ilə axtarın</translation>
 <translation id="1845060436536902492">ChromeOS Flex, ChromeVox-da ekran oxuyucusunu əsasən görmə əngəlli və ya zəif görən insanlar nitq sintezi, yaxud brayl displeyi ilə ekrandakı mətni oxumaq üçün istifadə edir. ChromeVox-u aktiv etmək üçün boşluq düyməsini basın. ChromeVox aktivləşdirildikdə qısa nəzər salın.</translation>
 <translation id="1845727111305721124">Səs oxutmaq icazəsi verilib</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> çalışdırmaq üçün Control düyməsi ilə birlikdə klikləyin</translation>
@@ -1576,7 +1577,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2061589908388230480">Chromium parollarınızdan birini ictimai data pozuntusunda aşkar edərsə, hesabınıza daxil olduğunuz halda, Google Parol Meneceri sizin əvəzinizə parolu dəyişdirməyi təklif edə bilər. <ph name="BEGIN_LINK" />Avtomatik parol dəyişikliyi haqqında daha çox məlumat<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Axtarış tarixçənizi Anonim pəncərədə saxlamadan vebdən istifadə edin</translation>
 <translation id="206308717637808771">Bütün pəncərələri bağladığınız zaman datanı silin. Dataya baxdığınız saytla eyni şəkildə yanaşılır</translation>
-<translation id="2065405795449409761">Chrome'u avtomatlaşdırılmış test proqram təminatı idarə edir.</translation>
 <translation id="2066700471214517561">Chromebook-dan istifadə edən şəxsin aydın səslənməsi üçün şüalı mikrofon.</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> printerində çapı yekunlaşdırdı</translation>
 <translation id="2071393345806050157">Lokal qeydiyyat faylı yoxdur.</translation>
@@ -3772,6 +3772,7 @@ Yalnız veb-tərtibatçılar bu funksiyanı aktiv etməli və etibarlı tətbiql
 <translation id="3581861561942370740">Endirmə tarixçəsində axtarın</translation>
 <translation id="3582057310199111521">Aldadıcı saytda daxil edilib və data pozulması ilə nəticələnib</translation>
 <translation id="3582299299336701326">İşıqlı ekranlarını qaranlıq, qaranlıq ekranları isə işıqlı edin. Rəng inversiyasını aktiv və deaktiv etmək üçün Axtarış + Ctrl + H düymələrini basın.</translation>
+<translation id="358381413217813387">Bu səhifəni Google Linza ilə axtarın</translation>
 <translation id="3584169441612580296">Kompüterinizdə foto, musiqi və digər medianı oxuyun və dəyişin</translation>
 <translation id="3586741240886978899">Bu saytda istifadə etdiniz</translation>
 <translation id="3586806079541226322">Bu fayl açılmır</translation>
@@ -6887,6 +6888,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Modem Rejiminin Hazır Olub-Olmadığını Yoxlayın</translation>
 <translation id="5753570386948603678">Tarixçədən silin</translation>
+<translation id="5755101376452091923">Adınızı <ph name="BEGIN_LINK" />Google hesabınızda<ph name="END_LINK" /> (<ph name="USERNAME" />) redaktə edə bilərsiniz</translation>
 <translation id="5756163054456765343">Yardım mərkəzi</translation>
 <translation id="5757187557809630523">növbəti trek</translation>
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>
@@ -7245,7 +7247,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5997337190805127100">Sayta Giriş Barədə Ətraflı Öyrənin</translation>
 <translation id="5998458948782718639">Avto doldurmanı təkmilləşdirməyə yardım edin</translation>
 <translation id="5998976983953384016">Təsdiqləyin və aktiv edin</translation>
-<translation id="5999024481231496910">Üçüncü tərəf kukisinin mərhələli ləğv testini aktivləşdirdiniz. Bunu ayarlar səhifəsində ləğv etmək olmur. Üçüncü tərəf kukilərini təkrar aktivləşdirmək istəsəniz, bu funksiyanı deaktiv edərək Chrome-u yenidən işə salın.</translation>
 <translation id="5999630716831179808">Səslər</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
 <translation id="6001052984304731761">Chrome-un tab qrupları təklif etməsi üçün daxil olun</translation>
@@ -7438,6 +7439,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6135826623269483856">Bütün displeylərinizdə pəncərələri idarə etməyə icazə verilmir</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">Təhlükəsizlik açarınız PIN ilə qorunmur. Barmaq izlərini idarə etmək üçün əvvəlcə PIN yaradın.</translation>
+<translation id="6136637346277431354">Tablar və s. əlavə edin</translation>
 <translation id="6138680304137685902">X9.62 ECDSA SHA-384 ilə imza</translation>
 <translation id="6140948187512243695">Detalları göstərin</translation>
 <translation id="6141988275892716286">Endirməni təsdiq edin</translation>
@@ -7668,7 +7670,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6287288864483377583">İdxal yalnız bir sertifikat üçün dəstəklənir</translation>
 <translation id="6287828400772161253">Android telefonu (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Google Sİ rejimindən soruşun</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Yaddaş yeri az olduğuna görə bərpa etmək mümkün deyil.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>
@@ -9518,6 +9519,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="760197030861754408">Qoşulmaq üçün <ph name="LANDING_PAGE" /> səhifəsinə daxil olun.</translation>
 <translation id="7602079150116086782">Başqa cihazlardan heç bir panel yoxdur</translation>
 <translation id="7602173054665172958">Çap idarəetməsi</translation>
+<translation id="7602868996817972616">Bu səhifə haqqında Google-dan soruşun</translation>
 <translation id="7603785829538808504">Aşağıda sıralanmış saytlar fərdi ayarı izləyir</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 parol import edilmədi}other{{NUM_PASSWORDS} parol import edilmədi}}</translation>
 <translation id="7605163396341021431">Android tətbiqlərinə bu Chromebook-da USB cihazları üzərində nəzarət imkanı verin</translation>

@@ -1284,6 +1284,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5902752768726620872">{count,plural, =1{{count} nova guia}one{{count} nova guia}other{{count} novas guias}}</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5922999516621365983">Arraste a guia até aqui para fixar.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{Adicione até 1 arquivo, guia ou imagem}one{Adicione até {COUNT} arquivo, guia ou imagem}other{Adicione até {COUNT} arquivos, guias ou imagens}}</translation>
 <translation id="5936006948844852401">Gerenciar armazenamento</translation>
 <translation id="5936065461722368675">Traduzir a página toda</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
@@ -1872,6 +1873,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8035133914807600019">Nova pasta...</translation>
 <translation id="8035412398498507358">Fotos</translation>
+<translation id="8037713009824540257">Adicionar site</translation>
 <translation id="8040407350301524547">Para conferir opções de trajeto, toque em "Conferir rotas".</translation>
 <translation id="804427445359061970">Suas guias de outros dispositivos vão aparecer aqui</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>

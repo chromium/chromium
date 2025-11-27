@@ -1284,6 +1284,7 @@
 <translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5922999516621365983">將分頁拖曳至此處以固定分頁。</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{最多可加入 1 個檔案、分頁或圖片}other{最多可加入 {COUNT} 個檔案、分頁或圖片}}</translation>
 <translation id="5936006948844852401">管理儲存空間</translation>
 <translation id="5936065461722368675">翻譯完整網頁</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
@@ -1872,6 +1873,7 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035133914807600019">新增資料夾…</translation>
 <translation id="8035412398498507358">相片</translation>
+<translation id="8037713009824540257">新增網站</translation>
 <translation id="8040407350301524547">如要查看路線選項，請輕按「取得路線」。</translation>
 <translation id="804427445359061970">您可在此查看從其他裝置開啟過的分頁</translation>
 <translation id="8058655154417507695">到期年份</translation>

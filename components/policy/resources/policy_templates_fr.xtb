@@ -8047,6 +8047,36 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
 <translation id="6412793408912788345">Afficher l'écran d'introduction de Gemini lors de la connexion</translation>
 <translation id="6416506846917150119">Désactiver l'écriture prédictive lors de la saisie au clavier physique</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="6417827417523888006">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles de sites Web associés.
+
+Cette règle remplace la règle <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Chaque ensemble figurant dans la liste des ensembles de sites Web associés du navigateur doit respecter les exigences liées à ces ensembles.
+Un ensemble de sites Web associés doit contenir un site principal et au moins un site membre.
+Un ensemble peut également contenir une liste de sites de services dont il est propriétaire, ainsi qu'un mappage entre un site et toutes ses variantes ccTLD.
+Pour savoir plus en détail comment <ph name="PRODUCT_NAME" /> utilise les ensembles de sites Web associés, rendez-vous sur https://github.com/WICG/first-party-sets.
+
+
+Tous les sites d'un ensemble de sites Web associés doivent être des domaines enregistrables diffusés sur HTTPS. Chaque site d'un ensemble de sites Web associés doit aussi être unique (il ne peut pas figurer plusieurs fois dans un ensemble de sites Web associés).
+
+Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles de sites Web associés.
+
+Pour tous les sites appartenant à un ensemble de sites Web associés de la liste <ph name="REPLACEMENTS" /> : si un site figure aussi dans un ensemble de sites Web associés de la liste du navigateur, il sera supprimé de l'ensemble de sites Web associés du navigateur.
+L'ensemble de sites Web associés de la règle sera alors ajouté à la liste des ensembles de sites Web associés du navigateur.
+
+Pour tous les sites appartenant à un ensemble de sites Web associés de la liste <ph name="ADDITIONS" /> : si un site figure aussi dans un ensemble de sites Web associés de la liste du navigateur, l'ensemble de sites Web associés du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble de sites Web associés à la liste du navigateur. Une fois la liste du navigateur mise à jour, l'ensemble de sites Web associés de la règle est ajouté à la liste des ensembles de sites Web associés du navigateur.
+
+La liste des ensembles de sites Web associés du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition s'applique aussi aux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />. De même, un site ne peut pas figurer à la fois dans la liste <ph name="REPLACEMENTS" /> et dans la liste <ph name="ADDITIONS" />.
+
+Le caractère générique (*) ne peut pas être utilisé comme valeur de règle, ni dans aucun ensemble de sites Web associés figurant dans ces listes.
+
+Tous les ensembles que cette règle fournit doivent être des ensembles de sites Web associés valides sous peine de générer une erreur.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" /> ou à <ph name="MS_AAD_NAME" />, ou inscrites à <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou inscrites à <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon des ensembles de sites Web associés.</translation>
 <translation id="6419001911253110938">Activer l'affichage de l'écran d'introduction pour les fonctionnalités d'IA en cours de session pendant la procédure de connexion</translation>
 <translation id="6421254653839955267">Si cette règle est activée, la recherche du CNAME est ignorée. Le nom du serveur est utilisé tel qu'il a été saisi lors de la génération du SPN Kerberos.
 
@@ -8847,7 +8877,7 @@ Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la co
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="6944302005022384441">Pour des raisons de sécurité, les API Web <ph name="SHOW_SUBAPPS_APP_API_NAME" /> ,<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> et <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> nécessitent un geste préalable de l'utilisateur ("activation temporaire") pour être appelées, sans quoi l'appel échouera. L'utilisateur est également invité à confirmer l'opération via une boîte de dialogue dédiée.
 
-Lorsque cette règle est configurée, les administrateurs peuvent spécifier les origines sur lesquelles ces API peuvent être appelées sans geste préalable de l'utilisateur ni demander confirmation à l'utilisateur.
+Lorsque cette règle est configurée, les administrateurs peuvent spécifier les origines sur lesquelles ces API peuvent être appelées sans geste préalable de l'utilisateur ni demande de confirmation à l'utilisateur.
 
 Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. La valeur * n'est pas acceptée pour cette règle.
 
@@ -9080,7 +9110,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="706669471845501145">Autoriser les sites à afficher des notifications sur le bureau</translation>
 <translation id="7067419518071223152">Cette règle permet de lister les formats d'URL pour les applis Web autorisées à accéder à certains types de fichiers.
 
-      Si cette règle n'est pas configurée, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> s'applique pour toutes les applis Web, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+      Si cette règle n'est pas configurée, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> s'applique pour toutes les applis Web, à condition qu'elle soit définie. Si elle n'est pas définie, les paramètres spécifiés par les utilisateurs s'appliquent.
 
       Si le format d'URL ne correspond pas à <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> ni à <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> ou les paramètres personnels des utilisateurs s'appliquent, dans cet ordre.
 
@@ -9174,7 +9204,7 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 <translation id="7126928806195745404">Paramètres JavaScript</translation>
 <translation id="7127108620894338616">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent prendre une capture d'onglets de même origine.
 
-      Si elle ne l'est pas, ces sites ne sont pas pris en compte pour un remplacement à ce niveau de capture.
+      Si elle ne l'est pas, ces sites ne sont pas pris en compte dans les exceptions à ce niveau de capture.
 
       Notez que les Applications Chrome en mode fenêtre qui ont la même origine que ce site pourront quand même être capturées.
 
@@ -9533,7 +9563,7 @@ Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuille
 <translation id="736404635686727796">Cette règle permet de lister les formats d'URL des sites dont l'accès aux imprimantes locales est automatiquement refusé via l'API WebPrinting.
 Les formats valides sont limités aux applis Web isolées.
 
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si elle n'est pas définie, les paramètres spécifiés par les utilisateurs s'appliquent.
 
 Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL figure dans les deux règles.
 
@@ -10061,7 +10091,7 @@ Si cette règle n'est pas configurée, le navigateur détermine les origines à 
 <translation id="7771298620150437359">Configurer les langues préférées et leur ordre</translation>
 <translation id="7771471711336504337">Cette règle permet de lister les formats d'URL pour lesquels les sites peuvent demander aux utilisateurs l'accès à un port série.
 
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si elle n'est pas définie, les paramètres spécifiés par les utilisateurs s'appliquent.
 
 Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels des utilisateurs.
 
@@ -11441,6 +11471,15 @@ Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traductio
 <translation id="8734543507835977857">Démarrer les délais de gestion de l'alimentation et les limites de longueur de session au démarrage de la session</translation>
 <translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
 <translation id="873800217865395140">Fréquence de collecte des données télémétriques de site Web en millisecondes.</translation>
+<translation id="8742596277791362306">Cette règle permet de contrôler l'activation de la fonctionnalité d'ensembles de sites Web associés.
+
+Cette règle remplace la règle <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Si cette règle est définie sur "True" ou n'est pas configurée, la fonctionnalité d'ensembles de sites Web associés est activée.
+
+Si cette règle est définie sur "False", la fonctionnalité d'ensembles de sites Web associés est désactivée.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon des ensembles de sites Web associés.</translation>
 <translation id="8743149927570551353">Configurer quand l'outil Transfert de contenus <ph name="PRODUCT_OS_NAME" /> est disponible</translation>
 <translation id="8743902569031401303">Autoriser les enquêtes sur la navigation sécurisée</translation>
 <translation id="8744844164152340112">Contrôle le thème utilisé pour afficher l'UI pendant la configuration initiale et en cours de session (sombre/clair/auto).

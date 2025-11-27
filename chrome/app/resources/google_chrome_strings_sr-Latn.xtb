@@ -168,7 +168,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2841525013647267359">Prevedite sa jezika</translation>
 <translation id="2846251086934905009">Greška pri instalaciji: Program za instalaciju nije završio instalaciju. Instalacija je otkazana.</translation>
 <translation id="2853415089995957805">Chrome predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
-<translation id="2856481144859256719">Uvek prikazuj prečicu za AI režim u Google pretrazi</translation>
 <translation id="2857540653560290388">Pokreće se Chrome...</translation>
 <translation id="286025080868315611">Saznajte zašto Chrome blokira neka preuzimanja</translation>
 <translation id="2861074815332034794">Ažuriramo Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="835927394551949760">Pitajte Google</translation>
 <translation id="8362914115861174987">Prevodi na jezik</translation>
 <translation id="8366770919198174997">Smanjuje performanse, ali čini Chrome otpornijim na napade</translation>
+<translation id="8367705492654390392">Upitajte bilo šta</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="8377158135256176353">Uključite ili isključite Gemini u Chrome Canary-ju</translation>
 <translation id="8387459386171870978">Nastavite sa korišćenjem Chrome-a</translation>

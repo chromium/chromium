@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">Превод от</translation>
 <translation id="2846251086934905009">Грешка при инсталирането: Инсталационната програма не завърши. Инсталирането е прекратено.</translation>
 <translation id="2853415089995957805">Chrome зарежда предварително страниците, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
-<translation id="2856481144859256719">Прекият път към режима с AI в Google Търсене да се показва винаги</translation>
 <translation id="2857540653560290388">Chrome се стартира...</translation>
 <translation id="286025080868315611">Научете защо Chrome блокира някои изтегляния</translation>
 <translation id="2861074815332034794">Chrome се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -662,6 +661,7 @@
 <translation id="835927394551949760">Задаване на въпроси на Google</translation>
 <translation id="8362914115861174987">Превод на</translation>
 <translation id="8366770919198174997">Намалява ефективността, но прави Chrome по-устойчив на атаки</translation>
+<translation id="8367705492654390392">Попитайте каквото и да е</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="8377158135256176353">Превключване на Gemini в Chrome Canary</translation>
 <translation id="8387459386171870978">Продължаване на използването на Chrome</translation>

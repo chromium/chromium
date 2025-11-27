@@ -167,7 +167,6 @@
 <translation id="2841525013647267359">Дараах хэлээс орчуулах</translation>
 <translation id="2846251086934905009">Суулгах үед алдаа гарлаа: Суулгагч дуусгаагүй. Суулгалтыг тасалсан.</translation>
 <translation id="2853415089995957805">Chrome таны зочлох магадлалтай хуудаснуудыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална</translation>
-<translation id="2856481144859256719">Google Хайлтын ХОУ-ы горимын товчлолыг үргэлж харуулах</translation>
 <translation id="2857540653560290388">Chrome-г эхлүүлж байна...</translation>
 <translation id="286025080868315611">Chrome зарим татаж авсан файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="2861074815332034794">Chrome-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="835927394551949760">Google-с асуух</translation>
 <translation id="8362914115861174987">Дараах руу орчуулах</translation>
 <translation id="8366770919198174997">Гүйцэтгэлийг багасгах ч Chrome-г халдлагад илүү тэсвэртэй болгоно</translation>
+<translation id="8367705492654390392">Хүссэн зүйлээ асуугаарай</translation>
 <translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="8377158135256176353">Chrome Канар дахь Gemini-г асаах/унтраах</translation>
 <translation id="8387459386171870978">Chrome-г үргэлжлүүлэн ашиглах</translation>

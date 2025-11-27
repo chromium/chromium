@@ -167,7 +167,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
 <translation id="2850691299438350830">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
-<translation id="2856481144859256719">Palaging Ipakita ang AI Mode sa Shortcut ng Google Search</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">Tungkol sa &amp;Chromium</translation>
 <translation id="2915996080311180594">I-restart sa Ibang Pagkakataon</translation>
@@ -629,6 +628,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8359544530202147897">I-update ang Chromium para patuloy na magamit ang data sa Chromium sa iyong Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng Windows 10 o mas bago. Gumagamit ng Windows 8 ang computer na ito.</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
+<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8372327902843331129">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chromium. Mase-save ang password na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="837460953767177950">Pagkatapos, kakailanganin mong i-restart ang Chromium.</translation>

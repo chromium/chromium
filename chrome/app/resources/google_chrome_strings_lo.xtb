@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">ແປຈາກພາສາ</translation>
 <translation id="2846251086934905009">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຕົວຕິດຕັ້ງເຮັດວຽກໄດ້ບໍ່ສົມບູນ. ຍົກເລີກການຕິດຕັ້ງແລ້ວ.</translation>
 <translation id="2853415089995957805">Chrome ໂຫຼດໜ້າທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງໄວ້ລ່ວງໜ້າ, ເພື່ອໃຫ້ພວກມັນໂຫຼດໄວຂຶ້ນເມື່ອທ່ານເຂົ້າເບິ່ງ</translation>
-<translation id="2856481144859256719">ສະແດງໂໝດ AI ໃນທາງລັດ Google ຊອກຫາສະເໝີ</translation>
 <translation id="2857540653560290388">ກຳລັງເປີດໃຊ້ Chrome...</translation>
 <translation id="286025080868315611">ສຶກສາວ່າເປັນຫຍັງ Chrome ຈຶ່ງບລັອກການດາວໂຫຼດບາງລາຍການ</translation>
 <translation id="2861074815332034794">ກຳລັງອັບເດດ Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="835927394551949760">ຖາມ Google</translation>
 <translation id="8362914115861174987">ແປພາສາເປັນ</translation>
 <translation id="8366770919198174997">ຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ</translation>
+<translation id="8367705492654390392">ຖາມຫຍັງກໍໄດ້</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8377158135256176353">ເປີດ/ປິດ Gemini ໃນ Chrome Canary</translation>
 <translation id="8387459386171870978">ສືບຕໍ່ນຳໃຊ້ Chrome</translation>

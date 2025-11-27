@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Übersetzen aus Sprache:</translation>
 <translation id="2846251086934905009">Installationsfehler: Die Installation konnte nicht abgeschlossen werden und wurde abgebrochen.</translation>
 <translation id="2853415089995957805">Chrome lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
-<translation id="2856481144859256719">Verknüpfung zum KI-Modus in der Google Suche immer anzeigen</translation>
 <translation id="2857540653560290388">Chrome wird gestartet…</translation>
 <translation id="286025080868315611">Warum blockiert Chrome einige Downloads?</translation>
 <translation id="2861074815332034794">Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="835927394551949760">Google fragen</translation>
 <translation id="8362914115861174987">Zielsprache</translation>
 <translation id="8366770919198174997">Reduziert die Leistung, macht Chrome aber widerstandsfähiger gegen Angriffe</translation>
+<translation id="8367705492654390392">Frage hier eingeben</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary aktivieren / deaktivieren</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>

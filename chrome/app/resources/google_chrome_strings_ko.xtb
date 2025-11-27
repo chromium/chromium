@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
 <translation id="2853415089995957805">Chrome은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
-<translation id="2856481144859256719">Google 검색의 AI 모드 바로가기 항상 표시</translation>
 <translation id="2857540653560290388">Chrome 실행 중...</translation>
 <translation id="286025080868315611">Chrome에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="2861074815332034794">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="835927394551949760">Google에 물어보기</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8366770919198174997">성능은 감소하지만 Chrome의 공격에 대한 저항력이 강화됨</translation>
+<translation id="8367705492654390392">무엇이든 물어보세요</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8377158135256176353">Chrome Canary의 Gemini 전환</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>

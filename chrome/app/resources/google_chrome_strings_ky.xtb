@@ -168,7 +168,6 @@
 <translation id="2841525013647267359">Төмөнкү тилден которуу</translation>
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2853415089995957805">Chrome'дун божомолунда сиз кире турган барактар алдын ала жүктөлүп, киргениңизде алар тез ачылат</translation>
-<translation id="2856481144859256719">Google Издөөдөгү ЖИ режиминин ыкчам баскычы ар дайым көрсөтүлсүн</translation>
 <translation id="2857540653560290388">Chrome иштетилүүдө…</translation>
 <translation id="286025080868315611">Chrome эмне үчүн айрым жүктөп алууларды бөгөттөп жатканын билип алыңыз</translation>
 <translation id="2861074815332034794">Chrome жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -668,6 +667,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="835927394551949760">Google'дан суроо</translation>
 <translation id="8362914115861174987">Кайсы тилге:</translation>
 <translation id="8366770919198174997">Майнаптуулук төмөндөйт, бирок Chrome чабуулдарга туруктуураак болуп калат</translation>
+<translation id="8367705492654390392">Каалаган сурооңузду бериңиз</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
 <translation id="8377158135256176353">Chrome Canary'деги Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="8387459386171870978">Chrome'ду колдоно берүү</translation>

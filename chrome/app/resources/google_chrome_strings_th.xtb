@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">แปลจากภาษา</translation>
 <translation id="2846251086934905009">ข้อผิดพลาดในการติดตั้ง: โปรแกรมติดตั้งทำงานไม่สมบูรณ์ ล้มเลิกการติดตั้งแล้ว</translation>
 <translation id="2853415089995957805">Chrome จะโหลดหน้าเว็บที่คุณอาจเข้าชมไว้ล่วงหน้าเพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
-<translation id="2856481144859256719">แสดงโหมด AI ในทางลัด Google Search เสมอ</translation>
 <translation id="2857540653560290388">กำลังเปิด Chrome...</translation>
 <translation id="286025080868315611">ดูสาเหตุที่ Chrome บล็อกการดาวน์โหลดบางรายการ</translation>
 <translation id="2861074815332034794">กำลังอัปเดต Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">ถาม Google</translation>
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8366770919198174997">ลดประสิทธิภาพแต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้น</translation>
+<translation id="8367705492654390392">ถามอะไรก็ได้</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="8377158135256176353">เปิด/ปิด Gemini ใน Chrome Canary</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>

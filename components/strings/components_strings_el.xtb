@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">Πλάγια γραφή</translation>
 <translation id="2130448033692577677">Τα πρότυπα που έχετε καθορίσει μπορεί να μην εφαρμοστούν επειδή δεν έχει ρυθμιστεί η πολιτική DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Αυτές εμφανίζονται με τυχαία σειρά. Μπορείτε να αλλάξετε την προεπιλογή ανά πάσα στιγμή.</translation>
 <translation id="2137891579555018930">Αναμονή για άδεια…</translation>
 <translation id="213826338245044447">Σελιδοδείκτες κινητής συσκευής</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">Δεν μπορούμε να σας βοηθήσουμε με αυτό. Δοκιμάστε ξανά.</translation>
 <translation id="2453045048779611513">Ο οργανισμός σας περιορίζει τα στοιχεία που μπορείτε να αποθηκεύσετε</translation>
 <translation id="2456755709261364512">Το επίπεδο φόρτισης της μπαταρίας σας πρέπει να είναι πάνω από <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Τις εφαρμοσμένες πολιτικές προγράμματος περιήγησης (πολιτικές συσκευής και προφίλ)</translation>
 <translation id="2461385121573678775">Το Chrome Enterprise Core σας παρέχει ένα κεντρικό εργαλείο για τη διαμόρφωση των πολιτικών του προγράμματος περιήγησης από το cloud</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
 <translation id="2462932596748424101">Κοινωνικά δίκτυα</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">Η κρυπτογράφηση και ο έλεγχος ταυτότητας της σύνδεσης γίνονται με <ph name="CIPHER" /> και χρησιμοποιεί το <ph name="KX" /> ως μηχανισμό ανταλλαγής κλειδιών.</translation>
 <translation id="2833637280516285136">Ραδιοφωνικές συνεντεύξεις</translation>
 <translation id="2835170189407361413">Διαγραφή φόρμας</translation>
+<translation id="2835907903001172712">Μια επισκόπηση του προγράμματος περιήγησης</translation>
 <translation id="2837891525090413132">Μπορεί να ζητήσει να κλειδώσει και να χρησιμοποιήσει το πληκτρολόγιό σας</translation>
 <translation id="2839032553903800133">Οι ειδοποιήσεις έχουν αποκλειστεί</translation>
 <translation id="2839501879576190149">Ακολουθεί ψεύτικος ιστότοπος</translation>
@@ -1557,6 +1560,7 @@
 <translation id="3543935938072367282">Ταχύτερη ολοκλήρωση αγορών με την αυτόματη συμπλήρωση</translation>
 <translation id="3547442767634383572">Επισκόπηση προφίλ εργασίας</translation>
 <translation id="3547746132308051926">20 x 24 ίντσες</translation>
+<translation id="3549904448933807997">Πληροφορίες προγραμμάτων περιήγησης και προφίλ (συμπεριλαμβανομένων προσωπικών προφίλ και προφίλ εργασίας)</translation>
 <translation id="3552155506104542239">Προειδοποίηση: Αυτή η πολιτική είναι σε διένεξη με την πολιτική <ph name="POLICY_NAME" /> και δεν θα επηρεάσει τις εφαρμογές Android. Πέρα από αυτό, η πολιτική λειτουργεί με τον αναμενόμενο τρόπο.</translation>
 <translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
@@ -2399,6 +2403,7 @@
 <translation id="4887406273302438710">Προστασία κωδικών πρόσβασης με το Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για διαγραφή του ιστορικού περιήγησης, των cookie, της κρυφής μνήμης και άλλων στοιχείων στις ρυθμίσεις του Chrome</translation>
 <translation id="4892518386797173871">Πίσω</translation>
+<translation id="4894390983254799375">Όπως το αναγνωριστικό συσκευής, το όνομα, η έκδοση λειτουργικού συστήματος και το όνομα χρήστη λειτουργικού συστήματος</translation>
 <translation id="4895019427244614047">Διαγραφή διεύθυνσης</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Ολυμπιακοί Αγώνες</translation>
@@ -2837,6 +2842,7 @@
 <translation id="5593349413089863479">Η σύνδεση δεν είναι απολύτως ασφαλής.</translation>
 <translation id="5593640815048812868">Φορητοί υπολογιστές και notebook</translation>
 <translation id="5595485650161345191">Επεξεργασία διεύθυνσης</translation>
+<translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5596939519753369075">2 x 3,5 ίντσες</translation>
 <translation id="5597254438174353289">Μπλε 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ή <ph name="ISSUER_2_NAME" /></translation>
@@ -2935,6 +2941,7 @@
 <translation id="5764920692828389743">Αποστολή σε <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Για να δείτε τρόπους και απαιτήσεις παράδοσης, επιλέξτε μια διεύθυνση</translation>
 <translation id="57689295674415555">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας;</translation>
+<translation id="5773286975255318081">Όπως τα ονόματα χρήστη προφίλ και οι εκδόσεις του προγράμματος περιήγησης</translation>
 <translation id="5776313857861697733">Προτεραιότητα</translation>
 <translation id="577804500166306874">Φόρτωση αποτελέσματος</translation>
 <translation id="5781136890105823427">Το πείραμα ενεργοποιήθηκε</translation>
@@ -3241,7 +3248,6 @@
 <translation id="6284449872909111707">Αποστολή άμεσων μηνυμάτων και μηνυμάτων κειμένου</translation>
 <translation id="6284517535531159884">Τύπος αρχικών θέσεων παραλλαγών</translation>
 <translation id="6287197303017372967">Λάβετε λεπτομερείς οδηγίες για τον προορισμό σας με τη λειτουργία πλοήγησης.</translation>
-<translation id="6288559570252410796">Ερώτηση στη Λειτουργία AI της Google</translation>
 <translation id="628877850550444614">Βρέθηκε έκπτωση</translation>
 <translation id="6289939620939689042">Χρώμα σελίδας</translation>
 <translation id="6292819926564202163">Η μηχανή αναζήτησής σας στο Chrome</translation>
@@ -3550,6 +3556,7 @@
 <translation id="6772959465807028761">Για να χρησιμοποιήσετε το YouTube, συνεχίστε με τον Λογαριασμό σας Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Χρήση του YouTube με τις επιλογές του γονέα σου</translation>
+<translation id="6779290995699117286">Οι πληροφορίες προφίλ, προγράμματος περιήγησης και συσκευής είναι προσβάσιμες στον διαχειριστή σας. Ο διαχειριστής μπορεί να δει:</translation>
 <translation id="6779348349813025131">Η Διαχείριση κωδικών πρόσβασης Google χρειάζεται πρόσβαση στην Κλειδοθήκη macOS</translation>
 <translation id="6780449997190414928">Συνήθως συνδέεστε με ασφάλεια σε αυτόν τον ιστότοπο, αλλά το Chrome δεν μπόρεσε να χρησιμοποιήσει ασφαλή σύνδεση αυτή τη φορά. Κάποιος ίσως να προσπαθεί να παρακολουθήσει ή να τροποποιήσει τη σύνδεση δικτύου σας. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Μπορείτε να αλλάξετε τη μηχανή αναζήτησης ανά πάσα στιγμή στις ρυθμίσεις του Chrome.</translation>
@@ -3713,6 +3720,7 @@
 <translation id="7031646650991750659">Ποιες εφαρμογές Google Play έχετε εγκαταστήσει</translation>
 <translation id="7035705295266423040">Η τράπεζα θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να διαχειριστείτε τις ρυθμίσεις απορρήτου του Λογαριασμού σας Google.</translation>
+<translation id="7040230719604914234">Χειριστής</translation>
 <translation id="7042465939346919737">Η Google χρησιμοποιεί πληροφορίες από τη σελίδα ολοκλήρωσης αγοράς και άλλα σχετικά δεδομένα, για να προσφέρει αυτές τις επιλογές. Για να αποκρύψετε τις επιλογές πληρωμής αργότερα, μεταβείτε στις <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Περιορισμός αποτελεσμάτων</translation>
 <translation id="7043552168914147882">Μέσα με καρτέλες</translation>
@@ -4396,6 +4404,7 @@
 <translation id="8135546115396015134">αριστερό πλήκτρο</translation>
 <translation id="8137456439814903304">Ενέργεια και υπηρεσίες κοινής ωφέλειας</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από 1 μήνα}other{Δημιουργήθηκε πριν από {NUM_MONTHS} μήνες}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, τρέχουσα προεπιλογή. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Έκδοση PDF:</translation>
 <translation id="8149426793427495338">Ο υπολογιστής σας τέθηκε σε αδράνεια.</translation>
 <translation id="815036624016370447">Οι πληροφορίες από τον Λογαριασμό σας Google <ph name="ACCOUNT" /> μπορούν να σας βοηθήσουν να συμπληρώνετε πιο γρήγορα φόρμες στο Chrome</translation>
@@ -4510,7 +4519,6 @@
 <translation id="831997045666694187">Βράδυ</translation>
 <translation id="8321448084834652864">Μπορείτε να αλλάξετε τη μηχανή αναζήτησης ανά πάσα στιγμή στις ρυθμίσεις του Chromium.</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Enter για να ρωτήσετε τη Λειτουργία AI της Google</translation>
 <translation id="8322402665880479974">Κρεβάτια και προσκέφαλα</translation>
 <translation id="8323505966575306467">Προσθέστε περισσότερη προστασία στους κωδικούς πρόσβασής σας</translation>
 <translation id="832547548543012337">Διαγραφή διαβατηρίου</translation>
@@ -4686,6 +4694,7 @@
 <translation id="8606988009912891950">Τα θέματα διαφημίσεων βοηθούν τους ιστοτόπους να εμφανίζουν συναφείς διαφημίσεις, προστατεύοντας παράλληλα το ιστορικό περιήγησης και την ταυτότητά σας. Το Chrome μπορεί να σημειώνει θέματα ενδιαφέροντος βάσει του πρόσφατου ιστορικού περιήγησης. Αργότερα, ένας ιστότοπος που επισκέπτεστε μπορεί να ζητήσει από το Chrome συναφή θέματα για την εξατομίκευση των διαφημίσεων που βλέπετε.</translation>
 <translation id="8612919051706159390">Διαδικτυακές κοινότητες</translation>
 <translation id="8617269623452051934">χρήση της συσκευής σας</translation>
+<translation id="8619130384334725124">Τρέχουσα προεπιλογή</translation>
 <translation id="8620276786115098679">Φάκελος Kaku 7</translation>
 <translation id="8622864575115813231">Επικοινωνία με το χρηματοπιστωτικό σας ίδρυμα…</translation>
 <translation id="8624354461147303341">Λήψη εκπτώσεων</translation>
@@ -4763,6 +4772,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">ενσωματωμένο περιεχόμενο</translation>
 <translation id="8757526089434340176">Διαθέσιμη προσφορά Google Pay</translation>
+<translation id="8758529215314160755">Μπορείτε να επεξεργαστείτε το όνομά σας στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google <ph name="END_LINK" /><ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Αυτή η κάρτα έχει λήξει</translation>
 <translation id="87601671197631245">Αυτός ο ιστότοπος χρησιμοποιεί μια παρωχημένη διαμόρφωση ασφαλείας, η οποία μπορεί να εκθέσει τις πληροφορίες σας (για παράδειγμα, τους κωδικούς πρόσβασης, τα μηνύματα ή τα στοιχεία των πιστωτικών σας καρτών) κατά την αποστολή τους σε αυτόν τον ιστότοπο.</translation>
 <translation id="8763927697961133303">Συσκευή USB</translation>
@@ -5073,7 +5083,6 @@
 <translation id="950926967802086924">Κλειδί πρόσβασης • Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="955429569736351433">Επιτράπηκε η χρήση του VR</translation>
 <translation id="955627189349169688">Μπορείτε να εξαιρεθείτε από αυτή την πολιτική στις <ph name="BEGIN_LINK" />Ρυθμίσεις της λειτουργίας Συγχρονισμός Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Κουμπί Λειτουργίας AI, ενεργοποίηση για ερώτηση στη Λειτουργία AI της Google</translation>
 <translation id="95721182352849470">Κίτρινο 2</translation>
 <translation id="961663415146723894">Δέσιμο στο κάτω μέρος</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>

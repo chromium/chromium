@@ -1284,6 +1284,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5902752768726620872">{count,plural, =1{{count} አዲስ ትር}one{{count} አዲስ ትር}other{{count} አዲስ ትሮች}}</translation>
 <translation id="5911030830365207728">Google ትርጉም</translation>
 <translation id="5922999516621365983">ትርን ለመሰካት ወደዚህ ይጎትቱት።</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{እስከ 1 ፋይል፣ ትር ወይም ምስል ድረስ ያክሉ}one{እስከ {COUNT} ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}other{እስከ {COUNT} ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}}</translation>
 <translation id="5936006948844852401">ማከማቻን አስተዳድር</translation>
 <translation id="5936065461722368675">ሙሉ ገጹን ተርጉም</translation>
 <translation id="5937560539988385583">ገፅ ተተርጉሟል</translation>
@@ -1872,6 +1873,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8032569120109842252">የምከተላቸው</translation>
 <translation id="8035133914807600019">አዲስ አቃፊ…</translation>
 <translation id="8035412398498507358">ፎቶዎች</translation>
+<translation id="8037713009824540257">ጣቢያ አክል</translation>
 <translation id="8040407350301524547">ለአቅጣጫ አማራጮች «አቅጣጫዎችን ያግኙ» ላይ መታ ያድርጉ።</translation>
 <translation id="804427445359061970">የእርስዎን ትሮች ከሌሎች መሣሪያዎች እዚህ ያገኛሉ</translation>
 <translation id="8058655154417507695">ጊዜው የሚያበቃበት ዓመት</translation>

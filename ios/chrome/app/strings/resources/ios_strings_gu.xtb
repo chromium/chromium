@@ -359,7 +359,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />ની વિગતો બતાવો</translation>
 <translation id="2309265394777270359">ટૅબ બંધ કરો</translation>
 <translation id="2311077293164383652">પિન કરેલું ટૅબ બંધ કરો</translation>
-<translation id="2316129865977710310">નહીં, આભાર</translation>
+<translation id="2316129865977710310">ના, આભાર</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="2323697864063408084">તમારી લૉક સ્ક્રીન પર અને બૅનર તરીકે નોટિફિકેશન મેળવો જેથી તમારા માટે અગત્યનું હોય તે ક્યારેય ચૂકી ન જવાય</translation>
@@ -1284,6 +1284,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} નવું ટૅબ}one{{count} નવું ટૅબ}other{{count} નવા ટૅબ}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5922999516621365983">ટૅબને પિન કરવા માટે તેને અહીં ખેંચો.</translation>
+<translation id="5930982343430790032">{COUNT,plural, =1{વધુમાં વધુ 1 ફાઇલ, ટૅબ કે છબી ઉમેરો}one{વધુમાં વધુ {COUNT} ફાઇલ, ટૅબ અથવા છબી ઉમેરો}other{વધુમાં વધુ {COUNT} ફાઇલ, ટૅબ અથવા છબી ઉમેરો}}</translation>
 <translation id="5936006948844852401">સ્ટોરેજ મેનેજ કરો</translation>
 <translation id="5936065461722368675">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="5937560539988385583">પેજનો અનુવાદ કર્યો</translation>
@@ -1684,7 +1685,7 @@
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> વાંચ્યા વગરના લેખ.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
-<translation id="741204030948306876">હા, હું સંમત છું</translation>
+<translation id="741204030948306876">હા, મને માન્ય છે</translation>
 <translation id="7417689656810783109">ગ્રૂપનું નામ બદલો</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7425053386765766120">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
@@ -1872,6 +1873,7 @@
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8035133914807600019">નવું ફોલ્ડર...</translation>
 <translation id="8035412398498507358">Photos</translation>
+<translation id="8037713009824540257">સાઇટ ઉમેરો</translation>
 <translation id="8040407350301524547">રસ્તાના વિકલ્પો માટે, “દિશાનિર્દેશો મેળવો” પર ટૅપ કરો.</translation>
 <translation id="804427445359061970">તમને અન્ય ડિવાઇસમાંની તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8058655154417507695">સમાપ્તિ વર્ષ</translation>

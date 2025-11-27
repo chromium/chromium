@@ -225,6 +225,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3368138297038111198">Partage d'une fenêtre…</translation>
 <translation id="3386292677130313581">Demander avant d'autoriser des sites à connaître votre position (recommandé)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="3435896845095436175">Activer</translation>
 <translation id="344449859752187052">Cookies tiers bloqués</translation>
 <translation id="3448554387819310837">Lorsque cette option est activée, les sites peuvent demander à utiliser votre appareil photo. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre appareil photo.</translation>
 <translation id="3491678231052507920">Les sites utilisent généralement vos données et appareils de réalité virtuelle pour que vous puissiez lancer des sessions de réalité virtuelle</translation>
@@ -342,6 +343,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4672315773691449562">Appuyer sur Appli de navigateur, puis sur Chrome</translation>
 <translation id="4676059169848868271">Pour autoriser <ph name="APP_NAME" /> à utiliser le suivi des mains, activez-le également dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Gérer vos cartes</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
 <translation id="4755971844837804407">Lorsque cette option est activée, les sites peuvent vous présenter tous types d'annonces. Lorsqu'elle est désactivée, les sites ne peuvent pas afficher d'annonces intrusives ou trompeuses.</translation>
 <translation id="4779083564647765204">Zoom</translation>

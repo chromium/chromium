@@ -2176,6 +2176,7 @@
 <translation id="4506599922270137252">सिस्टम व्यवस्थापक से संपर्क करें</translation>
 <translation id="450710068430902550">व्यवस्थापक के साथ शेयर करना</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate की मदद से इस पेज का अनुवाद करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="4510703642214459906">जगह</translation>
 <translation id="4515275063822566619">कार्ड और पते की जानकारी Chrome और आपके Google खाते (<ph name="ACCOUNT_EMAIL" />) से ली जाती है. आप उन्हें <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर प्रबंधित कर सकते हैं.</translation>
 <translation id="4515847625438516456">माइक्रोकार और सबकॉम्पैक्ट कार</translation>
 <translation id="451601984112574365">ग्रीन 3</translation>
@@ -2402,7 +2403,7 @@
 <translation id="4887406273302438710">Windows Hello की मदद से पासवर्ड सुरक्षित रखें</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में जाकर, अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="4892518386797173871">पीछे का हिस्सा</translation>
-<translation id="4894390983254799375">जैसे, डिवाइस आईडी, नाम, ओएस वर्शन, और ओएस का उपयोगकर्ता नाम</translation>
+<translation id="4894390983254799375">जैसे: डिवाइस आईडी, डिवाइस का नाम, ओएस वर्शन, और ओएस का उपयोगकर्ता नाम</translation>
 <translation id="4895019427244614047">पता मिटाएं</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ओलंपिक</translation>
@@ -2840,6 +2841,7 @@
 <translation id="5593349413089863479">कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="5593640815048812868">लैपटॉप और नोटबुक</translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
+<translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5596939519753369075">2 x 3.5 इंच</translation>
 <translation id="5597254438174353289">ब्लू 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> या <ph name="ISSUER_2_NAME" /></translation>
@@ -3245,7 +3247,6 @@
 <translation id="6284449872909111707">टेक्स्ट और फटाफट मैसेज सेवा</translation>
 <translation id="6284517535531159884">वैरिएशन सीड टाइप</translation>
 <translation id="6287197303017372967">नेविगेट करने की सुविधा का इस्तेमाल करके, अपनी मंजिल पर पहुंचने के मोड़-दर-मोड़ निर्देश पाएं.</translation>
-<translation id="6288559570252410796">Google के एआई मोड में सवाल पूछें</translation>
 <translation id="628877850550444614">छूट मिली</translation>
 <translation id="6289939620939689042">पेज का रंग</translation>
 <translation id="6292819926564202163">Chrome में आपका सर्च इंजन</translation>
@@ -3553,7 +3554,7 @@
 <translation id="6772959465807028761">YouTube का इस्तेमाल करने के लिए, अपने Google खाते से प्रोसेस जारी रखें</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">अपने माता-पिता की चुनी गई सेटिंग के हिसाब से, YouTube का इस्तेमाल करें</translation>
-<translation id="6779290995699117286">आपका एडमिन, प्रोफ़ाइल, ब्राउज़र, और डिवाइस की जानकारी ऐक्सेस कर सकता है. वह यह जानकारी देख सकता है:</translation>
+<translation id="6779290995699117286">आपका एडमिन यह जानकारी ऐक्सेस कर सकता है: प्रोफ़ाइल, ब्राउज़र, और डिवाइस की जानकारी. एडमिन यह देख सकता है:</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
 <translation id="6780449997190414928">Chrome आम तौर पर आपको इस साइट से सुरक्षित तरीके से कनेक्ट करता है, लेकिन इस बार इसे साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर चोरी-छिपे आपके इंटरनेट पर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chrome की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
@@ -3717,6 +3718,7 @@
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>
 <translation id="7035705295266423040">बैंक आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने Google खाते की निजता सेटिंग मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7042465939346919737">Google, ये विकल्प उपलब्ध कराने के लिए चेकआउट पेज और काम के अन्य डेटा से मिली जानकारी का इस्तेमाल करता है. बाद में पेमेंट करने के विकल्प छिपाने के लिए <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> पर जाएं</translation>
 <translation id="7042616127917168121">नतीजों को बेहतर बनाएं</translation>
 <translation id="7043552168914147882">टैब स्टॉक</translation>
@@ -4371,6 +4373,7 @@
 <translation id="8077669823243888800">चाइनीज़ #8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8078006011486731853">{0,plural, =1{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें अपलोड करनी हैं?}}</translation>
 <translation id="8079031581361219619">साइट को फिर लोड करें?</translation>
+<translation id="8079591184016291275">इवेंट का नाम</translation>
 <translation id="8079976827192572403">खतरनाक साइट</translation>
 <translation id="8081087320434522107">सिडान</translation>
 <translation id="8086429410809447605">महिलाओं के कपड़े</translation>
@@ -4515,7 +4518,6 @@
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321448084834652864">Chromium की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google के एआई मोड में सवाल पूछने के लिए Enter दबाएं</translation>
 <translation id="8322402665880479974">बेड और हेडबोर्ड</translation>
 <translation id="8323505966575306467">अपने पासवर्ड को और सुरक्षित बनाएं</translation>
 <translation id="832547548543012337">पासपोर्ट की जानकारी मिटाएं</translation>
@@ -4769,6 +4771,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">एम्बेड किया गया कॉन्टेंट</translation>
 <translation id="8757526089434340176">Google Pay ऑफ़र उपलब्ध है</translation>
+<translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> <ph name="ACCOUNT" /> पर जाकर, अपना नाम बदला जा सकता है</translation>
 <translation id="8759274551635299824">इस कार्ड की अवधि खत्म हो चुकी है</translation>
 <translation id="87601671197631245">यह साइट एक पुराने सुरक्षा कॉन्फ़िगरेशन का इस्तेमाल करती है. इस वजह से, साइट पर भेजी जाने वाली आपकी जानकारी (उदाहरण के लिए, पासवर्ड, मैसेज या क्रेडिट कार्ड) को कोई और देख सकता है.</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
@@ -5079,7 +5082,6 @@
 <translation id="950926967802086924">पासकी • Google Password Manager</translation>
 <translation id="955429569736351433">वीआर इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome सिंक की सेटिंग<ph name="END_LINK" /> में जाकर, इस नीति से ऑप्ट आउट किया जा सकता है.</translation>
-<translation id="95676157383774931">एआई मोड का बटन. Google के एआई मोड में सवाल पूछने के लिए टैप करें</translation>
 <translation id="95721182352849470">येलो 2</translation>
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="961856697154696964">ब्राउज़िंग डेटा मिटाएं</translation>

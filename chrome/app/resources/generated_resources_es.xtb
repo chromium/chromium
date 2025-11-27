@@ -1260,6 +1260,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="184273675144259287">Sustituye tus aplicaciones y archivos de Linux por una copia de seguridad anterior</translation>
 <translation id="1842766183094193446">¿Seguro que quieres habilitar el modo Demo?</translation>
 <translation id="1843048149176045210">Copiar enlace de descarga</translation>
+<translation id="1843347690926158494">Buscar en esta pestaña con Google Lens</translation>
 <translation id="1845060436536902492">ChromeVox, el lector de pantalla de ChromeOS Flex, lo usan principalmente las personas invidentes o con baja visión para leer el texto que se muestra en la pantalla con un sintetizador de voz o una pantalla braille. Pulsa la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar una visita guiada rápida.</translation>
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Pulsa la tecla Ctrl y haz clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
@@ -1576,7 +1577,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2061589908388230480">Si Chromium detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión. <ph name="BEGIN_LINK" />Más información sobre el cambio de contraseña automatizado<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Navega por Internet sin guardar tu historial de navegación con una ventana de Incógnito</translation>
 <translation id="206308717637808771">Elimina los datos al cerrar todas las ventanas. Los datos se tratan igual que en el sitio web que estás viendo.</translation>
-<translation id="2065405795449409761">Un software automatizado de pruebas está controlando Chrome.</translation>
 <translation id="2066700471214517561">Usa el micrófono con formación de haces para que la persona que usa el Chromebook se oiga con claridad.</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminado de imprimir en <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
@@ -3770,6 +3770,7 @@ Solo los desarrolladores web deben activar esta función y solo deben usarla con
 <translation id="3581861561942370740">Buscar en el historial de descargas</translation>
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una brecha de seguridad de datos</translation>
 <translation id="3582299299336701326">Si la pantalla es clara, la oscurece. Si es oscura, la aclara. Pulsa la tecla de búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
+<translation id="358381413217813387">Busca esta página con Google Lens</translation>
 <translation id="3584169441612580296">Leer y modificar fotos, música y otros archivos multimedia de tu ordenador</translation>
 <translation id="3586741240886978899">Usada en este sitio</translation>
 <translation id="3586806079541226322">No se puede abrir el archivo</translation>
@@ -6583,6 +6584,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5523532775593636291">Los sitios que añadas siempre permanecerán activos y no se liberará memoria de ellos</translation>
 <translation id="5523558474028191231">El nombre puede contener letras, números y caracteres especiales, y debe tener como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526745900034778153">Iniciar sesión para seguir con la sincronización</translation>
+<translation id="5527211644528700597">Usa métodos en el dispositivo para detectar amenazas</translation>
 <translation id="5527463195266282916">Se ha intentado instalar una versión anterior de la extensión.</translation>
 <translation id="5527474464531963247">También puedes seleccionar otra red.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
@@ -6778,6 +6780,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
 <translation id="5663653125349867535">&amp;Lista de lectura</translation>
 <translation id="5663918299073387939">Los sitios suelen solicitar el control y la reprogramación de dispositivos MIDI para crear música, editarla o actualizar el firmware del dispositivo</translation>
+<translation id="5666116074010586111">Envía la URL y el contenido de la página a Google para detectar amenazas más rápido</translation>
 <translation id="5666911576871845853">&amp;Añadir nuevo perfil</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
@@ -7245,7 +7248,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5997337190805127100">Más información sobre el acceso del sitio web</translation>
 <translation id="5998458948782718639">Ayuda a mejorar Autocompletar</translation>
 <translation id="5998976983953384016">Confirmar y activar</translation>
-<translation id="5999024481231496910">Has habilitado las pruebas de la eliminación gradual de cookies de terceros. Este ajuste no se puede anular en la página de configuración. Si quieres volver a habilitar las cookies de terceros, reinicia Chrome con esta función inhabilitada.</translation>
 <translation id="5999630716831179808">Voces</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001052984304731761">Inicia sesión para que Chrome pueda sugerir grupos de pestañas</translation>
@@ -7438,6 +7440,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6135826623269483856">No tienen permiso para gestionar las ventanas en ninguna de tus pantallas</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida mediante un PIN. Para gestionar huellas dactilares, primero debes crear un PIN.</translation>
+<translation id="6136637346277431354">Añade pestañas y más</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6141988275892716286">Confirmar descarga</translation>
@@ -7668,7 +7671,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="628726841779494414">Administra tus impresoras en los ajustes de impresora</translation>
 <translation id="6287288864483377583">Solo se puede importar un certificado</translation>
 <translation id="6287828400772161253">Teléfono Android (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Preguntar a Modo IA de Google</translation>
 <translation id="6290613030083731160">No hay dispositivos cercanos disponibles para compartir archivos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">No se puede restaurar por falta de espacio de almacenamiento.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>
@@ -7959,6 +7961,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Reinicia tu Chromebook y vuelve a intentarlo</translation>
 <translation id="6511827214781912955">Te recomendamos que elimines <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas</translation>
+<translation id="6512364354776355686">Te avisa de todas las conexiones no seguras</translation>
 <translation id="6512759338201777379">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" /></translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móviles si no te has conectado a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
@@ -9143,6 +9146,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7340179705876485790">Para retroceder más de una página, mantén pulsado el botón para volver.</translation>
 <translation id="7340650977506865820">El sitio web está compartiendo tu pantalla</translation>
 <translation id="7340757554212515731">Automáticamente envía informes sobre fallos, así como datos de diagnóstico y uso, a Google</translation>
+<translation id="7340886226071938450">Posición de la barra de pestañas</translation>
 <translation id="734088800888587319">Métricas de red</translation>
 <translation id="7341834142292923918">Quiere acceder a este sitio web</translation>
 <translation id="7343372807593926528">Describe el problema antes de enviar tus comentarios.</translation>
@@ -9519,6 +9523,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="760197030861754408">Accede a <ph name="LANDING_PAGE" /> para establecer conexión.</translation>
 <translation id="7602079150116086782">No hay pestañas de otros dispositivos.</translation>
 <translation id="7602173054665172958">Gestión de impresión</translation>
+<translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
 <translation id="7603785829538808504">Los sitios que se indican a continuación tienen una configuración personalizada.</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 contraseña no importada}other{{NUM_PASSWORDS} contraseñas no importadas}}</translation>
 <translation id="7605163396341021431">Permite a las aplicaciones Android controlar dispositivos USB en este Chromebook</translation>
@@ -9872,6 +9877,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7830833461614351956">¿Copiar <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
+<translation id="7833725807105678871">Prioriza la velocidad del sitio por encima de las funciones de seguridad mejoradas</translation>
 <translation id="7834832693620032149">Para compartir audio, comparte una pestaña o una ventana</translation>
 <translation id="7836577093182643605">Lista de temas que has bloqueado y que no quieres que se compartan con los sitios</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
@@ -11144,6 +11150,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8690129572193755009">Los sitios pueden solicitar permiso para procesar protocolos</translation>
 <translation id="869144235543261764">Esta pestaña está reproduciendo un vídeo en modo Imagen en imagen</translation>
 <translation id="869167754614449887">Se ha eliminado <ph name="FILE_NAME" /> del historial de descargas</translation>
+<translation id="8691990641861252959">Te avisa de las conexiones no seguras en el Internet abierto</translation>
 <translation id="8692107307702113268">La contraseña contiene más de 1000 caracteres</translation>
 <translation id="8693862390730570097">No permitir que Ayúdame a escribir se abra automáticamente</translation>
 <translation id="8694596275649352090">Bloquear al suspender o al cerrar la tapa</translation>
@@ -11345,6 +11352,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8821268776955756404">Ya puedes usar <ph name="APP_NAME" />.</translation>
 <translation id="8821647731831124007">No hay puntos de acceso disponibles</translation>
 <translation id="882204272221080310">Actualizar firmware para mayor seguridad</translation>
+<translation id="8822690627597552656">Ralentiza algunos sitios desconocidos para bloquear ataques habituales</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto de enlace</translation>
 <translation id="8823704566850948458">Sugerir contraseña...</translation>
 <translation id="8823963789776061136">También puedes seleccionar el archivo PPD de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

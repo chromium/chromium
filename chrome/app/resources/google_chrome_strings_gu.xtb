@@ -167,7 +167,6 @@
 <translation id="2841525013647267359">આમાંથી અનુવાદ કરો</translation>
 <translation id="2846251086934905009">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલર પૂર્ણ થયું નહીં. ઇન્સ્ટોલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="2853415089995957805">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
-<translation id="2856481144859256719">Google Searchમાં AI મોડનો શૉર્ટકટ હંમેશાં બતાવો</translation>
 <translation id="2857540653560290388">Chrome લૉન્ચ કરી રહ્યાં છીએ…</translation>
 <translation id="286025080868315611">Chrome શા માટે અમુક ડાઉનલોડ કરેલી ફાઇલને બ્લૉક કરે છે તે જાણો</translation>
 <translation id="2861074815332034794">Chrome અપડેટ કરી રહ્યાં છીએ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -667,6 +666,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="835927394551949760">Googleને પૂછો</translation>
 <translation id="8362914115861174987">આ ભાષામાં અનુવાદ કરો</translation>
 <translation id="8366770919198174997">પર્ફોર્મન્સ ઘટાડે છે પરંતુ Chromeને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>
+<translation id="8367705492654390392">કંઈપણ પૂછો</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8377158135256176353">Chrome Canaryમાં Gemini ટૉગલ કરો</translation>
 <translation id="8387459386171870978">Chromeનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>

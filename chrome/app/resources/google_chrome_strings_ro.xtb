@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">Tradu din</translation>
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
 <translation id="2853415089995957805">Chrome preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
-<translation id="2856481144859256719">Afișează întotdeauna comanda rapidă pentru Modul AI în Căutarea Google</translation>
 <translation id="2857540653560290388">Se lansează Chrome...</translation>
 <translation id="286025080868315611">Află de ce Chrome blochează unele descărcări</translation>
 <translation id="2861074815332034794">Se actualizează Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -660,6 +659,7 @@
 <translation id="835927394551949760">Întreabă Google</translation>
 <translation id="8362914115861174987">Tradu în</translation>
 <translation id="8366770919198174997">Reduce performanța, dar face Chrome mai rezistent la atacuri</translation>
+<translation id="8367705492654390392">Întreabă orice</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8377158135256176353">Activează / dezactivează Gemini în Chrome Canary</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>

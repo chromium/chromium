@@ -693,6 +693,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2127747486437921899">Corsivo</translation>
 <translation id="2130448033692577677">I modelli che hai specificato potrebbero non essere applicati a causa della mancata impostazione della policy DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Questi sono mostrati in ordine casuale. Puoi modificare l'impostazione predefinita in qualsiasi momento.</translation>
 <translation id="2137891579555018930">In attesa di autorizzazione…</translation>
 <translation id="213826338245044447">Preferiti mobile</translation>
@@ -912,6 +913,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2452837234288608067">Non posso aiutarti. Riprova.</translation>
 <translation id="2453045048779611513">La tua organizzazione limita ciò che puoi salvare</translation>
 <translation id="2456755709261364512">La batteria deve avere una percentuale di carica superiore al <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">Policy del browser applicate (policy relative a computer e profili)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ti offre uno strumento centralizzato per configurare le policy del browser dal cloud</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2462932596748424101">Social network</translation>
@@ -1123,6 +1125,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2826760142808435982">La connessione è stata criptata e autenticata utilizzando <ph name="CIPHER" /> e <ph name="KX" /> come meccanismo di scambio delle chiavi.</translation>
 <translation id="2833637280516285136">Talk-show radiofonici</translation>
 <translation id="2835170189407361413">Cancella modulo</translation>
+<translation id="2835907903001172712">Panoramica del browser</translation>
 <translation id="2837891525090413132">Può chiedere di bloccare e usare la tastiera</translation>
 <translation id="2839032553903800133">Notifiche bloccate</translation>
 <translation id="2839501879576190149">Sito falso</translation>
@@ -1554,6 +1557,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3543935938072367282">Effettua pagamenti in modo più rapido con la compilazione automatica</translation>
 <translation id="3547442767634383572">Panoramica del profilo di lavoro</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
+<translation id="3549904448933807997">Informazioni su browser e profili (inclusi profili personali e di lavoro)</translation>
 <translation id="3552155506104542239">Avviso: questa policy è in conflitto con <ph name="POLICY_NAME" /> e non avrà alcun effetto sulle app per Android. In caso contrario, questa policy funziona come previsto.</translation>
 <translation id="3552297013052089404">Carattere Sans Serif</translation>
 <translation id="3558573058928565255">Giorno e ora</translation>
@@ -2395,6 +2399,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4887406273302438710">Proteggere le password con Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per eliminare la cronologia di navigazione, i cookie e altri dati e svuotare la cache nelle impostazioni di Chrome</translation>
 <translation id="4892518386797173871">Posteriore</translation>
+<translation id="4894390983254799375">Ad esempio, ID dispositivo, nome, versione del sistema operativo e nome utente del sistema operativo</translation>
 <translation id="4895019427244614047">Elimina l'indirizzo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadi</translation>
@@ -2832,6 +2837,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5593349413089863479">La connessione non è completamente sicura</translation>
 <translation id="5593640815048812868">Laptop e notebook</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
+<translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5596939519753369075">2 x 3,5 in</translation>
 <translation id="5597254438174353289">Blu 3</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
@@ -2930,6 +2936,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5764920692828389743">Invia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>
 <translation id="57689295674415555">Il numero della carta virtuale non è stato inserito?</translation>
+<translation id="5773286975255318081">Ad esempio, nomi utente dei profili e versioni del browser</translation>
 <translation id="5776313857861697733">Priorità</translation>
 <translation id="577804500166306874">Caricamento del risultato</translation>
 <translation id="5781136890105823427">Esperimento attivato</translation>
@@ -3235,7 +3242,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6284449872909111707">SMS e messaggistica immediata</translation>
 <translation id="6284517535531159884">Tipo di origine varianti</translation>
 <translation id="6287197303017372967">Usa la funzionalità di navigazione per ricevere indicazioni stradali passo passo per raggiungere la tua destinazione.</translation>
-<translation id="6288559570252410796">Chiedi a Google AI Mode</translation>
 <translation id="628877850550444614">È stato trovato uno sconto</translation>
 <translation id="6289939620939689042">Colore pagina</translation>
 <translation id="6292819926564202163">Il tuo motore di ricerca in Chrome</translation>
@@ -3543,6 +3549,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6772959465807028761">Per usare YouTube, continua con il tuo Account Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa YouTube con le scelte del tuo genitore</translation>
+<translation id="6779290995699117286">Il profilo, il browser e le informazioni del dispositivo sono accessibili all'amministratore. Possono vedere:</translation>
 <translation id="6779348349813025131">Gestore delle password di Google richiede l'accesso al Portachiavi di macOS</translation>
 <translation id="6780449997190414928">In genere ti connetti a questo sito in modo sicuro, ma questa volta Chrome non è riuscito a utilizzare una connessione sicura. Un malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chrome.</translation>
@@ -3706,6 +3713,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
 <translation id="7035705295266423040">La tua banca vuole verificare la tua identità</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per gestire le impostazioni sulla privacy del tuo Account Google.</translation>
+<translation id="7040230719604914234">Operatore</translation>
 <translation id="7042465939346919737">Per offrire queste opzioni, Google utilizza le informazioni della pagina di pagamento e altri dati pertinenti. Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Perfeziona risultati</translation>
 <translation id="7043552168914147882">Carta con linguetta</translation>
@@ -4389,6 +4397,7 @@ Ulteriori dettagli:
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
+<translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versione PDF:</translation>
 <translation id="8149426793427495338">Il computer è entrato in modalità sospensione.</translation>
 <translation id="815036624016370447">Le informazioni del tuo Account Google <ph name="ACCOUNT" /> possono aiutarti a compilare i moduli più velocemente in Chrome</translation>
@@ -4503,7 +4512,6 @@ Ulteriori dettagli:
 <translation id="831997045666694187">Sera</translation>
 <translation id="8321448084834652864">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chromium.</translation>
 <translation id="8321476692217554900">Notifiche</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per chiedere a Google AI Mode</translation>
 <translation id="8322402665880479974">Letti e testiere</translation>
 <translation id="8323505966575306467">Aggiungi più protezione alle tue password</translation>
 <translation id="832547548543012337">Elimina il passaporto</translation>
@@ -4678,6 +4686,7 @@ Ulteriori dettagli:
 <translation id="8606988009912891950">Gli argomenti degli annunci consentono ai siti di mostrarti annunci pertinenti proteggendo allo stesso tempo la tua cronologia di navigazione e la tua identità. Chrome può rilevare argomenti di interesse in base alla tua cronologia di navigazione recente. Dopodiché, un sito che visiti può chiedere a Chrome argomenti pertinenti per personalizzare gli annunci che vedi.</translation>
 <translation id="8612919051706159390">Community online</translation>
 <translation id="8617269623452051934">utilizzo del tuo dispositivo</translation>
+<translation id="8619130384334725124">Valore predefinito attuale</translation>
 <translation id="8620276786115098679">Busta Kaku 7</translation>
 <translation id="8622864575115813231">Contatto dell'istituto finanziario in corso…</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
@@ -4755,6 +4764,7 @@ Ulteriori dettagli:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">contenuti incorporati</translation>
 <translation id="8757526089434340176">Offerta Google Pay disponibile</translation>
+<translation id="8758529215314160755">Puoi modificare il tuo nome nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -5064,7 +5074,6 @@ Ulteriori dettagli:
 <translation id="950926967802086924">Passkey • Gestore delle password di Google</translation>
 <translation id="955429569736351433">VR consentita</translation>
 <translation id="955627189349169688">Puoi disattivare questa policy nelle <ph name="BEGIN_LINK" />impostazioni di Sincronizzazione Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Pulsante AI Mode, attiva per chiedere a Google AI Mode</translation>
 <translation id="95721182352849470">Giallo 2</translation>
 <translation id="961663415146723894">Rilegatura in basso</translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>

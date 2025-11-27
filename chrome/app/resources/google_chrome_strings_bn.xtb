@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">এই ভাষা থেকে অনুবাদ করুন</translation>
 <translation id="2846251086934905009">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার সম্পূর্ণ হয়নি। ইনস্টলেশন বাতিল করা হয়েছে।</translation>
 <translation id="2853415089995957805">আপনি দেখতে পারেন এমন পৃষ্ঠা Chrome প্রিলোড করে, যাতে আপনি দেখার সময় সেগুলি দ্রুত লোড হতে পারে</translation>
-<translation id="2856481144859256719">Google Search শর্টকাটে সবসময় AI মোড দেখুন</translation>
 <translation id="2857540653560290388">Chrome লঞ্চ করা হচ্ছে...</translation>
 <translation id="286025080868315611">Chrome কেন কিছু ডাউনলোড ব্লক করে তা জানুন</translation>
 <translation id="2861074815332034794">Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -664,6 +663,7 @@
 <translation id="835927394551949760">Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="8362914115861174987">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="8366770919198174997">পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের হাত থেকে Chrome-কে আরও বেশি প্রতিরোধক করে তোলে</translation>
+<translation id="8367705492654390392">যেকোনও কিছু জিজ্ঞাসা করুন</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="8377158135256176353">Chrome ক্যানারি-তে Gemini টগল করুন</translation>
 <translation id="8387459386171870978">Chrome ব্যবহার করা চালিয়ে যান</translation>

@@ -225,6 +225,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3368138297038111198">Sharing a window</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="3435896845095436175">Enable</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
 <translation id="3448554387819310837">When on, sites can ask to use your camera. When off, sites can't use your camera.</translation>
 <translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>
@@ -342,6 +343,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tap Browser app, then tap Chrome</translation>
 <translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Manage your cards</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -678,6 +680,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>
+<translation id="8493548450030356203">Pop-up zoom window</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>

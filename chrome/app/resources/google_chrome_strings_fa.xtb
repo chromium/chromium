@@ -164,7 +164,6 @@
 <translation id="2841525013647267359">ترجمه کردن از</translation>
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2853415089995957805">‏‫Chrome صفحه‌هایی را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بارگیری شوند</translation>
-<translation id="2856481144859256719">‏«حالت هوش مصنوعی» همیشه در «میان‌بر جستجوی Google» نشان داده شود</translation>
 <translation id="2857540653560290388">‏درحال راه‌اندازی Chrome…</translation>
 <translation id="286025080868315611">‏ببینید چرا Chrome برخی‌از بارگیری‌ها را مسدود می‌کند</translation>
 <translation id="2861074815332034794">‏درحال به‌روزرسانی Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -659,6 +658,7 @@
 <translation id="835927394551949760">‏از Google بپرسید</translation>
 <translation id="8362914115861174987">ترجمه به</translation>
 <translation id="8366770919198174997">‏عملکرد را کاهش می‌دهد اما Chrome را دربرابر حملات مقاوم‌تر می‌کند</translation>
+<translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8377158135256176353">‏روشن/خاموش کردن Gemini در Chrome Canary</translation>
 <translation id="8387459386171870978">‏ادامه استفاده از Chrome</translation>

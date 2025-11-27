@@ -166,7 +166,6 @@
 <translation id="2841525013647267359">Dịch từ</translation>
 <translation id="2846251086934905009">Lỗi cài đặt: Chưa hoàn tất trình cài đặt. Hoạt động cài đặt đã bị huỷ.</translation>
 <translation id="2853415089995957805">Chrome tải trước các trang mà bạn có thể sẽ truy cập để các trang đó tải nhanh hơn khi bạn truy cập</translation>
-<translation id="2856481144859256719">Luôn hiện lối tắt đến Chế độ AI trên Google Tìm kiếm</translation>
 <translation id="2857540653560290388">Đang khởi động Chrome...</translation>
 <translation id="286025080868315611">Tìm hiểu lý do Chrome chặn một số nội dung tải xuống</translation>
 <translation id="2861074815332034794">Đang cập nhật Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -664,6 +663,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="835927394551949760">Hỏi Google</translation>
 <translation id="8362914115861174987">Dịch sang</translation>
 <translation id="8366770919198174997">Làm giảm hiệu suất nhưng giúp Chrome tăng khả năng chống lại các cuộc tấn công</translation>
+<translation id="8367705492654390392">Đặt câu hỏi bất kỳ</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="8377158135256176353">Bật/tắt Gemini trong Chrome Canary</translation>
 <translation id="8387459386171870978">Tiếp tục sử dụng Chrome</translation>

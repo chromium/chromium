@@ -167,7 +167,6 @@
 <translation id="2846251086934905009">Грешка при инсталацији: Програм за инсталацију није завршио инсталацију. Инсталација је отказана.</translation>
 <translation id="2847479871509788944">Уклони из Chromium-а...</translation>
 <translation id="2850691299438350830">Штити вас у Chromium-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени.</translation>
-<translation id="2856481144859256719">Увек приказуј пречицу за AI режим у Google претрази</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2910007522516064972">О &amp;Chromium-у</translation>
 <translation id="2915996080311180594">Рестартуј касније</translation>
@@ -629,6 +628,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8359544530202147897">Ажурирајте Chromium да бисте наставили да користите Chromium податке на Google налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Да бисте добијали будућа Chromium ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.</translation>
 <translation id="8362914115861174987">Преводи на језик</translation>
+<translation id="8367705492654390392">Упитајте било шта</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="8372327902843331129">Да би вам лозинке и други садржај били доступни на свим уређајима, пријавите се у Chromium. Ова лозинка ће бити сачувана на Google налогу када се пријавите.</translation>
 <translation id="837460953767177950">Затим треба да рестартујете Chromium.</translation>
