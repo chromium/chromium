@@ -27,6 +27,9 @@ class CONTENT_EXPORT SharedStorageCodeCacheHostProxy
       const GURL& script_url);
   ~SharedStorageCodeCacheHostProxy() override;
 
+  void GetPendingBackend(blink::mojom::CodeCacheType cache_type,
+                         GetPendingBackendCallback callback) override;
+
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
                                     const GURL& url,
                                     base::Time expected_response_time,

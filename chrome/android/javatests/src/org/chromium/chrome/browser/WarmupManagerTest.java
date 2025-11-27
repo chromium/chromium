@@ -538,7 +538,5 @@ public class WarmupManagerTest {
                 "The updated context should have a scaled up densityDpi",
                 DisplayUtil.getUiDensityForAutomotive(baseContext, baseDensityDpi),
                 updatedDensityDpi);
-
-        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
     }
 }

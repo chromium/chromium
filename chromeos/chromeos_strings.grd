@@ -7249,6 +7249,9 @@
       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the class tools notification">
         Class Tools
       </message>
+       <message name="IDS_BOCA_SHARE_SCREEN_NOTIFICATION_MESSAGE" desc="Message of a notification that tells the user that the Class Tools app is sharing their screen to a display">
+        Class Tools is sharing your screen to <ph name="RECEIVER_NAME">$1<ex>Classroom 101</ex></ph>
+      </message>
 
       <!-- Strings for Spotlight notifications -->
       <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
@@ -7268,7 +7271,7 @@
 
       <!-- Strings for Class Tools remote receiver -->
       <message name="IDS_BOCA_RECEIVER_TITLE" desc="Title of an app which runs in kiosk mode and receives incoming screen share presentations. Screen share presentations are initiated from the Class Tools app on another ChromeOS device.">
-        Class Tools screen share
+        Class Tools display
       </message>
     </messages>
   </release>

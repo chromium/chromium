@@ -26,7 +26,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -51,6 +50,7 @@
 #include "content/browser/indexed_db/status.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -64,25 +64,6 @@ using blink::IndexedDBObjectStoreMetadata;
 namespace content::indexed_db {
 
 namespace {
-
-std::string WriteBlobToFileResultToString(
-    storage::mojom::WriteBlobToFileResult result) {
-  switch (result) {
-    case storage::mojom::WriteBlobToFileResult::kError:
-      return "Error";
-    case storage::mojom::WriteBlobToFileResult::kBadPath:
-      return "BadPath";
-    case storage::mojom::WriteBlobToFileResult::kInvalidBlob:
-      return "InvalidBlob";
-    case storage::mojom::WriteBlobToFileResult::kIOError:
-      return "IOError";
-    case storage::mojom::WriteBlobToFileResult::kTimestampError:
-      return "TimestampError";
-    case storage::mojom::WriteBlobToFileResult::kSuccess:
-      return "Success";
-  }
-  NOTREACHED();
-}
 
 // Disabled in some tests.
 bool g_inactivity_timeout_enabled = true;
@@ -821,29 +802,35 @@ bool Transaction::CreateExternalObjects(
   return true;
 }
 
-Status Transaction::BlobWriteComplete(
-    BlobWriteResult result,
-    storage::mojom::WriteBlobToFileResult error) {
+Status Transaction::BlobWriteComplete(StatusOr<BlobWriteResult> result) {
+  // Log this histogram in both success and error cases, but only when blobs
+  // were actually written in the transaction. An error `result` can only arise
+  // when blob write was attempted. A `result` of `kRunPhaseTwoAsync` indicates
+  // that non-zero blobs were written.
+  constexpr char kHistogramName[] = "IndexedDB.BackingStore.WriteBlobs";
+
   TRACE_EVENT0("IndexedDB", "Transaction::BlobWriteComplete");
   if (state_ == FINISHED) {  // aborted
     return Status::OK();
   }
   DCHECK_EQ(state_, COMMITTING);
 
-  switch (result) {
-    case BlobWriteResult::kFailure: {
-      Status status = Abort(
-          DatabaseError(blink::mojom::IDBException::kDataError,
-                        base::ASCIIToUTF16(base::StringPrintf(
-                            "Failed to write blobs (%s)",
-                            WriteBlobToFileResultToString(error).c_str()))));
-      if (!status.ok()) {
-        bucket_context_->OnDatabaseError(database_.get(), status, {});
-      }
-      // The result is ignored.
-      return Status::OK();
+  if (!result.has_value()) {
+    LogStatus(result.error(), kHistogramName, bucket_context_->in_memory());
+    Status status = Abort(DatabaseError(
+        blink::mojom::IDBException::kDataError,
+        base::ASCIIToUTF16(absl::StrFormat("Failed to write blobs (%s)",
+                                           result.error().ToString()))));
+    if (!status.ok()) {
+      bucket_context_->OnDatabaseError(database_.get(), status, {});
     }
+    // The result is ignored.
+    return Status::OK();
+  }
+
+  switch (result.value()) {
     case BlobWriteResult::kRunPhaseTwoAsync:
+      LogStatus(Status::OK(), kHistogramName, bucket_context_->in_memory());
       ScheduleTask(/*operation_name_for_metrics=*/{},
                    base::BindOnce(&CommitPhaseTwoProxy));
       bucket_context_->QueueRunTasks();
@@ -852,7 +839,6 @@ Status Transaction::BlobWriteComplete(
       return CommitPhaseTwo();
     }
   }
-  NOTREACHED();
 }
 
 Status Transaction::DoPendingCommit() {
@@ -904,12 +890,12 @@ Status Transaction::DoPendingCommit() {
       backing_store_transaction_->CommitPhaseOne(
           /*blob_write_callback=*/
           base::BindOnce(
-              [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
-                 storage::mojom::WriteBlobToFileResult error) {
+              [](base::WeakPtr<Transaction> transaction,
+                 StatusOr<BlobWriteResult> result) {
                 if (!transaction) {
                   return Status::OK();
                 }
-                return transaction->BlobWriteComplete(result, error);
+                return transaction->BlobWriteComplete(result);
               },
               ptr_factory_.GetWeakPtr()),
           // This callback is only used by SQLite. The LevelDB version of this

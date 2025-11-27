@@ -99,12 +99,14 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
             StyleRef(), child->StyleRef().Display());
 
     if (IsA<LayoutTextCombine>(child)) [[unlikely]] {
-      if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
+      if (!LayoutTextCombine::IsSupportedMode(
+              new_style_builder.GetWritingMode())) {
         // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||
                To<LayoutText>(child->SlowFirstChild())->IsWordBreak() ||
+               !child->SlowFirstChild()->GetNode() ||
                child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.

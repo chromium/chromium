@@ -130,8 +130,6 @@ class OnDeviceTranslationServiceController
   // The idle timeout for the translation service. When the service is idle for
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
-  // TODO(crbug.com/335374928): implement the error handling for the translation
-  // service crash.
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
   // Used to listen for changes on the pref values of TranslateKit component and
   // language pack components.

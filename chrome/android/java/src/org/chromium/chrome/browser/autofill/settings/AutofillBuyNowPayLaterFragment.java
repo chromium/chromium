@@ -46,6 +46,9 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
     @VisibleForTesting
     static final String BNPL_ISSUER_TERMS_CLICKED_USER_ACTION = "Bnpl_IssuerTermsClicked";
 
+    @VisibleForTesting static final String BNPL_TOGGLED_OFF_USER_ACTION = "Bnpl_ToggledOff";
+    @VisibleForTesting static final String BNPL_TOGGLED_ON_USER_ACTION = "Bnpl_ToggledOn";
+
     @VisibleForTesting static final String PREF_KEY_BNPL_ISSUER_TERM = "bnpl_issuers_term_key";
     @VisibleForTesting static final String PREF_LIST_TERMS_URL = "bnpl_issuers_terms_url";
 
@@ -162,7 +165,10 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        mPersonalDataManager.setBuyNowPayLater((boolean) newValue);
+        boolean prefEnabled = (boolean) newValue;
+        mPersonalDataManager.setBuyNowPayLater(prefEnabled);
+        RecordUserAction.record(
+                prefEnabled ? BNPL_TOGGLED_ON_USER_ACTION : BNPL_TOGGLED_OFF_USER_ACTION);
         return true;
     }
 

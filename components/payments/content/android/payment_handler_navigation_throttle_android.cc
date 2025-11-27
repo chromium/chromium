@@ -13,7 +13,7 @@
 namespace payments {
 namespace android {
 // static
-void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
+static void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =

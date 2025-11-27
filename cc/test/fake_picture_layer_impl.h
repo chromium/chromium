@@ -72,7 +72,7 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   float raster_page_scale() const { return raster_page_scale_; }
   void set_raster_page_scale(float scale) { raster_page_scale_ = scale; }
 
-  using PictureLayerImpl::ideal_contents_scale_key;
+  using PictureLayerImpl::GetIdealContentsScaleKey;
   using PictureLayerImpl::raster_contents_scale_key;
 
   PictureLayerTiling* HighResTiling() const;

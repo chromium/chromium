@@ -1949,11 +1949,18 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     public void testErrorScreenOkButtonCallsDelegate() {
         mCoordinator
                 .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator
+                .getMediatorForTesting()
                 .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();
-        verify(mDelegateMock).onErrorOkPressed();
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ true);
     }
 
     @Test
@@ -2108,6 +2115,185 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertEquals(0, getModelsOfType(itemList, FILL_BUTTON).size());
+    }
+
+    @Test
+    public void testDismissPaymentMethodsScreenCallsDelegate() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissPaymentMethodsScreenCallsDelegate_DismissedByUser() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissPaymentMethodsScreenAfterBackButtonPressCallsDelegate_DismissedByUser() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        // Find the back button action in the BNPL header and invoke it.
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(sheetItems.get(0).type, is(BNPL_SELECTION_PROGRESS_HEADER));
+        PropertyModel bnplSelectionProgressHeaderModel = sheetItems.get(0).model;
+        bnplSelectionProgressHeaderModel
+                .get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_ON_BACK_BUTTON_CLICKED)
+                .run();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissBnplIssuerScreenCallsDelegate() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissBnplIssuerScreenCallsDelegate_DismissedByUser() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ true);
+    }
+
+    @Test
+    public void testDismissBnplIssuerTosScreenCallsDelegate() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator.getMediatorForTesting().showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissBnplIssuerTosScreenCallsDelegate_DismissedByUser() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator.getMediatorForTesting().showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ true);
+    }
+
+    @Test
+    public void testDismissProgressScreenCallsDelegate() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissProgressScreenCallsDelegate_DismissedByUser() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ true);
+    }
+
+    @Test
+    public void testDismissErrorScreenCallsDelegate() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator
+                .getMediatorForTesting()
+                .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ false, /* shouldReshow= */ false);
+    }
+
+    @Test
+    public void testDismissErrorScreenCallsDelegate_DismissedByUser() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        mCoordinator
+                .getMediatorForTesting()
+                .showErrorScreen(ERROR_SCREEN_TITLE, ERROR_SCREEN_DESCRIPTION);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
+
+        mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
+
+        verify(mDelegateMock).onDismissed(/* dismissedByUser= */ true, /* shouldReshow= */ true);
     }
 
     @Test

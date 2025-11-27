@@ -14,6 +14,9 @@ extern NSString* const kMagicStackEditSectionIdentifier;
 // The max text size of text with the Footnote Text Style.
 extern const int kMaxTextSizeForStyleFootnote;
 
+// The insets of the magic stack module container.
+extern const NSDirectionalEdgeInsets kMagicStackContainerInsets;
+
 // The spacing between modules in the Magic Stack.
 extern const CGFloat kMagicStackSpacing;
 

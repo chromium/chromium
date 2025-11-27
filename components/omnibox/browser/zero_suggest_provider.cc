@@ -704,7 +704,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     const ResultType result_type,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnURLLoadComplete");
 
   DCHECK(!done_);
@@ -767,7 +767,7 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     const ResultType result_type,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnPrefetchURLLoadComplete");
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;

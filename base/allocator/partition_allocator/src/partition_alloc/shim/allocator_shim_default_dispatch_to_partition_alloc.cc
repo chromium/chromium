@@ -415,14 +415,15 @@ void __real_free(void*);
 }       // extern "C"
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-// static
-template <partition_alloc::AllocFlags base_alloc_flags,
-          partition_alloc::FreeFlags base_free_flags>
-PA_ALWAYS_INLINE void
-PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
-    void* object,
-    void* context) {
-  partition_alloc::ScopedDisallowAllocations guard{};
+constexpr bool MightNeedToHandleSystemDeallocation() {
+#if PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_CAST_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
+PA_ALWAYS_INLINE bool MaybeHandleSystemDeallocation(void* object) {
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -431,7 +432,8 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
-    return free(object);
+    free(object);
+    return true;
   }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
@@ -446,10 +448,28 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
-    return __real_free(object);
+    __real_free(object);
+    return true;
   }
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
+  return false;
+}
 
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+    void* object,
+    void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  // We create separate constexpr branch just to optimize this path on platforms
+  // where we don't need to check MaybeHandleSystemDeallocation.
+  if constexpr (MightNeedToHandleSystemDeallocation()) {
+    if (MaybeHandleSystemDeallocation(object)) [[unlikely]] {
+      return;
+    }
+  }
   partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
       object);
 }
@@ -462,10 +482,16 @@ PartitionAllocFunctionsInternal<base_alloc_flags,
                                 base_free_flags>::FreeWithSize(void* object,
                                                                size_t size,
                                                                void* context) {
-  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
-  // still useful though, as we avoid double-checking that the address is owned.
-  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
-      object, context);
+  partition_alloc::ScopedDisallowAllocations guard{};
+  // We create separate constexpr branch just to optimize this path on platforms
+  // where we don't need to check MaybeHandleSystemDeallocation.
+  if constexpr (MightNeedToHandleSystemDeallocation()) {
+    if (MaybeHandleSystemDeallocation(object)) [[unlikely]] {
+      return;
+    }
+  }
+  partition_alloc::PartitionRoot::FreeWithSizeInlineInUnknownRoot<
+      base_free_flags>(object, size);
 }
 
 // static
@@ -659,7 +685,8 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-    EventuallyZeroFreedMemory eventually_zero_freed_memory) {
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    EnableFreeWithSize enable_free_with_size) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
@@ -698,9 +725,25 @@ void ConfigurePartitions(
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
+        opts.free_with_size =
+            enable_free_with_size
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
         return opts;
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
+
+  // Ensure that we switch `new_root` before directing new traffic to it, this
+  // ensures that a BucketDistribution is consistent over the life of an
+  // allocation.
+  switch (distribution) {
+    case BucketDistribution::kNeutral:
+      // We start in the 'default' case.
+      break;
+    case BucketDistribution::kDenser:
+      new_root->SwitchToDenserBucketDistribution();
+      break;
+  }
 
   // Now switch traffic to the new partition.
   g_original_root = current_root;
@@ -710,15 +753,6 @@ void ConfigurePartitions(
   current_root->PurgeMemory(
       partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
       partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
-
-  switch (distribution) {
-    case BucketDistribution::kNeutral:
-      // We start in the 'default' case.
-      break;
-    case BucketDistribution::kDenser:
-      new_root->SwitchToDenserBucketDistribution();
-      break;
-  }
 
   PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
 }

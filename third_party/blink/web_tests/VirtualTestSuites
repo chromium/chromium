@@ -39,6 +39,16 @@
     "owners": ["msw@chromium.org", "iahouma@google.com", "chrome-chia@google.com"],
     "expires": "never"
   },
+  {
+    "prefix": "ai_require_transient_user_activation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/ai/language-model/language-model-create-transient-user-activation.tentative.https.window.js"
+    ],
+    "args": ["--disable-features=AIRelaxUserActivationReqs"],
+    "owners": ["msw@chromium.org", "iahouma@google.com", "chrome-chia@google.com"],
+    "expires": "never"
+  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
@@ -2753,23 +2763,6 @@
     ]
   },
   {
-    "prefix": "sanitizer-api",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/sanitizer-api/"
-    ],
-    "args": [
-      "--enable-features=SanitizerAPI"
-    ],
-    "expires": "Jan 18, 2026",
-    "owners": [
-      "vogelheim@google.com"
-    ],
-    "exclusive_tests": "ALL"
-  },
-  {
     "prefix": "scalefactor150",
     "platforms": [
       "Linux",
@@ -2816,6 +2809,7 @@
       "external/wpt/css/css-grid/animation",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe.tentative.html",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-dom-content-loaded.tentative.html",
+      "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-fallback.tentative.html",
       "external/wpt/css/printing",
       "external/wpt/largest-contentful-paint",
       "fast/forms/file/file-appearance-no-default-width.html",
@@ -4022,7 +4016,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared-storage-selecturl-limit",
@@ -4044,7 +4038,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIEnableWALForDatabase,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
@@ -5280,8 +5274,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
-      "--disable-features=WebNNOnnxRuntime"
+      "--enable-features=WebMachineLearningNeuralNetwork"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5549,8 +5542,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
-      "--disable-features=WebNNOnnxRuntime"
+      "--enable-features=WebMachineLearningNeuralNetwork"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5820,8 +5812,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--use-gpu-in-tests",
-      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
-      "--disable-features=WebNNOnnxRuntime"
+      "--enable-features=WebMachineLearningNeuralNetwork"
     ],
     "expires": "Jun 1, 2026",
     "owners": [

@@ -15,8 +15,8 @@ namespace autofill {
 class AutofillWebDataServiceObserverOnDBSequence;
 class AutofillWebDataServiceObserverOnUISequence;
 
-// Interface for doing Autofill work directly on the DB sequence (used by
-// Sync, mostly), without fully exposing the AutofillWebDataBackend to clients.
+// Exposes operations on the Autofill database tables for AutofillWebDataService
+// and the sync bridges.
 class AutofillWebDataBackend {
  public:
   virtual ~AutofillWebDataBackend() = default;

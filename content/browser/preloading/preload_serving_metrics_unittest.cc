@@ -1454,12 +1454,12 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
       "PotentialCandidateServingResultAndServableStateAndMatcherAction",
-      // 13 = PrefetchPotentialCandidateServingResult::kNotServedNoCandidates
+      // 14 = PrefetchPotentialCandidateServingResult::kNotServedNoCandidates
       // 4 = PrefetchServableState::kNotServable
       // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
       // 2 = PrefetchContainer::LoadState::kEligible
       // 1 = is_expired == false
-      134121, 1);
+      144121, 1);
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen.QueueSize",

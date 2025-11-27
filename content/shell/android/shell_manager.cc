@@ -54,8 +54,8 @@ static void JNI_ShellManager_Init(JNIEnv* env,
   g_global_state.Get().j_shell_manager.Reset(obj);
 }
 
-void JNI_ShellManager_LaunchShell(JNIEnv* env,
-                                  const JavaParamRef<jstring>& jurl) {
+static void JNI_ShellManager_LaunchShell(JNIEnv* env,
+                                         const JavaParamRef<jstring>& jurl) {
   ShellBrowserContext* browserContext =
       ShellContentBrowserClient::Get()->browser_context();
   GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));

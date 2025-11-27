@@ -11,7 +11,7 @@
 namespace android_webview {
 
 // static
-void JNI_RendererProcessMetricsProviderUtils_ForceRecordHistograms(
+static void JNI_RendererProcessMetricsProviderUtils_ForceRecordHistograms(
     JNIEnv* env) {
   RendererProcessMetricsProvider().ProvideCurrentSessionData(nullptr);
 }

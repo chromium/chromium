@@ -2353,6 +2353,7 @@ if (!is_android) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//base",
+      "//base:build_time",
       "//base:i18n",
       "//base/allocator:buildflags",
       "//base/test:proto_test_support",
@@ -2436,6 +2437,7 @@ if (!is_android) {
       "//chrome/browser/legion:browser_tests",
       "//chrome/browser/lens:lens_tab_contextualization_test",
       "//chrome/browser/lifetime:termination_notification",
+      "//chrome/browser/media:browser_tests",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -3339,6 +3341,7 @@ if (!is_android) {
       "../browser/local_network_access/local_network_access_deprecation_browsertest.cc",
       "../browser/local_network_access/local_network_access_iframe_browsertest.cc",
       "../browser/local_network_access/local_network_access_policies_browsertest.cc",
+      "../browser/local_network_access/local_network_access_prompt_browsertest.cc",
       "../browser/local_network_access/local_network_access_workers_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",
       "../browser/login_detection/login_detection_browsertest.cc",
@@ -3495,6 +3498,7 @@ if (!is_android) {
       "../browser/performance_manager/page_node_browsertest.cc",
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/performance_manager/policies/bfcache_policy_browsertest.cc",
+      "../browser/performance_manager/policies/discard_eligibility_policy_browsertest.cc",
       "../browser/performance_manager/policies/page_discarding_helper_browsertest.cc",
       "../browser/performance_manager/policies/transient_keep_alive_policy_browsertest.cc",
       "../browser/performance_manager/user_tuning/performance_detection_manager_browsertest.cc",
@@ -6015,7 +6019,10 @@ if (!is_android) {
     sources += metric_integration_sources
 
     if (!is_chromeos) {
-      sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
+      sources += [
+        "../browser/webauthn/change_pin_controller_impl_browsertest.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest.cc",
+      ]
       deps += [ "//chrome/browser/webauthn:test_support" ]
     }
 
@@ -6168,19 +6175,11 @@ if (!is_android) {
       # Needed by startup.mobile benchmark.
       data_deps += [ "//chrome/android/webapk/shell_apk:webapk" ]
 
-      if (telemetry_target_suffix == "_android_clank_chrome") {
-        # Depending on Android version, either Chrome.apk or Monochrome.apk can
-        # be selected. See ChromeBackendSettings.GetApkName method in
-        # catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py.
-        data_deps += [ "//tools/perf/:perf_android_clank_monochrome" ]
-      }
-
       if (telemetry_target_suffix == "_android_webview" &&
           enable_chrome_android_internal) {
         # This suffix is used by all webview tests. Several different webview
         # APKs can be used, depending on the platform.
         data_deps += [
-          "//tools/perf/:perf_android_clank_monochrome",
           "//tools/perf/:perf_android_clank_trichrome_webview_bundle",
           "//tools/perf/:perf_android_clank_webview",
         ]
@@ -6417,7 +6416,7 @@ test("unit_tests") {
     "../browser/collaboration/messaging/messaging_backend_service_factory_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",
-    "../browser/component_updater/afp_blocked_domain_list_component_installer_unittest.cc",
+    "../browser/component_updater/afp_blocked_domain_list_component_remover_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/cookie_readiness_list_component_installer_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
@@ -6949,6 +6948,7 @@ test("unit_tests") {
     "//chrome/browser/first_party_sets",
     "//chrome/browser/google:unit_tests",
     "//chrome/browser/ip_protection:unit_tests",
+    "//chrome/browser/media:unittests",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/prefs:unit_tests",
     "//chrome/browser/media/router",
@@ -8169,7 +8169,6 @@ test("unit_tests") {
       "../browser/profiles/profile_avatar_icon_util_unittest.cc",
       "../browser/profiles/profile_destroyer_unittest.cc",
       "../browser/renderer_context_menu/render_view_context_menu_unittest.cc",
-      "../browser/resource_coordinator/decision_details_unittest.cc",
       "../browser/resource_coordinator/discard_metrics_lifecycle_unit_observer_unittest.cc",
       "../browser/resource_coordinator/lifecycle_unit_base_unittest.cc",
       "../browser/resource_coordinator/lifecycle_unit_unittest.cc",
@@ -8427,6 +8426,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/waap:unit_tests",
+      "//chrome/browser/ui/wallet:unit_tests",
       "//chrome/browser/ui/webauthn:unit_tests",
       "//chrome/browser/ui/webid:unit_tests",
       "//chrome/browser/ui/webui:webui_util",
@@ -10179,6 +10179,7 @@ test("unit_tests") {
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/profiles/guest_mode_policy_handler_unittest.cc",
       "../browser/signin/accounts_policy_manager_unittest.cc",
+      "../browser/ui/webui/batch_upload_promo/batch_upload_promo_handler_unittest.cc",
       "../browser/ui/webui/browser_switch/browser_switch_ui_unittest.cc",
     ]
 
@@ -10200,6 +10201,7 @@ test("unit_tests") {
       "../browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/browser_switcher",
       "//chrome/browser/browser_switcher:unit_tests",
+      "//chrome/browser/ui/webui/batch_upload_promo",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/soda",
       "//components/user_education/webui",
@@ -10595,6 +10597,7 @@ test("unit_tests") {
       "../browser/ui/views/tabs/fake_tab_slot_controller.h",
       "../browser/ui/views/tabs/overflow_view_unittest.cc",
       "../browser/ui/views/tabs/tab_container_unittest.cc",
+      "../browser/ui/views/tabs/tab_context_menu_controller_unittest.cc",
       "../browser/ui/views/tabs/tab_group_views_unittest.cc",
       "../browser/ui/views/tabs/tab_hover_card_bubble_view_unittest.cc",
       "../browser/ui/views/tabs/tab_hover_card_controller_unittest.cc",

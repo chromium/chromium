@@ -180,13 +180,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<WebFrameWidgetImpl::PromiseCallbacks>
-    : public CrossThreadCopierByValuePassThrough<
-          WebFrameWidgetImpl::PromiseCallbacks> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 using ::ui::mojom::blink::DragOperation;

@@ -24,7 +24,6 @@
 
 namespace dbus_xdg {
 class Request;
-enum class SystemdUnitStatus;
 }  // namespace dbus_xdg
 
 namespace ui {
@@ -104,9 +103,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
                          const std::string& signal_name,
                          bool success);
 
-  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
-
-  void OnServiceStarted(std::optional<bool> service_started);
+  void OnServiceStarted(bool service_started);
 
   void CreateSession();
 

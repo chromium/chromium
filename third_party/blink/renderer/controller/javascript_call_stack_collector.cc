@@ -26,10 +26,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::optional<LocalFrameToken>>
-    : public CrossThreadCopierPassThrough<std::optional<LocalFrameToken>> {};
-
 namespace {
 
 // Determines whether a script frame should be included in the call stack.

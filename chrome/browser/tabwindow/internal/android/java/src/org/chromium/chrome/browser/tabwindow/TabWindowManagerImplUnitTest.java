@@ -1078,40 +1078,43 @@ public class TabWindowManagerImplUnitTest {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
         instanceInfoList.add(
                 new InstanceInfo(
-                        0,
-                        0,
+                        /* instanceId= */ 0,
+                        /* taskId= */ 0,
                         InstanceInfo.Type.OTHER,
-                        "",
-                        "",
+                        /* url= */ "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0));
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false));
         instanceInfoList.add(
                 new InstanceInfo(
-                        1,
-                        0,
+                        /* instanceId= */ 1,
+                        /* taskId= */ 0,
                         InstanceInfo.Type.OTHER,
-                        "",
-                        "",
+                        /* url= */ "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0));
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false));
         instanceInfoList.add(
                 new InstanceInfo(
-                        2,
-                        0,
+                        /* instanceId= */ 2,
+                        /* taskId= */ 0,
                         InstanceInfo.Type.OTHER,
-                        "",
-                        "",
+                        /* url= */ "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0));
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false));
         when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
 
         ActivityController<Activity> activityController0 = createActivity();
@@ -1160,16 +1163,17 @@ public class TabWindowManagerImplUnitTest {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
         instanceInfoList.add(
                 new InstanceInfo(
-                        0,
-                        0,
+                        /* instanceId= */ 0,
+                        /* taskId= */ 0,
                         InstanceInfo.Type.OTHER,
-                        "",
-                        "",
+                        /* url= */ "",
+                        /* title= */ "",
                         /* customTitle= */ null,
-                        0,
-                        0,
-                        false,
-                        0));
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closedByUser= */ false));
         when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
 
         // The default mock TabModelSelectorFactory is hard to verify

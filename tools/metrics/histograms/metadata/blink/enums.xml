@@ -150,6 +150,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Direct Gpu Memory Buffer"/>
   <int value="7" label="Passthrough"/>
   <int value="8" label="Swap Chain"/>
+  <int value="9" label="Deprecated"/>
+  <int value="10" label="External Bitmap"/>
 </enum>
 
 <enum name="CanvasResourceProviderUsage">
@@ -6362,6 +6364,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5728" label="V8Origin_Parse_Method"/>
   <int value="5729" label="ExtendedTextMetrics"/>
   <int value="5730" label="UseCssSizingProperties"/>
+  <int value="5731" label="SharedStorageAPIAll"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -781,8 +781,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
     EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(_, provider_.get()))
         .Times(1)
         .WillOnce([&] { future_.SetValue(); });
-    provider_->RequestCompleted(index, nullptr, code,
-                                std::make_unique<std::string>(response));
+    provider_->RequestCompleted(index, nullptr, code, std::move(response));
     EXPECT_TRUE(future_.WaitAndClear());
     testing::Mock::VerifyAndClearExpectations(mock_listener_.get());
   }

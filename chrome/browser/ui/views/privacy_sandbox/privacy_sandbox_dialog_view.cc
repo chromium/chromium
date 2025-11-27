@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -76,11 +75,6 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
   }
 
   void OnWindowClosing() {
-    // Notice Framework doesn't have a browser to widget mapping.
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxNoticeFramework)) {
-      return;
-    }
     // TODO(crbug.com/408016824): To be deprecated once V2 is migrated to.
     if (auto* privacy_sandbox_service =
             PrivacySandboxServiceFactory::GetForProfile(

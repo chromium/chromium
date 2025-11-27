@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
@@ -79,7 +80,7 @@ class SigninInterceptFirstRunExperienceDialog
   // `InterceptTurnSyncOnHelperDelegate` needs access to private methods of
   // `SigninInterceptFirstRunExperienceDialog`.
   class InterceptTurnSyncOnHelperDelegate;
-  friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
+  friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;
 
   // Ordered list of first run steps. Some steps might be skipped but they
   // always appear in this order.
@@ -123,7 +124,7 @@ class SigninInterceptFirstRunExperienceDialog
   std::unique_ptr<content::WebContents>
       profile_customization_preloaded_contents_;
   std::unique_ptr<ProfileCustomizationSyncedThemeWaiter> synced_theme_waiter_;
-
+  base::ScopedClosureRunner auto_accept_management_;
   base::WeakPtrFactory<SigninInterceptFirstRunExperienceDialog>
       weak_ptr_factory_{this};
 };

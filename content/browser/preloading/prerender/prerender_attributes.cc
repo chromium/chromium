@@ -38,7 +38,8 @@ PrerenderAttributes::PrerenderAttributes(
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
     scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-    bool allow_reuse)
+    bool allow_reuse,
+    bool form_submission)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
@@ -54,7 +55,8 @@ PrerenderAttributes::PrerenderAttributes(
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
       preload_pipeline_info(std::move(preload_pipeline_info)),
-      allow_reuse(allow_reuse) {
+      allow_reuse(allow_reuse),
+      form_submission(form_submission) {
   if (initiator_render_frame_host) {
     initiator_origin = initiator_render_frame_host->GetLastCommittedOrigin();
     initiator_process_id =

@@ -57,6 +57,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/unexportable_keys/mojom/unexportable_key_service_proxied.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "components/url_pattern/simple_url_pattern_matcher.h"
@@ -3096,6 +3097,14 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   if (params_->device_bound_sessions_enabled) {
     builder.set_has_device_bound_session_service(true);
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    if (params_->bound_sessions_unexportable_key_service.is_valid()) {
+      builder.set_unexportable_key_service(
+          std::make_unique<unexportable_keys::UnexportableKeyServiceProxied>(
+              std::move(params_->bound_sessions_unexportable_key_service)));
+    }
+#endif
 
     if (base::FeatureList::IsEnabled(
             net::features::kPersistDeviceBoundSessions)) {

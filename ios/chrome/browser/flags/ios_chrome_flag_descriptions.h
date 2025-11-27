@@ -611,9 +611,6 @@ extern const char kLensUnaryApiSalientTextEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
-extern const char kLensUnaryClientDataHeaderEnabledName[];
-extern const char kLensUnaryClientDataHeaderEnabledDescription[];
-
 extern const char kLensUnaryHttpTransportEnabledName[];
 extern const char kLensUnaryHttpTransportEnabledDescription[];
 
@@ -697,9 +694,6 @@ extern const char kOmniboxDRSPrototypeDescription[];
 
 extern const char kOmniboxDRSPrototypeName[];
 extern const char kOmniboxDRSPrototypeDescription[];
-
-extern const char kOmniboxGeminiPrototypeProviderName[];
-extern const char kOmniboxGeminiPrototypeProviderDescription[];
 
 extern const char kOmniboxGroupingFrameworkForTypedSuggestionsName[];
 extern const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[];

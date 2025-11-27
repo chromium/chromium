@@ -15,12 +15,17 @@ source_set("contextual_tasks") {
 
   if (!is_android) {
     sources += [
+      "active_task_context_provider.h",
+      "active_task_context_provider_impl.h",
       "contextual_tasks_context_service.h",
       "contextual_tasks_context_service_factory.h",
     ]
   }
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/tabs:public",
+  ]
 
   public_deps = [
     "//chrome/browser/profiles:profile",
@@ -52,6 +57,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
+      "active_task_context_provider_impl.cc",
       "contextual_tasks_context_service.cc",
       "contextual_tasks_context_service_factory.cc",
       "contextual_tasks_signal_utils.cc",
@@ -83,12 +89,15 @@ source_set("impl") {
   if (!is_android) {
     deps += [
       "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/contextual_search",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/passage_embeddings",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//components/contextual_search:public",
+      "//components/tabs:public",
       "//components/url_deduplication",
       "//components/visited_url_ranking/public",
     ]
@@ -151,8 +160,10 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/searchbox",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
       "//components/lens",

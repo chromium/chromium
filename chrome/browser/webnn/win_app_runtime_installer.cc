@@ -101,8 +101,12 @@ void UpdatePrefs(const std::wstring& dependency_id) {
 }
 
 // Called after all `AppInstallItems` reach the complete state (succeeded,
-// canceled or failed).
-void OnInstallationCompleted(std::vector<bool> results) {
+// canceled or failed). `app_install_manager` is kept alive by this function to
+// ensure the registered status change callbacks will be invoked.
+void OnInstallationCompleted(
+    Microsoft::WRL::ComPtr<
+        abi_install::IAppInstallManager> /*app_install_manager*/,
+    std::vector<bool> results) {
   if (std::ranges::any_of(results, [](bool success) { return !success; })) {
     return;
   }
@@ -143,13 +147,10 @@ void OnInstallationStarted(
     auto* token_ptr = token.get();
 
     // Register the status change event handler for `item`.
-    // `app_install_manager` is captured in the callback to be kept alive to
-    // ensure the callback will be triggered.
     item->add_StatusChanged(
         Microsoft::WRL::Callback<AppInstallStatusChangedHandler>(
-            [app_install_manager, token = std::move(token),
-             callback = base::BindPostTask(
-                 base::SequencedTaskRunner::GetCurrentDefault(),
+            [token = std::move(token),
+             callback = base::BindPostTaskToCurrentDefault(
                  concurrent_callbacks.CreateCallback())](
                 abi_install::IAppInstallItem* item,
                 IInspectable* args) mutable {
@@ -165,7 +166,7 @@ void OnInstallationStarted(
                 case abi_install::AppInstallState::AppInstallState_Completed: {
                   RecordInstallState(WinAppRuntimeInstallStateUma::kCompleted);
                   item->remove_StatusChanged(*token);
-                  if (!callback.is_null()) {
+                  if (callback) {
                     std::move(callback).Run(true);
                   }
                   break;
@@ -173,7 +174,7 @@ void OnInstallationStarted(
                 case abi_install::AppInstallState::AppInstallState_Error: {
                   RecordInstallState(WinAppRuntimeInstallStateUma::kError);
                   item->remove_StatusChanged(*token);
-                  if (!callback.is_null()) {
+                  if (callback) {
                     std::move(callback).Run(false);
                   }
                   break;
@@ -181,7 +182,7 @@ void OnInstallationStarted(
                 case abi_install::AppInstallState::AppInstallState_Canceled: {
                   RecordInstallState(WinAppRuntimeInstallStateUma::kCanceled);
                   item->remove_StatusChanged(*token);
-                  if (!callback.is_null()) {
+                  if (callback) {
                     std::move(callback).Run(false);
                   }
                   break;
@@ -218,7 +219,8 @@ void OnInstallationStarted(
   }
 
   std::move(concurrent_callbacks)
-      .Done(base::BindOnce(&OnInstallationCompleted));
+      .Done(base::BindOnce(&OnInstallationCompleted,
+                           std::move(app_install_manager)));
 }
 
 // Activates and returns the IAppInstallManager instance.

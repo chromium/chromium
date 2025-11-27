@@ -14,9 +14,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "components/services/storage/service_worker/service_worker_storage_test_utils.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/disk_cache/disk_cache.h"
@@ -2000,6 +2003,101 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
         ReadResource(resource_id2, resource_data2.size());
     ASSERT_EQ(read_resource_result2.status, net::ERR_CACHE_MISS);
     EXPECT_EQ(read_resource_result2.data, "");
+  }
+}
+
+TEST_F(ServiceWorkerStorageControlImplTest, Checksum) {
+  const GURL kScope("https://www.example.com/");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/sw.js");
+  const std::string kTestData = "Here is some data.";
+  const std::string kChecksum =
+      base::HexEncode(crypto::hash::Sha256(kTestData));
+  const int64_t kRegistrationId = GetNewRegistrationId();
+  const int64_t kVersionId = GetNewVersionId().version_id;
+  const int64_t kResourceId = GetNewResourceId();
+
+  // 1. Store a registration.
+  ASSERT_EQ(
+      CreateAndStoreRegistration(kRegistrationId, kVersionId, kResourceId,
+                                 kScope, kKey, kScriptUrl, kTestData.size()),
+      DatabaseStatus::kOk);
+
+  // 2. Write the resource with a valid checksum.
+  {
+    mojo::Remote<mojom::ServiceWorkerResourceWriter> writer =
+        CreateResourceWriter(kResourceId);
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders("HTTP/1.1 200 OK\n"));
+    ASSERT_GE(WriteResponseHead(writer.get(), std::move(response_head)), 0);
+    mojo_base::BigBuffer data(base::as_bytes(base::span(kTestData)));
+    ASSERT_EQ(WriteResponseData(writer.get(), std::move(data)),
+              static_cast<int>(kTestData.size()));
+
+    mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer =
+        CreateResourceMetadataWriter(kResourceId);
+    ServiceWorkerResourceRecord record;
+    record.set_resource_id(kResourceId);
+    record.set_url(kScriptUrl.spec());
+    record.set_sha256_checksum(kChecksum);
+    std::string metadata;
+    record.SerializeToString(&metadata);
+    mojo_base::BigBuffer metadata_buffer(base::as_bytes(base::span(metadata)));
+    ASSERT_EQ(WriteResponseMetadata(metadata_writer.get(),
+                                    std::move(metadata_buffer)),
+              static_cast<int>(metadata.size()));
+  }
+
+  // 3. Read the resource and verify the checksum.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::Remote<mojom::ServiceWorkerResourceReader> reader =
+        CreateResourceReader(kResourceId);
+
+    ReadResponseHeadResult head_result = ReadResponseHead(reader.get());
+    ASSERT_GT(head_result.status, 0);
+    ReadDataResult result = ReadResponseData(reader.get(), kTestData.size());
+    ASSERT_EQ(result.status, static_cast<int>(kTestData.size()));
+    EXPECT_EQ(result.data, kTestData);
+
+    histogram_tester.ExpectUniqueSample("ServiceWorker.ResourceChecksumMatch",
+                                        true, 1);
+    task_environment().RunUntilIdle();
+  }
+
+  // 4. Write the resource with an invalid checksum.
+  {
+    mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer =
+        CreateResourceMetadataWriter(kResourceId);
+    ServiceWorkerResourceRecord record;
+    record.set_resource_id(kResourceId);
+    record.set_url(kScriptUrl.spec());
+    record.set_sha256_checksum("invalid_checksum");
+    std::string metadata;
+    record.SerializeToString(&metadata);
+    mojo_base::BigBuffer metadata_buffer(base::as_bytes(base::span(metadata)));
+    ASSERT_EQ(WriteResponseMetadata(metadata_writer.get(),
+                                    std::move(metadata_buffer)),
+              static_cast<int>(metadata.size()));
+  }
+
+  // 5. Read the resource and verify the checksum mismatch.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::Remote<mojom::ServiceWorkerResourceReader> reader =
+        CreateResourceReader(kResourceId);
+
+    ReadResponseHeadResult head_result = ReadResponseHead(reader.get());
+    ASSERT_GT(head_result.status, 0);
+    ReadDataResult result = ReadResponseData(reader.get(), kTestData.size());
+    ASSERT_EQ(result.status, static_cast<int>(kTestData.size()));
+    EXPECT_EQ(result.data, kTestData);
+
+    histogram_tester.ExpectUniqueSample("ServiceWorker.ResourceChecksumMatch",
+                                        false, 1);
+    task_environment().RunUntilIdle();
   }
 }
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -301,12 +302,13 @@ void ShadowOverlayView::OnAnimationSequenceProgressed(
 
 void ShadowOverlayView::OnAnimationSequenceEnded(
     const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id) {
-  CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
-
-  // If we finish in the open state, the animation should be at 100%. If we
-  // finish in the close state, the ShadowBox's shadow is removed entirely so
-  // this line is a no-op.
-  shadow_box_->SetShadowOpacity(1.0f);
+  // When the animation ends, set the final opacity based on whether the side
+  // panel is closing or opening.
+  const double ending_opacity =
+      side_panel_observer_.GetSource()->animation_coordinator()->IsClosing()
+          ? 0.0f
+          : 1.0f;
+  shadow_box_->SetShadowOpacity(ending_opacity);
 }
 
 BEGIN_METADATA(ShadowOverlayView)

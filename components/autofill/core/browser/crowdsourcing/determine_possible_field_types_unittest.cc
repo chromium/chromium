@@ -40,6 +40,8 @@ void PrintTo(const PossibleTypes& ps, std::ostream* os) {
         return u"DATE";
       case FormatString_Type_FLIGHT_NUMBER:
         return u"FLIGHT_NUMBER";
+      case FormatString_Type_ICU_DATE:
+        return u"ICU_DATE";
     }
     NOTREACHED();
   };
@@ -63,6 +65,8 @@ namespace {
 
 using ::autofill::test::CreateTestFormField;
 using ::autofill::test::CreateTestSelectField;
+using ::one_time_tokens::OneTimeToken;
+using ::one_time_tokens::OneTimeTokenType;
 using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
@@ -402,8 +406,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
           profiles, {credit_card}, std::vector<EntityInstance>(),
           std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
 
   ASSERT_EQ(form_structure->field_count(), possible_types.size());
   EXPECT_THAT(possible_types[0].types,
@@ -460,8 +464,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
           std::vector<AutofillProfile>(), std::vector<CreditCard>(),
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/kCvc16, "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/kCvc16, std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -501,8 +505,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), {credit_card},
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/std::u16string(),
+          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -542,8 +546,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), {credit_card},
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/std::u16string(),
+          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -582,8 +586,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), {credit_card},
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/std::u16string(),
+          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -622,8 +626,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), {credit_card},
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/std::u16string(),
+          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types,
                          Not(Contains(CREDIT_CARD_VERIFICATION_CODE)))));
@@ -660,8 +664,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), {credit_card},
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types,
                          Not(Contains(CREDIT_CARD_VERIFICATION_CODE)))));
@@ -691,8 +695,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
           std::vector<AutofillProfile>(), std::vector<CreditCard>(),
           std::vector<EntityInstance>(), {loyalty_card},
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
                                                LOYALTY_MEMBERSHIP_ID);
@@ -725,11 +729,97 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           {profile}, std::vector<CreditCard>(), std::vector<EntityInstance>(),
           {loyalty_card},
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
 
   // No loyalty card votes.
   EXPECT_THAT(possible_types[0].types, UnorderedElementsAre(EMAIL_ADDRESS));
+}
+
+// Tests if the OTP field is detected.
+TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceOtpField) {
+  constexpr char kOtp[] = "123456";
+
+  FormData form;
+  form.set_fields({CreateTestFormField("first-name", "first-name", "Pippi",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("last-name", "last-name", "Longstocking",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("otp-field", "otp-field", kOtp,
+                                       FormControlType::kInputText)});
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<OneTimeToken> recent_otps = {
+      OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::Time::Now())};
+  std::vector<PossibleTypes> possible_types_otp =
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", recent_otps, "en-us",
+          form_structure->fields());
+
+  CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types_otp, 2,
+                                               ONE_TIME_CODE);
+}
+
+// Tests OTP field is not detected if there are no recently received OTPs.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceNoOtpFieldDueToNoRecentOtp) {
+  constexpr char kOtp[] = "123456";
+
+  FormData form;
+  form.set_fields({CreateTestFormField("first-name", "first-name", "Pippi",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("last-name", "last-name", "Longstocking",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("otp-field", "otp-field", kOtp,
+                                       FormControlType::kInputText)});
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
+
+  EXPECT_THAT(possible_types,
+              Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
+}
+
+// Tests other fields are not detected as OTPs
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceNoOtpFieldDueToFormatMismatch) {
+  constexpr char kCvc[] = "1234";
+  constexpr char kCreditCardNumber[] = "4234-5678-9012-3456";
+
+  FormData form;
+  form.set_fields(
+      {// Credit card number is not detected as OTP
+       CreateTestFormField("number", "number", kCreditCardNumber,
+                           FormControlType::kInputText),
+       // CVC field is not detected as OTP
+       CreateTestFormField("cvc", "cv_", kCvc, FormControlType::kInputText)});
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-us", form_structure->fields());
+
+  EXPECT_THAT(possible_types,
+              Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
 }
 
 // Tests if the Autofill AI field types are crowdsourced.
@@ -764,20 +854,21 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
       .issue_date = u"2010-09-01",
   });
 
-  EXPECT_THAT(DeterminePossibleFieldTypesForUpload(
-                  std::vector<AutofillProfile>(), std::vector<CreditCard>(),
-                  base::span_from_ref(entity), std::vector<LoyaltyCard>(),
-                  /*fields_that_match_state=*/{},
-                  /*last_unlocked_credit_card_cvc=*/u"", "en-US",
-                  form_structure->fields()),
-              ElementsAre(HasTypes(NAME_FIRST),                   //
-                          HasTypes(NAME_LAST, NAME_LAST_SECOND),  //
-                          HasTypes(PASSPORT_NUMBER),              //
-                          HasTypes(PASSPORT_EXPIRATION_DATE),     //
-                          HasTypes(PASSPORT_ISSUE_DATE),          //
-                          HasTypes(PASSPORT_ISSUE_DATE),          //
-                          HasTypes(PASSPORT_ISSUE_DATE),          //
-                          HasTypes(UNKNOWN_TYPE)));
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(HasTypes(NAME_FIRST),                   //
+                  HasTypes(NAME_LAST, NAME_LAST_SECOND),  //
+                  HasTypes(PASSPORT_NUMBER),              //
+                  HasTypes(PASSPORT_EXPIRATION_DATE),     //
+                  HasTypes(PASSPORT_ISSUE_DATE),          //
+                  HasTypes(PASSPORT_ISSUE_DATE),          //
+                  HasTypes(PASSPORT_ISSUE_DATE),          //
+                  HasTypes(UNKNOWN_TYPE)));
 }
 
 // Tests if format strings are crowdsourced for certain Autofill AI FieldTypes.
@@ -844,8 +935,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<AutofillProfile>(), std::vector<CreditCard>(),
           {passport_entity, flight_entity}, std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-US",
-          form_structure->fields()),
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
       ElementsAre(
           AllOf(HasTypes(NAME_FIRST), HasNoFormats()),
           AllOf(HasTypes(NAME_LAST, NAME_LAST_SECOND), HasNoFormats()),
@@ -1258,9 +1349,12 @@ class DetermineAvailableFieldTypesTest : public ::testing::Test {
 TEST_F(DetermineAvailableFieldTypesTest, Entities) {
   EntityInstance entity = test::GetPassportEntityInstance();
   FieldTypeSet available_types = DetermineAvailableFieldTypes(
-      /*profiles=*/{}, /*credit_cards=*/{}, /*entities=*/{entity},
+      /*profiles=*/{},
+      /*credit_cards=*/{},
+      /*entities=*/{entity},
       /*loyalty_cards=*/{},
       /*last_unlocked_credit_card_cvc=*/u"",
+      /*recent_otps=*/{},
       /*app_locale=*/"en-US");
   EXPECT_THAT(
       available_types,
@@ -1273,8 +1367,12 @@ TEST_F(DetermineAvailableFieldTypesTest, Entities) {
 TEST_F(DetermineAvailableFieldTypesTest, LoyaltyCards) {
   LoyaltyCard card = test::CreateLoyaltyCard();
   FieldTypeSet available_types = DetermineAvailableFieldTypes(
-      /*profiles=*/{}, /*credit_cards=*/{}, /*entities=*/{}, {card},
+      /*profiles=*/{},
+      /*credit_cards=*/{},
+      /*entities=*/{},
+      /*loyalty_cards=*/{card},
       /*last_unlocked_credit_card_cvc=*/u"",
+      /*recent_otps=*/{},
       /*app_locale=*/"");
   EXPECT_TRUE(available_types.contains(LOYALTY_MEMBERSHIP_ID));
 }

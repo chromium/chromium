@@ -79,7 +79,6 @@ class UnderlyingPullAlgorithm final : public StreamAlgorithm {
       : source_(source) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int spanification_suspected_redundant_argc,
                                   base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
@@ -93,7 +92,6 @@ class UnderlyingCancelAlgorithm final : public StreamAlgorithm {
       : source_(source) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int spanification_suspected_redundant_argc,
                                   base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 

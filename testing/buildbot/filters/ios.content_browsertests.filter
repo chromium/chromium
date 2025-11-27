@@ -223,7 +223,6 @@
 -SystemTracingEndToEndBrowserTest.SimpleTraceEvent
 
 # These tests are flaky.
--All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/1
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
@@ -494,3 +493,9 @@
 # TODO(crbug.com/460416956): The test has been failing since
 # https://crrev.com/c/7068613.
 -PrerenderUntilScriptBrowserTest.TargetBlank
+
+# TODO(crbug.com/463721931): The test below are flaky on the bot.
+-All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
+-All/NavigationControllerHistoryInterventionBrowserTest.TestHonorStickyActivationWithChildFrameCrossDocument/RDAllFrames_BFCacheDisabled
+-All/NavigationControllerHistoryInterventionBrowserTest.TestHonorStickyActivationWithChildFrameCrossDocument/RDAllFrames_BFCacheEnabled
+-All/VirtualBrowsingContextGroupTest.Navigation/RDCrashedFrame_BFCacheEnabled

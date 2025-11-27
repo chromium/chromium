@@ -96,7 +96,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
   ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
-  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
   ASSERT_EQ(account_info.full_name, "full name");
   ASSERT_EQ(account_info.given_name, "given name");
   ASSERT_EQ(account_info.locale, "locale");
@@ -120,7 +120,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfoWithSub) {
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
   ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
-  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
   ASSERT_EQ(account_info.full_name, "full name");
   ASSERT_EQ(account_info.given_name, "given name");
   ASSERT_EQ(account_info.locale, "locale");
@@ -144,7 +144,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfoWithIdAndSub) {
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
   ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
-  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
   ASSERT_EQ(account_info.full_name, "full name");
   ASSERT_EQ(account_info.given_name, "given name");
   ASSERT_EQ(account_info.locale, "locale");
@@ -166,7 +166,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
   ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
-  ASSERT_EQ(account_info.hosted_domain, kNoHostedDomainFound);
+  ASSERT_EQ(account_info.GetHostedDomain(), std::string());
   ASSERT_EQ(account_info.full_name, std::string());
   ASSERT_EQ(account_info.given_name, std::string());
   ASSERT_EQ(account_info.locale, std::string());
@@ -187,7 +187,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoHostedDomain) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.hosted_domain, kNoHostedDomainFound);
+  ASSERT_EQ(account_info.GetHostedDomain(), std::string());
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with the value

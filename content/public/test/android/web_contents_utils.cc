@@ -43,7 +43,7 @@ void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
 
 // Reports all frame submissions to the browser process, even those that do not
 // impact Browser UI.
-void JNI_WebContentsUtils_ReportAllFrameSubmissions(
+static void JNI_WebContentsUtils_ReportAllFrameSubmissions(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     jboolean enabled) {
@@ -54,7 +54,7 @@ void JNI_WebContentsUtils_ReportAllFrameSubmissions(
   provider->ReportAllFrameSubmissionsForTesting(enabled);
 }
 
-ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
+static ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
@@ -62,7 +62,7 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
       ->GetJavaRenderFrameHost();
 }
 
-void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
+static void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jstring>& script,
@@ -96,15 +96,16 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
       ISOLATED_WORLD_ID_GLOBAL);
 }
 
-void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jweb_contents) {
+static void JNI_WebContentsUtils_CrashTab(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
       RESULT_CODE_KILLED);
 }
 
-void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
+static void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jobject>& done_callback) {
@@ -119,7 +120,7 @@ void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
                         ScopedJavaGlobalRef<jobject>(done_callback)));
 }
 
-void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
+static void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);

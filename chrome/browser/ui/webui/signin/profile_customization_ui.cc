@@ -111,10 +111,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean(
       "shouldShowDefaultProfileName",
       base::FeatureList::IsEnabled(
-          switches::kProfileCreationFrictionReductionExperiment) &&
-          switches::kProfileCreationFrictionReductionVariation.Get() ==
-              switches::ProfileCreationFrictionReductionVariation::
-                  kPrefillNameRequirement);
+          switches::
+              kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
 
   if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

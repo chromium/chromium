@@ -97,9 +97,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!status_tray_) {
-    // TODO(crbug.com/454734385): Implement StatusTray functionality on
-    // ChromeOS.
+  if (!base::FeatureList::IsEnabled(features::kGlicShowStatusTrayIcon)) {
     return;
   }
 #endif

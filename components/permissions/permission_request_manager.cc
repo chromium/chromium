@@ -733,11 +733,11 @@ void PermissionRequestManager::FinalizeCurrentRequests() {
   // We have no need to block preemption anymore.
   std::ignore = std::move(block_preempt);
 
+  requests_.clear();
+
   for (Observer& observer : observer_list_) {
     observer.OnRequestsFinalized();
   }
-
-  requests_.clear();
   ScheduleDequeueRequestIfNeeded();
 }
 

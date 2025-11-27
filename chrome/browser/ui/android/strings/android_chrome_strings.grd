@@ -4874,6 +4874,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TABSWITCHER_NO_TABS_OPEN_TO_VISIT_DIFFERENT_PAGES" desc="Text appearing on an empty tab switcher that indicates that users can open tabs here to visit different pages.">
         Open tabs to visit different pages at the same time
       </message>
+      <message name="IDS_TABPICKER_NO_TABS_EMPTY_STATE_HEADER" desc="Text appearing on an empty tab picker that indicates that users do not have recently opened tabs.">
+        No recent tabs
+      </message>
+      <message name="IDS_TABPICKER_NO_TABS_EMPTY_STATE_DESCRIPTION" desc="Text appearing on an empty tab picker that indicates that users can open tabs to add to search query.">
+        Open a new tab to add it to your question
+      </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_TABSWITCHER_TOGGLE_DEFAULT" desc="Placeholder content description for the button that enters or leaves the tab switcher. NUMBER_OF_TABS is the number of tabs within the tab switcher.">
         {NUMBER_OF_TABS, plural,
           =1 {See <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab}

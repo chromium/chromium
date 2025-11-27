@@ -57,6 +57,8 @@ static_library("home_modules") {
       "tab_group_promo.h",
       "tab_group_sync_promo.cc",
       "tab_group_sync_promo.h",
+      "tips_notifications_promo.cc",
+      "tips_notifications_promo.h",
     ]
   }
 
@@ -118,6 +120,7 @@ source_set("unit_tests") {
       "quick_delete_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
       "tab_group_sync_promo_unittest.cc",
+      "tips_notifications_promo_unittest.cc",
     ]
   }
 

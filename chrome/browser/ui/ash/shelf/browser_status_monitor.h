@@ -104,7 +104,7 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
   void RemoveWebContentsObserver(content::WebContents* contents);
 
   // Sets the shelf id for browsers represented by the browser shortcut item.
-  void SetShelfIDForBrowserWindowContents(Browser* browser,
+  void SetShelfIDForBrowserWindowContents(ash::BrowserDelegate* browser,
                                           content::WebContents* web_contents);
 
   raw_ptr<ChromeShelfController> shelf_controller_;

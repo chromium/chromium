@@ -213,7 +213,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(
                 /*planned_max_preloading_type=*/PreloadingType::kPrerender),
-            /*allow_reuse=*/false);
+            /*allow_reuse=*/false,
+            /*form_submission=*/false);
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
@@ -229,7 +230,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(
                 /*planned_max_preloading_type=*/PreloadingType::kPrerender),
-            /*allow_reuse=*/false);
+            /*allow_reuse=*/false,
+            /*form_submission=*/false);
     }
   }
 

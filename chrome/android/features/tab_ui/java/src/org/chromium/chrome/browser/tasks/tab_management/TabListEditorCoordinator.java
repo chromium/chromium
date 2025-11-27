@@ -8,11 +8,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -77,6 +78,7 @@ public class TabListEditorCoordinator {
     }
 
     static final String COMPONENT_NAME = "TabListEditor";
+    public static final int UNLIMITED_SELECTION = 0;
 
     // TODO(crbug.com/41467140): Unify similar interfaces in other components that used the
     // TabListCoordinator.
@@ -169,6 +171,14 @@ public class TabListEditorCoordinator {
          *     tabId for tabs or syncId for groups.
          */
         void selectTabs(Set<TabListEditorItemSelectionId> itemIds);
+
+        /**
+         * Preselects tabs through this TabListEditor.
+         *
+         * @param itemIds The item ids representing the tabs to be selected. This can either be a
+         *     tabId for tabs or syncId for groups.
+         */
+        void preselectTabs(Set<TabListEditorItemSelectionId> itemIds);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -293,6 +303,11 @@ public class TabListEditorCoordinator {
                 public void selectTabs(Set<TabListEditorItemSelectionId> itemIds) {
                     mTabListEditorMediator.selectTabs(itemIds);
                 }
+
+                @Override
+                public void preselectTabs(Set<TabListEditorItemSelectionId> itemIds) {
+                    mTabListEditorMediator.preselectTabs(itemIds);
+                }
             };
 
     private final Activity mActivity;
@@ -319,6 +334,8 @@ public class TabListEditorCoordinator {
     private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final String mComponentName;
+    private final int mAllowedSelectionCount;
+    private final SnackbarManager mSnackbarManager;
 
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private @Nullable TabListCoordinator mTabListCoordinator;
@@ -351,6 +368,8 @@ public class TabListEditorCoordinator {
      * @param componentName A unique string used to identify the parent component. Null if the
      *     originating component is not important and the current component name is preferred.
      *     Recommended to use the class name or make sure the string is unique.
+     * @param allowedSelectionCount The maximum number of tabs that can be selected at once. If
+     *     equal to UNLIMITED_SELECTION, then unlimited.
      */
     public TabListEditorCoordinator(
             Activity activity,
@@ -371,7 +390,8 @@ public class TabListEditorCoordinator {
             @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @CreationMode int creationMode,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
-            @Nullable String componentName) {
+            @Nullable String componentName,
+            int allowedSelectionCount) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mActivity = activity;
             mRootView = rootView;
@@ -381,6 +401,7 @@ public class TabListEditorCoordinator {
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             mTabListMode = mode;
             mDisplayGroups = displayGroups;
+            mSnackbarManager = snackbarManager;
             mTabActionState = initialTabActionState;
             mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID;
@@ -389,6 +410,7 @@ public class TabListEditorCoordinator {
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             mUndoBarExplicitTrigger = undoBarExplicitTrigger;
             mComponentName = componentName == null ? COMPONENT_NAME : componentName;
+            mAllowedSelectionCount = allowedSelectionCount;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -583,6 +605,14 @@ public class TabListEditorCoordinator {
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.initWithNative(regularProfile);
         }
+
+        @DrawableRes
+        int emptyImageResId =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                        ? R.drawable.tablet_tab_switcher_empty_state_illustration
+                        : R.drawable.phone_tab_switcher_empty_state_illustration_static;
+        ViewGroup emptyViewParent = mTabListEditorLayout.findViewById(R.id.list_content);
+        if (emptyViewParent == null) emptyViewParent = mTabListEditorLayout;
         mTabListCoordinator =
                 new TabListCoordinator(
                         mTabListMode,
@@ -602,14 +632,18 @@ public class TabListEditorCoordinator {
                         /* attachToParent= */ false,
                         mComponentName,
                         /* onModelTokenChange= */ null,
-                        /* hasEmptyView= */ false,
-                        /* emptyImageResId= */ Resources.ID_NULL,
-                        /* emptyHeadingStringResId= */ Resources.ID_NULL,
-                        /* emptySubheadingStringResId= */ Resources.ID_NULL,
+                        /* emptyViewParent= */ emptyViewParent,
+                        /* emptyImageResId= */ emptyImageResId,
+                        /* emptyHeadingStringResId= */ R.string
+                                .tabpicker_no_tabs_empty_state_header,
+                        /* emptySubheadingStringResId= */ R.string
+                                .tabpicker_no_tabs_empty_state_description,
                         /* onTabGroupCreation= */ null,
                         /* allowDragAndDrop= */ false,
                         /* tabSwitcherDragHandler= */ null,
-                        mUndoBarExplicitTrigger);
+                        mUndoBarExplicitTrigger,
+                        mSnackbarManager,
+                        mAllowedSelectionCount);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.
         mTabListCoordinator.initWithNative(regularProfile);

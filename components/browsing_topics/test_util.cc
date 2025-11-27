@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/test_util.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"

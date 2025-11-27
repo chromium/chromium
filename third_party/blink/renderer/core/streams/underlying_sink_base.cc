@@ -33,13 +33,8 @@ void UnderlyingSinkStartAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkWriteAlgorithm::Run(
     ScriptState* script_state,
-    int spanification_suspected_redundant_argc,
     base::span<v8::Local<v8::Value>> argv) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-  DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+  DCHECK_EQ(argv.size(), 1u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->write(script_state,
@@ -59,13 +54,8 @@ void UnderlyingSinkWriteAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkCloseAlgorithm::Run(
     ScriptState* script_state,
-    int spanification_suspected_redundant_argc,
     base::span<v8::Local<v8::Value>> argv) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-  DCHECK_EQ(spanification_suspected_redundant_argc, 0);
+  DCHECK_EQ(argv.size(), 0u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->close(script_state, PassThroughException(isolate));
@@ -83,13 +73,8 @@ void UnderlyingSinkCloseAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingSinkAbortAlgorithm::Run(
     ScriptState* script_state,
-    int spanification_suspected_redundant_argc,
     base::span<v8::Local<v8::Value>> argv) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-  DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+  DCHECK_EQ(argv.size(), 1u);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   auto result = sink_->abort(script_state,

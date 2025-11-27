@@ -15,11 +15,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -32,6 +30,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -59,8 +58,12 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.WebContents;
@@ -73,6 +76,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,6 +89,7 @@ public class FuseboxMediatorUnitTest {
 
     @Mock private FuseboxViewHolder mViewHolder;
     @Mock private FuseboxPopup mPopup;
+    @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     @Mock private Clipboard mClipboard;
@@ -93,6 +98,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -121,6 +127,8 @@ public class FuseboxMediatorUnitTest {
         activity.setContentView(viewGroup);
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+
         mContext = RuntimeEnvironment.application;
         mResources = mContext.getResources();
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
@@ -129,17 +137,17 @@ public class FuseboxMediatorUnitTest {
         mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         mMediator =
-                spy(
-                        new FuseboxMediator(
-                                mContext,
-                                mWindowAndroid,
-                                mModel,
-                                mViewHolder,
-                                mAttachments,
-                                mAutocompleteRequestTypeSupplier,
-                                mTabModelSelectorSupplier,
-                                mComposeBoxQueryControllerBridge,
-                                mOnCompactModeChangedSupplier));
+                new FuseboxMediator(
+                        mContext,
+                        mProfile,
+                        mWindowAndroid,
+                        mModel,
+                        mViewHolder,
+                        mAttachments,
+                        mAutocompleteRequestTypeSupplier,
+                        mTabModelSelectorSupplier,
+                        mComposeBoxQueryControllerBridge,
+                        mOnCompactModeChangedSupplier);
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
@@ -158,6 +166,7 @@ public class FuseboxMediatorUnitTest {
         mMediator =
                 new FuseboxMediator(
                         mContext,
+                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
@@ -201,6 +210,15 @@ public class FuseboxMediatorUnitTest {
         when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
         when(mComposeBoxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
         return tab;
+    }
+
+    private Intent createTabPickerResultIntent(List<Integer> tabIds) {
+        Intent data = mock(Intent.class);
+        Bundle extras = mock(Bundle.class);
+        when(data.getExtras()).thenReturn(extras);
+        when(data.getIntegerArrayListExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS))
+                .thenReturn(new ArrayList<>(tabIds));
+        return data;
     }
 
     private Set<Integer> getCurrentlyAttachedIdsFromModel() {
@@ -310,22 +328,20 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onCameraClicked_permissionGranted_launchesCamera() {
         doReturn(true).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchCamera();
 
         mMediator.onCameraClicked();
 
-        verify(mMediator).launchCamera();
+        verify(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
         verify(mWindowAndroid, never()).requestPermissions(any(), any());
     }
 
     @Test
     public void onCameraClicked_permissionDenied_requestsPermission() {
         doReturn(false).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchCamera();
 
         mMediator.onCameraClicked();
 
-        verify(mMediator, never()).launchCamera();
+        verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
         verify(mWindowAndroid).requestPermissions(any(), any());
     }
 
@@ -427,11 +443,25 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testIsIncognito() {
+        mMediator.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+
+        mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        assertEquals(
+                BrandedColorScheme.INCOGNITO,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+    }
+
+    @Test
     public void setToolbarVisible_noBridge_doesNothing() {
         // Create a mediator, but don't initialize the bridge.
         FuseboxMediator mediator =
                 new FuseboxMediator(
                         mContext,
+                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
@@ -502,20 +532,6 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void onToggleAttachmentsPopup_createImagesEligible_showsCreateImageButton() {
-        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
-        recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void onToggleAttachmentsPopup_createImagesNotEligible_hidesCreateImageButton() {
-        doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
-        recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
     }
 
     @Test
@@ -665,41 +681,86 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testUpdateCurrentlyAttachedTabs_Reconciliation() {
-        // Setup Tabs for the TabModelSelector
-        Tab tab1 = mockTab(101, true);
-        Tab tab2 = mockTab(102, false);
-        Tab tab3 = mockTab(103, true);
-        Tab tab4 = mockTab(104, false);
+        Tab tab1 = mockTab(101, /* webContentsReady= */ true);
+        mockTab(102, /* webContentsReady= */ false);
+        Tab tab3 = mockTab(103, /* webContentsReady= */ true);
+        mockTab(104, /* webContentsReady= */ false);
 
         addTabAttachment(tab1);
         addTabAttachment(tab3);
-        // Verify initial setup.
-        assertEquals(2, mAttachments.size());
-        assertTrue(getCurrentlyAttachedIdsFromModel().contains(101));
-        assertTrue(getCurrentlyAttachedIdsFromModel().contains(103));
-        clearInvocations(mMediator);
-
-        // Mock getPreselectionTabIds to return the current attached IDs (as ArrayList<Integer>).
-        ArrayList<Integer> initialPreselectedIds = new ArrayList<>();
-        initialPreselectedIds.add(101);
-        initialPreselectedIds.add(103);
-        doReturn(initialPreselectedIds).when(mMediator).getPreselectionTabIds();
+        assertEquals(new HashSet<>(Arrays.asList(101, 103)), getCurrentlyAttachedIdsFromModel());
 
         // Create set of newly selected Ids.
-        Set<Integer> newlySelectedIds = new HashSet<>();
-        newlySelectedIds.add(102);
-        newlySelectedIds.add(103);
-        newlySelectedIds.add(104);
-
-        // Call updateCurrentlyAttachedTabs to add newly selected tabs and remove unselected tabs.
+        Set<Integer> newlySelectedIds = new HashSet<>(Arrays.asList(102, 103, 104));
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
+        assertEquals(newlySelectedIds, getCurrentlyAttachedIdsFromModel());
+    }
 
-        // Verify final state.
-        Set<Integer> finalIds = getCurrentlyAttachedIdsFromModel();
-        assertEquals(3, finalIds.size());
-        assertFalse(finalIds.contains(101));
-        assertTrue(finalIds.contains(102));
-        assertTrue(finalIds.contains(103));
-        assertTrue(finalIds.contains(104));
+    @Test
+    public void onTabPickerClicked_launchesTabPickerActivity() throws ClassNotFoundException {
+        mMediator.onTabPickerClicked();
+
+        // Verify popup is dismissed
+        verify(mPopup).dismiss();
+
+        // Verify intent is shown
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+
+        assertEquals(
+                FuseboxMediator.CHROME_ITEM_PICKER_ACTIVITY_CLASS,
+                intent.getComponent().getClassName());
+        assertNotNull(intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS));
+    }
+
+    @Test
+    public void onTabPickerClicked_sendsPreselectedTabIds() throws ClassNotFoundException {
+        // Setup tabs and add them as attachments
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        addTabAttachment(tab1);
+        addTabAttachment(tab2);
+
+        mMediator.onTabPickerClicked();
+
+        // Capture the intent and verify its extras
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        ArrayList<Integer> preselectedIds =
+                intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
+
+        assertNotNull(preselectedIds);
+        assertEquals(2, preselectedIds.size());
+        assertTrue(preselectedIds.contains(101));
+        assertTrue(preselectedIds.contains(102));
+    }
+
+    @Test
+    public void testOnTabPickerResult_modelListNotEmpty_activatesAiMode() {
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101, 102));
+        Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
+
+        // Add tabs as attachments
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertEquals(new HashSet<>(selectedTabIds), getCurrentlyAttachedIdsFromModel());
+
+        // Verify AutocompleteRequestType is AI Mode.
+        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
+    }
+
+    @Test
+    public void testOnTabPickerResult_modelListEmpty_doesNotActivateAiMode() {
+        Intent resultIntent = createTabPickerResultIntent(new ArrayList<>());
+
+        // Set a non-AI mode starting state
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertEquals(new HashSet<>(), getCurrentlyAttachedIdsFromModel());
+
+        // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
+        assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
     }
 }

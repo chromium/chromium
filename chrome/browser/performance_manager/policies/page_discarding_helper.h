@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
@@ -21,6 +22,10 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace performance_manager {
 
@@ -41,11 +46,15 @@ class PageDiscardingHelper
       public NodeDataDescriberDefaultImpl,
       public PageNodeObserver {
  public:
-  // DiscardCallback passes the time of first discarding is done.
-  // If discarding fails or there is no candidate for discarding, this passes
-  // nullopt.
-  using DiscardCallback =
-      base::OnceCallback<void(std::optional<base::TimeTicks>)>;
+  // The result of page discard. The WebContents pointer is for
+  // TabManager::DiscardTabByExtension.
+  struct DiscardResult {
+    // Time of the first successful discard, or nullopt if no successful
+    // discard occurred.
+    std::optional<base::TimeTicks> first_discard_time;
+    // The WebContents of the first discarded tab after discard.
+    raw_ptr<content::WebContents> first_content_after_discard = nullptr;
+  };
 
   PageDiscardingHelper();
   ~PageDiscardingHelper() override;
@@ -55,9 +64,8 @@ class PageDiscardingHelper
   // Selects and discards a tab. This will try to discard a tab until there's
   // been a successful discard or until there's no more discard candidate.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see comment there
-  // about usage. Returns a time taken shortly after the first successful
-  // discard, or nullopt if no successful discard occurred.
-  std::optional<base::TimeTicks> DiscardAPage(
+  // about usage.
+  DiscardResult DiscardAPage(
       DiscardEligibilityPolicy::DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
@@ -95,6 +103,15 @@ class PageDiscardingHelper
  private:
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+
+  // Helper function so DiscardMultiplePages doesn't have to return the unused
+  // WebContents pointer.
+  DiscardResult DiscardMultiplePagesImpl(
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
+      bool discard_protected_tabs,
+      DiscardEligibilityPolicy::DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime);
 
   // The mechanism used to do the actual discarding.
   std::unique_ptr<mechanism::PageDiscarder> page_discarder_;

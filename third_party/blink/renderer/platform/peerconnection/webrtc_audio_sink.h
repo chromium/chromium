@@ -169,9 +169,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
     webrtc::TimestampAligner timestamp_aligner_;
   };
 
-  template <typename>
-  friend struct CrossThreadCopier;
-
   // WebMediaStreamAudioSink implementation.
   void OnData(const media::AudioBus& audio_bus,
               base::TimeTicks estimated_capture_time) override;

@@ -294,8 +294,8 @@ void SigninManagerAndroid::WipeData(Profile* profile,
   new ProfileDataRemover(profile, all_data, std::move(callback));
 }
 
-std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
-                                                    std::string& email) {
+static std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
+                                                           std::string& email) {
   return gaia::ExtractDomainName(email);
 }
 

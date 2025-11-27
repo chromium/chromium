@@ -19,7 +19,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash::cloud_upload {
@@ -126,12 +125,6 @@ void CloudUploadUI::BindInterface(
     factory_receiver_.reset();
   }
   factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void CloudUploadUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void CloudUploadUI::CreatePageHandler(

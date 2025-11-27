@@ -28,15 +28,6 @@ namespace glic {
 
 class TabUnderlineViewController;
 
-// The following logic makes many references to "pinned" tabs. All of these
-// refer to tabs that are selected to be shared with Gemini under the glic
-// multitab feature. This is different from the older existing notion of
-// "pinned" tabs in the tabstrip, which is the UI treatment that fixes a Tab
-// view to one side with a reduced visual. Separate terminology should be used
-// for the glic multitab concept in order to disambiguate, but landed code
-// already adopts the "pinning" term and so that continues to be used here.
-// TODO(crbug.com/433131600): update glic multitab sharing code to use less
-// conflicting terminology.
 class TabUnderlineView : public AnimatedEffectView {
   METADATA_HEADER(TabUnderlineView, views::View)
 

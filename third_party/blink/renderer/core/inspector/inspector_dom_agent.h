@@ -298,6 +298,8 @@ class CORE_EXPORT InspectorDOMAgent final
                         const AtomicString& value);
   void DidRemoveDOMAttr(Element*, const QualifiedName&);
   void StyleAttributeInvalidated(const HeapVector<Member<Element>>& elements);
+  void DidModifyAdoptedStyleSheets(Node*);
+  void AdoptedStyleSheetsInvalidated(Node*);
   void CharacterDataModified(CharacterData*);
   void DidInvalidateStyleAttr(Node*);
   void DidPushShadowRoot(Element* host, ShadowRoot*);

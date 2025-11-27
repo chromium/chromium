@@ -219,7 +219,7 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateBitmapProvider(
+    return CanvasResourceProvider::CreateExternalBitmapProvider(
         size, format, alpha_type, color_space, kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(

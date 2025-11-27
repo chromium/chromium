@@ -43,10 +43,10 @@ class SidePanelUI {
     Show(entry_key, std::nullopt, /*suppress_animations=*/false);
   }
 
-  // Open side panel with entry key, animating from starting_bounds to its final
-  // open position.
+  // Open side panel with entry key, animating from
+  // starting_bounds_in_browser_coordinates to its final open position.
   virtual void ShowFrom(SidePanelEntryKey entry_key,
-                        gfx::Rect starting_bounds) = 0;
+                        gfx::Rect starting_bounds_in_browser_coordinates) = 0;
 
   // Close the side panel.
   virtual void Close(SidePanelEntry::PanelType panel_type,

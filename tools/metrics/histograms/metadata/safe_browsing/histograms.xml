@@ -599,6 +599,59 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(ClientSafeBrowsingReportTypeString) -->
+
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.{ReportType}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the network result for a client safe browsing report request for
+    report type {ReportType}.
+  </summary>
+  <token key="ReportType">
+    <variant name="AdSample" summary="AdSample"/>
+    <variant name="APKDownload" summary="APKDownload"/>
+    <variant name="BlockedAdPopup" summary="BlockedAdPopup"/>
+    <variant name="BlockedAdRedirect" summary="BlockedAdRedirect"/>
+    <variant name="DangerousDownloadAutoDeleted"
+        summary="DangerousDownloadAutoDeleted"/>
+    <variant name="DangerousDownloadByAPI" summary="DangerousDownloadByAPI"/>
+    <variant name="DangerousDownloadOpened" summary="DangerousDownloadOpened"/>
+    <variant name="DangerousDownloadProfileClosed"
+        summary="DangerousDownloadProfileClosed"/>
+    <variant name="DangerousDownloadRecovery"
+        summary="DangerousDownloadRecovery"/>
+    <variant name="DangerousDownloadWarning"
+        summary="DangerousDownloadWarning"/>
+    <variant name="DangerousDownloadWarningAndroid"
+        summary="DangerousDownloadWarningAndroid"/>
+    <variant name="ExternalAppRedirect" summary="ExternalAppRedirect"/>
+    <variant name="HashPrefixRealTimeExperiment"
+        summary="HashPrefixRealTimeExperiment"/>
+    <variant name="NotificationPermissionAccepted"
+        summary="NotificationPermissionAccepted"/>
+    <variant name="PhishySiteInteractions" summary="PhishySiteInteractions"/>
+    <variant name="ServiceWorkerBehavior" summary="ServiceWorkerBehavior"/>
+    <variant name="Unknown" summary="Unknown"/>
+    <variant name="URLBilling" summary="URLBilling"/>
+    <variant name="URLClientSideMalware" summary="URLClientSideMalware"/>
+    <variant name="URLClientSidePhishing" summary="URLClientSidePhishing"/>
+    <variant name="URLMalware" summary="URLMalware"/>
+    <variant name="URLPasswordProtectionPhishing"
+        summary="URLPasswordProtectionPhishing"/>
+    <variant name="URLPhishing" summary="URLPhishing"/>
+    <variant name="URLRealTimeAndHashRealTimeDiscrepancy"
+        summary="URLRealTimeAndHashRealTimeDiscrepancy"/>
+    <variant name="URLSuspicious" summary="URLSuspicious"/>
+    <variant name="URLUnwanted" summary="URLUnwanted"/>
+    <variant name="WarningShown" summary="WarningShown"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/ping_manager.cc:ClientSafeBrowsingReportTypeString) -->
+
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult{IsAccessTokenIncluded}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-24">
@@ -688,6 +741,27 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records whether a sent client safe browsing report request contains a
     GAIA-tied OAuth2 token. This token is sent only for signed-in Enhanced Safe
     Browsing users.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.ResponseReceived"
+    enum="ClientSafeBrowsingReportType" expires_after="2026-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs per report type when the network request to send the report completes.
+    Logged each time the response is received once a report has been sent.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful"
+    enum="ClientSafeBrowsingReportType" expires_after="2026-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs per report type when the network request to send the report completes
+    when the response was 200 OK and no net error. Logged each time the response
+    is received once a report has been sent.
   </summary>
 </histogram>
 

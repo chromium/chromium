@@ -111,6 +111,10 @@ class GlicStatusIconTest : public testing::Test {
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
   base::HistogramTester histogram_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_{
+      features::kGlicShowStatusTrayIcon};
+#endif
 };
 
 #if !BUILDFLAG(IS_LINUX)

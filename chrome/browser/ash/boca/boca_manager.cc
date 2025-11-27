@@ -133,9 +133,9 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
     std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
     std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager)
-    : on_task_session_manager_(std::move(on_task_session_manager)),
-      session_client_impl_(std::move(session_client_impl)),
+    : session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
+      on_task_session_manager_(std::move(on_task_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
@@ -186,7 +186,8 @@ BocaManager::BocaManager(Profile* profile,
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
-        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
+        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile),
+        boca_session_manager_.get());
   }
 
   boca_metrics_manager_ =

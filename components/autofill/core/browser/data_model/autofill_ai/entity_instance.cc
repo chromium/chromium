@@ -8,9 +8,6 @@
 #include <ranges>
 #include <variant>
 
-#include "base/feature_list.h"
-#include "base/i18n/time_formatting.h"
-#include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,9 +26,6 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/icu/source/i18n/unicode/dtptngen.h"
-#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
 
@@ -100,71 +94,10 @@ std::u16string Format(
     case FormatString_Type_FLIGHT_NUMBER:
       return FormatFlightNumber(std::move(s), format_string->value);
     case FormatString_Type_DATE:
+    case FormatString_Type_ICU_DATE:
       break;
   }
   return s;
-}
-
-// TODO(crbug.com/434122759): Consider adding a timezone parameter to
-// LocalizedTimeFormatWithPattern instead.
-std::optional<icu::SimpleDateFormat> GetFlightDepartureDateFormatter(
-    std::string_view app_locale) {
-  UErrorCode status = U_ZERO_ERROR;
-  // `CreateSimpleDateFormatter` uses the generator to find the best pattern
-  // for the locale - it is done in the exact same way as in that function.
-  icu::Locale locale(std::string(app_locale).c_str());
-  if (locale.isBogus()) {
-    return std::nullopt;
-  }
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(locale, status));
-  if (U_FAILURE(status)) {
-    return std::nullopt;
-  }
-  icu::UnicodeString generated_pattern =
-      generator->getBestPattern("MMM d", status);
-  if (U_FAILURE(status)) {
-    return std::nullopt;
-  }
-  icu::SimpleDateFormat formatter(generated_pattern, locale, status);
-  if (U_FAILURE(status)) {
-    return std::nullopt;
-  }
-  formatter.setTimeZone(*icu::TimeZone::getGMT());
-  return formatter;
-}
-
-// This feature is a kill switch for the locale-aware formatting of the flight
-// departure date.
-BASE_FEATURE(kAutofillFlightEnableLocaleAwareDepartureDate,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(crbug.com/434122759): Move this functionality to
-// autofill::data_util::FormatDate.
-std::u16string FormatFlightDepartureDate(std::u16string_view raw_info,
-                                         std::string_view app_locale) {
-  if (raw_info.empty()) {
-    return u"";
-  }
-  base::Time departure_time;
-  if (!base::Time::FromUTCString(base::UTF16ToUTF8(raw_info).c_str(),
-                                 &departure_time)) {
-    return u"";
-  }
-
-  if (base::FeatureList::IsEnabled(
-          kAutofillFlightEnableLocaleAwareDepartureDate)) {
-    if (const std::optional<icu::SimpleDateFormat> formatter =
-            GetFlightDepartureDateFormatter(app_locale)) {
-      icu::UnicodeString date_string;
-      formatter->format(departure_time.InMillisecondsFSinceUnixEpoch(),
-                        date_string);
-      return base::i18n::UnicodeStringToString16(date_string);
-    }
-  }
-
-  return base::UTF8ToUTF16(base::UnlocalizedTimeFormatWithPattern(
-      departure_time, "MMM d", icu::TimeZone::getGMT()));
 }
 
 }  // namespace
@@ -202,13 +135,12 @@ std::u16string AttributeInstance::GetInfo(
                        return country.GetCountryName(app_locale);
                      },
                      [&](const DateInfo& date) {
-                       if (field_type == FLIGHT_RESERVATION_DEPARTURE_DATE) {
-                         return FormatFlightDepartureDate(
-                             GetRawInfo(field_type), app_locale);
+                       if (format_string &&
+                           format_string->type == FormatString_Type_ICU_DATE) {
+                         return date.GetIcuDate(format_string->value,
+                                                app_locale);
                        }
-                       // TODO(crbug.com/396325496): Consider falling back
-                       // to a locale-specific format by relying on
-                       // `app_locale`.
+
                        return date.GetDate(format_string ? format_string->value
                                                          : u"YYYY-MM-DD");
                      },
@@ -278,6 +210,8 @@ void AttributeInstance::SetInfo(
             }
           },
           [&](DateInfo& date) {
+            CHECK(!format_string ||
+                  format_string->type != FormatString_Type_ICU_DATE);
             date.SetDate(value, format_string && format_string->type ==
                                                      FormatString_Type_DATE
                                     ? format_string->value

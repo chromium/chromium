@@ -59,8 +59,6 @@ kidsmanagement::ListMembersResponse CreateFamilyWithOneMember(
 }
 }  // namespace
 
-// TODO(b/280772872): Integrate AsyncURLChecker to test
-// supervised_user::SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites.
 class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     : public testing::TestWithParam<supervised_user::WebFilterType> {
  public:

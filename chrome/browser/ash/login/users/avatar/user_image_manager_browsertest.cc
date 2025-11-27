@@ -231,18 +231,14 @@ class UserImageManagerTestBase : public LoginManagerTest,
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForAccount(identity_manager, core_info.account_id,
                                       kRandomTokenStrForTesting);
-    AccountInfo account_info;
-    account_info.email = core_info.email;
-    account_info.gaia = core_info.gaia;
-    account_info.account_id = core_info.account_id;
-    account_info.is_under_advanced_protection =
-        core_info.is_under_advanced_protection;
-    account_info.full_name = account_info.email;
-    account_info.given_name = account_info.email;
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = account_info.email;
-    account_info.picture_url =
-        embedded_test_server()->GetURL("/avatar.jpg").spec();
+    AccountInfo account_info =
+        AccountInfo::Builder(core_info)
+            .SetFullName(core_info.email)
+            .SetGivenName(core_info.email)
+            .SetHostedDomain(std::string())
+            .SetLocale(core_info.email)
+            .SetAvatarUrl(embedded_test_server()->GetURL("/avatar.jpg").spec())
+            .Build();
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

@@ -6,10 +6,9 @@ import * as fill_constants from '//components/autofill/ios/form_util/resources/f
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {getFormControlElements, getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {getFormControlElements, getFormElementFromIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
-
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -141,7 +140,7 @@ function countEditableElements_(elements) {
  *     empty if no match.
  */
 function getUnownedIframes() {
-  return Array.from(gCrWebLegacy.form.getIframeElements(document))
+  return Array.from(getIframeElements(document))
       .filter(e => !e.closest('form'));
 }
 

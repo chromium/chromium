@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -79,7 +80,12 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns the URL that a task was created for. Once this is retrieved, the
   // entry is removed from the cache.
-  virtual GURL GetInitialUrlForTask(const base::Uuid& uuid);
+  virtual std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid);
+
+  // Get a thread URL based on the task ID. If no task is found or the task does
+  // not have a thread ID, the default AI URL is returned.
+  virtual void GetThreadUrlFromTaskId(const base::Uuid& task_id,
+                                      base::OnceCallback<void(GURL)> callback);
 
   // Returns the URL for the default AI page. This is the URL that should be
   // loaded in the absence of any other context.

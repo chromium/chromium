@@ -4,6 +4,8 @@
 
 #include "components/sync/service/sync_stopped_reporter.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -132,7 +134,7 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
 }
 
 void SyncStoppedReporter::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(simple_url_loader_);
   LogSyncStoppedRequestResult(*simple_url_loader_);
   simple_url_loader_.reset();

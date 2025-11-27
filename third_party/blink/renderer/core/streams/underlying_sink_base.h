@@ -84,7 +84,6 @@ class UnderlyingSinkWriteAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int spanification_suspected_redundant_argc,
                                   base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
@@ -98,7 +97,6 @@ class UnderlyingSinkCloseAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int spanification_suspected_redundant_argc,
                                   base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
@@ -112,7 +110,6 @@ class UnderlyingSinkAbortAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int spanification_suspected_redundant_argc,
                                   base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 

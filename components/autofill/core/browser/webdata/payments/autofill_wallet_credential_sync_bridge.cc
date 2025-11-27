@@ -41,7 +41,7 @@ const char kAutofillWalletCredentialSyncBridgeUserDataKey[] =
 void AutofillWalletCredentialSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillWalletCredentialSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletCredentialSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -55,7 +55,7 @@ AutofillWalletCredentialSyncBridge*
 AutofillWalletCredentialSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletCredentialSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillWalletCredentialSyncBridgeUserDataKey));
 }
 

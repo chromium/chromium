@@ -229,9 +229,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/427242080): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(
       chrome::android::kAndroidPinnedTabsTabletTabStrip);
-  // TODO(crbug.com/433879656): Remove when this feature on LFF device is
-  // stable.
-  feature_overrides.EnableFeature(features::kFluidResize);
 
   // Three flags are required for the bookmarks bar feature.
   // TODO(crbug.com/430059235): Remove once feature is launched to 100% on all

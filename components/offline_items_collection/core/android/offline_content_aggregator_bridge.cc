@@ -37,7 +37,7 @@ namespace android {
 namespace {
 const char kOfflineContentAggregatorBridgeUserDataKey[] = "aggregator_bridge";
 
-ContentId JNI_OfflineContentAggregatorBridge_CreateContentId(
+static ContentId JNI_OfflineContentAggregatorBridge_CreateContentId(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id) {

@@ -38,8 +38,11 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
 
 namespace {
 
@@ -416,6 +419,29 @@ PossibleTypes GetPossibleTypes(
   return pt;
 }
 
+void FindAndSetPossibleOtpFieldTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<const OneTimeToken> recent_otps,
+    base::span<PossibleTypes> possible_types) {
+  if (recent_otps.empty()) {
+    return;
+  }
+
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
+    std::u16string field_value = field->value();
+    base::TrimWhitespace(field_value, base::TRIM_ALL, &field_value);
+    const std::string field_value_u8 = base::UTF16ToUTF8(field_value);
+
+    // Check if the field value matches any of the recent OTPs.
+    for (const OneTimeToken& otp : recent_otps) {
+      if (field_value_u8 == otp.value()) {
+        pt.types.insert(ONE_TIME_CODE);
+        return;
+      }
+    }
+  }
+}
+
 }  // namespace
 
 PossibleTypes::PossibleTypes() = default;
@@ -468,6 +494,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const OneTimeToken> recent_otps,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields) {
   std::vector<PossibleTypes> possible_types;
@@ -488,6 +515,12 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
                                   possible_types);
 
+  if (!recent_otps.empty() &&
+      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+    // OTPs are not stored, run special logic to detect OTP values.
+    FindAndSetPossibleOtpFieldTypes(fields, recent_otps, possible_types);
+  }
+
   for (auto [field, pt] : base::zip(fields, possible_types)) {
     if (pt.types.empty()) {
       pt.types = {UNKNOWN_TYPE};
@@ -503,6 +536,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const OneTimeToken> recent_otps,
     const std::string& app_locale) {
   FieldTypeSet types;
   for (const AutofillProfile& profile : profiles) {
@@ -526,6 +560,11 @@ FieldTypeSet DetermineAvailableFieldTypes(
           features::kAutofillEnableLoyaltyCardsFilling) &&
       !loyalty_cards.empty()) {
     types.insert(LOYALTY_MEMBERSHIP_ID);
+  }
+
+  if (!recent_otps.empty() &&
+      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+    types.insert(ONE_TIME_CODE);
   }
   return types;
 }

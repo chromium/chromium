@@ -239,9 +239,10 @@ class AndroidProfileTool:
     """Installs the built WebView on the device and set it as the WebView
     provider.
     public instructions: https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md#installing-webview-and-switching-provider # pylint: disable=line-too-long
+    The orderfile script tries to install WebView with the "com.android.webview"
+    package name. This package name is usually different from the package name
+    for the WebView installed by default on the device in the system image.
     """
-    # Uninstall the existing WebView package to avoid signatures issues.
-    self._device.Uninstall('com.google.android.webview.debug')
     RunCommand([installer_path, 'install'])
     RunCommand([installer_path, 'set-webview-provider'])
 

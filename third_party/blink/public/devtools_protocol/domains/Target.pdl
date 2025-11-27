@@ -265,6 +265,16 @@ domain Target
       # List of remote locations.
       array of RemoteLocation locations
 
+  # Gets the targetId of the DevTools page target opened for the given target
+  # (if any).
+  experimental command getDevToolsTarget
+    parameters
+      # Page or tab target ID.
+      TargetID targetId
+    returns
+      # The targetId of DevTools page target if exists.
+      optional TargetID targetId
+
   # Issued when attached to target because of auto-attach or `attachToTarget` command.
   experimental event attachedToTarget
     parameters

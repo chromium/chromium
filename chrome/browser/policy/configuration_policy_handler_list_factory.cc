@@ -480,6 +480,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kIncognitoModeAllowlist,
     policy_prefs::kIncognitoModeAllowlist,
     base::Value::Type::LIST },
+  { key::kStaticStorageQuotaEnabled,
+    prefs::kStaticStorageQuotaEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

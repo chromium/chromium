@@ -821,10 +821,6 @@ float ScreenWin::GetScaleFactorForDPI(int dpi) const {
   return display::win::GetScaleFactorForDPI(dpi, true);
 }
 
-float ScreenWin::GetSystemScaleFactor() const {
-  return display::win::internal::GetUnforcedDeviceScaleFactor();
-}
-
 void ScreenWin::SetRequestHDRStatusCallback(
     RequestHDRStatusCallback request_hdr_status_callback) {
   request_hdr_status_callback_ = std::move(request_hdr_status_callback);

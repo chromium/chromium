@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class BookmarksPageHandler;
 namespace commerce {
@@ -27,10 +26,6 @@ class ShoppingListContextMenuController;
 class ShoppingServiceHandler;
 class PriceTrackingHandler;
 }  // namespace commerce
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -82,10 +77,6 @@ class BookmarksSidePanelUI
           receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
-
-  void BindInterface(
       mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_image_handler);
 
@@ -125,7 +116,6 @@ class BookmarksSidePanelUI
   std::unique_ptr<commerce::PriceTrackingHandler> price_tracking_handler_;
   mojo::Receiver<commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
       price_tracking_factory_receiver_{this};
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
   std::unique_ptr<commerce::ShoppingListContextMenuController>

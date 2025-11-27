@@ -20,7 +20,7 @@ constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
 
 }  // namespace
 
-base::android::ScopedJavaLocalRef<jstring>
+static base::android::ScopedJavaLocalRef<jstring>
 JNI_LoginDbDeprecationUtilBridge_GetAutoExportCsvFilePath(JNIEnv* env,
                                                           Profile* profile) {
   return base::android::ConvertUTF8ToJavaString(

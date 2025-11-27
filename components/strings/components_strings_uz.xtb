@@ -2171,6 +2171,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4506599922270137252">Tizim administratori bilan bog‘lanish</translation>
 <translation id="450710068430902550">Administratorga ulashish</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, bu sahifani Google Translate orqali tarjima qilish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
+<translation id="4510703642214459906">Manzil</translation>
 <translation id="4515275063822566619">Google hisobi (<ph name="ACCOUNT_EMAIL" />), Chrome brauzerida saqlangan karta va manzillar. Siz ularni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali boshqarishingiz mumkin.</translation>
 <translation id="4515847625438516456">Mikroavtomobillar va subkompaktlar</translation>
 <translation id="451601984112574365">Yashil 3</translation>
@@ -4364,6 +4365,7 @@ Batafsil axborot:
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Maxfiy fayl yuklansinmi?}other{Maxfiy fayllar yuklansinmi?}}</translation>
 <translation id="8079031581361219619">Sayt qayta yuklansinmi?</translation>
+<translation id="8079591184016291275">Tadbir nomi</translation>
 <translation id="8079976827192572403">Xavfli sayt</translation>
 <translation id="8081087320434522107">Sedanlar</translation>
 <translation id="8086429410809447605">Ayollar kiyimlari</translation>
@@ -4761,6 +4763,7 @@ Batafsil axborot:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">joylashtirilgan kontent</translation>
 <translation id="8757526089434340176">Google Pay taklifi mavjud</translation>
+<translation id="8758529215314160755">Ismingizni <ph name="BEGIN_LINK" />Google hisobingiz<ph name="END_LINK" /> (<ph name="ACCOUNT" />) orqali tahrirlashingiz mumkin</translation>
 <translation id="8759274551635299824">Kredit kartaning amal qilish muddati tugagan</translation>
 <translation id="87601671197631245">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parollar, xabarlar va kredit kartalari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>
 <translation id="8763927697961133303">USB qurilma</translation>

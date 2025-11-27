@@ -89,6 +89,7 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxStorageTexturesInFragmentStage() const;
   unsigned maxStorageBuffersInVertexStage() const;
   unsigned maxStorageTexturesInVertexStage() const;
+  unsigned maxImmediateSize() const;
 
  private:
   ComboLimits limits_;

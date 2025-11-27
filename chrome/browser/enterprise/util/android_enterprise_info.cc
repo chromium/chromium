@@ -73,9 +73,10 @@ class AndroidEnterpriseInfoFriendHelper {
 
 }  // namespace enterprise_util
 
-void JNI_EnterpriseInfo_UpdateNativeOwnedState(JNIEnv* env,
-                                               jboolean hasProfileOwnerApp,
-                                               jboolean hasDeviceOwnerApp) {
+static void JNI_EnterpriseInfo_UpdateNativeOwnedState(
+    JNIEnv* env,
+    jboolean hasProfileOwnerApp,
+    jboolean hasDeviceOwnerApp) {
   enterprise_util::AndroidEnterpriseInfoFriendHelper::ForwardToServiceCallbacks(
       static_cast<bool>(hasProfileOwnerApp),
       static_cast<bool>(hasDeviceOwnerApp));

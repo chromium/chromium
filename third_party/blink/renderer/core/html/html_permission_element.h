@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -124,9 +125,7 @@ class CORE_EXPORT HTMLPermissionElement
                                   const AtomicString& language_string);
   virtual void UpdateAppearance();
 
-  void UpdateIcon(mojom::blink::PermissionName permission,
-                  HTMLPermissionIconElement::VisualState state =
-                      HTMLPermissionIconElement::VisualState::kIdle);
+  void UpdateIcon(mojom::blink::PermissionName permission);
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();
@@ -209,7 +208,7 @@ class CORE_EXPORT HTMLPermissionElement
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivClipPath);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
-                           IntersectionOclluderLogging);
+                           IntersectionOccluderLogging);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionVisibleOverlapsRecentAttachedInterval);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementFencedFrameTest,
@@ -527,9 +526,9 @@ class CORE_EXPORT HTMLPermissionElement
   // revert back.
   void EnableFallbackMode();
 
-  // If there's a node covers this element, try to get some useful
-  // information from this node and add to console log.
-  void AddOccluderInfoToConsole();
+  // Report an issue to the devtools issues panel, specifically related to the
+  // permission element's activation being disabled.
+  void ReportActivationDisabledAuditsIssue(DisableReason reason);
 
   IntersectionVisibility IntersectionVisibilityForTesting() const {
     return intersection_visibility_;

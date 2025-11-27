@@ -266,10 +266,8 @@ class AutofillWebDataService : public WebDataServiceBase {
   void RemoveObserver(AutofillWebDataServiceObserverOnUISequence* observer);
 
   // Returns a SupportsUserData object that may be used to store data accessible
-  // from the DB sequence. Should be called only from the DB sequence, and will
-  // be destroyed on the DB sequence soon after ShutdownOnUISequence() is
-  // called.
-  base::SupportsUserData* GetDBUserData();
+  // from the DB sequence. Must be called only from the DB sequence.
+  base::SupportsUserData& GetDBUserData();
 
   // Takes a callback which will be called on the DB sequence with a pointer to
   // an AutofillWebdataBackend. This backend can be used to access or update the

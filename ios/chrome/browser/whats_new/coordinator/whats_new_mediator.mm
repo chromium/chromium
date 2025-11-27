@@ -24,27 +24,10 @@
 #import "url/gurl.h"
 
 @interface WhatsNewMediator ()
-
-@property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* chromeTipEntries;
-
 @end
 
 // The mediator to display What's New data.
 @implementation WhatsNewMediator
-
-#pragma mark - Public
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    // Serialize What's New Chrome Tips
-    self.chromeTipEntries = [[NSMutableArray alloc] init];
-    for (WhatsNewItem* item in WhatsNewChromeTipEntries(WhatsNewFilePath())) {
-      [self.chromeTipEntries addObject:item];
-    }
-  }
-  return self;
-}
 
 #pragma mark - WhatsNewDetailViewActionHandler
 
@@ -121,11 +104,9 @@
 
 #pragma mark Private
 
-// Returns a `WhatsNewItem` representing a highlighted chrome tip.
-- (WhatsNewItem*)whatsNewChromeTipItem {
-  // Return a random chrome tip.
-  int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
-  return self.chromeTipEntries[entryIndex];
+// Returns an Array of `WhatsNewItem` representing a highlighted chrome tip.
+- (NSArray<WhatsNewItem*>*)whatsNewChromeTipItems {
+  return WhatsNewChromeTipEntries(WhatsNewFilePath());
 }
 
 // Returns an Array of `WhatsNewItem` features.
@@ -156,7 +137,7 @@
 
 // Update the consumer with What's New items.
 - (void)updateConsumer {
-  [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItem]
+  [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItems]
                           featureItems:[self whatsNewFeatureItems]];
 }
 

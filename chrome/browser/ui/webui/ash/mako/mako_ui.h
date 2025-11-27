@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
 
@@ -44,10 +42,6 @@ class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
       mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
-  void BindInterface(
       mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
           pending_receiver);
 
@@ -57,7 +51,6 @@ class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   std::optional<SkRegion> draggable_region_ = std::nullopt;
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<LobsterPageHandler> lobster_page_handler_;
 };
 

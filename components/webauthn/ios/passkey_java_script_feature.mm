@@ -56,6 +56,9 @@ constexpr char kRpId[] = "rpId";
 // Parameter for the "logCreateResolved" event.
 constexpr char kIsGpm[] = "isGpm";
 
+// Request ID associated with deferred promises.
+constexpr char kRequestId[] = "requestId";
+
 // Frame ID for handle* events.
 constexpr char kFrameId[] = "frameId";
 
@@ -256,38 +259,37 @@ std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
   return credential_descriptors;
 }
 
-// Extracts all parameters required to build a RequestParams object from the
-// provided dictionary.
-PasskeyTabHelper::RequestParams ExtractRequestParams(
-    const base::Value::Dict* dict) {
-  if (!dict) {
-    return PasskeyTabHelper::RequestParams();
+// Extracts all parameters required to build a PasskeyRequestParams object from
+// the provided dictionary.
+PasskeyRequestParams ExtractRequestParams(const base::Value::Dict& dict) {
+  const std::string* frame_id = dict.FindString(kFrameId);
+  const std::string* request_id = dict.FindString(kRequestId);
+  const base::Value::Dict* request_dict = dict.FindDict(kRequest);
+  if (!frame_id || !request_id || !request_dict) {
+    return PasskeyRequestParams();
   }
 
-  const std::string* frame_id = dict->FindString(kFrameId);
-
-  return PasskeyTabHelper::RequestParams(
-      frame_id ? *frame_id : "", ExtractRpEntity(dict->FindDict(kRpEntity)),
-      Base64Decode(dict->FindString(kChallenge)),
-      ExtractUserVerification(dict->FindString(kUserVerification)));
+  return PasskeyRequestParams(
+      *frame_id, *request_id, ExtractRpEntity(dict.FindDict(kRpEntity)),
+      Base64Decode(request_dict->FindString(kChallenge)),
+      ExtractUserVerification(request_dict->FindString(kUserVerification)));
 }
 
 // Extracts all parameters required to build an ExtractAssertionRequestParams
 // object from the provided dictionary.
-PasskeyTabHelper::AssertionRequestParams ExtractAssertionRequestParams(
+AssertionRequestParams ExtractAssertionRequestParams(
     const base::Value::Dict& dict) {
-  return PasskeyTabHelper::AssertionRequestParams(
-      ExtractRequestParams(dict.FindDict(kRequest)),
+  return AssertionRequestParams(
+      ExtractRequestParams(dict),
       ExtractCredentials(dict.FindList(kAllowCredentials)));
 }
 
 // Extracts all parameters required to build a RegistrationRequestParams object
 // from the provided dictionary.
-PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
+RegistrationRequestParams ExtractRegistrationRequestParams(
     const base::Value::Dict& dict) {
-  return PasskeyTabHelper::RegistrationRequestParams(
-      ExtractRequestParams(dict.FindDict(kRequest)),
-      ExtractUserEntity(dict.FindDict(kUserEntity)),
+  return RegistrationRequestParams(
+      ExtractRequestParams(dict), ExtractUserEntity(dict.FindDict(kUserEntity)),
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
@@ -344,17 +346,21 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
-void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
-  CallJavaScriptFunction(web_frame, "passkey.deferToRenderer", {});
+void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame,
+                                               std::string_view request_id) {
+  CallJavaScriptFunction(web_frame, "passkey.deferToRenderer",
+                         base::Value::List().Append(request_id));
 }
 
 void PasskeyJavaScriptFeature::ResolveAttestationRequest(
     web::WebFrame* web_frame,
-    const std::string& credential_id,
+    std::string_view request_id,
+    std::string_view credential_id,
     AttestationData attestation_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAttestationRequest",
       base::Value::List()
+          .Append(request_id)
           .Append(base::Base64Encode(credential_id))
           .Append(base::Base64Encode(attestation_data.attestation_object))
           .Append(base::Base64Encode(attestation_data.authenticator_data))
@@ -364,11 +370,13 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
 
 void PasskeyJavaScriptFeature::ResolveAssertionRequest(
     web::WebFrame* web_frame,
-    const std::string& credential_id,
+    std::string_view request_id,
+    std::string_view credential_id,
     AssertionData assertion_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAssertionRequest",
       base::Value::List()
+          .Append(request_id)
           .Append(base::Base64Encode(credential_id))
           .Append(base::Base64Encode(assertion_data.authenticator_data))
           .Append(assertion_data.client_data_json)

@@ -1020,11 +1020,6 @@ const char kLensUnaryApisWithHttpTransportEnabledName[] =
 const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
     "Enables the unary APIs with HTTP transport.";
 
-const char kLensUnaryClientDataHeaderEnabledName[] =
-    "Lens unary client data header enabled";
-const char kLensUnaryClientDataHeaderEnabledDescription[] =
-    "Enables the client data header for unary request.";
-
 const char kLensUnaryHttpTransportEnabledName[] =
     "Lens unary HTTP transport enabled";
 const char kLensUnaryHttpTransportEnabledDescription[] =
@@ -1156,11 +1151,6 @@ const char kNtpComposeboxUsesChromeComposeClientDescription[] =
 const char kOmniboxDRSPrototypeName[] = "Enable the Omnibox DRS prototype";
 const char kOmniboxDRSPrototypeDescription[] =
     "Enables the omnibox dynamic response system prototype";
-
-const char kOmniboxGeminiPrototypeProviderName[] =
-    "Omnibox Gemini Prototype Provider";
-const char kOmniboxGeminiPrototypeProviderDescription[] =
-    "Enables a prototype provider that suggests a query on omnibox focus.";
 
 const char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
     "Omnibox Grouping Framework for Typed Suggestions";

@@ -5,11 +5,23 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_INTERNALS_TAB_STRIP_INTERNALS_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_INTERNALS_TAB_STRIP_INTERNALS_UTIL_H_
 
+#include <list>
 #include <string>
 
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals.mojom.h"
 
 class TabStripModel;
+
+namespace sessions {
+
+namespace tab_restore {
+
+struct Entry;
+
+}  // namespace tab_restore
+using TabRestoreEntries = std::list<std::unique_ptr<tab_restore::Entry>>;
+
+}  // namespace sessions
 
 namespace tab_strip_internals {
 
@@ -21,6 +33,9 @@ mojom::NodePtr BuildTabCollectionTree(const TabStripModel* model);
 
 // Builds a selection model for the given `model`.
 mojom::SelectionModelPtr BuildSelectionModel(const TabStripModel* model);
+
+mojom::TabRestoreDataPtr BuildTabRestoreData(
+    const sessions::TabRestoreEntries& entries);
 
 }  // namespace tab_strip_internals
 

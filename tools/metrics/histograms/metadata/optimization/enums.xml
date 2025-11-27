@@ -752,7 +752,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="64" label="AUTOFILL_ABLATION_SITES_LIST5"/>
   <int value="65" label="AUTOFILL_ABLATION_SITES_LIST6"/>
   <int value="67" label="AMOUNT_EXTRACTION_ALLOWLIST"/>
-  <int value="68" label="AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST"/>
+  <int value="68" label="Deprecated2"/>
   <int value="69" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM"/>
   <int value="70" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP"/>
   <int value="71" label="SAVED_TAB_GROUP"/>
@@ -792,6 +792,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="113" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID"/>
   <int value="114" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID"/>
   <int value="115" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID"/>
+  <int value="116" label="AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

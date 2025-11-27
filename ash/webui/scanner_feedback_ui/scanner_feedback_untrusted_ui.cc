@@ -37,8 +37,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
 
@@ -206,12 +204,6 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
 }
 
 ScannerFeedbackUntrustedUI::~ScannerFeedbackUntrustedUI() = default;
-
-void ScannerFeedbackUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 void ScannerFeedbackUntrustedUI::BindInterface(
     mojo::PendingReceiver<mojom::scanner_feedback_ui::PageHandler> receiver) {

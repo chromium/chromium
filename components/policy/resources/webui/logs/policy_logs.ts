@@ -11,6 +11,7 @@ import '/strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {Log, VersionInfo} from './types.js';
@@ -44,7 +45,9 @@ function displayList() {
   }
   logs.forEach(log => {
     const logMessage = document.createElement('li');
-    logMessage.textContent = `[${log.logSeverity}] ${log.message}`;
+    // `log.message` is already escaped on the C++ side with EscapeForHTML().
+    logMessage.innerHTML =
+        sanitizeInnerHtml(`[${log.logSeverity}] ${log.message}`);
     logMessageContainer.appendChild(logMessage);
   });
 }

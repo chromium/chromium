@@ -81,6 +81,9 @@ import java.util.function.Supplier;
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
         implements ControlContainer, AppHeaderObserver, Observer {
+    private static final double SAMPLE_STALE_CAPTURE_PROBABILITY = 0.01;
+    private static boolean sForceStaleCaptureHistogram;
+
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
@@ -849,17 +852,22 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             }
         }
 
+        private boolean shouldSampleStaleCaptureHistogram() {
+            return sForceStaleCaptureHistogram || Math.random() < SAMPLE_STALE_CAPTURE_PROBABILITY;
+        }
+
         public void onContentViewScrollingStateChanged(boolean scrolling) {
             if (scrolling
                     && mControlsToken == TokenHolder.INVALID_TOKEN
-                    && !mConstraintsObserver.areControlsLocked()) {
+                    && !mConstraintsObserver.areControlsLocked()
+                    && shouldSampleStaleCaptureHistogram()) {
                 boolean isCaptureStale =
                         !mToolbarDataProvider
                                 .getUrlBarData()
                                 .displayText
                                 .equals(mMostRecentlyCapturedUrl);
                 RecordHistogram.recordBooleanHistogram(
-                        "Android.Toolbar.StaleCapturedUrlOnScroll", isCaptureStale);
+                        "Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled", isCaptureStale);
             }
         }
 
@@ -983,7 +991,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     private void onToolbarCaptureUpdated(Resource toolbarCaptureResource) {
+        Rect newSize = toolbarCaptureResource.getBitmapSize();
+        if (mToolbarCaptureSize.equals(newSize)) return;
+
         mToolbarCaptureSize.set(toolbarCaptureResource.getBitmapSize());
+        if (mToolbar != null) {
+            mToolbar.onCaptureSizeUpdated();
+        }
     }
 
     int getToolbarCaptureHeight() {
@@ -1029,5 +1043,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         setVisibility(Boolean.TRUE.equals(fullSpaceMode) ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    static Runnable forceStaleCaptureHistogramForTesting() {
+        sForceStaleCaptureHistogram = true;
+        return () -> sForceStaleCaptureHistogram = false;
     }
 }

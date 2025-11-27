@@ -3398,6 +3398,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Records a browser-assisted login. This is used to record metrics in the
   // embedder. This covers federated and webauthn assisted logins.
   virtual void RecordAssistedLogin(AssistedLoginType login_type);
+
+  // Determines whether storage quota behavior is overridden by either a user
+  // choice or enterprise policy. True should result in static values being
+  // returned by quota APIs, false in dynamic ones, regardless of command line
+  // flags or launches.
+  // Returns std::nullopt if there is no overridden value.
+  virtual std::optional<bool> GetOverrideValueForStaticStorageQuota(
+      BrowserContext* browser_context);
 };
 
 }  // namespace content

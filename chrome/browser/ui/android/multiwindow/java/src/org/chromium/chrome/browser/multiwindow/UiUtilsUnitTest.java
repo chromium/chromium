@@ -616,16 +616,17 @@ public class UiUtilsUnitTest {
     private InstanceInfo mockInstance(
             int taskId, int tabCount, int incognitoTabCount, boolean isIncognito) {
         return new InstanceInfo(
-                1,
+                /* instanceId= */ 1,
                 taskId,
-                0,
+                /* type= */ 0,
                 "https://url.com",
                 TITLE,
                 /* customTitle= */ null,
                 tabCount,
                 incognitoTabCount,
                 isIncognito,
-                0);
+                /* lastAccessedTime= */ 0,
+                /* closedByUser= */ false);
     }
 
     private InstanceInfo mockInstance(
@@ -635,24 +636,46 @@ public class UiUtilsUnitTest {
             boolean isIncognito,
             String customTitle) {
         return new InstanceInfo(
-                1,
-                taskId,
-                0,
+                /* instanceId= */ 1,
+                /* taskId= */ taskId,
+                /* type= */ 0,
                 "https://url.com",
                 TITLE,
                 customTitle,
                 tabCount,
                 incognitoTabCount,
                 isIncognito,
-                0);
+                /* lastAccessedTime= */ 0,
+                /* closedByUser= */ false);
     }
 
     private InstanceInfo mockInstance(int type) {
         return new InstanceInfo(
-                1, 57, type, "https://url.com", TITLE, /* customTitle= */ null, 1, 1, true, 0);
+                /* instanceId= */ 1,
+                /* taskId= */ 57,
+                type,
+                "https://url.com",
+                TITLE,
+                /* customTitle= */ null,
+                /* tabCount= */ 1,
+                /* incognitoTabCount= */ 1,
+                /* isIncognitoSelected= */ true,
+                /* lastAccessedTime= */ 0,
+                /* closedByUser= */ false);
     }
 
     private InstanceInfo mockInstanceBeforeLoadingTab(int type) {
-        return new InstanceInfo(1, 57, type, null, null, /* customTitle= */ null, 1, 0, false, 0);
+        return new InstanceInfo(
+                /* instanceId= */ 1,
+                /* taskId= */ 57,
+                type,
+                /* url= */ null,
+                /* title= */ null,
+                /* customTitle= */ null,
+                /* tabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isIncognitoSelected= */ false,
+                /* lastAccessedTime= */ 0,
+                /* closedByUser= */ false);
     }
 }

@@ -25,6 +25,7 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
                       uploadToMQLS:(BOOL)uploadToMQLS
+                  storePageContext:(BOOL)storePageContext
                        temperature:(float)temperature
                              model:(optimization_guide::proto::
                                         BlingPrototypingRequest_ModelEnum)model;

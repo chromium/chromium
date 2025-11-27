@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
@@ -131,7 +132,7 @@ ValuableSyncBridge::~ValuableSyncBridge() = default;
 void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillValuableSyncBridgeUserDataKey,
       std::make_unique<ValuableSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -144,7 +145,7 @@ void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* ValuableSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<ValuableSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillValuableSyncBridgeUserDataKey));
 }
 

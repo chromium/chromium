@@ -4,7 +4,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -79,7 +78,6 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
   raw_ptr<CryptohomeMixin> cryptohome_{nullptr};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class AuthFactorConfigTestWithLocalPassword : public AuthFactorConfigTestBase {
@@ -139,16 +137,7 @@ class AuthFactorConfigTestWithGaiaPassword : public AuthFactorConfigTestBase {
       : AuthFactorConfigTestBase(ash::AshAuthFactor::kGaiaPassword) {}
 };
 
-class ChangeGaiaPasswordFactorTest
-    : public AuthFactorConfigTestWithGaiaPassword {
- public:
-  ChangeGaiaPasswordFactorTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kChangePasswordFactorSetup);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ChangeGaiaPasswordFactorTest,
+IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithGaiaPassword,
                        UpdateToLocalPasswordSuccess) {
   std::optional<std::string> auth_token = MakeAuthToken(test::kGaiaPassword);
   ASSERT_TRUE(auth_token.has_value());

@@ -232,7 +232,7 @@ AwContents* AwContents::FromWebContents(WebContents* web_contents) {
 }
 
 // static
-void JNI_AwContents_UpdateDefaultLocale(
+static void JNI_AwContents_UpdateDefaultLocale(
     JNIEnv* env,
     const JavaParamRef<jstring>& locale,
     const JavaParamRef<jstring>& locale_list) {
@@ -469,13 +469,13 @@ static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
 }
 
 // static
-jint JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
+static jint JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
   return base::subtle::NoBarrier_Load(&g_instance_count);
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContents_GetSafeBrowsingLocaleForTesting(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_AwContents_GetSafeBrowsingLocaleForTesting(JNIEnv* env) {
   ScopedJavaLocalRef<jstring> locale =
       ConvertUTF8ToJavaString(env, base::i18n::GetConfiguredLocale());
   return locale;
@@ -1592,7 +1592,7 @@ void AwContents::ResumeLoadingCreatedPopupWebContents(JNIEnv* env) {
   web_contents_->ResumeLoadingCreatedWebContents();
 }
 
-void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
+static void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
   g_should_download_favicons = true;
 }
 

@@ -1243,11 +1243,11 @@ TEST_P(PasswordProtectionServiceBaseTest,
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
 
   // Initiate a saved password entry request (w/ no sync password).
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
-  account_info.email = "email";
-  account_info.gaia = GaiaId("gaia");
-  account_info.hosted_domain = "example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia"), "email")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("gaia")))
+          .SetHostedDomain("example.com")
+          .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
       .set_is_subject_to_enterprise_features(true);
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))

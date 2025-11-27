@@ -172,7 +172,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   void RequestCompleted(int request_index,
                         const network::SimpleURLLoader* source,
                         int response_code,
-                        std::unique_ptr<std::string> response_body);
+                        std::optional<std::string> response_body);
 
   // Callback for parsing the response JSON string into `base::Value` in an
   // isolated process.

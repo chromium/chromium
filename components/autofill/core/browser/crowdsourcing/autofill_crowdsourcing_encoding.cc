@@ -90,6 +90,9 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
       return data_util::IsValidAffixFormat(value);
     case FormatString_Type_FLIGHT_NUMBER:
       return data_util::IsValidFlightNumberFormat(value);
+    case FormatString_Type_ICU_DATE:
+      // TODO(crbug.com/464004123): Add validation for ICU date format strings.
+      return true;
   }
   return false;
 }

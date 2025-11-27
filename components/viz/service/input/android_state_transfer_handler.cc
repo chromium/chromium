@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
+#include "components/input/features.h"
 #include "components/viz/service/input/input_on_viz_state_processing_result.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_factory.h"
@@ -247,6 +248,9 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
     }
     state_for_curr_sequence_.emplace(std::move(state));
     pending_transferred_states_.pop();
+    if (input::features::kForwardEventsSeenOnBrowserToViz.Get()) {
+      HandleFirstDownEvent();
+    }
     return true;
   }
   return false;
@@ -305,6 +309,19 @@ void AndroidStateTransferHandler::EmitPendingTransfersHistogram() {
                                  /*exclusive_max=*/10, /*buckets=*/10u);
 }
 
+void AndroidStateTransferHandler::HandleFirstDownEvent() {
+  CHECK(state_for_curr_sequence_.has_value());
+  CHECK(input::features::kForwardEventsSeenOnBrowserToViz.Get());
+
+  if (!state_for_curr_sequence_->rir_support) {
+    return;
+  }
+  CHECK(state_for_curr_sequence_->transfer_state->down_event);
+  state_for_curr_sequence_->rir_support->OnTouchEvent(
+      *(state_for_curr_sequence_->transfer_state->down_event->get()),
+      /* emit_histograms= */ true);
+}
+
 void AndroidStateTransferHandler::HandleTouchEvent(
     base::android::ScopedInputEvent input_event) {
   // TODO(crbug.com/406986388) : Add flow events to track the events starting
@@ -338,6 +355,11 @@ void AndroidStateTransferHandler::HandleTouchEvent(
 
   std::optional<ui::MotionEventAndroid::EventTimes> event_times = std::nullopt;
   if (action == AMOTION_EVENT_ACTION_DOWN) {
+    if (input::features::kForwardEventsSeenOnBrowserToViz.Get()) {
+      // Ignore the down event sent by system, since the down event received on
+      // Browser is transferred to Viz and processed along with state.
+      return;
+    }
     event_times = ui::MotionEventAndroid::EventTimes();
     // AMotionEvent_getDownTime returns down time in nanoseconds precision.
     event_times->latest = base::TimeTicks::FromJavaNanoTime(

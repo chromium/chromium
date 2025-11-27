@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
@@ -73,6 +74,10 @@ using AttemptLoginDetails =
     optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails;
 using FillingFormResult = optimization_guide::proto::
     ActorLoginQuality_AttemptLoginDetails_FillingFormResult;
+using ParsedFormDetails =
+    optimization_guide::proto::ActorLoginQuality_ParsedFormDetails;
+using FieldData =
+    optimization_guide::proto::ActorLoginQuality_FormData_FieldData;
 
 Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
     const AttemptLoginDetails& expected) {
@@ -80,6 +85,12 @@ Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
   form_result_matchers.reserve(expected.filling_form_result().size());
   for (const auto& result : expected.filling_form_result()) {
     form_result_matchers.push_back(EqualsProto(result));
+  }
+
+  std::vector<testing::Matcher<const ParsedFormDetails&>> parsed_form_matchers;
+  parsed_form_matchers.reserve(expected.parsed_form_details().size());
+  for (const auto& detail : expected.parsed_form_details()) {
+    parsed_form_matchers.push_back(EqualsProto(detail));
   }
 
   return testing::AllOf(
@@ -90,7 +101,10 @@ Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
                         expected.attempt_login_time_ms()),
       testing::Property(
           "filling_form_result", &AttemptLoginDetails::filling_form_result,
-          testing::UnorderedElementsAreArray(form_result_matchers)));
+          testing::UnorderedElementsAreArray(form_result_matchers)),
+      testing::Property(
+          "parsed_form_details", &AttemptLoginDetails::parsed_form_details,
+          testing::UnorderedElementsAreArray(parsed_form_matchers)));
 }
 
 constexpr char16_t kTestUsername[] = u"username";
@@ -285,6 +299,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
 }
+
 TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_CrossSiteIframe) {
   url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
   url::Origin cross_site_origin =
@@ -388,6 +403,9 @@ TEST_P(ActorLoginCredentialFillerTest,
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_INVALID_CREDENTIAL);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*form_managers[0]->GetParsedObservedForm());
+
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -599,6 +617,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(true);
   form_result->set_was_password_filled(true);
@@ -800,6 +820,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameAndPasswordSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(kRequestDurationMs);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(true);
   form_result->set_was_password_filled(true);
@@ -1091,6 +1113,9 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameFieldSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(true);
   EXPECT_CALL(
@@ -1156,6 +1181,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordFieldSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_password_filled(true);
   EXPECT_CALL(
@@ -1217,6 +1244,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameFailsSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(false);
   form_result->set_was_password_filled(true);
@@ -1278,6 +1307,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillPasswordFailsSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(true);
   form_result->set_was_password_filled(false);
@@ -1340,6 +1371,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillBothFailsSingleForm) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_username_filled(false);
   form_result->set_was_password_filled(false);
@@ -1427,6 +1460,13 @@ TEST_P(ActorLoginCredentialFillerTest,
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
@@ -1534,6 +1574,11 @@ TEST_P(ActorLoginCredentialFillerTest,
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form_1);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form_2);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
@@ -1840,6 +1885,13 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(true);
   form_result1->set_was_password_filled(true);
@@ -1931,6 +1983,13 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
@@ -2019,6 +2078,13 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(true);
@@ -2106,6 +2172,13 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   form_result1->set_was_username_filled(false);
   form_result1->set_was_password_filled(false);
@@ -2350,6 +2423,14 @@ TEST_P(ActorLoginCredentialFillerTest,
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
   form_result2->set_was_username_filled(true);
+
+  // Expect parsed form details for all 3 forms found.
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -2453,6 +2534,15 @@ TEST_P(ActorLoginCredentialFillerTest,
   form_result1->set_was_password_filled(true);
   FillingFormResult* form_result2 = expected_details.add_filling_form_result();
   form_result2->set_was_password_filled(true);
+
+  // Expect parsed form details for all 3 forms found.
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*username_only_parsed_form);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*password_only_parsed_form);
+
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -2500,6 +2590,18 @@ TEST_P(ActorLoginCredentialFillerTest,
                                 parsed_form->password_element_renderer_id, _))
       .WillOnce(WithArg<1>(&PostResponse<false>));
 
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+
   filler.AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -2543,6 +2645,8 @@ TEST_P(ActorLoginCredentialFillerTest,
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_REQUIRED);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*form_managers[0]->GetParsedObservedForm());
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -2594,6 +2698,8 @@ TEST_P(ActorLoginCredentialFillerTest,
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*form_managers[0]->GetParsedObservedForm());
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -2653,7 +2759,9 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   expected_details.set_outcome(
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED);
-  expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
+
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
@@ -2721,6 +2829,8 @@ TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
   expected_details.set_attempt_login_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(*parsed_form);
   EXPECT_CALL(
       mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));

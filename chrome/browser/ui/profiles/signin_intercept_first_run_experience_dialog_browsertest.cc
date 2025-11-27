@@ -9,10 +9,13 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -57,79 +60,33 @@ namespace {
 const char kConsumerEmail[] = "test@example.com";
 const char kEnterpriseEmail[] = "test@managed.com";
 
-// Fake user policy signin service immediately invoking the callbacks.
-// TODO(alexilin): write a common FakeUserPolicySigninService for using in
-// sign-in tests instead of maintaining several copies.
-class FakeUserPolicySigninService : public policy::UserPolicySigninService {
- public:
-  FakeUserPolicySigninService(Profile* profile,
-                              signin::IdentityManager* identity_manager)
-      : UserPolicySigninService(profile,
-                                nullptr,
-                                nullptr,
-                                nullptr,
-                                identity_manager,
-                                nullptr) {}
-
-  // policy::UserPolicySigninService:
-  void RegisterForPolicyWithAccountId(
-      const std::string& username,
-      const CoreAccountId& account_id,
-      bool is_registration_for_management_consistency_check,
-      PolicyRegistrationCallback callback) override {
-    std::move(callback).Run(std::string(), std::string(),
-                            std::vector<std::string>());
-  }
-
-  // policy::UserPolicySigninServiceBase:
-  void FetchPolicyForSignedInUser(
-      const AccountId& account_id,
-      const std::string& dm_token,
-      const std::string& client_id,
-      const std::vector<std::string>& user_affiliation_ids,
-      scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
-      PolicyFetchCallback callback) override {
-    std::move(callback).Run(true);
-  }
-};
-
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
-}
-
-std::unique_ptr<KeyedService> CreateTestUserPolicySigninService(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<FakeUserPolicySigninService>(
-      profile, IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace
 
 // Browser tests for SigninInterceptFirstRunExperienceDialog.
 using TestBase = InteractiveFeaturePromoTestMixin<SigninBrowserTestBase>;
-class SigninInterceptFirstRunExperienceDialogBrowserTest
-    : public TestBase,
-      public base::test::WithFeatureOverride {
+
+class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
  public:
   using DialogEvent = SigninInterceptFirstRunExperienceDialog::DialogEvent;
   using DialogEventSet =
       base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
 
-  SigninInterceptFirstRunExperienceDialogBrowserTest()
+  SigninInterceptFirstRunExperienceDialogBrowserTestBase()
       : TestBase(UseDefaultTrackerAllowingPromos(
                      {feature_engagement::kIPHProfileSwitchFeature},
                      TrackerInitializationMode::kDoNotWait),
                  ClockMode::kUseTestClock,
                  InitialSessionState::kOutsideGracePeriod,
                  /*use_main_profile=*/true),
-        base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos),
         scoped_iph_delay_(
             AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
                 base::Seconds(0))) {}
 
-  ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
+  ~SigninInterceptFirstRunExperienceDialogBrowserTestBase() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     TestBase::SetUpInProcessBrowserTestFixture();
@@ -148,7 +105,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestUserPolicySigninService));
+        context,
+        base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
   }
 
   void SetUpOnMainThread() override {
@@ -166,15 +124,11 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     policy_provider_.UpdateChromePolicy(policy);
   }
 
-  void SetAccountCookieAndToken(const std::string& email) {
-    account_id_ = SetAccountsCookiesAndTokens({email})[0].account_id;
-  }
-
-  void SignIn(const std::string& email) {
-    account_id_ =
-        identity_test_env()
-            ->MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSignin)
-            .account_id;
+  void SignIn() {
+    account_id_ = identity_test_env()
+                      ->MakePrimaryAccountAvailable(
+                          GetEmail(), signin::ConsentLevel::kSignin)
+                      .account_id;
     EXPECT_EQ(
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         account_id());
@@ -247,6 +201,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   CoreAccountId account_id() { return account_id_; }
 
+  virtual std::string GetEmail() { return kConsumerEmail; }
+
  protected:
   const GURL kSyncConfirmationUrl = AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation"),
@@ -265,10 +221,45 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   CoreAccountId account_id_;
 };
 
+class SigninInterceptFirstRunExperienceDialogBrowserTest
+    : public SigninInterceptFirstRunExperienceDialogBrowserTestBase,
+      public base::test::WithFeatureOverride {
+ public:
+  SigninInterceptFirstRunExperienceDialogBrowserTest()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
+};
+
+class SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase
+    : public SigninInterceptFirstRunExperienceDialogBrowserTestBase {
+ public:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    TestBase::OnWillCreateBrowserContextServices(context);
+
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestSyncService));
+    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(
+                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
+  }
+
+  std::string GetEmail() override { return kEnterpriseEmail; }
+};
+
+class SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest
+    : public SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase,
+      public base::test::WithFeatureOverride {
+ public:
+  SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
+};
+
 // Shows and closes the fre dialog.
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        ShowAndCloseDialog) {
-  SignIn(kConsumerEmail);
+  SignIn();
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
@@ -279,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 // Goes through all steps of the fre dialog. The user enables sync.
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSync) {
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   content::TestNavigationObserver profile_customization_observer(
@@ -344,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 // The user enables sync.
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncSkipCustomization) {
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   content::TestNavigationObserver profile_customization_observer(
@@ -409,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 // waits on the sync confirmation page until the extension theme is applied.
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncExtensionTheme) {
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   content::TestNavigationObserver profile_customization_observer(
@@ -472,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 // for an account with a custom passphrase.
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncCustomPassphrase) {
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   content::TestNavigationObserver profile_customization_observer(
@@ -523,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
     // TODO(crbug.com/418143300): Show the history opt-in.
     GTEST_SKIP() << "History opt-in is not implemented yet.";
   }
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   content::TestNavigationObserver profile_customization_observer(
@@ -560,9 +551,10 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // Tests the case when the account has a profile color policy. Tests that the
 // FRE dialog skips the profile customization step.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       ProfileColorPolicy) {
-  SignIn(kEnterpriseEmail);
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    ProfileColorPolicy) {
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   sync_confirmation_observer.StartWatchingNewWebContents();
@@ -616,13 +608,14 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // The user chooses to manage sync settings in the sync confirmation dialog.
 // The profile customization is not shown in this case.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       SyncSettings) {
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    SyncSettings) {
   if (IsParamFeatureEnabled()) {
     GTEST_SKIP() << "History opt-in does not have a settings link.";
   }
 
-  SignIn(kConsumerEmail);
+  SignIn();
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
   sync_confirmation_observer.StartWatchingNewWebContents();
@@ -652,8 +645,9 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // Closes the fre dialog before the sync confirmation is shown. Tests that
 // `TurnSyncOnHelper` is eventually destroyed.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       CloseDialogBeforeSyncConfirmationIsShown) {
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    CloseDialogBeforeSyncConfirmationIsShown) {
   if (IsParamFeatureEnabled()) {
     // TODO(crbug.com/418143300): Check if this test is relevant for history
     // opt-in.
@@ -662,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   // It's important to use an enterprise email here in order to block the sync
   // confirmation UI until the sync engine starts.
-  SignIn(kEnterpriseEmail);
+  SignIn();
   // Delays the sync confirmation UI.
   sync_service()->SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
@@ -683,8 +677,11 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
   sync_service()->SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
-  EXPECT_FALSE(
-      TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(GetProfile()));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(
+        GetProfile());
+  }));
+
   // Sync is aborted.
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   ExpectRecordedEvents({DialogEvent::kStart});
@@ -693,9 +690,10 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // Tests the case when sync is disabled by policy. The fre dialog starts with
 // the profile customization UI.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       SyncDisabled) {
-  SignIn(kEnterpriseEmail);
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    SyncDisabled) {
+  SignIn();
   sync_service()->SetAllowedByEnterprisePolicy(false);
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   content::TestNavigationObserver profile_customization_observer(
@@ -734,9 +732,10 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // Tests the case when the user went through the forced intercept dialog. The
 // FRE dialog should skip the sync confirmation.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       ForcedIntercept) {
-  SignIn(kEnterpriseEmail);
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    ForcedIntercept) {
+  SignIn();
   content::TestNavigationObserver profile_customization_observer(
       kProfileCustomizationUrl);
   profile_customization_observer.StartWatchingNewWebContents();
@@ -767,9 +766,10 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 // Tests the case when promotional tabs are disabled by policy. The FRE dialog
 // should skip the sync confirmation.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       PromotionalTabsDisabled) {
-  SignIn(kEnterpriseEmail);
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    PromotionalTabsDisabled) {
+  SignIn();
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kPromotionalTabsEnabled,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -813,9 +813,10 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 // Tests the case when the user went through the forced intercept dialog and the
 // account has a profile color policy. Tests that the FRE dialog exits
 // immediately and displays the profile switch IPH.
-IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
-                       ForcedIntercept_ProfileColorPolicy) {
-  SignIn(kEnterpriseEmail);
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
+    ForcedIntercept_ProfileColorPolicy) {
+  SignIn();
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -831,10 +832,9 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
         ThemeSyncableService::ThemeSyncState::kApplied);
   }
 
-  // Wait for the dialog creation posted tasks to complete.
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !controller()->ShowsModalDialog(); }));
 
-  EXPECT_FALSE(controller()->ShowsModalDialog());
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart});
@@ -842,3 +842,72 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     SigninInterceptFirstRunExperienceDialogBrowserTest);
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest);
+
+class
+    SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest
+    : public SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(switches::kEnforceManagementDisclaimer);
+    } else {
+      disabled_features.push_back(switches::kEnforceManagementDisclaimer);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void UpdateExtendedAccountInfo() {
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+    account_info.hosted_domain = "managed.com";
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the managed is accepted for managed users, without any action from
+// the user, once the dialog is is shown.
+IN_PROC_BROWSER_TEST_P(
+    SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
+    ManagementIsAutoAccepted) {
+  SignIn();
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /*is_forced_intercept=*/false);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+
+  // When `ReplaceSyncWithSignInPromos` is enabled, management handing requires
+  // on the extended account info being available.
+  UpdateExtendedAccountInfo();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return enterprise_util::UserAcceptedAccountManagement(GetProfile());
+  }));
+
+  policy::FakeUserPolicySigninService* fake_policy_service =
+      static_cast<policy::FakeUserPolicySigninService*>(
+          policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fake_policy_service->policy_fetched(); }));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()));

@@ -16,7 +16,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash::office_fallback {
@@ -80,12 +79,6 @@ void OfficeFallbackUI::CloseDialog(mojom::DialogChoice choice) {
       break;
   }
   ui::MojoWebDialogUI::CloseDialog(args);
-}
-
-void OfficeFallbackUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OfficeFallbackUI)

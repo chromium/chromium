@@ -4,6 +4,9 @@
 
 #include "components/quirks/quirks_client.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -125,7 +128,7 @@ void QuirksClient::StartDownload() {
 }
 
 void QuirksClient::OnDownloadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Take ownership of the loader in this scope.

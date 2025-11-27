@@ -100,6 +100,38 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
          .duration = base::Milliseconds(100)});
   }
 
+  AnimationSpecification open_with_content_transition_animation_specifications =
+      AnimationSpecification(
+          /*tween_type=*/gfx::Tween::Type::ACCEL_45_DECEL_88,
+          /*sequences=*/{
+              {.animation_id = kSidePanelBoundsAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentTopBoundAnimation,
+               .start = base::Milliseconds(100),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentBottomBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentLeftBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)},
+              {.animation_id = kSidePanelContentWidthBoundAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentOpacityAnimation,
+               .start = base::Milliseconds(150),
+               .duration = base::Milliseconds(200)},
+              {.animation_id = kSidePanelContentCornerRadiusAnimation,
+               .start = base::Milliseconds(0),
+               .duration = base::Milliseconds(350)}});
+  if (!is_content_height_panel) {
+    open_with_content_transition_animation_specifications.sequences.push_back(
+        {.animation_id = kShadowOverlayOpacityAnimation,
+         .start = base::Milliseconds(150),
+         .duration = base::Milliseconds(100)});
+  }
+
   AnimationSpecification close_animation_specifications =
       AnimationSpecification(
           /*tween_type=*/is_content_height_panel
@@ -118,7 +150,12 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
 
   animation_spec_map_ = {
       {AnimationType::kOpen, open_animation_specifications},
+      {AnimationType::kOpenWithContentTransition,
+       open_with_content_transition_animation_specifications},
       {AnimationType::kClose, close_animation_specifications}};
+
+  animation_type_to_observer_map_[AnimationType::kOpen] = {};
+  animation_type_to_observer_map_[AnimationType::kClose] = {};
 
   Reset(AnimationType::kClose);
 }
@@ -130,8 +167,11 @@ void SidePanelAnimationCoordinator::Start(AnimationType type) {
     return;
   }
 
+  notified_ended_animations_.clear();
   animation_type_ = type;
   animation_.SetSlideDuration(GetAnimationDuration(type));
+
+  NotifyAnimationTypeStartedObservers();
 
   if (IsAnimatingOpen(type)) {
     animation_.Show();
@@ -141,6 +181,7 @@ void SidePanelAnimationCoordinator::Start(AnimationType type) {
 }
 
 void SidePanelAnimationCoordinator::Reset(AnimationType type) {
+  notified_ended_animations_.clear();
   animation_type_ = type;
 
   if (IsAnimatingOpen(type)) {
@@ -152,17 +193,30 @@ void SidePanelAnimationCoordinator::Reset(AnimationType type) {
 
 void SidePanelAnimationCoordinator::AddObserver(
     const SidePanelAnimationId& animation_id,
-    Observer* observer) {
-  animation_id_to_observer_map_[animation_id].push_back(observer);
+    AnimationIdObserver* observer) {
+  animation_id_to_observer_map_[animation_id].emplace(observer);
 }
 
 void SidePanelAnimationCoordinator::RemoveObserver(
     const SidePanelAnimationId& animation_id,
-    Observer* observer) {
-  auto& observers = animation_id_to_observer_map_[animation_id];
-  auto it = std::ranges::find(observers, observer);
-  CHECK(it != observers.end());
-  observers.erase(it);
+    AnimationIdObserver* observer) {
+  CHECK(animation_id_to_observer_map_.contains(animation_id))
+      << "Observer was not added for: " << animation_id.GetName();
+  animation_id_to_observer_map_[animation_id].erase(observer);
+}
+
+void SidePanelAnimationCoordinator::AddObserver(
+    AnimationType type,
+    AnimationTypeObserver* observer) {
+  animation_type_to_observer_map_[type].emplace(observer);
+}
+
+void SidePanelAnimationCoordinator::RemoveObserver(
+    AnimationType type,
+    AnimationTypeObserver* observer) {
+  CHECK(animation_type_to_observer_map_.at(type).contains(observer))
+      << "Observer was not added for type";
+  animation_type_to_observer_map_[type].erase(observer);
 }
 
 double SidePanelAnimationCoordinator::GetAnimationValueFor(
@@ -209,27 +263,30 @@ void SidePanelAnimationCoordinator::AnimationProgressed(
     const gfx::Animation* animation) {
   for (auto& [animation_id, observers] : animation_id_to_observer_map_) {
     if (!IsAnimationSequenceRunning(animation_id)) {
+      NotifyOnSequenceEndedObservers(animation_id, observers);
       continue;
     }
 
-    for (Observer* observer : observers) {
-      observer->OnAnimationSequenceProgressed(
-          animation_id, GetAnimationValueFor(animation_id));
+    double animation_value = GetAnimationValueFor(animation_id);
+    for (AnimationIdObserver* observer : observers) {
+      observer->OnAnimationSequenceProgressed(animation_id, animation_value);
     }
   }
 }
 
 void SidePanelAnimationCoordinator::AnimationEnded(
     const gfx::Animation* animation) {
+  // Ensure all animation observers are notified if not already.
   for (auto& [animation_id, observers] : animation_id_to_observer_map_) {
-    if (!IsAnimationSequenceFinished(animation_id)) {
-      continue;
-    }
-
-    for (Observer* observer : observers) {
-      observer->OnAnimationSequenceEnded(animation_id);
-    }
+    NotifyOnSequenceEndedObservers(animation_id, observers);
   }
+
+  NotifyAnimationTypeEndedObservers();
+}
+
+void SidePanelAnimationCoordinator::AnimationCanceled(
+    const gfx::Animation* animation) {
+  AnimationEnded(animation);
 }
 
 double SidePanelAnimationCoordinator::AdjustProgressForAnimationType(
@@ -291,4 +348,37 @@ SidePanelAnimationCoordinator::GetAnimationSpecificationForAnimationId(
   }
 
   return animation_specification;
+}
+
+const std::set<raw_ptr<SidePanelAnimationCoordinator::AnimationTypeObserver>>&
+SidePanelAnimationCoordinator::GetAnimationTypeObservers() {
+  CHECK(animation_type_to_observer_map_.contains(animation_type_))
+      << "The animation type must be prepopulated in the constructor";
+  return animation_type_to_observer_map_.at(animation_type_);
+}
+
+void SidePanelAnimationCoordinator::NotifyOnSequenceEndedObservers(
+    const SidePanelAnimationId& animation_id,
+    const std::set<raw_ptr<AnimationIdObserver>> observers) {
+  if (!IsAnimationSequenceFinished(animation_id) ||
+      notified_ended_animations_.contains(animation_id)) {
+    return;
+  }
+
+  notified_ended_animations_.insert(animation_id);
+  for (AnimationIdObserver* observer : observers) {
+    observer->OnAnimationSequenceEnded(animation_id);
+  }
+}
+
+void SidePanelAnimationCoordinator::NotifyAnimationTypeStartedObservers() {
+  for (AnimationTypeObserver* observer : GetAnimationTypeObservers()) {
+    observer->OnAnimationTypeStarted(animation_type_);
+  }
+}
+
+void SidePanelAnimationCoordinator::NotifyAnimationTypeEndedObservers() {
+  for (AnimationTypeObserver* observer : GetAnimationTypeObservers()) {
+    observer->OnAnimationTypeEnded(animation_type_);
+  }
 }

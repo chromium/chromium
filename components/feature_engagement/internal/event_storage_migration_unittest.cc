@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/event_storage_migration.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feature_engagement/internal/event_model_impl.h"
 #include "components/feature_engagement/internal/event_storage_validator.h"

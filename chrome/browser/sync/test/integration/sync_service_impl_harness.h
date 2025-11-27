@@ -183,17 +183,6 @@ class SyncServiceImplHarness {
   // already be signed in, or this will have no effect. Returns true on success.
   [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
 
-  // Enables Sync-the-feature for a particular selectable type. If
-  // Sync-the-feature is already enabled, this just means turning on the type
-  // via EnableSelectableType(type). Otherwise, sets up Sync-the-feature with
-  // only this type enabled. Returns true on success.
-  [[nodiscard]] bool EnableSyncForType(syncer::UserSelectableType type);
-
-  // Disables a particular selectable type. Returns true on success.
-  // TODO(crbug.com/353425612): Replace all calls to this with
-  // DisableSelectableType(type) which is identical.
-  [[nodiscard]] bool DisableSyncForType(syncer::UserSelectableType type);
-
   // Enables Sync-the-feature for all registered sync datatypes. Returns true on
   // success.
   // TODO(crbug.com/353425612): Replace all calls to this with either

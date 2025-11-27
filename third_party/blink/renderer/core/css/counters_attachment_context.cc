@@ -506,12 +506,25 @@ void CountersAttachmentContext::RemoveCounterIfAncestorExists(
     return;
   }
   const LayoutObject& previous_object = *previous_entry->layout_object;
-  if (const auto* element = DynamicTo<Element>(layout_object.GetNode())) {
-    const auto* previous_element =
-        DynamicTo<Element>(previous_object.GetNode());
-    if (previous_element && IsAncestorOf(*previous_element, *element)) {
-      counter_stack.pop_back();
-    }
+  const auto* previous_element = DynamicTo<Element>(previous_object.GetNode());
+  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+  if (!previous_element || !element) {
+    return;
+  }
+  // If previous element is ancestor to current element or previous element is
+  // previous sibling of an ancestor to current element, remove last counter
+  // from stack, as it will never be inherited, since we always inherit from
+  // ancestor first, so previous counter will always be inherited instead of
+  // last one.
+  if (IsAncestorOf(*previous_element, *element)) {
+    counter_stack.pop_back();
+    return;
+  }
+  const Element* parent =
+      LayoutTreeBuilderTraversal::ParentElement(*previous_element);
+  if (parent && IsAncestorOf(*parent, *element) &&
+      parent != LayoutTreeBuilderTraversal::ParentElement(*element)) {
+    counter_stack.pop_back();
   }
 }
 

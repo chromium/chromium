@@ -80,6 +80,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // net::TransportInfo version does.
   PrivateNetworkAccessCheckResult Check(const net::IPEndPoint& server_address);
 
+  // Same as Check(), for the case where the `resource_address_space` is already
+  // known.
+  PrivateNetworkAccessCheckResult CheckAddressSpace(
+      mojom::IPAddressSpace resource_address_space);
+
   // Returns the IP address space derived from the `transport_info` argument
   // passed to the last call to `Check()`, if any.
   //
@@ -88,7 +93,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   std::optional<mojom::IPAddressSpace> ResponseAddressSpace() const {
     return response_address_space_;
   }
-
   mojom::IPAddressSpace RequiredAddressSpace() const {
     return required_address_space_;
   }
@@ -125,10 +129,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   mojom::IPAddressSpace ClientAddressSpace() const;
 
  private:
-  // Helper for `Check()`.
-  PrivateNetworkAccessCheckResult CheckInternal(
-      mojom::IPAddressSpace resource_address_space);
-
   // Sets the current request URL (it may change after redirects).
   void SetRequestUrl(const GURL& url);
 

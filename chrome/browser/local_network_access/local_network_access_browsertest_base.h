@@ -23,7 +23,10 @@ namespace local_network_access {
 class LocalNetworkAccessBrowserTestBase : public policy::PolicyTest {
  public:
   using WebFeature = blink::mojom::WebFeature;
-  LocalNetworkAccessBrowserTestBase();
+  // By default, maps all hosts to 127.0.0.1. Set to false if the tests need
+  // control over which hosts resolve to localhost.
+  explicit LocalNetworkAccessBrowserTestBase(
+      bool map_all_hosts_to_localhost = true);
   ~LocalNetworkAccessBrowserTestBase() override;
 
   content::WebContents* web_contents() const {
@@ -50,6 +53,7 @@ class LocalNetworkAccessBrowserTestBase : public policy::PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
  private:
+  const bool map_all_hosts_to_localhost_;
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_;

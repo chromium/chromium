@@ -1110,7 +1110,6 @@ TEST_F(VideoTrackRecorderTestNoParam, HandlesOnError) {
 // Hardware encoder fails and fallbacks a software encoder.
 TEST_F(VideoTrackRecorderTestNoParam, HandleSoftwareEncoderFallback) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  sii->AlwaysBackMappableSharedImagesWithShMem();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
   EXPECT_CALL(*platform_, GetGpuFactories())
       .WillRepeatedly(Return(&mock_gpu_factories));
@@ -1160,7 +1159,6 @@ TEST_F(VideoTrackRecorderTestNoParam, HandleSoftwareEncoderFallback) {
 TEST_F(VideoTrackRecorderTestNoParam, RespectsEncoderFrameDelay) {
   auto shared_image_interface =
       base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  shared_image_interface->AlwaysBackMappableSharedImagesWithShMem();
   EXPECT_CALL(*shared_image_interface, DoCreateSharedImage(_, _, _, _))
       .Times(testing::AnyNumber());
 
@@ -1482,7 +1480,6 @@ TEST(VideoTrackRecorder, DefaultCodecWithoutGpuFactories) {
 
 TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedVp9) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  sii->AlwaysBackMappableSharedImagesWithShMem();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
   ScopedTestingPlatformSupport<MockTestingPlatform> platform;
   EXPECT_CALL(*platform, GetGpuFactories())
@@ -1506,7 +1503,6 @@ TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedVp9) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH264) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  sii->AlwaysBackMappableSharedImagesWithShMem();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
   ScopedTestingPlatformSupport<MockTestingPlatform> platform;
   EXPECT_CALL(*platform, GetGpuFactories())
@@ -1531,7 +1527,6 @@ TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH264) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH265) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  sii->AlwaysBackMappableSharedImagesWithShMem();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
   ScopedTestingPlatformSupport<MockTestingPlatform> platform;
   EXPECT_CALL(*platform, GetGpuFactories())
@@ -1555,7 +1550,6 @@ TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedH265) {
 
 TEST(VideoTrackRecorder, DefaultCodecWithAcceleratedVp8) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  sii->AlwaysBackMappableSharedImagesWithShMem();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
   ScopedTestingPlatformSupport<MockTestingPlatform> platform;
   EXPECT_CALL(*platform, GetGpuFactories())

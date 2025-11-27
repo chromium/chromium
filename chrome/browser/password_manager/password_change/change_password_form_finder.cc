@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
@@ -36,9 +38,14 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
-  auto options = optimization_guide::DefaultAIPageContentOptions(
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUseActionablesForImprovedPasswordChange)) {
+    return optimization_guide::ActionableAIPageContentOptions(
+        /*on_critical_path =*/true);
+  }
+  return optimization_guide::DefaultAIPageContentOptions(
       /*on_critical_path =*/true);
-  return options;
 }
 
 std::unique_ptr<Logger> GetLoggerIfAvailable(

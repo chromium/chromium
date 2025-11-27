@@ -107,8 +107,6 @@ public class LensController {
         mDelegate.terminateLensConnections();
     }
 
-    // TODO(b/180960783): Revisit the wrapper object for this enablement check. LensQueryParams
-    // was designed to be only used in the Prime classification query.
     /**
      * Whether the Lens is enabled based on user signals.
      *

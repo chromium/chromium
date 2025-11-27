@@ -118,6 +118,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(base::StringPairs* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
+  uint8_t GetEntryInMemoryData(const std::string& key) override;
   void OnBrowserIdle() override;
 
   // Called by SqlEntryImpl when it's being closed and is not doomed.
@@ -141,6 +142,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta);
 
@@ -185,6 +187,14 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t offset,
       int len,
       RangeResultCallback callback);
+
+  // Sets the in-memory hints for the entry identified by `key` and
+  // `res_id_or_error`. This schedules an operation to update the in-memory
+  // index.
+  void SetEntryDataHints(
+      const CacheEntryKey& key,
+      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      MemoryEntryDataHints hints);
 
   // Sends a dummy operation through the background task runner via the
   // operation coordinator, for unit tests.
@@ -372,6 +382,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
@@ -441,6 +452,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t offset,
       int len,
       RangeResultCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the operation to set in-memory hints. This is called by the
+  // `ExclusiveOperationCoordinator` to ensure that `res_id_or_error` is
+  // properly set (e.g., if the entry creation is still in progress).
+  void HandleSetEntryDataHintsOperation(
+      const CacheEntryKey& key,
+      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      MemoryEntryDataHints hints,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for cache eviction. This method is scheduled as

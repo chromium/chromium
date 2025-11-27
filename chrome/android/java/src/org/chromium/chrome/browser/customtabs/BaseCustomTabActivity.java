@@ -44,6 +44,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
@@ -585,6 +586,30 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 mIntentDataProvider.getTwaStartupUptimeMillis());
         mTabObserverRegistrar.associateWithActivity(getLifecycleDispatcher(), mTabProvider);
 
+        mTabProvider.addObserver(
+                new CustomTabActivityTabProvider.Observer() {
+                    private Tab mLastTab;
+
+                    @Override
+                    public void onInitialTabCreated(Tab tab, int mode) {
+                        AllTabObserver.addCustomTab(tab);
+                        mLastTab = tab;
+                    }
+
+                    @Override
+                    public void onTabSwapped(Tab tab) {
+                        AllTabObserver.removeCustomTab(mLastTab);
+                        AllTabObserver.addCustomTab(tab);
+                        mLastTab = tab;
+                    }
+
+                    @Override
+                    public void onAllTabsClosed() {
+                        AllTabObserver.removeCustomTab(mLastTab);
+                        mLastTab = null;
+                    }
+                });
+
         mCurrentPageVerifier =
                 new CurrentPageVerifier(
                         getCustomTabActivityTabProvider(),
@@ -860,6 +885,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (mBrowserServicesThemeColorProvider != null) {
             mBrowserServicesThemeColorProvider.destroy();
             mBrowserServicesThemeColorProvider = null;
+        }
+
+        if (mTabProvider != null && mTabProvider.getTab() != null) {
+            AllTabObserver.removeCustomTab(mTabProvider.getTab());
         }
 
         super.onDestroyInternal();

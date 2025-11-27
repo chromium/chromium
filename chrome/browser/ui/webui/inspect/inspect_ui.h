@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -108,6 +109,8 @@ class InspectUI : public content::WebUIController,
       target_handlers_;
 
   std::unique_ptr<PortForwardingStatusSerializer> port_status_serializer_;
+
+  base::WeakPtrFactory<InspectUI> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INSPECT_INSPECT_UI_H_

@@ -857,13 +857,17 @@ void ReadAnythingUntrustedPageHandler::OnScreenshotRequested() {
 }
 
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
-    read_anything::mojom::DistillationStatus status) {
+    read_anything::mojom::DistillationStatus status,
+    int word_count) {
   if (last_open_trigger_.has_value() &&
       last_open_trigger_.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
     last_open_trigger_.reset();
     base::UmaHistogramEnumeration(
         "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status,
         read_anything::mojom::DistillationStatus::kMaxValue);
+    base::UmaHistogramCustomCounts(
+        "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1,
+        kMaxWordsDistilled, kWordsDistilledBuckets);
   }
 }
 
@@ -885,8 +889,8 @@ void ReadAnythingUntrustedPageHandler::Activate(
     last_open_trigger_ = open_trigger;
   }
   if (features::IsReadAnythingReadAloudEnabled() && !active &&
-      side_panel_controller_->tab()->IsActivated() && !tab_will_detach_) {
-    page_->OnReadingModeHidden();
+      !tab_will_detach_) {
+    page_->OnReadingModeHidden(side_panel_controller_->tab()->IsActivated());
   }
 }
 

@@ -383,14 +383,13 @@ class SearchSuggestionParser {
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the
   // result.
   //
-  // |source| must be the SimpleURLLoader that loaded the data; it is used to
+  // `source` must be the SimpleURLLoader that loaded the data; it is used to
   // lookup the body's encoding from response headers.
   // Note: It can be nullptr in tests.
   //
-  // |response_body| must be the body of the response; it may be null.
-  static std::string ExtractJsonData(
-      const network::SimpleURLLoader* source,
-      std::unique_ptr<std::string> response_body);
+  // `response_body` must be the body of the response; it may be empty.
+  static std::string ExtractJsonData(const network::SimpleURLLoader* source,
+                                     std::optional<std::string> response_body);
 
   // Parses JSON response received from the provider, stripping XSSI
   // protection if needed. Returns the parsed data if successful, NULL

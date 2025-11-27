@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<body>
+<script>
+async function init() {
+  await window.fence.disableUntrustedNetwork();
+  await evaluateAndLogIssue(`sharedStorage.get('test')`);
+}
+
+init();
+</script>
+</body>

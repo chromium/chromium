@@ -67,13 +67,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::DataChannelInterface>>
-    : public CrossThreadCopierPassThrough<
-          webrtc::scoped_refptr<webrtc::DataChannelInterface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -14,6 +14,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/models/image_model.h"
@@ -288,19 +289,20 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
 }
 
 void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
-                                                             bool isPrecise) {
+                                                             jint accuracy) {
   CHECK(permission_prompt_);
 
-  GeolocationPromptOptions geolocation_options;
-  geolocation_options.selected_precise = isPrecise;
-
-  PromptOptions prompt_options = geolocation_options;
-
-  permission_prompt_->SetPromptOptions(std::move(prompt_options));
+  permission_prompt_->SetPromptOptions(GeolocationPromptOptions{
+      .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)});
 }
 
 static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
   return static_cast<int>(RequestType::kMaxValue) + 1;
+}
+
+jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
+    JNIEnv* env) {
+  return static_cast<int>(GeolocationAccuracy::kPrecise);
 }
 
 }  // namespace permissions

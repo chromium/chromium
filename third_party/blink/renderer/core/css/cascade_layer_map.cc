@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 
+#include <compare>
+
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 namespace blink {
@@ -79,11 +81,12 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 }
 
-int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
-                                       const CascadeLayer* rhs) const {
+std::weak_ordering CascadeLayerMap::CompareLayerOrderInternal(
+    const CascadeLayer* lhs,
+    const CascadeLayer* rhs) const {
   uint16_t lhs_order = lhs ? GetLayerOrder(*lhs) : kImplicitOuterLayerOrder;
   uint16_t rhs_order = rhs ? GetLayerOrder(*rhs) : kImplicitOuterLayerOrder;
-  return lhs_order < rhs_order ? -1 : (lhs_order > rhs_order ? 1 : 0);
+  return lhs_order <=> rhs_order;
 }
 
 const CascadeLayer* CascadeLayerMap::GetRootLayer() const {

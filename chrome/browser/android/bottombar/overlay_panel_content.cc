@@ -113,8 +113,8 @@ void OverlayPanelContent::UpdateBrowserControlsState(
       state, cc::BrowserControlsState::kBoth, false, std::nullopt);
 }
 
-jlong JNI_OverlayPanelContent_Init(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+static jlong JNI_OverlayPanelContent_Init(JNIEnv* env,
+                                          const JavaParamRef<jobject>& obj) {
   OverlayPanelContent* content = new OverlayPanelContent(env, obj);
   return reinterpret_cast<intptr_t>(content);
 }

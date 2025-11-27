@@ -150,8 +150,8 @@ AppModalDialogViewAndroid::~AppModalDialogViewAndroid() {
 }
 
 // static
-ScopedJavaLocalRef<jobject> JNI_JavascriptAppModalDialog_GetCurrentModalDialog(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jobject>
+JNI_JavascriptAppModalDialog_GetCurrentModalDialog(JNIEnv* env) {
   AppModalDialogController* controller =
       AppModalDialogQueue::GetInstance()->active_dialog();
   if (!controller || !controller->view())

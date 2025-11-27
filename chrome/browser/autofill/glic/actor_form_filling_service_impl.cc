@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
@@ -387,13 +388,27 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
       case FormFillingRequest_RequestedData_BILLING_ADDRESS:
       case FormFillingRequest_RequestedData_HOME_ADDRESS:
-      case FormFillingRequest_RequestedData_WORK_ADDRESS:
+      case FormFillingRequest_RequestedData_WORK_ADDRESS: {
+        if (!base::FeatureList::IsEnabled(
+                ::features::kActorFormFillingServiceEnableAddress)) {
+          std::move(callback_with_metrics)
+              .Run(base::unexpected(kAutofillNotAvailable));
+          return;
+        }
         data = GetAddressSuggestions(representative_fields, autofill_manager);
         break;
-      case FormFillingRequest_RequestedData_CREDIT_CARD:
+      }
+      case FormFillingRequest_RequestedData_CREDIT_CARD: {
+        if (!base::FeatureList::IsEnabled(
+                ::features::kActorFormFillingServiceEnableCreditCard)) {
+          std::move(callback_with_metrics)
+              .Run(base::unexpected(kAutofillNotAvailable));
+          return;
+        }
         data =
             GetCreditCardSuggestions(representative_fields, autofill_manager);
         break;
+      }
       default:
         // Invalid request type.
         std::move(callback_with_metrics).Run(base::unexpected(kOther));

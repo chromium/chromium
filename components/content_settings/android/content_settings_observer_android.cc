@@ -48,7 +48,7 @@ void AndroidObserver::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jlong JNI_ContentSettingsObserver_Init(
+static jlong JNI_ContentSettingsObserver_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {

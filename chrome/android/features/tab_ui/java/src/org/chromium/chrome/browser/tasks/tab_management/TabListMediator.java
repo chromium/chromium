@@ -106,6 +106,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -338,7 +340,10 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabActionListener mTabClosedListener;
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
+    private final @Nullable SnackbarManager mSnackbarManager;
+    private final int mAllowedSelectionCount;
 
+    private int mCurrentSelectionCount;
     private int mNextTabId = Tab.INVALID_TAB_ID;
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
     private boolean mActionsOnAllRelatedTabs;
@@ -442,22 +447,31 @@ class TabListMediator implements TabListNotificationHandler {
             new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                    @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
+                    if (model == null) return;
+
+                    boolean selected = model.get(TabProperties.IS_SELECTED);
+                    if (!selected
+                            && mAllowedSelectionCount > 0
+                            && mCurrentSelectionCount >= mAllowedSelectionCount) {
+                        showLimitSnackbar();
+                        return;
+                    }
+                    dismissLimitSnackbar();
                     SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
                             getTabSelectionDelegate();
                     assert selectionDelegate != null;
                     selectionDelegate.toggleSelectionForItem(
                             TabListEditorItemSelectionId.createTabId(tabId));
 
-                    @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
-                    if (model == null) return;
-
-                    boolean selected = model.get(TabProperties.IS_SELECTED);
                     if (selected) {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.UNSELECTED);
+                        mCurrentSelectionCount -= 1;
                     } else {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.SELECTED);
+                        mCurrentSelectionCount += 1;
                     }
                     model.set(TabProperties.IS_SELECTED, !selected);
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
@@ -1019,6 +1033,8 @@ class TabListMediator implements TabListNotificationHandler {
      * @param dataSharingTabManager The service used to initiate data sharing.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param undoBarExplicitTrigger Interface to explicitly trigger the undo closure snackbar.
+     * @param snackbarManager The manager to show snackbars.
+     * @param allowedSelectionCount The maximum number of tabs that can be selected at once.
      */
     TabListMediator(
             Activity activity,
@@ -1038,7 +1054,9 @@ class TabListMediator implements TabListNotificationHandler {
             @TabActionState int initialTabActionState,
             @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable Runnable onTabGroupCreation,
-            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
+            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
+            @Nullable SnackbarManager snackbarManager,
+            int allowedSelectionCount) {
         mActivity = activity;
         mModelList = modelList;
         mMode = mode;
@@ -1056,6 +1074,8 @@ class TabListMediator implements TabListNotificationHandler {
         mDataSharingTabManager = dataSharingTabManager;
         mOnTabGroupCreation = onTabGroupCreation;
         mUndoBarExplicitTrigger = undoBarExplicitTrigger;
+        mSnackbarManager = snackbarManager;
+        mAllowedSelectionCount = allowedSelectionCount;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -3386,6 +3406,22 @@ class TabListMediator implements TabListNotificationHandler {
             provider.setTabGroupId(groupId);
             provider.setTabGroupColorId(colorId);
         }
+    }
+
+    private void showLimitSnackbar() {
+        if (mSnackbarManager == null) return;
+        Snackbar snackbar =
+                Snackbar.make(
+                        mActivity.getString(R.string.tab_item_picker_limit_reached),
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_TAB_PICKER_LIMIT_REACHED);
+        mSnackbarManager.showSnackbar(snackbar);
+    }
+
+    private void dismissLimitSnackbar() {
+        if (mSnackbarManager == null) return;
+        mSnackbarManager.dismissAllSnackbars();
     }
 
     View.AccessibilityDelegate getAccessibilityDelegateForTesting() {

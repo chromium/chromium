@@ -178,19 +178,20 @@ LayerTitleCache::~LayerTitleCache() = default;
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-jlong JNI_LayerTitleCache_Init(JNIEnv* env,
-                               const JavaParamRef<jobject>& obj,
-                               jint fade_width,
-                               jint icon_start_padding,
-                               jint icon_end_padding,
-                               jint spinner_resource_id,
-                               jint spinner_incognito_resource_id,
-                               jint bubble_inner_dimension,
-                               jint bubble_outer_dimension,
-                               jint bubble_offset,
-                               jint bubble_inner_tint,
-                               jint bubble_outer_tint,
-                               const JavaParamRef<jobject>& jresource_manager) {
+static jlong JNI_LayerTitleCache_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint fade_width,
+    jint icon_start_padding,
+    jint icon_end_padding,
+    jint spinner_resource_id,
+    jint spinner_incognito_resource_id,
+    jint bubble_inner_dimension,
+    jint bubble_outer_dimension,
+    jint bubble_offset,
+    jint bubble_inner_tint,
+    jint bubble_outer_tint,
+    const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   LayerTitleCache* cache = new LayerTitleCache(

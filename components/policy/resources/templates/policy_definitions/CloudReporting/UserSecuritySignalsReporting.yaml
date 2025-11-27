@@ -15,9 +15,8 @@ features:
   per_profile: true
   cloud_only: true
   user_only: true
-future_on:
-- android
 supported_on:
+- android:144-
 - chrome.*:137-
 owners:
 - seblalancette@chromium.org

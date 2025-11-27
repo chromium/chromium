@@ -6440,8 +6440,6 @@ void RenderFrameHostImpl::SetNavigationRequest(
     return;
   }
 
-  did_last_navigation_have_view_transition_ =
-      navigation_request->HasViewTransitionResources();
   loading_state_ = LoadingState::LOADING_UI_REQUESTED;
   navigation_requests_[navigation_request.get()] =
       std::move(navigation_request);
@@ -11031,8 +11029,7 @@ void RenderFrameHostImpl::SetCrashReportStorageKey(
     mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
   }
 
-  document_associated_data_->crash_storage_map().insert(
-      std::make_pair(key, value));
+  document_associated_data_->crash_storage_map().insert_or_assign(key, value);
   std::move(callback).Run();
 }
 

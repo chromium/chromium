@@ -15,7 +15,8 @@
 namespace android_webview {
 
 // static
-jboolean JNI_MemoryMetricsLoggerUtils_ForceRecordHistograms(JNIEnv* env) {
+static jboolean JNI_MemoryMetricsLoggerUtils_ForceRecordHistograms(
+    JNIEnv* env) {
   // Note: Using a WaitableEvent instead of a RunLoop because there is no
   // sequenced context. Also can't use a TaskEnvironment because this function
   // is not running on the main thread.

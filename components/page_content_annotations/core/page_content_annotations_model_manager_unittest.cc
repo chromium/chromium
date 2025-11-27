@@ -5,6 +5,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

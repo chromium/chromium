@@ -19,6 +19,13 @@ import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
 
+export interface TopToolbarElement {
+  $: {
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
+    sourcesMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+  };
+}
+
 export class TopToolbarElement extends CrLitElement {
   static get is() {
     return 'top-toolbar';
@@ -39,17 +46,6 @@ export class TopToolbarElement extends CrLitElement {
   accessor attachedTabs_: Tab[] = [];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  private get menu_(): CrLazyRenderLitElement<CrActionMenuElement>|null {
-    return this.shadowRoot
-        .querySelector<CrLazyRenderLitElement<CrActionMenuElement>>('#menu');
-  }
-
-  private get sourcesMenu_(): CrLazyRenderLitElement<CrActionMenuElement>|null {
-    return this.shadowRoot
-        .querySelector<CrLazyRenderLitElement<CrActionMenuElement>>(
-            '#sourcesMenu');
-  }
-
   override render() {
     return getHtml.bind(this)();
   }
@@ -59,7 +55,9 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onCloseButtonClick_() {
-    this.fire('close-button-click');
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.CloseSidePanel');
+    this.browserProxy_.handler.closeSidePanel();
   }
 
   protected onNewThreadClick_() {
@@ -70,38 +68,50 @@ export class TopToolbarElement extends CrLitElement {
     this.fire('thread-history-click');
   }
 
-  protected onMoreClick_(e: MouseEvent) {
-    this.menu_?.get().showAt(e.target as HTMLElement);
+  protected onMoreClick_(e: Event) {
+    this.$.menu.get().showAt(e.target as HTMLElement);
   }
 
-  protected async onSourcesClick_(e: MouseEvent) {
+  protected async onSourcesClick_(e: Event) {
     const {tabs} = await this.browserProxy_.handler.getAttachedTabs();
     this.attachedTabs_ = tabs;
-    this.sourcesMenu_?.get().showAt(e.target as HTMLElement);
+    this.$.sourcesMenu.get().showAt(e.target as HTMLElement);
   }
 
   protected onTabClick_(tab: Tab) {
-    this.sourcesMenu_?.get().close();
-    this.fire('tab-click', tab);
+    this.$.sourcesMenu.get().close();
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
+    this.browserProxy_.handler.onTabClickedFromSourcesMenu(tab.tabId, tab.url);
   }
 
   protected onOpenInNewTabClick_() {
-    this.menu_?.get().close();
-    this.fire('open-in-new-tab-click');
+    this.$.menu.get().close();
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenInNewTab');
+    this.browserProxy_.handler.moveTaskUiToToNewTab();
   }
 
   protected onMyActivityClick_() {
-    this.menu_?.get().close();
-    this.fire('my-activity-click');
+    this.$.menu.get().close();
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenMyActivity');
+    this.browserProxy_.handler.openMyActivityUi();
   }
 
   protected onHelpClick_() {
-    this.menu_?.get().close();
-    this.fire('help-click');
+    this.$.menu.get().close();
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenHelp');
+    this.browserProxy_.handler.openHelpUi();
   }
 
   protected faviconUrl_(tab: Tab): string {
     return getFaviconForPageURL(tab.url.url, false);
+  }
+
+  protected shouldHideSourcesButton_() {
+    return true;
   }
 }
 

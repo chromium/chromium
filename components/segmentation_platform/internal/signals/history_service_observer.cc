@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"

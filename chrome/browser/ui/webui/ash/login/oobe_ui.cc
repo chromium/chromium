@@ -172,7 +172,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
@@ -683,12 +682,6 @@ void OobeUI::BindInterface(
     mojo::PendingReceiver<common::mojom::WebUiSyslogEmitter> receiver) {
   webui_syslog_emitter_ = std::make_unique<WebUiSyslogEmitter>();
   webui_syslog_emitter_->BindInterface(std::move(receiver));
-}
-
-void OobeUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void OobeUI::BindInterface(

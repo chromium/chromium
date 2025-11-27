@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -177,6 +176,12 @@ class PasswordManagerSyncTest : public SyncTest {
 
   ~PasswordManagerSyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+    // explicitly pick Sync-the-feature or Sync-the-transport.
+    return SyncTest::SetupSyncMode::kSyncTransportOnly;
+  }
+
   void SetUp() override {
     // Setup HTTPS server serving files from standard test directory.
     // This needs to happen here (really early) because the test server must
@@ -207,8 +212,6 @@ class PasswordManagerSyncTest : public SyncTest {
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
 
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
     mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
 
@@ -223,7 +226,7 @@ class PasswordManagerSyncTest : public SyncTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Whitelist all certs for the HTTPS server.
+    // Allowlist all certs for the HTTPS server.
     scoped_refptr<net::X509Certificate> cert =
         https_test_server()->GetCertificate();
     net::CertVerifyResult verify_result;
@@ -241,7 +244,6 @@ class PasswordManagerSyncTest : public SyncTest {
     SyncTest::TearDownOnMainThread();
   }
 
-  // Also stores the AccountInfo for the signed-in account in
   // Implicit browser signin, disables passwords account storage by default.
   void SignIn(SyncTestAccount account = SyncTestAccount::kDefaultAccount,
               bool explicit_signin = true) {
@@ -419,8 +421,6 @@ class PasswordManagerSyncTest : public SyncTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  base::CallbackListSubscription test_signin_client_subscription_;
-
   // A test server instance that runs on HTTPS (as opposed to the default
   // |embedded_test_server()|). This is necessary to simulate Gaia pages, which
   // must be on a secure (cryptographic) scheme.
@@ -500,13 +500,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // There should be an update bubble; accept it.
   BubbleObserver bubble_observer(web_contents);
-  // TODO(crbug.com/40121096): Remove this temporary logging once the test
-  // flakiness is diagnosed.
-  if (!bubble_observer.IsUpdatePromptShownAutomatically()) {
-    LOG(ERROR) << "ManagePasswordsUIController state: "
-               << ManagePasswordsUIController::FromWebContents(web_contents)
-                      ->GetState();
-  }
   ASSERT_TRUE(bubble_observer.IsUpdatePromptShownAutomatically());
   bubble_observer.AcceptUpdatePrompt();
 
@@ -843,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       KeepnAccountStorageEnabledSettingOnlyForUsers) {
+                       KeepAccountStorageEnabledSettingOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
   SignIn(SyncTestAccount::kConsumerAccount1, /*explicit_signin=*/false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -943,8 +936,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
-  ASSERT_TRUE(SetupSync());
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
+                       SyncUtilApisWithSyncTheFeature) {
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
 
   EXPECT_TRUE(
       password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
@@ -982,6 +976,41 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
                     GetSyncService(0)),
             GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount));
 }
+
+// Transport mode is not really supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+
+  // Sync-the-feature APIs should all return "false".
+  EXPECT_FALSE(
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          GetSyncService(0)));
+  EXPECT_FALSE(
+      password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
+          GetSyncService(0)));
+  EXPECT_TRUE(password_manager::sync_util::
+                  GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+                      GetSyncService(0))
+                      .empty());
+
+  // But the SyncState should be active.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  EXPECT_EQ(
+      password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
+      password_manager::sync_util::SyncState::kActiveWithNormalEncryption);
+
+  // Enter a persistent auth error state.
+  GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+
+  // Passwords are not sync-ing actively while sync is paused (any persistent
+  // auth error).
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  EXPECT_EQ(
+      password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
+      password_manager::sync_util::SyncState::kNotActive);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class PasswordManagerSyncTestWithPolicy : public PasswordManagerSyncTest {

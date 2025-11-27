@@ -30,11 +30,8 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -125,13 +122,15 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   AccountInfo SetupInterception() {
     std::string email = "bob@example.com";
     AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetHostedDomain(std::string())
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     AccountCapabilitiesTestMutator(&account_info.capabilities)
         .set_is_subject_to_account_level_enterprise_policies(false);
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     Profile* profile_2 = profile_manager()->CreateTestingProfile("Profile 2");
@@ -344,14 +343,16 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
 
   std::string email = "user@example.org";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("fullname")
+                     .SetGivenName("givenname")
+                     .SetHostedDomain(std::string())
+                     .SetLocale("en")
+                     .SetAvatarUrl("https://example.com")
+                     .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
       .set_is_subject_to_account_level_enterprise_policies(false);
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
+  CHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   password_manager::PasswordForm form =

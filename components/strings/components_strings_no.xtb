@@ -2176,6 +2176,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4506599922270137252">Kontakt systemadministratoren</translation>
 <translation id="450710068430902550">Deling med administratoren</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oversette denne siden med Google Oversetter</translation>
+<translation id="4510703642214459906">Arena</translation>
 <translation id="4515275063822566619">Kortene og adressene er fra Chrome og Google-kontoen din (<ph name="ACCOUNT_EMAIL" />). Du kan administrere dem i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikrobiler og småbiler</translation>
 <translation id="451601984112574365">Grønn 3</translation>
@@ -4370,6 +4371,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8077669823243888800">Kinesisk konvolutt nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vil du laste opp denne konfidensielle filen?}other{Vil du laste opp disse konfidensielle filene?}}</translation>
 <translation id="8079031581361219619">Vil du laste inn nettstedet på nytt?</translation>
+<translation id="8079591184016291275">Hendelsesnavn</translation>
 <translation id="8079976827192572403">Farlig nettsted</translation>
 <translation id="8081087320434522107">Sedaner</translation>
 <translation id="8086429410809447605">Dameklær</translation>
@@ -4767,6 +4769,7 @@ Mer informasjon:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">innebygd innhold</translation>
 <translation id="8757526089434340176">Google Pay-tilbud er tilgjengelig</translation>
+<translation id="8758529215314160755">Du kan endre navnet ditt i <ph name="BEGIN_LINK" />Google-kontoen din<ph name="END_LINK" />, <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Dette kortet er utløpt</translation>
 <translation id="87601671197631245">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord, meldinger eller kredittkort) kan bli avslørt når den sendes til dette nettstedet.</translation>
 <translation id="8763927697961133303">USB-enhet</translation>

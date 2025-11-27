@@ -327,7 +327,6 @@ struct GPU_GLES2_EXPORT ContextState {
   void SetMaxWindowRectangles(size_t max);
   size_t GetMaxWindowRectangles() const;
   void SetWindowRectangles(GLenum mode,
-                           size_t spanification_suspected_redundant_count,
                            base::span<const volatile GLint> box);
   template <typename T>
   void GetWindowRectangle(GLuint index, T* box) {

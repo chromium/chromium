@@ -32,7 +32,12 @@ public class PageInfoPermissionsControllerUnitTest {
     private static PermissionObject createPermission(
             String name, String nameMidSentence, boolean allowed, int warningResId) {
         return new PermissionObject(
-                ContentSettingsType.COOKIES, name, nameMidSentence, allowed, warningResId);
+                ContentSettingsType.COOKIES,
+                name,
+                nameMidSentence,
+                allowed,
+                warningResId,
+                /* requested= */ false);
     }
 
     private static final PermissionObject LOCATION_OS_WARNING =

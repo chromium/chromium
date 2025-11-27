@@ -34,50 +34,6 @@
 
 namespace glic {
 
-GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
-    : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
-      controller_(std::make_unique<GlicController>()),
-      status_tray_(status_tray),
-      enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
-      expected_registered_hotkey_(
-          GlicLauncherConfiguration::GetGlobalHotkey()) {
-  g_browser_process->profile_manager()->AddObserver(this);
-  // Start tracking any profiles that already exist.
-  for (auto* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    OnProfileAdded(profile);
-  }
-  EnableLaunchOnStartup(enabled_pref_);
-  UpdateState();
-}
-
-GlicBackgroundModeManager::~GlicBackgroundModeManager() {
-  g_browser_process->profile_manager()->RemoveObserver(this);
-}
-
-GlicBackgroundModeManager* GlicBackgroundModeManager::GetInstance() {
-  return g_browser_process->GetFeatures()->glic_background_mode_manager();
-}
-
-void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
-  if (enabled_pref_ == enabled) {
-    return;
-  }
-
-  enabled_pref_ = enabled;
-  UpdateState();
-  EnableLaunchOnStartup(enabled_pref_);
-}
-
-void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
-  if (expected_registered_hotkey_ == hotkey) {
-    return;
-  }
-
-  expected_registered_hotkey_ = hotkey;
-  UpdateState();
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 class GlicBackgroundModeManager::AcceleratorRegistrar
     : public ui::AcceleratorTarget {
@@ -172,6 +128,50 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
   const raw_ref<GlicBackgroundModeManager> manager_;
 };
 #endif
+
+GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
+    : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
+      controller_(std::make_unique<GlicController>()),
+      status_tray_(status_tray),
+      enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
+      expected_registered_hotkey_(
+          GlicLauncherConfiguration::GetGlobalHotkey()) {
+  g_browser_process->profile_manager()->AddObserver(this);
+  // Start tracking any profiles that already exist.
+  for (auto* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    OnProfileAdded(profile);
+  }
+  EnableLaunchOnStartup(enabled_pref_);
+  UpdateState();
+}
+
+GlicBackgroundModeManager::~GlicBackgroundModeManager() {
+  g_browser_process->profile_manager()->RemoveObserver(this);
+}
+
+GlicBackgroundModeManager* GlicBackgroundModeManager::GetInstance() {
+  return g_browser_process->GetFeatures()->glic_background_mode_manager();
+}
+
+void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
+  if (enabled_pref_ == enabled) {
+    return;
+  }
+
+  enabled_pref_ = enabled;
+  UpdateState();
+  EnableLaunchOnStartup(enabled_pref_);
+}
+
+void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
+  if (expected_registered_hotkey_ == hotkey) {
+    return;
+  }
+
+  expected_registered_hotkey_ = hotkey;
+  UpdateState();
+}
 
 void GlicBackgroundModeManager::HandleHotkey(
     const ui::Accelerator& accelerator) {

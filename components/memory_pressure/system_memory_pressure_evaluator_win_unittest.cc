@@ -256,8 +256,15 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
     testing::Mock::VerifyAndClearExpectations(&listener);
   }
 
-  // Going down to no pressure should not produce an notification.
+  // Going down to no pressure should produce a notification.
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
   evaluator.SetNone();
+  evaluator.CheckMemoryPressure();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
+  testing::Mock::VerifyAndClearExpectations(&listener);
+
+  // Again no pressure should not produce an additional notification.
   evaluator.CheckMemoryPressure();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());

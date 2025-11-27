@@ -21,7 +21,9 @@ promise_test(async t => {
   await test_driver.bless('Enable LanguageModel create()');
 
   // Consume transient activation.
-  consumeTransientUserActivation();
+  const win = window.open('about:blank', '_blank');
+  if (win)
+    win.close();
   assert_true(navigator.userActivation.hasBeenActive);
   assert_false(navigator.userActivation.isActive);
 

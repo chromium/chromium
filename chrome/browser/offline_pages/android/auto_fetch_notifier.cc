@@ -22,7 +22,8 @@ namespace offline_pages {
 // Java -> C++
 //
 
-void JNI_AutoFetchNotifier_CancelInProgress(JNIEnv* env, Profile* profile) {
+static void JNI_AutoFetchNotifier_CancelInProgress(JNIEnv* env,
+                                                   Profile* profile) {
   OfflinePageAutoFetcherService* service =
       OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(profile);
   DCHECK(service);

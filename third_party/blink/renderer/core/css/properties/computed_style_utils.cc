@@ -4814,25 +4814,22 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
   }
 
   const std::optional<Length>& length = intrinsic_length.GetLength();
-  if (intrinsic_length.MatchesElement()) {
-    DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
-    if (!length) {
-      return CSSIdentifierValue::Create(CSSValueID::kFromElement);
-    }
-    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFromElement));
-    list->Append(*ZoomAdjustedPixelValueForLength(*length, style));
-    return list;
-  }
-
   CSSValue* length_value = length
                                ? ZoomAdjustedPixelValueForLength(*length, style)
                                : CSSIdentifierValue::Create(CSSValueID::kNone);
-  if (!intrinsic_length.HasAuto()) {
+
+  CSSIdentifierValue* option = nullptr;
+  if (intrinsic_length.HasAuto()) {
+    option = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  } else if (intrinsic_length.MatchesElement()) {
+    DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+    option = CSSIdentifierValue::Create(CSSValueID::kFromElement);
+  } else {
     return length_value;
   }
+  DCHECK(option);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  list->Append(*option);
   list->Append(*length_value);
   return list;
 }

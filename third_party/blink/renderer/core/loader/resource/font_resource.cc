@@ -70,13 +70,6 @@ using ResultOrError =
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<ResultOrError> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = ResultOrError;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 namespace {
 // Durations of font-display periods.
 // https://tabatkins.github.io/specs/css-font-display/#font-display-desc

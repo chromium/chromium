@@ -323,10 +323,21 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
       password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
+
+  // Populate form_data and renderer IDs to be able to compare it with the
+  // mqls logger.
+  saved_form.form_data = actor_login::CreateSigninFormData(kUrl);
+  saved_form.username_element_renderer_id =
+      saved_form.form_data.fields()[0].renderer_id();
+  saved_form.password_element_renderer_id =
+      saved_form.form_data.fields()[1].renderer_id();
+
   // To make GetSigninFormManager return a non-nullptr value, we need to
   // populate the PasswordFormCache with a PasswordFormManager that represents
   // a sign-in form.
-  AddFormManager(CreateFormManager());
+  AddFormManager(CreateFormManager(kOrigin, /*is_in_main_frame=*/true,
+                                   saved_form.form_data, client(), driver(),
+                                   form_fetcher()));
   form_fetcher()->SetBestMatches({saved_form});
 
   EXPECT_CALL(driver(), CheckViewAreaVisible)
@@ -365,6 +376,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(saved_form);
+
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));
   // Destroy the helper, because it sends logs in the destructor.
@@ -379,6 +393,14 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
   saved_form.actor_login_approved = true;
 
+  saved_form.form_data = actor_login::CreateSigninFormData(kUrl);
+  // Populate form_data and renderer IDs to be able to compare it with the
+  // mqls logger.
+  saved_form.username_element_renderer_id =
+      saved_form.form_data.fields()[0].renderer_id();
+  saved_form.password_element_renderer_id =
+      saved_form.form_data.fields()[1].renderer_id();
+
   // There won't be a signin form, so the credential will be fetched from
   // the store rather than the fake form fetcher.
   client()->profile_store()->AddLogin(saved_form);
@@ -386,7 +408,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
   // To make GetSigninFormManager return a non-nullptr value, we need to
   // populate the PasswordFormCache with a PasswordFormManager that
   // represents a sign-in form.
-  AddFormManager(CreateFormManager());
+  AddFormManager(CreateFormManager(kOrigin, /*is_in_main_frame=*/true,
+                                   saved_form.form_data, client(), driver(),
+                                   form_fetcher()));
   form_fetcher()->SetBestMatches({saved_form});
 
   EXPECT_CALL(driver(), CheckViewAreaVisible)
@@ -424,6 +448,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(saved_form);
+
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));
   // Destroy the helper, because it sends logs in the destructor.
@@ -751,7 +778,17 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   PasswordForm exact_match =
       CreatePasswordForm(kUrl.spec(), u"exact_username", u"exact_password");
 
-  AddFormManager(CreateFormManager());
+  // Populate form_data and renderer IDs to be able to compare it with the
+  // mqls logger.
+  exact_match.form_data = actor_login::CreateSigninFormData(kUrl);
+  exact_match.username_element_renderer_id =
+      exact_match.form_data.fields()[0].renderer_id();
+  exact_match.password_element_renderer_id =
+      exact_match.form_data.fields()[1].renderer_id();
+
+  AddFormManager(CreateFormManager(kOrigin, /*is_in_main_frame=*/true,
+                                   exact_match.form_data, client(), driver(),
+                                   form_fetcher()));
   // The order is important, as PWM would rank them in this order and we
   // still want to return the affiliated match.
   form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
@@ -782,6 +819,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(0);
+  *expected_details.add_parsed_form_details() =
+      CreateExpectedFormDetails(exact_match);
+
   EXPECT_CALL(*mqls_logger(),
               SetGetCredentialsDetails(ProtoEquals(expected_details)));
   // Destroy the helper, because it sends logs in the destructor.

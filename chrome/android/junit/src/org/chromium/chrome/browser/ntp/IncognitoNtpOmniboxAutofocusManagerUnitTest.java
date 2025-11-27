@@ -403,7 +403,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     public void testAutofocusCondition_withHardwareKeyboard_autofocusFails() {
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = false;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(false);
         setUpManagerAndAddNewTab();
         finishLoadingNtp();
 
@@ -412,14 +412,13 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         runnableCaptor.getValue().run();
 
         verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
     }
 
     @Test
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     public void testAutofocusCondition_withHardwareKeyboard_autofocusSucceeds() {
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = true;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(true);
         setUpManagerAndAddNewTab();
         finishLoadingNtp();
 
@@ -430,7 +429,6 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mOmniboxStub)
                 .setUrlBarFocus(
                         true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
     }
 
     @Test
@@ -464,7 +462,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         // 1. with_prediction:
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = false;
         // 2. with_hardware_keyboard:
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = false;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(false);
         // 3. not_first_tab: This is the first tab, so it fails.
         setUpManagerAndAddNewTab();
 
@@ -478,7 +476,6 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
 
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
     }
 
     @Test

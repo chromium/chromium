@@ -262,19 +262,19 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
 
 TEST_F(PageDiscardingHelperTest, DiscardAPageNoCandidate) {
   page_node()->SetIsVisible(true);
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_FALSE(first_discarded_at.has_value());
+  EXPECT_FALSE(result.first_discard_time.has_value());
 }
 
 TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidate) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_TRUE(first_discarded_at.has_value());
+  EXPECT_TRUE(result.first_discard_time.has_value());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 1,
                                         1);
 }
@@ -282,20 +282,19 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidate) {
 TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidateFails) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(false));
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_FALSE(first_discarded_at.has_value());
+  EXPECT_FALSE(result.first_discard_time.has_value());
   // On the first discard attempt, an attempt will be made to discard
   // `page_node()`, which will render it uneligible for the next discard
   // attempt.
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 1,
                                         1);
 
-  first_discarded_at =
-      PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-          DiscardReason::URGENT);
-  EXPECT_FALSE(first_discarded_at.has_value());
+  result = PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      DiscardReason::URGENT);
+  EXPECT_FALSE(result.first_discard_time.has_value());
   // No eligible candidate found.
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 0,
                                         1);
@@ -323,10 +322,10 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_TRUE(first_discarded_at.has_value());
+  EXPECT_TRUE(result.first_discard_time.has_value());
 
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 2,
                                         1);
@@ -351,10 +350,10 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_TRUE(first_discarded_at.has_value());
+  EXPECT_TRUE(result.first_discard_time.has_value());
 }
 
 TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
@@ -376,10 +375,10 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_TRUE(first_discarded_at.has_value());
+  EXPECT_TRUE(result.first_discard_time.has_value());
 }
 
 TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
@@ -403,10 +402,10 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  std::optional<base::TimeTicks> first_discarded_at =
+  PageDiscardingHelper::DiscardResult result =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
-  EXPECT_TRUE(first_discarded_at.has_value());
+  EXPECT_TRUE(result.first_discard_time.has_value());
 }
 
 // Tests DiscardMultiplePages with reclaim_target_kb == nullopt.

@@ -25,6 +25,7 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/record.h"
@@ -1127,8 +1128,7 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
 
   if (outstanding_external_object_writes_ == 0) {
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult,
-        storage::mojom::WriteBlobToFileResult::kSuccess);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult);
   }
 
   CHECK_NE(transaction.mode(), blink::mojom::IDBTransactionMode::ReadOnly);
@@ -1177,9 +1177,7 @@ void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
   }
 
   if (--outstanding_external_object_writes_ == 0) {
-    std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kRunPhaseTwoAsync,
-             storage::mojom::WriteBlobToFileResult::kSuccess);
+    std::move(blob_write_callback_).Run(BlobWriteResult::kRunPhaseTwoAsync);
   }
 }
 
@@ -1206,8 +1204,7 @@ void DatabaseConnection::CancelBlobWriting() {
   outstanding_external_object_writes_ = 0;
   if (blob_write_callback_) {
     std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kFailure,
-             storage::mojom::WriteBlobToFileResult::kError);
+        .Run(base::unexpected(Status::IOError("Error")));
   }
 }
 
@@ -1999,7 +1996,9 @@ DatabaseConnection::CreateAllExternalObjects(
                               /*readonly=*/true),
           GetMaxBlobSize().InBytes(),
           base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
-                         base::Unretained(this), object.blob_number()));
+                         base::Unretained(this), object.blob_number()),
+          base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
+                              in_memory()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
                .first;
       if (!AddActiveBlobReference(object.blob_number())) {

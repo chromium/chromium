@@ -29,7 +29,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace lens {
@@ -384,12 +383,6 @@ void LensOverlayUntrustedUI::BindInterface(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(), /*lens_searchbox_client=*/controller);
   controller->SetContextualSearchboxHandler(std::move(handler));
-}
-
-void LensOverlayUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void LensOverlayUntrustedUI::BindInterface(

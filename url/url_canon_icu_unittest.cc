@@ -105,13 +105,9 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     ICUCharsetConverter converter(conv.converter());
 
     if (query_cases[i].input8) {
-      int len = static_cast<int>(strlen(query_cases[i].input8));
-      Component in_comp(0, len);
       std::string out_str;
-
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(query_cases[i].input8),
-                        &converter, &output, &out_comp);
+      CanonicalizeQuery(query_cases[i].input8, &converter, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);

@@ -947,9 +947,8 @@ bool GpuProcessHost::Init() {
       viz_main_pending_remote.InitWithNewPipeAndPassReceiver());
   viz::GpuHostImpl::InitParams params;
   params.restart_id = host_id_;
-  params.disable_gpu_shader_disk_cache =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache);
+  params.disable_gpu_shader_disk_cache = !features::IsShaderDiskCacheEnabled(
+      base::CommandLine::ForCurrentProcess());
   params.product = GetContentClient()->browser()->GetProduct();
   params.deadline_to_synchronize_surfaces =
       switches::GetDeadlineToSynchronizeSurfaces();

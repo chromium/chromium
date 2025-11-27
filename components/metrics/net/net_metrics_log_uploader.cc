@@ -156,6 +156,57 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       })");
   }
 
+  if (service_type == metrics::MetricsLogUploader::PRIVATE_METRICS) {
+    return net::DefineNetworkTrafficAnnotation(  //
+        "metrics_report_private_metrics",
+        R"(
+      semantics {
+        sender: "Private Metrics Log Uploader"
+        description:
+          "Report of usage statistics and crash-related data about Chrome. "
+          "Usage statistics contain information such as preferences, button "
+          "clicks, and memory usage and do not include web page URLs or "
+          "personal information. See more at "
+          "https://policies.google.com/privacy. Usage statistics are tied to a "
+          "pseudonymous machine identifier and not to your email address. The "
+          "identifier is not joinable with any other identifier, including "
+          "identifiers from other types of metrics. Private Metrics are "
+          "collected with a reduced amount of system information and are "
+          "stored separately from any other log sources."
+        trigger:
+          "Reports are automatically generated on startup and at intervals "
+          "while Chrome is running."
+        data:
+           "A protocol buffer with usage statistics and crash related data."
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-11-25"
+        user_data {
+          type: HW_OS_INFO
+          type: USAGE_AND_PERFORMANCE_METRICS
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "Users can enable or disable this feature via "
+          "\"Help improve Chrome's features and performance\" in Chrome "
+          "settings under Sync and Google services > Other Google services. "
+          "The feature is enabled by default."
+        chrome_policy {
+          MetricsReportingEnabled {
+            policy_options {mode: MANDATORY}
+            MetricsReportingEnabled: false
+          }
+        }
+      })");
+  }
+
   DCHECK_EQ(service_type, metrics::MetricsLogUploader::UKM);
 
   if (log_metadata.log_source_type.has_value() &&

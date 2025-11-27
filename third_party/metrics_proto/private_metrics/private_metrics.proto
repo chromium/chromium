@@ -121,7 +121,8 @@ message PrivateMetricEndpointPayload {
     REPORT_TYPE_INVALID = 1;
     DWA = 2;
     DKM = 3;
-    PUMA = 4;
+    PUMA_RC = 4;
+    PUMA_SEARCH = 5;
   }
   optional ReportType report_type = 3;
 }

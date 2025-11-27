@@ -71,7 +71,8 @@ String CanonicalizeProtocol(const String& input,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid protocol '" + stripped + "'.");
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid protocol '", stripped, "'."}));
     return String();
   }
 
@@ -124,8 +125,9 @@ void CanonicalizeUsernameAndPassword(const String& username,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid username '" + username +
-                                   "' and/or password '" + password + "'.");
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid username '", username, "' and/or password '", password,
+                "'."}));
     return;
   }
 
@@ -154,7 +156,7 @@ String CanonicalizeHostname(const String& input,
   bool success = false;
   String result = SecurityOrigin::CanonicalizeSpecialHost(input, &success);
   if (!success) {
-    exception_state.ThrowTypeError("Invalid hostname '" + input + "'.");
+    exception_state.ThrowTypeError(StrCat({"Invalid hostname '", input, "'."}));
     return String();
   }
 
@@ -191,7 +193,7 @@ String CanonicalizePort(const String& input,
   url::Component component;
   if (!url::CanonicalizePort(utf8.AsStringView(), default_port, &canon_output,
                              &component)) {
-    exception_state.ThrowTypeError("Invalid port '" + input + "'.");
+    exception_state.ThrowTypeError(StrCat({"Invalid port '", input, "'."}));
     return String();
   }
 
@@ -265,7 +267,7 @@ String CanonicalizePathname(const String& protocol,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid pathname '" + input + "'.");
+    exception_state.ThrowTypeError(StrCat({"Invalid pathname '", input, "'."}));
     return String();
   }
 

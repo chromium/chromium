@@ -71,7 +71,8 @@ class TestJavaObserver {
 };
 
 // Implements TestServiceObserver.onObserverNotify static method.
-void JNI_TestServiceObserver_OnObserverNotify(JNIEnv* env, jlong observer_ptr) {
+static void JNI_TestServiceObserver_OnObserverNotify(JNIEnv* env,
+                                                     jlong observer_ptr) {
   reinterpret_cast<TestJavaObserver*>(observer_ptr)->OnObserverNotify();
 }
 

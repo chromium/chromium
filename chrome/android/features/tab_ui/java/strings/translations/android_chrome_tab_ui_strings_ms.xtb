@@ -82,6 +82,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Tutup item}other{Tutup item}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Lak. kecil pratntn helaian kongsi.</translation>
+<translation id="3776329373944672717">Tajuk kumpulan tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Nyahsematkan tab}other{Nyahsematkan tab}}</translation>
 <translation id="3940195383040445971">Jejaki harga pada tab</translation>

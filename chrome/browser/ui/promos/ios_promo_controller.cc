@@ -11,14 +11,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
+#include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
+#include "components/feature_engagement/public/feature_constants.h"
 
 using desktop_to_mobile_promos::PromoType;
 
 namespace {
 
-// Returns the feature associated with the given IOSPromoType.
+// Returns the feature associated with the given PromoType.
 const base::Feature& FeatureForIOSPromoType(PromoType promo_type) {
   switch (promo_type) {
     case PromoType::kPassword:
@@ -63,6 +65,11 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
   // Don't show the promo if the window is not active or the toolbar is not
   // visible.
   if (!window || !window->IsActive() || !window->IsToolbarVisible()) {
+    return;
+  }
+
+  // Don't show the promo if the user has a recent active Android device.
+  if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
     return;
   }
 

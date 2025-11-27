@@ -24,7 +24,8 @@ class BrowserView;
 
 class SidePanel : public views::AccessiblePaneView,
                   public views::ResizeAreaDelegate,
-                  public SidePanelAnimationCoordinator::Observer {
+                  public SidePanelAnimationCoordinator::AnimationIdObserver,
+                  public SidePanelAnimationCoordinator::AnimationTypeObserver {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
  public:
@@ -61,6 +62,10 @@ class SidePanel : public views::AccessiblePaneView,
   void SetKeyboardResized(bool keyboard_resized) {
     keyboard_resized_ = keyboard_resized;
   }
+  // Returns the bounds between |content_starting_bounds_| and the content
+  // bounds in the provided |side_panel_final_bounds| for the current animation
+  // state.
+  gfx::Rect GetContentAnimationBounds(const gfx::Rect& side_panel_final_bounds);
 
   template <typename T>
   T* GetHeaderView() {
@@ -100,6 +105,14 @@ class SidePanel : public views::AccessiblePaneView,
   void Open(bool animated);
   void Close(bool animated);
 
+  void set_animation_starting_bounds_for_content(
+      const gfx::Rect& content_starting_bounds) {
+    content_starting_bounds_ = content_starting_bounds;
+  }
+  // Reparents the side panel animation content to the |content_parent_view_|
+  // and resets the animation.
+  void ResetSidePanelAnimationContent();
+
   // This is the parent view for the contents of the side panel.
   views::View* GetContentParentView();
 
@@ -110,6 +123,10 @@ class SidePanel : public views::AccessiblePaneView,
   // This method is the shared implementation of Open/Close.
   void UpdateVisibility(bool should_be_open, bool animated);
 
+  double GetAnimationValueFor(
+      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
+      const;
+
   bool ShouldShowAnimation() const;
   void AnnounceResize();
 
@@ -118,13 +135,16 @@ class SidePanel : public views::AccessiblePaneView,
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // SidePanelAnimationCoordinator::AnimationObserver
+  // SidePanelAnimationCoordinator::AnimationIdObserver
   void OnAnimationSequenceProgressed(
       const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
       double animation_value) override;
-  void OnAnimationSequenceEnded(
-      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
-      override;
+
+  // SidePanelAnimationCoordinator::AnimationTypeObserver:
+  void OnAnimationTypeStarted(
+      SidePanelAnimationCoordinator::AnimationType type) override;
+  void OnAnimationTypeEnded(
+      SidePanelAnimationCoordinator::AnimationType type) override;
 
   // Timestamp of the last step in the side panel open/close animation. This is
   // used for metrics purposes.
@@ -149,6 +169,10 @@ class SidePanel : public views::AccessiblePaneView,
   bool keyboard_resized_ = false;
 
   bool animations_disabled_ = false;
+
+  // Starting bounds for the side panel content if kOpenWithContentTransition
+  // animation is shown.
+  std::optional<gfx::Rect> content_starting_bounds_;
 
   // The animation coordinator for the side panel. This controls all of the
   // animations that are tied to the side panel when triggering the show and

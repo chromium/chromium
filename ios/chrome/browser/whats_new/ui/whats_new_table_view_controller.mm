@@ -51,8 +51,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Array of `WhatsNewItem` features.
 @property(nonatomic, strong) NSArray<WhatsNewItem*>* featureItems;
 
-// `WhatsNewItem` representing the chrome tip.
-@property(nonatomic, strong) WhatsNewItem* chromeTipItem;
+// Array of `WhatsNewItem` chrome tips.
+@property(nonatomic, strong) NSArray<WhatsNewItem*>* chromeTipItems;
 
 // Indicates whether a scroll happened.
 @property(nonatomic, assign) BOOL viewDidScroll;
@@ -137,9 +137,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       break;
     }
     case SectionChromeTipIdenfitier: {
-      [self.actionHandler recordWhatsNewInteraction:self.chromeTipItem];
+      NSInteger index = indexPath.row;
+      [self.actionHandler recordWhatsNewInteraction:self.chromeTipItems[index]];
       [self.delegate detailViewController:self
-          openDetailViewControllerForItem:self.chromeTipItem];
+          openDetailViewControllerForItem:self.chromeTipItems[index]];
       break;
     }
   }
@@ -165,10 +166,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - WhatsNewMediatorConsumer
 
-- (void)setWhatsNewProperties:(WhatsNewItem*)chromeTip
+- (void)setWhatsNewProperties:(NSArray<WhatsNewItem*>*)chromeTipItems
                  featureItems:(NSArray<WhatsNewItem*>*)featureItems {
   self.featureItems = featureItems;
-  self.chromeTipItem = chromeTip;
+  self.chromeTipItems = chromeTipItems;
 }
 
 #pragma mark Private
@@ -205,8 +206,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [model addSectionWithIdentifier:SectionChromeTipIdenfitier];
   [model setHeader:[self headerForSectionIndex:SectionChromeTipIdenfitier]
       forSectionWithIdentifier:SectionChromeTipIdenfitier];
-  [model addItem:[self whatsNewCell:self.chromeTipItem]
-      toSectionWithIdentifier:SectionChromeTipIdenfitier];
+
+  for (WhatsNewItem* item in self.chromeTipItems) {
+    [model addItem:[self whatsNewCell:item]
+        toSectionWithIdentifier:SectionChromeTipIdenfitier];
+  }
 }
 
 - (TableViewHeaderFooterItem*)headerForSectionIndex:

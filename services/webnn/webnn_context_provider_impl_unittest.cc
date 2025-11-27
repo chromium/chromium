@@ -30,17 +30,6 @@ class WebNNContextProviderImplTest : public testing::Test {
   WebNNContextProviderImplTest& operator=(const WebNNContextProviderImplTest&) =
       delete;
 
-#if BUILDFLAG(IS_WIN)
-  void EnableDirectMLBackend() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{webnn::mojom::features::
-                                  kWebMachineLearningNeuralNetwork,
-                              webnn::mojom::features::kWebNNDirectML},
-        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
-  }
-#endif
-
  protected:
   WebNNContextProviderImplTest()
       : scoped_feature_list_(
@@ -94,8 +83,6 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 #if BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
-  EnableDirectMLBackend();
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   test::WebNNTestEnvironment webnn_test_environment;
   webnn_test_environment.BindWebNNContextProvider(
@@ -116,9 +103,8 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
 // DirectML implementation unconditionally depends on a GPU/NPU.
 
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
-  EnableDirectMLBackend();
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuDisabled);
   webnn_test_environment.BindWebNNContextProvider(
@@ -139,9 +125,8 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
 }
 
 TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
-  EnableDirectMLBackend();
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled);
   webnn_test_environment.BindWebNNContextProvider(
@@ -162,9 +147,8 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
 }
 
 TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
-  EnableDirectMLBackend();
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
   test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuFeatureStatusDisabled);
   webnn_test_environment.BindWebNNContextProvider(

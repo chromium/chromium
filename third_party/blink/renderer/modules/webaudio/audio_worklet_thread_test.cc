@@ -493,12 +493,6 @@ INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadPriorityTestGroup,
 
 #if BUILDFLAG(IS_APPLE)
 
-template <>
-struct CrossThreadCopier<base::TimeDelta>
-    : public CrossThreadCopierPassThrough<base::TimeDelta> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 class AudioWorkletRealtimePeriodTestMac : public AudioWorkletThreadTest {
  public:
   std::unique_ptr<WorkerThread> CreateThreadAndCheckRealtimePeriod(

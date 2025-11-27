@@ -135,11 +135,11 @@ class CORE_EXPORT ScopedStyleResolver final
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
-  void AddKeyframeStyle(StyleRuleKeyframes*);
+  void AddKeyframeStyle(const CascadeLayered<StyleRuleKeyframes>&);
   void AddFontFeatureValuesRules(const RuleSet&);
   bool KeyframeStyleShouldOverride(
-      const StyleRuleKeyframes* new_rule,
-      const StyleRuleKeyframes* existing_rule) const;
+      const CascadeLayered<StyleRuleKeyframes>& new_rule,
+      const CascadeLayered<StyleRuleKeyframes>& existing_rule) const;
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -156,7 +156,7 @@ class CORE_EXPORT ScopedStyleResolver final
   HeapVector<RuleSetGroup> rule_set_groups_;
 
   using KeyframesRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
+      HeapHashMap<AtomicString, CascadeLayered<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
   using PositionTryRuleMap =

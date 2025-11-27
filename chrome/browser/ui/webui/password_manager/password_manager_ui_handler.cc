@@ -76,6 +76,12 @@ void PasswordManagerUIHandler::RevokeActorLoginPermission(
           site->url->signon_realm, base::UTF8ToUTF16(site->username)});
 }
 
+void PasswordManagerUIHandler::ChangePasswordManagerPin(
+    ChangePasswordManagerPinCallback callback) {
+  passwords_private_delegate_->ChangePasswordManagerPin(web_contents_,
+                                                        std::move(callback));
+}
+
 void PasswordManagerUIHandler::ShowAddShortcutDialog() {
   passwords_private_delegate_->ShowAddShortcutDialog(web_contents_);
 }
@@ -83,4 +89,20 @@ void PasswordManagerUIHandler::ShowAddShortcutDialog() {
 password_manager::SavedPasswordsPresenter*
 PasswordManagerUIHandler::GetSavedPasswordsPresenter() {
   return passwords_private_delegate_->GetSavedPasswordsPresenter();
+}
+
+void PasswordManagerUIHandler::IsAccountStorageEnabled(
+    IsAccountStorageEnabledCallback callback) {
+  bool result = passwords_private_delegate_->IsAccountStorageEnabled();
+  std::move(callback).Run(result);
+}
+
+void PasswordManagerUIHandler::SetAccountStorageEnabled(bool enabled) {
+  passwords_private_delegate_->SetAccountStorageEnabled(enabled, web_contents_);
+}
+
+void PasswordManagerUIHandler::ShouldShowAccountStorageSettingToggle(
+    ShouldShowAccountStorageSettingToggleCallback callback) {
+  std::move(callback).Run(
+      passwords_private_delegate_->ShouldShowAccountStorageSettingToggle());
 }

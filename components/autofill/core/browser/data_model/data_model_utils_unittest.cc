@@ -406,5 +406,15 @@ TEST(AutofillDataModelUtilsTest, IsValidFlightNumberFormat) {
   EXPECT_FALSE(IsValidFlightNumberFormat(u"F", /*exclude_full_value=*/true));
 }
 
+TEST(AutofillDataModelUtilsTest, LocalizePattern_ShortMonthDay) {
+  EXPECT_EQ(LocalizePattern(u"MMM d", "en_US"), u"MMM d");
+  EXPECT_EQ(LocalizePattern(u"MMM d", "pl_PL"), u"d MMM");
+  EXPECT_EQ(LocalizePattern(u"MMM d", "de_DE"), u"d. MMM");
+}
+
+TEST(AutofillDataModelUtilsTest, LocalizePattern_InvalidLocale) {
+  EXPECT_EQ(LocalizePattern(u"MMM d", "thisisaninvalidlocale"), std::nullopt);
+}
+
 }  // namespace
 }  // namespace autofill::data_util

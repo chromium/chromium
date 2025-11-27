@@ -78,8 +78,11 @@ void FontFaceCacheTest::AppendTestFaceForCapabilities(const CSSValue& stretch,
 
   auto* style_rule_font_face =
       MakeGarbageCollected<StyleRuleFontFace>(font_face_descriptor);
-  FontFace* font_face = FontFace::Create(&GetDocument(), style_rule_font_face,
-                                         false /* is_user_style */);
+  CascadeLayered<const StyleRuleFontFace> layered_style_rule_font_face(
+      style_rule_font_face,
+      /*layer=*/nullptr);
+  FontFace* font_face = FontFace::Create(
+      &GetDocument(), layered_style_rule_font_face, false /* is_user_style */);
   CHECK(font_face);
   cache_->Add(style_rule_font_face, font_face);
 }

@@ -156,11 +156,11 @@ class DwaBrowserTest : public SyncTest {
     EXPECT_TRUE(harness->SetupSync());
 
     if (consent_state) {
-      ASSERT_TRUE(
-          harness->EnableSyncForType(syncer::UserSelectableType::kExtensions));
+      ASSERT_TRUE(harness->EnableSelectableType(
+          syncer::UserSelectableType::kExtensions));
     } else {
-      ASSERT_TRUE(
-          harness->DisableSyncForType(syncer::UserSelectableType::kExtensions));
+      ASSERT_TRUE(harness->DisableSelectableType(
+          syncer::UserSelectableType::kExtensions));
     }
   }
 
@@ -176,10 +176,10 @@ class DwaBrowserTest : public SyncTest {
 
     if (consent_state) {
       ASSERT_TRUE(
-          harness->EnableSyncForType(syncer::UserSelectableType::kApps));
+          harness->EnableSelectableType(syncer::UserSelectableType::kApps));
     } else {
       ASSERT_TRUE(
-          harness->DisableSyncForType(syncer::UserSelectableType::kApps));
+          harness->DisableSelectableType(syncer::UserSelectableType::kApps));
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

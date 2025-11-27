@@ -12,6 +12,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/action_tracker_for_metrics.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -118,6 +119,7 @@ ActorTask::ActorTask(Profile* profile,
                      base::WeakPtr<ActorTaskDelegate> delegate)
     : profile_(profile),
       create_time_(base::TimeTicks::Now()),
+      action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
@@ -188,6 +190,8 @@ void ActorTask::SetState(State new_state) {
 
   // Actor and user control states must be mutually exclusive.
   CHECK(IsCompleted() || IsUnderActorControl() != IsUnderUserControl());
+
+  action_tracker_for_metrics_->WillMoveToState(new_state);
 
   State old_state = state_;
   const base::TimeDelta old_state_duration = current_state_timer_.Elapsed();
@@ -270,6 +274,8 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   actions_in_current_state_ += actions.size();
   total_number_of_actions_ += actions.size();
 
+  action_tracker_for_metrics_->WillAct(actions);
+
   execution_engine_->Act(
       std::move(actions),
       base::BindOnce(&ActorTask::OnFinishedAct, weak_ptr_factory_.GetWeakPtr(),
@@ -304,9 +310,12 @@ void ActorTask::OnFinishedActImpl(
                       .Add("result", ToDebugString(*result))
                       .AddError("Not in kActing state")
                       .Build());
-    std::move(callback).Run(MakeErrorResult(), std::nullopt, {});
+    mojom::ActionResultPtr error_result = MakeErrorResult();
+    action_tracker_for_metrics_->OnFinishedAct(*error_result);
+    std::move(callback).Run(std::move(error_result), std::nullopt, {});
     return;
   }
+  action_tracker_for_metrics_->OnFinishedAct(*result);
   SetState(State::kReflecting);
   std::move(callback).Run(std::move(result), index_of_failed_action,
                           std::move(action_results));
@@ -480,22 +489,11 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
         JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
     // Notify the UI of the tab removal.
-    if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      // We call this synchronously since a Stop will destroy the ActorTask
-      // in the same event pump and the UIEventDispatcher will be destroyed
-      // before dispatching the event.
-      ui_event_dispatcher_->OnActorTaskSyncChange(
-          ui::UiEventDispatcher::RemoveTab{.task_id = id_,
-                                           .handle = tab_handle});
-
-    } else {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
-                         ui_weak_ptr_factory_.GetWeakPtr(),
-                         ui::UiEventDispatcher::RemoveTab{
-                             .task_id = id_, .handle = tab_handle}));
-    }
+    // We call this synchronously since a Stop will destroy the ActorTask
+    // in the same event pump and the UIEventDispatcher will be destroyed
+    // before dispatching the event.
+    ui_event_dispatcher_->OnActorTaskSyncChange(
+        ui::UiEventDispatcher::RemoveTab{.task_id = id_, .handle = tab_handle});
   }
 }
 

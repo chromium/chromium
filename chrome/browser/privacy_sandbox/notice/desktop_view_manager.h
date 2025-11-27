@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager_interface.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
@@ -34,7 +33,6 @@ class DesktopViewManager : public DesktopViewManagerInterface {
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
 
   // DesktopViewManagerInterface:
-  NavigationHandler* GetNavigationHandler() override;
   void HandleChromeOwnedPageNavigation(
       BrowserWindowInterface* browser_interface) override;
   void OnEventOccurred(notice::mojom::PrivacySandboxNotice notice,
@@ -64,8 +62,6 @@ class DesktopViewManager : public DesktopViewManagerInterface {
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrivacySandboxNoticeServiceInterface> notice_service_;
   std::vector<notice::mojom::PrivacySandboxNotice> pending_notices_to_show_;
-  // Storage of various entrypoint handlers.
-  std::unique_ptr<NavigationHandler> navigation_handler_;
 };
 
 }  // namespace privacy_sandbox

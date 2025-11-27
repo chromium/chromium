@@ -47,11 +47,11 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
 
   std::unique_ptr<views::BoxLayoutView> GetEventPassAttributesView();
 
+  std::unique_ptr<views::BoxLayoutView> GetTransitTicketAttributesView();
+
   int GetDialogTitleResourceId() const;
 
   int GetHeaderImageResourceId() const;
-
-  void OnGoToWalletClicked();
 
   base::WeakPtr<WalletablePassSaveBubbleController> controller_;
 };

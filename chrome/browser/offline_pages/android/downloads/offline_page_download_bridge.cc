@@ -306,7 +306,7 @@ void OfflinePageDownloadBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void JNI_OfflinePageDownloadBridge_StartDownload(
+static void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_tab,
     std::string& origin) {

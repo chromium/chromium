@@ -18,6 +18,7 @@
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
+#include "ui/shell_dialogs/shell_dialogs_export.h"
 
 namespace ui {
 

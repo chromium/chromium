@@ -293,8 +293,8 @@ static_library("browser") {
     "command_updater_impl.h",
     "commerce/product_specifications/product_specifications_service_factory.cc",
     "commerce/product_specifications/product_specifications_service_factory.h",
-    "component_updater/afp_blocked_domain_list_component_installer.cc",
-    "component_updater/afp_blocked_domain_list_component_installer.h",
+    "component_updater/afp_blocked_domain_list_component_remover.cc",
+    "component_updater/afp_blocked_domain_list_component_remover.h",
     "component_updater/chrome_component_updater_configurator.cc",
     "component_updater/chrome_component_updater_configurator.h",
     "component_updater/chrome_origin_trials_component_installer.cc",
@@ -1816,6 +1816,7 @@ static_library("browser") {
     ":shell_integration",
     ":unexpire_flags",
     "//base",
+    "//base:build_time",
     "//base:i18n",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
@@ -1902,6 +1903,7 @@ static_library("browser") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",
+    "//chrome/browser/media:audio_process_ml_model_forwarder",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",
@@ -4165,7 +4167,6 @@ static_library("browser") {
       "renderer_context_menu/spelling_menu_observer.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
-      "resource_coordinator/decision_details.cc",
       "resource_coordinator/discard_metrics_lifecycle_unit_observer.cc",
       "resource_coordinator/discard_metrics_lifecycle_unit_observer.h",
       "resource_coordinator/lifecycle_unit.cc",
@@ -4449,6 +4450,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
+      "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/customize_buttons:impl",
@@ -4657,6 +4659,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/watermark",
       "//chrome/browser/ui/content_settings:impl",
@@ -8232,8 +8235,15 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/ui/webui/tab_strip_internals",
+      "//chrome/browser/ui/webui/tab_strip_internals:impl",
       "//components/tab_groups",
     ]
+
+    # TODO(crbug.com/427204855): Remove this circular include once
+    # "chrome/browser/sessions/tab_restore_service_factory.h" is
+    # fully componentized.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
 
   if (enable_spellcheck) {

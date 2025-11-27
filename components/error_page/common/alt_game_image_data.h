@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/metrics/field_trial_params.h"
-
 namespace error_page {
 
 size_t CountAlternateImages();

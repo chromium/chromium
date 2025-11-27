@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader_base.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -25,7 +26,7 @@ namespace safe_browsing {
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
 class MultipartUploadRequest
-    : public enterprise_connectors::ConnectorUploadRequest {
+    : public enterprise_connectors::MultipartUploadRequestBase {
  public:
   // Creates a MultipartUploadRequest, which will upload `data` to the given
   // `base_url` with `metadata` attached.
@@ -69,12 +70,6 @@ class MultipartUploadRequest
 
   ~MultipartUploadRequest() override;
 
-  // Start the upload. This must be called on the UI thread. When complete, this
-  // will call `callback_` on the UI thread.
-  void Start() override;
-
-  std::string GetUploadInfo() override;
-
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
   CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -107,12 +102,6 @@ class MultipartUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  void SetRequestHeaders(network::ResourceRequest* request);
-
-  // Update `scan_type_` to be CONTENT to indicate that the content scan is
-  // successful. Used in testing only.
-  void MarkScanAsCompleteForTesting();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, GeneratesCorrectBody);
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, RetriesCorrectly);
@@ -127,53 +116,7 @@ class MultipartUploadRequest
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
                            EquivalentToStringRequest);
 
-  // Set the boundary between parts.
-  void set_boundary(const std::string& boundary) { boundary_ = boundary; }
-
-  // Helper method to create the multipart request body.
-  std::string GenerateRequestBody(const std::string& metadata,
-                                  const std::string& data);
-
-  // Called whenever a net request finishes (on success or failure).
-  void OnURLLoaderComplete(std::optional<std::string> response_body);
-
-  // Called whenever a net request finishes (on success or failure).
-  void RetryOrFinish(int net_error,
-                     int response_code,
-                     std::optional<std::string> response_body);
-
-  // Called to send a single request. Is overridden in tests.
-  virtual void SendRequest();
-  void SendStringRequest(std::unique_ptr<network::ResourceRequest> request);
-  void SendFileRequest(std::unique_ptr<network::ResourceRequest> request);
-  void SendPageRequest(std::unique_ptr<network::ResourceRequest> request);
-
-  // Called after `data_pipe_getter_` has been initialized.
-  void DataPipeCreatedCallback(
-      std::unique_ptr<network::ResourceRequest> request,
-      std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter>
-          data_pipe_getter);
-
-  // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
-  // is known to be initialized to a correct state.
-  virtual void CompleteSendRequest(
-      std::unique_ptr<network::ResourceRequest> request);
-
-  void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
-                      file_access::ScopedFileAccess file_access);
-
-  std::string boundary_;
-
-  base::TimeDelta current_backoff_;
-  int retry_count_;
-
-  base::Time start_time_;
-
-  bool scan_complete_ = false;
-
-  bool is_obfuscated_ = false;
-
-  base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
+  scoped_refptr<base::TaskRunner> GetTaskRunner() override;
 };
 
 }  // namespace safe_browsing

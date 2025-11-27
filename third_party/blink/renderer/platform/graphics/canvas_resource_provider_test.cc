@@ -536,7 +536,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasResourceProvider::CreateBitmapProvider(
+  auto provider = CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
       kSize, color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
 
@@ -633,15 +633,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasResourceProvider::CreateBitmapProvider(
+  auto provider = CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
-  provider = CanvasResourceProvider::CreateBitmapProvider(
+  provider = CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
-  provider = CanvasResourceProvider::CreateBitmapProvider(
+  provider = CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());

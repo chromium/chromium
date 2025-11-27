@@ -173,9 +173,14 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
 
   // |notify| will be set to true if MemoryPressureListeners need to be
   // notified of a memory pressure level state change.
+
   bool notify = false;
   switch (current_vote()) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
+      // Always notify if the state changed.
+      if (old_vote != current_vote()) {
+        notify = true;
+      }
       break;
 
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:

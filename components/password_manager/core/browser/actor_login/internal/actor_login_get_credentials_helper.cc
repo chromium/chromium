@@ -12,7 +12,6 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -168,8 +167,9 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
                            OnEligibleLoginFormManagersRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    OnEligibleLoginFormManagersRetrieved(
-        login_form_finder_->GetEligibleLoginFormManagers(request_origin_));
+    FormFinderResult result =
+        login_form_finder_->GetEligibleLoginFormManagers(request_origin_);
+    OnEligibleLoginFormManagersRetrieved(std::move(result));
   }
 }
 
@@ -180,12 +180,17 @@ ActorLoginGetCredentialsHelper::~ActorLoginGetCredentialsHelper() {
 }
 
 void ActorLoginGetCredentialsHelper::OnEligibleLoginFormManagersRetrieved(
-    std::vector<password_manager::PasswordFormManager*> eligible_managers) {
+    FormFinderResult form_finder_result) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
       GetLogger(client_);
 
+  for (auto& form_detail : form_finder_result.parsed_forms_details) {
+    *get_credentials_logs_.add_parsed_form_details() = std::move(form_detail);
+  }
+
   password_manager::PasswordFormManager* signin_form_manager =
-      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
+      ActorLoginFormFinder::GetSigninFormManager(
+          form_finder_result.eligible_managers);
 
   if (signin_form_manager) {
     immediately_available_to_login_ = true;

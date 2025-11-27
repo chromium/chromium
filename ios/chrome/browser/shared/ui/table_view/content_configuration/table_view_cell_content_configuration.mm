@@ -58,6 +58,17 @@
   return cell;
 }
 
+- (UIView*)makeAccessibilityConfiguredContentView {
+  UIView* contentView = [self makeContentView];
+  contentView.isAccessibilityElement = YES;
+  contentView.accessibilityLabel = [self accessibilityLabel];
+  contentView.accessibilityValue = [self accessibilityValue];
+  contentView.accessibilityHint = [self accessibilityHint];
+  contentView.accessibilityUserInputLabels =
+      [self accessibilityUserInputLabels];
+  return contentView;
+}
+
 #pragma mark - UIContentConfiguration
 
 - (UIView<UIContentView>*)makeContentView {

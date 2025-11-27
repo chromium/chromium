@@ -30,6 +30,9 @@ function run() {
         debug("Wrote blob.");
         idb.close();
         setTimeout(verify);
+        // This ensures that the subsequent blob read happens from the DB and
+        // not from the blob instance created above.
+        gc();
       }
     },
   });

@@ -35,6 +35,10 @@ const std::list<OneTimeToken>& OneTimeTokenCache::PurgeExpiredAndGetCache() {
   return tokens_;
 }
 
+const std::list<OneTimeToken>& OneTimeTokenCache::GetCache() const {
+  return tokens_;
+}
+
 void OneTimeTokenCache::PurgeExpired() {
   base::Time now = base::Time::Now();
   tokens_.remove_if([&](const OneTimeToken& cached_token) {

@@ -188,6 +188,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         null,
                         null),
                 ChromePageInfoHighlight.noHighlight(),
-                Gravity.TOP);
+                Gravity.TOP,
+                /* openPermissionsSubpage= */ false);
     }
 }

@@ -289,7 +289,7 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
 namespace cronet {
 
-long JNI_NativeTestServer_Create(
+static long JNI_NativeTestServer_Create(
     JNIEnv* env,
     std::string& test_files_root,
     std::string& test_data_dir,

@@ -30,6 +30,7 @@
 
 #include <map>
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"

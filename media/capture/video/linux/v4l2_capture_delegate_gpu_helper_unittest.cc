@@ -106,8 +106,7 @@ class MockCaptureHandleProvider
  public:
   MockCaptureHandleProvider(const gfx::Size& size,
                             viz::SharedImageFormat format) {
-    gmb_handle_ =
-        gpu::TestSharedImageInterface::CreatePixmapHandle(size, format);
+    gmb_handle_ = gpu::TestSharedImageInterface::CreateGMBHandle(format, size);
   }
   // Duplicate as an writable (unsafe) shared memory region.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
@@ -138,7 +137,6 @@ class V4l2CaptureDelegateGpuHelperTest
  public:
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
     v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();

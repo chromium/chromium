@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_delegate.h"
@@ -274,6 +275,11 @@ void URLRequestContext::set_device_bound_session_store(
     std::unique_ptr<device_bound_sessions::SessionStore>
         device_bound_session_store) {
   device_bound_session_store_ = std::move(device_bound_session_store);
+}
+void URLRequestContext::set_unexportable_key_service(
+    std::unique_ptr<unexportable_keys::UnexportableKeyService>
+        unexportable_key_service) {
+  unexportable_key_service_ = std::move(unexportable_key_service);
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

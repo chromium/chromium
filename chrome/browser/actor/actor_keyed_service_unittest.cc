@@ -76,23 +76,6 @@ class ActorKeyedServiceTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
 };
 
-class ActorKeyedServiceStoredInactiveTasksTest
-    : public ActorKeyedServiceTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ActorKeyedServiceStoredInactiveTasksTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(kActorDoNotStoreCompletedTasks);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kActorDoNotStoreCompletedTasks);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
@@ -103,7 +86,7 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 }
 
 // Stops a task.
-TEST_P(ActorKeyedServiceStoredInactiveTasksTest, StopActiveTask) {
+TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTask();
 
@@ -121,19 +104,7 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, StopActiveTask) {
   EXPECT_TRUE(task->HasTab(tabs::TabHandle(123)));
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
-
-  if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-    ASSERT_FALSE(task);
-    ASSERT_EQ(actor_service->GetInactiveTasks().size(), 0u);
-  } else {
-    ASSERT_EQ(actor_service->GetInactiveTasks().size(), 1u);
-    EXPECT_EQ(actor_service->GetInactiveTasks().begin()->second->GetState(),
-              ActorTask::State::kFinished);
-    EXPECT_EQ(actor_service->GetInactiveTasks().begin()->second->GetEndTime(),
-              base::Time::Now());
-    EXPECT_FALSE(task->IsActingOnTab(tabs::TabHandle(123)));
-    EXPECT_FALSE(task->HasTab(tabs::TabHandle(123)));
-  }
+  ASSERT_FALSE(task);
 }
 
 TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
@@ -151,28 +122,8 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
   EXPECT_EQ(single_found[0], id2);
 }
 
-TEST_P(ActorKeyedServiceStoredInactiveTasksTest,
-       FindTaskIdsInInactive_ReturnsSuccessfully) {
-  if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-    GTEST_SKIP();
-  }
-  auto* actor_service = ActorKeyedService::Get(profile());
-  const TaskId id1 = actor_service->CreateTask();
-  const TaskId id2 = actor_service->CreateTask();
-  actor_service->StopTask(id1, ActorTask::StoppedReason::kTaskComplete);
-  actor_service->StopTask(id2, ActorTask::StoppedReason::kStoppedByUser);
-
-  // Find a single inactive task.
-  std::vector<TaskId> single_found =
-      actor_service->FindTaskIdsInInactive([](const ActorTask& task) {
-        return task.GetState() == ActorTask::State::kCancelled;
-      });
-  ASSERT_EQ(single_found.size(), 1u);
-  EXPECT_EQ(single_found[0], id2);
-}
-
 // Test that adding a tab to a paused or stopped task has no effect.
-TEST_P(ActorKeyedServiceStoredInactiveTasksTest, AddTabToPausedOrStoppedTask) {
+TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTask();
 
@@ -197,29 +148,13 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, AddTabToPausedOrStoppedTask) {
   EXPECT_FALSE(task->IsActingOnTab(tab_handle));
   EXPECT_FALSE(task->HasTab(tab_handle));
 
-  // Stop the task and try to add a tab.
+  // Stop the task and ensure it is gone.
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
-  if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-    EXPECT_FALSE(task);
-  } else {
-    EXPECT_TRUE(task->IsCompleted());
-    {
-      base::RunLoop loop;
-      task->AddTab(
-          tab_handle,
-          base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
-            EXPECT_EQ(result->code, mojom::ActionResultCode::kTaskWentAway);
-            loop.Quit();
-          }));
-      loop.Run();
-    }
-    EXPECT_FALSE(task->IsActingOnTab(tab_handle));
-    EXPECT_FALSE(task->HasTab(tab_handle));
-  }
+  EXPECT_FALSE(task);
 }
 
 // Test tab association to a paused task.
-TEST_P(ActorKeyedServiceStoredInactiveTasksTest, PausedTaskTabs) {
+TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTask();
 
@@ -274,13 +209,7 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, PausedTaskTabs) {
 
   // Stop the task. This should remove the tab from the task.
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
-
-  if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-    EXPECT_FALSE(task);
-  } else {
-    EXPECT_FALSE(task->IsActingOnTab(tab_handle));
-    EXPECT_FALSE(task->HasTab(tab_handle));
-  }
+  EXPECT_FALSE(task);
 }
 
 TEST_F(ActorKeyedServiceTest, LogsActorTaskCreatedOnCreateTask) {
@@ -291,10 +220,6 @@ TEST_F(ActorKeyedServiceTest, LogsActorTaskCreatedOnCreateTask) {
 
   histogram_tester.ExpectBucketCount(kActorTaskCreatedHistogram, true, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ActorKeyedServiceStoredInactiveTasksTest,
-                         testing::Bool());
 
 }  // namespace
 

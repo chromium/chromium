@@ -31,13 +31,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<TransceiverStateSurfacer> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = TransceiverStateSurfacer;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 // Copies the session description.
 // Note: At the time of writing, third_party/webrtc/pc/sdp_utils.h's
 // webrtc::CloneSessionDescription() creates a copy that does not include

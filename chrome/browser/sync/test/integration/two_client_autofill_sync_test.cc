@@ -54,6 +54,11 @@ class TwoClientAutofillProfileSyncTest : public SyncTest {
 
   ~TwoClientAutofillProfileSyncTest() override = default;
 
+  SetupSyncMode GetSetupSyncMode() const override {
+    // The AUTOFILL_PROFILE data type is not supported in transport mode.
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   bool SetupSyncAndHideAccountNameEmailProfile() {
     if (!SetupSync()) {
       return false;

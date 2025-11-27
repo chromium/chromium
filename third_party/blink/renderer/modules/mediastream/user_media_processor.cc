@@ -175,6 +175,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "INVALID_VIDEO_DEVICE_ID";
     case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
       return "STREAM_NOT_FOUND_IN_REGISTRY";
+    case MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION:
+      return "ANDROID_CANT_REQUEST_PERMISSION";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -331,6 +333,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::OK:
       return "OK";
     case MediaStreamRequestResult::PERMISSION_DENIED:
+    case MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION:
     case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
       return "Permission denied";
     case MediaStreamRequestResult::PERMISSION_DISMISSED:

@@ -23,6 +23,7 @@ class TeacherScreenPresenter {
   virtual ~TeacherScreenPresenter() = default;
 
   virtual void Start(std::string_view receiver_id,
+                     std::string_view receiver_name,
                      ::boca::UserIdentity teacher_identity,
                      const bool is_session_active,
                      base::OnceCallback<void(bool)> success_cb,

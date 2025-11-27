@@ -29,6 +29,7 @@ public final class FuseboxAttachment extends ListItem {
     public final byte[] data;
     public final @Nullable Tab tab;
     public final @Nullable Integer tabId;
+    private boolean mIsUploadComplete;
     private @Nullable String mToken;
 
     private FuseboxAttachment(
@@ -50,6 +51,7 @@ public final class FuseboxAttachment extends ListItem {
             this.tab = null;
             this.tabId = null;
         }
+        mIsUploadComplete = false;
         mToken = null;
 
         // Set the ATTACHMENT property to this instance after construction
@@ -127,5 +129,13 @@ public final class FuseboxAttachment extends ListItem {
     /** Gets the token for this attachment. */
     public String getToken() {
         return assertNonNull(mToken);
+    }
+
+    public boolean isUploadComplete() {
+        return mIsUploadComplete;
+    }
+
+    public void setUploadIsComplete() {
+        mIsUploadComplete = true;
     }
 }

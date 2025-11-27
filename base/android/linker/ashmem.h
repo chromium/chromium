@@ -21,21 +21,48 @@
 
 #include <cstddef>
 
-/* Returns true if the ashmem device is supported on this device.
- * Note that even if the device is not supported,
- * ashmem_{create,set_prot,get_prot,get_size}_region() will still work
- * because they will use the ASharedMemory functions from libandroid.so
- * instead. But ashmem_{pin,unpin}_region() will be no-ops. Starting with API
- * level 26, memfd regions are used under the scenes, also working as no-op
- * for pin/unpin.
- */
-int ashmem_device_is_supported();
+// Management of shared memory regions changed across OS releases. These minimal
+// low level wrappers abstract away those release-specific differences.
 
-int ashmem_create_region(const char *name, size_t size);
-int ashmem_set_prot_region(int fd, int prot);
-int ashmem_get_prot_region(int fd);
-int ashmem_pin_region(int fd, size_t offset, size_t len);
-int ashmem_unpin_region(int fd, size_t offset, size_t len);
-int ashmem_get_size_region(int fd);
+// On new OS releases returns false.
+//
+// On old systems returns true when the "/dev/ashmem" device is present on the
+// system and looks 'functional'.
+//
+// Without /dev/ashmem the functions below will continue working, but may
+// use different mechanisms and system library calls under the scenes.
+//
+// The functions can be disabled system-wide without removing /dev/ashmem. This
+// should be rare, and the rest of the functions declared below will behave just
+// like /dev/ashmem does not exist.
+int AshmemDeviceIsSupported();
+
+// Implements ASharedMemory_create(), as described in NDK docs (API level 26).
+int SharedMemoryRegionCreate(const char* name, size_t size);
+
+// Implements ASharedMemory_setProt(), as described in NDK docs (API level 26).
+int SharedMemoryRegionSetProtectionFlags(int fd, int prot);
+
+// Returns the memory protection flags for the region (PROT_READ, PROT_WRITE or
+// both).
+int SharedMemoryRegionGetProtectionFlags(int fd);
+
+// Pins the region to memory on old systems.
+//
+// Behaves as no-op when the region is not served by the ashmem device
+// (irrelevant FDs).
+//
+// Note: Even if AshmemDeviceIsSupported() is true, pinning may still be
+// disabled.
+// Note: This functionality was never officially provided by Android NDK, and
+// the underlying mechanisms are being removed.
+int AshmemPinRegion(int fd, size_t offset, size_t len);
+
+// Unpins the region from memory on old systems, allowing the OS to free it
+// without asking the userspace.
+//
+// Just like the AshmemPinRegion() above, behaves as no-op when the OS support
+// is removed. Also it is a no-op for irrelevant FDs.
+int AshmemUnpinRegion(int fd, size_t offset, size_t len);
 
 #endif  // BASE_ANDROID_LINKER_ASHMEM_H_

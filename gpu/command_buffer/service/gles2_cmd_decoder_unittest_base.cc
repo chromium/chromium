@@ -2038,7 +2038,6 @@ void GLES2DecoderTestBase::SetupShader(
   base::span<TestHelper::ProgramOutputInfo> program_outputs =
       shader_language_version_ == 100 ? kProgramOutputsESSL1
                                       : kProgramOutputsESSL3;
-  const size_t kNumProgramOutputs = 1;
   const int kNumUniformBlocks = 2;
   const auto kUniformBlockBinding = std::to_array<int>({0, 1});
   const auto kUniformBlockDataSize = std::to_array<int>({32, 16});
@@ -2057,8 +2056,7 @@ void GLES2DecoderTestBase::SetupShader(
 
     TestHelper::SetupShaderExpectationsWithVaryings(
         gl_.get(), group_->feature_info(), attribs, num_attribs, uniforms,
-        num_uniforms, nullptr, 0, program_outputs, kNumProgramOutputs,
-        program_service_id);
+        num_uniforms, nullptr, 0, program_outputs, program_service_id);
   }
 
   DoCreateShader(

@@ -1873,17 +1873,11 @@ class TestLNAPermissionURLLoaderNetworkObserver
       : granted_(permission_granted) {}
   void OnLocalNetworkAccessPermissionRequired(
       OnLocalNetworkAccessPermissionRequiredCallback callback) override {
-    // A TestURLLoaderNetworkObserver is configured for a single request, and
-    // within a single request this event should only be called once.
-    EXPECT_FALSE(called_);
-    called_ = true;
     std::move(callback).Run(granted_);
   }
 
  private:
   const bool granted_;
-  // Track whether OnLocalNetworkAccessPermissionRequired() has been called.
-  bool called_ = false;
 };
 
 TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {

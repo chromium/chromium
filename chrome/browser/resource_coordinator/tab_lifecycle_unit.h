@@ -23,14 +23,6 @@ class WebContents;
 
 namespace resource_coordinator {
 
-// Time during which backgrounded tabs are protected from urgent discarding
-// (not on ChromeOS).
-inline constexpr base::TimeDelta kBackgroundUrgentProtectionTime =
-    base::Minutes(10);
-
-// Time during which a tab cannot be discarded after having played audio.
-inline constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
-
 // Represents a tab.
 class TabLifecycleUnitSource::TabLifecycleUnit
     : public LifecycleUnitBase,
@@ -80,11 +72,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   base::TimeTicks GetLastFocusedTimeTicks() const override;
-  SortKey GetSortKey() const override;
   LifecycleUnitLoadingState GetLoadingState() const override;
   bool Load() override;
-  bool CanDiscard(LifecycleUnitDiscardReason reason,
-                  DecisionDetails* decision_details) const override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
   bool Discard(LifecycleUnitDiscardReason discard_reason,
                uint64_t memory_footprint_estimate) override;
@@ -121,9 +110,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // Same as GetSource, but cast to the most derived type.
   TabLifecycleUnitSource* GetTabSource() const;
 
-  // Updates |decision_details| based on media usage by the tab.
-  void CheckMediaUsage(DecisionDetails* decision_details) const;
-
   // Creates or updates the existing PreDiscardResourceUsage tab helper for the
   // tab's `web_contents` with `discard_reason` and
   // `tab_resident_set_size_estimate`. `tab_resident_set_size_estimate` is in
@@ -148,10 +134,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // content::WebContentsObserver:
   void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-
-  // Updates |decision_details| based on device usage by the tab (USB or
-  // Bluetooth).
-  void CheckDeviceUsage(DecisionDetails* decision_details) const;
 
   // TabStripModel to which this tab belongs.
   raw_ptr<TabStripModel> tab_strip_model_;

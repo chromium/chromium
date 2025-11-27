@@ -282,6 +282,8 @@ void CheckKeyboardIsUpAndNotCovered() {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupUserActionTester]);
 }
 
 - (void)tearDownHelper {
@@ -290,6 +292,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseUserActionTester]);
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
@@ -929,6 +933,20 @@ void CheckKeyboardIsUpAndNotCovered() {
       [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
                                  kFormElementPassword];
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+
+  // Verify actions.
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Present"],
+      @"Incorrect user action count for Present");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Accept"],
+      @"Incorrect user action count for Accept");
 }
 
 // Tests password generation on manual fallback not showing for signed in users

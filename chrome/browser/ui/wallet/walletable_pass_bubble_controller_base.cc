@@ -48,6 +48,13 @@ bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 
+void WalletablePassBubbleControllerBase::OnBubbleDiscarded() {
+  CHECK(base::FeatureList::IsEnabled(
+      autofill::features::kAutofillShowBubblesBasedOnPriorities));
+  std::move(callback_).Run(
+      WalletablePassClient::WalletablePassBubbleResult::kDiscarded);
+}
+
 void WalletablePassBubbleControllerBase::HideBubble(
     bool initiated_by_bubble_manager) {
   if (IsShowingBubble()) {
@@ -62,8 +69,19 @@ bool WalletablePassBubbleControllerBase::IsMouseHovered() const {
 
 void WalletablePassBubbleControllerBase::OnBubbleClosed(
     WalletablePassBubbleClosedReason reason) {
-  // TODO(crbug.com/432429605): BubbleManager can show and hide the bubble
-  // multiple times. The callback should run only on user action.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (autofill::BubbleManager* manager =
+            autofill::BubbleManager::GetForTab(&tab())) {
+      if (manager->HasPendingBubbleOfSameType(GetBubbleType())) {
+        // It means that the BubbleManager has the bubble in the queue,
+        // therefore, do not run the callback.
+        ResetBubbleViewAndInformBubbleManager();
+        return;
+      }
+    }
+  }
+
   if (callback_) {
     std::move(callback_).Run(GetResult(reason));
   }

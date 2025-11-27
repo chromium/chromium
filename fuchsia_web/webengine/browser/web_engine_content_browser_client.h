@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
@@ -89,7 +88,6 @@ class WEB_ENGINE_EXPORT WebEngineContentBrowserClient final
 
  private:
   const std::vector<std::string> cors_exempt_headers_;
-  const std::vector<ContentSettingsPattern> protected_service_workers_;
 
   // Owned by content::BrowserMainLoop.
   raw_ptr<WebEngineBrowserMainParts> main_parts_;

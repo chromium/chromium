@@ -21,6 +21,9 @@ domain DOM
   # front-end.
   type BackendNodeId extends integer
 
+  # Unique identifier for a CSS stylesheet.
+  type StyleSheetId extends string
+
   # Backend node with a friendly name.
   type BackendNode extends object
     properties
@@ -180,6 +183,7 @@ domain DOM
       optional BackendNode assignedSlot
       experimental optional boolean isScrollable
       experimental optional boolean affectedByStartingStyles
+      experimental optional array of StyleSheetId adoptedStyleSheets
 
   # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
   type DetachedElementInfo extends object
@@ -822,6 +826,14 @@ domain DOM
       string name
       # Attribute value.
       string value
+
+  # Fired when `Element`'s adoptedStyleSheets are modified.
+  experimental event adoptedStyleSheetsModified
+    parameters
+      # Id of the node that has changed.
+      NodeId nodeId
+      # New adoptedStyleSheets array.
+      experimental array of StyleSheetId adoptedStyleSheets
 
   # Fired when `Element`'s attribute is removed.
   event attributeRemoved

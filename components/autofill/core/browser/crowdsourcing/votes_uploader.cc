@@ -27,8 +27,11 @@
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 
 namespace autofill {
+
+using one_time_tokens::OneTimeToken;
 
 namespace {
 
@@ -222,8 +225,14 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     loyalty_cards = valuables_data_manager->GetLoyaltyCards();
   }
 
+  std::vector<OneTimeToken> recent_otps;
+  if (one_time_tokens::OneTimeTokenService* token_service =
+          client_->GetOneTimeTokenService()) {
+    recent_otps = token_service->GetCachedOneTimeTokens();
+  }
+
   if (profiles.empty() && credit_cards.empty() && entities.empty() &&
-      loyalty_cards.empty()) {
+      loyalty_cards.empty() && recent_otps.empty()) {
     return false;
   }
 
@@ -253,6 +262,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::vector<EntityInstance>& entities,
              const std::vector<LoyaltyCard>& loyalty_cards,
              const std::u16string& last_unlocked_credit_card_cvc,
+             const std::vector<OneTimeToken>& recent_otps,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
@@ -263,7 +273,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                 DeterminePossibleFieldTypesForUpload(
                     profiles, credit_cards, entities, loyalty_cards,
                     fields_that_match_state, last_unlocked_credit_card_cvc,
-                    app_locale, *form);
+                    recent_otps, app_locale, *form);
 
             for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
@@ -276,7 +286,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             options.observed_submission = observed_submission;
             options.available_field_types = DetermineAvailableFieldTypes(
                 profiles, credit_cards, entities, loyalty_cards,
-                last_unlocked_credit_card_cvc, app_locale);
+                last_unlocked_credit_card_cvc, recent_otps, app_locale);
             for (auto [field, dates_and_formats] :
                  base::zip(form->fields(), possible_types)) {
               options.fields[field->global_id()].format_strings =
@@ -292,8 +302,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           base::ToVector(profiles, [](const auto* ptr) { return *ptr; }),
           base::ToVector(credit_cards, [](const auto* ptr) { return *ptr; }),
           base::ToVector(entities), std::move(loyalty_cards),
-          last_unlocked_credit_card_cvc, client_->GetAppLocale(),
-          observed_submission, std::move(form),
+          last_unlocked_credit_card_cvc, std::move(recent_otps),
+          client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
           std::move(current_page_language), std::move(form_associations),
           std::move(fields_that_match_state)),

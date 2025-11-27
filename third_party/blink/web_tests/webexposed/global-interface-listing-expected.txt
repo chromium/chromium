@@ -3383,6 +3383,7 @@ interface GPUSupportedLimits
     getter maxComputeWorkgroupsPerDimension
     getter maxDynamicStorageBuffersPerPipelineLayout
     getter maxDynamicUniformBuffersPerPipelineLayout
+    getter maxImmediateSize
     getter maxInterStageShaderVariables
     getter maxSampledTexturesPerShaderStage
     getter maxSamplersPerShaderStage
@@ -7216,8 +7217,6 @@ interface OrientationSensor : Sensor
     method populateMatrix
 interface Origin
     static method from
-    static method fromURL
-    static method parse
     attribute @@toStringTag
     getter opaque
     method constructor

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -30,12 +31,19 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
+namespace webapps {
+
 namespace {
 
 bool CanShowBottomSheet(content::WebContents* web_contents,
-                        const std::vector<webapps::Screenshot>& screenshots) {
-  if (screenshots.size() == 0)
+                        const std::vector<Screenshot>& screenshots) {
+  if (screenshots.size() == 0) {
     return false;
+  }
+  if (WebappsUtils::IsAutoMintedTwaEnabled()) {
+    // Web App Service on the Android side will show the install UX instead.
+    return false;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PwaBottomSheetControllerProvider_canShowPwaBottomSheetInstaller(
@@ -44,12 +52,11 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
 
 }  // anonymous namespace
 
-namespace webapps {
-
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
 // static
-jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
+static jboolean
+JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     int install_trigger) {

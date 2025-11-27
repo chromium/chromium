@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/local_data_description.h"
 
 class Browser;
@@ -54,8 +55,9 @@ class BatchUploadService : public KeyedService {
     kProfileMenuPrimaryButtonAction = 4,
     kProfileMenuPrimaryButtonWithBookmarksAction = 5,
     kProfileMenuPrimaryButtonWithWindows10DepreciationAction = 6,
+    kAccountSettingsPage = 7,
 
-    kMaxValue = kProfileMenuPrimaryButtonWithWindows10DepreciationAction,
+    kMaxValue = kAccountSettingsPage,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
 
@@ -67,7 +69,8 @@ class BatchUploadService : public KeyedService {
   void OpenBatchUpload(
       Browser* browser,
       EntryPoint entry_point,
-      base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing());
+      base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing(),
+      base::OnceCallback<void()> dialog_closed_callback = base::DoNothing());
 
   // Returns whether the dialog is currently showing on a browser.
   bool IsDialogOpened() const;
@@ -131,6 +134,8 @@ class BatchUploadService : public KeyedService {
       // Called when the decision about showing the dialog is made.
       // Returns whether it was shown or not.
       base::OnceCallback<void(bool)> dialog_shown_callback_;
+      // Called when the decision about closing the dialog is made.
+      base::OnceCallback<void()> dialog_closed_callback_;
 
       DialogState();
       ~DialogState();

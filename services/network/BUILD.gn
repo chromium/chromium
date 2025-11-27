@@ -336,6 +336,7 @@ component("network_service") {
 
   deps = [
     "//base",
+    "//base:build_time",
     "//build:chromecast_buildflags",
     "//components/content_settings/core/common",
     "//components/cookie_config",
@@ -352,6 +353,7 @@ component("network_service") {
     "//components/os_crypt/sync",
     "//components/prefs",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//components/unexportable_keys/mojom:mojo_service",
     "//components/url_matcher",
     "//components/url_pattern",
     "//components/web_package",

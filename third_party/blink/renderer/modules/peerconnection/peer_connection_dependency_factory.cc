@@ -108,13 +108,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<base::RepeatingCallback<void(base::TimeDelta)>>
-    : public CrossThreadCopierPassThrough<
-          base::RepeatingCallback<void(base::TimeDelta)>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;

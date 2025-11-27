@@ -720,13 +720,7 @@ void TestHelper::SetupProgramSuccessExpectations(
     VaryingInfo* varyings,
     size_t num_varyings,
     base::span<ProgramOutputInfo> program_outputs,
-    size_t spanification_suspected_redundant_num_program_outputs,
     GLuint service_id) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_program_outputs ==
-            program_outputs.size(),
-        base::NotFatalUntil::M143);
   EXPECT_CALL(*gl, GetProgramiv(service_id, GL_LINK_STATUS, _))
       .WillOnce(SetArgPointee<2>(1))
       .RetiresOnSaturation();
@@ -812,9 +806,7 @@ void TestHelper::SetupProgramSuccessExpectations(
 
   if (feature_info->gl_version_info().IsAtLeastGLES(3, 0) &&
       !feature_info->disable_shader_translator()) {
-    for (size_t ii = 0;
-         ii < spanification_suspected_redundant_num_program_outputs; ++ii) {
-      ProgramOutputInfo& info = program_outputs[ii];
+    for (auto& info : program_outputs) {
       if (ProgramManager::HasBuiltInPrefix(info.name))
         continue;
 
@@ -846,7 +838,7 @@ void TestHelper::SetupShaderExpectations(::gl::MockGLInterface* gl,
   EXPECT_CALL(*gl, LinkProgram(service_id)).Times(1).RetiresOnSaturation();
 
   SetupProgramSuccessExpectations(gl, feature_info, attribs, num_attribs,
-                                  uniforms, num_uniforms, nullptr, 0, {}, 0,
+                                  uniforms, num_uniforms, nullptr, 0, {},
                                   service_id);
 }
 
@@ -860,13 +852,7 @@ void TestHelper::SetupShaderExpectationsWithVaryings(
     VaryingInfo* varyings,
     size_t num_varyings,
     base::span<ProgramOutputInfo> program_outputs,
-    size_t spanification_suspected_redundant_num_program_outputs,
     GLuint service_id) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_program_outputs ==
-            program_outputs.size(),
-        base::NotFatalUntil::M143);
   InSequence s;
 
   EXPECT_CALL(*gl,
@@ -874,10 +860,9 @@ void TestHelper::SetupShaderExpectationsWithVaryings(
       .Times(1)
       .RetiresOnSaturation();
 
-  SetupProgramSuccessExpectations(
-      gl, feature_info, attribs, num_attribs, uniforms, num_uniforms, varyings,
-      num_varyings, program_outputs,
-      spanification_suspected_redundant_num_program_outputs, service_id);
+  SetupProgramSuccessExpectations(gl, feature_info, attribs, num_attribs,
+                                  uniforms, num_uniforms, varyings,
+                                  num_varyings, program_outputs, service_id);
 }
 
 void TestHelper::DoBufferData(::gl::MockGLInterface* gl,

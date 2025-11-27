@@ -20,6 +20,7 @@ source_set("tab_strip_internals") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
+    "//components/sessions",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -38,10 +39,12 @@ source_set("impl") {
   deps = [
     ":tab_strip_internals",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/tab_strip_internals:resources",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//content/public/browser",
@@ -55,10 +58,10 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   deps = [
+    "//chrome/browser/ui/webui/tabs:mojo_bindings",
     "//components/tab_groups/public/mojom:mojo_bindings",
     "//url/mojom:url_mojom_gurl",
   ]
-
   webui_module_path = "/"
 }
 
@@ -70,6 +73,8 @@ source_set("browser_tests") {
   deps = [
     ":tab_strip_internals",
     "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",

@@ -273,8 +273,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  Status BlobWriteComplete(BlobWriteResult result,
-                           storage::mojom::WriteBlobToFileResult error);
+  Status BlobWriteComplete(StatusOr<BlobWriteResult> result);
   void CloseOpenCursors();
   Status CommitPhaseTwo();
   void TimeoutFired();

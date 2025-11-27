@@ -10,8 +10,6 @@
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
 class SanitizeDialogUI;
@@ -39,19 +37,12 @@ class SanitizeDialogUI : public ui::MojoWebDialogUI {
   SanitizeDialogUI(const SanitizeDialogUI&) = delete;
   SanitizeDialogUI& operator=(const SanitizeDialogUI&) = delete;
   void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-  void BindInterface(
       mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver);
   void SetAttemptRestartForTesting(
       const base::RepeatingClosure& restart_attempt);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  // The color change handler notifies the WebUI when the color provider
-  // changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<SanitizeSettingsResetter> sanitize_settings_resetter_;
 };

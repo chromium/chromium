@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -50,12 +51,16 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    browser_controller_.emplace();
     arc_icon_cache_ = std::make_unique<FakeArcIconCache>();
     delegate_provider_ =
         std::make_unique<ArcIconCacheDelegateProvider>(arc_icon_cache_.get());
   }
 
-  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
+  void TearDown() override {
+    browser_controller_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
 
  protected:
   void CreateTab(bool started_from_arc) {
@@ -90,6 +95,7 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList features_{kClickToCall};
   // Keep only one |WebContents| at a time.
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
   std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };

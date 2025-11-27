@@ -85,6 +85,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     public static final String EXTRA_SITE = "org.chromium.chrome.preferences.site";
     public static final String EXTRA_SITE_ADDRESS = "org.chromium.chrome.preferences.site_address";
 
+    // A boolean to configure whether the requested notifications permission should be shown.
+    // Defaults to false.
+    public static final String EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION =
+            "org.chromium.chrome.preferences.show_requested_notifications_permission";
+
     // A boolean to configure whether the sound setting should be shown. Defaults to true.
     public static final String EXTRA_SHOW_SOUND = "org.chromium.chrome.preferences.show_sound";
 
@@ -813,8 +818,17 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @RequiresNonNull({"mSite"})
     private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
         @ContentSettingsType.EnumType int notificationType = ContentSettingsType.NOTIFICATIONS;
+        boolean isBeingRequested =
+                getArguments().getBoolean(EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION, false);
+
+        // `isBeingRequested` indicates that the notification permission is currently being
+        // requested, as it is not technically allowed yet, we should display the "BLOCK" state.
+        // Because a requested permissoin's state is ASK, `mSite` will not contain a value for this
+        // permission.
         final @ContentSetting @Nullable Integer value =
-                mSite.getContentSetting(getBrowserContextHandle(), notificationType);
+                isBeingRequested
+                        ? (Integer) ContentSetting.BLOCK
+                        : mSite.getContentSetting(getBrowserContextHandle(), notificationType);
         if (setupAppDelegatePreference(
                 preference, R.string.website_notification_settings, notificationType, value)) {
             return;
@@ -829,8 +843,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 // are simply not adding it.)
                 return;
             }
-            String overrideSummary;
-            overrideSummary =
+
+            // TODO(crbug.com/458351800): Instead of ChromeImageViewPreference, use a "Subscribe"
+            // button as per mocks.
+
+            String overrideSummary =
                     isEmbargoed
                             ? getString(R.string.automatically_blocked)
                             : getString(

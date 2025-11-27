@@ -98,6 +98,10 @@ class AutofillOptimizationGuideDecider : public KeyedService {
   virtual bool IsUrlEligibleForBnplIssuer(BnplIssuer::IssuerId issuer_id,
                                           const GURL& url) const;
 
+  // Returns whether the `ActorFormFillingService` may trigger autofill on a
+  // field in a cross-origin iframe hosted at `url`.
+  virtual bool IsIframeUrlAllowlistedForActor(const GURL& url) const;
+
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.

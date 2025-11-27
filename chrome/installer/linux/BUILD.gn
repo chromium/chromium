@@ -68,6 +68,7 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
 # TODO(mmoss) Any convenient way to get all the relevant build files?
 # (e.g. all locales, resources, etc.)
 packaging_files = packaging_files_binaries + [
+                    "common/installer.py",
                     "$root_out_dir/xdg-mime",
                     "$root_out_dir/xdg-settings",
                     "$root_out_dir/locales/en-US.pak",
@@ -256,7 +257,6 @@ copy("common_packaging_files") {
     "common/default-app-block.template",
     "common/default-app.template",
     "common/desktop.template",
-    "common/installer.include",
     "common/postinst.include",
     "common/prerm.include",
     "common/repo.cron",
@@ -280,7 +280,6 @@ copy("common_packaging_files") {
 copy("deb_packaging_files") {
   visibility = [ ":*" ]
   sources = [
-    "debian/build.sh",
     "debian/changelog.template",
     "debian/control.template",
     "debian/postinst",
@@ -333,10 +332,7 @@ copy("theme_files") {
 if (!is_chromeos) {
   copy("rpm_packaging_files") {
     visibility = [ ":*" ]
-    sources = [
-      "rpm/build.sh",
-      "rpm/chrome.spec.template",
-    ]
+    sources = [ "rpm/chrome.spec.template" ]
     outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
   }
 }
@@ -440,7 +436,7 @@ template("linux_package") {
   deb_target_name = "${target_name}_deb"
   action(deb_target_name) {
     visibility = [ ":*" ]
-    script = "//build/gn_run_binary.py"
+    script = "debian/build.py"
 
     if (current_cpu == "x86") {
       deb_arch = "i386"
@@ -466,7 +462,6 @@ template("linux_package") {
     outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
 
     args = [
-      rebase_path("$root_out_dir/installer/debian/build.sh", root_build_dir),
       "-a",
       deb_arch,
       "-b",
@@ -495,7 +490,7 @@ template("linux_package") {
     rpm_target_name = "${target_name}_rpm"
     action(rpm_target_name) {
       visibility = [ ":*" ]
-      script = "//build/gn_run_binary.py"
+      script = "rpm/build.py"
 
       if (current_cpu == "x86") {
         rpm_arch = "i386"
@@ -521,7 +516,6 @@ template("linux_package") {
       outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
 
       args = [
-        rebase_path("$root_out_dir/installer/rpm/build.sh", root_build_dir),
         "-a",
         rpm_arch,
         "-b",

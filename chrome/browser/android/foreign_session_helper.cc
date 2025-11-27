@@ -89,7 +89,7 @@ bool ShouldSkipSession(const SyncedSession& session) {
   return true;
 }
 
-void JNI_ForeignSessionHelper_CopyTabToJava(
+static void JNI_ForeignSessionHelper_CopyTabToJava(
     JNIEnv* env,
     const sessions::SessionTab& tab,
     ScopedJavaLocalRef<jobject>& j_window) {
@@ -109,7 +109,7 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
       tab.last_active_time.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
 }
 
-void JNI_ForeignSessionHelper_CopyWindowToJava(
+static void JNI_ForeignSessionHelper_CopyWindowToJava(
     JNIEnv* env,
     const sessions::SessionWindow& window,
     ScopedJavaLocalRef<jobject>& j_window) {
@@ -124,7 +124,7 @@ void JNI_ForeignSessionHelper_CopyWindowToJava(
   }
 }
 
-void JNI_ForeignSessionHelper_CopySessionToJava(
+static void JNI_ForeignSessionHelper_CopySessionToJava(
     JNIEnv* env,
     const SyncedSession& session,
     ScopedJavaLocalRef<jobject>& j_session) {

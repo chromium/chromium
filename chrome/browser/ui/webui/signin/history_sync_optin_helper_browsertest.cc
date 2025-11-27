@@ -35,7 +35,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
@@ -130,8 +129,10 @@ class HistorySyncOptinHelperBrowserTest
 
   // Updates the fields relating to the account management.
   void UpdateAccountManagementInfo(AccountInfo& account_info, bool is_managed) {
-    account_info.hosted_domain =
-        is_managed ? "example.com" : signin::constants::kNoHostedDomainFound;
+    account_info =
+        AccountInfo::Builder(account_info)
+            .SetHostedDomain(is_managed ? "example.com" : std::string())
+            .Build();
     CHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }

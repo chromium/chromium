@@ -62,7 +62,8 @@ void ExtensionParentApproval::RequestExtensionApproval(
       env, window_android->GetJavaObject());
 }
 
-void JNI_ExtensionParentApproval_OnCompletion(JNIEnv* env, jint result_value) {
+static void JNI_ExtensionParentApproval_OnCompletion(JNIEnv* env,
+                                                     jint result_value) {
   // Check that we have a callback stored from the extension approval request
   // and call it.
   auto* cb = GetOnApprovalCallback();

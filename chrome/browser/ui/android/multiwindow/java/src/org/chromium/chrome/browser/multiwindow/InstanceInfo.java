@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import androidx.annotation.IntDef;
-import org.chromium.build.annotations.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,6 +64,12 @@ public final class InstanceInfo {
      */
     public final long lastAccessedTime;
 
+    /**
+     * Whether this instance was closed by an explicit user request. This is relevant only for a
+     * non-active instance.
+     */
+    public final boolean closedByUser;
+
     public InstanceInfo(
             int instanceId,
             int taskId,
@@ -74,7 +80,8 @@ public final class InstanceInfo {
             int tabCount,
             int incognitoTabCount,
             boolean isIncognitoSelected,
-            long lastAccessedTime) {
+            long lastAccessedTime,
+            boolean closedByUser) {
         this.instanceId = instanceId;
         this.taskId = taskId;
         this.type = type;
@@ -85,6 +92,7 @@ public final class InstanceInfo {
         this.incognitoTabCount = incognitoTabCount;
         this.isIncognitoSelected = isIncognitoSelected;
         this.lastAccessedTime = lastAccessedTime;
+        this.closedByUser = closedByUser;
     }
 
     @Override

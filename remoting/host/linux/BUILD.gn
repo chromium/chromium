@@ -98,6 +98,8 @@ if (enable_me2me_host) {
 
 source_set("gvariant") {
   sources = [
+    "gvariant_dict_builder.cc",
+    "gvariant_dict_builder.h",
     "gvariant_ref.cc",
     "gvariant_ref.h",
     "gvariant_type.cc",
@@ -140,6 +142,8 @@ source_set("platform_impls") {
     "capture_stream_manager.h",
     "clipboard_gnome.cc",
     "clipboard_gnome.h",
+    "clipboard_portal.cc",
+    "clipboard_portal.h",
     "curtain_mode_wayland.cc",
     "curtain_mode_wayland.h",
     "curtain_mode_x11.cc",
@@ -194,6 +198,20 @@ source_set("platform_impls") {
     "pipewire_mouse_cursor_capturer.h",
     "pipewire_mouse_cursor_monitor.cc",
     "pipewire_mouse_cursor_monitor.h",
+    "portal_capture_stream_manager.cc",
+    "portal_capture_stream_manager.h",
+    "portal_curtain_mode.cc",
+    "portal_curtain_mode.h",
+    "portal_desktop_resizer.cc",
+    "portal_desktop_resizer.h",
+    "portal_display_info_loader.cc",
+    "portal_display_info_loader.h",
+    "portal_utils.cc",
+    "portal_utils.h",
+    "scoped_portal_request.cc",
+    "scoped_portal_request.h",
+    "scoped_portal_session.cc",
+    "scoped_portal_session.h",
   ]
   deps = [
     ":gvariant",

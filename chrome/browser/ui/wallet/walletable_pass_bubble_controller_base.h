@@ -41,7 +41,7 @@ class WalletablePassBubbleControllerBase
       const WalletablePassBubbleControllerBase&) = delete;
 
   // BubbleControllerBase:
-  void OnBubbleDiscarded() override {}
+  void OnBubbleDiscarded() override;
   bool CanBeReshown() const override;
   void HideBubble(bool initiated_by_bubble_manager) override;
   bool IsShowingBubble() const override;

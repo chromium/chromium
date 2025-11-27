@@ -3818,6 +3818,82 @@ INSTANTIATE_TEST_SUITE_P(All,
                          kTestCombinations,
                          kSuffixGenerator);
 
+TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
+  bool update_scroll_predictor = IsUpdateScrollPredictorInputMappingEnabled();
+  bool refactor_queue = IsRefactorCompositorThreadEventQueueEnabled();
+
+  // The kUpdateScrollPredictorInputMapping feature depends on
+  // kRefactorCompositorThreadEventQueue. So, the case where
+  // update_scroll_predictor is true and refactor_queue is false is invalid.
+  if (update_scroll_predictor && !refactor_queue) {
+    return;
+  }
+
+  // Setup
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+  constexpr base::TimeDelta kInterval = base::Milliseconds(16);
+
+  // 1. Start a scroll
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
+      .Times(1);
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 2. Deliver a BeginFrame to set up the timing
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+
+  // 3. Queue an event "in the future" (e.g., 50ms from now)
+  base::TimeTicks future_event_time =
+      tick_clock.NowTicks() + base::Milliseconds(50);
+  auto future_event = CreateGestureScrollPinch(
+      WebInputEvent::Type::kGestureScrollUpdate, WebGestureDevice::kTouchscreen,
+      future_event_time, -10);
+
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
+  InjectInputEvent(std::move(future_event));
+  EXPECT_EQ(1ul, event_queue().size());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 4. Advance time to the next VSync
+  tick_clock.Advance(kInterval);
+
+  // 5. Deliver the FIRST BeginFrame after queuing.
+  if (!update_scroll_predictor) {
+    // Without kUpdateScrollPredictorInputMapping, future timestamp doesn't
+    // cause deferral.
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
+    DeliverInputForBeginFrame(tick_clock.NowTicks());
+    EXPECT_EQ(0ul, event_queue().size());
+  } else {
+    // With kUpdateScrollPredictorInputMapping, the future event is deferred.
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
+    DeliverInputForBeginFrame(tick_clock.NowTicks());
+    EXPECT_EQ(1ul, event_queue().size());
+  }
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 6. Advance time to the SECOND VSync
+  tick_clock.Advance(kInterval);
+
+  // 7. Deliver the SECOND BeginFrame.
+  if (!update_scroll_predictor) {
+    // Already dispatched.
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
+  } else {
+    // Both features on: Dispatched from backlog.
+    EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
+  }
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  EXPECT_EQ(0ul, event_queue().size());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     InputHandlerProxyEventQueueTest,

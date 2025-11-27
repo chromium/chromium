@@ -17,6 +17,10 @@ enum class ContentSuggestionsModuleType;
 // Container View for a module in the Magic Stack.
 @interface MagicStackModuleContainer : UIView <NewTabPageColorUpdating>
 
+// Initializes a MagicStackModuleContainer. If `noInset` is YES, the subview is
+// responsible for handling its own insets. This should be set if the module is
+// scrollable.
+- (instancetype)initWithFrame:(CGRect)frame noInset:(BOOL)noInset;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Configures this container with `config`.

@@ -9,12 +9,6 @@ using ::testing::Return;
 namespace privacy_sandbox {
 
 MockDesktopViewManager::MockDesktopViewManager() {
-  test_navigation_handler_ =
-      std::make_unique<NavigationHandler>(base::BindRepeating(
-          &MockDesktopViewManager::HandleChromeOwnedPageNavigation,
-          base::Unretained(this)));
-  ON_CALL(*this, GetNavigationHandler())
-      .WillByDefault(Return(test_navigation_handler_.get()));
 }
 
 MockDesktopViewManager::~MockDesktopViewManager() = default;

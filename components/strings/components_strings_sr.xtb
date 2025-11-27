@@ -2176,6 +2176,7 @@
 <translation id="4506599922270137252">да контактирате администратора система</translation>
 <translation id="450710068430902550">Дељење са администратором</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте превели ову страницу помоћу Google преводиоца</translation>
+<translation id="4510703642214459906">Место одржавања</translation>
 <translation id="4515275063822566619">Картице и адресе су из Chrome-а и са вашег Google налога (<ph name="ACCOUNT_EMAIL" />). Њима можете да управљате у <ph name="BEGIN_LINK" />подешавњима<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mикроаутомобили и мала компактна возила</translation>
 <translation id="451601984112574365">Зелена 3</translation>
@@ -4370,6 +4371,7 @@
 <translation id="8077669823243888800">Кинеска коверта бр. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Желите да отпремите поверљиви фајл?}one{Желите да отпремите поверљиве фајлове?}few{Желите да отпремите поверљиве фајлове?}other{Желите да отпремите поверљиве фајлове?}}</translation>
 <translation id="8079031581361219619">Желите ли поново да учитате сајт?</translation>
+<translation id="8079591184016291275">Назив догађаја</translation>
 <translation id="8079976827192572403">Опасан сајт</translation>
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086429410809447605">Женска одећа</translation>
@@ -4768,6 +4770,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">уграђен садржај</translation>
 <translation id="8757526089434340176">Доступна је Google Pay понуда</translation>
+<translation id="8758529215314160755">Можете да измените име на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
 <translation id="8763927697961133303">USB уређај</translation>

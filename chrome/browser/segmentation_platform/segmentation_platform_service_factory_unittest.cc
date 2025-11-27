@@ -625,7 +625,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
+TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
   InitService();
 
   home_modules::HomeModulesCardRegistry* registry =
@@ -636,7 +636,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
 #if BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(6u, registry->get_all_cards_by_priority().size());
+  ASSERT_EQ(7u, registry->get_all_cards_by_priority().size());
 #else
   EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -665,6 +665,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   input_context->metadata_args.emplace(
       "is_eligible_to_history_opt_in",
       processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "is_eligible_to_tips_opt_in", processing::ProcessedValue::FromFloat(0));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // No cards are added, the model fetches no results and fails.

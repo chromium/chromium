@@ -45,7 +45,7 @@ public class UiAndroidFeatureList {
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
 
     public static final CachedFlag sRefactorMinWidthContextOverride =
             newCachedFlag(

@@ -124,12 +124,6 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   Vector<void*> timer_data_;
 };
 
-template <>
-struct CrossThreadCopier<v8_inspector::V8StackTraceId> {
-  typedef v8_inspector::V8StackTraceId Type;
-  static Type Copy(const Type& id) { return id; }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_COMMON_IMPL_H_

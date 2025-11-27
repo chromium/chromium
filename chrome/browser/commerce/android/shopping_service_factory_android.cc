@@ -21,7 +21,7 @@ const char kShoppingServiceBridgeKey[] = "shopping-service-jni-bridge-key";
 
 namespace commerce {
 
-ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
+static ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
     JNIEnv* env,
     Profile* profile) {
   CHECK(profile);

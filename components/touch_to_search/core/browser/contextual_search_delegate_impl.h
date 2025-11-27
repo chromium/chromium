@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -97,7 +98,7 @@ class ContextualSearchDelegateImpl final : public ContextualSearchDelegate {
   // |callback| with the resulting ResolvedSearchTerm.
   void OnUrlLoadComplete(base::WeakPtr<ContextualSearchContext> context,
                          SearchTermResolutionCallback callback,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
   // Builds and returns the search term resolution request URL.
   // |context| is used to help build the query.

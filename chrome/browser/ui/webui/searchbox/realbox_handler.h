@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_REALBOX_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

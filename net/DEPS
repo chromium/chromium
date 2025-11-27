@@ -1,5 +1,6 @@
 include_rules = [
   "+components/network_time/time_tracker",
+  "+components/unexportable_keys",
   "+crypto",
   "+net/net_jni_headers",
   "+third_party/apple_apsl",

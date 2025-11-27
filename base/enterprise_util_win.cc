@@ -7,6 +7,10 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 
+namespace {
+bool g_is_enterprise_device_for_testing_ = false;
+}  // namespace
+
 namespace base {
 
 bool IsManagedDevice() {
@@ -21,9 +25,17 @@ bool IsManagedDevice() {
 }
 
 bool IsEnterpriseDevice() {
+  if (g_is_enterprise_device_for_testing_) {
+    return true;
+  }
   // Both legacy domain join and AAD join represent machine-wide enterprise
   // join.
   return base::win::IsEnrolledToDomain() || base::win::IsJoinedToAzureAD();
+}
+
+[[nodiscard]] AutoReset<bool> SetIsEnterpriseDeviceForTesting(
+    bool is_enterprise) {
+  return AutoReset<bool>(&g_is_enterprise_device_for_testing_, is_enterprise);
 }
 
 }  // namespace base

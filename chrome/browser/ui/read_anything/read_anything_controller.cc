@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,9 +29,45 @@ ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
   // This controller should only be instantiated if
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
+
+  if (tab_->GetBrowserWindowInterface() &&
+      tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
+    tab_->GetBrowserWindowInterface()->GetTabStripModel()->AddObserver(this);
+  }
 }
 
-ReadAnythingController::~ReadAnythingController() = default;
+ReadAnythingController::~ReadAnythingController() {
+  if (tab_->GetBrowserWindowInterface() &&
+      tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
+    tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
+  }
+}
+
+void ReadAnythingController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection_change) {
+  // TODO(crbug.com/462754391): Add logic to prevent marking a tab as inactive
+  // when the user is in split view and the tab is still visible.
+  if (selection_change.active_tab_changed()) {
+    // Handle when this controller's tab becomes active, or when this
+    // controller's tab is the previous active tab.
+    if (tab_->GetContents() == selection_change.new_contents) {
+      // TODO(crbug.com/463730426): ReadAnythingController should decide whether
+      // to show Reading Mode when tab becomes active.
+      is_active_tab_ = true;
+    } else if (tab_->GetContents() == selection_change.old_contents &&
+               change.type() != TabStripModelChange::kRemoved) {
+      // TODO(crbug.com/463730426): ReadAnythingController should close
+      // immersive reading mode when a tab becomes inactive.
+      is_active_tab_ = false;
+    }
+  }
+}
+
+bool ReadAnythingController::isActiveTab() {
+  return is_active_tab_;
+}
 
 // Returns the SidePanelUI for the active tab if the tab is active and has a
 // browser window interface. Returns nullptr otherwise.
@@ -52,6 +89,7 @@ ReadAnythingController::GetOrCreateWebUIWrapper() {
             GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL), profile,
             IDS_READING_MODE_TITLE,
             /*esc_closes_ui=*/false);
+    Observe(web_ui_wrapper_->web_contents());
   }
   return std::move(web_ui_wrapper_);
 }
@@ -98,4 +136,12 @@ ReadAnythingController::GetPresentationState() const {
     }
   }
   return PresentationState::kInactive;
+}
+
+void ReadAnythingController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
+    has_shown_ui_ = true;
+    Observe(nullptr);
+  }
 }

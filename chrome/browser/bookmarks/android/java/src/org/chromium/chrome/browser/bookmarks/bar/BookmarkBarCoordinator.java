@@ -402,6 +402,24 @@ public class BookmarkBarCoordinator
     // TopControlLayer implementation:
 
     @Override
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean reachRestingPosition) {
+        // When we are given yOffsets, we must handle translation of the Android widgets manually.
+        // See comment in {@link TopControlLayer} for full details. The yOffset is the positive
+        // distance from the top of the window. We need to shift the Android widgets up, which is
+        // negative in the Android coordinate system. The amount to shift up is the difference
+        // between the top of the Bookmark Bar (total top controls height minus bookmark bar height)
+        // and the layerYOffset. Therefore we subtract the layerYOffset from the above and negate.
+
+        // TODO(crbug.com/417238089): This assumes that the bookmark bar is the lowest item in the
+        // top controls. We will assume this for now to reconcile one frame animation flash.
+        mView.setTranslationY(
+                -1.0f
+                        * (mBrowserControlsStateProvider.getTopControlsHeight()
+                                - getTopControlHeight()
+                                - layerYOffset));
+    }
+
+    @Override
     public @TopControlType int getTopControlType() {
         return TopControlType.BOOKMARK_BAR;
     }
@@ -526,8 +544,13 @@ public class BookmarkBarCoordinator
         // make the SceneLayer visible, except when in full screen, which will account for cases
         // when the bookmark bar is enabled while top controls are offscreen. A change in either the
         // top or bottom controls heights may require resizing the anchored pop-up view if it is
-        // visible, so we provide those updated values as well.
-        updateAndroidWidgetVisibility();
+        // visible, so we provide those updated values as well. In the cases where BCIV can't handle
+        // the scroll, e.g. on NTP, we do not change visibility of the Android widgets or there
+        // would be a quick blinking effect.
+        if (!requestNewFrame && !isVisibilityForced) {
+            updateAndroidWidgetVisibility();
+        }
+
         mMediator.onBrowserControlsChanged(
                 mBrowserControlsStateProvider.getTopControlsHeight(),
                 mBrowserControlsStateProvider.getBottomControlsHeight());

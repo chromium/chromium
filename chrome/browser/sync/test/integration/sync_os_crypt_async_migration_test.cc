@@ -18,7 +18,6 @@ namespace {
 
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetAccountPasswordStoreInterface;
-using passwords_helper::GetAllPasswordsForProfile;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetProfilePasswordStoreInterface;
 
@@ -83,8 +82,6 @@ class SyncOSCryptAsyncMigrationTest
   }
 
   std::vector<password_manager::PasswordForm> GetAllPasswords() {
-    // GetAllPasswordsForProfile() doesn't support specifying the store, so we
-    // have to get the store and then get all logins from it.
     std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
         passwords_helper::GetLogins(GetPasswordStore());
     std::vector<password_manager::PasswordForm> passwords;

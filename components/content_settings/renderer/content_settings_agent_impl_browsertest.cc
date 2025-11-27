@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
@@ -205,6 +206,10 @@ class ContentSettingsAgentImplBrowserTest
       receiver_.Bind(std::move(receiver));
     }
 
+    void GetPendingBackend(blink::mojom::CodeCacheType cache_type,
+                           GetPendingBackendCallback callback) override {
+      std::move(callback).Run(std::nullopt);
+    }
     void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
                                       const GURL& url,
                                       base::Time expected_response_time,

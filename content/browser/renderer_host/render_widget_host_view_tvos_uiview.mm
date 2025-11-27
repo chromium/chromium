@@ -280,44 +280,49 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   }
 }
 
-// Returns YES if events are handled. Otherwise, NO to allow the event
-// to propagate to `super`.
-- (BOOL)handlePresses:(NSSet<UIPress*>*)presses
-             withType:(blink::WebInputEvent::Type)type {
-  // If any of `presses` is not handled, set `needToHandleInFramework`.
-  BOOL needToHandleInFramework = NO;
+// Returns the set of unhanlded UIPress events to propagate to `super`.
+- (NSSet<UIPress*>*)handlePresses:(NSSet<UIPress*>*)presses
+                         withType:(blink::WebInputEvent::Type)type {
+  NSMutableSet<UIPress*>* unhandled = [NSMutableSet set];
   for (UIPress* press in presses) {
     RemoteButton button = remoteButtonFromPressType(press.type);
     if (button == kNone) {
       // Since UIPress has key information from the physical keyboard,
       // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
-      needToHandleInFramework |= ![self sendKeyboardEvent:press eventType:type];
+      // If `press` is not handled in `sendKeyboardEvent`, it's
+      // added in `unhandled`.
+      if (![self sendKeyboardEvent:press eventType:type]) {
+        [unhandled addObject:press];
+      }
       continue;
     }
-    needToHandleInFramework |= ![self sendKeyEventWithRemoteButton:button
-                                                         eventType:type];
+    if (![self sendKeyEventWithRemoteButton:button eventType:type]) {
+      [unhandled addObject:press];
+      continue;
+    }
     if (press.type == UIPressTypeMenu) {
       // Pass `UIPressTypeMenu` to the framework to manage app suspension.
-      needToHandleInFramework = YES;
+      [unhandled addObject:press];
     }
   }
-  return !needToHandleInFramework;
+  return unhandled;
 }
 
 - (void)pressesBegan:(NSSet<UIPress*>*)presses
            withEvent:(UIPressesEvent*)event {
-  BOOL handled = [self handlePresses:presses
-                            withType:blink::WebInputEvent::Type::kKeyDown];
-  if (!handled) {
-    [super pressesBegan:presses withEvent:event];
+  NSSet<UIPress*>* unhandled =
+      [self handlePresses:presses
+                 withType:blink::WebInputEvent::Type::kKeyDown];
+  if (unhandled.count > 0) {
+    [super pressesBegan:unhandled withEvent:event];
   }
 }
 
 - (void)pressesEnded:(NSSet<UIPress*>*)presses
            withEvent:(UIPressesEvent*)event {
-  BOOL handled = [self handlePresses:presses
-                            withType:blink::WebInputEvent::Type::kKeyUp];
-  if (!handled) {
+  NSSet<UIPress*>* unhandled =
+      [self handlePresses:presses withType:blink::WebInputEvent::Type::kKeyUp];
+  if (unhandled.count > 0) {
     [super pressesEnded:presses withEvent:event];
   }
 }

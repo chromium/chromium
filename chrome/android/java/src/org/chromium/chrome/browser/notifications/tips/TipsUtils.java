@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.provider.Settings;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
@@ -29,11 +30,14 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.notifications.scheduler.TipsAgent;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -43,6 +47,16 @@ import java.util.concurrent.TimeUnit;
 /** Static utilities for Tips Notifications. */
 @NullMarked
 public class TipsUtils {
+    // LINT.IfChange(TipsShownPrefs)
+    public static final String ENHANCED_SAFE_BROWSING_SHOWN =
+            "android.tips.notifications.esb_shown";
+    public static final String QUICK_DELETE_SHOWN = "android.tips.notifications.quick_delete_shown";
+    public static final String GOOGLE_LENS_SHOWN = "android.tips.notifications.lens_shown";
+    public static final String BOTTOM_OMNIBOX_SHOWN =
+            "android.tips.notifications.bottom_omnibox_shown";
+
+    // LINT.ThenChange(//chrome/common/pref_names.h:TipsShownPrefs)
+
     /**
      * Assembles a {@link FeatureTipPromoData} object containing required UI and callback
      * information for the respective {@link TipsNotificationsFeatureType}'s promo'.
@@ -55,6 +69,7 @@ public class TipsUtils {
         final @StringRes int positiveButtonTextRes;
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
+        final @DrawableRes int mainPageLogoViewRes;
         final @StringRes int detailPageTitleRes;
         final List<String> detailPageSteps = new ArrayList<>();
 
@@ -63,6 +78,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_esb;
+                mainPageLogoViewRes = R.drawable.tips_promo_esb_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_esb));
@@ -75,6 +91,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
+                mainPageLogoViewRes = R.drawable.tips_promo_quick_delete_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 detailPageSteps.add(
                         context.getString(
@@ -90,6 +107,7 @@ public class TipsUtils {
                 positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_lens;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_lens;
+                mainPageLogoViewRes = R.drawable.tips_promo_lens_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_lens));
@@ -103,6 +121,7 @@ public class TipsUtils {
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox;
                 mainPageDescriptionRes =
                         R.string.tips_promo_bottom_sheet_description_bottom_omnibox;
+                mainPageLogoViewRes = R.drawable.tips_promo_bottom_omnibox_logo;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox_short;
                 detailPageSteps.add(
                         context.getString(
@@ -120,6 +139,7 @@ public class TipsUtils {
                 positiveButtonTextRes = Resources.ID_NULL;
                 mainPageTitleRes = Resources.ID_NULL;
                 mainPageDescriptionRes = Resources.ID_NULL;
+                mainPageLogoViewRes = Resources.ID_NULL;
                 detailPageTitleRes = Resources.ID_NULL;
         }
 
@@ -127,6 +147,7 @@ public class TipsUtils {
                 context.getString(positiveButtonTextRes),
                 context.getString(mainPageTitleRes),
                 context.getString(mainPageDescriptionRes),
+                mainPageLogoViewRes,
                 context.getString(detailPageTitleRes),
                 detailPageSteps);
     }
@@ -151,6 +172,11 @@ public class TipsUtils {
                     if (profile.shutdownStarted()) return;
 
                     if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+                        if (ChromeFeatureList.sAndroidTipsNotificationsResetFeatureTipShown
+                                .getValue()) {
+                            clearFeatureTipShownPrefs(profile);
+                        }
+
                         DeferredStartupHandler.getInstance()
                                 .addDeferredTask(
                                         () -> {
@@ -176,7 +202,8 @@ public class TipsUtils {
                 (enabled) -> {
                     // If the notification channel is enabled, check if a notification was actually
                     // scheduled before scheduling a task to run the reschedule logic.
-                    if (enabled && TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox)) {
+                    if (enabled) {
+                        TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox);
                         // Run this current function again in 1 hour since the scheduler will
                         // schedule a notification 4 hours out, so if the user is still active on
                         // Chrome then reschedule it. The remove call earlier in this function will
@@ -272,5 +299,26 @@ public class TipsUtils {
      */
     public static boolean shouldAlwaysShowOptInPromo() {
         return ChromeFeatureList.sAndroidTipsNotificationsAlwaysShowOptInPromo.getValue();
+    }
+
+    /**
+     * Set whether the tips notifications channel is enabled for use in the tips notifications magic
+     * stack module for show eligibility checking.
+     */
+    public static void registerTipsNotificationsModuleEnabledSettingsPref() {
+        areTipsNotificationsEnabled(
+                (enabled) -> {
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(
+                                    ChromePreferenceKeys.TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
+                                    enabled);
+                });
+    }
+
+    private static void clearFeatureTipShownPrefs(Profile profile) {
+        UserPrefs.get(profile).setBoolean(ENHANCED_SAFE_BROWSING_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(QUICK_DELETE_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
     }
 }

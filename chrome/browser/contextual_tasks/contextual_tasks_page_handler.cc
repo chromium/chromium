@@ -56,7 +56,21 @@ void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
 
 void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                                                GetUrlForTaskCallback callback) {
-  std::move(callback).Run(ui_service_->GetInitialUrlForTask(uuid));
+  // First check if there's an initial URL.
+  std::optional<GURL> initial_url = ui_service_->GetInitialUrlForTask(uuid);
+  if (initial_url) {
+    std::move(callback).Run(initial_url.value());
+    return;
+  }
+
+  // There's a slight difference in the callback signature between the mojo
+  // api (wants a reference) and the ui service (provided a moved object).
+  // The latter can't provide a reference since we're not keeping it
+  // long-term, hence wrapping this in a base::BindOnce.
+  ui_service_->GetThreadUrlFromTaskId(
+      uuid, base::BindOnce([](GetUrlForTaskCallback callback,
+                              GURL url) { std::move(callback).Run(url); },
+                           std::move(callback)));
 }
 
 void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {

@@ -10,38 +10,44 @@
   [
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Set_Method
+    MeasureAs=SharedStorageAPI_Set_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> set(DOMString key, DOMString value, optional SharedStorageSetMethodOptions options);
 
   [
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Append_Method
+    MeasureAs=SharedStorageAPI_Append_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> append(DOMString key, DOMString value, optional SharedStorageModifierMethodOptions options);
 
   [
     CallWith=ScriptState,
     ImplementedAs=Delete,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Delete_Method
+    MeasureAs=SharedStorageAPI_Delete_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> delete(DOMString key, optional SharedStorageModifierMethodOptions options);
 
   [
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Clear_Method
+    MeasureAs=SharedStorageAPI_Clear_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> clear(optional SharedStorageModifierMethodOptions options);
 
   [
     RuntimeEnabled=SharedStorageWebLocks,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_BatchUpdate_Method
+    MeasureAs=SharedStorageAPI_BatchUpdate_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> batchUpdate(sequence<SharedStorageModifierMethod> methods, optional SharedStorageModifierMethodOptions options);
 
   [
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<DOMString> get(DOMString key);
 
   [
@@ -66,7 +72,8 @@
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_SelectURL_Method
+    MeasureAs=SharedStorageAPI_SelectURL_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<SharedStorageResponse> selectURL(DOMString name,
                                  sequence<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
@@ -75,14 +82,16 @@
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Run_Method
+    MeasureAs=SharedStorageAPI_Run_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
   [
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_CreateWorklet_Method
+    MeasureAs=SharedStorageAPI_CreateWorklet_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<SharedStorageWorklet> createWorklet(USVString moduleURL,
                                                 optional SharedStorageWorkletOptions options = {});
 

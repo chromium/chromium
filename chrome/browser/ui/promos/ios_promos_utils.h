@@ -36,6 +36,11 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
 // on an iOS device.
 bool IsUserActiveOnIOS(Profile* profile);
 
+// Returns true if the user has an Android device that has been active in the
+// last 28 days. This is not exactly an Android version of
+// `IsUserActiveOnIOS()` - the logic is different.
+bool IsUserActiveOnAndroid(Profile* profile);
+
 }  // namespace ios_promos_utils
 
 #endif  // CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_

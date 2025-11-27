@@ -12,11 +12,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class GURL;
 
 namespace password_manager {
+struct PasswordForm;
 class PasswordFormManager;
 class PasswordManagerClient;
 class PasswordManagerDriver;
@@ -31,13 +33,33 @@ class FormRendererId;
 }
 
 namespace actor_login {
+
+struct FormFinderResult {
+  FormFinderResult();
+  FormFinderResult(
+      std::vector<password_manager::PasswordFormManager*> eligible_managers,
+      std::vector<
+          optimization_guide::proto::ActorLoginQuality_ParsedFormDetails>
+          parsed_forms_details);
+
+  ~FormFinderResult();
+
+  FormFinderResult(const FormFinderResult&);
+  FormFinderResult& operator=(const FormFinderResult&);
+  FormFinderResult(FormFinderResult&&);
+  FormFinderResult& operator=(FormFinderResult&&);
+
+  std::vector<password_manager::PasswordFormManager*> eligible_managers;
+  std::vector<optimization_guide::proto::ActorLoginQuality_ParsedFormDetails>
+      parsed_forms_details;
+};
+
 // Helper class to find all the login forms.
 class ActorLoginFormFinder {
  public:
   // A callback that receives all eligible login form managers found on the
   // page.
-  using EligibleManagersCallback = base::OnceCallback<void(
-      std::vector<password_manager::PasswordFormManager*>)>;
+  using EligibleManagersCallback = base::OnceCallback<void(FormFinderResult)>;
   using DriverFormKey =
       std::pair<autofill::FormRendererId,
                 base::WeakPtr<password_manager::PasswordManagerDriver>>;
@@ -59,10 +81,9 @@ class ActorLoginFormFinder {
       const std::vector<password_manager::PasswordFormManager*>&
           eligible_managers);
 
-  // Returns all the `PasswordFormManager`s that are allowed for `origin` and
-  // with a valid parsed login form
-  std::vector<password_manager::PasswordFormManager*>
-  GetEligibleLoginFormManagers(const url::Origin& origin);
+  // Retrieves all `PasswordFormManager`s for the given `origin` that contain a
+  // valid login form, along with the `ParsedFormDetails` for all parsed forms.
+  FormFinderResult GetEligibleLoginFormManagers(const url::Origin& origin);
 
   // Asynchronously finds all `PasswordFormManager`s that are associated with
   // `origin` and have a valid parsed login form. Invokes `callback` with the
@@ -71,6 +92,11 @@ class ActorLoginFormFinder {
                                          EligibleManagersCallback callback);
 
  private:
+  void IsLoginFormAsync(
+      const password_manager::PasswordForm& form,
+      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+      base::OnceCallback<void(bool)> callback);
+
   // Callback for when all candidate forms have been checked for eligibility.
   // It filters the candidates and passes the final eligible list to `callback`.
   void OnAllEligibleChecksCompleted(
@@ -81,6 +107,11 @@ class ActorLoginFormFinder {
           bool>> results);
 
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Form details of all the forms found in a single
+  // `GetEligibleLoginFormManagersAsync` call.
+  std::vector<optimization_guide::proto::ActorLoginQuality_ParsedFormDetails>
+      parsed_forms_details_;
 
   base::WeakPtrFactory<ActorLoginFormFinder> weak_ptr_factory_{this};
 };

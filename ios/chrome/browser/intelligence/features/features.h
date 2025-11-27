@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
 #import "base/feature_list.h"
-#import "base/metrics/field_trial_params.h"
 
 namespace base {
 class TimeDelta;

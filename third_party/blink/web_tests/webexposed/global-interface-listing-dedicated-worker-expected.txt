@@ -948,6 +948,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxComputeWorkgroupsPerDimension
 [Worker]     getter maxDynamicStorageBuffersPerPipelineLayout
 [Worker]     getter maxDynamicUniformBuffersPerPipelineLayout
+[Worker]     getter maxImmediateSize
 [Worker]     getter maxInterStageShaderVariables
 [Worker]     getter maxSampledTexturesPerShaderStage
 [Worker]     getter maxSamplersPerShaderStage
@@ -1583,8 +1584,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter wordSpacing
 [Worker] interface Origin
 [Worker]     static method from
-[Worker]     static method fromURL
-[Worker]     static method parse
 [Worker]     attribute @@toStringTag
 [Worker]     getter opaque
 [Worker]     method constructor

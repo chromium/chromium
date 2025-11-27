@@ -1621,6 +1621,27 @@ void TargetHandler::AddWorkerThrottle(
   }
 }
 
+Response TargetHandler::GetDevToolsTarget(
+    const std::string& target_id,
+    std::optional<std::string>* out_target_id) {
+  if (access_mode_ != AccessMode::kBrowser) {
+    return protocol::Response::ServerError(kNotAllowedError);
+  }
+  scoped_refptr<DevToolsAgentHostImpl> agent_host =
+      DevToolsAgentHostImpl::GetForId(target_id);
+
+  if (!agent_host) {
+    return protocol::Response::InvalidParams(kTargetNotFound);
+  }
+
+  if (scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+          agent_host->GetDevToolsAgentHost()) {
+    *out_target_id = devtools_agent_host->GetId();
+  }
+
+  return protocol::Response::Success();
+}
+
 Response TargetHandler::OpenDevTools(const std::string& target_id,
                                      std::optional<std::string> panel_id,
                                      std::string* out_target_id) {

@@ -180,7 +180,7 @@ void RecordLoadedStateEnum(LoadedState state) {
 }  // namespace
 
 // static
-ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
+static ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
     JNIEnv* env,
     Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

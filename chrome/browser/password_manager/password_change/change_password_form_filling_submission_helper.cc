@@ -37,12 +37,17 @@ constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
         FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto options = blink::mojom::AIPageContentOptions::New();
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
-  options->on_critical_path = true;
-  return options;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUseActionablesForImprovedPasswordChange)) {
+    return optimization_guide::ActionableAIPageContentOptions(
+        /*on_critical_path =*/true);
+  }
+  return optimization_guide::DefaultAIPageContentOptions(
+      /*on_critical_path =*/true);
 }
 
 std::unique_ptr<Logger> GetLoggerIfAvailable(

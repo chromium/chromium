@@ -52,13 +52,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // 13. Let pullAlgorithm be the following steps:
     //   a. If reading is true,
@@ -215,7 +209,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // 7. If readAgain is true, perform pullAlgorithm.
       if (engine_->read_again_) {
         auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_);
-        pull_algorithm->Run(script_state, 0, {});
+        pull_algorithm->Run(script_state, {});
       }
     }
 
@@ -234,13 +228,7 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -251,7 +239,7 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
 
     // a. Set canceled1 to true.
     engine_->canceled_[branch_] = true;
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
 
     // b. Set reason1 to reason.
     engine_->reason_[branch_].Reset(isolate, argv[0]);

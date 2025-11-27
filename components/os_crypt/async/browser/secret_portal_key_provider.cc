@@ -21,9 +21,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
-#include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/utils/name_has_owner.h"
-#include "components/dbus/xdg/systemd.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -71,9 +70,10 @@ void SecretPortalKeyProvider::GetKey(KeyCallback callback) {
   CHECK(callback);
   key_callback_ = std::move(callback);
 
-  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
-      bus_.get(), base::BindOnce(&SecretPortalKeyProvider::OnSystemdUnitStarted,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  dbus_xdg::RequestXdgDesktopPortal(
+      bus_.get(),
+      base::BindOnce(&SecretPortalKeyProvider::OnPortalServiceStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool SecretPortalKeyProvider::UseForEncryption() {
@@ -84,19 +84,9 @@ bool SecretPortalKeyProvider::IsCompatibleWithOsCryptSync() {
   return false;
 }
 
-void SecretPortalKeyProvider::OnSystemdUnitStarted(
-    dbus_xdg::SystemdUnitStatus) {
-  // Intentionally ignoring the status.
-  dbus_utils::CheckForServiceAndStart(
-      bus_.get(), GetSecretServiceName(),
-      base::BindOnce(&SecretPortalKeyProvider::OnPortalServiceStarted,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SecretPortalKeyProvider::OnPortalServiceStarted(
-    std::optional<bool> service_started) {
+void SecretPortalKeyProvider::OnPortalServiceStarted(bool service_started) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_started.value_or(false)) {
+  if (!service_started) {
     return Finalize(InitStatus::kNoService);
   }
 

@@ -609,18 +609,19 @@ void AwBrowserContext::ConfigureNetworkContextParams(
       context_params);
 }
 
-base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(
-    JNIEnv* env) {
+static base::android::ScopedJavaLocalRef<jobject>
+JNI_AwBrowserContext_GetDefaultJava(JNIEnv* env) {
   AwBrowserContext* default_context = AwBrowserContext::GetDefault();
   CHECK(default_context);
   return default_context->GetJavaBrowserContext();
 }
 
-std::string JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
+static std::string JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
   return AwBrowserContextStore::kDefaultContextName;
 }
 
-std::string JNI_AwBrowserContext_GetDefaultContextRelativePath(JNIEnv* env) {
+static std::string JNI_AwBrowserContext_GetDefaultContextRelativePath(
+    JNIEnv* env) {
   return AwBrowserContextStore::kDefaultContextPath;
 }
 
@@ -663,13 +664,14 @@ void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,
 }
 
 // static
-jboolean JNI_AwBrowserContext_IsValidHttpHeaderName(JNIEnv* env,
-                                                    std::string& header_name) {
+static jboolean JNI_AwBrowserContext_IsValidHttpHeaderName(
+    JNIEnv* env,
+    std::string& header_name) {
   return net::HttpUtil::IsValidHeaderName(header_name);
 }
 
 // static
-jboolean JNI_AwBrowserContext_IsValidHttpHeaderValue(
+static jboolean JNI_AwBrowserContext_IsValidHttpHeaderValue(
     JNIEnv* env,
     std::string& header_value) {
   return net::HttpUtil::IsValidHeaderValue(header_value);

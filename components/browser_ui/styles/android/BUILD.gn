@@ -8,6 +8,7 @@ import("//device/vr/buildflags/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/styles/ChromeColors.java",
+    "java/src/org/chromium/components/browser_ui/styles/IncognitoColors.java",
     "java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java",
   ]
   deps = [
@@ -18,6 +19,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.styles"
 }
@@ -41,7 +43,6 @@ android_resources("java_resources") {
     "java/res/color/chip_text_color_secondary_list.xml",
     "java/res/color/color_on_surface_with_alpha_10.xml",
     "java/res/color/color_on_surface_with_alpha_12.xml",
-    "java/res/color/color_on_surface_with_alpha_16.xml",
     "java/res/color/color_on_surface_with_alpha_8.xml",
     "java/res/color/color_primary_with_alpha_10.xml",
     "java/res/color/color_primary_with_alpha_15.xml",

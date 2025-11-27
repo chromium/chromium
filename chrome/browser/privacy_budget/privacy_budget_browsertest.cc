@@ -119,53 +119,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithUkmRecording,
       << "Active surface list still exists after resetting client ID";
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithUkmRecording,
-                       IncludesMetadata) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
-  ASSERT_TRUE(EnableUkmRecording());
-
-  constexpr blink::IdentifiableToken kDummyToken = 1;
-  constexpr blink::IdentifiableSurface kDummySurface =
-      blink::IdentifiableSurface::FromMetricHash(2125235);
-  auto* ukm_recorder = ukm::UkmRecorder::Get();
-
-  blink::IdentifiabilityMetricBuilder(ukm::UkmRecorder::GetNewSourceID())
-      .Add(kDummySurface, kDummyToken)
-      .Record(ukm_recorder);
-
-  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm_recorder);
-
-  ukm::UkmTestHelper ukm_test_helper(ukm_service());
-  ukm_test_helper.BuildAndStoreLog();
-  std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
-  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
-  ASSERT_TRUE(ukm_report);
-  ASSERT_NE(ukm_report->entries_size(), 0);
-
-  std::map<uint64_t, int64_t> seen_metrics;
-  for (const auto& entry : ukm_report->entries()) {
-    ASSERT_TRUE(entry.has_event_hash());
-    if (entry.event_hash() != ukm::builders::Identifiability::kEntryNameHash) {
-      continue;
-    }
-    for (const auto& metric : entry.metrics()) {
-      ASSERT_TRUE(metric.has_metric_hash());
-      ASSERT_TRUE(metric.has_value());
-      seen_metrics.insert({metric.metric_hash(), metric.value()});
-    }
-  }
-
-  const std::pair<uint64_t, int64_t> kExpectedGenerationEntry{
-      ukm::builders::Identifiability::kStudyGeneration_626NameHash,
-      test::ScopedPrivacyBudgetConfig::kDefaultGeneration};
-  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGenerationEntry));
-
-  const std::pair<uint64_t, int64_t> kExpectedGeneratorEntry{
-      ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
-      IdentifiabilityStudyState::kGeneratorVersion};
-  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGeneratorEntry));
-}
-
 namespace {
 
 class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {

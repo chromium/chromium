@@ -159,13 +159,29 @@ void ActorLoginCredentialFiller::FetchEligibleForms(
     base::OnceCallback<
         void(std::vector<password_manager::PasswordFormManager*>)>
         on_forms_retrieved_cb) {
+  auto log_parsed_forms_details =
+      [](base::WeakPtr<ActorLoginCredentialFiller> filler,
+         FormFinderResult form_finder_result) {
+        if (filler) {
+          for (auto& detail : form_finder_result.parsed_forms_details) {
+            *filler->attempt_login_logs_.add_parsed_form_details() =
+                std::move(detail);
+          }
+        }
+        return std::move(form_finder_result.eligible_managers);
+      };
+
   if (base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginFieldVisibilityCheck)) {
     login_form_finder_->GetEligibleLoginFormManagersAsync(
-        origin_, std::move(on_forms_retrieved_cb));
+        origin_,
+        base::BindOnce(log_parsed_forms_details, weak_ptr_factory_.GetWeakPtr())
+            .Then(std::move(on_forms_retrieved_cb)));
   } else {
     std::move(on_forms_retrieved_cb)
-        .Run(login_form_finder_->GetEligibleLoginFormManagers(origin_));
+        .Run(log_parsed_forms_details(
+            weak_ptr_factory_.GetWeakPtr(),
+            login_form_finder_->GetEligibleLoginFormManagers(origin_)));
   }
 }
 

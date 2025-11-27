@@ -49,7 +49,7 @@ void RegisterFileDescriptors(std::vector<std::optional<std::string>>& keys,
   }
 }
 
-void JNI_ChildProcessService_RegisterFileDescriptors(
+static void JNI_ChildProcessService_RegisterFileDescriptors(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& j_keys,
     const JavaParamRef<jintArray>& j_ids,
@@ -78,7 +78,7 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
   RegisterFileDescriptors(keys, ids, fds, offsets, sizes);
 }
 
-void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
+static void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
   VLOG(0) << "ChildProcessService: Exiting child process.";
   base::android::LibraryLoaderExitHook();
   _exit(0);
@@ -87,7 +87,7 @@ void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
 // Make sure this isn't inlined so it shows up in stack traces.
 // the function body unique by adding a log line, so it doesn't get merged
 // with other functions by link time optimizations (ICF).
-NOINLINE void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
+NOINLINE static void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
   DumpProcessStack();
 }
 
@@ -96,7 +96,7 @@ void DumpProcessStack() {
   base::debug::DumpWithoutCrashing();
 }
 
-void JNI_ChildProcessService_OnSelfFreeze(JNIEnv* env) {
+static void JNI_ChildProcessService_OnSelfFreeze(JNIEnv* env) {
   OnSelfFreeze();
 }
 

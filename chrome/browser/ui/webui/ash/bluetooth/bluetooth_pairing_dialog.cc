@@ -29,7 +29,6 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -160,12 +159,6 @@ void BluetoothPairingDialogUI::BindInterface(
     mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
         receiver) {
   GetBluetoothConfigService(std::move(receiver));
-}
-
-void BluetoothPairingDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_change_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothPairingDialogUI)

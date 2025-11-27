@@ -161,6 +161,32 @@ suite('NewTabPageActionChipsTest', () => {
     assertTrue(!!recentTabChipIcon);
   });
 
+  test('deep dive chip renders correct format', async () => {
+    await initializeChips({
+      actionChips: [{
+        type: ChipType.kDeepDive,
+        title: 'Example Tab',
+        suggestion: 'Ask more about this site',
+        tab: {
+          url: {url: 'https://example.com'},
+          tabId: 0,
+          title: 'Example Tab',
+          lastActiveTime: {internalValue: BigInt(0)},
+        },
+      }],
+    });
+
+    // Check correct classes are rendered
+    const deepDiveChipIcon = chips.shadowRoot.querySelector<HTMLElement>(
+        '.action-chip-icon-container.deep-dive');
+    assertTrue(!!deepDiveChipIcon);
+
+    // Check chip title is not rendered
+    const deepDiveChipTitle =
+        chips.shadowRoot.querySelector<HTMLImageElement>('.chip-title');
+    assertEquals(null, deepDiveChipTitle);
+  });
+
   suite('metrics collection', () => {
     let metrics: MetricsTracker;
     setup(async () => {

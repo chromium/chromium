@@ -14,11 +14,9 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "cc/base/math_util.h"
-#include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 
@@ -187,7 +185,6 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset) {
-  const float device_scale_factor = layer_tree_impl()->device_scale_factor();
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
   // Keep track of the tilings that were used so that tilings that are
@@ -209,61 +206,9 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     }
   }
 
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+  const float ideal_scale_key = GetIdealContentsScaleKey();
   const gfx::Rect scaled_recorded_bounds =
       gfx::ScaleToEnclosingRect(recorded_bounds_, max_contents_scale);
-
-  gfx::Rect debug_border_rect(shared_quad_state->quad_layer_rect);
-  debug_border_rect.Offset(quad_offset);
-
-  // Append debug borders for the quads in this layer.
-  if (ShowDebugBorders(DebugBorderType::LAYER)) {
-    for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
-                           max_contents_scale, ideal_scale_key);
-         iter; ++iter) {
-      SkColor4f color;
-      float width;
-      if (*iter && iter->IsReadyToDraw()) {
-        TileDrawInfo::Mode mode = iter->draw_mode();
-        if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
-          color = DebugColors::SolidColorTileBorderColor();
-          width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
-        } else if (mode == TileDrawInfo::OOM_MODE) {
-          color = DebugColors::OOMTileBorderColor();
-          width = DebugColors::OOMTileBorderWidth(device_scale_factor);
-        } else {
-          switch (GetTilingResolutionForDebugBorders(iter.CurrentTiling())) {
-            case TilingResolution::kHigh:
-              color = DebugColors::HighResTileBorderColor();
-              width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-              break;
-            case TilingResolution::kAboveHigh:
-              color = DebugColors::AboveHighResTileBorderColor();
-              width =
-                  DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
-              break;
-            case TilingResolution::kBelowHigh:
-              color = DebugColors::BelowHighResTileBorderColor();
-              width =
-                  DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
-              break;
-          }
-        }
-      } else {
-        color = DebugColors::MissingTileBorderColor();
-        width = DebugColors::MissingTileBorderWidth(device_scale_factor);
-      }
-
-      auto* debug_border_quad =
-          render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-      gfx::Rect geometry_rect = iter.geometry_rect();
-      geometry_rect.Offset(quad_offset);
-      gfx::Rect visible_geometry_rect = geometry_rect;
-      debug_border_quad->SetNew(shared_quad_state, geometry_rect,
-                                visible_geometry_rect, color, width);
-    }
-  }
 
   // Append quads for the tiles in this layer.
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
@@ -366,11 +311,8 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   const float max_contents_scale = tilings_.front()->contents_scale_key();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
-
   auto iter = TilingSetCoverageIterator<TileDisplayLayerTiling>(
-      tilings_, content_rect, max_contents_scale, ideal_scale_key);
+      tilings_, content_rect, max_contents_scale, GetIdealContentsScaleKey());
 
   // We cannot do anything if the mask resource was not provided.
   if (!iter || !*iter || !iter->resource()) {
@@ -429,6 +371,11 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
   return safe_to_delete_scales;
 }
 
+float TileDisplayLayerImpl::GetIdealContentsScaleKey() const {
+  const auto ideal_scale = GetIdealContentsScale();
+  return std::max(ideal_scale.x(), ideal_scale.y());
+}
+
 void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
@@ -452,8 +399,7 @@ TilingSetCoverageIterator<TileDisplayLayerTiling> TileDisplayLayerImpl::Cover(
 TileBasedLayerImpl<TileDisplayLayerTiling>::TilingResolution
 TileDisplayLayerImpl::GetTilingResolutionForDebugBorders(
     const TileDisplayLayerTiling* tiling) const {
-  const auto ideal_scale = GetIdealContentsScale();
-  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+  const float ideal_scale_key = GetIdealContentsScaleKey();
   if (MathUtil::IsFloatNearlyTheSame(tiling->contents_scale_key(),
                                      ideal_scale_key)) {
     // NOTE: The above check is not exactly the same computation as is

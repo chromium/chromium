@@ -8,7 +8,7 @@
  */
 
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Must be kept in sync with passkey_java_script_feature.mm.
 const HANDLER_NAME = 'PasskeyInteractionHandler';
@@ -297,25 +297,28 @@ type RejectFunction = (reason?: any) => void;
 class DeferredPublicKeyCredentialPromise {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   public promise: Promise<PublicKeyCredential>;
+  // Resolve function of the deferred promise.
+  private resolve!: ResolveFunction<PublicKeyCredential>;
+  // Reject function of the deferred promise.
+  private reject!: RejectFunction;
+  // Unique ID for this deferred promise.
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  public resolve!: ResolveFunction<PublicKeyCredential>;
-  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  public reject!: RejectFunction;
-  // TODO(crbug.com/460485333): keep a map of promises with unique ids instead
-  // of a single promise.
-  static ongoingPromise: DeferredPublicKeyCredentialPromise|null = null;
+  public readonly id: string;
+  // Map of deferred promises with unique IDs.
+  private static ongoingPromises:
+      Map<string, DeferredPublicKeyCredentialPromise> = new Map();
 
   constructor(timeoutMs?: number) {
     this.promise = Promise.race([
       new Promise<PublicKeyCredential>((resolve, reject) => {
         this.resolve = (value) => {
           resolve(value);
-          DeferredPublicKeyCredentialPromise.ongoingPromise = null;
+          DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
         };
 
         this.reject = (reason) => {
           reject(reason);
-          DeferredPublicKeyCredentialPromise.ongoingPromise = null;
+          DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
         };
       }),
       new Promise<PublicKeyCredential>((_, reject) => {
@@ -325,15 +328,21 @@ class DeferredPublicKeyCredentialPromise {
       }),
     ]);
 
-    DeferredPublicKeyCredentialPromise.ongoingPromise = this;
-  }
-}
+    // Assign a unique ID for this object.
+    this.id = generateRandomId();
 
-// Creates a deferred public key credential promise and return its credential
-// promise.
-function publicKeyCredentialPromise(timeoutMs: number|undefined):
-    Promise<Credential|null> {
-  return new DeferredPublicKeyCredentialPromise(timeoutMs).promise;
+    DeferredPublicKeyCredentialPromise.ongoingPromises.set(this.id, this);
+  }
+
+  // Resolves a deferred promise using the provided credential.
+  static resolve(id: string, cred: PublicKeyCredential): void {
+    DeferredPublicKeyCredentialPromise.ongoingPromises.get(id)?.resolve(cred);
+  }
+
+  // Rejects a deferred promise.
+  static reject(id: string): void {
+    DeferredPublicKeyCredentialPromise.ongoingPromises.get(id)?.reject();
+  }
 }
 
 // Creates a passthrough registration request from the provided parameters.
@@ -388,9 +397,13 @@ function createPassthroughAssertionRequest(
 function createRegistrationRequest(
     publicKeyOptions: PublicKeyCredentialCreationOptions):
     Promise<Credential|null> {
+  const deferredPromise =
+      new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
+
   sendWebKitMessage(HANDLER_NAME, {
     'event': 'handleCreateRequest',
     'frameId': gCrWeb.getFrameId(),
+    'requestId': deferredPromise.id,
     'request': extractRequestInformation(publicKeyOptions),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'userEntity': extractUserEntity(publicKeyOptions.user),
@@ -398,23 +411,27 @@ function createRegistrationRequest(
         publicKeyOptions.excludeCredentials),
   });  // Attestation request
 
-  return publicKeyCredentialPromise(publicKeyOptions.timeout);
+  return deferredPromise.promise;
 }
 
 // Creates an assertion request from the provided parameters.
 function createAssertionRequest(
     publicKeyOptions: PublicKeyCredentialRequestOptions):
     Promise<Credential|null> {
+  const deferredPromise =
+      new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
+
   sendWebKitMessage(HANDLER_NAME, {
     'event': 'handleGetRequest',
     'frameId': gCrWeb.getFrameId(),
+    'requestId': deferredPromise.id,
     'request': extractRequestInformation(publicKeyOptions),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'allowCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.allowCredentials),
   });  // Assertion request
 
-  return publicKeyCredentialPromise(publicKeyOptions.timeout);
+  return deferredPromise.promise;
 }
 
 /**
@@ -477,26 +494,26 @@ const credentialsContainer: CredentialsContainer = {
 Object.defineProperty(navigator, 'credentials', {value: credentialsContainer});
 
 // Function called from C++ to yield the passkey request back to the OS.
-function deferToRenderer(): void {
+function deferToRenderer(requestId: string): void {
   const emptyCredential: PublicKeyCredential = createEmptyCredential();
-  DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(emptyCredential);
+  DeferredPublicKeyCredentialPromise.resolve(requestId, emptyCredential);
 }
 
 // Resolves the credential promise with the provided response.
 function resolveCredentialPromise(
-    id64: string, response: AuthenticatorResponse): void {
+    requestId: string, id64: string, response: AuthenticatorResponse): void {
   const id = decodeBase64URLToArrayBuffer(id64);
   const credential: PublicKeyCredential =
       createPublicKeyCredential('platform', id, response);
 
-  DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(credential);
+  DeferredPublicKeyCredentialPromise.resolve(requestId, credential);
 }
 
 // Function called from C++ to resolve the deferred promise with a valid
 // assertion credential.
 function resolveAssertionRequest(
-    id64: string, authenticatorData64: string, clientDataJson: string,
-    signature64: string, userHandle: string): void {
+    requestId: string, id64: string, authenticatorData64: string,
+    clientDataJson: string, signature64: string, userHandle: string): void {
   const response: AuthenticatorAssertionResponse = {
     authenticatorData: decodeBase64URLToArrayBuffer(authenticatorData64),
     clientDataJSON: stringToArrayBuffer(clientDataJson),
@@ -504,21 +521,22 @@ function resolveAssertionRequest(
     userHandle: stringToArrayBuffer(userHandle),
   };
 
-  resolveCredentialPromise(id64, response);
+  resolveCredentialPromise(requestId, id64, response);
 }
 
 // Function called from C++ to resolve the deferred promise with a valid
 // attestation credential.
 function resolveAttestationRequest(
-    id64: string, attestationObject64: string, authenticatorData64: string,
-    publicKeySpkiDer64: string, clientDataJson: string): void {
+    requestId: string, id64: string, attestationObject64: string,
+    authenticatorData64: string, publicKeySpkiDer64: string,
+    clientDataJson: string): void {
   const response: AuthenticatorAttestationResponse =
       createAuthenticatorAttestationResponse(
           decodeBase64URLToArrayBuffer(attestationObject64),
           decodeBase64URLToArrayBuffer(authenticatorData64),
           decodeBase64URLToArrayBuffer(publicKeySpkiDer64), clientDataJson);
 
-  resolveCredentialPromise(id64, response);
+  resolveCredentialPromise(requestId, id64, response);
 }
 
 const passkey = new CrWebApi();

@@ -48,11 +48,14 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // Opens the inspector for |agent_host|.
   virtual void Inspect(DevToolsAgentHost* agent_host);
 
+  // Gets the DevTools window for |agent_host| if exists.
+  virtual scoped_refptr<DevToolsAgentHost> GetDevToolsAgentHost(
+      DevToolsAgentHost* agent_host);
+
   // Opens the DevTools window for |agent_host|.
   virtual scoped_refptr<DevToolsAgentHost> OpenDevTools(
-      content::DevToolsAgentHost* agent_host,
-      const content::DevToolsManagerDelegate::DevToolsOptions&
-          devtools_options);
+      DevToolsAgentHost* agent_host,
+      const DevToolsManagerDelegate::DevToolsOptions& devtools_options);
 
   // Activates the associated inspector for `agent_host` if there
   // is one.

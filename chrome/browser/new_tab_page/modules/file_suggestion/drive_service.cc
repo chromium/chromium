@@ -48,7 +48,6 @@ constexpr char kPlatform[] = "CHROME_OS";
 #else
 constexpr char kPlatform[] = "UNSPECIFIED_PLATFORM";
 #endif
-// TODO(crbug.com/40749413): Add language code to request.
 constexpr char kRequestBody[] = R"({
   "client_info": {
     "platform_type": "%s",

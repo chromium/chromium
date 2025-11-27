@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"

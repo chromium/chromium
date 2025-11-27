@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -46,6 +47,26 @@ using ::base::test::EqualsProto;
 using ::base::test::TestMessage;
 using ::testing::HasSubstr;
 
+class MockModelExecutionFetcher : public ModelExecutionFetcher {
+ public:
+  MOCK_METHOD(void,
+              ExecuteModel,
+              (ModelBasedCapabilityKey feature,
+               signin::IdentityManager* identity_manager,
+               const google::protobuf::MessageLite& request_metadata,
+               std::optional<base::TimeDelta> timeout,
+               ModelExecuteResponseCallback callback),
+              (override));
+};
+
+class MockDelegate : public ModelExecutionManager::Delegate {
+ public:
+  MOCK_METHOD(std::unique_ptr<ModelExecutionFetcher>,
+              CreateLegionFetcher,
+              (),
+              (override));
+};
+
 proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   proto::ComposeResponse compose_response;
   compose_response.set_output(output);
@@ -71,7 +92,7 @@ class ModelExecutionManagerTest : public testing::Test {
             &test_url_loader_factory_);
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        &optimization_guide_logger_, nullptr);
+        /*delegate=*/nullptr, &optimization_guide_logger_, nullptr);
   }
 
   bool SimulateResponse(const std::string& content,
@@ -117,7 +138,7 @@ class ModelExecutionManagerTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
@@ -135,7 +156,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder.GetCallback());
   EXPECT_FALSE(response_holder.GetFinalStatus());
   ASSERT_NE(response_holder.log_entry(), nullptr);
   EXPECT_EQ(3u,  // ModelExecutionError::kPermissionDenied
@@ -154,7 +176,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder.GetCallback());
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response",
@@ -182,12 +205,14 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequestsLimit) {
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder1.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder1.GetCallback());
 
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder2.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder2.GetCallback());
 
   test_url_loader_factory()->EraseResponse(
       GURL(kOptimizationGuideServiceModelExecutionDefaultURL));
@@ -226,11 +251,13 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequests) {
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kFormsClassifications, request,
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder1.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder1.GetCallback());
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kFormsClassifications, request,
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, response_holder2.GetCallback());
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder2.GetCallback());
 
   // Simulate a successful response for both executions.
   proto::AutofillAiTypeResponse response;
@@ -250,6 +277,50 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequests) {
   ASSERT_TRUE(response_holder2.GetFinalStatus());
   EXPECT_THAT(response_holder2.GetOutput<proto::AutofillAiTypeResponse>(),
               EqualsProto(response));
+}
+
+class ModelExecutionManagerDelegateTest : public ModelExecutionManagerTest {
+ public:
+  void SetUp() override {
+    ModelExecutionManagerTest::SetUp();
+    auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+    delegate_ = delegate.get();
+    model_execution_manager_ = std::make_unique<ModelExecutionManager>(
+        url_loader_factory_, identity_test_env_.identity_manager(),
+        std::move(delegate), &optimization_guide_logger_, nullptr);
+  }
+
+  MockDelegate* delegate() { return delegate_; }
+
+ private:
+  raw_ptr<MockDelegate> delegate_;
+};
+
+TEST_F(ModelExecutionManagerDelegateTest, UsesDelegateToCreateFetcher) {
+  RemoteResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
+  auto fetcher = std::make_unique<MockModelExecutionFetcher>();
+  EXPECT_CALL(*fetcher, ExecuteModel);
+  EXPECT_CALL(*delegate(), CreateLegionFetcher)
+      .WillOnce(testing::Return(testing::ByMove(std::move(fetcher))));
+
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kZeroStateSuggestions, TestMessage(),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kLegion,
+      response_holder.GetCallback());
+}
+
+TEST_F(ModelExecutionManagerDelegateTest, CreatesDefaultFetcher) {
+  RemoteResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
+  EXPECT_CALL(*delegate(), CreateLegionFetcher).Times(0);
+
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kCompose, TestMessage(),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder.GetCallback());
 }
 
 }  // namespace

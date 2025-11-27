@@ -19,7 +19,6 @@
 #include "content/public/common/url_constants.h"
 #include "crypto/random.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -84,12 +83,6 @@ void SampleSystemWebAppUI::BindInterface(
     sample_page_factory_.reset();
   }
   sample_page_factory_.Bind(std::move(factory));
-}
-
-void SampleSystemWebAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void SampleSystemWebAppUI::CreatePageHandler(

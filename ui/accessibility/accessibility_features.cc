@@ -5,6 +5,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 

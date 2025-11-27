@@ -35,20 +35,6 @@ void SendLogMessage(const std::string& message) {
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<scoped_refptr<webrtc::AudioProcessorInterface>>
-    : public CrossThreadCopierByValuePassThrough<
-          scoped_refptr<webrtc::AudioProcessorInterface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<scoped_refptr<WebRtcAudioSink::Adapter>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<WebRtcAudioSink::Adapter>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 WebRtcAudioSink::WebRtcAudioSink(
     const std::string& label,
     scoped_refptr<webrtc::AudioSourceInterface> track_source,

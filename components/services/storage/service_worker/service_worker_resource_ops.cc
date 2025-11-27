@@ -6,10 +6,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/pickle.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
+#include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_response_headers.h"
@@ -343,6 +348,10 @@ class ServiceWorkerResourceReaderImpl::DataReader {
       return;
     }
 
+    if (read_bytes > 0) {
+      hasher_.Update(buffer->first(read_bytes));
+    }
+
     producer_handle_ = pending_buffer_->Complete(read_bytes);
     DCHECK(producer_handle_.is_valid());
     pending_buffer_.reset();
@@ -363,6 +372,18 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     state_ = State::kComplete;
 #endif
 
+    if (status >= 0 && owner_ && owner_->sha256_checksum_) {
+      std::array<uint8_t, crypto::hash::kSha256Size> calculated_checksum;
+      hasher_.Finish(calculated_checksum);
+      const std::string calculated_checksum_hex =
+          base::HexEncode(calculated_checksum);
+      bool checksums_match = base::EqualsCaseInsensitiveASCII(
+          calculated_checksum_hex, *owner_->sha256_checksum_);
+
+      base::UmaHistogramBoolean("ServiceWorker.ResourceChecksumMatch",
+                                checksums_match);
+    }
+
     watcher_.Cancel();
     producer_handle_.reset();
 
@@ -381,6 +402,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   ReadDataCallback callback_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::SimpleWatcher watcher_;
+  crypto::hash::Hasher hasher_{crypto::hash::HashKind::kSha256};
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
 
 #if DCHECK_IS_ON()
@@ -544,13 +566,15 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
       kResponseMetadataIndex, /*offset=*/0, metadata_buffer_.get(),
       metadata_size,
       base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadMetadata,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), metadata_buffer_));
   if (rv != net::ERR_IO_PENDING) {
-    DidReadMetadata(rv);
+    DidReadMetadata(metadata_buffer_, rv);
   }
 }
 
-void ServiceWorkerResourceReaderImpl::DidReadMetadata(int status) {
+void ServiceWorkerResourceReaderImpl::DidReadMetadata(
+    scoped_refptr<BigIOBuffer> metadata_buffer,
+    int status) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(state_, State::kResponseInfoRead);
   state_ = State::kMetadataRead;
@@ -561,6 +585,13 @@ void ServiceWorkerResourceReaderImpl::DidReadMetadata(int status) {
   if (status < 0) {
     FailReadResponseHead(status);
     return;
+  }
+
+  ServiceWorkerResourceRecord record;
+  if (record.ParseFromArray(metadata_buffer->data(), status)) {
+    if (record.has_sha256_checksum()) {
+      sha256_checksum_ = record.sha256_checksum();
+    }
   }
 
   CompleteReadResponseHead(status);

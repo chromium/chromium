@@ -294,6 +294,7 @@ public class SpareChildConnectionTest {
                     mSpareConnection.getConnection(
                             mConnectionAllocator, mServiceCallback, testBindingState);
             assertNotNull(connection);
+            mTestConnectionFactory.simulateConnectionBindingSuccessfully();
             assertEquals(testBindingState, connection.bindingStateCurrent());
             if (testBindingState == ChildBindingState.WAIVED) {
                 assertEquals(0, connection.getStrongBindingCount());

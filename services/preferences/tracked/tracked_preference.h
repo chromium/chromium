@@ -22,6 +22,9 @@ class TrackedPreference {
 
   virtual TrackedPreferenceType GetType() const = 0;
 
+  // Gets the reporting ID for this preference.
+  virtual size_t GetReportingId() const = 0;
+
   // Notifies the underlying TrackedPreference about its new |value| which
   // can update hashes in the corresponding hash store via |transaction|.
   virtual void OnNewValue(const base::Value* value,

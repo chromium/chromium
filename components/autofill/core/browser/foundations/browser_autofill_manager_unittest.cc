@@ -886,8 +886,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               LoyaltyCardSuggestionSelected,
               (const LoyaltyCard& loyalty_card),
               (override));
-  MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
-  MOCK_METHOD(void, OnErrorOkPressed, (), (override));
+  MOCK_METHOD(void,
+              OnDismissed,
+              (bool dismissed_by_user, bool should_reshow),
+              (override));
   MOCK_METHOD(void,
               OnBnplIssuerSuggestionSelected,
               (const std::string& issuer_id),

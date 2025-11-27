@@ -145,7 +145,6 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     // have if we're in a detached context. See observable-constructor.window.js
     // for tests.
     if (!script_state->ContextIsValid()) {
-      CHECK(!GetExecutionContext());
       return;
     }
     ScriptState::Scope scope(script_state);

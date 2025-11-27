@@ -50,7 +50,7 @@ constexpr std::
 
 }  // namespace
 
-jlong JNI_PlayerCompositorDelegateImpl_Initialize(
+static jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_object,
     jlong paint_preview_service,

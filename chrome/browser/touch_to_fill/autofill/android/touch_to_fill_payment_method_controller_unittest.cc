@@ -141,7 +141,10 @@ class MockTouchToFillDelegateAndroidImpl
               BnplSuggestionSelected,
               (std::optional<int64_t> extracted_amount),
               (override));
-  MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
+  MOCK_METHOD(void,
+              OnDismissed,
+              (bool dismissed_by_user, bool should_reshow),
+              (override));
   MOCK_METHOD(void,
               SetCancelCallback,
               (base::OnceClosure cancel_callback),
@@ -681,14 +684,15 @@ TEST_F(TouchToFillPaymentMethodControllerTest, OnDismissedIsCalled) {
   OnAfterAskForValuesToFill();
 
   EXPECT_CALL(ttf_delegate(), OnDismissed);
-  payment_method_controller().OnDismissed(nullptr, true);
+  payment_method_controller().OnDismissed(nullptr, true, false);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        OnDismissedPassesDismissedByUserToDelegate) {
   EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
-  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/true));
+  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/true,
+                                          /*should_reshow=*/true));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
@@ -698,14 +702,16 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 
-  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/true);
+  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/true,
+                                          /*should_reshow=*/true);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        OnDismissedPassesNotDismissedByUserToDelegate) {
   EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
-  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/false));
+  EXPECT_CALL(ttf_delegate(), OnDismissed(/*dismissed_by_user=*/false,
+                                          /*should_reshow=*/false));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
@@ -715,7 +721,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 
-  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/false);
+  payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/false,
+                                          /*should_reshow=*/false);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,

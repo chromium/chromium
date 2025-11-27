@@ -96,22 +96,19 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
 
   AccountInfo CreateAccountInfo(const GaiaId& gaia_id,
                                 const std::string& email) {
-    AccountInfo account_info;
-
-    account_info.gaia = gaia_id;
-    account_info.email = email;
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = "example.com";
+    AccountInfo account_info =
+        AccountInfo::Builder(gaia_id, email)
+            .SetFullName("fullname")
+            .SetGivenName("givenname")
+            .SetHostedDomain("example.com")
+            .SetLocale("en")
+            .SetAvatarUrl("https://example.com")
+            .SetAccountId(account_tracker_service_.PickAccountIdForAccount(
+                gaia_id, email))
+            .Build();
     AccountCapabilitiesTestMutator(&account_info.capabilities)
         .set_is_subject_to_enterprise_features(true);
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
-    account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
-        account_info.gaia, account_info.email);
-
-    DCHECK(account_info.IsValid());
-
+    CHECK(account_info.IsValid());
     return account_info;
   }
 

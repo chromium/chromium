@@ -811,7 +811,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.FULL_SCREEN,
                         mUndoBarController,
-                        COMPONENT_NAME);
+                        COMPONENT_NAME,
+                        TabListEditorCoordinator.UNLIMITED_SELECTION);
     }
 
     @VisibleForTesting

@@ -62,10 +62,8 @@ bool IsBrowserSigninAllowed() {
   return true;
 #else
   if (base::FeatureList::IsEnabled(
-          switches::kProfileCreationFrictionReductionExperiment) &&
-      switches::kProfileCreationFrictionReductionVariation.Get() ==
-          switches::ProfileCreationFrictionReductionVariation::
-              kRemoveSigninStep) {
+          switches::
+              kProfileCreationFrictionReductionExperimentRemoveSigninStep)) {
     return false;
   }
 

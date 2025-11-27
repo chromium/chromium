@@ -94,9 +94,14 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
       float coverage_scale,
       float ideal_contents_scale) override {
     return TilingSetCoverageIterator<FakeTiling>(
-        std::vector<std::unique_ptr<FakeTiling>>(), coverage_rect,
-        coverage_scale, ideal_contents_scale);
+        empty_tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
   }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
+
+  // Note: TilingSetCoverageIterator stores its passed-in container as a const
+  // ref, so it's necessary to pass in an object that outlives the
+  // TilingSetCoverageIterator instance.
+  std::vector<std::unique_ptr<FakeTiling>> empty_tilings_;
 };
 
 FakeTiling::CoverageIterator FakeTiling::Cover(const gfx::Rect& coverage_rect,
@@ -353,6 +358,7 @@ class DirectlyCompositedTileBasedLayerImpl : public TestTileBasedLayerImpl {
 
  private:
   bool IsDirectlyCompositedImage() const override { return true; }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
 };
 
 TEST_F(TileBasedLayerImplTest,
@@ -404,6 +410,7 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
   float GetMaximumContentsScaleForUseInAppendQuads() override {
     return max_contents_scale_;
   }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
 
   Occlusion scaled_occlusion_;
   float max_contents_scale_ = 1.f;
@@ -433,6 +440,7 @@ class ResourcelessSoftwareDrawTileBasedLayerImpl
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
   }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
 
   bool append_quads_for_resourceless_software_draw_called_ = false;
 };
@@ -551,6 +559,7 @@ class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
   }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
 
   gfx::Vector2d quad_offset_;
 };
@@ -627,6 +636,7 @@ class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
   }
+  float GetIdealContentsScaleKey() const override { return 1.f; }
 
   std::unique_ptr<viz::SharedQuadState> shared_quad_state_at_specialization_;
 };

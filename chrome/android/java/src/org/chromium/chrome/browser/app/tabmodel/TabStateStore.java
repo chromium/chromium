@@ -35,9 +35,11 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
@@ -120,6 +122,14 @@ public class TabStateStore implements TabPersistentStore {
                 }
             };
 
+    private final TabModelObserver mTabModelObserver =
+            new TabModelObserver() {
+                @Override
+                public void willCloseAllTabs(boolean incognito) {
+                    cancelLoadingTabs(incognito);
+                }
+            };
+
     /**
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
@@ -142,6 +152,8 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void onNativeLibraryReady() {
+        mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
+        mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             catchUpAndBeginTracking();
         }
@@ -167,38 +179,51 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void waitForMigrationToFinish() {
-        // Not relevant for this impl.
+        // Not relevant for this impl. This is used by other implementations that wait for updates
+        // to the filesystem before proceeding. With this implementation the TabStateStorageService
+        // is always available immediately.
     }
 
     @Override
     public void saveState() {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): Because the db is only accessible on the background
+        // thread this either needs to do a blocking wait or be inherently a no-op. If all observers
+        // are WAI and trigger a save quickly, this can be a no-op.
     }
 
     @Override
     public void loadState(boolean ignoreIncognitoFiles) {
+        // TODO(https://crbug.com/458335579): Handle including or ignoring incognito tabs.
         loadAllTabsFromService();
     }
 
     @Override
     public void mergeState() {
-        // Not currently supported by this impl.
+        // This is only invoked for SDK versions less than API 31. Currently this is not supported.
+        // TODO(https://crbug.com/463956290): Decide whether to support this behavior or limit the
+        // new system to API 31+.
         assert false;
     }
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): Currently this is baked into loadState. The primary
+        // reason this is separated is to track some metrics for TabModelStartupInfoSupplier which
+        // could get inlined.
     }
 
     @Override
     public void restoreTabStateForUrl(String url) {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): Synchronously allows a Tab to restore and jump the
+        // queue if it has a matching URL. Used for view intents that target a specific URL. We
+        // should restructure the restore batching to allow this to happen.
     }
 
     @Override
     public void restoreTabStateForId(int id) {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): Synchronously allows a Tab to restore and jump the
+        // queue if it has a matching tab id. Used for view intents that target a specific tab id.
+        // We should restructure the restore batching to allow this to happen.
     }
 
     @Override
@@ -208,17 +233,15 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void clearState() {
+        // Clearing the state globally is intentional.
         mTabStateStorageService.clearState();
     }
 
-    @Override
-    public void cancelLoadingTabs(boolean incognito) {
-        // TODO(https://crbug.com/448151052): Implement.
-    }
-
-    @Override
-    public void removeTabFromQueues(Tab tab) {
-        // Not relevant to impl.
+    @SuppressWarnings("UnusedVariable")
+    private void cancelLoadingTabs(boolean incognito) {
+        // TODO(https://crbug.com/448151052): When all tabs are closed during restore, interrupt
+        // current restore aborting any future restore operations to avoid "back from the dead"
+        // tabs.
     }
 
     @Override
@@ -229,6 +252,9 @@ public class TabStateStore implements TabPersistentStore {
         if (mTabRegistrationObserver != null) {
             mTabRegistrationObserver.destroy();
         }
+
+        mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
+        mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
 
         for (CollectionSaveForwarder forwarder : mGroupForwarderMap.values()) {
             forwarder.destroy();
@@ -243,28 +269,23 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     @Override
-    public void saveTabListAsynchronously() {
-        // TODO(https://crbug.com/448151052): Implement.
-    }
-
-    @Override
     public void pauseSaveTabList() {
-        // TODO(https://crbug.com/448151052): Implement.
-    }
-
-    @Override
-    public void resumeSaveTabList() {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): This should freeze saves for the collection tree until
+        // resumed.
     }
 
     @Override
     public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
-        // TODO(https://crbug.com/448151052): Implement.
+        // TODO(https://crbug.com/448151052): This should catch up on saves for the collection tree
+        // after a pause.
     }
 
     @Override
     public void cleanupStateFile(int windowId) {
-        // TODO(https://crbug.com/451624258): Implement.
+        // The archived tab state file does not support this operation.
+        assert windowId != TabWindowManager.INVALID_WINDOW_ID;
+        String windowTag = Integer.toString(windowId);
+        mTabStateStorageService.clearWindow(windowTag);
     }
 
     @Override

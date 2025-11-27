@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome_signout_confirmation_prompt.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +40,9 @@ class ChromeSignoutConfirmationPromptPixelTest
       public testing::WithParamInterface<
           std::tuple<ChromeSignoutConfirmationPromptVariant, size_t>> {
  public:
-  ChromeSignoutConfirmationPromptPixelTest() = default;
+  ChromeSignoutConfirmationPromptPixelTest() {
+    feature_list_.InitAndEnableFeature(syncer::kUnoPhase2FollowUp);
+  }
 
   void ShowUi(const std::string& name) override {
     auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
@@ -89,6 +93,9 @@ class ChromeSignoutConfirmationPromptPixelTest
   }
 
   size_t GetUnsyncedDataCount() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,

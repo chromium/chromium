@@ -207,11 +207,12 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     // here and the content setting was ASK, the user must have accepted which
     // would reset the backoff.
     if (IsInLocationSettingsBackOff(is_default_search)) {
-      FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
-                                request_data.embedding_origin,
-                                std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny,
-                                request_data.prompt_options);
+      FinishNotifyPermissionSet(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          false /* persist */, PermissionDecision::kDeny,
+          request_data.prompt_options,
+          request_data.embedded_permission_request_descriptor.Clone());
       return;
     }
 
@@ -228,11 +229,12 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     // case can occur in split-screen multi-window.
     if (!delegate_->IsInteractable(web_contents) ||
         !location_settings_dialog_callback_.is_null()) {
-      FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
-                                request_data.embedding_origin,
-                                std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny,
-                                request_data.prompt_options);
+      FinishNotifyPermissionSet(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          false /* persist */, PermissionDecision::kDeny,
+          request_data.prompt_options,
+          request_data.embedded_permission_request_descriptor.Clone());
       return;
     }
 
@@ -249,9 +251,11 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     return;
   }
 
-  FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
-                            request_data.embedding_origin, std::move(callback),
-                            persist, decision, request_data.prompt_options);
+  FinishNotifyPermissionSet(
+      request_data.id, request_data.requesting_origin,
+      request_data.embedding_origin, std::move(callback), persist, decision,
+      request_data.prompt_options,
+      request_data.embedded_permission_request_descriptor.Clone());
 }
 
 content::PermissionResult
@@ -462,13 +466,17 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    std::optional<PromptOptions> prompt_options) {
+    std::optional<PromptOptions> prompt_options,
+    blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+        embedded_permission_request_descriptor) {
   PermissionRequestData request_data(
       this, id,
       content::PermissionRequestDescription(
           content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
               blink::PermissionType::GEOLOCATION)),
       requesting_origin, embedding_origin);
+  request_data.embedded_permission_request_descriptor =
+      std::move(embedded_permission_request_descriptor);
   request_data.prompt_options = prompt_options.value_or(std::monostate());
   GeolocationPermissionContext::NotifyPermissionSet(
      request_data,

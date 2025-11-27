@@ -199,11 +199,11 @@ bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }
 
-jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
+static jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
   return NO_PREFETCH_KEY;
 }
 
-jboolean JNI_AwPrefetchManager_IsSecPurposeForPrefetch(
+static jboolean JNI_AwPrefetchManager_IsSecPurposeForPrefetch(
     JNIEnv* env,
     std::string& sec_purpose_header_value) {
   return AwPrefetchManager::IsSecPurposeForPrefetch(sec_purpose_header_value);

@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 

@@ -123,7 +123,7 @@ void ShutdownOnServerThread() {
 
 // Quic server is currently hardcoded to run on port 6121 of the localhost on
 // the device.
-void JNI_QuicTestServer_StartQuicTestServer(
+static void JNI_QuicTestServer_StartQuicTestServer(
     JNIEnv* env,
     const JavaParamRef<jstring>& jtest_files_root,
     const JavaParamRef<jstring>& jtest_data_dir) {
@@ -143,24 +143,24 @@ void JNI_QuicTestServer_StartQuicTestServer(
       base::BindOnce(&StartOnServerThread, test_files_root, test_data_dir));
 }
 
-ScopedJavaLocalRef<jstring> JNI_QuicTestServer_GetConnectionClosePath(
+static ScopedJavaLocalRef<jstring> JNI_QuicTestServer_GetConnectionClosePath(
     JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(env, kConnectionClosePath);
 }
 
-void JNI_QuicTestServer_ShutdownQuicTestServer(JNIEnv* env) {
+static void JNI_QuicTestServer_ShutdownQuicTestServer(JNIEnv* env) {
   CHECK(!g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   ExecuteSynchronouslyOnServerThread(base::BindOnce(&ShutdownOnServerThread));
   g_quic_server_thread.reset();
 }
 
-int JNI_QuicTestServer_GetServerPort(JNIEnv* env) {
+static int JNI_QuicTestServer_GetServerPort(JNIEnv* env) {
   return kServerPort;
 }
 
-void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
-                                      const JavaParamRef<jstring>& jpath,
-                                      int delayInSeconds) {
+static void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
+                                             const JavaParamRef<jstring>& jpath,
+                                             int delayInSeconds) {
   CHECK(!g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   std::string path = base::android::ConvertJavaStringToUTF8(env, jpath);
   base::TimeDelta delay = base::Seconds(delayInSeconds);
@@ -168,7 +168,7 @@ void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
       base::BindOnce(&SetResponseDelayOnServerThread, path, delay));
 }
 
-int JNI_QuicTestServer_NumSessions(JNIEnv* env) {
+static int JNI_QuicTestServer_NumSessions(JNIEnv* env) {
   CHECK(g_quic_server);
   return g_quic_server->NumSessions();
 }

@@ -506,7 +506,7 @@
 <translation id="4973523518332075481">Utilize um nome com, no máximo, <ph name="MAX_LENGTH" /> carateres</translation>
 <translation id="4984616446166309645">Japonês</translation>
 <translation id="4987699874727873250">Inglês (Índia)</translation>
-<translation id="4988205478593450158">Tem a certeza de que quer eliminar "<ph name="FILE_NAME" />"?</translation>
+<translation id="4988205478593450158">Quer mesmo eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Borboleta vermelha</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
 <translation id="5010406651457630570">Computadores</translation>
@@ -763,7 +763,7 @@
 <translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
 <translation id="69548399407432279">Último ano</translation>
-<translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
+<translation id="6960565108681981554">Não ativada. Contacte a sua operadora.</translation>
 <translation id="696203921837389374">Ativar a sincronização através de dados móveis</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Porta</translation>
@@ -787,7 +787,7 @@
 <translation id="7075931588889865715">Tailandês com teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desligar para ativar a verificação</translation>
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
-<translation id="7088615885725309056">Mais antiga</translation>
+<translation id="7088615885725309056">Mais antigo</translation>
 <translation id="7103992300314999525">Macedónio</translation>
 <translation id="7104338189998813914">Ocorreu um problema ao aceder à sua conta do OneDrive</translation>
 <translation id="7106346894903675391">Comprar mais armazenamento...</translation>

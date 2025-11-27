@@ -212,6 +212,17 @@ class CORE_EXPORT AuditsIssue {
       SourceLocation* source_location,
       ExecutionContext* execution_context);
 
+  static void ReportPermissionElementIssue(
+      ExecutionContext* execution_context,
+      DOMNodeId node_id,
+      protocol::Audits::PermissionElementIssueType issue_type,
+      const String& type,
+      bool is_warning,
+      const String& permissionName = String(),
+      const String& occluderNodeInfo = String(),
+      const String& occluderParentNodeInfo = String(),
+      const String& disableReason = String());
+
  private:
 
   std::unique_ptr<protocol::Audits::InspectorIssue> issue_;

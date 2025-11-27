@@ -241,6 +241,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.ConnectedCallbackDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken to call http network transaction connected callback.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.CreateStreamDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken for HTTP stream creation to finish.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.InitialEligibilityToPrefetchStarted.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-05-17">
   <owner>taiyo@chromium.org</owner>
@@ -251,6 +285,24 @@ chromium-metrics-reviews@google.com.
     eligibility` to when `PrefetchService` starts its loading process (i.e.,
     `PrefetchService::StartSinglePrefetch` is called), which typically
     represents the duration the prefetch waits on the scheduler's queue.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.InitializeStreamDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken for HTTP stream initialization to finish if the
+    initialization was blocked, otherwise zero.
 
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.

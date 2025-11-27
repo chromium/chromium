@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
 
 #import <string>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -27,7 +28,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface CredentialExportCoordinator () <
-    CredentialExportViewControllerPresentationDelegate,
+    CredentialExportMediatorDelegate,
     PasskeyKeychainProviderBridgeDelegate,
     PasskeyWelcomeScreenViewControllerDelegate>
 @end
@@ -74,12 +75,13 @@
 
 - (void)start {
   _viewController = [[CredentialExportViewController alloc] init];
-  _viewController.delegate = self;
 
   _mediator = [[CredentialExportMediator alloc]
                initWithWindow:_baseNavigationController.view.window
       savedPasswordsPresenter:_savedPasswordsPresenter
                  passkeyModel:_passkeyModel];
+  _viewController.delegate = _mediator;
+  _mediator.delegate = self;
   _mediator.consumer = _viewController;
 
   _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
@@ -87,39 +89,6 @@
                    .email;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
-}
-
-#pragma mark - CredentialExportViewControllerPresentationDelegate
-
-- (void)userDidStartExport {
-  // TODO(crbug.com/449701042): Only fetch keys if there are selected passkeys.
-  bool metricsReportingEnabled =
-      GetApplicationContext()->GetLocalState()->GetBoolean(
-          metrics::prefs::kMetricsReportingEnabled);
-  _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
-        initWithEnableLogging:metricsReportingEnabled
-         navigationController:_baseNavigationController
-      navigationItemTitleView:password_manager::CreatePasswordManagerTitleView(
-                                  l10n_util::GetNSString(
-                                      IDS_IOS_PASSWORD_MANAGER))];
-  _passkeyKeychainProviderBridge.delegate = self;
-
-  CoreAccountInfo account =
-      IdentityManagerFactory::GetForProfile(self.profile)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  __weak __typeof(self) weakSelf = self;
-  [_passkeyKeychainProviderBridge
-      fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
-                            credential:nil
-                               // TODO(crbug.com/449701042): Consider adding new
-                               // reauth purpose.
-                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
-                            completion:^(
-                                NSArray<NSData*>* securityDomainSecrets) {
-                              [weakSelf startExportWithSecurityDomainSecrets:
-                                            securityDomainSecrets];
-                            }];
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
@@ -159,13 +128,36 @@
   [_baseNavigationController popToViewController:_viewController animated:YES];
 }
 
-#pragma mark - Private
+#pragma mark - CredentialExportMediatorDelegate
 
-- (void)startExportWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets {
-  if (@available(iOS 26, *)) {
-    [_mediator startExportWithSecurityDomainSecrets:securityDomainSecrets];
-  }
+- (void)fetchSecurityDomainSecretsWithCompletion:
+    (void (^)(NSArray<NSData*>*))completion {
+  bool metricsReportingEnabled =
+      GetApplicationContext()->GetLocalState()->GetBoolean(
+          metrics::prefs::kMetricsReportingEnabled);
+
+  _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
+        initWithEnableLogging:metricsReportingEnabled
+         navigationController:_baseNavigationController
+      navigationItemTitleView:password_manager::CreatePasswordManagerTitleView(
+                                  l10n_util::GetNSString(
+                                      IDS_IOS_PASSWORD_MANAGER))];
+  _passkeyKeychainProviderBridge.delegate = self;
+
+  CoreAccountInfo account =
+      IdentityManagerFactory::GetForProfile(self.profile)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  [_passkeyKeychainProviderBridge
+      fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
+                            credential:nil
+                               purpose:webauthn::ReauthenticatePurpose::kDecrypt
+                            completion:^(
+                                NSArray<NSData*>* securityDomainSecrets) {
+                              if (completion) {
+                                completion(securityDomainSecrets);
+                              }
+                            }];
 }
 
 @end

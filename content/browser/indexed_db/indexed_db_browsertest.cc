@@ -478,25 +478,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug109187Test) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug941965Test) {
-  if (using_sqlite_) {
-    GTEST_SKIP() << "Flaky with SQLite, see crbug.com/435459644";
-  }
-
-  // Double-open an incognito window to test that saving & reading a blob from
-  // indexeddb works.
-  Shell* incognito_browser = CreateOffTheRecordBrowser();
-  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
-             incognito_browser);
-  ASSERT_TRUE(incognito_browser);
-  incognito_browser->Close();
-  incognito_browser = CreateOffTheRecordBrowser();
-  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
-             incognito_browser);
-  ASSERT_TRUE(incognito_browser);
-  incognito_browser->Close();
-}
-
 class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithLowQuota() = default;
@@ -538,6 +519,21 @@ class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed,
                        DatabaseCallbacksTest) {
   SimpleTest(GetTestUrl("indexeddb", "database_callbacks_first.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, Bug941965Test) {
+  // Double-open an incognito window to test that saving & reading a blob from
+  // indexeddb works.
+  Shell* incognito_browser = CreateOffTheRecordBrowser();
+  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
+             incognito_browser);
+  ASSERT_TRUE(incognito_browser);
+  incognito_browser->Close();
+  incognito_browser = CreateOffTheRecordBrowser();
+  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
+             incognito_browser);
+  ASSERT_TRUE(incognito_browser);
+  incognito_browser->Close();
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, Bug346955148Test) {
@@ -919,6 +915,15 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
   EXPECT_GT(size, 4 << 20 /* 4 MB */);
   DeleteBucketData(kTestStorageKey);
   EXPECT_EQ(0, RequestUsage());
+}
+
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, BlobHistograms) {
+  base::HistogramTester histograms;
+  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"));
+  histograms.ExpectBucketCount("IndexedDB.BackingStore.WriteBlobs.OnDisk",
+                               0 /*Status::Type::kOk*/, 1);
+  histograms.ExpectBucketCount("IndexedDB.BackingStore.ReadBlob.OnDisk",
+                               0 /*net::Error::OK*/, 1);
 }
 
 // Regression test for crbug.com/330868483

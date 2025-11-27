@@ -156,6 +156,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -1365,11 +1366,19 @@ void StoragePartitionImpl::Initialize(
   // QuotaManager prior to the QuotaManager being used. We do them
   // all together here prior to handing out a reference to anything
   // that utilizes the QuotaManager.
+  const bool report_static_storage_quota =
+      GetContentClient()
+          ->browser()
+          ->GetOverrideValueForStaticStorageQuota(browser_context_)
+          .value_or(base::FeatureList::IsEnabled(
+              storage::features::kStaticStorageQuota));
+
   quota_context_ = base::MakeRefCounted<QuotaContext>(
       is_in_memory(), partition_path_,
       browser_context_->GetSpecialStoragePolicy(),
       base::BindRepeating(&StoragePartitionImpl::GetQuotaSettings,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      report_static_storage_quota);
   quota_manager_ = quota_context_->quota_manager();
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy =
       quota_manager_->proxy();

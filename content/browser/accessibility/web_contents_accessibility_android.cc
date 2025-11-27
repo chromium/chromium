@@ -2677,7 +2677,7 @@ WebContentsAccessibilityAndroid::GetLabeledByNodeIdsForTesting(JNIEnv* env,
   return base::android::ToJavaIntArray(env, node->GetLabelledByAndroidIds());
 }
 
-jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(
+static jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong ax_tree_update_ptr,
@@ -2686,7 +2686,7 @@ jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(
       env, obj, ax_tree_update_ptr, jaccessibility_node_info_builder));
 }
 
-jlong JNI_WebContentsAccessibilityImpl_Init(
+static jlong JNI_WebContentsAccessibilityImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
@@ -2698,7 +2698,7 @@ jlong JNI_WebContentsAccessibilityImpl_Init(
       env, obj, web_contents, jaccessibility_node_info_builder));
 }
 
-jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
+static jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,

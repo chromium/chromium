@@ -4,6 +4,9 @@
 
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -139,7 +142,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
                          const std::string&>
       loader_future;
   base::test::TestFuture<const network::SimpleURLLoader*, int,
-                         std::unique_ptr<std::string>>
+                         std::optional<std::string>>
       complete_future;
 
   enterprise_search_aggregator_suggestions_service_
@@ -208,7 +211,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
                          const std::string&>
       loader_future;
   base::test::TestFuture<const network::SimpleURLLoader*, int,
-                         std::unique_ptr<std::string>>
+                         std::optional<std::string>>
       complete_future;
 
   enterprise_search_aggregator_suggestions_service_

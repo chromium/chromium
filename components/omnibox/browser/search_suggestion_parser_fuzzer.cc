@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
@@ -30,8 +32,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // but we have to cut it off somewhere.
   if (size > 4096)
     return 0;
-  std::unique_ptr<std::string> response_body =
-      std::make_unique<std::string>(reinterpret_cast<const char*>(data), size);
+  std::optional<std::string> response_body = std::make_optional<std::string>(
+      reinterpret_cast<const char*>(data), size);
   std::optional<base::Value::List> root_list =
       SearchSuggestionParser::DeserializeJsonData(
           SearchSuggestionParser::ExtractJsonData(nullptr,

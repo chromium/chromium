@@ -80,6 +80,7 @@ class ProfileManagementDisclaimerService
   }
 
   base::ScopedClosureRunner DisableManagementDisclaimerUntilReset();
+  [[nodiscard]] base::ScopedClosureRunner AutoAcceptManagementDisclaimerUntilReset();
 
  private:
   struct ResetableState {
@@ -139,6 +140,8 @@ class ProfileManagementDisclaimerService
     enable_management_disclaimer_ = enabled;
   }
 
+  void MaybeResetAcceptManagementDisclaimer(bool auto_accept_management);
+
   void OnRegisteredForPolicy(bool is_from_cached_registration_result,
                              bool is_managed_account);
 
@@ -158,6 +161,8 @@ class ProfileManagementDisclaimerService
       profile_separation_policies_for_testing_;
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
+  int active_auto_accept_count_ = 0;
+  bool auto_accept_management_ = false;
   bool enable_management_disclaimer_ = true;
   SigninPrefs signin_prefs_;
 

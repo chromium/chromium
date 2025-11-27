@@ -66,6 +66,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
                              const blink::WebGestureEvent& event) override;
 
  protected:
+  // Callback for cleaning up the `context_menu_` field.
+  void OnMenuClosed();
+
   // Set up the WebUI content page and hook up the Omnibox handlers.
   void SetContentURL(std::string_view url);
 

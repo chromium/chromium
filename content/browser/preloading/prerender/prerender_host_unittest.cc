@@ -298,7 +298,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         /*prerender_navigation_handle_callback=*/{},
         PreloadPipelineInfoImpl::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrerender),
-        /*allow_reuse=*/false);
+        /*allow_reuse=*/false,
+        /*form_submission=*/false);
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {

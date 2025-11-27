@@ -2,6 +2,11 @@
     .proxy-multisource-padding {
       margin-inline-start: 36px;
     }
+
+    #proxy-single-source-container {
+      display: flex;
+      flex: 1;
+    }
   </style>
   <settings-section page-title="$i18n{systemPageTitle}"
       class="cr-centered-card-container">
@@ -36,7 +41,8 @@
 
     <div id="proxy" class="cr-row" on-click="onProxyClick_"
         actionable$="[[isProxyDefault_]]">
-      <div hidden$="[[isProxyEnforcedByMultipleSources_]]">
+      <div id="proxy-single-source-container"
+          hidden$="[[isProxyEnforcedByMultipleSources_]]">
         <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">
           $i18n{proxySettingsLabel}
         </div>

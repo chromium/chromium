@@ -23,7 +23,7 @@ namespace content {
 
 namespace {
 
-base::android::ScopedJavaLocalRef<jbyteArray>
+static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
     JNIEnv* env,
     const network::ResourceRequestBody& body) {
@@ -33,7 +33,7 @@ JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
 
 }  // namespace
 
-base::android::ScopedJavaLocalRef<jbyteArray>
+static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_ResourceRequestBody_CreateResourceRequestBodyFromBytes(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& j_post_data) {

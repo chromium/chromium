@@ -34,14 +34,9 @@ class VariationsIdsProviderTest : public ::testing::Test {
 
   ~VariationsIdsProviderTest() override = default;
 
-  void TearDown() override { test::ClearAllVariationIDs(); }
-
-  void SetCurrentTime(base::Time t) { current_time_ = t; }
-
-  base::Time MyClockFunc() { return current_time_; }
+  void TearDown() override { variations::test::ClearAllVariationIDs(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::Time current_time_ = base::Time::Min();
 };
 
 }  // namespace
@@ -481,14 +476,12 @@ TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
       VariationsIdsProvider::Mode::kUseSignedInState);
   auto& provider = *scoped_provider;
 
-  provider.SetClockFunc(base::BindRepeating(
-      &VariationsIdsProviderTest::MyClockFunc, base::Unretained(this)));
   provider.ForceVariationIdsForTesting({"100", "200", "t101"}, "");
 
   // Day 1: The Day 0 and forced variations ids are active.
   // Note that the order of the IDs is deterministic, so we can assert on the
   // exact contents of the vector.
-  SetCurrentTime(day_1);
+  scoped_provider.time_for_testing = day_1;
   EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
             provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
   EXPECT_EQ((std::vector<VariationID>{}),
@@ -502,7 +495,7 @@ TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
 
   // Day 2: The Day 2 study enters its time box, 444 is added to the first-party
   // context. The Day 0 study is still active, so it's not removed.
-  SetCurrentTime(day_2 + base::Hours(1));
+  scoped_provider.time_for_testing = day_2 + base::Hours(1);
   EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
             provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
   EXPECT_EQ((std::vector<VariationID>{444}),
@@ -516,7 +509,7 @@ TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
 
   // Day 3: We still haven't activated the Day 3 study, so nothing changes even
   // though the time is inside the time box.
-  SetCurrentTime(day_3 + base::Hours(1));
+  scoped_provider.time_for_testing = day_3 + base::Hours(1);
   EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
             provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
   EXPECT_EQ((std::vector<VariationID>{444}),
@@ -544,7 +537,7 @@ TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
 
   // Day 4: The Day 0 study exits its time box, so it's removed from the any
   // context. The rest remains the same.
-  SetCurrentTime(day_4 + base::Hours(1));
+  scoped_provider.time_for_testing = day_4 + base::Hours(1);
   EXPECT_EQ((std::vector<VariationID>{100, 200}),
             provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
   EXPECT_EQ((std::vector<VariationID>{444}),

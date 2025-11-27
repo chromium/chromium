@@ -507,6 +507,12 @@ TabFeatures::SetTabContextualizationControllerForTesting(
   return tab_contextualization_controller_.get();
 }
 
+autofill::BubbleManager* TabFeatures::SetBubbleManagerForTesting(
+    std::unique_ptr<autofill::BubbleManager> bubble_manager) {
+  autofill_bubble_manager_ = std::move(bubble_manager);
+  return autofill_bubble_manager_.get();
+}
+
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {

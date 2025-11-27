@@ -296,6 +296,7 @@ mojom("mojom_platform") {
     "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",
     "//components/payments/mojom",
+    "//components/persistent_cache/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
     "//device/bluetooth/public/mojom",

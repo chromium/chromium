@@ -246,6 +246,9 @@ class ABSL_ATTRIBUTE_VIEW string_view {
   }
 #endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 
+  // Deleted constructor from std::nullptr_t from C++23.
+  string_view(std::nullptr_t) = delete;
+
   constexpr string_view(const string_view&) noexcept = default;
   string_view& operator=(const string_view&) noexcept = default;
 

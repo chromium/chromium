@@ -693,6 +693,7 @@
 <translation id="2127747486437921899">斜體</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">以下搜尋引擎隨機排序。你可隨時變更預設。</translation>
 <translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="213826338245044447">流動版書籤</translation>
@@ -912,6 +913,7 @@
 <translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
 <translation id="2453045048779611513">你的機構對可儲存的內容設有限制</translation>
 <translation id="2456755709261364512">請務必將電池充電至 <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2459882793359532780">已套用的瀏覽器政策 (機器和設定檔政策)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core 提供一站式工具，讓你從雲端設定瀏覽器政策</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462932596748424101">社交網絡</translation>
@@ -1123,6 +1125,7 @@
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2833637280516285136">清談電台節目</translation>
 <translation id="2835170189407361413">清除表格</translation>
+<translation id="2835907903001172712">瀏覽器概覽</translation>
 <translation id="2837891525090413132">可以要求鎖定並使用你的鍵盤</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
@@ -1556,6 +1559,7 @@
 <translation id="3543935938072367282">自動填入資料，結帳更快捷</translation>
 <translation id="3547442767634383572">工作設定檔概覽</translation>
 <translation id="3547746132308051926">20 x 24 吋</translation>
+<translation id="3549904448933807997">瀏覽器和設定檔資料 (包括個人和工作設定檔)</translation>
 <translation id="3552155506104542239">警告：此政策與 <ph name="POLICY_NAME" /> 互相衝突，對 Android 應用程式不會有任何效果。否則，此政策會運作正常。</translation>
 <translation id="3552297013052089404">Sans-serif 字型</translation>
 <translation id="3558573058928565255">日間</translation>
@@ -2397,6 +2401,7 @@
 <translation id="4887406273302438710">使用 Windows Hello 保護密碼</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度刪除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="4892518386797173871">後方</translation>
+<translation id="4894390983254799375">例如裝置 ID、名稱、OS 版本和 OS 使用者名稱</translation>
 <translation id="4895019427244614047">刪除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運會</translation>
@@ -2932,6 +2937,7 @@
 <translation id="5764920692828389743">傳送至 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">如要查看送貨方式和要求，請選取一個地址</translation>
 <translation id="57689295674415555">未填入虛擬卡號嗎？</translation>
+<translation id="5773286975255318081">例如設定檔的使用者名稱和瀏覽器版本</translation>
 <translation id="5776313857861697733">優先次序</translation>
 <translation id="577804500166306874">正在載入結果</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -3546,6 +3552,7 @@
 <translation id="6772959465807028761">如要使用 YouTube，請登入 Google 帳戶再繼續操作</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">根據家長所選的設定使用 YouTube</translation>
+<translation id="6779290995699117286">管理員可存取設定檔、瀏覽器和裝置資訊，包括查看：</translation>
 <translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
 <translation id="6780449997190414928">你通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">你可在 Chrome 設定中隨時變更搜尋引擎設定。</translation>
@@ -4392,6 +4399,7 @@
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源和公用事業</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
+<translation id="8147389370274164212">目前預設為 <ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /> ·</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入休眠狀態。</translation>
 <translation id="815036624016370447">Google 帳戶 <ph name="ACCOUNT" /> 的資料有助你加快在 Chrome 填表的速度</translation>
@@ -4681,6 +4689,7 @@
 <translation id="8606988009912891950">廣告主題可協助網站向您顯示相關廣告，同時保護您的瀏覽記錄和身分。Chrome 可根據您最近的瀏覽記錄，記下您感興趣的主題。您日後瀏覽的網站可向 Chrome 要求相關主題資料，以便向您顯示個人化廣告。</translation>
 <translation id="8612919051706159390">網上社群</translation>
 <translation id="8617269623452051934">您的裝置使用狀態</translation>
+<translation id="8619130384334725124">目前預設</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8622864575115813231">正在聯絡金融機構…</translation>
 <translation id="8624354461147303341">取得折扣</translation>
@@ -4758,6 +4767,7 @@
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">已嵌入的內容</translation>
 <translation id="8757526089434340176">提供 Google Pay 優惠</translation>
+<translation id="8758529215314160755">你可以在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /> <ph name="ACCOUNT" /> 中編輯名稱</translation>
 <translation id="8759274551635299824">此信用卡已過期</translation>
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>

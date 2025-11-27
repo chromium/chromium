@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -59,12 +60,16 @@ import java.util.Set;
 @NullMarked
 public class FuseboxMediator {
     // TODO(crbug.com/457825183): Supply this class name and extra string externally.
-    private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
+    @VisibleForTesting
+    /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-    public static final String EXTRA_PRESELECTED_TAB_IDS =
-            "org.chromium.chrome.browser.chrome_item_picker.EXTRA_PRESELECTED_TAB_IDS";
+    public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
+    public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
+    private static final int SELECTION_MAX = 10;
+
     private final Context mContext;
+    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
@@ -81,6 +86,7 @@ public class FuseboxMediator {
 
     FuseboxMediator(
             Context context,
+            Profile profile,
             WindowAndroid windowAndroid,
             PropertyModel model,
             FuseboxViewHolder viewHolder,
@@ -91,6 +97,7 @@ public class FuseboxMediator {
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier) {
         mContext = context;
+        mProfile = profile;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
         mModel = model;
@@ -120,9 +127,6 @@ public class FuseboxMediator {
         mModel.set(
                 FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
                 mComposeBoxQueryControllerBridge.isPdfUploadEligible());
-        mModel.set(
-                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-                mComposeBoxQueryControllerBridge.isCreateImagesEligible());
 
         mModelList.addObserver(
                 new ListObservable.ListObserver<>() {
@@ -279,6 +283,8 @@ public class FuseboxMediator {
         if (mComposeBoxQueryControllerBridge == null) return;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
+        Set<Integer> currentAttachedIds = getAttachedTabIds();
+        if (currentAttachedIds.contains(tab.getId())) return;
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
@@ -305,20 +311,18 @@ public class FuseboxMediator {
     void onTabPickerClicked() {
         mPopup.dismiss();
         Intent intent;
+        ArrayList<Integer> preselectedIds = new ArrayList<>(getAttachedTabIds());
         try {
-            intent = new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS));
-            if (mTabModelSelectorSupplier.get() != null
-                    && mTabModelSelectorSupplier.get().getCurrentTab() != null) {
-                ProfileIntentUtils.addProfileToIntent(
-                        mTabModelSelectorSupplier.get().getCurrentTab().getProfile(), intent);
-            }
+            intent =
+                    new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
+                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
+            ProfileIntentUtils.addProfileToIntent(mProfile, intent);
         } catch (ClassNotFoundException e) {
             return;
         }
 
-        ArrayList<Integer> preselectedIds = getPreselectionTabIds();
-        // Send the IDs to the activity using the defined extra.
-        intent.putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
+        int nonTabSelectionCount = mModelList.size() - preselectedIds.size();
+        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, SELECTION_MAX - nonTabSelectionCount);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
@@ -330,6 +334,9 @@ public class FuseboxMediator {
         // tabIds will be null when the activity finishes with cancel using the back button.
         if (tabIds == null) return;
         updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
+        if (mModelList.size() != 0) {
+            maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
+        }
     }
 
     /**
@@ -342,8 +349,7 @@ public class FuseboxMediator {
     public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        Set<Integer> currentAttachedIds = new HashSet<>(getPreselectionTabIds());
-        currentAttachedIds.remove(null);
+        Set<Integer> currentAttachedIds = getAttachedTabIds();
         mModelList.removeIf(
                 item -> {
                     if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
@@ -576,11 +582,9 @@ public class FuseboxMediator {
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
     }
 
-    /**
-     * @return Array of Tab IDs (as Integer[]), empty if no attachments.
-     */
-    public ArrayList<Integer> getPreselectionTabIds() {
-        ArrayList<Integer> attachedTabIds = new ArrayList<>();
+    /** Returns {@link HashSet} of all the tab ids, or empty if no tab attachments. */
+    public HashSet<Integer> getAttachedTabIds() {
+        HashSet<Integer> attachedTabIds = new HashSet<>();
 
         for (int i = 0; i < mModelList.size(); i++) {
             FuseboxAttachment attachment = mModelList.get(i);

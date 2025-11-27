@@ -19,7 +19,7 @@
 
 namespace ui {
 
-jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
+static jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_html_text) {
   {
@@ -41,7 +41,7 @@ jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
                                       /* data_dst = */ nullptr);
 }
 
-jboolean JNI_ClipboardAndroidTestSupport_NativeClipboardContains(
+static jboolean JNI_ClipboardAndroidTestSupport_NativeClipboardContains(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_text) {
   // The Java side of the test pretended to be another app using
@@ -107,8 +107,8 @@ int WriteTextAndCountNotifications(const std::u16string& text) {
 }  // anonymous namespace
 
 // Test method to verify native clipboard monitoring works
-jboolean JNI_ClipboardAndroidTestSupport_NativeTestClipboardNotifications(
-    JNIEnv* env) {
+static jboolean
+JNI_ClipboardAndroidTestSupport_NativeTestClipboardNotifications(JNIEnv* env) {
   int notification_count = WriteTextAndCountNotifications(u"test notification");
   return notification_count == 1;
 }

@@ -9,7 +9,6 @@
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
-#include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/security_level.h"
 
 // Contains the utility functions to be able to create restricted tokens based

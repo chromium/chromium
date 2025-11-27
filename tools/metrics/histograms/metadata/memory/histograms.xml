@@ -174,8 +174,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Malloc.Wasted.After24H"
       summary="Amount of memory that is wasted due to fragmentation in
                PartitionAlloc, in bytes, for renderers older than 1 day."/>
-  <variant name=".ManualFillingCache"
-      summary="Only counting memory used by the password manager fallbacks."/>
   <variant name=".PartitionAlloc"
       summary="Only counting memory used by PartitionAlloc."/>
   <variant

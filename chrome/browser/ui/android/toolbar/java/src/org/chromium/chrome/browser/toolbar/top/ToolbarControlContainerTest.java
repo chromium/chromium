@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -741,6 +742,8 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testStaleCapturedUrlOnScroll_Stale() {
+        ResettersForTesting.register(
+                ToolbarControlContainer.forceStaleCaptureHistogramForTesting());
         makeAndInitAdapter();
         mConstraintsSupplier.set(BrowserControlsState.BOTH);
 
@@ -753,7 +756,7 @@ public class ToolbarControlContainerTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Toolbar.StaleCapturedUrlOnScroll", 1)
+                        .expectIntRecord("Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled", 1)
                         .build();
         mAdapter.onContentViewScrollingStateChanged(true);
         histogramWatcher.assertExpected();
@@ -761,6 +764,8 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testStaleCapturedUrlOnScroll_NotStale() {
+        ResettersForTesting.register(
+                ToolbarControlContainer.forceStaleCaptureHistogramForTesting());
         makeAndInitAdapter();
         mConstraintsSupplier.set(BrowserControlsState.BOTH);
 
@@ -770,7 +775,7 @@ public class ToolbarControlContainerTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Toolbar.StaleCapturedUrlOnScroll", 0)
+                        .expectIntRecord("Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled", 0)
                         .build();
         mAdapter.onContentViewScrollingStateChanged(true);
         histogramWatcher.assertExpected();
@@ -778,12 +783,14 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testStaleCapturedUrlOnScroll_ControlsLocked() {
+        ResettersForTesting.register(
+                ToolbarControlContainer.forceStaleCaptureHistogramForTesting());
         makeAndInitAdapter();
         setConstraintsOverride(BrowserControlsState.SHOWN);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Toolbar.StaleCapturedUrlOnScroll")
+                        .expectNoRecords("Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled")
                         .build();
         mAdapter.onContentViewScrollingStateChanged(true);
         histogramWatcher.assertExpected();
@@ -791,12 +798,14 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testStaleCapturedUrlOnScroll_NotScrolling() {
+        ResettersForTesting.register(
+                ToolbarControlContainer.forceStaleCaptureHistogramForTesting());
         makeAndInitAdapter();
         mConstraintsSupplier.set(BrowserControlsState.BOTH);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Toolbar.StaleCapturedUrlOnScroll")
+                        .expectNoRecords("Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled")
                         .build();
         mAdapter.onContentViewScrollingStateChanged(false);
         histogramWatcher.assertExpected();

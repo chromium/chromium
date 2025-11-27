@@ -97,7 +97,8 @@ void P2PSocketClientImpl::SendWithPacketId(
     base::span<const uint8_t> data,
     const webrtc::AsyncSocketPacketOptions& options,
     uint64_t packet_id) {
-  TRACE_EVENT_BEGIN("p2p", "Send", perfetto::Track(packet_id));
+  // Global parent track, as the corresponding END is in the Network service.
+  TRACE_EVENT_BEGIN("p2p", "Send", perfetto::Track::Global(packet_id));
 
   // Conditionally start or continue temporarily storing the packets of a batch.
   // We can't allow sending individual packets mid batch since we would receive

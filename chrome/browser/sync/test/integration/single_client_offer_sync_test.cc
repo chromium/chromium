@@ -61,6 +61,12 @@ class SingleClientOfferSyncTest
   }
 
  protected:
+  wallet_helper::StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? wallet_helper::StoreType::kAccountStore
+               : wallet_helper::StoreType::kProfileStore;
+  }
+
   void WaitForNumberOfOffers(size_t expected_count,
                              autofill::PaymentsDataManager* paydm) {
     while (paydm->GetAutofillOffers().size() != expected_count ||
@@ -190,14 +196,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   EXPECT_EQ(999, offers[0]->GetOfferId());
 
   // Trigger a sync and wait for the new data to arrive.
-  sync_pb::DataTypeState state_before = GetWalletDataTypeState(
-      syncer::AUTOFILL_WALLET_OFFER, 0, GetSetupSyncMode());
+  sync_pb::DataTypeState state_before =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
   // regression check for crbug.com/924447.
-  sync_pb::DataTypeState state_after = GetWalletDataTypeState(
-      syncer::AUTOFILL_WALLET_OFFER, 0, GetSetupSyncMode());
+  sync_pb::DataTypeState state_after =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
   EXPECT_NE(state_before.progress_marker().token(),
             state_after.progress_marker().token());
 
@@ -258,8 +264,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   ASSERT_EQ(1uL, paydm->GetAutofillOffers().size());
 
   // Turn off payments sync, the data should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfOffers(0, paydm);
   EXPECT_EQ(0uL, paydm->GetAutofillOffers().size());
 }

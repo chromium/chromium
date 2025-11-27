@@ -7981,6 +7981,36 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6412793408912788345">在用户登录期间显示 Gemini 介绍画面</translation>
 <translation id="6416506846917150119">在用户输入内容时停用实体键盘预测性撰写功能</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6417827417523888006">此政策提供了一种方式来覆盖被浏览器用以实现 Related Website Set 功能的集合列表。
+
+此政策会覆盖 <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" /> 政策。
+
+浏览器的 Related Website Set 列表中的每个集合都必须符合 Related Website Set 要求。
+每个 Related Website Set 都必须包含一个主要网站以及一个或多个成员网站。
+每个集合还可包含其拥有的一系列服务网站，以及从某个网站到其所有 ccTLD 变体的映射关系。
+如需详细了解 <ph name="PRODUCT_NAME" /> 如何使用 Related Website Set，请参阅 https://github.com/WICG/first-party-sets。
+
+
+Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注册网域。此外，Related Website Set 中的每个网站都必须互不相同，也就是说，同一个网站不能在 Related Website Set 中列出多次。
+
+如果此政策设为一个空字典，浏览器会使用 Related Website Set 的公开列表。
+
+对于来自 <ph name="REPLACEMENTS" /> 列表的 Related Website Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 Related Website Set 中，则该网站会从浏览器的 Related Website Set 中移除。
+之后，此政策的 Related Website Set 将添加到浏览器的 Related Website Set 列表中。
+
+对于来自 <ph name="ADDITIONS" /> 列表的 Related Website Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 Related Website Set 中，则浏览器的 Related Website Set 会进行更新，以便将新的 Related Website Set 添加到浏览器的列表中。待浏览器的列表更新完毕后，此政策的 Related Website Set 将添加到浏览器的 Related Website Set 列表中。
+
+浏览器的 Related Website Set 列表要求其中的所有网站都不得出现在多个集合中。<ph name="REPLACEMENTS" /> 列表和 <ph name="ADDITIONS" /> 列表也都有这样的要求。同理，同一个网站不能既出现在 <ph name="REPLACEMENTS" /> 列表中，又出现在 <ph name="ADDITIONS" /> 列表中。
+
+不支持使用通配符 (*) 作为政策值，也不支持在这些列表所含的任何 Related Website Set 中使用通配符。
+
+此政策提供的所有集合都必须是有效的 Related Website Set，如果无效，则会触发相应的错误。
+
+在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。
+
+在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。
+
+随着 Related Website Set 的弃用，自 <ph name="PRODUCT_NAME" /> 144 版起，此政策已被弃用。</translation>
 <translation id="6419001911253110938">允许在用户登录流程中显示会话内 AI 功能的介绍界面</translation>
 <translation id="6421254653839955267">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
 
@@ -11349,6 +11379,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8734543507835977857">在会话启动后才开始实施电源管理延迟和会话时长限制</translation>
 <translation id="8736538322216687231">强制启用最低级别的 YouTube 受限模式</translation>
 <translation id="873800217865395140">网站遥测数据收集时间间隔（以毫秒为单位）。</translation>
+<translation id="8742596277791362306">此政策用于控制是否启用 Related Website Set 功能。
+
+此政策会覆盖 <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" /> 政策。
+
+如果此政策未设置或设为 True，系统会启用 Related Website Set 功能。
+
+如果此政策设为 False，系统会停用 Related Website Set 功能。
+
+随着 Related Website Set 的弃用，自 <ph name="PRODUCT_NAME" /> 144 版起，此政策已被弃用。</translation>
 <translation id="8743149927570551353">配置 <ph name="PRODUCT_OS_NAME" /> Content Transfer 工具可用的时间</translation>
 <translation id="8743902569031401303">允许接收“安全浏览”功能调查问卷</translation>
 <translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。

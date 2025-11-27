@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -108,7 +109,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
-  MOCK_METHOD(void, OnReadingModeHidden, ());
+  MOCK_METHOD(void, OnReadingModeHidden, (bool tab_active));
   MOCK_METHOD(void, OnTabWillDetach, ());
   MOCK_METHOD(void, OnTabMuteStateChange, (bool muted));
   MOCK_METHOD(void,
@@ -292,6 +293,15 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
         ->read_anything_side_panel_controller();
   }
 
+  SidePanelEntry* read_anything_entry() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->side_panel_registry()
+        ->GetEntryForKey(
+            SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  }
+
   ChromeTranslateClient* GetChromeTranslateClient() {
     return ChromeTranslateClient::FromWebContents(
         browser()
@@ -363,12 +373,7 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   void OnTabWillDetach() { handler_->OnTabWillDetach(); }
 
   void Activate(bool active, SidePanelOpenTrigger* trigger = nullptr) {
-    SidePanelEntry* entry = browser()
-                                ->GetActiveTabInterface()
-                                ->GetTabFeatures()
-                                ->side_panel_registry()
-                                ->GetEntryForKey(SidePanelEntry::Key(
-                                    SidePanelEntry::Id::kReadAnything));
+    SidePanelEntry* entry = read_anything_entry();
     if (trigger) {
       entry->set_last_open_trigger(*trigger);
     }
@@ -1459,11 +1464,32 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Activate_OnCloseReadingMode_NotifiesPage) {
+  handler_ = CreateHandler();
+  Activate(false);
+  EXPECT_CALL(page_, OnReadingModeHidden(true)).Times(1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        Activate_OnDeactivateTab_NotifiesPage) {
   handler_ = CreateHandler();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Store the controller since it is per-tab, and a new tab will be activated
+  // below.
+  auto* original_controller = side_panel_controller();
 
-  Activate(false);
-  EXPECT_CALL(page_, OnReadingModeHidden).Times(1);
+  // Open a new tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Indicate the original tab is now hidden.
+  original_controller->OnEntryHidden(read_anything_entry());
+
+  ASSERT_FALSE(original_controller->tab()->IsActivated());
+  ASSERT_NE(original_controller, side_panel_controller());
+  EXPECT_CALL(page_, OnReadingModeHidden(false)).Times(1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1480,13 +1506,16 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3001;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1495,13 +1524,16 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3002;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1511,14 +1543,18 @@ IN_PROC_BROWSER_TEST_F(
   handler_ = CreateHandler();
   auto status1 = read_anything::mojom::DistillationStatus::kSuccess;
   auto status2 = read_anything::mojom::DistillationStatus::kFailure;
+  int word_count1 = 3003;
+  int word_count2 = 3004;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status1);
-  handler_->OnDistillationStatus(status2);
+  handler_->OnDistillationStatus(status1, word_count1);
+  handler_->OnDistillationStatus(status2, word_count2);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1526,14 +1562,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3005;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
   Activate(false);
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1542,16 +1581,19 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
+  int word_count = 3006;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   Activate(false);
-  handler_->OnDistillationStatus(status);
+  handler_->OnDistillationStatus(status, word_count);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,

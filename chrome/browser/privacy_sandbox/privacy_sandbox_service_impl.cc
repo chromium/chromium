@@ -488,23 +488,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
-  if (pref_service_->GetBoolean(
-          prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial)) {
-    if (base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
-            privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
-      field_trial->Activate();
-    }
-  }
-
-  // Special usecase for Third Party Coookies: Make sure the 3PC
-  // suppression value is overridden in case 3PC Blocking is not a valid
-  // reason to block the Prompt.
-  if (prompt_suppressed_reason ==
-          PromptSuppressedReason::kThirdPartyCookiesBlocked &&
-      CheckAndRegisterAllowPromptForBlocked3PCookiesTrial()) {
-    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
-  }
-
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/40234448): Remove this logic when most users have run init.
   MaybeInitializeRelatedWebsiteSetsPref();
@@ -531,14 +514,6 @@ void PrivacySandboxServiceImpl::Shutdown() {
   profile_ = nullptr;
 }
 
-bool PrivacySandboxServiceImpl::
-    CheckAndRegisterAllowPromptForBlocked3PCookiesTrial() {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial,
-                            true);
-  return base::FeatureList::IsEnabled(
-      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
-}
-
 void PrivacySandboxServiceImpl::SetPromptSuppressedReason(
     PromptSuppressedReason reason) {
   pref_service_->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
@@ -559,8 +534,7 @@ bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
   }
 
   if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_,
-                                     tracking_protection_settings_) &&
-      !CheckAndRegisterAllowPromptForBlocked3PCookiesTrial()) {
+                                     tracking_protection_settings_)) {
     SetPromptSuppressedReason(
         PromptSuppressedReason::kThirdPartyCookiesBlocked);
     return true;

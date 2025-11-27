@@ -3411,7 +3411,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3346306152660142597">Dostosuj tę stronę za pomocą AI</translation>
 <translation id="3347086966102161372">K&amp;opiuj adres obrazu</translation>
 <translation id="3348038390189153836">Wykryto urządzenie wymienne</translation>
-<translation id="3348131053948466246">Zasugerowano emotikony. Naciśnij strzałkę w górę lub w dół, by przejść do innego elementu, i naciśnij Enter, by go wstawić.</translation>
 <translation id="3348973040180736882">Rozpakowuję</translation>
 <translation id="3349933790966648062">Wykorzystanie pamięci</translation>
 <translation id="3350450887151703713">Przewiń do tyłu o 10 sekund</translation>
@@ -6617,7 +6616,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5563234215388768762">Wyszukaj w Google lub wpisz URL</translation>
 <translation id="5563824734298958390">Opuścić grupę kart?</translation>
 <translation id="5564450015351086922">Wypróbuj Obiektyw Google na iOS</translation>
-<translation id="5565579144504951367">Sprzęt jest gotowy do skonfigurowania</translation>
 <translation id="5565735124758917034">Aktywny</translation>
 <translation id="5568069709869097550">Nie można się zalogować</translation>
 <translation id="5568525251731145240">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanych z niej aplikacji?</translation>
@@ -6865,6 +6863,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Sprawdź gotowość do obsługi tetheringu</translation>
 <translation id="5753570386948603678">Usuń z historii</translation>
+<translation id="5755101376452091923">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="5756163054456765343">C&amp;entrum pomocy</translation>
 <translation id="5757187557809630523">następny utwór</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>

@@ -91,25 +91,27 @@ String MakeReferrerWarning(mojom::blink::SpeculationAction action,
   const String action_string = SpeculationActionAsString(action);
 
   const String suggested_fix =
-      has_link ? "A stricter referrer policy may be set using the matched "
-                 "link's \"referrerpolicy\" attribute, or it may be set "
-                 "specifically for the " +
-                     action_string +
-                     " request using the \"referrer_policy\" key in the "
-                     "speculation rule."
-               : "A stricter referrer policy may be set for this specific " +
-                     action_string +
-                     " request using the \"referrer_policy\" key in the "
-                     "speculation rule.";
+      has_link
+          ? StrCat({"A stricter referrer policy may be set using the matched "
+                    "link's \"referrerpolicy\" attribute, or it may be set "
+                    "specifically for the ",
+                    action_string,
+                    " request using the \"referrer_policy\" key in the "
+                    "speculation rule."})
+          : StrCat({"A stricter referrer policy may be set for this specific ",
+                    action_string,
+                    " request using the \"referrer_policy\" key in the "
+                    "speculation rule."});
   constexpr auto kExampleAcceptablePolicy =
       network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
 
-  return "Ignored attempt to " + action_string + " " + url.ElidedString() +
-         " due to unacceptable referrer policy (" +
-         SecurityPolicy::ReferrerPolicyAsString(referrer.referrer_policy) +
-         "). " + suggested_fix + " For example, the policy \"" +
-         SecurityPolicy::ReferrerPolicyAsString(kExampleAcceptablePolicy) +
-         "\" is sufficiently strict.";
+  return StrCat(
+      {"Ignored attempt to ", action_string, " ", url.ElidedString(),
+       " due to unacceptable referrer policy (",
+       SecurityPolicy::ReferrerPolicyAsString(referrer.referrer_policy), "). ",
+       suggested_fix, " For example, the policy \"",
+       SecurityPolicy::ReferrerPolicyAsString(kExampleAcceptablePolicy),
+       "\" is sufficiently strict."});
 }
 
 // Computes a referrer based on a Speculation Rule, and its URL or the link it
@@ -673,6 +675,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         CHECK(!rule->target_browsing_context_name_hint() ||
               action == mojom::blink::SpeculationAction::kPrerender ||
               action == mojom::blink::SpeculationAction::kPrerenderUntilScript);
+        CHECK(!rule->form_submission() ||
+              action == mojom::blink::SpeculationAction::kPrerender ||
+              action == mojom::blink::SpeculationAction::kPrerenderUntilScript);
         CHECK(!rule->requires_anonymous_client_ip_when_cross_origin() ||
               action == mojom::blink::SpeculationAction::kPrefetch);
 
@@ -698,7 +703,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
                 mojom::blink::SpeculationTargetHint::kNoHint),
             rule->eagerness(), rule->no_vary_search_hint().Clone(),
             rule->injection_type(), std::move(tags), rule_set,
-            /*anchor=*/nullptr));
+            /*anchor=*/nullptr, rule->form_submission()));
       }
     }
   };
@@ -878,7 +883,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                     rule->requires_anonymous_client_ip_when_cross_origin(),
                     target_hint, rule->eagerness(),
                     rule->no_vary_search_hint().Clone(), rule->injection_type(),
-                    std::move(tags), rule_set, link);
+                    std::move(tags), rule_set, link, rule->form_submission());
             link_candidates->push_back(std::move(candidate));
           }
         };

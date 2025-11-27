@@ -66,6 +66,8 @@
 # saves unnecessarily compiling your tool for the target platform. But if you
 # need a target build of your tool as well, just leave off the if statement.
 
+import("//build/config/sanitizers/sanitizers.gni")
+
 if (host_os == "win") {
   _host_executable_suffix = ".exe"
 } else {
@@ -118,6 +120,21 @@ template("compiled_action") {
     # The script takes as arguments the binary to run, and then the arguments
     # to pass it.
     args = [ rebase_path(host_executable, root_build_dir) ] + invoker.args
+
+    # Add msan instrumented libs to run the compiled binary with msan
+    # crbug.com/464092154
+    #
+    # //build is hermetic, so guard //third_party/instrumented_libs
+    # dependencies by build_with_chromium.
+    # maybe, projects that use //build with msan would need
+    # //third_party/instrumented_libs, so build_with_chromium guard might
+    # not be needed here.
+    if (build_with_chromium && host_toolchain_is_msan) {
+      configs = [
+        "//third_party/instrumented_libs:msan_runtime_libs($host_toolchain)",
+      ]
+      deps += [ "//third_party/instrumented_libs:ld-linux($host_toolchain)" ]
+    }
   }
 }
 

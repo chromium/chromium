@@ -3436,7 +3436,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3346306152660142597">Персонализиране на страницата чрез AI</translation>
 <translation id="3347086966102161372">К&amp;опиране на адреса на изображението</translation>
 <translation id="3348038390189153836">Установено бе изваждащо се устройство</translation>
-<translation id="3348131053948466246">Предложено е емоджи. За придвижване натиснете клавиша със стрелка нагоре или надолу, за вмъкване на предложението използвайте Enter.</translation>
 <translation id="3348973040180736882">Декомпресиране</translation>
 <translation id="3349933790966648062">Използвана памет</translation>
 <translation id="3350450887151703713">Повтаряне на 10 секунди</translation>
@@ -6646,7 +6645,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5563234215388768762">Търсете с Google или въведете URL адрес</translation>
 <translation id="5563824734298958390">Искате ли да напуснете групата раздели?</translation>
 <translation id="5564450015351086922">Изпробвайте Google Обектив под iOS</translation>
-<translation id="5565579144504951367">Хардуерът ви е готов за настройване</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
 <translation id="5568525251731145240">Да се изтрият ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />, всички сайтове от този домейн и инсталираните приложения?</translation>
@@ -6895,6 +6893,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Проверка на готовността за тетъринг</translation>
 <translation id="5753570386948603678">Изтриване от историята</translation>
+<translation id="5755101376452091923">Можете да редактирате името си <ph name="BEGIN_LINK" />в профила си в Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="5756163054456765343">П&amp;омощен център</translation>
 <translation id="5757187557809630523">следващ запис</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>

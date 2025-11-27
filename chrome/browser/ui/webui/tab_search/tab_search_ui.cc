@@ -35,7 +35,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -263,13 +262,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 TabSearchUI::~TabSearchUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabSearchUI)
-
-void TabSearchUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void TabSearchUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver) {

@@ -59,7 +59,7 @@
 <translation id="1251750620252348585">Título de nível 6 seguinte</translation>
 <translation id="1264956950255940376">Fechar ligeiramente o olho esquerdo</translation>
 <translation id="1268366246392928616">Não existe nenhuma expressão matemática anterior.</translation>
-<translation id="1275718070701477396">Linha selecionada</translation>
+<translation id="1275718070701477396">Opção selecionada</translation>
 <translation id="1284576163386164372">Pode sempre ver tutoriais ao abrir os menus com um toque de quatro dedos. Em seguida, ative o tutorial na secção "ChromeVox".</translation>
 <translation id="1291286136605998134">Botão ativar/desativar</translation>
 <translation id="1299774449519412690">Azul-celeste escuro</translation>
@@ -132,7 +132,7 @@
 <translation id="1717267964664691695">Tutorial de toque concluído</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">ftr</translation>
-<translation id="1730447754326314349">Damos-lhe as boas-vindas ao tutorial do ChromeVox. Para sair deste tutorial em qualquer altura, prima a tecla Escape no canto superior esquerdo do teclado. Para desativar o ChromeVox, mantenha premidas as teclas Control e Alt e prima Z. Quando pretender, utilize a barra de espaço para avançar para a aula seguinte.</translation>
+<translation id="1730447754326314349">Damos-lhe as boas-vindas ao tutorial do ChromeVox. Para sair deste tutorial em qualquer altura, prima a tecla Escape no canto superior esquerdo do teclado. Para desativar o ChromeVox, prima sem soltar as teclas Control e Alt e prima Z. Quando quiser, use a barra de espaço para avançar para a aula seguinte.</translation>
 <translation id="174268867904053074">Gráfico seguinte</translation>
 <translation id="1756785467854861272">Magenta-escuro</translation>
 <translation id="1758693804775271377">Deslize rapidamente para a esquerda ou para a direita com um dedo para procurar aulas sobre este tópico</translation>
@@ -189,7 +189,7 @@
 <translation id="2152179395627233441">Fechar área para praticar</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Clicar no item atual</translation>
-<translation id="2179452035581866348">O ChromeVox utiliza sons para lhe dar informações essenciais e adicionais. Pode utilizar estes sons para navegar mais rapidamente ao aprender o que significa cada som. Quando se sentir mais à vontade, pode desativar as descrições detalhadas na fala e contar com elas para obter informações essenciais acerca da página. Segue-se uma lista completa de sons e do respetivo significado.</translation>
+<translation id="2179452035581866348">O ChromeVox usa sons para dar informações essenciais e adicionais. Pode usar estes sons para navegar mais rapidamente aprendendo o que significa cada som. Quando se sentir mais à vontade, pode desativar as descrições detalhadas na fala e contar com elas para obter informações essenciais acerca da página. Segue-se uma lista completa de sons e do respetivo significado.</translation>
 <translation id="2183409941723714159">Navegação com a tecla Tab</translation>
 <translation id="2197863150503783129">Castanho sela</translation>
 <translation id="2199994615414171367">Matemática anterior</translation>
@@ -676,7 +676,7 @@
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5310788376443009632">removido:</translation>
 <translation id="5316825363044614340">mover para a linha seguinte</translation>
-<translation id="5320727453979144100">Modo aderente ativado</translation>
+<translation id="5320727453979144100">Modo fixo ativado</translation>
 <translation id="532485153932049746">Formatação de texto
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -729,7 +729,7 @@
 <translation id="5623842676595125836">Registo</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Símbolo de gráficos</translation>
-<translation id="5648939288050772726">Parabéns! Aprendeu as noções básicas para usar o ChromeVox com êxito. Não se esqueça de que pode abrir o menu de comandos do ChromeVox em qualquer altura ao premir Pesquisar + Ponto. Para saber ainda mais acerca do ChromeVox e ChromeOS, visite os artigos seguintes.
+<translation id="5648939288050772726">Parabéns! Aprendeu as noções básicas para usar o ChromeVox com êxito. Não se esqueça de que pode abrir o menu de comandos do ChromeVox em qualquer altura ao premir Pesquisar + Ponto. Para saber ainda mais acerca do ChromeVox e ChromeOS, visite os seguintes artigos.
     Se concluiu o tutorial, use o ChromeVox para navegar para o botão Fechar e clique no mesmo.</translation>
 <translation id="5653397561111110475">Usar as funcionalidades de acessibilidade do ecrã tátil do Chromebook</translation>
 <translation id="5655682562155942719">Comandos para avançar</translation>

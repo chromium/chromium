@@ -24,7 +24,7 @@ int ValueToStep(double value) {
 
 namespace browser_ui {
 
-void JNI_PageZoomMetrics_LogZoomLevelUKM(
+static void JNI_PageZoomMetrics_LogZoomLevelUKM(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     jdouble new_zoom_level) {

@@ -22,20 +22,20 @@ using ::testing::ElementsAre;
 using enum AttributeTypeName;
 
 constexpr char16_t kSeparator[] = u" - ";
-constexpr char kAppLocaleUS[] = "en-US";
 
 class AutofillAiLabelsTest : public testing::Test {
  public:
   std::vector<std::u16string> GetLabels(
       base::span<const EntityInstance* const> entities,
       DenseSet<AttributeTypeName> attribute_type_names_to_ignore,
-      bool only_disambiguating_types) {
+      bool only_disambiguating_types,
+      const std::string& app_locale = "en-US") {
     DenseSet<AttributeType> attribute_types_to_ignore(
         attribute_type_names_to_ignore,
         [](AttributeTypeName name) { return AttributeType(name); });
     return base::ToVector(
         GetLabelsForEntities(entities, attribute_types_to_ignore,
-                             only_disambiguating_types, kAppLocaleUS),
+                             only_disambiguating_types, app_locale),
         [&](const EntityLabel& label) {
           return base::JoinString(label, kSeparator);
         });
@@ -140,6 +140,27 @@ TEST_F(AutofillAiLabelsTest, Settings_NonDisambiguatingTypesAsLastResort) {
   EXPECT_THAT(GetLabels({&vehicle_1, &vehicle_2}, {kVehicleMake},
                         /*only_disambiguating_types=*/false),
               ElementsAre(u"John Doe", u"John Doe"));
+}
+
+TEST_F(AutofillAiLabelsTest, FlightDepartureDate_IsLocaleDependent) {
+  base::Time departure_time;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-01-01", &departure_time));
+  EntityInstance flight_1 = test::GetFlightReservationEntityInstance(
+      {.departure_time = departure_time});
+  EntityInstance flight_2 = test::GetFlightReservationEntityInstance(
+      {.departure_time = departure_time + base::Days(1)});
+
+  EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
+                        /*only_disambiguating_types=*/true),
+              ElementsAre(u"Jan 1", u"Jan 2"));
+  EXPECT_THAT(
+      GetLabels({&flight_1, &flight_2}, {},
+                /*only_disambiguating_types=*/true, /*app_locale=*/"de-DE"),
+      ElementsAre(u"1. Jan.", u"2. Jan."));
+  EXPECT_THAT(
+      GetLabels({&flight_1, &flight_2}, {},
+                /*only_disambiguating_types=*/true, /*app_locale=*/"pl-PL"),
+      ElementsAre(u"1 sty", u"2 sty"));
 }
 
 }  // namespace

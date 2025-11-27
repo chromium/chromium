@@ -10,6 +10,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -212,4 +213,82 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(side_panel_web_contents);
 
   EXPECT_EQ(controller_web_contents, side_panel_web_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnTabStripModelChanged_TabBecomesActiveOnStartup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
+  ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
+  ASSERT_TRUE(controller1);
+
+  // Confirm that tab1 became active on browser startup.
+  ASSERT_TRUE(controller1->isActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnTabStripModelChanged_NewTabBecomesActive) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
+  ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
+
+  // Add a second tab.
+  chrome::AddTabAt(browser(), GURL("about:blank"), /* index= */ 1,
+                   /* foreground= */ true);
+  tabs::TabInterface* tab2 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ReadAnythingController* controller2 = ReadAnythingController::From(tab2);
+  ASSERT_TRUE(controller2);
+
+  // Confirm that controller1 became inactive and controller2 became active.
+  ASSERT_FALSE(controller1->isActiveTab());
+  ASSERT_TRUE(controller2->isActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnTabStripModelChanged_TabsChangeActiveStateOnTabSwitch) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
+  ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
+
+  // Add a second tab.
+  chrome::AddTabAt(browser(), GURL("about:blank"), /* index= */ 1,
+                   /* foreground= */ true);
+  tabs::TabInterface* tab2 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ReadAnythingController* controller2 = ReadAnythingController::From(tab2);
+
+  // Switch back to the first tab.
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_EQ(0, tab_strip_model->active_index());
+
+  // Confirm that controller1 became active and controller2 became inactive.
+  ASSERT_TRUE(controller1->isActiveTab());
+  ASSERT_FALSE(controller2->isActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnTabStripModelChanged_NewBackgroundTabIsInactive) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
+  ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
+
+  // Add a new tab in the background (inactive).
+  chrome::AddTabAt(browser(), GURL("about:blank"), /* index= */ 1,
+                   /* foreground= */ false);
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(0, tab_strip_model->active_index());
+
+  tabs::TabInterface* tab2 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ReadAnythingController* controller2 = ReadAnythingController::From(tab2);
+
+  // Confirm that tab 1 remains active and tab 2 didn't become active.
+  ASSERT_TRUE(controller1->isActiveTab());
+  ASSERT_FALSE(controller2->isActiveTab());
 }

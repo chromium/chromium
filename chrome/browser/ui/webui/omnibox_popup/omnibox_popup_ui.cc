@@ -34,7 +34,6 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -185,13 +184,6 @@ void OmniboxPopupUI::BindInterface(
       metrics_reporter_service->metrics_reporter(), omnibox_controller,
       web_ui());
   omnibox_handler_->SetEmbedder(embedder());
-}
-
-void OmniboxPopupUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void OmniboxPopupUI::BindInterface(

@@ -1035,7 +1035,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     SETTINGS_MULTI_COLUMN,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(
                     SETTINGS_SINGLE_ACTIVITY,
@@ -1723,6 +1723,10 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_TIPS_NOTIFICATIONS, "always_show_opt_in_promo", false);
 
+    public static final BooleanCachedFeatureParam sAndroidTipsNotificationsResetFeatureTipShown =
+            newBooleanCachedFeatureParam(
+                    ANDROID_TIPS_NOTIFICATIONS, "reset_feature_tip_shown", false);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -1741,6 +1745,7 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
+                    sAndroidTipsNotificationsResetFeatureTipShown,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonDefaultVariant,

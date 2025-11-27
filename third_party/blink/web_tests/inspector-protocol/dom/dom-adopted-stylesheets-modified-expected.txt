@@ -1,0 +1,10 @@
+Test that DOM events are fired for adopted stylesheets.
+There are 1 adopted stylesheets.
+Removing stylesheet...
+Node IDs match: true
+There are now 0 adopted stylesheets.
+Adding stylesheet...
+Node IDs match: true
+There are now 1 adopted stylesheets.
+Adopted stylesheet IDs match: true
+

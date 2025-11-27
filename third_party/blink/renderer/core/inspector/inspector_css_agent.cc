@@ -3128,7 +3128,7 @@ protocol::Response InspectorCSSAgent::setSupportsText(
 protocol::Response InspectorCSSAgent::createStyleSheet(
     const String& frame_id,
     std::optional<bool> force,
-    protocol::CSS::StyleSheetId* out_style_sheet_id) {
+    protocol::DOM::StyleSheetId* out_style_sheet_id) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
   if (!frame)

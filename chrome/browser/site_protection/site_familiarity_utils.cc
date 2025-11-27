@@ -6,6 +6,7 @@
 
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
@@ -16,6 +17,18 @@
 #include "content/public/common/content_features.h"
 
 namespace site_protection {
+namespace {
+HostContentSettingsMap* GetHostContentSettingsMap(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  return HostContentSettingsMapFactory::GetForProfile(profile);
+}
+}  // namespace
 
 bool AreV8OptimizationsDisabledOnUnfamiliarSites(Profile* profile) {
   return ComputeDefaultJavascriptOptimizerSetting(profile) ==
@@ -85,6 +98,49 @@ std::optional<bool> AreV8OptimizationsDisabled(
   }
 
   return render_process_host->AreV8OptimizationsDisabled();
+}
+
+std::optional<content_settings::SettingSource>
+GetJavascriptOptimizerSettingSource(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  HostContentSettingsMap* map = GetHostContentSettingsMap(web_contents);
+  if (!map) {
+    return std::nullopt;
+  }
+
+  const GURL& site_url = web_contents->GetURL();
+  if (site_url.is_empty()) {
+    return std::nullopt;
+  }
+
+  content_settings::SettingInfo setting_info;
+  map->GetContentSetting(site_url, site_url,
+                         ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                         &setting_info);
+  return setting_info.source;
+}
+
+void EnableV8Optimizations(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  HostContentSettingsMap* map = GetHostContentSettingsMap(web_contents);
+  if (!map) {
+    return;
+  }
+
+  const GURL& site_url = web_contents->GetURL();
+  if (site_url.is_empty()) {
+    return;
+  }
+
+  map->SetContentSettingDefaultScope(site_url, site_url,
+                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 }  // namespace site_protection

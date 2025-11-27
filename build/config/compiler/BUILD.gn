@@ -20,7 +20,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
-import("//build/toolchain/kythe.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -2269,11 +2268,6 @@ config("default_warnings") {
   # TODO(crbug.com/355446806): Clean up and enable.
   if (is_apple) {
     ldflags += [ "-Wl,-no_warn_duplicate_libraries" ]
-  }
-
-  if (enable_kythe_annotations) {
-    # TODO(crbug.com/461948903): remove this once fuchsia compile error fixed
-    cflags += [ "-Wno-deprecated-declarations" ]
   }
 
   # Rust warnings

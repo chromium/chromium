@@ -29,7 +29,7 @@ interface TouchToFillPaymentMethodComponent {
     /** This delegate is called when the TouchToFillPaymentMethod component is interacted with. */
     interface Delegate {
         /** Called whenever the sheet is dismissed (by user or native). */
-        void onDismissed(boolean dismissedByUser);
+        void onDismissed(boolean dismissedByUser, boolean shouldReshow);
 
         /** Called when user requests to scan a new credit card. */
         void scanCreditCard();
@@ -84,9 +84,6 @@ interface TouchToFillPaymentMethodComponent {
 
         /** Called when the user clicks the "Manage loyalty cards" button. */
         void openPassesManagementUi();
-
-        /** Called when the user clicks the "OK" button on the error screen. */
-        void onErrorOkPressed();
 
         /**
          * Called when the user selects a BNPL issuer.

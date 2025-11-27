@@ -58,6 +58,11 @@ public class TabStateStorageService {
         TabStateStorageServiceJni.get().clearState(mNativeTabStateStorageService);
     }
 
+    /** Clears all the tabs for a given window from persistent storage. */
+    public void clearWindow(String windowTag) {
+        TabStateStorageServiceJni.get().clearWindow(mNativeTabStateStorageService, windowTag);
+    }
+
     @NativeMethods
     interface Natives {
         void save(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
@@ -69,5 +74,8 @@ public class TabStateStorageService {
                 Callback<StorageLoadedData> loadedDataCallback);
 
         void clearState(long nativeTabStateStorageServiceAndroid);
+
+        void clearWindow(
+                long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
     }
 }

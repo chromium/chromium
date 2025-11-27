@@ -102,7 +102,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mSnackbarManager,
                         mRootView,
                         mContainerView,
-                        new ArrayList<Integer>());
+                        new ArrayList<Integer>(),
+                        TabListEditorCoordinator.UNLIMITED_SELECTION);
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
@@ -167,7 +168,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mSnackbarManager,
                         mRootView,
                         mContainerView,
-                        new ArrayList<Integer>());
+                        new ArrayList<Integer>(),
+                        TabListEditorCoordinator.UNLIMITED_SELECTION);
 
         coordinatorWithInvalidId.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);

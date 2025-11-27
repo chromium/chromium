@@ -709,47 +709,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<blink::mojom::FileSystemAccessManager>(
-      base::BindRepeating(&RenderFrameHostImpl::GetFileSystemAccessManager,
-                          base::Unretained(host)));
-
-  map->Add<blink::mojom::FileSystemManager>(base::BindRepeating(
-      &RenderFrameHostImpl::GetFileSystemManager, base::Unretained(host)));
-
-  if (base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
-    map->Add<blink::mojom::FontAccessManager>(base::BindRepeating(
-        &RenderFrameHostImpl::GetFontAccessManager, base::Unretained(host)));
-  }
-
-  map->Add<device::mojom::GamepadHapticsManager>(
-      &device::GamepadHapticsManager::Create);
-
-  map->Add<blink::mojom::GeolocationService>(base::BindRepeating(
-      &RenderFrameHostImpl::GetGeolocationService, base::Unretained(host)));
-
-  map->Add<blink::mojom::IdleManager>(base::BindRepeating(
-      &RenderFrameHostImpl::BindIdleManager, base::Unretained(host)));
-
-#if BUILDFLAG(ENABLE_MDNS)
-  map->Add<network::mojom::MdnsResponder>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateMdnsResponder, base::Unretained(host)));
-#endif  // BUILDFLAG(ENABLE_MDNS)
-
-  // BrowserMainLoop::GetInstance() may be null on unit tests.
-  if (BrowserMainLoop::GetInstance()) {
-    map->Add<midi::mojom::MidiSessionProvider>(
-        base::BindRepeating(&MidiHost::BindReceiver,
-                            host->GetProcess()->GetDeprecatedID(),
-                            BrowserMainLoop::GetInstance()->midi_service()),
-        GetIOThreadTaskRunner({}));
-  }
-
-  map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
-      &BindMediaPlayerObserverClientHandler, base::Unretained(host)));
-
-  map->Add<blink::mojom::NotificationService>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateNotificationService, base::Unretained(host)));
-
   // WebRTC p2p connections are disallowed in fenced frames. Creation of
   // RTCPeerConnection is already disabled in the renderer, so in theory this
   // unbound interface should never present an issue.
@@ -1132,6 +1091,48 @@ void PopulateBinderMapWithContext(
 
   map->Add<blink::mojom::FeatureObserver>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetFeatureObserver>);
+
+  map->Add<blink::mojom::FileSystemAccessManager>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::GetFileSystemAccessManager>);
+
+  map->Add<blink::mojom::FileSystemManager>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetFileSystemManager>);
+
+  if (base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
+    map->Add<blink::mojom::FontAccessManager>(
+        &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetFontAccessManager>);
+  }
+
+  map->Add<device::mojom::GamepadHapticsManager>(
+      &device::GamepadHapticsManager::Create);
+
+  map->Add<blink::mojom::GeolocationService>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetGeolocationService>);
+
+  map->Add<blink::mojom::IdleManager>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindIdleManager>);
+
+#if BUILDFLAG(ENABLE_MDNS)
+  map->Add<network::mojom::MdnsResponder>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateMdnsResponder>);
+#endif  // BUILDFLAG(ENABLE_MDNS)
+
+  // BrowserMainLoop::GetInstance() may be null on unit tests.
+  if (BrowserMainLoop::GetInstance()) {
+    map->Add<midi::mojom::MidiSessionProvider>(
+        base::BindRepeating(&MidiHost::BindReceiver,
+                            host->GetProcess()->GetDeprecatedID(),
+                            BrowserMainLoop::GetInstance()->midi_service()),
+        GetIOThreadTaskRunner({}));
+  }
+
+  map->Add<media::mojom::MediaPlayerObserverClient>(
+      &BindMediaPlayerObserverClientHandler);
+
+  map->Add<blink::mojom::NotificationService>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateNotificationService>);
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);
@@ -1587,6 +1588,9 @@ void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
   // |SharedStorageWorkletHost::broker_|.
   map->Add<blink::mojom::LockManager>(base::BindRepeating(
       &SharedStorageWorkletHost::GetLockManager, base::Unretained(host)));
+  map->Add<blink::mojom::ReportingServiceProxy>(
+      base::BindRepeating(&CreateReportingServiceProxyForSharedStorageWorklet,
+                          base::Unretained(host)));
 }
 
 void PopulateBinderMapWithContext(

@@ -17,11 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 namespace ash {
 namespace file_manager {
@@ -52,12 +47,6 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   void BindInterface(
       mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver);
 
-  // Instantiates the implementor of the mojom::PageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Get the number of open File Manager windows.
   // Should be called on UI thread.
   static int GetNumInstances();
@@ -75,8 +64,6 @@ class FileManagerUI : public ui::MojoWebDialogUI,
 
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   // Counts the number of active Files SWA instances. This counter goes up every
   // time a new window is opened and down every time a window is closed.

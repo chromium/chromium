@@ -884,7 +884,9 @@ void BuildActionsResultWithObservations(
           JournalDetailsBuilder()
               .Add("result_code", base::ToString(result_code))
               .Add("index_of_failed_action",
-                   (index_of_failed_action.has_value() ? *index_of_failed_action : -1))
+                   index_of_failed_action.has_value()
+                       ? base::ToString(*index_of_failed_action)
+                       : std::string("<empty>"))
               .Add("skip_async_observation_information",
                    skip_async_observation_information)
               .Add("action_results", action_results.size())

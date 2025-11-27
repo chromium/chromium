@@ -224,9 +224,13 @@ void LoginOnUff() {
 
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupUserActionTester]);
 }
 
 - (void)tearDownHelper {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseUserActionTester]);
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
 
@@ -572,6 +576,28 @@ void LoginOnUff() {
       [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
                                  kFormPassword];
   [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
+
+  // Verify metrics.
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:1
+                             forBucket:2
+                          forHistogram:@"PasswordManager."
+                                       @"PasswordDropdownItemSelected"],
+      @"Incorrect histogram count for PasswordDropdownItemSelected");
+
+  // Verify actions.
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Present"],
+      @"Incorrect user action count for Present");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Accept"],
+      @"Incorrect user action count for Accept");
 }
 
 // Tests that password generation is offered for signed in users.
@@ -605,6 +631,19 @@ void LoginOnUff() {
   // Confirm by tapping on the 'Use Suggested Password' button.
   [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordMatcher()]
       performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Present"],
+      @"Incorrect user action count for Present");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Accept"],
+      @"Incorrect user action count for Accept");
 }
 
 // Tests that password generation is not offered for signed in users with

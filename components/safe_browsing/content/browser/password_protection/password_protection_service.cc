@@ -63,8 +63,7 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,
     const GURL& password_form_action,
-    const GURL& password_form_frame_url,
-    const std::string& hosted_domain) {
+    const GURL& password_form_frame_url) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   LoginReputationClientRequest::TriggerType trigger_type =
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE;

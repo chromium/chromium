@@ -7,7 +7,6 @@ writers and emits various template and doc files (admx, html, json etc.).
 '''
 
 import argparse
-import codecs
 import collections
 import json
 import os
@@ -211,7 +210,7 @@ def main():
         _LANG_PLACEHOLDER, lang)
     # Loads the localized policy json file which must be a valid json file
     # encoded in utf-8.
-    with codecs.open(policy_templates_json_path, 'r', 'utf-8') as policy_file:
+    with open(policy_templates_json_path, 'r', encoding='utf-8') as policy_file:
       policy_data = json.loads(
           policy_file.read(), object_hook=_JsonToUtf8Encoding)
 
@@ -242,11 +241,7 @@ def main():
         # Run the template writer on th policy data.
         writer = GetWriter(writer_desc.type, config)
         output_data = policy_generator.GetTemplateText(writer)
-        # Make sure the file uses Windows line endings if needed.  This is
-        # important here because codecs.open() opens files in binary more and
-        # will not do line ending conversion.
-        if writer_desc.force_windows_line_ending:
-          output_data = re.sub(r'([^\r])\n', r'\1\r\n', output_data)
+        newline = '\r\n' if writer_desc.force_windows_line_ending else None
 
         # Make output directory if it doesn't exist yet.
         output_dir = os.path.split(output_path)[0]
@@ -254,7 +249,10 @@ def main():
           os.makedirs(output_dir)
 
         # Write output file.
-        with codecs.open(output_path, 'w', writer_desc.encoding) as output_file:
+        with open(output_path,
+                  'w',
+                  encoding=writer_desc.encoding,
+                  newline=newline) as output_file:
           output_file.write(output_data)
 
 

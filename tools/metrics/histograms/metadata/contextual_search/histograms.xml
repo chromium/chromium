@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Image"/>
   <variant name="Other"/>
   <variant name="Pdf"/>
+  <variant name="Tab"/>
 </variants>
 
 <!-- LINT.IfChange(ContextualSearchSource) -->

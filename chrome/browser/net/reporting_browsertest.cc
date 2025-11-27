@@ -789,6 +789,57 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_EQ(custom_key, nullptr);
 }
 
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
+                       CrashStorageAPIDuplicateValue) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to reporting-enabled page.
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  // Use the crash reporting storage API, to collect some data about the current
+  // page. In this case, just the current origin and a custom key, to verify
+  // they come out on the other end of the crash report.
+  EXPECT_TRUE(content::EvalJs(contents->GetPrimaryMainFrame(), R"(
+    (async () => {
+      await crashReport.initialize(100);
+      crashReport.set('custom_key', 'value_1');
+      crashReport.set('custom_key', 'value_2');
+    })();
+  )")
+                  .is_ok());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List request =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = request.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const base::Value::Dict* crash_report_api_body =
+      body->FindDict("crash_report_api");
+  const std::string* custom_key =
+      crash_report_api_body->FindString("custom_key");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(main_url, *url);
+  EXPECT_EQ("unresponsive", *reason);
+  EXPECT_EQ("value_2", *custom_key);
+}
+
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
                        CrashReportUnresponsive) {
   content::WebContents* contents =

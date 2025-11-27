@@ -35,11 +35,10 @@ namespace ash {
 namespace {
 
 // Pops a string-to-string dictionary from the reader.
-std::unique_ptr<base::Value> PopStringToStringDictionary(
-    dbus::MessageReader* reader) {
+base::Value PopStringToStringDictionary(dbus::MessageReader* reader) {
   dbus::MessageReader array_reader(nullptr);
   if (!reader->PopArray(&array_reader))
-    return nullptr;
+    return base::Value();
   base::Value::Dict result;
   while (array_reader.HasMoreData()) {
     dbus::MessageReader entry_reader(nullptr);
@@ -47,27 +46,27 @@ std::unique_ptr<base::Value> PopStringToStringDictionary(
     std::string value;
     if (!array_reader.PopDictEntry(&entry_reader) ||
         !entry_reader.PopString(&key) || !entry_reader.PopString(&value)) {
-      return nullptr;
+      return base::Value();
     }
     result.Set(key, value);
   }
-  return std::make_unique<base::Value>(std::move(result));
+  return base::Value(std::move(result));
 }
 
 }  // namespace
 
 ValueMatcher::ValueMatcher(const base::Value& value)
-    : expected_value_(std::make_unique<base::Value>(value.Clone())) {}
+    : expected_value_(value.Clone()) {}
 ValueMatcher::~ValueMatcher() = default;
 
 bool ValueMatcher::MatchAndExplain(const base::Value& value,
                                    MatchResultListener* listener) const {
-  return *expected_value_ == value;
+  return expected_value_ == value;
 }
 
 void ValueMatcher::DescribeTo(::std::ostream* os) const {
   std::string expected_value_str;
-  base::JSONWriter::WriteWithOptions(*expected_value_,
+  base::JSONWriter::WriteWithOptions(expected_value_,
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &expected_value_str);
   *os << "value equals " << expected_value_str;
@@ -75,7 +74,7 @@ void ValueMatcher::DescribeTo(::std::ostream* os) const {
 
 void ValueMatcher::DescribeNegationTo(::std::ostream* os) const {
   std::string expected_value_str;
-  base::JSONWriter::WriteWithOptions(*expected_value_,
+  base::JSONWriter::WriteWithOptions(expected_value_,
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &expected_value_str);
   *os << "value does not equal " << expected_value_str;
@@ -285,7 +284,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
     }
     dbus::MessageReader variant_reader(nullptr);
     ASSERT_TRUE(entry_reader.PopVariant(&variant_reader));
-    std::unique_ptr<base::Value> value;
+    base::Value value;
     // Variants in the dictionary can be basic types or string-to-string
     // dictionary.
     switch (variant_reader.GetDataType()) {
@@ -295,17 +294,15 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
       case dbus::Message::BOOL:
       case dbus::Message::INT32:
       case dbus::Message::STRING:
-        value = std::make_unique<base::Value>(
-            dbus::PopDataAsValue(&variant_reader));
-        ASSERT_FALSE(value->is_none());
+        value = dbus::PopDataAsValue(&variant_reader);
+        ASSERT_FALSE(value.is_none());
         break;
       default:
         NOTREACHED();
     }
-    ASSERT_TRUE(value.get());
     const base::Value* expected_value = expected_dictionary->Find(key);
     ASSERT_TRUE(expected_value);
-    EXPECT_EQ(*value, *expected_value);
+    EXPECT_EQ(value, *expected_value);
   }
 }
 

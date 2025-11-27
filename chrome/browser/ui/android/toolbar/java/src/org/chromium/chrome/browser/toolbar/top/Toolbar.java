@@ -109,4 +109,9 @@ public interface Toolbar {
 
     /** Add the location bar view back to the toolbar. */
     void restoreLocationBarView();
+
+    /**
+     * Notify the toolbar the capture size has updated so the overlay position needs adjustments.
+     */
+    void onCaptureSizeUpdated();
 }

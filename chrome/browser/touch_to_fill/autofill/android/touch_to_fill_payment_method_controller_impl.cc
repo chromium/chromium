@@ -301,11 +301,11 @@ void TouchToFillPaymentMethodControllerImpl::OnContentAutofillDriverCreated(
       std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
 }
 
-void TouchToFillPaymentMethodControllerImpl::OnDismissed(
-    JNIEnv* env,
-    bool dismissed_by_user) {
+void TouchToFillPaymentMethodControllerImpl::OnDismissed(JNIEnv* env,
+                                                         bool dismissed_by_user,
+                                                         bool should_reshow) {
   if (delegate_) {
-    delegate_->OnDismissed(dismissed_by_user);
+    delegate_->OnDismissed(dismissed_by_user, should_reshow);
   }
   view_.reset();
   delegate_.reset();
@@ -364,14 +364,6 @@ void TouchToFillPaymentMethodControllerImpl::LoyaltyCardSuggestionSelected(
     const LoyaltyCard& loyalty_card) {
   if (delegate_) {
     delegate_->LoyaltyCardSuggestionSelected(loyalty_card);
-  }
-}
-
-void TouchToFillPaymentMethodControllerImpl::OnErrorOkPressed(JNIEnv* env) {
-  if (delegate_) {
-    delegate_->OnErrorOkPressed();
-  } else {
-    Hide();
   }
 }
 

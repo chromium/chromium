@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.TestActivity;
@@ -97,6 +98,14 @@ public class CaretBrowsingDialogTest {
 
     @Test
     public void testCancelAction() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Accessibility.Android.CaretBrowsing.SelectedAction",
+                                AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction
+                                        .DISMISSED)
+                        .build();
+
         mCaretBrowsingDialog.onClick(
                 mCaretBrowsingDialog.getModelForTesting(),
                 ModalDialogProperties.ButtonType.NEGATIVE);
@@ -105,6 +114,8 @@ public class CaretBrowsingDialogTest {
                         mCaretBrowsingDialog.getModelForTesting(),
                         DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         verify(mAccessibilitySettingsBridge, never()).setCaretBrowsingEnabled(mProfile, true);
+
+        watcher.assertExpected();
     }
 
     @Test

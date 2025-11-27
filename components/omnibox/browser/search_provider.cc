@@ -405,7 +405,7 @@ const AutocompleteInput SearchProvider::GetInput(bool is_keyword) const {
 void SearchProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   TRACE_EVENT0("omnibox", "SearchProvider::OnURLLoadComplete");
   DCHECK(!done_);
   const bool is_keyword = source == keyword_loader_.get();

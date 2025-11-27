@@ -545,7 +545,7 @@ void InputManager::StateOnTouchTransfer(
       iter->second.rir_support.get());
   android_state_transfer_handler_.StateOnTouchTransfer(
       std::move(state), support_android->GetWeakPtr());
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void InputManager::ForceEnableZoomStateChanged(

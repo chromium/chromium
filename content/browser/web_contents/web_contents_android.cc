@@ -222,7 +222,7 @@ static void JNI_WebContentsImpl_DestroyWebContents(
 }
 
 // static
-ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
+static ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
     JNIEnv* env,
     jlong web_contents_ptr) {
   WebContentsAndroid* web_contents_android =

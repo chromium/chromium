@@ -200,22 +200,8 @@ CGFloat const kDividerWidthConstant = 1;
   if (_forceDisabled == forceDisabled) {
     return;
   }
-
-  if (forceDisabled) {
-    [self.visibilityDelegate setBadgeViewHidden:YES];
-  } else {
-    // Turning off force disable mode doesn't imply that the badge view will
-    // not remain hidden. Check if there is a badge to be displayed to avoid
-    // accidentally removing the placeholder as a side effect of unhiding.
-    if (!IsProactiveSuggestionsFrameworkEnabled()) {
-      [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
-    } else {
-      [self.visibilityDelegate
-          setBadgeViewHidden:(_currentlyDisplayedBadges.count == 0)];
-    }
-  }
-
   _forceDisabled = forceDisabled;
+  [self updateVisibility];
 }
 
 - (void)updateDisplayedBadges:(NSArray<id<BadgeItem>>*)badgesToDisplay {
@@ -252,12 +238,12 @@ CGFloat const kDividerWidthConstant = 1;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   BOOL badgeViewShouldCollapse = progress <= kFullScreenProgressThreshold;
   if (badgeViewShouldCollapse) {
-    self.view.hidden = YES;
+    [self.visibilityDelegate setBadgeViewHidden:YES];
   } else {
     CGFloat alphaValue = fmax((progress - kFullScreenProgressThreshold) /
                                   (1 - kFullScreenProgressThreshold),
                               0);
-    self.view.hidden = NO;
+    [self updateVisibility];
     self.view.alpha = alphaValue;
   }
 }
@@ -354,6 +340,23 @@ CGFloat const kDividerWidthConstant = 1;
                      self.view.transform = CGAffineTransformIdentity;
                    }
                    completion:nil];
+}
+
+// Update the visibility of `self.view` through `self.visibilityDelegate`.
+- (void)updateVisibility {
+  if (self.forceDisabled) {
+    [self.visibilityDelegate setBadgeViewHidden:YES];
+  } else {
+    // Turning off force disable mode doesn't imply that the badge view will
+    // not remain hidden. Check if there is a badge to be displayed to avoid
+    // accidentally removing the placeholder as a side effect of unhiding.
+    if (!IsProactiveSuggestionsFrameworkEnabled()) {
+      [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
+    } else {
+      [self.visibilityDelegate
+          setBadgeViewHidden:(_currentlyDisplayedBadges.count == 0)];
+    }
+  }
 }
 
 @end

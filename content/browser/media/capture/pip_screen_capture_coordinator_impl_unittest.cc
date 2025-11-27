@@ -7,6 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/capture_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +31,11 @@ class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
               OnPipWindowIdChanged,
               (std::optional<NativeWindowId>),
               (override));
+  MOCK_METHOD(
+      void,
+      OnCapturesChanged,
+      (const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&),
+      (override));
 };
 
 class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
@@ -39,6 +47,11 @@ class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
               OnPipWindowIdChanged,
               (const std::optional<NativeWindowId>&),
               (override));
+  MOCK_METHOD(
+      void,
+      OnCapturesChanged,
+      (const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&),
+      (override));
 };
 
 void CallOnPipShownAndWaitUntilDone(
@@ -204,6 +217,166 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
   EXPECT_EQ(proxy->PipWindowId(), std::nullopt);
 
   proxy->RemoveObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, AddCaptureNotifiesObservers) {
+  MockObserver observer;
+  coordinator_->AddObserver(&observer);
+
+  const base::UnguessableToken session_id = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id(1, 1);
+  const content::DesktopMediaID desktop_media_id(
+      content::DesktopMediaID::TYPE_SCREEN, 123);
+  const auto& expected_capture_info =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id,
+          .render_frame_host_id = render_frame_host_id,
+          .desktop_media_id = desktop_media_id};
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
+                            testing::Eq(std::ref(expected_capture_info)))));
+  coordinator_->AddCapture(expected_capture_info);
+
+  coordinator_->RemoveObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, RemoveCaptureNotifiesObservers) {
+  MockObserver observer;
+  coordinator_->AddObserver(&observer);
+
+  const base::UnguessableToken session_id = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id(1, 1);
+  const content::DesktopMediaID desktop_media_id(
+      content::DesktopMediaID::TYPE_SCREEN, 123);
+  const auto& expected_capture_info =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id,
+          .render_frame_host_id = render_frame_host_id,
+          .desktop_media_id = desktop_media_id};
+
+  EXPECT_CALL(observer, OnCapturesChanged(_)).Times(1);
+  coordinator_->AddCapture(expected_capture_info);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::IsEmpty()));
+  coordinator_->RemoveCapture(session_id);
+
+  coordinator_->RemoveObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveCapture) {
+  MockObserver observer;
+  coordinator_->AddObserver(&observer);
+
+  const base::UnguessableToken session_id1 = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id1(1, 1);
+  const content::DesktopMediaID desktop_media_id1(
+      content::DesktopMediaID::TYPE_SCREEN, 123);
+  const auto& expected_capture_info1 =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id1,
+          .render_frame_host_id = render_frame_host_id1,
+          .desktop_media_id = desktop_media_id1};
+
+  const base::UnguessableToken session_id2 = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id2(2, 2);
+  const content::DesktopMediaID desktop_media_id2(
+      content::DesktopMediaID::TYPE_WINDOW, 456);
+  const auto& expected_capture_info2 =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id2,
+          .render_frame_host_id = render_frame_host_id2,
+          .desktop_media_id = desktop_media_id2};
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
+                            testing::Eq(std::ref(expected_capture_info1)))));
+  coordinator_->AddCapture(expected_capture_info1);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::UnorderedElementsAre(
+                            testing::Eq(std::ref(expected_capture_info1)),
+                            testing::Eq(std::ref(expected_capture_info2)))));
+  coordinator_->AddCapture(expected_capture_info2);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
+                            testing::Eq(std::ref(expected_capture_info2)))));
+  coordinator_->RemoveCapture(session_id1);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnCapturesChanged(testing::IsEmpty()));
+  coordinator_->RemoveCapture(session_id2);
+
+  coordinator_->RemoveObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       AddAndRemoveCaptureFromProxyNotifiesOtherProxy) {
+  auto proxy1 = coordinator_->CreateProxy();
+  auto proxy2 = coordinator_->CreateProxy();
+  ASSERT_TRUE(proxy1);
+  ASSERT_TRUE(proxy2);
+
+  MockProxyObserver observer;
+  proxy2->AddObserver(&observer);
+
+  const base::UnguessableToken session_id1 = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id1(1, 1);
+  const content::DesktopMediaID desktop_media_id1(
+      content::DesktopMediaID::TYPE_SCREEN, 123);
+  const auto& expected_capture_info1 =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id1,
+          .render_frame_host_id = render_frame_host_id1,
+          .desktop_media_id = desktop_media_id1};
+
+  const base::UnguessableToken session_id2 = base::UnguessableToken::Create();
+  const content::GlobalRenderFrameHostId render_frame_host_id2(2, 2);
+  const content::DesktopMediaID desktop_media_id2(
+      content::DesktopMediaID::TYPE_WINDOW, 456);
+  const auto& expected_capture_info2 =
+      PipScreenCaptureCoordinatorProxy::CaptureInfo{
+          .session_id = session_id2,
+          .render_frame_host_id = render_frame_host_id2,
+          .desktop_media_id = desktop_media_id2};
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
+                              testing::Eq(std::ref(expected_capture_info1)))))
+        .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+    proxy1->AddCapture(expected_capture_info1);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnCapturesChanged(testing::UnorderedElementsAre(
+                              testing::Eq(std::ref(expected_capture_info1)),
+                              testing::Eq(std::ref(expected_capture_info2)))))
+        .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+    proxy1->AddCapture(expected_capture_info2);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnCapturesChanged(testing::ElementsAre(
+                              testing::Eq(std::ref(expected_capture_info2)))))
+        .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+    proxy1->RemoveCapture(session_id1);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnCapturesChanged(testing::IsEmpty()))
+        .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+    proxy1->RemoveCapture(session_id2);
+    run_loop.Run();
+  }
+
+  proxy2->RemoveObserver(&observer);
 }
 
 }  // namespace content

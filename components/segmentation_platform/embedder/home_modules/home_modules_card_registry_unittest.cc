@@ -497,6 +497,60 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
   EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
 }
 
+// Tests that the Registry registers the TipsNotificationsPromo card when its
+// feature is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardEnabled) {
+  feature_list_.InitWithFeatures(
+      {features::kEducationalTipModule, features::kAndroidTipsNotifications},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(
+      &profile_pref_service_, &local_state_pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(),
+              Contains(kTipsNotificationsPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kTipsNotificationsPromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTipsNotificationsPromo);
+  EXPECT_THAT(signalKeys, Contains("tips_notifications_promo_shown_count"));
+  EXPECT_THAT(signalKeys, Contains("is_eligible_to_tips_opt_in"));
+  EXPECT_THAT(signalKeys, Contains("educational_tip_shown_count"));
+}
+
+// Tests that the Registry won't register the TipsNotificationsPromo card when
+// it is disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardDisabled) {
+  feature_list_.InitWithFeatures(
+      {features::kEducationalTipModule, features::kAndroidTipsNotifications},
+      {});
+  profile_pref_service_.SetUserPref(
+      kTipsNotificationsPromoImpressionCounterPref,
+      std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(
+      &profile_pref_service_, &local_state_pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(),
+              Not(Contains(kTipsNotificationsPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTipsNotificationsPromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTipsNotificationsPromo);
+  EXPECT_THAT(signalKeys,
+              Not(Contains("tips_notifications_promo_shown_count")));
+  EXPECT_THAT(signalKeys, Not(Contains("is_eligible_to_tips_opt_in")));
+  EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
+}
+
 #endif
 
 }  // namespace segmentation_platform::home_modules

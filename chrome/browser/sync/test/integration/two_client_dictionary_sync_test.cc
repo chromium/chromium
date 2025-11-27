@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -24,15 +26,38 @@ using dictionary_helper::NumDictionaryEntriesChecker;
 using dictionary_helper::RemoveWord;
 using spellcheck::kMaxSyncableDictionaryWords;
 
-class TwoClientDictionarySyncTest : public SyncTest {
+class TwoClientDictionarySyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           syncer::kSpellcheckSeparateLocalAndAccountDictionaries},
+          {});
+    }
+  }
+
   ~TwoClientDictionarySyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   bool TestUsesSelfNotifications() override { return false; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    TwoClientDictionarySyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   LoadDictionaries();
@@ -57,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   EXPECT_TRUE(DictionaryChecker(words).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousAdd)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -71,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousRemove)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -90,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(RemoveOnAAddOnB)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -111,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
 
 // Tests the case where a client has more words added than the
 // kMaxSyncableDictionaryWords limit.
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());

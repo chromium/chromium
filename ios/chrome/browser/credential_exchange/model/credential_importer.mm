@@ -172,6 +172,13 @@ std::string DataToString(NSData* data) {
     password_manager::CSVPassword::Status status =
         password_manager::CSVPassword::Status::kOK;
 
+    // URL field is optional, so it might be nil. Pass as empty and continue.
+    if (!password.URL) {
+      csvPasswords.emplace_back(password_manager::CSVPassword(
+          /*invalid_url=*/"", username, passwordStr, note, status));
+      continue;
+    }
+
     // Password manager expects urls to be in HTTP or HTTPS scheme. The imported
     // password might not contain it and e.g. just be an eTLD+1. Try adding the
     // scheme and validate the result.

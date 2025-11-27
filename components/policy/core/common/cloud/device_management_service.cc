@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -505,7 +507,7 @@ class DeviceManagementService::JobImpl : public Job {
 
   // Callback for `SimpleURLLoader`. Extracts data from |response_body| and
   // |url_loader_| and passes it on to |OnURLLoaderCompleteInternal|.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Interprets URL loading data and either schedules a retry or hands the data
   // off to |HandleResponseData|.
@@ -557,7 +559,7 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   bool was_fetched_via_proxy = false;
   std::string mime_type;
@@ -571,12 +573,7 @@ void DeviceManagementService::JobImpl::OnURLLoaderComplete(
     }
   }
 
-  std::string response_body_str;
-  if (response_body.get()) {
-    response_body_str = std::move(*response_body.get());
-  }
-
-  OnURLLoaderCompleteInternal(response_body_str, mime_type,
+  OnURLLoaderCompleteInternal(std::move(response_body).value_or(""), mime_type,
                               url_loader_->NetError(), response_code,
                               was_fetched_via_proxy);
 }

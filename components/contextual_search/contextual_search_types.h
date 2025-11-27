@@ -20,6 +20,7 @@ enum class MimeType;
 namespace contextual_search {
 
 // Upload status of a file.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.contextual_search
 enum class FileUploadStatus {
   // Not uploaded.
   kNotUploaded = 0,

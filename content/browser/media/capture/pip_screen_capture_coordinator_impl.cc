@@ -63,10 +63,30 @@ std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
   return pip_window_id_;
 }
 
+void PipScreenCaptureCoordinatorImpl::AddCapture(
+    PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
+  captures_.push_back(std::move(capture_info));
+  for (Observer& obs : observers_) {
+    obs.OnCapturesChanged(captures_);
+  }
+}
+
+void PipScreenCaptureCoordinatorImpl::RemoveCapture(
+    const base::UnguessableToken& session_id) {
+  captures_.erase(std::remove_if(captures_.begin(), captures_.end(),
+                                 [&session_id](const auto& c) {
+                                   return c.session_id == session_id;
+                                 }),
+                  captures_.end());
+  for (Observer& obs : observers_) {
+    obs.OnCapturesChanged(captures_);
+  }
+}
+
 std::unique_ptr<PipScreenCaptureCoordinatorProxy>
 PipScreenCaptureCoordinatorImpl::CreateProxy() {
   return std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
-      weak_factory_.GetWeakPtr(), PipWindowId());
+      weak_factory_.GetWeakPtr(), PipWindowId(), captures_);
 }
 
 void PipScreenCaptureCoordinatorImpl::AddObserver(Observer* observer) {
@@ -80,6 +100,7 @@ void PipScreenCaptureCoordinatorImpl::RemoveObserver(Observer* observer) {
 void PipScreenCaptureCoordinatorImpl::ResetForTesting() {
   pip_window_id_ = std::nullopt;
   observers_.Clear();
+  captures_.clear();
   weak_factory_.InvalidateWeakPtrs();
 }
 

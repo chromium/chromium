@@ -172,7 +172,8 @@ import java.util.List;
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
     ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
-    ChromeFeatureList.SUBMENUS_IN_APP_MENU
+    ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+    ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.

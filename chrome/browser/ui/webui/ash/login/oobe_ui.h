@@ -31,14 +31,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace ui {
-class ColorChangeHandler;
-}
-
-namespace color_change_listener::mojom {
-class PageHandler;
-}  // namespace color_change_listener::mojom
-
 namespace content {
 class WebUIDataSource;
 }
@@ -180,11 +172,6 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
-  // Binds to the Jelly dynamic color Mojo
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Binds to the cros authentication factor editing services.
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver);
@@ -232,8 +219,6 @@ class OobeUI : public ui::MojoWebUIController {
       webui_only_handlers_;  // Non-owning pointers.
   std::vector<raw_ptr<BaseScreenHandler, VectorExperimental>>
       screen_handlers_;  // Non-owning pointers.
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<OobeScreensHandlerFactory> oobe_screens_handler_factory_;
 

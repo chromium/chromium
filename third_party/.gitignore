@@ -125,7 +125,7 @@
 /rust-toolchain/
 /scan-build/src
 /scons-2.0.1
-/screen-ai
+/screen-ai/*/*
 /shaka-player/dist/
 /siso/.versions/
 /siso/cipd/

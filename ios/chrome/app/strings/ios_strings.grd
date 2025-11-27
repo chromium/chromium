@@ -392,6 +392,9 @@
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_STORE_PAGE_CONTEXT_SWITCH" translateable="false" desc="Switch indicating whether PageContext is stored locally [Length: unlimited].">
+        Store page context locally
+      </message>
       <message name="IDS_IOS_AI_PROTOTYPING_SYSTEM_INSTRUCTIONS_PLACEHOLDER" translateable="false" desc="System instructions placeholder text for AI prototyping menu [Length: unlimited].">
         Insert system instructions... (Optional)
       </message>
@@ -563,6 +566,15 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_INPUT_BAR_DONE" desc="The title for the button above the keyboard used to dismiss it. [6em]">
         Done
+      </message>
+      <message name="IDS_IOS_AUTOFILL_INVALID_CARDHOLDER_NAME_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card holder name is invalid. [iOS only]">
+        Invalid cardholder name
+      </message>
+      <message name="IDS_IOS_AUTOFILL_INVALID_CVC_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card security code is invalid. [iOS only]">
+        Invalid security code
+      </message>
+      <message name="IDS_IOS_AUTOFILL_INVALID_EXPIRATION_DATE_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card expiration date is invalid. [iOS only]">
+        Invalid expiration date
       </message>
       <message name="IDS_IOS_AUTOFILL_NICKNAME" desc="Title of the field representing the user defined nickname of a credit card. [Length: 15em] [iOS only]">
         Card nickname
@@ -1629,6 +1641,9 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS" desc="The Bookmarks title on the new tab page [Length: 10em]">
         Bookmarks
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE" desc="The name of the 'Edit Site' command in the Content Suggestions articles context menu to edit a pinned site">
+        Edit Site
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE" desc="The title of the footer of the sections of Content Suggestions">
         More
       </message>
@@ -1652,6 +1667,9 @@
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS" desc="The Parcel Tracking module package delivery undeliverable status description on the Home surface [Length: 10em]">
         Your package can't be delivered
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE" desc="The name of the 'Pin Site' command in the Content Suggestions articles context menu">
+        Pin site
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW" desc="Label indicating user can allow price tracking notifications">
           Allow price tracking notifications…
@@ -1823,6 +1841,9 @@
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE" desc="The Trending Queries module title on the new tab page [Length: 10em]">
         Trending searches
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE" desc="The name of the 'Unpin Site' command in the Content Suggestions articles context menu">
+        Unpin site
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW" desc="The What's New title on the new tab page [Length: 10em]">
         What's New

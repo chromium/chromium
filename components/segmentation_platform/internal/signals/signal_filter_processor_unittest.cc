@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"

@@ -101,8 +101,7 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const GURL& password_form_action,
-      const GURL& password_form_frame_url,
-      const std::string& hosted_domain);
+      const GURL& password_form_frame_url);
 #endif
 
   virtual void MaybeStartProtectedPasswordEntryRequest(

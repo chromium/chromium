@@ -8,14 +8,12 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -38,8 +36,9 @@ template <typename T>
 using Dict = std::vector<std::tuple<std::string, T>>;
 using VarDict = Dict<dbus_utils::Variant>;
 
+using internal::SystemdUnitCallback;
+using internal::SystemdUnitStatus;
 using SystemdUnitCallbacks = std::vector<SystemdUnitCallback>;
-using StatusOrCallbacks = std::variant<SystemdUnitStatus, SystemdUnitCallbacks>;
 
 namespace {
 
@@ -47,11 +46,8 @@ constexpr char kUnitNameFormat[] = "app-$1-$2.scope";
 
 constexpr char kModeReplace[] = "replace";
 
-// Declare this helper for SystemdUnitActiveStateWatcher to be used.
-void SetStateAndRunCallbacks(SystemdUnitStatus result);
-
-// Watches the object to become active and fires callbacks via
-// SetStateAndRunCallbacks. The callbacks are fired whenever a response with the
+// Watches the object to become active and fires callbacks.
+// The callbacks are fired whenever a response with the
 // state being "active" or "failed" (or similar) comes.
 //
 // PS firing callbacks results in destroying this object. So any references
@@ -59,13 +55,15 @@ void SetStateAndRunCallbacks(SystemdUnitStatus result);
 class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
  public:
   SystemdUnitActiveStateWatcher(scoped_refptr<dbus::Bus> bus,
-                                dbus::ObjectProxy* object_proxy)
+                                dbus::ObjectProxy* object_proxy,
+                                SystemdUnitCallback callback)
       : dbus::PropertySet(object_proxy,
                           kInterfaceSystemdUnit,
                           base::BindRepeating(
                               &SystemdUnitActiveStateWatcher::OnPropertyChanged,
                               base::Unretained(this))),
-        bus_(bus) {
+        bus_(bus),
+        callback_(std::move(callback)) {
     RegisterProperty(kSystemdActiveStateProp, &active_state_);
     ConnectSignals();
     GetAll();
@@ -80,7 +78,7 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
   void OnPropertyChanged(const std::string& property_name) {
     DCHECK(active_state_.is_valid());
     const std::string state_value = active_state_.value();
-    if (callbacks_called_ || state_value == "activating" ||
+    if (!callback_ || state_value == "activating" ||
         state_value == "reloading") {
       // Ignore if callbacks have already been fired or continue waiting until
       // the state changes to something else.
@@ -89,10 +87,9 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
 
     // There are other states as failed, inactive, and deactivating. Treat all
     // of them as failed.
-    callbacks_called_ = true;
-    SetStateAndRunCallbacks(state_value == kSystemdStateActive
-                                ? SystemdUnitStatus::kUnitStarted
-                                : SystemdUnitStatus::kFailedToStart);
+    std::move(callback_).Run(state_value == kSystemdStateActive
+                                 ? SystemdUnitStatus::kUnitStarted
+                                 : SystemdUnitStatus::kFailedToStart);
     MaybeDeleteSelf();
   }
 
@@ -103,7 +100,7 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
   }
 
   void MaybeDeleteSelf() {
-    if (!keep_alive_ && callbacks_called_) {
+    if (!keep_alive_ && !callback_) {
       delete this;
     }
   }
@@ -111,39 +108,23 @@ class SystemdUnitActiveStateWatcher : public dbus::PropertySet {
   // Registered property that this listens updates to.
   dbus::Property<std::string> active_state_;
 
-  // Indicates whether callbacks for the unit's state have been called.
-  bool callbacks_called_ = false;
-
   // Control variable that helps to defer the destruction of |this| as deleting
   // self when the state changes to active during |OnGetAll| will result in a
   // segfault.
   bool keep_alive_ = true;
 
   scoped_refptr<dbus::Bus> bus_;
+  SystemdUnitCallback callback_;
 };
 
-// Global state for cached result or pending callbacks.
-StatusOrCallbacks& GetUnitNameState() {
-  static base::NoDestructor<StatusOrCallbacks> state(
-      std::in_place_type<SystemdUnitCallbacks>);
-  return *state;
-}
-
-void SetStateAndRunCallbacks(SystemdUnitStatus result) {
-  auto& state = GetUnitNameState();
-  auto callbacks = std::move(std::get<SystemdUnitCallbacks>(state));
-  state = result;
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(result);
-  }
-}
-
-void OnGetPathResponse(scoped_refptr<dbus::Bus> bus, dbus::Response* response) {
+void OnGetPathResponse(scoped_refptr<dbus::Bus> bus,
+                       SystemdUnitCallback callback,
+                       dbus::Response* response) {
   dbus::MessageReader reader(response);
   dbus::ObjectPath obj_path;
   if (!response || !reader.PopObjectPath(&obj_path) || !obj_path.IsValid()) {
     // We didn't get a valid response. Treat this as failed service.
-    SetStateAndRunCallbacks(SystemdUnitStatus::kFailedToStart);
+    std::move(callback).Run(SystemdUnitStatus::kFailedToStart);
     return;
   }
 
@@ -152,12 +133,14 @@ void OnGetPathResponse(scoped_refptr<dbus::Bus> bus, dbus::Response* response) {
   // Create the active state property watcher. It will destroy itself once
   // it gets notified about the state change.
   std::unique_ptr<SystemdUnitActiveStateWatcher> active_state_watcher =
-      std::make_unique<SystemdUnitActiveStateWatcher>(bus, unit_proxy);
+      std::make_unique<SystemdUnitActiveStateWatcher>(bus, unit_proxy,
+                                                      std::move(callback));
   active_state_watcher.release();
 }
 
 void WaitUnitActivateAndRunCallbacks(scoped_refptr<dbus::Bus> bus,
-                                     std::string unit_name) {
+                                     std::string unit_name,
+                                     SystemdUnitCallback callback) {
   // Get the path of the unit, which looks similar to
   // /org/freedesktop/systemd1/unit/app_2dorg_2echromium_2eChromium_2d3182191_2escope
   // and then wait for it activation.
@@ -168,34 +151,38 @@ void WaitUnitActivateAndRunCallbacks(scoped_refptr<dbus::Bus> bus,
   dbus::MessageWriter writer(&method_call);
   writer.AppendString(unit_name);
 
-  systemd->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                      base::BindOnce(&OnGetPathResponse, std::move(bus)));
+  systemd->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&OnGetPathResponse, std::move(bus), std::move(callback)));
 }
 
 void OnStartTransientUnitResponse(scoped_refptr<dbus::Bus> bus,
                                   std::string unit_name,
+                                  SystemdUnitCallback callback,
                                   dbus::Response* response) {
   SystemdUnitStatus result = response ? SystemdUnitStatus::kUnitStarted
                                       : SystemdUnitStatus::kFailedToStart;
   // If the start of the unit failed, immediately notify the client. Otherwise,
   // wait for its activation.
   if (result == SystemdUnitStatus::kFailedToStart) {
-    SetStateAndRunCallbacks(result);
+    std::move(callback).Run(result);
   } else {
-    WaitUnitActivateAndRunCallbacks(std::move(bus), unit_name);
+    WaitUnitActivateAndRunCallbacks(std::move(bus), unit_name,
+                                    std::move(callback));
   }
 }
 
 void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
+                            SystemdUnitCallback callback,
                             std::optional<bool> name_has_owner) {
   if (!name_has_owner.value_or(false)) {
-    SetStateAndRunCallbacks(SystemdUnitStatus::kNoSystemdService);
+    std::move(callback).Run(SystemdUnitStatus::kNoSystemdService);
     return;
   }
 
   pid_t pid = getpid();
   if (pid <= 1) {
-    SetStateAndRunCallbacks(SystemdUnitStatus::kInvalidPid);
+    std::move(callback).Run(SystemdUnitStatus::kInvalidPid);
     return;
   }
 
@@ -225,10 +212,13 @@ void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
   dbus_utils::WriteValue(writer, Dict<VarDict>());
   systemd->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OnStartTransientUnitResponse, std::move(bus), unit_name));
+      base::BindOnce(&OnStartTransientUnitResponse, std::move(bus), unit_name,
+                     std::move(callback)));
 }
 
 }  // namespace
+
+namespace internal {
 
 void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
                                          SystemdUnitCallback callback) {
@@ -237,40 +227,22 @@ void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
 #endif
 
-  auto& state = GetUnitNameState();
-
-  if (std::holds_alternative<SystemdUnitStatus>(state)) {
-    // If the result is already cached, run the callback immediately.
-    std::move(callback).Run(std::get<SystemdUnitStatus>(state));
-    return;
-  }
-
-  // Add the callback to the list of pending callbacks.
-  auto& callbacks = std::get<SystemdUnitCallbacks>(state);
-  callbacks.push_back(std::move(callback));
-
-  if (callbacks.size() > 1) {
-    // An operation is already in progress.
-    return;
-  }
-
   auto env = base::Environment::Create();
   if (env->HasVar("FLATPAK_SANDBOX_DIR") || env->HasVar("SNAP")) {
     // xdg-desktop-portal has a separate reliable way of detecting the
     // application name for Flatpak and Snap environments, so the systemd unit
     // is not necessary in these cases.
-    SetStateAndRunCallbacks(SystemdUnitStatus::kUnitNotNecessary);
+    std::move(callback).Run(SystemdUnitStatus::kUnitNotNecessary);
     return;
   }
 
   // Check if the systemd service is available
   dbus_utils::NameHasOwner(
       bus, kServiceNameSystemd,
-      base::BindOnce(&OnNameHasOwnerResponse, base::WrapRefCounted(bus)));
+      base::BindOnce(&OnNameHasOwnerResponse, base::WrapRefCounted(bus),
+                     std::move(callback)));
 }
 
-void ResetCachedStateForTesting() {
-  GetUnitNameState() = SystemdUnitCallbacks();
-}
+}  // namespace internal
 
 }  // namespace dbus_xdg

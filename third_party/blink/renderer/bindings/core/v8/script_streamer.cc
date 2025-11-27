@@ -1093,11 +1093,9 @@ enum class BackgroundProcessorState {
   kFinished,
 };
 
-#if DCHECK_IS_ON()
 std::ostream& operator<<(std::ostream& o, const BackgroundProcessorState& s) {
   return o << static_cast<unsigned>(s);
 }
-#endif  // DCHECK_IS_ON()
 
 std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
 BuildCompileHintsForStreaming(
@@ -1335,7 +1333,6 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::~BackgroundProcessor() {
 void BackgroundResourceScriptStreamer::BackgroundProcessor::SetState(
     BackgroundProcessorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-#if DCHECK_IS_ON()
   using S = BackgroundProcessorState;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       base::StateTransitions<S>, transitions,
@@ -1385,8 +1382,7 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::SetState(
            {// Received the result from the script decoder.
             S::kFinished}},
       }));
-  DCHECK_STATE_TRANSITION(&transitions, state_, state);
-#endif  // DCHECK_IS_ON()
+  CHECK_STATE_TRANSITION(&transitions, state_, state);
   state_ = state;
 }
 

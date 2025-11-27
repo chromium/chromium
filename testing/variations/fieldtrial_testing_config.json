@@ -1262,23 +1262,6 @@
             ]
         }
     ],
-    "AndroidWindowOcclusion": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidWindowOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidWindowPopupLargeScreen": [
         {
             "platforms": [
@@ -3407,8 +3390,26 @@
                     "enable_features": [
                         "CheckVisibilityInChangePasswordFormWaiter",
                         "DisableFillingOnPageLoadForLeakedCredentials",
-                        "DownloadModelForPasswordChange",
                         "StopLoginCheckOnFailedLogin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutomatedPasswordChangeStudyV4": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DownloadModelForPasswordChange",
+                        "ReduceRequirementsForPasswordChange"
                     ]
                 }
             ]
@@ -8211,6 +8212,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultANGLEVulkan"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DefaultBrowserFramework": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserFramework"
                     ]
                 }
             ]
@@ -13540,6 +13558,21 @@
             ]
         }
     ],
+    "IOSKeyboardAccessoryTwoBubble": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSKeyboardAccessoryTwoBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensFetchSrp": [
         {
             "platforms": [
@@ -13785,8 +13818,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Disabled",
+                    "disable_features": [
                         "IOSPasskeyModalLoginWithShim"
                     ]
                 }
@@ -15309,10 +15342,8 @@
     "LoadAllTabsAtStartup": [
         {
             "platforms": [
-                "android_webview",
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -16098,6 +16129,24 @@
             ]
         }
     ],
+    "MobilePromoOnDesktop": [
+        {
+            "platforms": [
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MobilePromoOnDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [
@@ -16488,24 +16537,6 @@
                     },
                     "enable_features": [
                         "NewContentForCheckerboardedScrolls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NewTabsInGroups": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewTabAddsToActiveGroup"
                     ]
                 }
             ]
@@ -17345,6 +17376,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OnDeviceStorage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OnTaskStatusCheck": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "OnTaskStatusCheckInterval": "60s"
+                    },
+                    "enable_features": [
+                        "OnTaskStatusCheck"
                     ]
                 }
             ]
@@ -19792,26 +19841,6 @@
                         "PrivacySandboxAdsAPIsM1Override",
                         "PrivateAggregationApi",
                         "SharedStorageAPI"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacySandboxAllowPromptForBlocked3PCookies": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxAllowPromptForBlocked3PCookies"
                     ]
                 }
             ]
@@ -23405,21 +23434,6 @@
             ]
         }
     ],
-    "SettingsMultiColumn": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SettingsMultiColumn"
-                    ]
-                }
-            ]
-        }
-    ],
     "SettingsSingleActivity": [
         {
             "platforms": [
@@ -24991,6 +25005,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabGridEmptyThumbnail"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabGroupInteractionsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BookmarkTabGroupConversion",
+                        "CreateNewTabGroupAppMenuTopLevel",
+                        "NewTabAddsToActiveGroup",
+                        "ShowTabGroupsMacSystemMenu",
+                        "TabGroupMenuImprovements",
+                        "TabGroupMenuMoreEntryPoints"
                     ]
                 }
             ]

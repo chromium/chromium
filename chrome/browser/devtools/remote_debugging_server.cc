@@ -6,13 +6,18 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
@@ -64,6 +70,16 @@ enum class DevToolsDebuggingUserDataDirStatus {
   kMaxValue = kDebuggingRequestedErrorObtainingUserDataDir,
 };
 
+// Returns a port if the string is a valid port number, otherwise returns
+// nullopt. A valid port is a number between 0 and 65535, inclusive.
+std::optional<uint16_t> ParsePort(std::string_view port_str) {
+  int port;
+  if (base::StringToInt(port_str, &port) && port >= 0 && port <= 65535) {
+    return static_cast<uint16_t>(port);
+  }
+  return std::nullopt;
+}
+
 class TCPServerSocketFactory
     : public content::DevToolsSocketFactory {
  public:
@@ -72,6 +88,13 @@ class TCPServerSocketFactory
 
   TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
   TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
+
+ protected:
+  // content::DevToolsSocketFactory.
+  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
+    return CreateLocalHostServerSocket(port_);
+  }
+  uint16_t port_;
 
  private:
   std::unique_ptr<net::ServerSocket> CreateLocalHostServerSocket(int port) {
@@ -83,11 +106,6 @@ class TCPServerSocketFactory
     if (socket->ListenWithAddressAndPort("::1", port, kBackLog) == net::OK)
       return socket;
     return nullptr;
-  }
-
-  // content::DevToolsSocketFactory.
-  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    return CreateLocalHostServerSocket(port_);
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -103,8 +121,54 @@ class TCPServerSocketFactory
     return CreateLocalHostServerSocket(port);
   }
 
-  uint16_t port_;
   uint16_t last_tethering_port_;
+};
+
+// Creates a server socket on a specific port, or any available port if the port
+// is busy. Prefers a free port over switching from IPv4 to IPv6.
+class TCPServerSocketFactoryWithPortFallback : public TCPServerSocketFactory {
+ public:
+  using TCPServerSocketFactory::TCPServerSocketFactory;
+
+ private:
+  std::unique_ptr<net::ServerSocket> CreateSocketOnAddress(const char* address,
+                                                           uint16_t port) {
+    auto socket =
+        std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
+    if (socket->ListenWithAddressAndPort(address, port, kBackLog) == net::OK) {
+      return socket;
+    }
+    return nullptr;
+  }
+
+  // content::DevToolsSocketFactory.
+  std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
+    std::unique_ptr<net::ServerSocket> socket =
+        CreateSocketOnAddress("127.0.0.1", port_);
+    if (socket) {
+      return socket;
+    }
+
+    if (port_ != 0) {
+      socket = CreateSocketOnAddress("127.0.0.1", 0);
+      if (socket) {
+        return socket;
+      }
+    }
+
+    socket = CreateSocketOnAddress("::1", port_);
+    if (socket) {
+      return socket;
+    }
+
+    if (port_ != 0) {
+      socket = CreateSocketOnAddress("::1", 0);
+      if (socket) {
+        return socket;
+      }
+    }
+    return nullptr;
+  }
 };
 
 // Returns true, or a reason why remote debugging is not allowed.
@@ -134,6 +198,28 @@ IsRemoteDebuggingAllowed(const std::optional<bool>& is_default_user_data_dir,
 
 }  // namespace
 
+int RemoteDebuggingServer::GetPortFromUserDataDir(
+    const base::FilePath& output_dir) {
+  std::string content;
+  if (!base::ReadFileToString(
+          output_dir.Append(content::kDevToolsActivePortFileName), &content)) {
+    return kDefaultDevToolsPort;
+  }
+
+  // The file contains the port number on the first line.
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (lines.empty()) {
+    return kDefaultDevToolsPort;
+  }
+
+  if (auto port = ParsePort(lines[0])) {
+    return *port;
+  }
+
+  return kDefaultDevToolsPort;
+}
+
 void RemoteDebuggingServer::StartHttpServerInApprovalMode(
     PrefService* local_state) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -144,6 +230,27 @@ void RemoteDebuggingServer::StartHttpServerInApprovalMode(
           &RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange,
           base::Unretained(this)));
   MaybeStartOrStopServerForPrefChange();
+}
+
+void RemoteDebuggingServer::StartHttpServerInApprovalModeWithPort(
+    const base::FilePath& output_dir,
+    int port) {
+  is_http_server_being_started_ = false;
+
+  // Recheck the pref value in case it changed since we posted the task.
+  if (!pref_change_registrar_->prefs()->GetBoolean(
+          prefs::kDevToolsRemoteDebuggingEnabled)) {
+    return;
+  }
+
+  // We do not support hosting DevTools in this mode, therefore,
+  // not passing the value of the kCustomDevtoolsFrontend switch.
+  StartHttpServer(
+      std::make_unique<TCPServerSocketFactoryWithPortFallback>(port),
+      output_dir,
+      /*debug_frontend_dir=*/base::FilePath(),
+      content::DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly);
+  is_http_server_running_ = true;
 }
 
 void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
@@ -166,10 +273,11 @@ void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
     return;
   }
 
-  // TODO(crbug.com/460665929): If the default 9222 is taken,
-  // we should find a free port and report it via the chrome://inspect page.
-  int port = 9222;
-  // Used to write the selected port to a well-known location in the profile
+  if (is_http_server_running_ || is_http_server_being_started_) {
+    return;
+  }
+
+  // The selected port is written to a well-known location in the profile
   // directory to bootstrap the connection process.
   base::FilePath output_dir;
   {
@@ -177,17 +285,14 @@ void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
     DCHECK(result);
   }
 
-  if (is_http_server_running_) {
-    return;
-  }
-
-  // We do not support hosting DevTools in this mode, therefore,
-  // not passing the value of the kCustomDevtoolsFrontend switch.
-  StartHttpServer(
-      std::make_unique<TCPServerSocketFactory>(port), output_dir,
-      /*debug_frontend_dir=*/base::FilePath(),
-      content::DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly);
-  is_http_server_running_ = true;
+  is_http_server_being_started_ = true;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&RemoteDebuggingServer::GetPortFromUserDataDir,
+                     output_dir),
+      base::BindOnce(
+          &RemoteDebuggingServer::StartHttpServerInApprovalModeWithPort,
+          weak_factory_.GetWeakPtr(), output_dir));
 }
 
 // static
@@ -288,10 +393,9 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
 
   std::string port_str =
       command_line.GetSwitchValueASCII(::switches::kRemoteDebuggingPort);
-  int port;
-  if (base::StringToInt(port_str, &port) && port >= 0 && port < 65535) {
+  if (auto port = ParsePort(port_str)) {
     base::FilePath output_dir;
-    if (!port) {
+    if (*port == 0) {
       // The client requested an ephemeral port. Must write the selected
       // port to a well-known location in the profile directory to
       // bootstrap the connection process.
@@ -317,7 +421,7 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
 
     being_debugged = true;
     server->StartHttpServer(
-        std::make_unique<TCPServerSocketFactory>(port), output_dir,
+        std::make_unique<TCPServerSocketFactory>(*port), output_dir,
         debug_frontend_dir,
         content::DevToolsAgentHost::RemoteDebuggingServerMode::kDefault);
   }

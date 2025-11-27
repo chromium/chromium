@@ -85,6 +85,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/util/android/url_constants.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_branded_strings.h"
 #else
@@ -1366,6 +1368,27 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 // via `HasContentSettingChangedViaPageInfo(type)`.
 bool PageInfo::ShouldShowPermission(
     const PageInfo::PermissionInfo& info) const {
+  // For the Loud Clapper experiment Chrome should display NOTIFICATIONS
+  // permission while it is being requested.
+#if BUILDFLAG(IS_ANDROID)
+  if (info.type == ContentSettingsType::NOTIFICATIONS &&
+      base::FeatureList::IsEnabled(
+          permissions::kPermissionsAndroidClapperLoud) &&
+      web_contents_) {
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(
+            web_contents_.get());
+    if (manager && manager->IsRequestInProgress()) {
+      for (const auto& request : manager->Requests()) {
+        if (request->GetContentSettingsType() ==
+            ContentSettingsType::NOTIFICATIONS) {
+          return true;
+        }
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Note |ContentSettingsType::ADS| will show up regardless of its default
   // value when it has been activated on the current origin.
   if (info.type == ContentSettingsType::ADS) {

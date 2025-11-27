@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -196,6 +197,26 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
                            FormControlType::kInputTelephone),
        CreateTestFormField("Email", "email", "",
                            FormControlType::kInputEmail)});
+  return form;
+}
+
+[[nodiscard]] FormData CreateTestOtpFormData(const char* unique_id) {
+  FormData form;
+  form.set_host_frame(MakeLocalFrameToken());
+  form.set_renderer_id(MakeFormRendererId());
+  form.set_name(u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : ""));
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_is_action_empty(true);
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(
+      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
+
+  form.set_fields({CreateTestFormField("One time password", "otp", "",
+                                       FormControlType::kInputText)});
   return form;
 }
 
@@ -1605,7 +1626,7 @@ void VerifySingleBooleanSampleOrEmpty(
 
 void VerifySingleSubmissionKeyMetricExpectations(
     const base::HistogramTester& histogram_tester,
-    absl::string_view form_type_name,
+    std::string_view form_type_name,
     const SingleSubmissionKeyMetricExpectations& expectations) {
   VerifySingleBooleanSampleOrEmpty(
       histogram_tester,

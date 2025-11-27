@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_REPORTING_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_REPORTING_H_
 
+#include <cmath>
 #include <string>
 
 #include "base/logging.h"
@@ -12,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/browser/indexed_db/status.h"
+#include "net/base/net_errors.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace storage {
@@ -124,6 +126,16 @@ inline Status LogStatus(Status status,
                         bool in_memory) {
   status.Log(base::StrCat({histogram_name, ToVariantSuffix(in_memory)}));
   return status;
+}
+
+// Logs the `net::Error` `result` to `histogram_name` suffixed with a variant
+// indicating whether the backing store is `in_memory` or on-disk.
+inline void LogNetError(std::string_view histogram_name,
+                        bool in_memory,
+                        net::Error result) {
+  base::UmaHistogramSparse(
+      base::StrCat({histogram_name, ToVariantSuffix(in_memory)}),
+      std::abs(result));
 }
 
 // Performs `action` and logs its result (expected to be a `StatusOr<>`) to

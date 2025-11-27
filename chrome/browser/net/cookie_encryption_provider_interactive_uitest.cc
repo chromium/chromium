@@ -41,6 +41,7 @@
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
 #include "components/os_crypt/async/browser/test_secret_portal.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
@@ -200,6 +201,8 @@ class CookieEncryptionProviderBrowserTest
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
       case kOSCryptAsyncWithSecretPortalProvider:
+        dbus_xdg::SetPortalStateForTesting(
+            dbus_xdg::PortalRegistrarState::kSuccess);
         enabled_features.push_back(features::kDbusSecretPortal);
         enabled_features.push_back(
             features::kSecretPortalKeyProviderUseForEncryption);
@@ -267,6 +270,8 @@ class CookieEncryptionProviderBrowserTest
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
       case kSecretPortalMetrics:
+        dbus_xdg::SetPortalStateForTesting(
+            dbus_xdg::PortalRegistrarState::kIdle);
         histogram_tester_.ExpectBucketCount(
             os_crypt_async::SecretPortalKeyProvider::kUmaInitStatusEnum,
             os_crypt_async::SecretPortalKeyProvider::InitStatus::kSuccess, 1);

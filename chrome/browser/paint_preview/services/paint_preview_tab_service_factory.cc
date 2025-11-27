@@ -67,7 +67,7 @@ SimpleFactoryKey* PaintPreviewTabServiceFactory::GetKeyToUse(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
     JNIEnv* env) {
   ProfileKey* profile_key =

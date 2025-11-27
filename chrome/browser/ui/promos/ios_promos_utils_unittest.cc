@@ -61,6 +61,28 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
 }
 
+std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
+    const std::string& guid,
+    syncer::DeviceInfo::OsType os_type,
+    base::Time last_updated) {
+  return std::make_unique<syncer::DeviceInfo>(
+      guid, "name", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_PHONE, os_type,
+      syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
+      "model", "full_hardware_class", last_updated,
+      /*pulse_interval=*/base::Days(1),
+      /*send_tab_to_self_receiving_enabled=*/
+      false,
+      /*send_tab_to_self_receiving_type=*/
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      /*sharing_info=*/std::nullopt,
+      /*paask_info=*/std::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::DataTypeSet::All(),
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+}
+
 class IOSPromosUtilsTest : public testing::Test {
  public:
   IOSPromosUtilsTest() {
@@ -160,6 +182,35 @@ TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_NoIOSDevice) {
                        syncer::DeviceInfo::FormFactor::kPhone));
 
   EXPECT_FALSE(ios_promos_utils::IsUserActiveOnIOS(profile()));
+}
+
+// Tests that IsUserActiveOnAndroid returns true when a recent Android device
+// exists.
+TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_Recent) {
+  device_info_tracker()->Add(CreateDeviceInfoWithTime(
+      kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
+      base::Time::Now() - base::Days(1)));
+
+  EXPECT_TRUE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
+}
+
+// Tests that IsUserActiveOnAndroid returns false when only an old Android
+// device exists.
+TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_Old) {
+  device_info_tracker()->Add(CreateDeviceInfoWithTime(
+      kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
+      base::Time::Now() - base::Days(30)));
+
+  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
+}
+
+// Tests that IsUserActiveOnAndroid returns false when no Android device exists.
+TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_NoDevice) {
+  device_info_tracker()->Add(
+      CreateDeviceInfoWithTime(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
+                               base::Time::Now() - base::Days(1)));
+
+  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
 }
 
 }  // namespace

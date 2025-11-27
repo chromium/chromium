@@ -891,8 +891,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         onStateLoaded();
     }
 
-    @Override
-    public void cancelLoadingTabs(boolean incognito) {
+    private void cancelLoadingTabs(boolean incognito) {
         if (incognito) {
             mCancelIncognitoTabLoads = true;
         } else {
@@ -930,8 +929,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mTabsToSave.addLast(tab);
     }
 
-    @Override
-    public void removeTabFromQueues(Tab tab) {
+    @VisibleForTesting
+    void removeTabFromQueues(Tab tab) {
         mTabsToSave.remove(tab);
         mTabsToRestore.remove(getTabToRestoreById(tab.getId()));
         mTabsToMigrate.remove(tab);
@@ -1195,8 +1194,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 });
     }
 
-    @Override
-    public void saveTabListAsynchronously() {
+    private void saveTabListAsynchronously() {
         if (ChromeFeatureList.sAndroidTabSkipSaveTabsKillswitch.isEnabled()
                 && mMetadataSaveMode != MetadataSaveMode.SAVING_ALLOWED) {
             if (mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_CLEAN) {

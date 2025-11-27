@@ -9,10 +9,7 @@
   ImplementedAs=DOMOrigin
 ] interface Origin {
   constructor();
-  [RaisesException] constructor(USVString serializedOrigin);
 
-  [Measure] static Origin? parse(USVString serializedOrigin);
-  [Measure] static Origin? fromURL(USVString serializedURL);
   [CallWith=ScriptState, RaisesException, Measure] static Origin from(any value);
 
   readonly attribute boolean opaque;

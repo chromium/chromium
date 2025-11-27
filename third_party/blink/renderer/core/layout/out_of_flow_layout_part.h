@@ -181,6 +181,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     const OofContainingBlock<LogicalOffset> containing_block;
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
     const OofInlineContainer<LogicalOffset> fixedpos_inline_container;
+    Member<const BlockBreakToken> break_token;
     bool requires_content_before_breaking = false;
 
     NodeInfo(BlockNode node,
@@ -267,7 +268,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
    public:
     NodeInfo node_info;
     OffsetInfo offset_info;
-    Member<const BlockBreakToken> break_token;
 
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the

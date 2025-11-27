@@ -228,10 +228,6 @@ extern const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 
-// If true, will not block prompt when third party cookies are blocked.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
-
 // If true, enable showing notices through the notice framework.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxNoticeFramework);

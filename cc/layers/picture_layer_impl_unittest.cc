@@ -1533,13 +1533,13 @@ TEST_F(LegacySWPictureLayerImplTest, TileScalesWithSolidColorRasterSource) {
   SetupTrees(pending_raster_source, active_raster_source);
   // Solid color raster source should not allow tilings at any scale.
   EXPECT_FALSE(active_layer()->CanHaveTilings());
-  EXPECT_EQ(0.f, active_layer()->ideal_contents_scale_key());
+  EXPECT_EQ(0.f, active_layer()->GetIdealContentsScaleKey());
 
   // Activate non-solid-color pending raster source makes active layer can have
   // tilings.
   ActivateTree();
   EXPECT_TRUE(active_layer()->CanHaveTilings());
-  EXPECT_GT(active_layer()->ideal_contents_scale_key(), 0.f);
+  EXPECT_GT(active_layer()->GetIdealContentsScaleKey(), 0.f);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, MarkRequiredOffscreenTiles) {
@@ -1745,7 +1745,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   EXPECT_EQ(1.f, active_layer()->HighResTiling()->contents_scale_key());
   EXPECT_EQ(1.f, active_layer()->raster_contents_scale_key());
-  EXPECT_EQ(2.f, active_layer()->ideal_contents_scale_key());
+  EXPECT_EQ(2.f, active_layer()->GetIdealContentsScaleKey());
 
   // Both tilings still exist.
   EXPECT_EQ(2.f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());

@@ -35,8 +35,8 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
 
   void Trace(Visitor*) const override;
 
-  HeapTaskRunnerTimer<HTMLGeolocationElement>& SpinningIconTimerForTesting() {
-    return spinning_icon_timer_;
+  const base::TimeTicks& InProgressApearanceStartedTimeForTesting() {
+    return in_progress_appearance_started_time_;
   }
 
  private:
@@ -77,11 +77,9 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   void CurrentPositionCallback(
       base::expected<Geoposition*, GeolocationPositionError*>);
   Geolocation* GetGeolocation();
-  void SpinningIconTimerFired(TimerBase*);
-  void MaybeStopSpinning();
-  enum class RequestInProgress { kNo, kYes };
-  void StartSpinning(RequestInProgress request_in_progress);
-  bool ShouldShowSpinningIcon();
+  void MaybeHideInProgressAppearance();
+  void ShowInProgressAppearance();
+  bool ShouldShowInProgressAppearance();
   void RequestGeolocation();
   void ClearWatch();
   enum class ForceAutolocate { kNo, kYes };
@@ -93,8 +91,7 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   int watch_id_ = 0;
   bool did_autolocate_trigger_request = false;
   bool is_geolocation_request_in_progress_ = false;
-  base::TimeTicks spinning_started_time_;
-  HeapTaskRunnerTimer<HTMLGeolocationElement> spinning_icon_timer_;
+  base::TimeTicks in_progress_appearance_started_time_;
 
   Member<Geoposition> position_;
   Member<GeolocationPositionError> error_;

@@ -13,6 +13,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "sql/streaming_blob_handle.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -40,7 +41,8 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
       base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
           fetch_blob_chunk,
       int max_chunk_size,
-      base::OnceClosure on_became_inactive);
+      base::OnceClosure on_became_inactive,
+      base::RepeatingCallback<void(net::Error)> on_read_complete);
   ~ActiveBlobStreamer() override;
 
   ActiveBlobStreamer(const ActiveBlobStreamer&) = delete;
@@ -102,7 +104,7 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   bool ReadBlobBytes(uint64_t offset, base::span<uint8_t> into);
   // Called after finishing servicing a single ActiveBlobStreamer::Read(), which
   // happens after 0-many calls to ReadBlobBytes().
-  void BlobReadComplete();
+  void BlobReadComplete(net::Error result);
 
   // This UUID is used for both the blob that's served via `blink::mojom::Blob`
   // and the blob in the registry. This is crucial because operations such as
@@ -156,6 +158,10 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   mojo::Remote<blink::mojom::Blob> registry_blob_;
 
   base::OnceClosure on_became_inactive_;
+
+  // Run from `BlobReadComplete()`, i.e., on completion of every attempt to read
+  // the contents of the underlying blob.
+  base::RepeatingCallback<void(net::Error)> on_read_complete_;
 
   base::WeakPtrFactory<ActiveBlobStreamer> weak_factory_{this};
 };

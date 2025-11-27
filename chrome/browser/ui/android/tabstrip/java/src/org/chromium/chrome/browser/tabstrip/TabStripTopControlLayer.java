@@ -244,6 +244,10 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
 
         notifyTransitionFinished(true);
         mTransitionState = null;
+
+        // Post an update request, so that the layers can get an update and have the chance populate
+        // their resting state (e.g. yOffset, offset tags, etc.)
+        mTopControlsStacker.requestLayerUpdatePost(/* requireAnimate= */ false);
     }
 
     private void updateSceneLayerOffset(int yOffset) {

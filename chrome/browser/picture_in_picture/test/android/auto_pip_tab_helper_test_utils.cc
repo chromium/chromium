@@ -13,13 +13,14 @@
 
 namespace picture_in_picture {
 
-void JNI_AutoPictureInPictureTabHelperTestUtils_InitializeForTesting(
+static void JNI_AutoPictureInPictureTabHelperTestUtils_InitializeForTesting(
     JNIEnv* env,
     content::WebContents* web_contents) {
   AutoPictureInPictureTabHelper::GetOrCreateForWebContents(web_contents);
 }
 
-jboolean JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
+static jboolean
+JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
     JNIEnv* env,
     content::WebContents* web_contents) {
   auto* tab_helper =
@@ -28,7 +29,7 @@ jboolean JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
   return tab_helper->IsInAutoPictureInPicture();
 }
 
-jboolean
+static jboolean
 JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered(
     JNIEnv* env,
     content::WebContents* web_contents) {
@@ -38,13 +39,15 @@ JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered
   return tab_helper->HasAutoPictureInPictureBeenRegistered();
 }
 
-jboolean JNI_AutoPictureInPictureTabHelperTestUtils_HasPictureInPictureVideo(
+static jboolean
+JNI_AutoPictureInPictureTabHelperTestUtils_HasPictureInPictureVideo(
     JNIEnv* env,
     content::WebContents* web_contents) {
   return web_contents->HasPictureInPictureVideo();
 }
 
-void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
+static void
+JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
     JNIEnv* env,
     content::WebContents* web_contents,
     jboolean has_high_engagement) {
@@ -54,7 +57,8 @@ void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
   tab_helper->set_has_high_engagement_for_testing(has_high_engagement);
 }
 
-jint JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
+static jint
+JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
     JNIEnv* env,
     content::WebContents* web_contents,
     GURL& url) {
@@ -64,7 +68,8 @@ jint JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
   return tab_helper->GetDismissCountForTesting(url);
 }
 
-void JNI_AutoPictureInPictureTabHelperTestUtils_SetIsUsingCameraOrMicrophone(
+static void
+JNI_AutoPictureInPictureTabHelperTestUtils_SetIsUsingCameraOrMicrophone(
     JNIEnv* env,
     content::WebContents* web_contents,
     jboolean is_using_camera_or_microphone) {

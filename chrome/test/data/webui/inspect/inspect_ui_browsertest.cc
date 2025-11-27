@@ -287,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, RemoteDebugging) {
   EXPECT_TRUE(RunTestCase("RemoteDebuggingAllowedAndEnabled"));
 }
 
-IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, RemoteDebuggingCheckbox) {
+IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest,
+                       RemoteDebuggingCheckboxUpdatesAddress) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
   local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, false);
@@ -295,35 +296,11 @@ IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, RemoteDebuggingCheckbox) {
                                            GURL(chrome::kChromeUIInspectURL)));
   ASSERT_FALSE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
 
-  {
-    base::RunLoop run_loop;
-    PrefChangeRegistrar pref_change_registrar;
-    pref_change_registrar.Init(local_state);
-    pref_change_registrar.Add(prefs::kDevToolsRemoteDebuggingEnabled,
-                              run_loop.QuitClosure());
+  ASSERT_TRUE(RunTestCase("ClickRemoteDebuggingCheckboxAndCheckAddress"));
 
-    ASSERT_TRUE(RunTestCase("ClickRemoteDebuggingCheckbox"));
-    run_loop.Run();
-    EXPECT_TRUE(
-        local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
-  }
-
-  // Reload the page to reset mocha.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIInspectURL)));
-  ASSERT_TRUE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
-
-  {
-    base::RunLoop run_loop;
-    PrefChangeRegistrar pref_change_registrar;
-    pref_change_registrar.Init(local_state);
-    pref_change_registrar.Add(prefs::kDevToolsRemoteDebuggingEnabled,
-                              run_loop.QuitClosure());
-    ASSERT_TRUE(RunTestCase("ClickRemoteDebuggingCheckbox"));
-    run_loop.Run();
-    EXPECT_FALSE(
-        local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
-  }
+  // After the test, the checkbox has been clicked twice, so the state is back
+  // to disabled.
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
 }
 
 }  // namespace

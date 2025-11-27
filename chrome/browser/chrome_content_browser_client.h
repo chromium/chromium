@@ -1215,6 +1215,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void RecordAssistedLogin(
       content::ContentBrowserClient::AssistedLoginType login_type) override;
 
+  std::optional<bool> GetOverrideValueForStaticStorageQuota(
+      content::BrowserContext* browser_context) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

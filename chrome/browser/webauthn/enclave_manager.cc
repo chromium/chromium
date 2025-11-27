@@ -3047,6 +3047,9 @@ void EnclaveManager::Load(base::OnceClosure closure) {
   load_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
   load_callbacks_.emplace_back(std::move(closure));
+  load_callbacks_.emplace_back(
+      base::BindOnce(&EnclaveManager::NotifyObserversThatStateUpdated,
+                     weak_ptr_factory_.GetWeakPtr()));
   Act();
 }
 
@@ -4195,6 +4198,10 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
 void EnclaveManager::Stopped() {
   state_machine_.reset();
   Act();
+  NotifyObserversThatStateUpdated();
+}
+
+void EnclaveManager::NotifyObserversThatStateUpdated() {
   for (Observer& observer : observer_list_) {
     observer.OnStateUpdated();
   }

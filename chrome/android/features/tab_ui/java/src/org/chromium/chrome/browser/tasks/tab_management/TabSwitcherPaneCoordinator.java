@@ -432,7 +432,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* attachToParent= */ false,
                             COMPONENT_NAME,
                             /* onModelTokenChange= */ null,
-                            /* hasEmptyView= */ supportsEmptyState,
+                            /* emptyViewParent= */ supportsEmptyState ? parentView : null,
                             supportsEmptyState ? emptyImageResId : Resources.ID_NULL,
                             supportsEmptyState
                                     ? R.string.tabswitcher_no_tabs_empty_state
@@ -443,7 +443,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             onTabGroupCreation,
                             /* allowDragAndDrop= */ true,
                             tabSwitcherDragHandler,
-                            /* undoBarExplicitTrigger= */ null);
+                            /* undoBarExplicitTrigger= */ null,
+                            /* snackbarManager= */ null,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 

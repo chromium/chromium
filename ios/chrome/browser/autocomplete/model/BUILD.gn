@@ -34,6 +34,8 @@ source_set("model") {
     "tab_matcher_impl.mm",
     "zero_suggest_cache_service_factory.cc",
     "zero_suggest_cache_service_factory.h",
+    "zero_suggest_prefetcher.h",
+    "zero_suggest_prefetcher.mm",
   ]
 
   deps = [
@@ -54,7 +56,6 @@ source_set("model") {
     "//components/unified_consent",
     "//ios/chrome/browser/ai_prototyping/model",
     "//ios/chrome/browser/aim/model:aim_availability",
-    "//ios/chrome/browser/autocomplete/model/prototype",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",
@@ -84,6 +85,7 @@ source_set("unit_tests") {
   sources = [
     "omnibox_shortcuts_helper_unittest.mm",
     "remote_suggestions_service_factory_unittest.mm",
+    "zero_suggest_prefetcher_unittest.mm",
   ]
   deps = [
     ":model",
@@ -91,9 +93,12 @@ source_set("unit_tests") {
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/testing:nserror_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

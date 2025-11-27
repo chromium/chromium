@@ -153,27 +153,6 @@ gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreateGMBHandle(
   return handle;
 }
 
-// static
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreatePixmapHandle(
-    const gfx::Size& size,
-    viz::SharedImageFormat format) {
-  gfx::NativePixmapHandle native_pixmap_handle;
-  for (int i = 0; i < format.NumberOfPlanes(); i++) {
-    size_t height_in_pixels = format.GetPlaneSize(i, size).height();
-    CHECK(height_in_pixels);
-    size_t stride =
-        viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
-            .value();
-    native_pixmap_handle.planes.emplace_back(
-        stride, 0, height_in_pixels * stride,
-        base::ScopedFD(open("/dev/zero", O_RDWR)));
-  }
-
-  return gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
-}
-#endif
-
 scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
@@ -258,10 +237,6 @@ TestSharedImageInterface::CreateSharedImage(
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
-  if (always_use_shmem_for_mappable_si_) {
-    return ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
-  }
 
   // If the GMB handle passed here is shared memory (e.g. because it was created
   // by a unittest that is simulating a production flow with native handles),
@@ -447,6 +422,33 @@ TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
       buffer_usage, holder_);
   return image;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage) {
+  const auto& format = si_info.meta.format;
+  const auto& size = si_info.meta.size;
+
+  gfx::NativePixmapHandle native_pixmap_handle;
+  for (int i = 0; i < format.NumberOfPlanes(); i++) {
+    size_t height_in_pixels = format.GetPlaneSize(i, size).height();
+    CHECK(height_in_pixels);
+    size_t stride =
+        viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
+            .value();
+    native_pixmap_handle.planes.emplace_back(
+        stride, 0, height_in_pixels * stride,
+        base::ScopedFD(open("/dev/zero", O_RDWR)));
+  }
+
+  return CreateSharedImage(
+      si_info, surface_handle, buffer_usage,
+      gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {

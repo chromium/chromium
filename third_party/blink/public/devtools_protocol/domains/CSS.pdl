@@ -14,8 +14,6 @@ experimental domain CSS
   depends on DOM
   depends on Page
 
-  type StyleSheetId extends string
-
   # Stylesheet type: "injected" for stylesheets injected via extension, "user-agent" for user-agent
   # stylesheets, "inspector" for stylesheets created by the inspector (i.e. those holding the "via
   # inspector" rules), "regular" for regular stylesheets.
@@ -108,7 +106,7 @@ experimental domain CSS
   type CSSStyleSheetHeader extends object
     properties
       # The stylesheet identifier.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       # Owner frame identifier.
       Page.FrameId frameId
       # Stylesheet resource URL. Empty if this is a constructed stylesheet created using
@@ -156,7 +154,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Rule selector data.
       SelectorList selectorList
       # Array of selectors from ancestor style rules, sorted by distance from the current rule.
@@ -205,7 +203,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       # Offset of the start of the rule (including selector) from the beginning of the stylesheet.
       number startOffset
       # Offset of the end of the rule body from the beginning of the stylesheet.
@@ -253,7 +251,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # CSS properties in the style.
       array of CSSProperty cssProperties
       # Computed values for all shorthands found in the style.
@@ -306,7 +304,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Array of media queries.
       optional array of MediaQuery mediaList
 
@@ -341,7 +339,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Optional name for the container.
       optional string name
       # Optional physical axes queried for the container.
@@ -364,7 +362,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
 
   # CSS Scope at-rule descriptor.
   experimental type CSSScope extends object
@@ -375,7 +373,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
 
   # CSS Layer at-rule descriptor.
   experimental type CSSLayer extends object
@@ -386,7 +384,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
 
   # CSS Starting Style at-rule descriptor.
   experimental type CSSStartingStyle extends object
@@ -395,7 +393,7 @@ experimental domain CSS
       # available).
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
 
   # CSS Layer data.
   experimental type CSSLayerData extends object
@@ -464,7 +462,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated style declaration.
@@ -477,7 +475,7 @@ experimental domain CSS
       Value name
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated style declaration.
@@ -522,7 +520,7 @@ experimental domain CSS
       optional Value name
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated style declaration.
@@ -533,7 +531,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated property name.
@@ -578,7 +576,7 @@ experimental domain CSS
       Value name
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # List of parameters.
@@ -591,7 +589,7 @@ experimental domain CSS
     properties
       # The css style sheet identifier (absent for user agent stylesheet and user-specified
       # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
+      optional DOM.StyleSheetId styleSheetId
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated key text.
@@ -603,7 +601,7 @@ experimental domain CSS
   type StyleDeclarationEdit extends object
     properties
       # The css style sheet identifier.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       # The range of the style text in the enclosing stylesheet.
       SourceRange range
       # New style text.
@@ -614,7 +612,7 @@ experimental domain CSS
   command addRule
     parameters
       # The css style sheet identifier where a new rule should be inserted.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       # The text of a new rule.
       string ruleText
       # Text position of a new rule in the target style sheet.
@@ -630,7 +628,7 @@ experimental domain CSS
   # Returns all class names from specified stylesheet.
   command collectClassNames
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
     returns
       # Class name list.
       array of string classNames
@@ -647,7 +645,7 @@ experimental domain CSS
       optional boolean force
     returns
       # Identifier of the created "via-inspector" stylesheet.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
 
   # Disables the CSS agent for the given page.
   command disable
@@ -815,7 +813,7 @@ experimental domain CSS
   # Returns the current textual content for a stylesheet.
   command getStyleSheetText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
     returns
       # The stylesheet text.
       string text
@@ -834,7 +832,7 @@ experimental domain CSS
   # returns an array of locations of the CSS selector in the style sheet.
   experimental command getLocationForSelector
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       string selectorText
     returns
       array of SourceRange ranges
@@ -877,7 +875,7 @@ experimental domain CSS
   # Modifies the property rule property name.
   command setPropertyRulePropertyName
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string propertyName
     returns
@@ -887,7 +885,7 @@ experimental domain CSS
   # Modifies the keyframe rule key text.
   command setKeyframeKey
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string keyText
     returns
@@ -897,7 +895,7 @@ experimental domain CSS
   # Modifies the rule selector.
   command setMediaText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string text
     returns
@@ -907,7 +905,7 @@ experimental domain CSS
   # Modifies the expression of a container query.
   experimental command setContainerQueryText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string text
     returns
@@ -917,7 +915,7 @@ experimental domain CSS
   # Modifies the expression of a supports at-rule.
   experimental command setSupportsText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string text
     returns
@@ -927,7 +925,7 @@ experimental domain CSS
   # Modifies the expression of a scope at-rule.
   experimental command setScopeText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string text
     returns
@@ -937,7 +935,7 @@ experimental domain CSS
   # Modifies the rule selector.
   command setRuleSelector
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       SourceRange range
       string selector
     returns
@@ -947,7 +945,7 @@ experimental domain CSS
   # Sets the new stylesheet text.
   command setStyleSheetText
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
       string text
     returns
       # URL of source map associated with script (if any).
@@ -1008,13 +1006,13 @@ experimental domain CSS
   # Fired whenever a stylesheet is changed as a result of the client operation.
   event styleSheetChanged
     parameters
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
 
   # Fired whenever an active document stylesheet is removed.
   event styleSheetRemoved
     parameters
       # Identifier of the removed stylesheet.
-      StyleSheetId styleSheetId
+      DOM.StyleSheetId styleSheetId
 
   experimental event computedStyleUpdated
     parameters

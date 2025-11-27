@@ -31,10 +31,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/browser_context.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 bool IsFirstRunEligibleProfile(Profile* profile) {
@@ -244,7 +241,7 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   } else if (reason == FinishedReason::kSkippedByPolicies) {
     // TODO(crbug.com/40256886): Try to get a domain name if available.
     FinishProfileSetUp(
-        profiles::GetDefaultNameForNewEnterpriseProfile(kNoHostedDomainFound));
+        profiles::GetDefaultNameForNewEnterpriseProfile(std::string()));
   }
 }
 

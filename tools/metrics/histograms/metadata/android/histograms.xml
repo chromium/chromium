@@ -2388,15 +2388,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
-    expires_after="2023-01-15">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on Home button in Android toolbar for each profile type.
-  </summary>
-</histogram>
-
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
     expires_after="2026-04-12">
   <owner>ckitagawa@chromium.org</owner>
@@ -4344,16 +4335,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records how the omnibox was focused.</summary>
 </histogram>
 
-<histogram name="Android.OpenHistoryFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2023-01-15">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on History menu item separately for each profile type in
-    Android.
-  </summary>
-</histogram>
-
 <histogram name="Android.OverscrollFromBottom.BottomControlsStatus"
     enum="BottomControlsStatus" expires_after="2026-02-24">
   <owner>wenyufu@chromium.org</owner>
@@ -5472,6 +5453,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Settings.PendingPopBackWorked" units="count"
+    expires_after="2026-12-31">
+  <owner>hidehiko@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <summary>
+    Records when the user triggers fragment pop back on SettingsActivity after
+    the fragment manager already saved its state. In the case we delayed the pop
+    back operation. Records the number of such cases to make sure this works
+    enough. This record is used to verify the effectiveness of the fix.
+  </summary>
+</histogram>
+
 <histogram name="Android.ShowSelectionMenuSourceType" enum="MenuSourceType"
     expires_after="2026-04-19">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -6044,8 +6037,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Toolbar.StaleCapturedUrlOnScroll" enum="Boolean"
-    expires_after="2026-09-24">
+<histogram name="Android.Toolbar.StaleCapturedUrlOnScroll.Subsampled"
+    enum="Boolean" expires_after="2026-09-24">
   <owner>peilinwang@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -6054,6 +6047,8 @@ chromium-metrics-reviews@google.com.
     url of the current page. This histogram is recorded every time
     onContentViewScrollingStateChanged(true) gets called with browser controls
     unlocked.
+
+    Subsampled to 1% of the time.
   </summary>
 </histogram>
 

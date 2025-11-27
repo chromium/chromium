@@ -123,4 +123,31 @@ TEST_F(OneTimeTokenCacheTest, TokensAreSortedByTime) {
               testing::ElementsAre(token1, token2, token3));
 }
 
+// Ensure that GetCache does not purge expired tokens.
+TEST_F(OneTimeTokenCacheTest, GetCache_DoesNotPurgeExpiredTokens) {
+  OneTimeToken token1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  cache_.PurgeExpiredAndAdd(token1);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  OneTimeToken token2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  cache_.PurgeExpiredAndAdd(token2);
+
+  // Fast forward so token1 is expired, but token2 is not expired
+  task_environment_.FastForwardBy(kMaxAge - base::Seconds(1));
+
+  // At this point, token1 should be expired, but GetCache should still return
+  // it because no purging method was called.
+  const auto& tokens = cache_.GetCache();
+  EXPECT_THAT(tokens, testing::ElementsAre(token1, token2));
+
+  // Verify that the tokens are still in the cache after another GetCache call.
+  const auto& tokens_after_second_call = cache_.GetCache();
+  ASSERT_EQ(2u, tokens_after_second_call.size());
+  EXPECT_THAT(tokens_after_second_call, testing::ElementsAre(token1, token2));
+
+  // Only a purging method should remove expired tokens.
+  const auto& purged_tokens = cache_.PurgeExpiredAndGetCache();
+  ASSERT_EQ(1u, purged_tokens.size());
+  EXPECT_THAT(purged_tokens, testing::ElementsAre(token2));
+}
 }  // namespace one_time_tokens

@@ -407,13 +407,6 @@ void CustomizeChromeUI::BindInterface(
 }
 
 void CustomizeChromeUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
-
-void CustomizeChromeUI::BindInterface(
     mojo::PendingReceiver<
         side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory>
         pending_receiver) {

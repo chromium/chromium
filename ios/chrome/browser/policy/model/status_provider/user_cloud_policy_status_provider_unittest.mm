@@ -23,7 +23,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -34,8 +33,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -90,7 +87,8 @@ class UserCloudPolicyStatusProviderTest
 
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_is_subject_to_enterprise_features(true);
-    account.hosted_domain = kNoHostedDomainFound;
+    account =
+        AccountInfo::Builder(account).SetHostedDomain(std::string()).Build();
     identity_test_env_.UpdateAccountInfoForAccount(account);
   }
 

@@ -4,6 +4,9 @@
 
 #include "components/speech/upstream_loader.h"
 
+#include <optional>
+#include <string>
+
 #include "base/containers/span.h"
 #include "components/speech/upstream_loader_client.h"
 #include "net/http/http_response_headers.h"
@@ -99,14 +102,14 @@ void UpstreamLoader::OnUploadPipeWriteable(MojoResult unused) {
   SendData();
 }
 
-void UpstreamLoader::OnComplete(std::unique_ptr<std::string> response_body) {
+void UpstreamLoader::OnComplete(std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
     response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
-  upstream_loader_client_->OnUpstreamDataComplete(response_body != nullptr,
+  upstream_loader_client_->OnUpstreamDataComplete(response_body.has_value(),
                                                   response_code);
 }
 

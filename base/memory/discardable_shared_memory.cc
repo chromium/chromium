@@ -134,7 +134,7 @@ size_t AlignToPageSize(size_t size) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UseAshmemUnpinningForDiscardableMemory() {
-  if (!ashmem_device_is_supported()) {
+  if (!AshmemDeviceIsSupported()) {
     return false;
   }
 
@@ -544,7 +544,7 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::LockPages(
   if (region.IsValid()) {
     if (UseAshmemUnpinningForDiscardableMemory()) {
       int pin_result =
-          ashmem_pin_region(region.GetPlatformHandle(), offset, length);
+          AshmemPinRegion(region.GetPlatformHandle(), offset, length);
       if (pin_result == ASHMEM_WAS_PURGED) {
         return PURGED;
       }
@@ -566,7 +566,7 @@ void DiscardableSharedMemory::UnlockPages(
   if (region.IsValid()) {
     if (UseAshmemUnpinningForDiscardableMemory()) {
       int unpin_result =
-          ashmem_unpin_region(region.GetPlatformHandle(), offset, length);
+          AshmemUnpinRegion(region.GetPlatformHandle(), offset, length);
       DCHECK_EQ(0, unpin_result);
     }
   }

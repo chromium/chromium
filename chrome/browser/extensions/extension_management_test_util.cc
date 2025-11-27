@@ -112,6 +112,14 @@ void ExtensionManagementPrefUpdaterBase::SetIndividualExtensionAutoInstalled(
   pref_.SetByDottedPath(make_path(id, schema::kUpdateUrl), update_url);
 }
 
+void ExtensionManagementPrefUpdaterBase::SetIndividualExtensionRemoved(
+    const ExtensionId& id) {
+  DCHECK(crx_file::id_util::IdIsValid(id));
+  pref_.SetByDottedPath(make_path(id, schema::kInstallationMode),
+                        schema::kRemoved);
+  RemoveDictionaryPath(pref_, make_path(id, schema::kUpdateUrl));
+}
+
 // Helper functions for 'install_sources' manipulation -------------------------
 
 void ExtensionManagementPrefUpdaterBase::UnsetInstallSources() {

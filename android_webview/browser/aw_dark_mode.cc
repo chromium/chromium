@@ -32,16 +32,17 @@ bool IsForceDarkEnabled(content::WebContents* web_contents) {
 }  // namespace
 
 // static
-jlong JNI_AwDarkMode_Init(JNIEnv* env,
-                          const JavaParamRef<jobject>& obj,
-                          const JavaParamRef<jobject>& java_web_contents) {
+static jlong JNI_AwDarkMode_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
   return reinterpret_cast<intptr_t>(new AwDarkMode(env, obj, web_contents));
 }
 
-void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
+static void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
   sShouldEnableSimplifiedDarkMode = true;
 }
 

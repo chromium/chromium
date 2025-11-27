@@ -52,7 +52,7 @@ WebContentsObserverProxy::WebContentsObserverProxy(
 
 WebContentsObserverProxy::~WebContentsObserverProxy() {}
 
-jlong JNI_WebContentsObserverProxy_Init(
+static jlong JNI_WebContentsObserverProxy_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& java_web_contents) {

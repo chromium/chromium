@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/bluetooth/android/jni_headers/BluetoothBridge_jni.h"
 
-jboolean JNI_BluetoothBridge_IsWebContentsConnectedToBluetoothDevice(
+static jboolean JNI_BluetoothBridge_IsWebContentsConnectedToBluetoothDevice(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
@@ -16,7 +16,7 @@ jboolean JNI_BluetoothBridge_IsWebContentsConnectedToBluetoothDevice(
       content::WebContentsCapabilityType::kBluetoothConnected);
 }
 
-jboolean JNI_BluetoothBridge_IsWebContentsScanningForBluetoothDevices(
+static jboolean JNI_BluetoothBridge_IsWebContentsScanningForBluetoothDevices(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =

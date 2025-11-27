@@ -11,6 +11,8 @@
 #include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+#include <string_view>
 #include <vector>
 #endif
 
@@ -119,8 +121,11 @@ bool IsChromeAppKioskSession();
 #if !BUILDFLAG(IS_CHROMEOS)
 // Returns the default name for a new enterprise profile. Never returns an empty
 // string.
+// The type of `hosted_domain` matches `AccountInfo::GetHostedDomain()`:
+// - std::nullopt means that the account's hosted domain is unknown.
+// - Empty string means that an account does not have hosted domain.
 std::u16string GetDefaultNameForNewEnterpriseProfile(
-    const std::string& hosted_domain = std::string());
+    std::optional<std::string_view> hosted_domain = std::nullopt);
 
 // Returns the default name for a new signed-in profile, based on
 // `account_info`. Never returns an empty string.

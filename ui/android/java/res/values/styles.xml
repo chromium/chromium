@@ -160,6 +160,10 @@ found in the LICENSE file.
     <style name="TextAppearance.TextMedium.Secondary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
+    <style name="TextAppearance.TextSmall.Secondary.Baseline.Light"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+    </style>
 
     <style name="TextAppearance.Headline.Disabled.Baseline.Light" parent="TextAppearance.Headline"
         tools:ignore="UnusedResources">
@@ -276,6 +280,10 @@ found in the LICENSE file.
     </style>
     <style name="TextAppearance.TextMediumThick.Blue.Baseline.Light"
         parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Blue.Baseline.Light"
+        parent="TextAppearance.TextSmall" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_light</item>
     </style>
     <style name="TextAppearance.TextLarge.Blue.Baseline.Dark" parent="TextAppearance.TextLarge"

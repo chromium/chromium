@@ -27,6 +27,10 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 
+namespace unexportable_keys {
+class UnexportableKeyService;
+}
+
 namespace net {
 class CertVerifier;
 class ClientSocketFactory;
@@ -216,6 +220,15 @@ class NET_EXPORT URLRequestContext final {
 #endif
   }
   // May return nullptr if the feature is disabled.
+  unexportable_keys::UnexportableKeyService* unexportable_key_service() const {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    return unexportable_key_service_.get();
+#else
+    return nullptr;
+#endif
+  }
+
+  // May return nullptr if the feature is disabled.
   device_bound_sessions::SessionService* device_bound_session_service() const {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     return device_bound_session_service_.get();
@@ -317,6 +330,9 @@ class NET_EXPORT URLRequestContext final {
   void set_device_bound_session_service(
       std::unique_ptr<device_bound_sessions::SessionService>
           device_bound_session_service);
+  void set_unexportable_key_service(
+      std::unique_ptr<unexportable_keys::UnexportableKeyService>
+          unexportable_key_service);
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   std::unique_ptr<HostResolver> host_resolver_;
@@ -366,6 +382,8 @@ class NET_EXPORT URLRequestContext final {
       url_requests_;
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<unexportable_keys::UnexportableKeyService>
+      unexportable_key_service_;
   std::unique_ptr<device_bound_sessions::SessionStore>
       device_bound_session_store_;
   std::unique_ptr<device_bound_sessions::SessionService>

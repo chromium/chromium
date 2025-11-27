@@ -724,6 +724,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
+    bool premapped,
+    const AsyncMapInvokedCallback& callback,
     gfx::BufferUsage buffer_usage,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");
@@ -744,23 +746,6 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
   client_si->mappable_buffer_ = std::move(mappable_buffer);
-  client_si->buffer_usage_ = buffer_usage;
-  return client_si;
-}
-
-// static
-scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
-    const Mailbox& mailbox,
-    const SharedImageMetadata& metadata,
-    const SyncToken& sync_token,
-    bool premapped,
-    const AsyncMapInvokedCallback& callback,
-    gfx::BufferUsage buffer_usage,
-    scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
-  SharedImageInfo info(metadata, "CSICreateForTesting");
-
-  auto client_si =
-      CreateForTesting(mailbox, metadata, sync_token, buffer_usage, sii_holder);
   client_si->async_map_invoked_callback_for_testing_ = callback;
   client_si->premapped_for_testing_ = premapped;
   client_si->buffer_usage_ = buffer_usage;

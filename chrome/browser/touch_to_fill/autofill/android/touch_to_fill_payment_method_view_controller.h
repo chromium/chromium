@@ -21,7 +21,9 @@ class TouchToFillPaymentMethodViewController {
   virtual ~TouchToFillPaymentMethodViewController() = default;
 
   // Called whenever the surface gets hidden (regardless of the cause).
-  virtual void OnDismissed(JNIEnv* env, bool dismissed_by_user) = 0;
+  virtual void OnDismissed(JNIEnv* env,
+                           bool dismissed_by_user,
+                           bool should_reshow) = 0;
   // Calls credit card scanner
   virtual void ScanCreditCard(JNIEnv* env) = 0;
   // Causes the payment methods settings page to be shown
@@ -41,8 +43,6 @@ class TouchToFillPaymentMethodViewController {
   virtual void LoyaltyCardSuggestionSelected(
       JNIEnv* env,
       const LoyaltyCard& loyalty_card) = 0;
-  // Called when the user presses the "OK" button on the error screen.
-  virtual void OnErrorOkPressed(JNIEnv* env) = 0;
   // Called when the user taps on a BNPL issuer in the BNPL issuer selection
   // bottom sheet.
   virtual void OnBnplIssuerSuggestionSelected(JNIEnv* env,

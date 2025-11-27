@@ -12,7 +12,10 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
@@ -112,8 +115,94 @@ mojom::DataPtr BuildMojoTab(const tabs::TabInterface* tab) {
     mojo_tab->title = base::UTF16ToUTF8(data->GetTitle());
     mojo_tab->url = data->GetVisibleURL();
   }
+  mojo_tab->active = tab->IsActivated();
+  mojo_tab->visible = tab->IsVisible();
+  mojo_tab->selected = tab->IsSelected();
+  mojo_tab->pinned = tab->IsPinned();
+  mojo_tab->split = tab->IsSplit();
+  mojo_tab->alert_states =
+      tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
   return mojom::Data::NewTab(std::move(mojo_tab));
+}
+
+// Build a TabRestoreEntryBase from an Entry.
+mojom::TabRestoreEntryBasePtr BuildTabRestoreEntryBase(
+    const sessions::tab_restore::Entry& entry) {
+  auto base = mojom::TabRestoreEntryBase::New();
+  base->original_id = entry.original_id.id();
+
+  if (!entry.timestamp.is_null()) {
+    base->timestamp = entry.timestamp;
+  }
+  return base;
+}
+
+// Build a single TabRestoreTab entry.
+mojom::TabRestoreTabPtr BuildTabRestoreTab(
+    const sessions::tab_restore::Tab& tab) {
+  auto mojo_tab = mojom::TabRestoreTab::New();
+  mojo_tab->id = MakeNodeId(base::NumberToString(tab.id.id()),
+                            mojom::NodeId::Type::kTabRestoreTab);
+  mojo_tab->restore_entry = BuildTabRestoreEntryBase(tab);
+  mojo_tab->browser_id = tab.browser_id;
+  mojo_tab->tabstrip_index = tab.tabstrip_index;
+  mojo_tab->pinned = tab.pinned;
+
+  if (!tab.navigations.empty()) {
+    const sessions::SerializedNavigationEntry& nav =
+        tab.navigations[tab.normalized_navigation_index()];
+    mojo_tab->title = base::UTF16ToUTF8(nav.title());
+    mojo_tab->url = nav.virtual_url();
+  }
+
+  if (tab.group.has_value()) {
+    mojo_tab->group_id = tab.group->token();
+  }
+
+  if (tab.group_visual_data.has_value()) {
+    const auto& data = *tab.group_visual_data;
+    mojo_tab->group_visual_data = mojom::TabGroupVisualData::New(
+        base::UTF16ToUTF8(data.title()), data.color(), data.is_collapsed());
+  }
+
+  return mojo_tab;
+}
+
+// Build a single TabRestoreGroup entry.
+mojom::TabRestoreGroupPtr BuildTabRestoreGroup(
+    const sessions::tab_restore::Group& group) {
+  auto mojo_group = mojom::TabRestoreGroup::New();
+  mojo_group->id = MakeNodeId(base::NumberToString(group.id.id()),
+                              mojom::NodeId::Type::kTabRestoreGroup);
+  mojo_group->restore_entry = BuildTabRestoreEntryBase(group);
+  mojo_group->browser_id = group.browser_id;
+  mojo_group->group_id = group.group_id.token();
+  mojo_group->visual_data = mojom::TabGroupVisualData::New(
+      base::UTF16ToUTF8(group.visual_data.title()), group.visual_data.color(),
+      group.visual_data.is_collapsed());
+
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : group.tabs) {
+    mojo_group->tabs.push_back(BuildTabRestoreTab(*tab));
+  }
+
+  return mojo_group;
+}
+
+// Build a single TabRestoreWindow entry.
+mojom::TabRestoreWindowPtr BuildTabRestoreWindow(
+    const sessions::tab_restore::Window& window) {
+  auto mojo_window = mojom::TabRestoreWindow::New();
+  mojo_window->id = MakeNodeId(base::NumberToString(window.id.id()),
+                               mojom::NodeId::Type::kTabRestoreWindow);
+  mojo_window->restore_entry = BuildTabRestoreEntryBase(window);
+  mojo_window->selected_tab_index = window.selected_tab_index;
+
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : window.tabs) {
+    mojo_window->tabs.push_back(BuildTabRestoreTab(*tab));
+  }
+
+  return mojo_window;
 }
 
 }  // namespace
@@ -202,6 +291,42 @@ mojom::SelectionModelPtr BuildSelectionModel(const TabStripModel* model) {
   }
 
   return mojo_sel_model;
+}
+
+mojom::TabRestoreDataPtr BuildTabRestoreData(
+    const sessions::TabRestoreEntries& entries) {
+  auto data = mojom::TabRestoreData::New();
+
+  for (const auto& entry : entries) {
+    mojom::TabRestoreEntryPtr mojo_entry;
+
+    switch (entry->type) {
+      case sessions::tab_restore::TAB: {
+        const auto* tab =
+            static_cast<const sessions::tab_restore::Tab*>(entry.get());
+        mojo_entry = mojom::TabRestoreEntry::NewTab(BuildTabRestoreTab(*tab));
+        break;
+      }
+      case sessions::tab_restore::WINDOW: {
+        const auto* window =
+            static_cast<const sessions::tab_restore::Window*>(entry.get());
+        mojo_entry =
+            mojom::TabRestoreEntry::NewWindow(BuildTabRestoreWindow(*window));
+        break;
+      }
+      case sessions::tab_restore::GROUP: {
+        const auto* group =
+            static_cast<const sessions::tab_restore::Group*>(entry.get());
+        mojo_entry =
+            mojom::TabRestoreEntry::NewGroup(BuildTabRestoreGroup(*group));
+        break;
+      }
+    }
+
+    data->entries.push_back(std::move(mojo_entry));
+  }
+
+  return data;
 }
 
 }  // namespace tab_strip_internals

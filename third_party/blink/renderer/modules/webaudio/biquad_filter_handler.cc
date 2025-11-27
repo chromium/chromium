@@ -40,15 +40,8 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 // "forever". Investigate if we can adjust this to a smaller value.
 constexpr double kMaxTailTime = 30.0;
 
-bool HasConstantValues(
-    base::span<float> values,
-    int spanification_suspected_redundant_frames_to_process) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_frames_to_process ==
-            static_cast<int>(values.size()),
-        base::NotFatalUntil::M143);
-  if (spanification_suspected_redundant_frames_to_process <= 1) {
+bool HasConstantValues(base::span<float> values) {
+  if (values.size() <= 1) {
     return true;
   }
 
@@ -60,14 +53,18 @@ bool HasConstantValues(
   // SIMD enabled for byte alignment purposes so it is only an optimization on
   // platforms without SIMD.
   int processed_frames = 1;
+  // Due to `values_size - 3` below this value could be negative, so to save
+  // having multiple static_cast<int>, we do it once and just use that to
+  // silence warnings about comparing unsigned and signed.
+  DCHECK_LE(values.size(),
+            static_cast<size_t>(std::numeric_limits<int>::max()));
+  const int values_size = static_cast<int>(values.size());
 
 #if defined(__SSE2__)
   // Process 4 floats at a time using SIMD
   __m128 value_vec = _mm_set1_ps(value);
   // Start at 0 for byte alignment
-  for (processed_frames = 0;
-       processed_frames <
-       spanification_suspected_redundant_frames_to_process - 3;
+  for (processed_frames = 0; processed_frames < values_size - 3;
        processed_frames += 4) {
     // Load 4 floats from memory
     __m128 input_vec = _mm_loadu_ps(&values[processed_frames]);
@@ -82,9 +79,7 @@ bool HasConstantValues(
   // Process 4 floats at a time using SIMD
   float32x4_t value_vec = vdupq_n_f32(value);
   // Start at 0 for byte alignment
-  for (processed_frames = 0;
-       processed_frames <
-       spanification_suspected_redundant_frames_to_process - 3;
+  for (processed_frames = 0; processed_frames < values_size - 3;
        processed_frames += 4) {
     // Load 4 floats from memory
     float32x4_t input_vec = vld1q_f32(&values[processed_frames]);
@@ -100,8 +95,7 @@ bool HasConstantValues(
   }
 #endif
   // Fallback implementation without SIMD optimization
-  while (processed_frames <
-         spanification_suspected_redundant_frames_to_process) {
+  while (processed_frames < values_size) {
     if (values[processed_frames] != value) {
       return false;
     }
@@ -275,8 +269,7 @@ class BiquadDSPKernel final {
 
   double TailTime() const;
   // Update the biquad coefficients with the given parameters
-  void UpdateCoefficients(int spanification_suspected_redundant_frames,
-                          base::span<const float> frequency,
+  void UpdateCoefficients(base::span<const float> frequency,
                           base::span<const float> q,
                           base::span<const float> gain,
                           base::span<const float> detune);
@@ -299,28 +292,22 @@ class BiquadDSPKernel final {
 };
 
 void BiquadDSPKernel::UpdateCoefficients(
-    int spanification_suspected_redundant_frames,
     base::span<const float> cutoff_frequency,
     base::span<const float> q,
     base::span<const float> gain,
     base::span<const float> detune) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_frames ==
-            static_cast<int>(cutoff_frequency.size()),
-        base::NotFatalUntil::M143);
+  const size_t kFrames = cutoff_frequency.size();
   // Convert from Hertz to normalized frequency 0 -> 1.
-  biquad_.SetHasSampleAccurateValues(spanification_suspected_redundant_frames >
-                                     1);
+  biquad_.SetHasSampleAccurateValues(kFrames > 1);
 
-  for (int k = 0; k < spanification_suspected_redundant_frames; ++k) {
+  for (size_t k = 0; k < kFrames; ++k) {
     const double normalized_frequency =
         NormalizeFrequency(cutoff_frequency[k], nyquist_, detune[k]);
     SetBiquadParams(&biquad_, kernel_processor_->Type(), k,
                     normalized_frequency, q[k], gain[k]);
   }
 
-  const int coef_index = spanification_suspected_redundant_frames - 1;
+  const int coef_index = kFrames - 1;
   const double tail =
       biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate_) / sample_rate_;
 
@@ -375,14 +362,11 @@ void BiquadDSPKernel::Process(const float* source,
           // automation rate is "k-rate" for all of the AudioParams), we don't
           // need to compute filter coefficients for each frame since they would
           // be the same as the first.
-          bool is_constant =
-              HasConstantValues(cutoff_frequency, frames_to_process) &&
-              HasConstantValues(q, frames_to_process) &&
-              HasConstantValues(gain, frames_to_process) &&
-              HasConstantValues(detune, frames_to_process);
-          size_t needed_frames = is_constant ? 1 : frames_to_process;
-          UpdateCoefficients(needed_frames,
-                             base::span(cutoff_frequency).first(needed_frames),
+          bool is_constant = HasConstantValues(cutoff_frequency) &&
+                             HasConstantValues(q) && HasConstantValues(gain) &&
+                             HasConstantValues(detune);
+          size_t needed_frames = is_constant ? 1 : std::size(cutoff_frequency);
+          UpdateCoefficients(base::span(cutoff_frequency).first(needed_frames),
                              base::span(q).first(needed_frames),
                              base::span(gain).first(needed_frames),
                              base::span(detune).first(needed_frames));
@@ -392,10 +376,10 @@ void BiquadDSPKernel::Process(const float* source,
           q[0] = kernel_processor_->ParameterQ().FinalValue();
           gain[0] = kernel_processor_->ParameterGain().FinalValue();
           detune[0] = kernel_processor_->ParameterDetune().FinalValue();
-          UpdateCoefficients(1, base::span(cutoff_frequency).first(1u),
-                             base::span(q).first(1u),
-                             base::span(gain).first(1u),
-                             base::span(detune).first(1u));
+          UpdateCoefficients(base::span(cutoff_frequency).first<1u>(),
+                             base::span(q).first<1u>(),
+                             base::span(gain).first<1u>(),
+                             base::span(detune).first<1u>());
         }
       }
     }
@@ -853,15 +837,8 @@ void BiquadFilterHandler::NotifyBadState() const {
 }
 
 bool BiquadFilterHandler::HasConstantValuesForTesting(
-    base::span<float> values,
-    int spanification_suspected_redundant_frames_to_process) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_frames_to_process ==
-            static_cast<int>(values.size()),
-        base::NotFatalUntil::M143);
-  return HasConstantValues(values,
-                           spanification_suspected_redundant_frames_to_process);
+    base::span<float> values) {
+  return HasConstantValues(values);
 }
 
 }  // namespace blink

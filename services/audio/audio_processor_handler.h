@@ -24,6 +24,7 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
+class MlModelHandle;
 class MlModelManager;
 
 // Encapsulates audio processing effects in the audio process, using a
@@ -128,6 +129,9 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
                              std::optional<double> new_volume);
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  // Lifetime management handle for ML models. Must outlive audio_processor_.
+  const std::unique_ptr<MlModelHandle> residual_echo_estimation_model_handle_;
 
   // The audio processor is accessed on all threads (OS capture thread, OS
   // playout thread, owning sequence) and created / destroyed on the owning

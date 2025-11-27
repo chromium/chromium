@@ -12,8 +12,6 @@ namespace blink {
 // Unlike the garbage-collected `SourceLocation`, a `CrossThreadSourceLocation`
 // is safe to move across threads.
 class PLATFORM_EXPORT CrossThreadSourceLocation {
-  friend struct CrossThreadCopier<CrossThreadSourceLocation>;
-
  public:
   CrossThreadSourceLocation() = default;
 

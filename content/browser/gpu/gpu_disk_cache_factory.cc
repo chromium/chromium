@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
 namespace content {
@@ -21,8 +21,8 @@ void CreateFactoryInstance() {
   DCHECK(!factory_instance);
   // Setup static reserved handles and their mapping to specific paths.
   gpu::GpuDiskCacheFactory::HandleToPathMap handle_to_path_map;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
+  if (features::IsShaderDiskCacheEnabled(
+          base::CommandLine::ForCurrentProcess())) {
     base::FilePath compositor_cache_dir =
         GetContentClient()->browser()->GetShaderDiskCacheDirectory();
     if (!compositor_cache_dir.empty()) {

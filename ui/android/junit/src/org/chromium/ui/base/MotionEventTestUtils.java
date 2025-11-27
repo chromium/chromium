@@ -6,7 +6,10 @@ package org.chromium.ui.base;
 
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.MotionEvent.PointerCoords;
+import android.view.MotionEvent.PointerProperties;
 
+import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
 import org.chromium.base.MathUtils;
@@ -133,5 +136,54 @@ public final class MotionEventTestUtils {
         Assert.assertEquals(a.touchMinor, b.touchMinor, MathUtils.EPSILON);
         Assert.assertEquals(a.x, b.x, MathUtils.EPSILON);
         Assert.assertEquals(a.y, b.y, MathUtils.EPSILON);
+    }
+
+    @CalledByNative
+    private static MotionEvent getMultiTouchEventWithHistory(
+            long oldestEventTime, long latestEventTime, long downTime) {
+        // Any value greater than `MotionEventAndroid::kDefaultCachedPointers`.
+        int pointerCount = 3;
+        PointerProperties[] pointerProperties =
+                new PointerProperties[] {
+                    new PointerProperties(), new PointerProperties(), new PointerProperties()
+                };
+        PointerCoords[] pointerCoords =
+                new PointerCoords[] {new PointerCoords(), new PointerCoords(), new PointerCoords()};
+        assert (pointerProperties.length == pointerCoords.length);
+        assert (pointerCoords.length == pointerCount);
+        // Set non-zero values for `pointerCoords`.
+        for (int i = 0; i < pointerCoords.length; i++) {
+            pointerCoords[i].x += 5 + i;
+            pointerCoords[i].y += 5 + i;
+            pointerCoords[i].touchMajor += 5 + i;
+        }
+        MotionEvent event =
+                MotionEvent.obtain(
+                        downTime,
+                        oldestEventTime,
+                        MotionEvent.ACTION_MOVE,
+                        pointerCoords.length,
+                        pointerProperties,
+                        pointerCoords,
+                        0,
+                        0,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_CLASS_POINTER,
+                        0);
+
+        // Set x,y values different than the ones already present in MotionEvent.
+        // The values already present in MotionEvent could be accessed with `getHistoricalXXX`
+        // methods.
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            pointerCoords[i].x += 5 + i;
+            pointerCoords[i].y += 5 + i;
+            pointerCoords[i].touchMajor += 5 + i;
+        }
+        event.addBatch(latestEventTime, pointerCoords, 0);
+        event.offsetLocation(/* deltaX= */ 10, /* deltaY= */ 20);
+        return event;
     }
 }

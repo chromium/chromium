@@ -58,7 +58,6 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -99,7 +98,6 @@ using PasswordReuseDialogInteraction =
 using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using PasswordReuseLookup = GaiaPasswordReuse::PasswordReuseLookup;
-using signin::constants::kNoHostedDomainFound;
 using ::testing::_;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -255,15 +253,12 @@ class MockChromePasswordProtectionService
   }
   void SetAccountInfo(const std::string& username,
                       const std::string& hosted_domain) {
-    AccountInfo account_info;
-    account_info.gaia = GaiaId("gaia");
-    account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-    account_info.email = username;
-    account_info.hosted_domain = hosted_domain;
-    AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_features(hosted_domain !=
-                                               kNoHostedDomainFound);
-    account_info_ = account_info;
+    account_info_ = AccountInfo::Builder(GaiaId("gaia"), username)
+                        .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("gaia")))
+                        .SetHostedDomain(hosted_domain)
+                        .Build();
+    AccountCapabilitiesTestMutator(&account_info_.capabilities)
+        .set_is_subject_to_enterprise_features(!hosted_domain.empty());
   }
 
   SafeBrowsingUIManager* ui_manager() { return ui_manager_.get(); }
@@ -941,7 +936,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordReuseUserEventNotRecordedDueToIncognito) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
   service_->ConfigService(true /*is_incognito*/,
                           false /*is_extended_reporting*/);
   ASSERT_TRUE(service_->IsIncognito());
@@ -978,7 +973,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordReuseDetectedUserEventRecorded) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
   service_->SetIsAccountSignedIn(true);
   NavigateAndCommit(GURL("https://www.example.com/"));
 
@@ -1031,7 +1026,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordCaptureEventScheduledOnStartup) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
 
   // Case 1: Check that the timer is not set in the ctor if no password hash is
   // saved.
@@ -1057,7 +1052,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
 
   service_ = NewMockPasswordProtectionService(
       /*sync_password_hash=*/"");
@@ -1082,7 +1077,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordCaptureEventRecorded) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
 
   // Case 1: Default service_ ctor has an empty password hash. Should not log.
   service_->MaybeLogPasswordCapture(/*did_log_in=*/false);
@@ -1112,7 +1107,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordCaptureEventReschedules) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
 
   // Case 1: Default service_ ctor has an empty password hash, so we don't log
   // or reschedule the logging.
@@ -1139,7 +1134,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordReuseLookupUserEventRecorded) {
   // Configure sync account type to GMAIL.
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
-  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), account_info);
 
   NavigateAndCommit(GURL("https://www.example.com/"));
 
@@ -1601,7 +1596,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // If user is a Gmail user and enterprise password is used, event should be
   // sent.
   CoreAccountInfo gmail_account_info = SetPrimaryAccount(kGmailUserName);
-  SetUpSyncAccount(kNoHostedDomainFound, gmail_account_info);
+  SetUpSyncAccount(/*hosted_domain=*/std::string(), gmail_account_info);
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_REUSE);
   NavigateAndCommit(GURL(kPasswordReuseURL));

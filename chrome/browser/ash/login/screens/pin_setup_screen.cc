@@ -272,8 +272,7 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
     token_lifetime_timeout_.Stop();
     if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context())) {
       exit_callback_.Run(Result::kDoneAsMainFactor);
-    } else if (IsInSetupMode(PinSetupMode::kRecovery, *context()) &&
-               features::IsAllowPasswordlessRecoveryEnabled()) {
+    } else if (IsInSetupMode(PinSetupMode::kRecovery, *context())) {
       exit_callback_.Run(Result::kDoneRecoveryReset);
     } else {
       CHECK(IsInSetupMode(PinSetupMode::kSetupAsSecondaryFactor, *context()));

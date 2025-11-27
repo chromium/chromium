@@ -1148,11 +1148,7 @@ std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   DCHECK(layout_view);
   const float unscaled_natural_height =
       AdjustForAbsoluteZoom::AdjustFloat(*natural_height_, *layout_view);
-  NaturalSizingInfo info;
-  info.size = gfx::SizeF(0, unscaled_natural_height);
-  info.has_width = false;
-  info.has_height = true;
-  return info;
+  return NaturalSizingInfo::MakeHeight(unscaled_natural_height);
 }
 
 void LocalFrameView::UpdateGeometry() {

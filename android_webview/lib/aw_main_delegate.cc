@@ -38,6 +38,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_clock.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -141,10 +142,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // the regression occurs. This info is not available for webview so there
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
-
-  // Deemed that performance benefit is not worth the stability cost.
-  // See crbug.com/1309151.
-  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
 
   // Keep data: URL support in SVGUseElement for webview until deprecation is
   // completed in the Web Platform.
@@ -303,8 +300,11 @@ bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 variations::VariationsIdsProvider*
 AwMainDelegate::CreateVariationsIdsProvider() {
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
   return variations::VariationsIdsProvider::CreateInstance(
-      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations,
+      std::make_unique<base::DefaultClock>());
 }
 
 std::optional<int> AwMainDelegate::PostEarlyInitialization(

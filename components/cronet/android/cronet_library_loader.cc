@@ -158,8 +158,8 @@ void InitializePerfetto() {
 
 }  // namespace
 
-void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
-                                        jboolean initializePerfetto) {
+static void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
+                                               jboolean initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
 
   if (!base::ThreadPoolInstance::Get()) {
@@ -205,7 +205,7 @@ void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
   base::android::LibraryLoaderExitHook();
 }
 
-void JNI_CronetLibraryLoader_CronetInitOnInitThread(
+static void JNI_CronetLibraryLoader_CronetInitOnInitThread(
     JNIEnv* env,
     net::NetLogCaptureMode trace_net_log_capture_mode) {
   // Initialize SingleThreadTaskExecutor for init thread.
@@ -247,12 +247,12 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
   g_init_thread_init_done.Signal();
 }
 
-net::NetLogCaptureMode
+static net::NetLogCaptureMode
 JNI_CronetLibraryLoader_GetTraceNetLogCaptureModeForTesting(JNIEnv* env) {
   return g_trace_net_log_capture_mode.value();
 }
 
-ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
+static ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
     JNIEnv* env) {
 #if defined(ARCH_CPU_ARM64)
   // Attempt to avoid crashes on some ARM64 Marshmallow devices by
@@ -265,7 +265,8 @@ ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
   return base::android::ConvertUTF8ToJavaString(env, CRONET_VERSION);
 }
 
-void JNI_CronetLibraryLoader_SetMinLogLevel(JNIEnv* env, jint jlog_level) {
+static void JNI_CronetLibraryLoader_SetMinLogLevel(JNIEnv* env,
+                                                   jint jlog_level) {
   logging::SetMinLogLevel(jlog_level);
 }
 

@@ -201,6 +201,14 @@ class BrowserView : public BrowserWindow,
   // Returns an empty size if this browser is not for a web app.
   gfx::Size GetWebAppFrameToolbarPreferredSize() const;
 
+  // Adds provided |content| as a child of BrowserView so that layout can be
+  // handled by BrowserViewLayout. Used when opening the side panel using
+  // SidePanelUI::ShowFrom which animates the side panel content from provided
+  // bounds.
+  void SetSidePanelAnimationContent(views::View* content);
+  // Returns side panel content if it is currently parented to the BrowserView.
+  views::View* GetSidePanelAnimationContent();
+
   // Returns all the ContentsContainerViews that belong to this browser.
   std::vector<ContentsContainerView*> GetContentsContainerViews();
 
@@ -783,6 +791,9 @@ class BrowserView : public BrowserWindow,
   views::View* GetContentsContainerForTest() { return contents_container_; }
   views::View* GetSidePanelRoundedCornerForTesting() {
     return side_panel_rounded_corner_;
+  }
+  BrowserViewLayout* GetBrowserViewLayoutForTesting() {
+    return GetBrowserViewLayout();
   }
 
   // Returns all the NativeViewHosts attached to this BrowserView which should

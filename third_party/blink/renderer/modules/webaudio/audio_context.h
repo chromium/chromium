@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkoptions_string.h"
 #include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -58,6 +59,7 @@ class MODULES_EXPORT AudioContext final
       public mojom::blink::PermissionObserver,
       public mojom::blink::MediaDevicesListener,
       public FrameVisibilityObserver,
+      public PageVisibilityObserver,
       public media::mojom::blink::MediaPlayer {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -157,6 +159,9 @@ class MODULES_EXPORT AudioContext final
   void FrameVisibilityChanged(
       mojom::blink::FrameVisibility frame_visibility) override;
 
+  // PageVisibilityObserver
+  void PageVisibilityChanged() override;
+
   // media::mojom::MediaPlayer  implementation.
   void RequestPlay() override {}
   void RequestPause(bool triggered_by_user) override {}
@@ -246,13 +251,17 @@ class MODULES_EXPORT AudioContext final
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
+  void set_clock_for_testing(const base::TickClock* clock);
 
  private:
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
+  friend class AudioContextStatsTest;
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
                            OnRenderErrorFromPlatformDestination);
+
+  class StatsUpdateRestrictor;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -358,6 +367,8 @@ class MODULES_EXPORT AudioContext final
   void SendLogMessage(const char* const function_name, const String& message);
 
   LocalFrame* GetLocalFrame() const;
+
+  Page* GetPageFromFrame() const;
 
   // Connects to the MediaPlayerHost to register as a media player.
   void EnsureMediaPlayerConnection();
@@ -519,6 +530,8 @@ class MODULES_EXPORT AudioContext final
   // Set to true when the DidClose() method is called. Used to detect if the
   // context is destroyed without being properly closed.
   bool is_closed_ = false;
+
+  std::unique_ptr<StatsUpdateRestrictor> stats_update_restrictor_;
 
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };

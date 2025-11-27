@@ -1621,6 +1621,7 @@ static_library("test_support") {
     "//components/services/unzip/content",
     "//components/sessions",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//components/value_store:test_support",
     "//content/test:test_support",
     "//extensions:test_support",

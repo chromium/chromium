@@ -137,8 +137,6 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   std::unique_ptr<RotateKeyRequest> pending_rotation_request_;
 
   // Runner for tasks needed to be run in the background.
-  // TODO(b/210108864): Add background tasks counter to allow DCHECKing that
-  // no tasks are running the background during key rotation.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Checker used to validate that non-background tasks should be

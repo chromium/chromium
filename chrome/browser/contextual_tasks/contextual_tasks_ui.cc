@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -22,7 +24,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -94,6 +97,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
+  source->AddLocalizedString(
+      "lensSearchButtonLabel",
+      IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);
 
   source->AddString(
       "composeboxImageFileTypes",
@@ -112,11 +118,17 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowTypedSuggest", false);
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   // Disable ZPS.
-  source->AddBoolean("composeboxShowZps", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
+  source->AddBoolean(
+      "composeboxShowZps",
+      contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable image context suggestions.
-  source->AddBoolean("composeboxShowImageSuggest", contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
+  source->AddBoolean(
+      "composeboxShowImageSuggest",
+      contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   // Disable context menu and related features.
-    source->AddBoolean("composeboxShowContextMenu", contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
+  source->AddBoolean(
+      "composeboxShowContextMenu",
+      contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
@@ -165,6 +177,23 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddResourcePath(
       "internals/",
       IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
+
+  // Create a session handle on the web contents if it doesn't already exist.
+  // TODO(crbug.com/462193737): Pass the session handle from the omnibox
+  // or NTP through the web contents helper.
+  if (auto* contextual_search_web_contents_helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              web_ui->GetWebContents());
+      !contextual_search_web_contents_helper->session_handle()) {
+    Profile* profile = Profile::FromWebUI(web_ui);
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile);
+    auto contextual_session_handle = contextual_search_service->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kNewTabPage);
+    contextual_search_web_contents_helper->set_session_handle(
+        std::move(contextual_session_handle));
+  }
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -324,8 +353,7 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     : content::WebContentsObserver(web_contents),
       ui_service_(ui_service),
       context_controller_(context_controller),
-      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {
-}
+      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -381,6 +409,10 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     }
   }
   task_info_delegate_->SetThreadId(url_thread_id);
+
+  // TODO(crbug.com/456793138): Update the contextual search session handle on
+  // the webcontents, reusing sessions if the thread already has a corresponding
+  // session entry, based on the mtid, once mtid is reliably set by the server.
 
   // If we don't yet have a title, try to pull one from the query.
   if (!task_info_delegate_->GetThreadTitle()) {

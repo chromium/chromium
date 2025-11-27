@@ -16,6 +16,7 @@
 
 namespace base {
 class FilePath;
+class TimeDelta;
 }  // namespace base
 
 namespace os_crypt_async {
@@ -31,7 +32,8 @@ class PageContentCache;
 class PageContentCacheHandler {
  public:
   PageContentCacheHandler(os_crypt_async::OSCryptAsync* os_crypt_async,
-                          const base::FilePath& profile_path);
+                          const base::FilePath& profile_path,
+                          base::TimeDelta max_context_age);
   ~PageContentCacheHandler();
 
   PageContentCacheHandler(const PageContentCacheHandler&) = delete;

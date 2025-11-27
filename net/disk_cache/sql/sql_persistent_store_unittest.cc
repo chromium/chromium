@@ -305,7 +305,21 @@ class SqlPersistentStoreTest : public testing::Test {
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->UpdateEntryHeaderAndLastUsed(key, res_id, last_used,
+    store_->UpdateEntryHeaderAndLastUsed(
+        key, res_id, last_used, /*new_hints=*/std::nullopt, std::move(buffer),
+        header_size_delta, future.GetCallback());
+    return future.Get();
+  }
+
+  SqlPersistentStore::Error UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      SqlPersistentStore::ResId res_id,
+      base::Time last_used,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta,
+      const std::optional<MemoryEntryDataHints>& new_hints) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->UpdateEntryHeaderAndLastUsed(key, res_id, last_used, new_hints,
                                          std::move(buffer), header_size_delta,
                                          future.GetCallback());
     return future.Get();
@@ -480,6 +494,18 @@ class SqlPersistentStoreTest : public testing::Test {
       details.doomed = s.ColumnBool(3);
       details.body_end = s.ColumnInt64(4);
       return details;
+    }
+    return std::nullopt;
+  }
+
+  // Helper to read hints from the resources table.
+  std::optional<uint8_t> GetResourceHints(const CacheEntryKey& key) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
+        "SELECT hints FROM resources WHERE cache_key=?"));
+    s.BindString(0, key.string());
+    if (s.Step()) {
+      return static_cast<uint8_t>(s.ColumnInt(0));
     }
     return std::nullopt;
   }
@@ -3531,7 +3557,8 @@ TEST_F(SqlPersistentStoreTest,
   bool callback_run = false;
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   store_->UpdateEntryHeaderAndLastUsed(
-      kKey, res_id, base::Time::Now(), buffer, buffer->size(),
+      kKey, res_id, base::Time::Now(), /*new_hints=*/std::nullopt, buffer,
+      buffer->size(),
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();
@@ -4545,6 +4572,165 @@ TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
   const int64_t kLowWatermark =
       kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
   EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+}
+
+TEST_F(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("my-key1");
+  const CacheEntryKey kKey2("my-key2");
+  const CacheEntryKey kKey3("my-key3");
+
+  // 1. Create three entries.
+  SqlPersistentStore::ResId res_id1 = CreateEntryAndGetResId(kKey1);
+  SqlPersistentStore::ResId res_id2 = CreateEntryAndGetResId(kKey2);
+  SqlPersistentStore::ResId res_id3 = CreateEntryAndGetResId(kKey3);
+
+  // 2. Ensure index is not loaded.
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  ASSERT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  // 3. Start loading the index.
+  base::test::TestFuture<SqlPersistentStore::Error> load_index_future;
+  ASSERT_TRUE(store_->MaybeLoadInMemoryIndex(load_index_future.GetCallback()));
+
+  // 4. Doom two entries while index loading is in flight.
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future1;
+  store_->DoomEntry(kKey1, res_id1, doom_future1.GetCallback());
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future3;
+  store_->DoomEntry(kKey3, res_id3, doom_future3.GetCallback());
+
+  // 5. Wait for index loading to complete.
+  EXPECT_EQ(load_index_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // 6. The index is now loaded. The doomed entries should not be in the index
+  //    because they were added to `pending_doomed_res_ids_` and removed after
+  //    the index was loaded.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // 7. Wait for the doom operations to complete.
+  EXPECT_EQ(doom_future1.Get(), SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(doom_future3.Get(), SqlPersistentStore::Error::kOk);
+
+  // 8. The index state should remain the same.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // 9. Verify that the doomed entries are gone and the other entry is still
+  //    accessible.
+  auto open_result1 = OpenEntry(kKey1);
+  ASSERT_TRUE(open_result1.has_value());
+  EXPECT_FALSE(open_result1->has_value());
+  auto open_result2 = OpenEntry(kKey2);
+  ASSERT_TRUE(open_result2.has_value());
+  ASSERT_TRUE(open_result2->has_value());
+  EXPECT_EQ((*open_result2)->res_id, res_id2);
+  auto open_result3 = OpenEntry(kKey3);
+  ASSERT_TRUE(open_result3.has_value());
+  EXPECT_FALSE(open_result3->has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
+  CreateAndInitStore();
+
+  // Load the in-memory index, which is necessary for the index recovery
+  // mechanism.
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  // The entry should be in the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Simulate a database failure.
+  store_->SetSimulateDbFailureForTesting(true);
+
+  // Try to doom the entry. The database operation will fail.
+  ASSERT_EQ(DoomEntry(kKey, res_id),
+            SqlPersistentStore::Error::kFailedForTesting);
+
+  // Because the DB operation failed, the entry should have been re-added to
+  // the in-memory index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Disable the failure simulation.
+  store_->SetSimulateDbFailureForTesting(false);
+
+  // The entry should still be openable.
+  auto open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  ASSERT_TRUE(open_result->has_value());
+  EXPECT_EQ(open_result.value()->res_id, res_id);
+
+  // Doom the entry again. This time it should succeed.
+  ASSERT_EQ(DoomEntry(kKey, res_id), SqlPersistentStore::Error::kOk);
+
+  // The entry should now be gone from the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // The entry should not be openable.
+  open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  EXPECT_FALSE(open_result->has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, SetAndGetEntryInMemoryData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+
+  // 1. Create a new entry.
+  auto res_id = CreateEntryAndGetResId(kKey);
+
+  // 2. Load the index.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 3. Set in-memory data hints.
+  const uint8_t hints_value = 42;
+  store_->SetInMemoryEntryDataHints(kKey.hash(), res_id,
+                                    MemoryEntryDataHints(hints_value));
+
+  // 4. Get the hints and verify.
+  auto hints = store_->GetInMemoryEntryDataHints(kKey.hash());
+  ASSERT_TRUE(hints.has_value());
+  EXPECT_EQ(hints->value(), hints_value);
+
+  // 5. Persist the hints to the database.
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>("");
+  ASSERT_EQ(
+      UpdateEntryHeaderAndLastUsed(kKey, res_id, base::Time::Now(), buffer, 0,
+                                   MemoryEntryDataHints(hints_value)),
+      SqlPersistentStore::Error::kOk);
+
+  // Verify hints are in the database.
+  auto db_hints = GetResourceHints(kKey);
+  ASSERT_TRUE(db_hints.has_value());
+  EXPECT_EQ(*db_hints, hints_value);
+
+  // 6. Close and re-open the store.
+  ClearStore();
+  CreateAndInitStore();
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 7. Get the hints again and verify they were loaded from the DB.
+  auto reloaded_hints = store_->GetInMemoryEntryDataHints(kKey.hash());
+  ASSERT_TRUE(reloaded_hints.has_value());
+  EXPECT_EQ(reloaded_hints->value(), hints_value);
 }
 
 }  // namespace disk_cache

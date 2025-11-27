@@ -103,15 +103,15 @@ RouterRequestConditionToBlink(RouterCondition* v8_condition,
     // "If |method| is not a [=/method=], then return false."
     // i.e. throw TypeError.
     if (!IsValidHTTPToken(method)) {
-      exception_state.ThrowTypeError("'" + method +
-                                     "' is not a valid HTTP method.");
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' is not a valid HTTP method."}));
       return std::nullopt;
     }
     // "If |method| is a [=forbidden method=], then return false."
     // i.e. throw TypeError.
     if (FetchUtils::IsForbiddenMethod(method)) {
-      exception_state.ThrowTypeError("'" + method +
-                                     "' HTTP method is unsupported.");
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' HTTP method is unsupported."}));
       return std::nullopt;
     }
     request_condition_exist = true;

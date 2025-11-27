@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/tab/storage_package.h"
@@ -23,7 +24,7 @@ namespace {
 constexpr base::TaskTraits kDBTaskTraits = {
     base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
-} // namespace
+}  // namespace
 
 TabStateStorageBackend::TabStateStorageBackend(
     const base::FilePath& profile_path)
@@ -47,6 +48,12 @@ void TabStateStorageBackend::Initialize() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TabStateStorageBackend::WaitForAllPendingOperations(
+    base::OnceClosure on_idle) {
+  db_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                    std::move(on_idle));
+}
+
 void TabStateStorageBackend::Update(
     std::unique_ptr<TabStateStorageUpdater> updater) {
   db_task_runner_->PostTaskAndReplyWithResult(
@@ -58,13 +65,13 @@ void TabStateStorageBackend::Update(
 }
 
 void TabStateStorageBackend::LoadAllNodes(
-    std::string window_tag,
+    const std::string& window_tag,
     bool is_off_the_record,
     base::OnceCallback<void(std::vector<NodeState>)> callback) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
-                     base::Unretained(database_.get()), std::move(window_tag),
+                     base::Unretained(database_.get()), window_tag,
                      is_off_the_record),
       base::BindOnce(&TabStateStorageBackend::OnAllTabsRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -74,6 +81,12 @@ void TabStateStorageBackend::ClearAllNodes() {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearAllNodes,
                                 base::Unretained(database_.get())));
+}
+
+void TabStateStorageBackend::ClearWindow(const std::string& window_tag) {
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
+                                base::Unretained(database_.get()), window_tag));
 }
 
 void TabStateStorageBackend::OnDBReady(bool success) {}

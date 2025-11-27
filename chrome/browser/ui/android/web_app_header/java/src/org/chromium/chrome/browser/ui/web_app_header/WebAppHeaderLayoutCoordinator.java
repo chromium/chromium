@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -47,7 +50,10 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -56,8 +62,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -74,6 +82,10 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                 WebAppHeaderDelegate,
                 BrowserControlsStateProvider.Observer,
                 ThemeColorProvider.TintObserver {
+
+    private static final int ANIMATION_START_DELAY_MS = 500;
+    private static final int ANIMATION_PAUSE_DELAY_MS = 2500;
+    private static final int ANIMATION_DURATION_MS = 800;
 
     private int mHeaderControlButtonWidthDp;
     private int mHeaderButtonPaddingDp;
@@ -115,6 +127,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     private @Nullable TextView mAppOriginView;
     private @Nullable String mAppOrigin;
     private final Callback<@Nullable Tab> mOnTabUpdate;
+    private final BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -142,6 +155,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         assert browserServicesIntentDataProvider.isWebApkActivity()
                 || browserServicesIntentDataProvider.isTrustedWebActivity();
 
+        mBrowserServicesIntentDataProvider = browserServicesIntentDataProvider;
         mIsTWA = browserServicesIntentDataProvider.isTrustedWebActivity();
         mDisplayMode = browserServicesIntentDataProvider.getResolvedDisplayMode();
         mHistoryDelegate = historyDelegate;
@@ -390,9 +404,6 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         if (wasShowingButtons == mShowButtons) return;
 
         int visibility = mShowButtons ? View.VISIBLE : View.GONE;
-        if (mAppOriginView != null) {
-            mAppOriginView.setVisibility(visibility);
-        }
 
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.setVisibility(mShowButtons);
@@ -637,13 +648,6 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                 mToggleButtonView.setVisibility(View.VISIBLE);
             }
         }
-        if (mAppOriginView != null) {
-            if (isVisible) {
-                mAppOriginView.setVisibility(View.GONE);
-            } else {
-                mAppOriginView.setVisibility(View.VISIBLE);
-            }
-        }
         mMediator.setBrowserControlsVisible(isVisible);
     }
 
@@ -651,15 +655,73 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     public void onDidFinishNavigationInPrimaryMainFrame(
             Tab tab, NavigationHandle navigationHandle) {
         if (mAppOriginView == null) return;
-        String origin = navigationHandle.getUrl().getOrigin().getSpec();
-        if (origin.equals(mAppOrigin)) return;
-        mAppOrigin = origin;
+        if (mBrowserServicesIntentDataProvider == null
+                || mBrowserServicesIntentDataProvider.getAllTrustedWebActivityOrigins() == null)
+            return;
+        GURL origin = navigationHandle.getUrl().getOrigin();
+        boolean isTWAOrigin =
+                mBrowserServicesIntentDataProvider
+                        .getAllTrustedWebActivityOrigins()
+                        .contains(Origin.create(origin.getSpec()));
+        // If the origin is not new or does not belong to the TWA, do nothing.
+        if ((mAppOrigin != null && mAppOrigin.equals(origin.getSpec())) || !isTWAOrigin) {
+            return;
+        }
+
+        mAppOrigin = origin.getSpec();
+        String domain = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(origin);
+        mAppOriginView.setText(domain);
+        setTextThemeColor();
+        runDomainTextAnimation();
+    }
+
+    private void runDomainTextAnimation() {
+        if (mAppOriginView == null) return;
+
+        AnimatorSet animationSet = new AnimatorSet();
+
+        animationSet.playSequentially(
+                Arrays.asList(
+                        animateFadeInView(mAppOriginView), animateFadeOutView(mAppOriginView)));
+        animationSet.start();
+    }
+
+    private Animator animateFadeInView(View view) {
+        ObjectAnimator fadeInAnimation = ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f, 1.0f);
+        fadeInAnimation.setDuration(ANIMATION_DURATION_MS);
+        fadeInAnimation.setStartDelay(ANIMATION_START_DELAY_MS);
+        fadeInAnimation.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animation) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                });
+        return fadeInAnimation;
+    }
+
+    private Animator animateFadeOutView(View view) {
+        ObjectAnimator fadeOutAnimation = ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f);
+        fadeOutAnimation.setDuration(ANIMATION_DURATION_MS);
+        // Pause before fade out.
+        fadeOutAnimation.setStartDelay(ANIMATION_PAUSE_DELAY_MS);
+        fadeOutAnimation.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        view.setVisibility(View.GONE);
+                    }
+                });
+        return fadeOutAnimation;
+    }
+
+    private void setTextThemeColor() {
+        if (mAppOriginView == null) return;
 
         final ColorStateList textColorList =
                 mThemeColorProvider.getActivityFocusTint() == null
                         ? mAppOriginView.getTextColors()
                         : mThemeColorProvider.getActivityFocusTint();
         mAppOriginView.setTextColor(textColorList);
-        mAppOriginView.setText(mAppOrigin);
     }
 }

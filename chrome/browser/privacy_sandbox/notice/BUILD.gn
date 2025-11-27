@@ -106,12 +106,8 @@ if (!is_android) {
   }
 
   source_set("desktop_view_manager") {
-    sources = [
-      "desktop_entrypoint_handlers.cc",
-      "desktop_view_manager.cc",
-    ]
+    sources = [ "desktop_view_manager.cc" ]
     public = [
-      "desktop_entrypoint_handlers.h",
       "desktop_view_manager.h",
       "desktop_view_manager_test_peer.h",
     ]
@@ -246,7 +242,6 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
     deps += [
       ":desktop_view_manager",
       "//chrome/browser/sync",
@@ -254,7 +249,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support_ui",
-      "//components/privacy_sandbox:features",
     ]
   }
 }

@@ -101,7 +101,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
                       mojom::blink::SharedStorageWorkletServiceClient> client,
                   mojom::blink::SharedStorageWorkletPermissionsPolicyStatePtr
                       permissions_policy_state,
-                  const String& embedder_context) override;
+                  const String& embedder_context,
+                  InitializeCallback callback) override;
   void AddModule(mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
                      pending_url_loader_factory,
                  const KURL& script_source_url,

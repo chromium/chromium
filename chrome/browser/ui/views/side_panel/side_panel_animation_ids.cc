@@ -7,4 +7,12 @@
 #include "ui/base/interaction/element_identifier.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelBoundsAnimation);
+
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kShadowOverlayOpacityAnimation);
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentTopBoundAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentBottomBoundAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentLeftBoundAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWidthBoundAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentOpacityAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentCornerRadiusAnimation);

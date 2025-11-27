@@ -3143,10 +3143,14 @@ HttpCache::Transaction::GetHttpCacheEntryRejectionStatus(
     return HttpCacheEntryRejectionStatus::kNoRejectionLoadOnlyFromCache;
   }
 
-  return (in_memory_info & HINT_UNUSABLE_PER_CACHING_HEADERS) ==
-                 HINT_UNUSABLE_PER_CACHING_HEADERS
+  if ((in_memory_info & HINT_UNUSABLE_PER_CACHING_HEADERS) !=
+      HINT_UNUSABLE_PER_CACHING_HEADERS) {
+    return HttpCacheEntryRejectionStatus::kNoRejectionUsable;
+  }
+
+  return base::FeatureList::IsEnabled(features::kHttpCacheSkipUnusableEntry)
              ? HttpCacheEntryRejectionStatus::kRejection
-             : HttpCacheEntryRejectionStatus::kNoRejectionUsable;
+             : HttpCacheEntryRejectionStatus::kNoRejectionHintDisabled;
 }
 
 bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(

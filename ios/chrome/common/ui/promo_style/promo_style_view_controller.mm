@@ -50,11 +50,11 @@ constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kShortBannerMultiplier = 0.2;
 constexpr CGFloat kExtraShortBannerMultiplier = 0.15;
-constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
 constexpr CGFloat kButtonPadding = 8;
+constexpr CGFloat kReadMoreImagePadding = 8;
 
 // Corner radius for the whole view.
 constexpr CGFloat kCornerRadius = 20;
@@ -69,6 +69,18 @@ const CGFloat kHeaderImageShadowOffsetY = 0;
 const CGFloat kHeaderImageShadowRadius = 6;
 const CGFloat kHeaderImageShadowOpacity = 0.1;
 const CGFloat kHeaderImageShadowShadowInset = 20;
+
+// Returns the arrow down image with the correct configuration.
+UIImage* ArrowDownImage() {
+  UIImageSymbolConfiguration* symbol_configuration = [UIImageSymbolConfiguration
+      configurationWithTextStyle:UIFontTextStyleCaption2];
+  symbol_configuration = [symbol_configuration
+      configurationByApplyingConfiguration:
+          [UIImageSymbolConfiguration
+              configurationWithWeight:UIImageSymbolWeightBold]];
+  return [UIImage systemImageNamed:@"arrow.down"
+                 withConfiguration:symbol_configuration];
+}
 
 }  // namespace
 
@@ -117,6 +129,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   BOOL _shouldScrollToBottom;
   // Task runner to resize banner image off the UI thread.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
+  // Backup of the primary action string to restore it after "Read More" state.
+  NSString* _originalPrimaryActionString;
 }
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
@@ -705,6 +719,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 #pragma mark - ButtonStackActionDelegate
 
 - (void)didTapPrimaryActionButton {
+  if (self.scrollToEndMandatory && !self.didReachBottom) {
+    [self scrollToBottom];
+    return;
+  }
   if ([self.delegate respondsToSelector:@selector(didTapPrimaryActionButton)]) {
     base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
                                   PromoStyleSheetAction::kPrimaryButtonTapped);
@@ -980,50 +998,21 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     return;
   }
 
-  DCHECK(self.readMoreString);
-  NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kSolidButtonTextColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+  CHECK(self.readMoreString);
+  if (!_originalPrimaryActionString) {
+    _originalPrimaryActionString = self.configuration.primaryActionString;
+  }
+  self.configuration.primaryActionString = self.readMoreString;
+  [self reloadConfiguration];
+
+  UIButtonConfiguration* config = self.primaryActionButton.configuration;
+  config.image = ArrowDownImage();
+  config.imagePlacement = NSDirectionalRectEdgeTrailing;
+  config.imagePadding = kReadMoreImagePadding;
+  config.imageColorTransformer = ^UIColor*(UIColor* _) {
+    return [UIColor colorNamed:kSolidButtonTextColor];
   };
-
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:self.readMoreString
-                                             attributes:textAttributes];
-
-  // Use `ceilf()` when calculating the icon's bounds to ensure the
-  // button's content height does not shrink by fractional points, as the
-  // attributed string's actual height is slightly smaller than the
-  // assigned height.
-  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
-  attachment.image = [[UIImage imageNamed:@"read_more_arrow"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  CGFloat height = ceilf(attributedString.size.height);
-  CGFloat capHeight = ceilf(
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline].capHeight);
-  CGFloat horizontalOffset =
-      base::i18n::IsRTL() ? -1.f * kMoreArrowMargin : kMoreArrowMargin;
-  CGFloat verticalOffset = (capHeight - height) / 2.f;
-  attachment.bounds =
-      CGRectMake(horizontalOffset, verticalOffset, height, height);
-  [attributedString
-      appendAttributedString:[NSAttributedString
-                                 attributedStringWithAttachment:attachment]];
-  self.primaryActionButton.accessibilityIdentifier =
-      kPromoStyleReadMoreActionAccessibilityIdentifier;
-
-  // Make the title change without animation, as the UIButton's default
-  // animation when using setTitle:forState: doesn't handle adding a
-  // UIImage well (the old title gets abruptly pushed to the side as it's
-  // fading out to make room for the new image, which looks awkward).
-  __weak PromoStyleViewController* weakSelf = self;
-  [UIView performWithoutAnimation:^{
-    UIButtonConfiguration* buttonConfiguration =
-        weakSelf.primaryActionButton.configuration;
-    buttonConfiguration.attributedTitle = attributedString;
-    weakSelf.primaryActionButton.configuration = buttonConfiguration;
-    [weakSelf.primaryActionButton layoutIfNeeded];
-  }];
+  self.primaryActionButton.configuration = config;
 }
 
 // Updates views based on the initial scroll state. This should be
@@ -1071,6 +1060,18 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     });
   }
   self.didReachBottom = YES;
+
+  if (!_originalPrimaryActionString) {
+    return;
+  }
+
+  self.configuration.primaryActionString = _originalPrimaryActionString;
+  _originalPrimaryActionString = nil;
+  [self reloadConfiguration];
+
+  UIButtonConfiguration* config = self.primaryActionButton.configuration;
+  config.image = nil;
+  self.primaryActionButton.configuration = config;
 }
 
 // Handle taps on the help button.

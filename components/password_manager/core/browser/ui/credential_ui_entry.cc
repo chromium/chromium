@@ -150,7 +150,8 @@ CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
       username(base::UTF8ToUTF16(passkey.username())),
       user_display_name(base::UTF8ToUTF16(passkey.display_name())),
       creation_time(passkey.creation_time()),
-      hidden(passkey.hidden()) {
+      hidden(passkey.hidden()),
+      rp_id(passkey.rp_id()) {
   CHECK(!passkey.credential_id().empty());
   CredentialFacet facet;
   facet.url = GURL(base::StrCat(

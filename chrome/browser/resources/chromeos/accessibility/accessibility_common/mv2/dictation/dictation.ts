@@ -147,15 +147,15 @@ export class Dictation {
    * Called when Dictation is toggled.
    * @param activated Whether Dictation was just activated.
    */
-  private onToggleDictation_(activated: boolean): void {
+  private async onToggleDictation_(activated: boolean): Promise<void> {
     if (activated && !this.active_) {
-      this.startDictation_();
+      await this.startDictation_();
     } else {
       this.stopDictation_(/*notify=*/ false);
     }
   }
 
-  private startDictation_(): void {
+  private async startDictation_(): Promise<void> {
     this.active_ = true;
     if (this.chromeVoxEnabled_) {
       // Silence ChromeVox in case it was speaking. It can speak over the start
@@ -168,7 +168,8 @@ export class Dictation {
         Dictation.Timeouts.NO_FOCUSED_IME_MS,
         Dictation.StopReason.NO_FOCUSED_IME);
     // TODO(b/314203187): Determine if not null assertion is acceptable.
-    this.inputController_!.connect(() => this.verifyMicrophoneNotMuted_());
+    await this.inputController_!.connect(
+        () => this.verifyMicrophoneNotMuted_());
   }
 
   /**

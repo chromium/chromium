@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 
+#include <string_view>
+
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
@@ -14,12 +16,17 @@
 
 namespace autofill::test {
 
+namespace {
+
 using ::testing::ElementsAre;
+using ::testing::Message;
 
-constexpr absl::string_view kDefaultTestOrigin = "https://example.test/";
+constexpr std::string_view kDefaultTestOrigin = "https://example.test/";
 
-testing::Message DescribeFormData(const FormData& form_data) {
-  testing::Message result;
+}  // namespace
+
+Message DescribeFormData(const FormData& form_data) {
+  Message result;
   result << "Form contains " << form_data.fields().size() << " fields:\n";
   for (const FormFieldData& field : form_data.fields()) {
     result << "type=" << FormControlTypeToString(field.form_control_type())
@@ -235,7 +242,7 @@ void FormStructureTest::CheckFormStructureTestData(
     const std::vector<FormStructureTestCase>& test_cases) {
   for (const FormStructureTestCase& test_case : test_cases) {
     const FormData form = GetFormData(test_case.form_attributes);
-    SCOPED_TRACE(testing::Message("Test description: ")
+    SCOPED_TRACE(Message("Test description: ")
                  << test_case.form_attributes.description_for_logging);
 
     auto form_structure = std::make_unique<FormStructure>(form);

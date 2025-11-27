@@ -73,7 +73,7 @@ class ContextualSearchProvider : public BaseSearchProvider {
   void SuggestRequestCompleted(AutocompleteInput input,
                                const network::SimpleURLLoader* source,
                                const int response_code,
-                               std::unique_ptr<std::string> response_body);
+                               std::optional<std::string> response_body);
 
   // Uses |results| and |input| to populate |matches_| and its associated
   // metadata.

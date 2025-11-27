@@ -353,6 +353,8 @@ std::string ContextualSearchMetricsRecorder::MimeTypeToString(
       return "Pdf";
     case lens::MimeType::kImage:
       return "Image";
+    case lens::MimeType::kAnnotatedPageContent:
+      return "Tab";
     default:
       return "Other";
   }

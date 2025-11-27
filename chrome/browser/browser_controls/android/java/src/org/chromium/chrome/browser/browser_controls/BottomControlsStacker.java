@@ -370,7 +370,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
             int totalHeight = mTotalHeight;
             if (totalHeight == INVALID_HEIGHT) {
-                // TODO(crbug.com/395937483): Investigate if this causes any other bugs.
+                // TODO(crbug.com/463962392): Investigate if this causes any other bugs.
                 Log.w(TAG, "Using mTotalHeight before initialization");
 
                 totalHeight = 0;

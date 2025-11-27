@@ -38,9 +38,18 @@ class ModelExecutionFetcher;
 
 class ModelExecutionManager final {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Used to provide alternative fetcher implementations.
+    virtual std::unique_ptr<ModelExecutionFetcher> CreateLegionFetcher() = 0;
+  };
+
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
+      std::unique_ptr<Delegate> delegate,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service);
@@ -59,6 +68,7 @@ class ModelExecutionManager final {
       const google::protobuf::MessageLite& request_metadata,
       std::optional<base::TimeDelta> timeout,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
+      ModelExecutionServiceType service_type,
       OptimizationGuideModelExecutionResultCallback callback);
 
   // Records a fake model execution response to be returned when ExecuteModel is
@@ -77,9 +87,9 @@ class ModelExecutionManager final {
   using ActiveFeatureExecutions =
       std::map<FetcherId, std::unique_ptr<ModelExecutionFetcher>>;
 
-  // Creates a new ModelExecutionFetcher for |feature|.
+  // Creates a new ModelExecutionFetcher.
   std::unique_ptr<ModelExecutionFetcher> CreateModelExecutionFetcher(
-      ModelBasedCapabilityKey feature);
+      ModelExecutionServiceType service_type);
 
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(
@@ -106,6 +116,9 @@ class ModelExecutionManager final {
 
   // The endpoint for the model execution service.
   const GURL model_execution_service_url_;
+
+  // Provides alternative fetcher implementations.
+  std::unique_ptr<Delegate> delegate_;
 
   // The next available `FetcherId`. Assigned in increasing order.
   FetcherId next_model_execution_fetcher_id = 0;

@@ -8,13 +8,13 @@ import android.graphics.Bitmap;
 
 import androidx.core.util.Pair;
 
-import org.chromium.ui.base.DeviceFormFactor;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -184,10 +184,16 @@ public class PermissionDialogDelegate {
         mDialogController = controller;
     }
 
-    public void onGeolocationAccuracySelected(boolean isPrecise) {
+    public @LocationAccuracy int getInitialGeolocationAccuracySelection() {
+        assert mNativeDelegatePtr != 0;
+        return PermissionDialogDelegateJni.get()
+                .getInitialGeolocationAccuracySelection(mNativeDelegatePtr);
+    }
+
+    public void onGeolocationAccuracySelected(@LocationAccuracy int locationAccuracy) {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
-                .onGeolocationAccuracySelected(mNativeDelegatePtr, isPrecise);
+                .onGeolocationAccuracySelected(mNativeDelegatePtr, locationAccuracy);
     }
 
     /** Return the size of the RequestType enum used for permission requests. */
@@ -341,6 +347,10 @@ public class PermissionDialogDelegate {
 
         int getRequestTypeEnumSize();
 
-        void onGeolocationAccuracySelected(long nativePermissionDialogDelegate, boolean isPrecise);
+        void onGeolocationAccuracySelected(
+                long nativePermissionDialogDelegate, @LocationAccuracy int locationAccuracy);
+
+        @LocationAccuracy
+        int getInitialGeolocationAccuracySelection(long nativePermissionDialogDelegate);
     }
 }

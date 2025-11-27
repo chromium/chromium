@@ -19,6 +19,11 @@ BASE_FEATURE(kUseAndroidBufferedInputDispatch,
 const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime{
     &features::kInputOnViz,
     /*name=*/"transfer_sequences_with_abnormal_down_time", false};
+
+// Whether to forward the events that were seen by Browser to Viz.
+const base::FeatureParam<bool> kForwardEventsSeenOnBrowserToViz{
+    &features::kInputOnViz,
+    /*name=*/"forward_events_seen_on_browser_to_viz", false};
 #endif
 
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,

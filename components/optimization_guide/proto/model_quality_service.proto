@@ -10,6 +10,7 @@ import "components/optimization_guide/proto/features/actor_login.proto";
 import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
+import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
@@ -99,6 +100,8 @@ message LogAiDataRequest {
     IosSmartTabGroupingLoggingData ios_smart_tab_grouping = 30;
 
     ActorLoginLoggingData actor_login = 31;
+
+    ContextualTasksContextLoggingData contextual_tasks_context = 32;
 
     DefaultLoggingData default = 1000;
   }

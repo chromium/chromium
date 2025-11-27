@@ -414,11 +414,11 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-jlong JNI_WindowAndroid_Init(JNIEnv* env,
-                             const JavaParamRef<jobject>& obj,
-                             jint sdk_display_id,
-                             jfloat scroll_factor,
-                             jboolean window_is_wide_color_gamut) {
+static jlong JNI_WindowAndroid_Init(JNIEnv* env,
+                                    const JavaParamRef<jobject>& obj,
+                                    jint sdk_display_id,
+                                    jfloat scroll_factor,
+                                    jboolean window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(
       env, obj, sdk_display_id, scroll_factor, window_is_wide_color_gamut);
   return reinterpret_cast<intptr_t>(window);

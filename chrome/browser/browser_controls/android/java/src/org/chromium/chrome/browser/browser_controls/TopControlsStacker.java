@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import android.os.Handler;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
@@ -117,10 +118,26 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 TopControlType.PROGRESS_BAR,
             };
 
+    /** Helper class used to mark state for {@link #requestLayerUpdatePost(boolean).} */
+    private class PendingRequest implements Runnable {
+        public boolean requireAnimate;
+
+        private PendingRequest(boolean requireAnimate) {
+            this.requireAnimate = requireAnimate;
+        }
+
+        @Override
+        public void run() {
+            TopControlsStacker.this.mPendingRequest = null;
+            requestLayerUpdateSync(requireAnimate);
+        }
+    }
+
     // All controls are stored in a Map and we should only have one of each control type.
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
     private final SparseIntArray mLayerRestingOffsets = new SparseIntArray();
     private final SparseIntArray mLayerYOffset = new SparseIntArray();
+    private final Handler mHandler = new Handler();
 
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final BrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
@@ -135,6 +152,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private @Nullable BrowserControlsOffsetTagsInfo mTopControlsOffsetTagInfo;
     private boolean mIsMinHeightShrinking;
     private boolean mHasAnimationLayer;
+
+    private @Nullable PendingRequest mPendingRequest;
 
     /**
      * Constructs the top controls stacker, which is used to calculate heights and offsets for any
@@ -153,7 +172,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     /**
      * Adds a new control layer to the list of active top controls. Note that the control's height
-     * will not be recalculated until {@link #requestLayerUpdate(boolean)} is called.
+     * will not be recalculated until {@link #requestLayerUpdateSync(boolean)} is called.
      *
      * @param newControl TopControlLayer to add to the active controls.
      */
@@ -165,7 +184,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     /**
      * Removes a control layer from the list of active top controls. Note that the control's height
-     * will not be recalculated until {@link #requestLayerUpdate(boolean)} is called.
+     * will not be recalculated until {@link #requestLayerUpdateSync(boolean)} is called.
      *
      * @param control The TopControlLayer to remove from the active controls.
      */
@@ -177,7 +196,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * Sets whether scrolling is disabled for the top controls. This call can potentially still
      * change the browser control's shown ratio when minHeight is updated when the controls is
      * scrolled off, or when BrowserControlsState.HIDDEN. Note that the control's height will not be
-     * recalculated until {@link #requestLayerUpdate(boolean)} is called.
+     * recalculated until {@link #requestLayerUpdateSync(boolean)} is called.
      *
      * @param disabled Whether scrolling is disabled.
      */
@@ -207,13 +226,32 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     /**
-     * Trigger the browser controls height update based on the current layer status. If there's
-     * already an animated transition running, this call might cause it to skip to the end state.
+     * Trigger the browser controls height update based on the current layer status.
      *
-     * @param animate Whether animate the browser controls size change.
+     * <p>Note that this call will trigger the layer updates immediately. If there's already an
+     * animated transition running, this call might cause it to skip to the end state.
+     *
+     * @param requireAnimate Whether animate the browser controls size change.
      */
-    public void requestLayerUpdate(boolean animate) {
-        updateLayersInternally(animate, mBrowserControlsSizer.offsetOverridden());
+    public void requestLayerUpdateSync(boolean requireAnimate) {
+        updateLayersInternally(requireAnimate, mBrowserControlsSizer.offsetOverridden());
+    }
+
+    /**
+     * Trigger the browser controls height update based on the current layer status.
+     *
+     * <p>This call post the layer update to the handler, so it is already an animated transition
+     * running, this call might cause it to skip to the end state.
+     *
+     * @param requireAnimate Whether animate the browser controls size change.
+     */
+    public void requestLayerUpdatePost(boolean requireAnimate) {
+        if (mPendingRequest != null) {
+            mPendingRequest.requireAnimate |= requireAnimate;
+        } else {
+            mPendingRequest = new PendingRequest(requireAnimate);
+            mHandler.post(mPendingRequest);
+        }
     }
 
     private void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
@@ -597,7 +635,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (mBrowserControlsState == newState) return;
         mBrowserControlsState = newState;
         if (mScrollingDisabled) {
-            requestLayerUpdate(false);
+            requestLayerUpdateSync(false);
         }
     }
 
@@ -693,6 +731,9 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     /** Tear down |this| and clear all existing controls from the Map. */
     public void destroy() {
+        if (mPendingRequest != null) {
+            mHandler.removeCallbacks(mPendingRequest);
+        }
         mControls.clear();
         mBrowserControlsVisibilityDelegate.removeObserver(mBrowserControlsStateCallback);
         mBrowserControlsSizer.removeObserver(this);

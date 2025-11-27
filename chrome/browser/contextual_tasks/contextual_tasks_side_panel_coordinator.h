@@ -46,7 +46,8 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
     // Own the WebContents from the side panel.
     std::unique_ptr<content::WebContents> web_contents;
 
-    // Whether the side panel is open.
+    // Whether the side panel is open. Only used when FeatureParam
+    // `kTaskScopedSidePanel` is set to true.
     bool is_open;
   };
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
@@ -64,8 +65,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
-  // Show the side panel.
-  void Show();
+  // Show the side panel. If |transition_from_tab| is true, trigger the side
+  // panel content to animate from the active tab content's bounds.
+  void Show(bool transition_from_tab = false);
 
   // Close the side panel.
   void Close();
@@ -107,10 +109,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Clean up unused WebContents.
   void CleanUpUnusedWebContents();
 
-  // Update the open state of the current task.
-  // Do nothing if no task is found.
-  void UpdateOpenStateForCurrentTask(bool is_open);
-
   int GetPreferredDefaultSidePanelWidth();
 
   // Update the associated WebContents for active tab.
@@ -141,13 +139,25 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   void MaybeDetachWebContentsFromWebView(content::WebContents* web_contents);
 
   // Called when active tab has been updated.
-  void UpdateForActiveTab();
+  void ObserveWebContentsOnActiveTab();
 
   // Update the statucs of active tab context on the side panel.
-  void UpdateActiveTabContextStatus();
+  void UpdateContextualTaskUI();
 
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
+
+  // Update open state of the side panel, can be either task scoped or tab
+  // scoped based on FeatureParam `kTaskScopedSidePanel`.
+  void UpdateOpenState(bool is_open);
+
+  // Get the open state of the side panel, can be either task scoped or tab
+  // scoped based on FeatureParam `kTaskScopedSidePanel`.
+  bool ShouldBeOpen();
+
+  // Initialize the open state of the tab scoped side panel if the
+  // active tab does not have an open state.
+  void MaybeInitTabScopedOpenState();
 
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
@@ -170,6 +180,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Different windows do not share the WebContents with the same task.
   std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
+
+  // The tab scoped side panel open state map. Only used when FeatureParam
+  // `kTaskScopedSidePanel` is set to false.
+  std::map<SessionID, bool> tab_scoped_open_state_;
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;

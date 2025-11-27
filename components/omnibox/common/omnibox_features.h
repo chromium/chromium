@@ -142,14 +142,6 @@ BASE_DECLARE_FEATURE(kOmniboxAimShortcutTypedState);
 // users to type in multiline / longer text.
 BASE_DECLARE_FEATURE(kMultilineEditField);
 
-#if BUILDFLAG(IS_IOS)
-// Enables the Gemini Prototype Omnibox Provider.
-BASE_DECLARE_FEATURE(kGeminiPrototypeOmniboxProvider);
-
-// Returns whether the Gemini Prototype provider is enabled.
-bool IsGeminiPrototypeProviderEnabled();
-#endif
-
 // Whether the composebox should use the new `chrome-compose` client.
 BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);
 

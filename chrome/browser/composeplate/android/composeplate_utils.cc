@@ -13,8 +13,9 @@
 #include "chrome/browser/composeplate/android/jni_headers/ComposeplateUtils_jni.h"
 
 // static
-jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
-                                                       Profile* profile) {
+static jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(
+    JNIEnv* env,
+    Profile* profile) {
   DCHECK(profile);
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),
@@ -23,8 +24,9 @@ jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
 }
 
 // static
-jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(JNIEnv* env,
-                                                          Profile* profile) {
+static jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(
+    JNIEnv* env,
+    Profile* profile) {
   DCHECK(profile);
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       AimEligibilityServiceFactory::GetForProfile(profile),

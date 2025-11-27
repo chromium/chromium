@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -35,6 +37,8 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
@@ -635,6 +639,119 @@ public class OmniboxResourceProvider {
     public static @Nullable Bitmap getFaviconBitmapForTab(Tab tab) {
         if (sTabFaviconFactory == null) return null;
         return sTabFaviconFactory.apply(tab);
+    }
+
+    /**
+     * Converts a branded color scheme to a boolean, whether to use incognito colors or day night
+     * adaptive colors.
+     *
+     * @param brandedColorScheme The theme to check.
+     * @return A boolean, true for incognito, false for day night adaptive.
+     */
+    public static boolean convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(
+            @BrandedColorScheme int brandedColorScheme) {
+        // It is assumed that anywhere that calls this method doesn't actually need to support
+        // real branded colors schemes. Instead we just need to determine if it is incognito or not.
+        return brandedColorScheme == BrandedColorScheme.INCOGNITO;
+    }
+
+    /** Resolves the background color of the chip showing the AI Mode tool active. */
+    public static @ColorInt int getAiModeButtonColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
+    }
+
+    /** Resolves the background color of the chip showing image gen the tool active. */
+    public static @ColorInt int getImageGenButtonColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorSurfaceContainerLow(context, isIncognito);
+    }
+
+    /** Resolves the border color of the active tool chip. */
+    public static @ColorInt int getRequestTypeButtonBorderColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorPrimaryContainer(context, isIncognito);
+    }
+
+    /** Resolves the border color of the tool chip when used as a hint to enter AI Mode. */
+    public static @ColorInt int getAiModeIconTintColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorPrimary(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
+    public static @ColorInt int getImageGenIconTintColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDefaultIconColor(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for all the ai mode icons. This is a vivid color. */
+    public static @ColorInt int getAiModeHintIconTintColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDefaultIconColorSecondary(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for all the ai mode icons. */
+    public static @ColorInt int getAiModeHintBorderColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorOnSurfaceWithAlpha16(context, isIncognito);
+    }
+
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
+    public static ColorStateList getPrimaryIconTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return ChromeColors.getPrimaryIconTint(context, isIncognito);
+    }
+
+    /** Resolves the text appearance for the image gen chip. */
+    public static @StyleRes int getImageGenButtonTextRes(
+            @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextSmallPrimary(isIncognito);
+    }
+
+    /** Resolves the text appearance for the AI Mode chip. This includes a vivid color. */
+    public static @StyleRes int getAiModeButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextSmallAccent1(isIncognito);
+    }
+
+    /** Resolves the text appearance for the hint chip, somewhat faded out. */
+    public static @StyleRes int getAiModeHintTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextSmallSecondary(isIncognito);
+    }
+
+    /** Returns the drawable that is to go behind the + button in the search box. */
+    public static Drawable getSearchBoxIconBackground(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId =
+                isIncognito
+                        ? R.drawable.search_box_icon_background_opaque_incognito
+                        : R.drawable.search_box_icon_background_opaque;
+        return getDrawable(context, resId);
     }
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {

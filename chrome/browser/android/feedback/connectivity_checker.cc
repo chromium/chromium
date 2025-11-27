@@ -51,7 +51,7 @@ void ExecuteCallback(const base::android::JavaRef<jobject>& callback,
                                            callback, result);
 }
 
-void JNI_ConnectivityChecker_PostCallback(
+static void JNI_ConnectivityChecker_PostCallback(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_callback,
     ConnectivityCheckResult result) {
@@ -169,7 +169,7 @@ void ConnectivityChecker::OnTimeout() {
 
 }  // namespace
 
-void JNI_ConnectivityChecker_CheckConnectivity(
+static void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
     Profile* profile,
     std::string& j_url,
@@ -196,7 +196,8 @@ void JNI_ConnectivityChecker_CheckConnectivity(
   connectivity_checker->StartAsyncCheck();
 }
 
-jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env, std::string& j_url) {
+static jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
+                                                   std::string& j_url) {
   GURL url(j_url);
   return url.is_valid();
 }

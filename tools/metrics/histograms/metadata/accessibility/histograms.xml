@@ -156,6 +156,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.CaretBrowsing.Enabled"
+    enum="BooleanEnabled" expires_after="2026-11-01">
+  <owner>lokeric@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks whether caret browsing is enabled at startup.</summary>
+</histogram>
+
+<histogram name="Accessibility.Android.CaretBrowsing.SelectedAction"
+    enum="AccessibilityCaretBrowsingAction" expires_after="2026-11-01">
+  <owner>lokeric@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks users' actions for turning on/off caret browsing.</summary>
+</histogram>
+
 <histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
     enum="AccessibilityPredicateType" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
@@ -3279,6 +3295,18 @@ even if they fit the naming pattern. -->
     <variant name="ConnectedCallback" summary="Deprecated 2025-03-19"/>
     <variant name="Constructor"/>
   </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.WordsDistilledAfterOmnibox"
+    units="words" expires_after="2026-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records an estimate of how many words were distilled in Reading mode for the
+    page opened via the omnibox entrypoint. Uses built-in web segmenter to count
+    words using the page language. (See
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.WordsHeard" units="words"

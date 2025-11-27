@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/synchronization/lock.h"
+#include "base/time/clock.h"
 #include "base/types/pass_key.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
@@ -66,8 +67,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
     : public base::FieldTrialList::Observer,
       public SyntheticTrialObserver {
  public:
-  using ClockFunction = base::RepeatingCallback<base::Time()>;
-
   class COMPONENT_EXPORT(VARIATIONS) Observer {
    public:
     // Called when variation ids headers are updated.
@@ -94,7 +93,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Creates the VariationsIdsProvider instance. This must be called before
   // GetInstance(). Only one instance of VariationsIdsProvider may be created.
-  static VariationsIdsProvider* CreateInstance(Mode mode);
+  static VariationsIdsProvider* CreateInstance(
+      Mode mode,
+      std::unique_ptr<base::Clock> clock);
 
   static VariationsIdsProvider* GetInstance();
 
@@ -102,10 +103,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   VariationsIdsProvider& operator=(const VariationsIdsProvider&) = delete;
 
   Mode mode() const { return mode_; }
-
-  // Sets the clock function to be used for getting the current time.
-  // TODO: crbug.com/422445605 - Use this to provide a network time clock.
-  void SetClockFunc(ClockFunction clock_func);
 
   // Returns the X-Client-Data headers corresponding to `is_signed_in`: a header
   // that may be sent in first-party requests and a header that may be sent in
@@ -202,17 +199,20 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   friend class ::variations::test::ScopedVariationsIdsProvider;
 
-  explicit VariationsIdsProvider(Mode mode);
+  explicit VariationsIdsProvider(Mode mode, std::unique_ptr<base::Clock> clock);
   ~VariationsIdsProvider() override;
 
   // Creates a new instance of `VariationsIdsProvider` for testing, returning
   // the pointer to the previous instance. This should only be called by
   // `ScopedVariationsIdsProvider`.
-  static VariationsIdsProvider* CreateInstanceForTesting(Mode mode);
+  static VariationsIdsProvider* CreateInstanceForTesting(
+      Mode mode,
+      std::unique_ptr<base::Clock> clock);
+
   // Resets the global instance of `VariationsIdsProvider` to the given
   // instance, for testing. This should only be called by
   // `ScopedVariationsIdsProvider`.
-  static void DestroyInstanceForTesting(VariationsIdsProvider* previous_instance);
+  static void ResetInstanceForTesting(VariationsIdsProvider* previous_instance);
 
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the `variation_id` repeated field of
@@ -312,9 +312,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Google Web id.
   bool IsDuplicateId(VariationID id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns the current time..
-  base::Time GetCurrentTime() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   // Sets the last update time to the given time.
   void SetLastUpdateTime(base::Time time) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -332,6 +329,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const Mode mode_;
+
+  // The clock function to be used for getting the current time. This is used
+  // to provide a network-based clock, as well as for testing.
+  const std::unique_ptr<base::Clock> clock_;
 
   // Guards access to variables below.
   base::Lock lock_;
@@ -379,10 +380,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Whether this instance is subscribed to the field trial list. This is used
   // to ensure that the instance is only subscribed once, on first use.
   bool is_subscribed_to_field_trial_list_ GUARDED_BY(lock_) = false;
-
-  // The clock function to be used for getting the current time. This is used
-  // to provide a network-based clock, as well as for testing.
-  ClockFunction clock_func_ GUARDED_BY(lock_);
 };
 
 }  // namespace variations

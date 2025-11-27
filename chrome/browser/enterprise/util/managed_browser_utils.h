@@ -142,6 +142,9 @@ std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
     Profile* profile);
+
+base::ScopedClosureRunner
+EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(Profile* profile);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util

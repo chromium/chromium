@@ -25,6 +25,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "net/base/features.h"
@@ -650,23 +651,31 @@ void SqlBackendImpl::HandleDoomEntryOperation(
     return;
   }
 
-  // If the entry is not active and no operation is pending, it means the entry
-  // is not currently open. In this case, we can directly ask the store to
-  // delete the "live" (not yet doomed) entry from the database.
+  // Convert store error to net error. kNotFound is considered a success for
+  // dooming (idempotency).
+  auto store_callback = base::BindOnce(
+      [](CompletionOnceCallback callback, SqlPersistentStore::Error result) {
+        std::move(callback).Run((result == SqlPersistentStore::Error::kOk ||
+                                 result == SqlPersistentStore::Error::kNotFound)
+                                    ? net::OK
+                                    : net::ERR_FAILED);
+      },
+      std::move(callback));
+
+  // If there is a unique entry in the in-memory index, call DoomEntry using its
+  // res_id.
+  if (auto res_id = store_->TryGetSingleResIdFromInMemoryIndex(key.hash())) {
+    store_->DoomEntry(key, *res_id, std::move(store_callback));
+    // The handle for this operation is released upon returning, allowing the
+    // next queued operation to run.
+    return;
+  }
+
+  // If the entry is not active and a single entry could not be found in the
+  // in-memory index, we can directly ask the store to delete the "live" (not
+  // yet doomed) entry from the database.
   store_->DeleteLiveEntry(
-      key, base::BindOnce(
-               [](base::WeakPtr<SqlBackendImpl> weak_ptr,
-                  CompletionOnceCallback callback,
-                  SqlPersistentStore::Error result) {
-                 // Convert store error to net error. kNotFound is
-                 // considered a success for dooming (idempotency).
-                 std::move(callback).Run(
-                     (result == SqlPersistentStore::Error::kOk ||
-                      result == SqlPersistentStore::Error::kNotFound)
-                         ? net::OK
-                         : net::ERR_FAILED);
-               },
-               weak_factory_.GetWeakPtr(), std::move(callback))
+      key, std::move(store_callback)
                .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
@@ -856,6 +865,12 @@ void SqlBackendImpl::HandleOnExternalCacheHitOperation(
           .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
+uint8_t SqlBackendImpl::GetEntryInMemoryData(const std::string& key) {
+  return store_->GetInMemoryEntryDataHints(CacheEntryKey::HashFromString(key))
+      .value_or(MemoryEntryDataHints(0))
+      .value();
+}
+
 void SqlBackendImpl::OnBrowserIdle() {
   store_->MaybeLoadInMemoryIndex(base::DoNothing());
   store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
@@ -1031,13 +1046,14 @@ void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta) {
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(
                &SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation,
                weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
-               std::move(buffer), header_size_delta,
+               new_hints, std::move(buffer), header_size_delta,
                PushInFlightEntryModification(
                    key, InFlightEntryModification(res_id_or_error, last_used,
                                                   buffer))));
@@ -1047,6 +1063,7 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
+    const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
@@ -1060,7 +1077,8 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     return;
   }
   store_->UpdateEntryHeaderAndLastUsed(
-      key, *optional_res_id, last_used, std::move(buffer), header_size_delta,
+      key, *optional_res_id, last_used, new_hints, std::move(buffer),
+      header_size_delta,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1330,6 +1348,30 @@ void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
   }
   store_->GetEntryAvailableRange(key, *optional_res_id, offset, len,
                                  std::move(callback));
+}
+
+void SqlBackendImpl::SetEntryDataHints(
+    const CacheEntryKey& key,
+    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    MemoryEntryDataHints hints) {
+  exclusive_operation_coordinator_.PostOrRunNormalOperation(
+      key,
+      base::BindOnce(&SqlBackendImpl::HandleSetEntryDataHintsOperation,
+                     weak_factory_.GetWeakPtr(), key, res_id_or_error, hints));
+}
+
+void SqlBackendImpl::HandleSetEntryDataHintsOperation(
+    const CacheEntryKey& key,
+    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    MemoryEntryDataHints hints,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  const auto optional_res_id = GetResId(res_id_or_error);
+  if (!optional_res_id) {
+    // Fail the operation for entries that previously failed a speculative
+    // creation or optimistic write.
+    return;
+  }
+  store_->SetInMemoryEntryDataHints(key.hash(), *optional_res_id, hints);
 }
 
 SqlBackendImpl::PopInFlightEntryModificationRunner

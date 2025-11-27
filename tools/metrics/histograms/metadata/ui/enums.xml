@@ -424,6 +424,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="UMA_BOOKMARK_BATCH_UPLOAD"/>
   <int value="75" label="UMA_NTP_MOST_VISITED_UNPIN_UNDO"/>
   <int value="76" label="UMA_SIGN_IN"/>
+  <int value="77" label="UMA_TAB_PICKER_LIMIT_REACHED"/>
 </enum>
 
 <enum name="WebUIPreloadReason">

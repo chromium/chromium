@@ -135,7 +135,7 @@ class ServiceWorkerResourceReaderImpl
   // Called while executing ReadResponseHead() in the order they are declared.
   void ContinueReadResponseHead();
   void DidReadHttpResponseInfo(scoped_refptr<net::IOBuffer> buffer, int status);
-  void DidReadMetadata(int status);
+  void DidReadMetadata(scoped_refptr<BigIOBuffer> metadata_buffer, int status);
   // Complete the operation started by ReadResponseHead().
   void FailReadResponseHead(int status);
   void CompleteReadResponseHead(int status);
@@ -154,6 +154,20 @@ class ServiceWorkerResourceReaderImpl
   // Holds the callback of ReadResponseHead(). Stored as a member field to
   // handle //net-style maybe-async methods.
   ReadResponseHeadCallback read_response_head_callback_;
+
+  // The expected SHA-256 checksum of the service worker resource. This is
+  // calculated for both the main script and imported scripts.
+  //
+  // This checksum is calculated on the raw bytes of the service worker
+  // resource when it is first written to the disk cache. The checksum is
+  // then stored in the resource's metadata in the ServiceWorkerDatabase.
+  //
+  // When the resource is read back from the cache, a new checksum is
+  // calculated on the data that was read, and this new checksum is
+  // compared with the stored checksum to verify the integrity of the
+  // resource. The result of this comparison is recorded in the
+  // "ServiceWorker.ResourceChecksumMatch" UMA metric.
+  std::optional<std::string> sha256_checksum_;
 
   // Helper for ReadData().
   std::unique_ptr<DataReader> data_reader_;

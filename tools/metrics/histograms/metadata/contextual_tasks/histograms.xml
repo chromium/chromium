@@ -23,6 +23,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="ContextualTasks.AiResponse.UserAction.LinkClicked.{ContextualTasksUiSurface}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a user clicks on a link embedded in the AI response on
+    the contextual tasks page. Split out by the contextual tasks form factor
+    (panel or tab) that the link was clicked on.Always recorded as true.
+  </summary>
+  <token key="ContextualTasksUiSurface">
+    <variant name="Panel"
+        summary="The link was clicked when the contextual tasks panel was
+                 open."/>
+    <variant name="Tab"
+        summary="The link was clicked when the contextual tasks UI was
+                 displayed in full tab."/>
+  </token>
+</histogram>
+
 <histogram name="ContextualTasks.Context.ContextCalculationLatency" units="ms"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

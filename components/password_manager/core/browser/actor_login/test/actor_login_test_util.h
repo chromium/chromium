@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_TEST_ACTOR_LOGIN_TEST_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_TEST_ACTOR_LOGIN_TEST_UTIL_H_
 
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
@@ -15,6 +16,11 @@ class FormData;
 }  // namespace autofill
 
 namespace actor_login {
+
+// Creates the expected `ActorLoginQuality_ParsedFormDetails`
+// from the given `PasswordForm`.
+optimization_guide::proto::ActorLoginQuality_ParsedFormDetails
+CreateExpectedFormDetails(const password_manager::PasswordForm& form);
 
 // Creates a password`Credential` with the given `username` and `url`.
 // The other fields are set to default values.

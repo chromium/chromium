@@ -43,9 +43,6 @@ BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
 // Whether to disable gesture text selection.
 BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
 
-// Whether to enable the unary client data header.
-BASE_DECLARE_FEATURE(kLensUnaryClientDataHeaderEnabled);
-
 // Whether to block fetch objects interaction RPCs on separate handshake.
 BASE_DECLARE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake);
 

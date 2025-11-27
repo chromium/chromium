@@ -54,6 +54,10 @@ class MediaCapturePickerManagerBridge {
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // The number of windows/ screens media source have been selected. This is
+  // used to generate an unique media id.
+  static int next_fake_id_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_MANAGER_BRIDGE_H_

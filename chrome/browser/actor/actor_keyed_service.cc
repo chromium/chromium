@@ -260,21 +260,11 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks()
   return active_tasks;
 }
 
-const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks()
-    const {
-  std::map<TaskId, const ActorTask*> inactive_tasks;
-  for (const auto& [id, task] : inactive_tasks_) {
-    inactive_tasks[id] = task.get();
-  }
-  return inactive_tasks;
-}
-
 void ActorKeyedService::ResetForTesting() {
   for (auto it = active_tasks_.begin(); it != active_tasks_.end();) {
     StopTask((it++)->first, ActorTask::StoppedReason::kTaskComplete);
   }
   active_tasks_.clear();
-  inactive_tasks_.clear();
 }
 
 TaskId ActorKeyedService::CreateTask() {
@@ -480,22 +470,13 @@ void ActorKeyedService::StopTask(TaskId task_id,
 
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
-    if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      task.mapped()->Stop(stop_reason);
-    } else {
-      auto ret = inactive_tasks_.insert(std::move(task));
-      ret.position->second->Stop(stop_reason);
-    }
+    task.mapped()->Stop(stop_reason);
   }
 }
 
 ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
   auto task = active_tasks_.find(task_id);
   if (task != active_tasks_.end()) {
-    return task->second.get();
-  }
-  task = inactive_tasks_.find(task_id);
-  if (task != inactive_tasks_.end()) {
     return task->second.get();
   }
   return nullptr;
@@ -539,17 +520,6 @@ std::vector<TaskId> ActorKeyedService::FindTaskIdsInActive(
     base::FunctionRef<bool(const ActorTask&)> predicate) const {
   std::vector<TaskId> result;
   for (const auto& [id, task] : active_tasks_) {
-    if (predicate(*task)) {
-      result.push_back(id);
-    }
-  }
-  return result;
-}
-
-std::vector<TaskId> ActorKeyedService::FindTaskIdsInInactive(
-    base::FunctionRef<bool(const ActorTask&)> predicate) const {
-  std::vector<TaskId> result;
-  for (const auto& [id, task] : inactive_tasks_) {
     if (predicate(*task)) {
       result.push_back(id);
     }

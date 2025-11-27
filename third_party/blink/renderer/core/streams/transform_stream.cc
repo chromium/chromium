@@ -34,14 +34,8 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 0);
+    DCHECK_EQ(argv.size(), 0u);
     DCHECK(controller_);
     v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
@@ -91,14 +85,8 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
     DCHECK(controller_);
     v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
@@ -329,14 +317,8 @@ class TransformStream::DefaultSinkWriteAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
     const auto chunk = argv[0];
 
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-write-algorithm
@@ -432,14 +414,8 @@ class TransformStream::DefaultSinkAbortAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
     const auto reason = argv[0];
 
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-abort-algorithm
@@ -467,14 +443,8 @@ class TransformStream::DefaultSinkCloseAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 0);
+    DCHECK_EQ(argv.size(), 0u);
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-close-algorithm
     // 1. Let readable be stream.[[readable]].
     // 2. Let controller be stream.[[transformStreamController]].
@@ -483,7 +453,7 @@ class TransformStream::DefaultSinkCloseAlgorithm final
 
     // 3. Let flushPromise be the result of performing
     //    controller.[[flushAlgorithm]].
-    auto flush_promise = controller->flush_algorithm_->Run(script_state, 0, {});
+    auto flush_promise = controller->flush_algorithm_->Run(script_state, {});
 
     // 4. Perform ! TransformStreamDefaultControllerClearAlgorithms(controller).
     TransformStreamDefaultController::ClearAlgorithms(controller);
@@ -577,14 +547,8 @@ class TransformStream::DefaultSourcePullAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 0);
+    DCHECK_EQ(argv.size(), 0u);
 
     // https://streams.spec.whatwg.org/#transform-stream-default-source-pull
     // 1. Assert: stream.[[backpressure]] is true.
@@ -619,14 +583,8 @@ class TransformStream::DefaultSourceCancelAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
 
     // https://streams.spec.whatwg.org/#initialize-transform-stream
     // 7. Let cancelAlgorithm be the following steps, taking a reason argument:

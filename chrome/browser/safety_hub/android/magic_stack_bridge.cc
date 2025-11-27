@@ -50,24 +50,24 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaMagicStackEntry(
                                      ModuleTypeToString(obj.module));
 }
 
-std::optional<MenuNotificationEntry> JNI_MagicStackBridge_GetModuleToShow(
-    JNIEnv* env,
-    Profile* profile) {
+static std::optional<MenuNotificationEntry>
+JNI_MagicStackBridge_GetModuleToShow(JNIEnv* env, Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
   return service->GetNotificationToShow();
 }
 
-void JNI_MagicStackBridge_DismissActiveModule(JNIEnv* env, Profile* profile) {
+static void JNI_MagicStackBridge_DismissActiveModule(JNIEnv* env,
+                                                     Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
   service->DismissActiveNotification();
 }
 
-void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
-                                                    Profile* profile) {
+static void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
+                                                           Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
@@ -75,8 +75,9 @@ void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
       safety_hub::SafetyHubModuleType::SAFE_BROWSING);
 }
 
-void JNI_MagicStackBridge_DismissCompromisedPasswordsModule(JNIEnv* env,
-                                                            Profile* profile) {
+static void JNI_MagicStackBridge_DismissCompromisedPasswordsModule(
+    JNIEnv* env,
+    Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);

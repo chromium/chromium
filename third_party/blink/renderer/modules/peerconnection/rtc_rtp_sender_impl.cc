@@ -23,18 +23,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<webrtc::RtpParameters>
-    : public CrossThreadCopierPassThrough<webrtc::RtpParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<webrtc::RTCError>
-    : public CrossThreadCopierPassThrough<webrtc::RTCError> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // TODO(hbos): Replace RTCVoidRequest with something resolving promises based

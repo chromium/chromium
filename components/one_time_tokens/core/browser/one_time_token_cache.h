@@ -28,6 +28,9 @@ class OneTimeTokenCache {
   // Purges expired tokens and returns the remaining tokens.
   const std::list<OneTimeToken>& PurgeExpiredAndGetCache();
 
+  // Returns all the tokens without filtering for expiration.
+  const std::list<OneTimeToken>& GetCache() const;
+
  private:
   void PurgeExpired();
 

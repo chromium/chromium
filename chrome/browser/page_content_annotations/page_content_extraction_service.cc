@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -60,8 +61,11 @@ PageContentExtractionService::PageContentExtractionService(
           base::FeatureList::IsEnabled(features::kPageContentCache)),
       page_content_cache_handler_(
           is_page_content_cache_enabled_
-              ? std::make_unique<PageContentCacheHandler>(os_crypt_async,
-                                                          profile_path)
+              ? std::make_unique<PageContentCacheHandler>(
+                    os_crypt_async,
+                    profile_path,
+                    base::Days(
+                        features::kPageContentCacheMaxCacheAgeInDays.Get()))
               : nullptr) {}
 
 PageContentExtractionService::~PageContentExtractionService() {

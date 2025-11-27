@@ -3429,7 +3429,6 @@
 <translation id="3346306152660142597">მოირგეთ ეს გვერდი ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="3347086966102161372">სურათის მისამართის კ&amp;ოპირება</translation>
 <translation id="3348038390189153836">აღმოჩენილია ამოშლადი მოწყობილობა</translation>
-<translation id="3348131053948466246">შემოთავაზებულია emoji. ნავიგაციისთვის დააჭირეთ კლავიშებს ზემოთ ან ქვემოთ მიმართული ისრით, შეყვანისთვის დააჭირეთ enter-ს.</translation>
 <translation id="3348973040180736882">შეკუმშვის გაუქმება</translation>
 <translation id="3349933790966648062">მეხსიერების მოხმარება</translation>
 <translation id="3350450887151703713">10 წამის ხელახლა დაკვრა</translation>
@@ -6640,7 +6639,6 @@
 <translation id="5563234215388768762">მოიძიეთ Google-ით, ან აკრიფეთ URL</translation>
 <translation id="5563824734298958390">გსურთ ჩანართების ჯგუფიდან გასვლა?</translation>
 <translation id="5564450015351086922">ცადეთ Google Lens iOS-ზე</translation>
-<translation id="5565579144504951367">თქვენი აპარატურა მზადაა დასაყენებლად</translation>
 <translation id="5565735124758917034">აქტიური</translation>
 <translation id="5568069709869097550">სისტემაში შესვლა ვერ მოხერხდა</translation>
 <translation id="5568525251731145240">გსურთ, წაშალოთ საიტების მონაცემები და ნებართვები როგორც <ph name="SITE_NAME" />-ის, ისე მასთან დაკავშირებული ყველა საიტისთვისა და დაინსტალირებული აპისთვის?</translation>
@@ -6888,6 +6886,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ტეტერინგის მზადყოფნის შემოწმება</translation>
 <translation id="5753570386948603678">ისტორიიდან წაშლა</translation>
+<translation id="5755101376452091923">თქვენი სახელის რედაქტირება შეგიძლიათ თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /> <ph name="USERNAME" /></translation>
 <translation id="5756163054456765343">დახმარ&amp;ების ცენტრი</translation>
 <translation id="5757187557809630523">შემდეგი ჩანაწერი</translation>
 <translation id="5758631781033351321">აქ თქვენს საკითხავ სიას იპოვით</translation>

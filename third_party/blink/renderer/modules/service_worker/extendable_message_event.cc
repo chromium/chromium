@@ -21,46 +21,46 @@ ExtendableMessageEvent* ExtendableMessageEvent::Create(
 
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
     scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     GCedMessagePortArray* ports,
     ServiceWorkerClient* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
-      std::move(data), origin, ports, observer);
+      std::move(data), std::move(origin), ports, observer);
   event->source_as_client_ = source;
   return event;
 }
 
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
     scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     GCedMessagePortArray* ports,
     ServiceWorker* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
-      std::move(data), origin, ports, observer);
+      std::move(data), std::move(origin), ports, observer);
   event->source_as_service_worker_ = source;
   return event;
 }
 
 ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     GCedMessagePortArray* ports,
     ServiceWorkerClient* source,
     WaitUntilObserver* observer) {
-  ExtendableMessageEvent* event =
-      MakeGarbageCollected<ExtendableMessageEvent>(origin, ports, observer);
+  ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
+      std::move(origin), ports, observer);
   event->source_as_client_ = source;
   return event;
 }
 
 ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     GCedMessagePortArray* ports,
     ServiceWorker* source,
     WaitUntilObserver* observer) {
-  ExtendableMessageEvent* event =
-      MakeGarbageCollected<ExtendableMessageEvent>(origin, ports, observer);
+  ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
+      std::move(origin), ports, observer);
   event->source_as_service_worker_ = source;
   return event;
 }
@@ -106,6 +106,13 @@ MessagePortArray ExtendableMessageEvent::ports() const {
   return MessagePortArray();
 }
 
+String ExtendableMessageEvent::origin() const {
+  if (!potentially_invalid_origin_serialization_.IsNull()) {
+    return potentially_invalid_origin_serialization_;
+  }
+  return origin_ ? origin_->ToString() : String();
+}
+
 const AtomicString& ExtendableMessageEvent::InterfaceName() const {
   return event_interface_names::kExtendableMessageEvent;
 }
@@ -113,10 +120,8 @@ const AtomicString& ExtendableMessageEvent::InterfaceName() const {
 DOMOrigin* ExtendableMessageEvent::GetDOMOrigin(LocalDOMWindow*) const {
   // No access check is required, as this object intentionally reveals its
   // sender's origin cross-origin.
-
-  // TODO(449542601): We should shift `origin_` to hold a SecurityOrigin rather
-  // than a string.
-  return DOMOrigin::Create(SecurityOrigin::CreateFromString(origin_));
+  return GetSecurityOrigin() ? DOMOrigin::Create(GetSecurityOrigin())
+                             : DOMOrigin::Create();
 }
 
 void ExtendableMessageEvent::Trace(Visitor* visitor) const {
@@ -142,8 +147,10 @@ ExtendableMessageEvent::ExtendableMessageEvent(
     const ScriptValue& data = initializer->data();
     data_.Set(data.GetIsolate(), data.V8Value());
   }
-  if (initializer->hasOrigin())
-    origin_ = initializer->origin();
+  if (initializer->hasOrigin()) {
+    potentially_invalid_origin_serialization_ = initializer->origin();
+    origin_ = SecurityOrigin::CreateFromString(initializer->origin());
+  }
   if (initializer->hasLastEventId())
     last_event_id_ = initializer->lastEventId();
   if (initializer->hasSource() and initializer->source()) {
@@ -166,27 +173,28 @@ ExtendableMessageEvent::ExtendableMessageEvent(
 
 ExtendableMessageEvent::ExtendableMessageEvent(
     scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     GCedMessagePortArray* ports,
     WaitUntilObserver* observer)
     : ExtendableEvent(event_type_names::kMessage,
                       ExtendableMessageEventInit::Create(),
                       observer),
       serialized_data_(std::move(data)),
-      origin_(origin),
+      origin_(std::move(origin)),
       last_event_id_(String()),
       ports_(ports) {
   if (serialized_data_)
     serialized_data_->RegisterMemoryAllocatedWithCurrentScriptContext();
 }
 
-ExtendableMessageEvent::ExtendableMessageEvent(const String& origin,
-                                               GCedMessagePortArray* ports,
-                                               WaitUntilObserver* observer)
+ExtendableMessageEvent::ExtendableMessageEvent(
+    scoped_refptr<const SecurityOrigin> origin,
+    GCedMessagePortArray* ports,
+    WaitUntilObserver* observer)
     : ExtendableEvent(event_type_names::kMessageerror,
                       ExtendableMessageEventInit::Create(),
                       observer),
-      origin_(origin),
+      origin_(std::move(origin)),
       last_event_id_(String()),
       ports_(ports) {}
 

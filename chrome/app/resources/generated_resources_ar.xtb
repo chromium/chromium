@@ -1647,6 +1647,7 @@
 <translation id="2104166991923847969">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
 <translation id="2106439768713835453">مشاركة صوت التطبيق أيضًا</translation>
+<translation id="2107359546799360577">‏تحسينات JavaScript غير مفعَّلة.</translation>
 <translation id="2108204112555497972">تمّ التحقُّق قبل <ph name="NUM_DAYS_HOURS_MINUTES" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="2109384632594340939">صورة الملف الشخصي</translation>
@@ -1808,7 +1809,7 @@
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
 <translation id="2221265863788848174">‏يريد تطبيق خارجي التحكّم بالكامل في جلسة Chrome هذه لتصحيح أخطائها، ويشمل ذلك الوصول إلى بياناتك المحفوظة وملفات تعريف الارتباط وبيانات الموقع الإلكتروني، وإمكانية الانتقال إلى أي عنوان URL.
 
-ويجب أن يفعِّل هذه الميزة المطوّرون على الويب فقط وألا يستخدموها إلا مع التطبيقات الموثوقة.</translation>
+ويجب أن يفعِّل هذه الميزة المطوّرون على الويب فقط وألا يستخدموها إلا مع التطبيقات الموثوق بها.</translation>
 <translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
 <translation id="2224337661447660594">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
@@ -2063,6 +2064,7 @@
 <translation id="2390782873446084770">مزامنة الواي فاي</translation>
 <translation id="2391419135980381625">الخط العادي</translation>
 <translation id="2391805183137601570">‏فتح Steam</translation>
+<translation id="239185270194776190">‏يتم عرض محادثتك مع Gemini في نافذة أخرى. يمكنك النقر في أي مكان على هذه اللوحة الجانبية لنقلها إلى هنا.</translation>
 <translation id="2392369802118427583">تفعيل</translation>
 <translation id="2393136602862631930">‏إعداد <ph name="APP_NAME" /> على جهاز Chromebook</translation>
 <translation id="2393313392064891208">‏محتوى أحكام نظام التشغيل ChromeOS Flex من Google</translation>
@@ -3432,7 +3434,6 @@
 <translation id="3346306152660142597">‏تخصيص هذه الصفحة بواسطة الذكاء الاصطناعي (AI)</translation>
 <translation id="3347086966102161372">&amp;نسخ عنوان الصورة</translation>
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
-<translation id="3348131053948466246">‏رموز الإيموجي المُقترَحة. اضغط على السهم المتّجه للأعلى أو للأسفل للتنقُّل ثم اضغط على Enter للإدخال.</translation>
 <translation id="3348973040180736882">جارٍ فك ضغط الملف</translation>
 <translation id="3349933790966648062">الذاكرة المستخدَمة</translation>
 <translation id="3350450887151703713">إعادة تشغيل 10 ثوانٍ</translation>
@@ -4273,6 +4274,7 @@
 <translation id="3893536212201235195">قراءة وتغيير إعدادات تسهيل الاستخدام</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">لحفظ إشارات مرجعية في حسابك، يجب حذف الإشارات غير المستخدمة</translation>
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3895076768659607631">&amp;إدارة محركات البحث...</translation>
 <translation id="3895090224522145010">‏اسم مستخدم Kerberos</translation>
@@ -4995,6 +4997,7 @@
 <translation id="4405781821077215583">تكبير أو تصغير العناصر على الشاشة، بما في ذلك النصوص</translation>
 <translation id="4406308048672435032">يمكنك جعل علامة التبويب هذه غير نشطة أو إعادة تحميلها للاطّلاع على القائمة الكاملة مرة أخرى</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
+<translation id="4406963243402726564">بيانات غير محفوظة</translation>
 <translation id="4408599188496843485">م&amp;ساعدة</translation>
 <translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />"، وسيتم إعلامك عند بدء التسجيل.}=2{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />"، وسيتم إعلامك عند بدء التسجيل.}=3{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />" وتطبيق واحد آخر، وسيتم إعلامك عند بدء التسجيل.}zero{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />" و# تطبيق آخر، وسيتم إعلامك عند بدء التسجيل.}few{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />" و# تطبيقات أخرى، وسيتم إعلامك عند بدء التسجيل.}many{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />" و# تطبيقًا آخر، وسيتم إعلامك عند بدء التسجيل.}other{بإمكان المشرف تسجيل محتوى شاشتك باستخدام "<ph name="APP0_NAME" />" و"<ph name="APP1_NAME" />" و# تطبيق آخر، وسيتم إعلامك عند بدء التسجيل.}}</translation>
@@ -6639,7 +6642,6 @@
 <translation id="5563234215388768762">‏البحث في Google أو كتابة عنوان URL</translation>
 <translation id="5563824734298958390">هل تريد مغادرة مجموعة علامات التبويب؟</translation>
 <translation id="5564450015351086922">‏"عدسة Google" تتوفّر الآن على أجهزة iOS</translation>
-<translation id="5565579144504951367">جهازك مستعد لعملية الإعداد</translation>
 <translation id="5565735124758917034">نشط</translation>
 <translation id="5568069709869097550">تعذّر الدخول</translation>
 <translation id="5568525251731145240">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وكل المواقع الإلكترونية المدرَجة ضِمنه، وتطبيقاته المثبَّتة؟</translation>

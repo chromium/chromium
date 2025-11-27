@@ -122,6 +122,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_auralinux.cc:UmaAtkApi) -->
 
+<!-- LINT.IfChange(AccessibilityCaretBrowsingAction)-->
+
+<enum name="AccessibilityCaretBrowsingAction">
+  <summary>Tracks overall usage of caret browsing.</summary>
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Cancel - Keyboard dialog dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridge.java:AccessibilityCaretBrowsingAction) -->
+
 <!-- LINT.IfChange(AccessibilityImageLabelModeAndroid)-->
 
 <enum name="AccessibilityImageLabelModeAndroid">

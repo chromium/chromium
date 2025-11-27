@@ -54,22 +54,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "actor-form-filling-service-enable-address",
-    "owners": [
-      "battre@chromium.org",
-      "//components/autofill/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "actor-form-filling-service-enable-credit-card",
-    "owners": [
-      "slobodan@chromium.org",
-      "chrome-payments-eng@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "adaptive-button-in-top-toolbar-page-summary",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 140
@@ -1069,6 +1053,10 @@
     "name": "autofill-enable-syncing-of-loyalty-cards",
     "owners": [ "piotrwrotniak@google.com",  "vizcay@google.com", "autofill-squad-muc@google.com" ],
     "expiry_milestone": 145
+  },
+  { "name": "autofill-enable-touch-to-fill-reshow-for-bnpl",
+    "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 155
   },
   {
     "name": "autofill-enable-vcn-3ds-authentication",
@@ -4809,6 +4797,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-your-saved-info-settings-page",
+    "owners": ["mikhe@google.com", "chrome-autofill@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-zero-copy",
     "owners": [ "ccameron@chromium.org", "chrome-gpu@google.com" ],
     // This flag is commonly used when asking users to help gather debug info.
@@ -6736,11 +6729,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-unary-client-data-header-enabled",
-    "owners": ["cmyang@google.com", "brandonli@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "lens-unary-http-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lihailong@google.com"],
     "expiry_milestone": 145
@@ -7683,11 +7671,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-gemini-prototype-provider",
-    "owners": [ "ewannpv@chromium.org", "gambard@chromium.org" ],
-    "expiry_milestone": 146
-  },
-  {
     "name": "omnibox-grouping-framework-non-zps",
     "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "ender@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150
@@ -8608,7 +8591,17 @@
     "expiry_milestone": 150
   },
   {
-    "name": "profile-creation-friction-reduction-experiment",
+    "name": "profile-creation-friction-reduction-experiment-prefill-name-requirement",
+    "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "profile-creation-friction-reduction-experiment-remove-signin-step",
+    "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "profile-creation-friction-reduction-experiment-skip-customize-profile",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 160
   },

@@ -38,6 +38,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -62,6 +63,7 @@ constexpr int kMinWindowHeight = 400;
 
 class EmbeddedPermissionPromptInteractiveTest
     : public InteractiveBrowserTest,
+      public content::TestDevToolsProtocolClient,
       public testing::WithParamInterface<float> {
  public:
   EmbeddedPermissionPromptInteractiveTest() {
@@ -1155,26 +1157,41 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       NavigateWebContents(
           kWebContentsElementId,
           https_server()->GetURL(
-              "b.test", "/permissions/permission_element_embedder.html")));
-  content::WebContentsConsoleObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  RunTestSequence(
+              "b.test", "/permissions/permission_element_embedder.html")),
       ExecuteJs(kWebContentsElementId,
                 content::JsReplace("() => { insertIframe($1, $2); }", GetURL(),
-                                   "zoom5")));
-  // Wait until getting the message that the permission element's font is
-  // too large.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    for (const auto& message : observer.messages()) {
-      if (message.message ==
-          u"Font size of the permission element 'camera' is too large") {
-        return true;
-      }
-    }
+                                   "zoom5")),
+      WaitForStateChange(kWebContentsElementId, done_visible), Do([&]() {
+        // Need to attach the devtools client to the cross-site child frame to
+        // be able to notice the font size issue.
+        AttachToFrameTreeHost(ChildFrameAt(browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame(),
+                                           0));
+        SendCommandSync("Audits.enable");
 
-    return false;
-  }));
+        // Wait until getting the message that the permission element's font
+        // is too large.
+        WaitForMatchingNotification(
+            "Audits.issueAdded",
+            base::BindRepeating([](const base::Value::Dict& params) {
+              const std::string* code =
+                  params.FindStringByDottedPath("issue.code");
+              if (!code) {
+                return false;
+              }
+              const std::string* issue_type = params.FindStringByDottedPath(
+                  "issue.details.permissionElementIssueDetails.issueType");
+              if (!issue_type) {
+                return false;
+              }
+              return *code == "PermissionElementIssue" &&
+                     *issue_type == "FontSizeTooLarge";
+            }));
+
+        DetachProtocolClient();
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,

@@ -174,9 +174,6 @@ export class FingerprintSetup extends FingerprintSetupBase {
    * @param isComplete Whether fingerprint enrollment is complete.
    * @param percentComplete Percentage of completion of the enrollment.
    */
-  /**
-   * TODO(b/321675493) Revamp progress update to validate isComplete
-  */
   onEnrollScanDone(
       scanResult: FingerprintResultType, _isComplete: boolean,
       percentComplete: number): void {

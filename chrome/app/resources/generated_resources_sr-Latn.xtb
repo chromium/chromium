@@ -3427,7 +3427,6 @@ Ovu funkciju treba da uključuju samo veb-programeri i da je koriste samo sa pou
 <translation id="3346306152660142597">Prilagodite ovu stranicu pomoću veštačke inteligencije</translation>
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
 <translation id="3348038390189153836">Otkriven je prenosivi uređaj</translation>
-<translation id="3348131053948466246">Emodži je predložen. Pritisnite nagore ili nadole da biste se kretali i Enter za unos.</translation>
 <translation id="3348973040180736882">Dekomprimuje se</translation>
 <translation id="3349933790966648062">Memorijski prostor u upotrebi</translation>
 <translation id="3350450887151703713">Ponovo pusti 10 sekundi</translation>
@@ -6636,7 +6635,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5563234215388768762">Pretražite Google ili unesite URL</translation>
 <translation id="5563824734298958390">Želite da napustite grupu kartica?</translation>
 <translation id="5564450015351086922">Isprobajte Google objektiv na iOS-u</translation>
-<translation id="5565579144504951367">Hardver je spreman za podešavanje</translation>
 <translation id="5565735124758917034">Aktivno</translation>
 <translation id="5568069709869097550">Ne mogu da se prijavim</translation>
 <translation id="5568525251731145240">Želite da izbrišete podatke o sajtovima i dozvole za <ph name="SITE_NAME" />, sve podređene sajtove i instalirane aplikacije?</translation>
@@ -6885,6 +6883,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Provera spremnosti za privezivanje</translation>
 <translation id="5753570386948603678">Izbriši iz istorije</translation>
+<translation id="5755101376452091923">Možete da izmenite ime na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /> <ph name="USERNAME" /></translation>
 <translation id="5756163054456765343">C&amp;entar za pomoć</translation>
 <translation id="5757187557809630523">sledeća pesma</translation>
 <translation id="5758631781033351321">Ovde ćete pronaći listu za čitanje</translation>

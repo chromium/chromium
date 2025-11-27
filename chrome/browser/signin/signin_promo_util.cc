@@ -485,16 +485,6 @@ bool ShouldShowBookmarkSignInPromo(Profile& profile) {
     return false;
   }
 
-  // Do not show the promo if a user was previously syncing, as this may result
-  // in duplicate data.
-  // TODO(crbug.com/402748138): Remove this once bookmarks de-duplication is
-  // implemented.
-  if (!profile.GetPrefs()
-           ->GetString(::prefs::kGoogleServicesLastSyncingGaiaId)
-           .empty()) {
-    return false;
-  }
-
   if (!ShouldShowSignInPromoCommon(profile, SignInPromoType::kBookmark)) {
     return false;
   }

@@ -73,9 +73,9 @@ enum NotificationActionType {
   TEXT
 };
 
-ScopedJavaLocalRef<jobject> JNI_NotificationPlatformBridge_ConvertToJavaBitmap(
-    JNIEnv* env,
-    const gfx::Image& icon) {
+static ScopedJavaLocalRef<jobject>
+JNI_NotificationPlatformBridge_ConvertToJavaBitmap(JNIEnv* env,
+                                                   const gfx::Image& icon) {
   SkBitmap skbitmap = icon.AsBitmap();
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!skbitmap.drawsNothing())

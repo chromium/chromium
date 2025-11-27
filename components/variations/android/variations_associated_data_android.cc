@@ -22,7 +22,8 @@ using base::android::ScopedJavaLocalRef;
 namespace variations {
 namespace android {
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationParamValue(
     JNIEnv* env,
     const JavaParamRef<jstring>& jtrial_name,
     const JavaParamRef<jstring>& jparam_name) {
@@ -33,15 +34,15 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
   return ConvertUTF8ToJavaString(env, param_value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetFeedbackVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetFeedbackVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetVariationsString();
   return ConvertUTF8ToJavaString(env, values);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationsState(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationsState(JNIEnv* env) {
   if (!base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
     return nullptr;
   }
@@ -58,8 +59,8 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationsState(
   return ConvertUTF8ToJavaString(env, value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetGoogleAppVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetGoogleAppVariationsString();
   return ConvertUTF8ToJavaString(env, values);

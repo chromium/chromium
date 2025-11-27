@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator_delegate.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
-#import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
@@ -76,10 +75,6 @@
 
 // The paste delegate for the omnibox that prevents multipasting.
 @property(nonatomic, strong) OmniboxTextFieldPasteDelegate* pasteDelegate;
-
-// Helper that starts ZPS prefetch when the user opens a NTP.
-@property(nonatomic, strong)
-    ZeroSuggestPrefetchHelper* zeroSuggestPrefetchHelper;
 
 // The keyboard accessory view. Will be nil if the app is running on an iPad.
 @property(nonatomic, strong)
@@ -240,11 +235,6 @@
 
   mediator.omniboxTextController = _omniboxTextController;
 
-  self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
-      initWithWebStateList:browser->GetWebStateList()];
-  self.zeroSuggestPrefetchHelper.omniboxAutocompleteController =
-      _omniboxAutocompleteController;
-
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
   annotator.applicationHandler =
@@ -295,8 +285,6 @@
   _keyboardMediator = nil;
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
-  [self.zeroSuggestPrefetchHelper disconnect];
-  self.zeroSuggestPrefetchHelper = nil;
   [_omniboxAutocompleteController disconnect];
   _omniboxAutocompleteController = nil;
   [_omniboxTextController disconnect];

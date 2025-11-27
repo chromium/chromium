@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -30,13 +31,14 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("thin_webview::android")
 @NullMarked
 public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
-    private final CompositorView mCompositorView;
+    private CompositorView mCompositorView;
     private final WindowAndroid mWindowAndroid;
     private long mNativeThinWebViewImpl;
     private @Nullable View mContentView;
     // Passed to native and stored as a weak reference, so ensure this strong
     // reference is not optimized away by R8.
     @DoNotInline private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
+    private final boolean mOwnsWindowAndroid;
 
     /**
      * Creates a {@link ThinWebViewImpl} backed by a {@link Surface}.
@@ -60,6 +62,28 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         } else {
             mWindowAndroid = new WindowAndroid(context, /* trackOcclusion= */ false);
         }
+
+        mOwnsWindowAndroid = true;
+        init(context, constraints);
+    }
+
+    /**
+     * Creates a {@link ThinWebViewImpl} backed by a {@link Surface}.
+     *
+     * @param context The Context to create this view.
+     * @param constraints A set of constraints associated with this view.
+     * @param windowAndroid The {@link WindowAndroid} of the current activity.
+     */
+    public ThinWebViewImpl(
+            Context context, ThinWebViewConstraints constraints, WindowAndroid windowAndroid) {
+        super(context);
+        mWindowAndroid = windowAndroid;
+        mOwnsWindowAndroid = false;
+        init(context, constraints);
+    }
+
+    @Initializer
+    private void init(Context context, ThinWebViewConstraints constraints) {
         mCompositorView = new CompositorViewImpl(context, mWindowAndroid, constraints);
 
         LayoutParams layoutParams =
@@ -99,7 +123,9 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         mCompositorView.destroy();
         ThinWebViewImplJni.get().destroy(mNativeThinWebViewImpl);
         mNativeThinWebViewImpl = 0;
-        mWindowAndroid.destroy();
+        if (mOwnsWindowAndroid) {
+            mWindowAndroid.destroy();
+        }
     }
 
     @Override

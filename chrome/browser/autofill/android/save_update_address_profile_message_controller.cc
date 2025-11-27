@@ -88,6 +88,30 @@ bool SaveUpdateAddressProfileMessageController::IsMessageDisplayed() {
   return !!message_;
 }
 
+void SaveUpdateAddressProfileMessageController::OnPrimaryActionForTest() {
+  OnPrimaryAction();
+}
+
+void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
+    messages::DismissReason reason) {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             reason);
+  }
+}
+
+messages::MessageWrapper*
+SaveUpdateAddressProfileMessageController::GetMessageForTest() {
+  return message_.get();
+}
+
+void SaveUpdateAddressProfileMessageController::DismissMessage() {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::UNKNOWN);
+  }
+}
+
 void SaveUpdateAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
       .Run(web_contents_.get(), *profile_, original_profile_.get(),
@@ -121,21 +145,6 @@ void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
   // Clean the state, message is no longer shown.
   message_.reset();
   web_contents_ = nullptr;
-}
-
-void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
-    messages::DismissReason reason) {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
-                                                             reason);
-  }
-}
-
-void SaveUpdateAddressProfileMessageController::DismissMessage() {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::UNKNOWN);
-  }
 }
 
 void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(

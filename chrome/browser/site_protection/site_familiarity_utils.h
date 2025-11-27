@@ -32,6 +32,18 @@ ComputeDefaultJavascriptOptimizerSetting(Profile* profile);
 std::optional<bool> AreV8OptimizationsDisabled(
     content::WebContents* web_contents);
 
+// Returns the source of the optimizer setting in the given WebContents, or
+// nullopt if the content settings map or current URL is not available.
+std::optional<content_settings::SettingSource>
+GetJavascriptOptimizerSettingSource(content::WebContents* web_contents);
+
+// Enables the v8 optimizations content setting for the current URL in the
+// given WebContents. Does nothing if the content settings map or current URL
+// is not available.
+// Note: the updated setting won't take effect until a new browsing instance
+// is started (e.g. a new tab is opened).
+void EnableV8Optimizations(content::WebContents* web_contents);
+
 }  // namespace site_protection
 
 #endif  // CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_

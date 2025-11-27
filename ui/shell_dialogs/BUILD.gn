@@ -179,6 +179,7 @@ test("shell_dialogs_unittests") {
     deps += [
       "//components/dbus",
       "//dbus",
+      "//dbus:test_support",
     ]
   }
 

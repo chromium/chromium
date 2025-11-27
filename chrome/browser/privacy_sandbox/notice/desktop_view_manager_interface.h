@@ -14,8 +14,6 @@ class BrowserWindowInterface;
 
 namespace privacy_sandbox {
 
-class NavigationHandler;
-
 // This class will:
 // 1. Manage the showing, hiding and closing of notices in the correct order on
 // the desktop side.
@@ -33,9 +31,6 @@ class DesktopViewManagerInterface {
   };
 
   virtual ~DesktopViewManagerInterface();
-
-  // Returns handler responsible for tracking navigations.
-  virtual NavigationHandler* GetNavigationHandler() = 0;
 
   // Called by navigation handler when a suitable URL has
   // been found. All suitable URLs are chrome-owned.

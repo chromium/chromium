@@ -344,7 +344,7 @@ ScriptPromise<IDLUndefined> ReadableStreamDefaultController::CancelSteps(
   // 2. Let result be the result of performing this.[[cancelAlgorithm]], passing
   //    reason.
   auto result =
-      cancel_algorithm_->Run(script_state, 1, base::span_from_ref(reason));
+      cancel_algorithm_->Run(script_state, base::span_from_ref(reason));
 
   // 3. Perform ! ReadableStreamDefaultControllerClearAlgorithms(this).
   ClearAlgorithms(this);
@@ -431,7 +431,7 @@ void ReadableStreamDefaultController::CallPullIfNeeded(
 
   // 6. Let pullPromise be the result of performing
   //    controller.[[pullAlgorithm]].
-  auto pull_promise = controller->pull_algorithm_->Run(script_state, 0, {});
+  auto pull_promise = controller->pull_algorithm_->Run(script_state, {});
 
   pull_promise.Then(script_state, controller->resolve_function_.Get(),
                     controller->reject_function_.Get());

@@ -12,7 +12,9 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/events/android/motion_event_android_source.h"
 #include "ui/events/events_export.h"
@@ -20,6 +22,15 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
+
+namespace mojom {
+class CachedMotionEventAndroidDataView;
+}
+
+// When adding new fields to this class, update the corresponding Mojo struct
+// traits to ensure the new fields are propagated correctly. Ignore the lint
+// warning if no new fields are added.
+// LINT.IfChange(MotionEventAndroid)
 
 // An abstract base class which caches Android's MotionEvent object values and
 // depends on impl classes for uncached data.
@@ -100,6 +111,9 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   uint32_t GetUniqueEventId() const override;
   Action GetAction() const override;
   int GetActionIndex() const override;
+  // Pointer count as returned by Android's `MotionEvent.getPointerCount()`.
+  // This could be different than `cached_pointers_.size()` which by default
+  // only caches two pointers.
   size_t GetPointerCount() const override;
   int GetPointerId(size_t pointer_index) const override;
   float GetX(size_t pointer_index) const override;
@@ -151,6 +165,25 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
+  struct PointerCoordinates {
+    gfx::PointF position;
+    float touch_major = 0;
+  };
+
+  struct CachedPointer {
+    CachedPointer();
+    int id = 0;
+    PointerCoordinates pointer_data;
+    float touch_minor = 0;
+    float pressure = 0;
+    float orientation = 0;
+    float tilt_x = 0;
+    float tilt_y = 0;
+    ToolType tool_type = ToolType::UNKNOWN;
+  };
+
+  MotionEventAndroid();
+
  protected:
   float pix_to_dip() const { return pix_to_dip_; }
 
@@ -182,19 +215,12 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   const MotionEventAndroidSource* source() const { return source_.get(); }
 
  private:
+  friend struct mojo::StructTraits<ui::mojom::CachedMotionEventAndroidDataView,
+                                   std::unique_ptr<ui::MotionEventAndroid>>;
+  FRIEND_TEST_ALL_PREFIXES(MotionEventAndroidTraitsTest,
+                           MultiplePointersWithHistory);
+
   float ToDips(float pixels) const;
-  struct CachedPointer {
-    CachedPointer();
-    int id = 0;
-    gfx::PointF position;
-    float touch_major = 0;
-    float touch_minor = 0;
-    float pressure = 0;
-    float orientation = 0;
-    float tilt_x = 0;
-    float tilt_y = 0;
-    ToolType tool_type = ToolType::UNKNOWN;
-  };
 
   // Cache pointer coords, id's and major lengths for the most common
   // touch-related scenarios, i.e., scrolling and pinching which has at most two
@@ -208,39 +234,41 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   // Used to convert pixel coordinates from the Java-backed MotionEvent to
   // DIP coordinates cached/returned by the MotionEventAndroid.
-  const float pix_to_dip_;
+  float pix_to_dip_;
 
   // Variables for mouse wheel event.
-  const float ticks_x_;
-  const float ticks_y_;
-  const float tick_multiplier_;
+  float ticks_x_;
+  float ticks_y_;
+  float tick_multiplier_;
 
-  const bool for_touch_handle_;
+  bool for_touch_handle_;
 
   // |cached_oldest_event_time_| and |cached_latest_event_time_| are same when
   // history size is 0, in presence of historical events
   // |cached_oldest_event_time_| is the event time of oldest coalesced event.
-  const base::TimeTicks cached_oldest_event_time_;
-  const base::TimeTicks cached_latest_event_time_;
+  base::TimeTicks cached_oldest_event_time_;
+  base::TimeTicks cached_latest_event_time_;
   // This stores the event time of first down event in touch sequence, it is
   // obtained from MotionEvent.getDownTime for java backed events and
   // from AMotionEvent_getDowntime for native backed events.
-  const base::TimeTicks cached_down_time_ms_;
-  const Action cached_action_;
-  const size_t cached_pointer_count_;
-  const size_t cached_history_size_;
-  const int cached_action_index_;
-  const int cached_action_button_;
-  const int cached_gesture_classification_;
-  const int cached_button_state_;
-  const int cached_flags_;
-  const gfx::Vector2dF cached_raw_position_offset_;
+  base::TimeTicks cached_down_time_ms_;
+  Action cached_action_;
+  size_t cached_pointer_count_;
+  size_t cached_history_size_;
+  int cached_action_index_;
+  int cached_action_button_;
+  int cached_gesture_classification_;
+  int cached_button_state_;
+  int cached_flags_;
+  gfx::Vector2dF cached_raw_position_offset_;
 
   // A unique identifier for the Android motion event.
   const uint32_t unique_event_id_;
 
   std::unique_ptr<MotionEventAndroidSource> source_;
 };
+
+// LINT.ThenChange(//ui/events/mojom/motion_event_android_mojom_traits.h:MotionEventAndroid)
 
 }  // namespace ui
 

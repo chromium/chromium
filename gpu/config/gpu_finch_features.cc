@@ -154,6 +154,20 @@ BASE_FEATURE(kAdjustGpuProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will use the shader disk cache. This feature provides a
+// kill-switch for working around issues with the disk cache and assessing the
+// performance value of the disk cache. The --disable-gpu-shader-disk-cache flag
+// overrides this feature and forces the disk cache to be disabled.
+BASE_FEATURE(kGpuShaderDiskCache, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsShaderDiskCacheEnabled(const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kDisableGpuShaderDiskCache)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kGpuShaderDiskCache);
+}
+
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.

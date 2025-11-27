@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace metrics::features {
 

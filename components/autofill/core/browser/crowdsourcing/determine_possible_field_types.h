@@ -17,6 +17,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace one_time_tokens {
+class OneTimeToken;
+}
+
 namespace autofill {
 
 class AutofillProfile;
@@ -66,6 +70,7 @@ struct PossibleTypes {
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const one_time_tokens::OneTimeToken> recent_otps,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields);
 
@@ -77,6 +82,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
+    base::span<const one_time_tokens::OneTimeToken> recent_otps,
     const std::string& app_locale);
 
 base::flat_set<std::pair<data_util::Date, PossibleTypes*>>

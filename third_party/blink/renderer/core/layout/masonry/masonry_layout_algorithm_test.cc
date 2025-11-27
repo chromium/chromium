@@ -1307,11 +1307,12 @@ TEST_F(MasonryLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {
       {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
       /*tie_threshold=*/LayoutUnit());
 
-  EXPECT_EQ(
-      GetMaxPositionsForAllTracks(running_positions, /*span_size=*/2),
-      Vector<LayoutUnit>({LayoutUnit(3), LayoutUnit(3.5), LayoutUnit(3.5)}));
+  EXPECT_EQ(GetMaxPositionsForAllTracks(running_positions, /*span_size=*/2),
+            Vector<LayoutUnit>({LayoutUnit(3), LayoutUnit(3.5), LayoutUnit(3.5),
+                                LayoutUnit(3.5)}));
   EXPECT_EQ(GetMaxPositionsForAllTracks(running_positions, /*span_size=*/4),
-            Vector<LayoutUnit>({LayoutUnit(3.5)}));
+            Vector<LayoutUnit>({LayoutUnit(3.5), LayoutUnit(3.5),
+                                LayoutUnit(3.5), LayoutUnit(3.5)}));
   EXPECT_EQ(GetMaxPositionsForAllTracks(running_positions, /*span_size=*/1),
             Vector<LayoutUnit>({LayoutUnit(2.0), LayoutUnit(3.0),
                                 LayoutUnit(3.5), LayoutUnit(2.5)}));

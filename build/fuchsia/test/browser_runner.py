@@ -139,6 +139,7 @@ class BrowserRunner:
             '--min-height-for-gpu-raster-tile=128',
             '--webgl-msaa-sample-count=0',
             '--max-decoded-image-size-mb=10',
+            '--protected-service-workers=https://[*.]',
         ])
         if extra_args:
             browser_cmd.extend(extra_args)

@@ -2935,3 +2935,354 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(observer.last_entry_will_hide_reason_,
               testing::Optional(SidePanelEntryHideReason::kBackgrounded));
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       ShowFromAnimationReparentsContentView) {
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite),
+      base::BindRepeating([](SidePanelEntryScope&) {
+        auto view = std::make_unique<views::View>();
+        view->SetPaintToLayer();
+        view->layer()->SetFillsBoundsOpaquely(false);
+        return view;
+      }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
+  // Set a custom container to control the animation time.
+  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
+  gfx::AnimationContainerTestApi test_api(container.get());
+
+  coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
+                          gfx::Rect(0, 0, 100, 100));
+  // Advance the animation by 150ms, at this point the browser view should own
+  // the contents view.
+  test_api.IncrementTime(base::Milliseconds(150));
+  ASSERT_NE(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+
+  // Advance the animation to its end, at this point the contents view should be
+  // reparented to the side panel's ContentParentView.
+  test_api.IncrementTime(base::Milliseconds(350));
+  ASSERT_EQ(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    ShowFromAnimationAnimatesContentViewInTheCorrectDirection_RightAligned) {
+  // Set the toolbar height side panel to be right aligned.
+  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  ASSERT_TRUE(browser()
+                  ->GetBrowserView()
+                  .toolbar_height_side_panel()
+                  ->IsRightAligned());
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite),
+      base::BindRepeating([](SidePanelEntryScope&) {
+        auto view = std::make_unique<views::View>();
+        view->SetPaintToLayer();
+        view->layer()->SetFillsBoundsOpaquely(false);
+        return view;
+      }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
+  // Set a custom container to control the animation time.
+  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
+  gfx::AnimationContainerTestApi test_api(container.get());
+
+  gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
+  coordinator()->ShowFrom(
+      SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
+      gfx::Rect(browser_view_bounds.x(), browser_view_bounds.height() / 2,
+                browser_view_bounds.width() / 4,
+                browser_view_bounds.height() / 2));
+  // Advance the animation by 100ms and check the x value of the animating
+  // content.
+  test_api.IncrementTime(base::Milliseconds(100));
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  ASSERT_NE(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  int content_x_at_first_step = browser()
+                                    ->GetBrowserView()
+                                    .GetBrowserViewLayoutForTesting()
+                                    ->side_panel_animation_content()
+                                    ->bounds()
+                                    .x();
+
+  // Advance the animation by another 100ms, and check the x value of the
+  // animating content is heading in the right direction.
+  test_api.IncrementTime(base::Milliseconds(100));
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  int content_x_at_second_step = browser()
+                                     ->GetBrowserView()
+                                     .GetBrowserViewLayoutForTesting()
+                                     ->side_panel_animation_content()
+                                     ->bounds()
+                                     .x();
+
+  // Verify the content is moving right.
+  ASSERT_LT(content_x_at_first_step, content_x_at_second_step);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    ShowFromAnimationAnimatesContentViewInTheCorrectDirection_LeftAligned) {
+  // Set the toolbar height side panel to be left aligned.
+  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  ASSERT_FALSE(browser()
+                   ->GetBrowserView()
+                   .toolbar_height_side_panel()
+                   ->IsRightAligned());
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite),
+      base::BindRepeating([](SidePanelEntryScope&) {
+        auto view = std::make_unique<views::View>();
+        view->SetPaintToLayer();
+        view->layer()->SetFillsBoundsOpaquely(false);
+        return view;
+      }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
+  // Set a custom container to control the animation time.
+  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
+  gfx::AnimationContainerTestApi test_api(container.get());
+
+  gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
+  coordinator()->ShowFrom(
+      SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
+      gfx::Rect(browser_view_bounds.width() - browser_view_bounds.width() / 4,
+                browser_view_bounds.height() / 2,
+                browser_view_bounds.width() / 4,
+                browser_view_bounds.height() / 2));
+  // Advance the animation by 100ms and check the x value of the animating
+  // content.
+  test_api.IncrementTime(base::Milliseconds(100));
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  ASSERT_NE(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  int content_x_at_first_step = browser()
+                                    ->GetBrowserView()
+                                    .GetBrowserViewLayoutForTesting()
+                                    ->side_panel_animation_content()
+                                    ->bounds()
+                                    .x();
+
+  // Advance the animation by another 100ms, and check the x value of the
+  // animating content is heading in the right direction.
+  test_api.IncrementTime(base::Milliseconds(100));
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  int content_x_at_second_step = browser()
+                                     ->GetBrowserView()
+                                     .GetBrowserViewLayoutForTesting()
+                                     ->side_panel_animation_content()
+                                     ->bounds()
+                                     .x();
+
+  // Verify the content is moving left.
+  ASSERT_GT(content_x_at_first_step, content_x_at_second_step);
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       ClosingMidShowFromAnimationReparentsContentView) {
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite),
+      base::BindRepeating([](SidePanelEntryScope&) {
+        auto view = std::make_unique<views::View>();
+        view->SetPaintToLayer();
+        view->layer()->SetFillsBoundsOpaquely(false);
+        return view;
+      }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
+  // Set a custom container to control the animation time.
+  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
+  gfx::AnimationContainerTestApi test_api(container.get());
+
+  coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
+                          gfx::Rect(0, 0, 100, 100));
+  // Advance the animation by 150ms, at this point the browser view should own
+  // the contents view.
+  test_api.IncrementTime(base::Milliseconds(150));
+  ASSERT_NE(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+
+  // Trigger the side panel to close, at this point the contents view should be
+  // reparented to the side panel's ContentParentView.
+  coordinator()->Close(SidePanelEntry::PanelType::kToolbar,
+                       SidePanelEntryHideReason::kSidePanelClosed,
+                       /*suppress_animations=*/false);
+  ASSERT_EQ(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    ShowFromAnimationReparentsContentViewIfInterruptedByADifferentShowAnimation) {
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntryId::kAboutThisSite),
+      base::BindRepeating([](SidePanelEntryScope&) {
+        auto view = std::make_unique<views::View>();
+        view->SetPaintToLayer();
+        view->layer()->SetFillsBoundsOpaquely(false);
+        return view;
+      }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+
+  // Deregister and reregister kShoppingInsights side panel with kToolbar
+  // PanelType.
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntryId::kShoppingInsights));
+  std::unique_ptr<SidePanelEntry> shopping_entry =
+      std::make_unique<SidePanelEntry>(
+          SidePanelEntry::PanelType::kToolbar,
+          SidePanelEntry::Key(SidePanelEntryId::kShoppingInsights),
+          base::BindRepeating([](SidePanelEntryScope&) {
+            auto view = std::make_unique<views::View>();
+            view->SetPaintToLayer();
+            view->layer()->SetFillsBoundsOpaquely(false);
+            return view;
+          }),
+          /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(shopping_entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
+  // Set a custom container to control the animation time.
+  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
+  gfx::AnimationContainerTestApi test_api(container.get());
+
+  coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
+                          gfx::Rect(0, 0, 100, 100));
+  // Advance the animation by 150ms, at this point the browser view should own
+  // the contents view.
+  test_api.IncrementTime(base::Milliseconds(150));
+  ASSERT_NE(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+
+  // Show the kShoppingInsights side panel mid content transition animation and
+  // verify the content is correctly reparented.
+  coordinator()->Show(SidePanelEntryId::kShoppingInsights);
+  ASSERT_EQ(browser()
+                ->GetBrowserView()
+                .GetBrowserViewLayoutForTesting()
+                ->side_panel_animation_content(),
+            nullptr);
+  ASSERT_EQ(
+      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+}

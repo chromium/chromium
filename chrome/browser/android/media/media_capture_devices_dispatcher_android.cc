@@ -30,42 +30,42 @@ jboolean CallIndicator(const JavaParamRef<jobject>& java_web_contents,
 
 }  // namespace
 
-jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingAudio(
+static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingAudio(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingAudio);
 }
 
-jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingVideo(
+static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingVideo(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingVideo);
 }
 
-jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingTab(
+static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingTab);
 }
 
-jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingWindow(
+static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingWindow(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingWindow);
 }
 
-jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingScreen(
+static jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingScreen(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   return CallIndicator(java_web_contents,
                        &MediaStreamCaptureIndicator::IsCapturingDisplay);
 }
 
-void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyStopped(
+static void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyStopped(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =

@@ -2017,6 +2017,10 @@ inline constexpr char kSkyVaultMigrationStartTime[] =
     "skyvault.migration_start_time";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Boolean that when set overrides the kStaticStorageQuota feature flag.
+inline constexpr char kStaticStorageQuotaEnabled[] =
+    "static_storage_quota_enabled";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
@@ -4345,6 +4349,8 @@ inline constexpr char kNonMilestoneUpdateToastVersion[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+
+// LINT.IfChange(TipsShownPrefs)
 // Boolean prefs indicating whether a tip notification has already been shown.
 inline constexpr char kAndroidTipNotificationShownESB[] =
     "android.tips.notifications.esb_shown";
@@ -4354,6 +4360,7 @@ inline constexpr char kAndroidTipNotificationShownLens[] =
     "android.tips.notifications.lens_shown";
 inline constexpr char kAndroidTipNotificationShownBottomOmnibox[] =
     "android.tips.notifications.bottom_omnibox_shown";
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsUtils.java:TipsShownPrefs)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace prefs

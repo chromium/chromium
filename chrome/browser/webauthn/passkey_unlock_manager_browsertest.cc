@@ -70,7 +70,8 @@ class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
 
 class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
  public:
-  PasskeyUnlockManagerBrowserTest() = default;
+  PasskeyUnlockManagerBrowserTest() { EnableUVKeySupport(); }
+
   ~PasskeyUnlockManagerBrowserTest() override = default;
 
   webauthn::PasskeyUnlockManager* passkey_unlock_manager() {
@@ -152,7 +153,6 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
                        NotifyObserversOnEnclaveStateUpdated) {
-  EnableUVKeySupport();
   AddTestPasskeyToModel();
   testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
   passkey_unlock_manager()->AddObserver(&observer);

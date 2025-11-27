@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_PERFORMANCE_HINT_BOOST_MANAGER_H_
 #define COMPONENTS_VIZ_SERVICE_PERFORMANCE_HINT_BOOST_MANAGER_H_
 
-#include "base/metrics/field_trial_params.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 

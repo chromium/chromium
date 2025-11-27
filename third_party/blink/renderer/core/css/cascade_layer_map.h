@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYER_MAP_H_
 
+#include <compare>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
@@ -36,13 +39,38 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
   // Compare the layer orders of two CascadeLayer objects, possibly from
   // different sheets. Callers may pass nullptr to represent the implicit outer
   // layer.
-  int CompareLayerOrder(const CascadeLayer* lhs, const CascadeLayer* rhs) const;
+  //
+  // TODO(crbug.com/463698792): Return std::weak_ordering.
+  int CompareLayerOrder(const CascadeLayer* lhs,
+                        const CascadeLayer* rhs) const {
+    std::weak_ordering ordering = CompareLayerOrderInternal(lhs, rhs);
+    if (ordering == 0) {
+      return 0;
+    }
+    return ordering < 0 ? -1 : 1;
+  }
+
+  template <typename T>
+  static std::weak_ordering CompareLayerOrder(const CascadeLayerMap* layer_map,
+                                              const CascadeLayered<T>& lhs,
+                                              const CascadeLayered<T>& rhs) {
+    // Note that layer_map may be nullptr here, but only when both layers
+    // are nullptr.
+    if (lhs.layer == rhs.layer) {
+      return std::weak_ordering::equivalent;
+    }
+    CHECK(layer_map);
+    return layer_map->CompareLayerOrderInternal(lhs.layer, rhs.layer);
+  }
 
   void Trace(blink::Visitor*) const;
 
   const CascadeLayer* GetRootLayer() const;
 
  private:
+  std::weak_ordering CompareLayerOrderInternal(const CascadeLayer* lhs,
+                                               const CascadeLayer* rhs) const;
+
   Member<const CascadeLayer> canonical_root_layer_;
   HeapHashMap<Member<const CascadeLayer>, uint16_t> layer_order_map_;
 };

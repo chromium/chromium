@@ -282,7 +282,7 @@ void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {
   ResetImpl();
 }
 
-ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
+static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -296,7 +296,7 @@ ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
       env, reinterpret_cast<int64_t>(recorder));
 }
 
-ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
+static ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);

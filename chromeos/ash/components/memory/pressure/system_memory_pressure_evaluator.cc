@@ -94,7 +94,8 @@ void SystemMemoryPressureEvaluator::OnMemoryPressure(
 
   if (current_vote() == base::MEMORY_PRESSURE_LEVEL_NONE) {
     last_moderate_notification_ = base::TimeTicks();
-    notify = false;
+    // Only notify when transitioning to no pressure.
+    notify = old_vote != base::MEMORY_PRESSURE_LEVEL_NONE;
   } else if (current_vote() == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     // In the case of MODERATE memory pressure we may be in this state for quite
     // some time so we limit the rate at which we dispatch notifications.

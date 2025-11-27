@@ -22,7 +22,7 @@ namespace syncer {
 class Cryptographer;
 class KeyDerivationParams;
 class SyncServiceImpl;
-}
+}  // namespace syncer
 
 namespace password_manager {
 class PasswordStoreInterface;
@@ -48,7 +48,7 @@ void RemoveLogins(password_manager::PasswordStoreInterface* store);
 password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
     int index);
 
-// Gets the password store of the verifier profile.
+// Gets the profile password store of the verifier profile.
 password_manager::PasswordStoreInterface*
 GetVerifierProfilePasswordStoreInterface();
 
@@ -56,15 +56,27 @@ GetVerifierProfilePasswordStoreInterface();
 password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
     int index);
 
+// Gets the account password store of the verifier profile.
+password_manager::PasswordStoreInterface*
+GetVerifierAccountPasswordStoreInterface();
+
 // Gets either the profile-scoped or the account-scoped password store of the
 // profile with index |index|.
 password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
     int index,
     password_manager::PasswordForm::Store store);
 
+// Gets either the profile-scoped or the account-scoped password store of the
+// verifier profile.
+password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
+    password_manager::PasswordForm::Store store);
+
 // Returns true iff the profile with index |index| contains the same password
 // forms as the verifier profile.
-bool ProfileContainsSamePasswordFormsAsVerifier(int index);
+bool ProfileContainsSamePasswordFormsAsVerifier(
+    int index,
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns true iff the profile with index |index_a| contains the same
 // password forms as the profile with index |index_b|.
@@ -76,7 +88,9 @@ bool ProfilesContainSamePasswordForms(
 
 // Returns true iff all profiles contain the same password forms as the
 // verifier profile.
-bool AllProfilesContainSamePasswordFormsAsVerifier();
+bool AllProfilesContainSamePasswordFormsAsVerifier(
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns true iff all profiles contain the same password forms.
 bool AllProfilesContainSamePasswordForms(
@@ -87,20 +101,23 @@ bool AwaitProfileContainsSamePasswordFormsAsVerifier(int index);
 
 // Returns the number of forms in the password store of the profile with index
 // |index|.
+// TODO(crbug.com/353425612): Remove the default value for `store`.
 int GetPasswordCount(int index,
                      password_manager::PasswordForm::Store store =
                          password_manager::PasswordForm::Store::kProfileStore);
 
-// Gets all passwords from the password store of |profile_index|.
-std::vector<password_manager::PasswordForm> GetAllPasswordsForProfile(
-    int profile_index);
-
 // Returns the number of forms in the password store of the verifier profile.
-int GetVerifierPasswordCount();
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+int GetVerifierPasswordCount(
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
-password_manager::PasswordForm CreateTestPasswordForm(int index);
+password_manager::PasswordForm CreateTestPasswordForm(
+    int index,
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
@@ -171,13 +188,17 @@ class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
 class SamePasswordFormsAsVerifierChecker
     : public SingleClientStatusChangeChecker {
  public:
-  explicit SamePasswordFormsAsVerifierChecker(int index);
+  explicit SamePasswordFormsAsVerifierChecker(
+      int index,
+      password_manager::PasswordForm::Store store =
+          password_manager::PasswordForm::Store::kProfileStore);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const int index_;
+  const password_manager::PasswordForm::Store store_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;
 };
@@ -187,7 +208,9 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
  public:
   PasswordFormsChecker(
       int index,
-      const std::vector<password_manager::PasswordForm>& expected_forms);
+      const std::vector<password_manager::PasswordForm>& expected_forms,
+      password_manager::PasswordForm::Store store =
+          password_manager::PasswordForm::Store::kProfileStore);
   ~PasswordFormsChecker() override;
 
   // StatusChangeChecker implementation.
@@ -197,6 +220,7 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfiedImpl(std::ostream* os);
 
   const int index_;
+  const password_manager::PasswordForm::Store store_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;

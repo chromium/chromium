@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
@@ -417,9 +418,18 @@ std::optional<int> TabStripLayoutHelper::GetAdjacentSplitTab(
 }
 
 bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
-  // The slot can only be collapsed if it is a tab and in a collapsed group.
-  // If the slot is indeed a tab and in a group, check the collapsed state of
-  // the group to determine if it is collapsed.
+  const std::optional<tab_groups::TabGroupId> focused_group =
+      controller_->GetFocusedGroup();
+
+  // If a group is focused, all other tabs and group headers should be
+  // collapsed.
+  if (focused_group.has_value()) {
+    const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
+    return !id.has_value() || id.value() != focused_group.value();
+  }
+
+  // Otherwise, a tab is only collapsed if it is in an explicitly collapsed
+  // group.
   const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
   return slots_[i].type == TabSlotView::ViewType::kTab && id.has_value() &&
          controller_->IsGroupCollapsed(id.value());

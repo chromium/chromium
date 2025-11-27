@@ -30,8 +30,6 @@ GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kForceMaxTextureSize[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kGpuProgramCacheSizeKb[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
-    kDisableGpuShaderDiskCache[];
-GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char
     kEnableThreadedTextureMailboxes[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kGLShaderIntermOutput[];
 GPU_COMMAND_BUFFER_SERVICE_EXPORT extern const char kUseVulkan[];

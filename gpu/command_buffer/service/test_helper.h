@@ -145,7 +145,6 @@ class TestHelper {
       VaryingInfo* varyings,
       size_t num_varyings,
       base::span<ProgramOutputInfo> program_outputs,
-      size_t spanification_suspected_redundant_num_program_outputs,
       GLuint service_id);
 
   static void SetupProgramSuccessExpectations(
@@ -158,7 +157,6 @@ class TestHelper {
       VaryingInfo* varyings,
       size_t num_varyings,
       base::span<ProgramOutputInfo> program_outputs,
-      size_t spanification_suspected_redundant_num_program_outputs,
       GLuint service_id);
 
   static void DoBufferData(::gl::MockGLInterface* gl,

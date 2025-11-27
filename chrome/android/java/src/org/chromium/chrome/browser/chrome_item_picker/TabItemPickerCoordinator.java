@@ -64,6 +64,7 @@ public class TabItemPickerCoordinator {
     private final OnBackPressedCallback mBackPressCallback;
     private final Callback<Boolean> mBackPressEnabledObserver;
     private final ArrayList<Integer> mPreselectedTabIds;
+    private final int mAllowedSelectionCount;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -75,7 +76,8 @@ public class TabItemPickerCoordinator {
             SnackbarManager snackbarManager,
             ViewGroup rootView,
             ViewGroup containerView,
-            ArrayList<Integer> preselectedTabIds) {
+            ArrayList<Integer> preselectedTabIds,
+            int allowedSelectionCount) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -84,6 +86,7 @@ public class TabItemPickerCoordinator {
         mRootView = rootView;
         mContainerView = containerView;
         mPreselectedTabIds = preselectedTabIds;
+        mAllowedSelectionCount = allowedSelectionCount;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -181,15 +184,13 @@ public class TabItemPickerCoordinator {
         List<Tab> allTabs =
                 TabModelUtils.convertTabListToListOfTabs(
                         mTabModelSelector.getModel(profile.isIncognitoBranded()));
-        if (cachedTabIds == null || cachedTabIds.length == 0) {
-            showEditorUi(allTabs);
-            return;
-        }
 
         List<Tab> tabsToShow = new ArrayList<>();
         Set<Integer> cachedTabIdsSet = new HashSet<>();
-        for (long id : cachedTabIds) {
-            cachedTabIdsSet.add((int) id);
+        if (cachedTabIds != null) {
+            for (long id : cachedTabIds) {
+                cachedTabIdsSet.add((int) id);
+            }
         }
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
@@ -223,10 +224,8 @@ public class TabItemPickerCoordinator {
                 tabs,
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
-
-        if (mPreselectedTabIds.size() == 0) return;
+        if (mPreselectedTabIds.isEmpty()) return;
         Set<TabListEditorItemSelectionId> selectionSet = new HashSet<>();
-
         for (Integer id : mPreselectedTabIds) {
             if (id == null) continue;
             @Nullable Tab tab = mTabModelSelector.getTabById(id);
@@ -234,9 +233,7 @@ public class TabItemPickerCoordinator {
                 selectionSet.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
             }
         }
-        if (!selectionSet.isEmpty()) {
-            controller.selectTabs(selectionSet);
-        }
+        controller.preselectTabs(selectionSet);
     }
 
     public interface ItemPickerSelectionHandler {
@@ -353,7 +350,8 @@ public class TabItemPickerCoordinator {
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.ITEM_PICKER,
                         /* undoBarExplicitTrigger= */ null,
-                        /* componentName= */ "TabItemPickerCoordinator");
+                        /* componentName= */ "TabItemPickerCoordinator",
+                        mAllowedSelectionCount);
 
         mNavigationProvider =
                 new ItemPickerNavigationProvider(

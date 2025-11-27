@@ -261,8 +261,8 @@ Component* Component::Compile(v8::Isolate* isolate,
                            options);
   if (!parse_result.has_value()) {
     exception_state.ThrowTypeError(
-        "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
-        String::FromUTF8(parse_result.error().message()));
+        StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                "'. ", String::FromUTF8(parse_result.error().message())}));
     return nullptr;
   }
 
@@ -298,17 +298,17 @@ Component* Component::Compile(v8::Isolate* isolate,
             MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
         if (regexp->IsValid())
           continue;
-        exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                       " pattern '" + final_pattern +
-                                       "'. Custom regular expression group '" +
-                                       group_value + "' is invalid.");
+        exception_state.ThrowTypeError(
+            StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                    "'. Custom regular expression group '", group_value,
+                    "' is invalid."}));
         return nullptr;
       }
       // We couldn't find a bad regexp group, but we still have an overall
       // error.  This shouldn't happen, but we handle it anyway.
-      exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                     " pattern '" + final_pattern +
-                                     "'. An unexpected error has occurred.");
+      exception_state.ThrowTypeError(
+          StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                  "'. An unexpected error has occurred."}));
       return nullptr;
     }
 

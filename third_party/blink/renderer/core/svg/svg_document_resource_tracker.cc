@@ -50,7 +50,7 @@ String SVGDocumentResourceTracker::MakeCacheIdentifier(
   // Setting a unique cache identifier allows us to use global `MemoryCache`
   // to store SVG resources specific to each page.
   constexpr char kSVGDocumentResourcePrefix[] = "svg-resources:";
-  return kSVGDocumentResourcePrefix + browser_context_group_token;
+  return StrCat({kSVGDocumentResourcePrefix, browser_context_group_token});
 }
 
 SVGResourceDocumentContent* SVGDocumentResourceTracker::Get(

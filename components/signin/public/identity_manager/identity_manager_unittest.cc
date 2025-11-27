@@ -2459,7 +2459,7 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   EXPECT_EQ(account_info.account_id, refreshed_account_info.account_id);
   EXPECT_EQ(account_info.email, refreshed_account_info.email);
   EXPECT_EQ(account_info.gaia, refreshed_account_info.gaia);
-  EXPECT_EQ(kTestHostedDomain, refreshed_account_info.hosted_domain);
+  EXPECT_EQ(kTestHostedDomain, refreshed_account_info.GetHostedDomain());
   EXPECT_EQ(kTestFullName, refreshed_account_info.full_name);
   EXPECT_EQ(kTestGivenName, refreshed_account_info.given_name);
   EXPECT_EQ(kTestLocale, refreshed_account_info.locale);

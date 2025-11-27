@@ -49,6 +49,9 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
  private:
   void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
+  base::MemoryPressureLevel last_memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
+
   base::ObserverList<SyncMemoryPressureListenerRegistration>::Unchecked
       listeners_;
 };

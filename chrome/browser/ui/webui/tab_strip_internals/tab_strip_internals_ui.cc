@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_handler.h"
 #include "chrome/grit/tab_strip_internals_resources.h"
@@ -48,6 +50,10 @@ void TabStripInternalsUI::CreatePageHandler(
     mojo::PendingRemote<tab_strip_internals::mojom::Page> page,
     mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver) {
   CHECK(page);
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(profile);
   page_handler_ = std::make_unique<TabStripInternalsPageHandler>(
-      std::move(receiver), std::move(page));
+      profile, std::move(receiver), std::move(page));
 }

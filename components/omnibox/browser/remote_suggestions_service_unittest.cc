@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/lens/lens_features.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
@@ -63,7 +65,7 @@ class TestObserver : public RemoteSuggestionsService::Observer {
   void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
-      const std::unique_ptr<std::string>& response_body) override {
+      base::optional_ref<std::string> response_body) override {
     ASSERT_EQ(request_id_, request_id);
     response_received_ = true;
     response_body_ = response_body ? *response_body : "";
@@ -92,7 +94,7 @@ class MockDelegate : public NiceMock<RemoteSuggestionsService::Delegate> {
       OnRequestCompleted,
       (const network::SimpleURLLoader* source,
        const int response_code,
-       std::unique_ptr<std::string> response_body,
+       std::optional<std::string> response_body,
        RemoteSuggestionsService::CompletionCallback completion_callback),
       (override));
 
@@ -102,7 +104,7 @@ class MockDelegate : public NiceMock<RemoteSuggestionsService::Delegate> {
       (const int request_index,
        const network::SimpleURLLoader* source,
        const int response_code,
-       std::unique_ptr<std::string> response_body,
+       std::optional<std::string> response_body,
        RemoteSuggestionsService::IndexedCompletionCallback completion_callback),
       (override));
 };
@@ -119,8 +121,8 @@ class RemoteSuggestionsServiceTest : public testing::Test {
 
   void OnRequestCompleted(const network::SimpleURLLoader* source,
                           const int response_code,
-                          std::unique_ptr<std::string> response_body) {
-    response_body_ = response_body ? *response_body : "";
+                          std::optional<std::string> response_body) {
+    response_body_ = std::move(response_body).value_or("");
   }
 
   TemplateURLService& template_url_service() {
@@ -453,7 +455,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
   EXPECT_CALL(delegate3, OnRequestCompleted(_, _, _, _))
       .WillOnce(
           [](const network::SimpleURLLoader* source, const int response_code,
-             std::unique_ptr<std::string> response_body,
+             std::optional<std::string> response_body,
              RemoteSuggestionsService::CompletionCallback completion_callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,

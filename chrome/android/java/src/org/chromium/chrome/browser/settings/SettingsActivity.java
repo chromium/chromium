@@ -138,6 +138,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private final OneshotSupplierImpl<SnackbarManager> mSnackbarManagerSupplier =
             new OneshotSupplierImpl<>();
 
+    // Number of popback requested after the fragment manager saved its state.
+    private int mPendingPopBackCount;
+
     // An intent that was received in onNewIntent and would cause fragment transactions, but is
     // pending for processing in the next onResume call. See onNewIntent for why we can not directly
     // process those intents in onNewIntent.
@@ -668,6 +671,27 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         checkForMissingDeviceLockOnAutomotive();
 
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            if (mPendingPopBackCount > 0) {
+                RecordHistogram.recordCount100Histogram(
+                        "Android.Settings.PendingPopBackWorked", mPendingPopBackCount);
+                FragmentManager fragmentManager =
+                        mMultiColumnSettings == null
+                                ? getSupportFragmentManager()
+                                : mMultiColumnSettings.getChildFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() <= mPendingPopBackCount) {
+                    finish();
+                } else {
+                    var entry =
+                            fragmentManager.getBackStackEntryAt(
+                                    fragmentManager.getBackStackEntryCount()
+                                            - mPendingPopBackCount);
+                    fragmentManager.popBackStack(
+                            entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+                mPendingPopBackCount = 0;
+            }
+        }
         // If there is a pending intent to process from onNewIntent, process it now.
         if (mPendingNewIntent != null) {
             // If multi-column is enabled, fragment instantiation is handled in MultiColumnSettings.
@@ -992,7 +1016,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 finish();
             } else {
-                fragmentManager.popBackStack();
+                if (fragmentManager.isStateSaved()) {
+                    ++mPendingPopBackCount;
+                } else {
+                    fragmentManager.popBackStack();
+                }
             }
         } else {
             finish();

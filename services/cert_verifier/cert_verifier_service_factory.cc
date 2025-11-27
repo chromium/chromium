@@ -324,7 +324,7 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
       base::MakeRefCounted<certificate_transparency::ChromeCTPolicyEnforcer>(
           update_time, std::move(disqualified_logs), std::move(log_info),
           base::FeatureList::IsEnabled(
-              net::features::kEnableStaticCTAPIEnforcement));
+              net::features::kEnforceOneRfc6962CtPolicy));
 
   UpdateVerifierServices();
 

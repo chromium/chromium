@@ -135,7 +135,7 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, LogExtensionState, (), (override));
   MOCK_METHOD(void,
               OnDistillationStatus,
-              (read_anything::mojom::DistillationStatus),
+              (read_anything::mojom::DistillationStatus, int word_count),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
@@ -440,25 +440,46 @@ TEST_F(ReadAnythingAppControllerTest,
   read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
 
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
   read_aloud_model().SetSpeechPlaying(true);
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
       ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode, 1);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_DoesNotLogIfTabActive) {
+  read_aloud_model().SetSpeechPlaying(true);
+  base::HistogramTester histogram_tester;
+
+  controller().OnReadingModeHidden(false);
+
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsSeen(123);
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_LogsWordsSeenIfTabNotActive) {
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsSeen(123);
+  controller().OnReadingModeHidden(false);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
@@ -466,7 +487,7 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
   controller().UpdateWordsSeen(123);
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
 
   EXPECT_EQ(0, model().words_seen());
 }
@@ -474,7 +495,17 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsHeard) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsHeard(123);
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_LogsWordsHeardIfTabNotActive) {
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsHeard(123);
+  controller().OnReadingModeHidden(false);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
@@ -486,7 +517,7 @@ TEST_F(ReadAnythingAppControllerTest,
   base::HistogramTester histogram_tester;
   controller().UpdateWordsHeard(123);
 
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
 
   histogram_tester.ExpectTotalCount(
       ReadAnythingAppController::kWordsHeardHistogramName, 0);
@@ -494,7 +525,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   controller().UpdateWordsHeard(123);
-  controller().OnReadingModeHidden();
+  controller().OnReadingModeHidden(true);
 
   EXPECT_EQ(0, model().words_heard());
 }
@@ -2844,6 +2875,20 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_SendsDistilledWordCount) {
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  const int word_count = 1234;
+
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, word_count))
+      .Times(1);
+
+  controller().OnDistilled(word_count);
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+  task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
+                                  base::Seconds(1));
 }
 
 class ReadAnythingAppControllerV8SegmentationTest

@@ -14,10 +14,13 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +48,6 @@
 
 // TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -124,8 +126,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/439447971): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   base::FilePath dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &dir);
@@ -136,9 +136,19 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_TRUE(extension);
 
   // Open the embedded options page.
-  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPage(extension, browser()));
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(extension,
+                                                               web_contents));
   WaitForExtensionNotIdle(extension->id());
 
+  // On Android, the option page will be opened in a new tab as the guest view
+  // is not enabled on Android yet.
+#if BUILDFLAG(IS_ANDROID)
+  web_contents = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_EQ("chrome-extension://" + extension->id() + "/popup.html",
+            web_contents->GetURL());
+#else
   // Get the info about the extension, including the inspectable views.
   auto info = GetExtensionInfo(*extension);
 
@@ -165,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
       content::WebContents::FromRenderFrameHost(render_frame_host);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
+#endif
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40273479): Test is flaky on MSan builders.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
@@ -578,8 +588,8 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
   MV2ExperimentStage experiment_stage_;
 };
 
-// TODO(crbug.com/439447971): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Manefiest Version 2 is not allowed in Android.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeveloperPrivateApiWithMV2DeprecationApiTest,
@@ -682,6 +692,6 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
     }
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

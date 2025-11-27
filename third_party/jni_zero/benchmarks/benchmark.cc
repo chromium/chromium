@@ -307,7 +307,7 @@ static std::string JNI_Benchmark_RunNativeToJavaStringsBenchmark(JNIEnv* env) {
   return benchmark_log.str();
 }
 
-void JNI_Benchmark_SendLargeIntArray(
+static void JNI_Benchmark_SendLargeIntArray(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jintArray>& j_array) {
   size_t array_size = static_cast<size_t>(env->GetArrayLength(j_array.obj()));

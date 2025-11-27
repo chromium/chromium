@@ -64,6 +64,7 @@ class EnterpriseMemoryLimitEvaluator {
   uint64_t resident_set_limit_mb_ = 0;
 
   const std::unique_ptr<memory_pressure::MemoryPressureVoter> voter_;
+  base::MemoryPressureLevel current_vote_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

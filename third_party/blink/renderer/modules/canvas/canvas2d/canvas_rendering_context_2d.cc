@@ -1302,7 +1302,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // The final fallback is to raster into a bitmap that will then either be
     // uploaded into GPU memory (for GPU compositing) or copied into the Viz
     // process (for software compositing).
-    provider = CanvasResourceProvider::CreateBitmapProvider(
+    provider = CanvasResourceProviderBitmap::CreateBitmapProvider(
         canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
         canvas());
   }

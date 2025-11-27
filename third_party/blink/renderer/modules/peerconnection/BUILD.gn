@@ -18,7 +18,6 @@ blink_modules_sources("peerconnection") {
     "adapters/ice_transport_proxy.h",
     "adapters/sctp_transport_proxy.cc",
     "adapters/sctp_transport_proxy.h",
-    "adapters/web_rtc_cross_thread_copier.cc",
     "adapters/web_rtc_cross_thread_copier.h",
     "dedicated_worker_global_scope_rtc_transform.h",
     "media_stream_remote_video_source.cc",

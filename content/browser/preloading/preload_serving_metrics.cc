@@ -207,6 +207,11 @@ PrefetchContainerMetrics::PrefetchContainerMetrics() = default;
 
 PrefetchContainerMetrics::~PrefetchContainerMetrics() = default;
 
+PrefetchContainerMetrics::PrefetchContainerMetrics(
+    const PrefetchContainerMetrics&) = default;
+PrefetchContainerMetrics& PrefetchContainerMetrics::operator=(
+    const PrefetchContainerMetrics&) = default;
+
 PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics::
     PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics()
     :  // It will be filled just after ctor, but `PrefetchMatchResolverAction`

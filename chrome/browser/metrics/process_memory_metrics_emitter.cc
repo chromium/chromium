@@ -583,8 +583,6 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/layout", "PartitionAlloc.Wasted.Layout",
      MetricSize::kLarge, "wasted", EmitTo::kSizeInUmaOnly, nullptr},
-    {"passwords", "ManualFillingCache", MetricSize::kSmall, kEffectiveSize,
-     EmitTo::kSizeInUmaOnly, nullptr},
     {"site_storage", "SiteStorage", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetSiteStorage},
     {"site_storage/blob_storage", "SiteStorage.BlobStorage", MetricSize::kLarge,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
@@ -12,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -24,25 +26,48 @@ import java.nio.ByteBuffer;
 @SuppressWarnings("unused")
 @NullMarked
 public class ComposeBoxQueryControllerBridge {
-    private long mNativeInstance;
 
-    private ComposeBoxQueryControllerBridge(long nativeInstance) {
-        mNativeInstance = nativeInstance;
+    /** Observer for file upload status changes. */
+    interface FileUploadObserver {
+        /**
+         * @param token Unique string identifier for the file.
+         * @param status The status of the file's upload.
+         */
+        void onFileUploadStatusChanged(String token, @FileUploadStatus int status);
     }
 
+    private long mNativeInstance;
+    private @Nullable FileUploadObserver mFileUploadObserver;
+
+    private ComposeBoxQueryControllerBridge() {}
+
+    /** Create a new ComposeBoxQueryControllerBridge using the given profile. */
     public static @Nullable ComposeBoxQueryControllerBridge getForProfile(Profile profile) {
-        long nativeInstance = ComposeBoxQueryControllerBridgeJni.get().init(profile);
+        ComposeBoxQueryControllerBridge javaInstance = new ComposeBoxQueryControllerBridge();
+        long nativeInstance = ComposeBoxQueryControllerBridgeJni.get().init(profile, javaInstance);
         if (nativeInstance == 0L) return null;
-        return new ComposeBoxQueryControllerBridge(nativeInstance);
+        javaInstance.mNativeInstance = nativeInstance;
+        return javaInstance;
     }
 
     public void destroy() {
         ComposeBoxQueryControllerBridgeJni.get().destroy(mNativeInstance);
         mNativeInstance = 0;
+        mFileUploadObserver = null;
     }
 
     public long getNativeInstance() {
         return mNativeInstance;
+    }
+
+    /**
+     * Set the current file upload observer. If non-null, the observer will be notified of file
+     * upload status changes for all files, identified by token. Note that there are intermediate
+     * statuses (neither success nor failure), there is no guarantee of ordering between files, but
+     * a file upload will either succeed/fail at most once.
+     */
+    void setFileUploadObserver(@Nullable FileUploadObserver observer) {
+        mFileUploadObserver = observer;
     }
 
     /** Start a new Composebox session. An active session is required to upload files. */
@@ -111,9 +136,17 @@ public class ComposeBoxQueryControllerBridge {
         return ComposeBoxQueryControllerBridgeJni.get().isCreateImagesEligible(mNativeInstance);
     }
 
+    @CalledByNative
+    void onFileUploadStatusChanged(String token, @FileUploadStatus int fileUploadStatus) {
+        if (mFileUploadObserver != null) {
+            mFileUploadObserver.onFileUploadStatusChanged(token, fileUploadStatus);
+        }
+    }
+
     @NativeMethods
     public interface Natives {
-        long init(@JniType("Profile*") Profile profile);
+        long init(
+                @JniType("Profile*") Profile profile, ComposeBoxQueryControllerBridge javaInstance);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         void destroy(long nativeInstance);

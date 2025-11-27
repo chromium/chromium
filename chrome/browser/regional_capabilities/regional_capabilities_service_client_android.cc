@@ -43,7 +43,8 @@ void RegionalCapabilitiesServiceClientAndroid::FetchCountryId(
       reinterpret_cast<intptr_t>(heap_callback.release()));
 }
 
-void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
+static void
+JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
     JNIEnv* env,
     jlong ptr_to_native_callback,
     const base::android::JavaParamRef<jstring>& j_device_country) {

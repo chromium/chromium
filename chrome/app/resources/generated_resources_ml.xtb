@@ -3426,7 +3426,6 @@
 <translation id="3346306152660142597">AI ഉപയോഗിച്ച് ഈ പേജ് ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="3347086966102161372">ഇമേജ് വിലാസം പകർത്തുക</translation>
 <translation id="3348038390189153836">നീക്കം ചെയ്യാവുന്ന ഉപകരണം കണ്ടെത്തി</translation>
-<translation id="3348131053948466246">നിർദ്ദേശിക്കുന്ന ഇമോജി. നാവിഗേറ്റ് ചെയ്യാൻ മുകളിലേക്കോ താഴേക്കോ ഉള്ള അമ്പടയാള കീകൾ അമർത്തുക, ചേർക്കാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="3348973040180736882">ഡീകംപ്രസിംഗ്</translation>
 <translation id="3349933790966648062">മെമ്മറി ഫൂട്ട് പ്രിന്‍റ്</translation>
 <translation id="3350450887151703713">10 സെക്കൻഡ് വീണ്ടും പ്ലേ ചെയ്യുക</translation>
@@ -6636,7 +6635,6 @@
 <translation id="5563234215388768762">Google-ൽ തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="5563824734298958390">ടാബ് ഗ്രൂപ്പിൽ നിന്ന് പുറത്ത് കടക്കണോ?</translation>
 <translation id="5564450015351086922">iOS-ൽ Google Lens പരീക്ഷിക്കൂ</translation>
-<translation id="5565579144504951367">നിങ്ങളുടെ ഹാർഡ്‌വെയർ സജ്ജീകരിക്കാൻ തയ്യാറാണ്</translation>
 <translation id="5565735124758917034">സജീവമാണ്</translation>
 <translation id="5568069709869097550">സൈൻ ഇൻ ചെയ്യാനായില്ല</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> എന്ന സൈറ്റിനും അതിന് കീഴിലുള്ള എല്ലാ സൈറ്റുകൾക്കും ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾക്കുമുള്ള സൈറ്റ് ഡാറ്റയും അനുമതികളും ഇല്ലാതാക്കണോ?</translation>
@@ -6884,6 +6882,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ടെതറിംഗ് റെഡിനസ് പരിശോധിക്കുക</translation>
 <translation id="5753570386948603678">ചരിത്രത്തിൽ നിന്ന് ഇല്ലാതാക്കുക</translation>
+<translation id="5755101376452091923"><ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> <ph name="USERNAME" /> -ൽ നിങ്ങളുടെ പേര് എഡിറ്റ് ചെയ്യാം</translation>
 <translation id="5756163054456765343">സഹാ&amp;യ കേന്ദ്രം</translation>
 <translation id="5757187557809630523">അടുത്ത ട്രാക്ക്</translation>
 <translation id="5758631781033351321">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഇവിടെ കാണാം</translation>

@@ -15,7 +15,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace net {
 
-jboolean JNI_HttpUtil_IsAllowedHeader(
+static jboolean JNI_HttpUtil_IsAllowedHeader(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_header_name,
     const JavaParamRef<jstring>& j_header_value) {

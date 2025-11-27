@@ -24,7 +24,7 @@ CodeCacheHost& BackgroundCodeCacheHost::GetCodeCacheHost(
   if (!code_cache_host_) {
     CHECK(pending_remote_);
     CHECK(!background_task_runner_);
-    code_cache_host_ = std::make_unique<CodeCacheHost>(
+    code_cache_host_ = CodeCacheHost::Create(
         mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote_)));
     background_task_runner_ = background_task_runner;
   }

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_delegate_bridge.h"
 
+#import <optional>
+#import <string>
+
 RemoteSuggestionsServiceDelegateBridge::RemoteSuggestionsServiceDelegateBridge(
     id<RemoteSuggestionsServiceDelegate> delegate,
     RemoteSuggestionsService* remote_suggestions_service)
@@ -24,7 +27,7 @@ RemoteSuggestionsServiceDelegateBridge::AsWeakPtr() {
 void RemoteSuggestionsServiceDelegateBridge::OnRequestCompleted(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     RemoteSuggestionsService::CompletionCallback completion_callback) {
   [delegate_ onRequestCompleted:source
                    responseCode:response_code
@@ -36,7 +39,7 @@ void RemoteSuggestionsServiceDelegateBridge::OnIndexedRequestCompleted(
     const int request_index,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     RemoteSuggestionsService::IndexedCompletionCallback completion_callback) {
   [delegate_ onIndexedRequestCompleted:request_index
                              urlLoader:source

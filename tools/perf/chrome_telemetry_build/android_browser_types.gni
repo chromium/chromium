@@ -10,8 +10,6 @@ import("//build/config/android/config.gni")
 
 telemetry_android_browser_target_suffixes = [
   "_android_chrome",
-  "_android_monochrome",
-  "_android_monochrome_bundle",
   "_android_webview",
   "_android_trichrome_chrome_bundle",
 ]

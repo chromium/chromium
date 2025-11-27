@@ -135,6 +135,25 @@ void LogVerificationEvent(
       "IndexedDB.LevelDB.InSessionCleanupVerificationEvent", event);
 }
 
+std::string WriteBlobToFileResultToString(
+    storage::mojom::WriteBlobToFileResult result) {
+  switch (result) {
+    case storage::mojom::WriteBlobToFileResult::kError:
+      return "Error";
+    case storage::mojom::WriteBlobToFileResult::kBadPath:
+      return "BadPath";
+    case storage::mojom::WriteBlobToFileResult::kInvalidBlob:
+      return "InvalidBlob";
+    case storage::mojom::WriteBlobToFileResult::kIOError:
+      return "IOError";
+    case storage::mojom::WriteBlobToFileResult::kTimestampError:
+      return "TimestampError";
+    case storage::mojom::WriteBlobToFileResult::kSuccess:
+      return "Success";
+  }
+  NOTREACHED();
+}
+
 // Returns some configuration that is shared across leveldb DB instances. The
 // configuration is further tweaked in `CreateLevelDBState()`.
 leveldb_env::Options GetLevelDBOptions() {
@@ -4360,8 +4379,7 @@ Status BackingStore::Transaction::CommitPhaseOne(
     return WriteNewBlobs(std::move(callback));
   } else {
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult,
-        storage::mojom::WriteBlobToFileResult::kSuccess);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult);
   }
 }
 
@@ -4534,8 +4552,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   if (num_objects_to_write == 0) {
     TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult,
-        storage::mojom::WriteBlobToFileResult::kSuccess);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult);
   }
 
   write_state_.emplace(num_objects_to_write, std::move(callback));
@@ -4558,7 +4575,9 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           transaction->write_state_.reset();
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
-          std::move(on_complete).Run(BlobWriteResult::kFailure, result);
+          std::move(on_complete)
+              .Run(base::unexpected(
+                  Status::IOError(WriteBlobToFileResultToString(result))));
           return;
         }
         --(write_state.calls_left);
@@ -4567,8 +4586,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           transaction->write_state_.reset();
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
-          std::move(on_complete)
-              .Run(BlobWriteResult::kRunPhaseTwoAsync, result);
+          std::move(on_complete).Run(BlobWriteResult::kRunPhaseTwoAsync);
         }
       },
       weak_ptr_factory_.GetWeakPtr());

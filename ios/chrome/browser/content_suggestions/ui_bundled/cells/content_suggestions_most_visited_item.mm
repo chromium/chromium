@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 
 #import "base/check.h"
+#import "components/ntp_tiles/tile_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -47,6 +48,10 @@
   } else {
     return [NSArray arrayWithObjects:openInNewTab, removeMostVisited, nil];
   }
+}
+
+- (BOOL)isPinned {
+  return self.source == ntp_tiles::TileSource::CUSTOM_LINKS;
 }
 
 // Target for custom action.

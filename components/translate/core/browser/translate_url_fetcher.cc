@@ -4,6 +4,10 @@
 
 #include "components/translate/core/browser/translate_url_fetcher.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -119,11 +123,9 @@ bool TranslateURLFetcher::Request(const GURL& url,
 }
 
 void TranslateURLFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
-  std::string data;
+    std::optional<std::string> response_body) {
   if (response_body) {
     DCHECK_EQ(net::OK, simple_loader_->NetError());
-    data = std::move(*response_body);
     state_ = COMPLETED;
   } else {
     state_ = FAILED;
@@ -131,7 +133,8 @@ void TranslateURLFetcher::OnSimpleLoaderComplete(
 
   simple_loader_.reset();
 
-  std::move(callback_).Run(state_ == COMPLETED, data);
+  std::move(callback_).Run(state_ == COMPLETED,
+                           std::move(response_body).value_or(""));
 }
 
 }  // namespace translate

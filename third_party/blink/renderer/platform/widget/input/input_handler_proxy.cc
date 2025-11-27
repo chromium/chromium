@@ -663,8 +663,9 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(
 
   if (base::FeatureList::IsEnabled(
           features::kRefactorCompositorThreadEventQueue)) {
-    // Don't dispatch events that are for a future frame.
-    if (compositor_event_queue_->PeekTimestamp() > sample_time) {
+    // We delegate the check to the queue, which knows if the next event is
+    // forced (backlog) or valid based on time.
+    if (!compositor_event_queue_->IsNextEventReady(sample_time)) {
       return false;
     }
   }
@@ -1754,6 +1755,11 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
 
   ProcessQueuedEventsUpToSampleTime(args, sample_time);
 
+  if (base::FeatureList::IsEnabled(
+          features::kRefactorCompositorThreadEventQueue)) {
+    compositor_event_queue_->DidFinishDispatch();
+  }
+
   if (!queue_flushed_callback_.is_null()) {
     std::move(queue_flushed_callback_).Run();
   }
@@ -1791,7 +1797,7 @@ void InputHandlerProxy::ProcessQueuedEventsUpToSampleTime(
   if (base::FeatureList::IsEnabled(
           features::kRefactorCompositorThreadEventQueue)) {
     // Coalesce scroll and pinch events in the |compositor_event_queue_| till
-    // sample_time.
+    // sample_time. It automatically includes the backlog.
     compositor_event_queue_->CoalesceEvents(sample_time);
   }
 

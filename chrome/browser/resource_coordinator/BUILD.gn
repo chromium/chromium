@@ -28,7 +28,6 @@ source_set("resource_coordinator") {
 
   if (!is_android) {
     sources += [
-      "decision_details.h",
       "lifecycle_unit.h",
       "tab_load_tracker.h",
     ]

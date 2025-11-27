@@ -469,7 +469,7 @@ void ContextualSearchProvider::SuggestRequestCompleted(
     AutocompleteInput input,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 

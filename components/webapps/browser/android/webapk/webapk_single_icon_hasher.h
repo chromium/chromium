@@ -54,15 +54,15 @@ class WebApkSingleIconHasher {
   static void SetIconDataAndHashFromSkBitmap(
       WebappIcon* icon,
       const SkBitmap& bitmap,
-      std::unique_ptr<std::string> response_body = nullptr);
+      std::optional<std::string> response_body = std::nullopt);
 
  private:
   void OnSimpleLoaderComplete(base::WeakPtr<content::WebContents> web_contents,
                               int ideal_icon_size,
                               int timeout_ms,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
-  void OnImageDownloaded(std::unique_ptr<std::string> response_body,
+  void OnImageDownloaded(std::optional<std::string> response_body,
                          int id,
                          int http_status_code,
                          const GURL& url,

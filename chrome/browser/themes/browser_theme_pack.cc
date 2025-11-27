@@ -270,8 +270,6 @@ constexpr StringToIdTable<TP::OverwritableByUserThemeProperty>
         // /!\ If you make any changes here, you must also increment
         // kThemePackVersion above, or else themes will display incorrectly.
 };
-constexpr size_t kOverwritableColorTableLength =
-    std::size(kOverwritableColorTable);
 
 // Colors generated based on the theme, but not overwritable in the theme file.
 constexpr int kNonOverwritableColorTable[] = {
@@ -290,13 +288,11 @@ constexpr int kNonOverwritableColorTable[] = {
     // /!\ If you make any changes here, you must also increment
     // kThemePackVersion above, or else themes will display incorrectly.
 };
-constexpr size_t kNonOverwritableColorTableLength =
-    std::size(kNonOverwritableColorTable);
 
 // The maximum number of colors we may need to store (includes ones that can be
 // specified by the theme, and ones that we calculate but can't be specified).
 constexpr size_t kColorsArrayLength =
-    kOverwritableColorTableLength + kNonOverwritableColorTableLength;
+    std::size(kOverwritableColorTable) + std::size(kNonOverwritableColorTable);
 
 // Strings used by themes to identify display properties keys in JSON.
 const StringToIdTable<TP::OverwritableByUserThemeProperty>
@@ -321,19 +317,13 @@ const StringToIdTable<tab_groups::TabGroupColorId> kTabGroupColorIdTable[] = {
     {"cyan_override", tab_groups::TabGroupColorId::kCyan},
     {"orange_override", tab_groups::TabGroupColorId::kOrange},
 };
-const size_t kTabGroupColorIdTableSize = std::size(kTabGroupColorIdTable);
 
 template <typename T>
 int GetIdForString(const std::string& key,
-                   base::span<const StringToIdTable<T>> table,
-                   size_t spanification_suspected_redundant_table_length) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_table_length == table.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_table_length; ++i) {
-    if (base::EqualsCaseInsensitiveASCII(key, table[i].key)) {
-      return static_cast<int>(table[i].id);
+                   base::span<const StringToIdTable<T>> table) {
+  for (const auto& entry : table) {
+    if (base::EqualsCaseInsensitiveASCII(key, entry.key)) {
+      return static_cast<int>(entry.id);
     }
   }
 
@@ -1449,8 +1439,8 @@ void BrowserThemePack::SetTintsFromJSON(const base::Value::Dict* tints_value) {
     color_utils::HSL hsl = {*h, *s, *l};
     MakeHSLShiftValid(&hsl);
 
-    int id = GetIdForString<TP::OverwritableByUserThemeProperty>(
-        key, kTintTable, kTintTableLength);
+    int id =
+        GetIdForString<TP::OverwritableByUserThemeProperty>(key, kTintTable);
     if (id != -1) {
       temp_tints[id] = hsl;
     }
@@ -1479,7 +1469,7 @@ void BrowserThemePack::SetColorsFromJSON(
   // Copy data from the intermediary data structure to the array.
   size_t count = 0;
   for (std::map<int, SkColor>::const_iterator it = temp_colors.begin();
-       it != temp_colors.end() && count < kOverwritableColorTableLength;
+       it != temp_colors.end() && count < std::size(kOverwritableColorTable);
        ++it, ++count) {
     UNSAFE_TODO(colors_[count]).id = it->first;
     UNSAFE_TODO(colors_[count]).color = it->second;
@@ -1541,7 +1531,7 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
       }
     } else {
       int id = GetIdForString<TP::OverwritableByUserThemeProperty>(
-          key, kOverwritableColorTable, kOverwritableColorTableLength);
+          key, kOverwritableColorTable);
       if (id != -1) {
         (*temp_colors)[id] = color;
       }
@@ -1560,7 +1550,7 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
   std::map<int, int> temp_properties;
   for (const auto [key, value] : *display_properties_value) {
     int property_id = GetIdForString<TP::OverwritableByUserThemeProperty>(
-        key, kDisplayProperties, kDisplayPropertiesSize);
+        key, kDisplayProperties);
     switch (property_id) {
       case TP::NTP_BACKGROUND_ALIGNMENT: {
         if (value.is_string()) {
@@ -1632,8 +1622,8 @@ void BrowserThemePack::SetTabGroupColorPaletteShadesFromJSON(
       continue;
     }
 
-    int id = GetIdForString<tab_groups::TabGroupColorId>(
-        key, kTabGroupColorIdTable, kTabGroupColorIdTableSize);
+    int id =
+        GetIdForString<tab_groups::TabGroupColorId>(key, kTabGroupColorIdTable);
     if (id != -1) {
       tab_group_color_palette_shades_[count].id = id;
       ui::GenerateStandardShadesFromHue(

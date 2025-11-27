@@ -40,21 +40,6 @@ using performance_manager::mojom::blink::V8ContextWorldType;
 
 namespace blink {
 
-// Copies the data by move.
-template <>
-struct CrossThreadCopier<V8ContextDescriptionPtr>
-    : public CrossThreadCopierByValuePassThrough<V8ContextDescriptionPtr> {};
-
-// Copies the data by move.
-template <>
-struct CrossThreadCopier<IframeAttributionDataPtr>
-    : public CrossThreadCopierByValuePassThrough<IframeAttributionDataPtr> {};
-
-// Copies the data using the copy constructor.
-template <>
-struct CrossThreadCopier<V8ContextToken>
-    : public CrossThreadCopierPassThrough<V8ContextToken> {};
-
 namespace {
 
 // Determines if the given stable world ID is an extension world ID.

@@ -2493,6 +2493,8 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0 /*Status::Type::kOk*/,
         1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackingStore.WriteBlobs.OnDisk", 0);
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);

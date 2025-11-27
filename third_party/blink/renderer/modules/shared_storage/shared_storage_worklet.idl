@@ -11,14 +11,16 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
   [
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_AddModule_Method
+    MeasureAs=SharedStorageAPI_AddModule_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<undefined> addModule(USVString moduleURL, optional WorkletOptions options = {});
 
   [
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_SelectURL_Method
+    MeasureAs=SharedStorageAPI_SelectURL_Method,
+     DeprecateAs=SharedStorageAPIAll
   ] Promise<SharedStorageResponse> selectURL(DOMString name,
                                  sequence<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
@@ -27,6 +29,7 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
-    MeasureAs=SharedStorageAPI_Run_Method
+    MeasureAs=SharedStorageAPI_Run_Method,
+    DeprecateAs=SharedStorageAPIAll
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 };

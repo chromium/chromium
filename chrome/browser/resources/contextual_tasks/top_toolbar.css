@@ -12,14 +12,35 @@
 
 :host {
   align-items: center;
-  background-color: var(--cr-fallback-color-primary-container);
+  background-color: var(--cr-fallback-color-surface);
   display: flex;
+  height: 48px;
   justify-content: space-between;
-  padding: 16px;
+}
+
+.leftSide {
+  display: flex;
+  align-items: center;
+}
+
+.toolbarLogo {
+  background-image: url(chrome://resources/cr_components/searchbox/icons/chrome_product.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  box-sizing: border-box;
+  margin: 0 12px 0 8px;
+  width: 32px;
+  height: 32px;
+}
+
+.rightSide {
+  flex-grow: 1;
 }
 
 #rightButtonContainer {
   float: right;
+  padding-right: 16px;
 }
 
 .dropdown-item {
@@ -38,6 +59,28 @@
 
 .dropdown-item cr-icon {
   padding-inline-end: 10px;
+}
+
+cr-action-menu {
+  --cr-menu-border-radius: 16px;
+}
+
+cr-action-menu > button {
+  padding: 4px 16px;
+  min-width: 230px;
+}
+
+button > cr-icon {
+  width: 20px;
+  height: 20px;
+}
+
+cr-icon-button {
+  --cr-icon-button-margin-start: 8px;
+}
+
+cr-icon-button[hidden] {
+  display: none;
 }
 
 .header {

@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -76,10 +78,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
       const V8UnionArrayBufferOrArrayBufferViewOrString* source,
       const FontFaceDescriptors* descriptors);
   static FontFace* Create(Document*,
-                          const StyleRuleFontFace*,
+                          const CascadeLayered<const StyleRuleFontFace>&,
                           bool is_user_style);
 
-  FontFace(ExecutionContext*, const StyleRuleFontFace*, bool is_user_style);
+  FontFace(ExecutionContext*,
+           const CascadeLayered<const StyleRuleFontFace>&,
+           bool is_user_style);
   FontFace(ExecutionContext*,
            const AtomicString& family,
            const FontFaceDescriptors*);
@@ -175,7 +179,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   Document* GetDocument() const;
 
-  const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
+  const StyleRuleFontFace* GetStyleRule() const {
+    return style_rule_.value.Get();
+  }
+  const CascadeLayer* GetCascadeLayer() const {
+    return style_rule_.layer.Get();
+  }
   bool IsUserStyle() const { return is_user_style_; }
 
   const CSSLengthResolver& EnsureLengthResolver() const;
@@ -226,7 +235,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   Member<LoadedProperty> loaded_property_;
   Member<CSSFontFace> css_font_face_;
-  Member<const StyleRuleFontFace> style_rule_;
+  CascadeLayered<const StyleRuleFontFace> style_rule_;
 
   LoadStatusType status_;
   // Note that we will also need to distinguish font faces in different tree

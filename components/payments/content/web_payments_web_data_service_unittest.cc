@@ -4,6 +4,7 @@
 
 #include "components/payments/content/web_payments_web_data_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"

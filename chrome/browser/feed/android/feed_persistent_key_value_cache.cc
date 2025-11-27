@@ -59,7 +59,7 @@ PersistentKeyValueStore* GetStore() {
 
 }  // namespace
 
-void JNI_FeedPersistentKeyValueCache_Lookup(
+static void JNI_FeedPersistentKeyValueCache_Lookup(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& j_key,
     const JavaParamRef<jobject>& j_response_callback) {
@@ -75,7 +75,7 @@ void JNI_FeedPersistentKeyValueCache_Lookup(
       base::BindOnce(&OnLookupFinished, env, std::move(callback)));
 }
 
-void JNI_FeedPersistentKeyValueCache_Put(
+static void JNI_FeedPersistentKeyValueCache_Put(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& j_key,
     const JavaParamRef<jbyteArray>& j_value,
@@ -93,7 +93,7 @@ void JNI_FeedPersistentKeyValueCache_Put(
                      base::android::ScopedJavaGlobalRef<jobject>(j_runnable)));
 }
 
-void JNI_FeedPersistentKeyValueCache_Evict(
+static void JNI_FeedPersistentKeyValueCache_Evict(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& j_key,
     const JavaParamRef<jobject>& j_runnable) {

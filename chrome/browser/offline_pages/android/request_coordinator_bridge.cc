@@ -107,7 +107,7 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
 
-JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
+static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj,
@@ -144,7 +144,7 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
                              ScopedJavaGlobalRef<jobject>(j_callback_obj)));
 }
 
-JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
+static JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj) {
@@ -164,7 +164,7 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
       base::BindOnce(&OnGetAllRequestsDone, j_callback_ref));
 }
 
-JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
+static JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jlongArray>& j_request_ids_array,

@@ -10,11 +10,11 @@ import android.hardware.display.DisplayManager;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.tab.Tab;
@@ -419,7 +419,7 @@ public abstract class MultiInstanceManager {
 
     public abstract void setCurrentDisplayIdForTesting(int displayId);
 
-    public abstract @Nullable DisplayManager.DisplayListener getDisplayListenerForTesting();
+    public abstract DisplayManager.@Nullable DisplayListener getDisplayListenerForTesting();
 
     @VisibleForTesting
     public static void setTestDisplayIds(List<Integer> testDisplayIds) {
@@ -439,7 +439,8 @@ public abstract class MultiInstanceManager {
                 PersistedInstanceType.ANY,
                 PersistedInstanceType.ACTIVE,
                 PersistedInstanceType.INACTIVE,
-                PersistedInstanceType.OFF_THE_RECORD
+                PersistedInstanceType.OFF_THE_RECORD,
+                PersistedInstanceType.REGULAR
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PersistedInstanceType {
@@ -454,5 +455,8 @@ public abstract class MultiInstanceManager {
 
         // Represents an instance for an incognito-only window.
         int OFF_THE_RECORD = 1 << 2;
+
+        // Represents an instance for a regular window that does not hold incognito tabs.
+        int REGULAR = 1 << 3;
     }
 }

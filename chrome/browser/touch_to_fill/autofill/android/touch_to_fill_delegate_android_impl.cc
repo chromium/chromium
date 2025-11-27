@@ -138,10 +138,13 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!field) {
     return {TriggerOutcome::kUnknownField, {}};
   }
-  // Trigger only if not shown before.
-  if (ttf_payment_method_state_ != TouchToFillState::kShouldShow) {
-    return {TriggerOutcome::kShownBefore, {}};
+  // Trigger only if Touch To Fill should not be shown or reshown.
+  if (ttf_payment_method_state_ != TouchToFillState::kShouldShow &&
+      ttf_payment_method_state_ !=
+          TouchToFillState::kShownAndShouldBeShownAgain) {
+    return {TriggerOutcome::kShownBeforeAndShouldNotBeShownAgain, {}};
   }
+
   // Trigger only if the client and the form are not insecure.
   if (IsFormOrClientNonSecure(manager_->client(), *form)) {
     return {TriggerOutcome::kFormOrClientNotSecure, {}};
@@ -435,7 +438,8 @@ void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
                                         query_field_.global_id());
 }
 
-void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
+void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user,
+                                                 bool should_reshow) {
   if (dismissed_by_user && bnpl_callbacks_.cancel_callback) {
     std::move(bnpl_callbacks_.cancel_callback).Run();
   } else {
@@ -443,13 +447,13 @@ void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
   }
 
   if (IsShowingTouchToFill()) {
-    ttf_payment_method_state_ = TouchToFillState::kWasShown;
+    ttf_payment_method_state_ =
+        should_reshow && base::FeatureList::IsEnabled(
+                             features::kAutofillEnableTouchToFillReshowForBnpl)
+            ? TouchToFillState::kShownAndShouldBeShownAgain
+            : TouchToFillState::kShownAndShouldNotBeShownAgain;
     dismissed_by_user_ = dismissed_by_user;
   }
-}
-
-void TouchToFillDelegateAndroidImpl::OnErrorOkPressed() {
-  HideTouchToFill();
 }
 
 void TouchToFillDelegateAndroidImpl::OnBnplIssuerSuggestionSelected(
@@ -504,8 +508,11 @@ void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(
 void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
     const FormStructure& submitted_form) {
   // Log whether autofill was used after dismissing the touch to fill (without
-  // selecting any credit card for filling)
-  if (ttf_payment_method_state_ == TouchToFillState::kWasShown &&
+  // selecting any credit card for filling).
+  if ((ttf_payment_method_state_ ==
+           TouchToFillState::kShownAndShouldNotBeShownAgain ||
+       ttf_payment_method_state_ ==
+           TouchToFillState::kShownAndShouldBeShownAgain) &&
       query_form_.global_id() == submitted_form.global_id() &&
       HasAnyAutofilledFields(submitted_form)) {
     base::UmaHistogramBoolean(

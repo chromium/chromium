@@ -55,7 +55,7 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
 BASE_FEATURE(kAllowApnModificationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the annotator feature is enabled in ChromeOS.
-BASE_FEATURE(kAnnotatorMode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAnnotatorMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApnRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -156,6 +156,13 @@ constexpr base::FeatureParam<base::TimeDelta>
     kBocaInSessionPeriodicJobIntervalInSeconds{
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
+
+// Enables or disables OnTask status check.
+BASE_FEATURE(kOnTaskStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Custom boca receiver polling time interval.
+const base::FeatureParam<base::TimeDelta> kOnTaskStatusCheckInterval{
+    &kOnTaskStatusCheck, "OnTaskStatusCheckInterval", base::Seconds(60)};
 
 // Enables or disables locked quiz migration to leverage the OnTask SWA.
 BASE_FEATURE(kBocaOnTaskLockedQuizMigration, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -382,12 +389,6 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 // If enabled, use second the Euicc that is exposed by Hermes in Cellular Setup
 // and Settings.
 BASE_FEATURE(kCellularUseSecondEuicc, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, allow the user to switch from Gaia password to local password in
-// Settings and in the recovery flow.
-BASE_FEATURE(kChangePasswordFactorSetup,
-             "ChangePasswordFactorSeteup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Multiple scraped passwords should be checked against password in
 // cryptohome.
@@ -664,12 +665,6 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
 // Control whether the eSIM activation dialog supports submitting an empty code.
 BASE_FEATURE(kESimEmptyActivationCodeSupported,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables sending explicit modifiers for the zwp_linux_dmabuf_v1 Wayland
-// protocol. This option only has an effect with version 3 or 4 of the protocol.
-// If disabled only the DRM_FORMAT_MOD_INVALID modifier will be send,
-// effectively matching version 2 behavior more closely.
-BASE_FEATURE(kExoLinuxDmabufModifiers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2039,11 +2034,6 @@ BASE_FEATURE(kAuthPanelUsingAuthHub, base::FEATURE_DISABLED_BY_DEFAULT);
 // having a pin-only config.
 BASE_FEATURE(kAllowPasswordlessSetup, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This feature controls whether or not after ChromeOS recovery
-// the user can reset PIN as their main factor. If disabled, they will set
-// a password as their main factor.
-BASE_FEATURE(kAllowPasswordlessRecovery, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
 // that lives in ash/in_session_auth/auth_dialog_contents_view or
 // the new dialog that's also shared with Settings and Password Manager,
@@ -2483,6 +2473,10 @@ bool IsBocaRedirectStudentAudioToKioskEnabled() {
 
 bool IsBocaReceiverCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaReceiverCustomPolling);
+}
+
+bool IsOnTaskStatusCheckEnabled() {
+  return base::FeatureList::IsEnabled(kOnTaskStatusCheck);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
@@ -3604,10 +3598,6 @@ bool IsAuthPanelUsingAuthHub() {
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
-}
-
-bool IsAllowPasswordlessRecoveryEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPasswordlessRecovery);
 }
 
 bool IsLocalAuthenticationWithPinEnabled() {

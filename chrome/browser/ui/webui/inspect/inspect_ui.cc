@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "net/base/ip_endpoint.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -676,6 +679,14 @@ void InspectUI::SetRemoteDebuggingEnabled(bool enabled) {
   }
   g_browser_process->local_state()->SetBoolean(
       prefs::kDevToolsRemoteDebuggingEnabled, enabled);
+  UpdateRemoteDebuggingEnabled();
+  if (enabled) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&InspectUI::UpdateRemoteDebuggingEnabled,
+                       weak_factory_.GetWeakPtr()),
+        base::Milliseconds(300));
+  }
 }
 
 void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
@@ -830,7 +841,7 @@ void InspectUI::UpdateRemoteDebuggingEnabled() {
           features::kDevToolsAcceptDebuggingConnections)) {
     web_ui()->CallJavascriptFunctionUnsafe("updateRemoteDebuggingEnabled",
                                            /*enabled=*/false, /*allowed=*/false,
-                                           /*hidden=*/true);
+                                           /*hidden=*/true, /*address=*/"");
     return;
   }
   PrefService* local_state = g_browser_process->local_state();
@@ -839,8 +850,12 @@ void InspectUI::UpdateRemoteDebuggingEnabled() {
   bool allowed =
       local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed);
   bool enabled = allowed && pref->GetValue()->GetBool();
+  std::string address;
+  if (enabled) {
+    address = content::DevToolsAgentHost::GetRemoteDebuggingServerAddress();
+  }
   web_ui()->CallJavascriptFunctionUnsafe("updateRemoteDebuggingEnabled",
-                                         enabled, allowed, false);
+                                         enabled, allowed, false, address);
 }
 
 void InspectUI::SetPortForwardingDefaults() {

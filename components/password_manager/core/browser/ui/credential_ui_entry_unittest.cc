@@ -235,11 +235,11 @@ TEST(CredentialUIEntryTest,
 TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
   const std::vector<uint8_t> cred_id = {1, 2, 3, 4};
   const std::vector<uint8_t> user_id = {5, 6, 7, 4};
-  const std::u16string kUsername = u"marisa";
-  const std::u16string kDisplayName = u"Marisa Kirisame";
+  constexpr char16_t kUsername[] = u"marisa";
+  constexpr char16_t kDisplayName[] = u"Marisa Kirisame";
+  constexpr char kRpId[] = "rpid.com";
   PasskeyCredential passkey(
-      PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("rpid.com"),
+      PasskeyCredential::Source::kAndroidPhone, PasskeyCredential::RpId(kRpId),
       PasskeyCredential::CredentialId(cred_id),
       PasskeyCredential::UserId(user_id),
       PasskeyCredential::Username(base::UTF16ToUTF8(kUsername)),
@@ -248,6 +248,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
   EXPECT_EQ(entry.passkey_credential_id, cred_id);
   EXPECT_EQ(entry.username, kUsername);
   EXPECT_EQ(entry.user_display_name, kDisplayName);
+  EXPECT_EQ(entry.rp_id, kRpId);
   ASSERT_EQ(entry.facets.size(), 1u);
   EXPECT_EQ(entry.facets.at(0).url, GURL("https://rpid.com/"));
   EXPECT_EQ(entry.facets.at(0).signon_realm, "https://rpid.com");

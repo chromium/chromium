@@ -22,79 +22,23 @@ namespace {
 const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 
-typedef std::unordered_map<std::string, std::string> SwitchParams;
-
-SwitchParams ParseDarkModeSettings() {
-  SwitchParams switch_params;
-
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch("dark-mode-settings"))
-    return switch_params;
-
-  std::vector<std::string> param_values = base::SplitString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "dark-mode-settings"),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (auto param_value : param_values) {
-    std::vector<std::string> pair = base::SplitString(
-        param_value, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-    if (pair.size() == 2)
-      switch_params[base::ToLowerASCII(pair[0])] = base::ToLowerASCII(pair[1]);
-  }
-
-  return switch_params;
-}
-
-template <typename T>
-T GetIntegerSwitchParamValue(const SwitchParams& switch_params,
-                             std::string param,
-                             T default_value) {
-  auto it = switch_params.find(base::ToLowerASCII(param));
-  if (it == switch_params.end())
-    return default_value;
-
-  int result;
-  return base::StringToInt(it->second, &result) ? static_cast<T>(result)
-                                                : default_value;
-}
-
-int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
-  const int flag_value =
-      features::kForceDarkForegroundLightnessThresholdParam.Get();
-  return flag_value >= 0 ? flag_value
-                         : GetIntegerSwitchParamValue<int>(
-                               switch_params, "ForegroundBrightnessThreshold",
-                               kDefaultForegroundBrightnessThreshold);
-}
-
-int GetBackgroundBrightnessThreshold(const SwitchParams& switch_params) {
-  const int flag_value =
-      features::kForceDarkBackgroundLightnessThresholdParam.Get();
-  return flag_value >= 0 ? flag_value
-                         : GetIntegerSwitchParamValue<int>(
-                               switch_params, "BackgroundBrightnessThreshold",
-                               kDefaultBackgroundBrightnessThreshold);
-}
-
 template <typename T>
 T Clamp(T value, T min_value, T max_value) {
   return std::max(min_value, std::min(value, max_value));
 }
 
 DarkModeSettings BuildDarkModeSettings() {
-  SwitchParams switch_params = ParseDarkModeSettings();
-
   DarkModeSettings settings;
   settings.foreground_brightness_threshold =
-      Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
+      Clamp<int>(kDefaultForegroundBrightnessThreshold, 0, 255);
   settings.background_brightness_threshold =
-      Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);
+      Clamp<int>(kDefaultBackgroundBrightnessThreshold, 0, 255);
   return settings;
 }
 
 }  // namespace
 
+// Always get the dark mode settings using this function.
 const DarkModeSettings& GetCurrentDarkModeSettings() {
   static DarkModeSettings settings = BuildDarkModeSettings();
   return settings;

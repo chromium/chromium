@@ -419,7 +419,7 @@ bool PrerendererImpl::MaybePrerender(
       PreloadPipelineInfoImpl::Create(
           /*planned_max_preloading_type=*/
           ConvertSpeculationActionToPreloadingType(candidate->action)),
-      /*allow_reuse=*/false);
+      /*allow_reuse=*/false, candidate->form_submission);
   attributes.enable_cross_origin_prerender_iframes =
       enable_cross_origin_prerender_iframes_;
 

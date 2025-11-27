@@ -868,7 +868,7 @@ Wenn du „<ph name="CLEAR_BROWSING_HISTORY_ACTION" />“, „<ph name="CLEAR_PA
 <translation id="1592334921377856028">Melden des Hardwarestatus auf Geräten deaktivieren</translation>
 <translation id="1593665816445147335">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites Nutzer um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Ist dies nicht der Fall, werden die persönlichen Einstellungen des Nutzers verwendet.
 
       URL‑Muster dürfen nicht im Konflikt mit „<ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
@@ -5198,7 +5198,7 @@ Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefau
 
       URL‑Muster dürfen nicht im Konflikt mit „<ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
@@ -7294,7 +7294,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5905473632148429217">OCSP/CRL-Online-Prüfungen aktivieren</translation>
 <translation id="590591187943862671">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites Nutzer um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
 
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Ist dies nicht der Fall, werden die persönlichen Einstellungen des Nutzers verwendet.
 
       URL‑Muster dürfen nicht im Konflikt mit „<ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
@@ -7592,7 +7592,7 @@ Wenn diese Richtlinie deaktiviert ist, befindet sich die App für Tastenkombinat
 <translation id="6157537876488211233">Kommagetrennte Liste der Proxy-Umgehungsregeln</translation>
 <translation id="615770784601443240">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites Nutzer auffordern dürfen, ihnen Zugriff auf ein USB‑Gerät zu gewähren.
 
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Ist dies nicht der Fall, werden die persönlichen Einstellungen des Nutzers verwendet.
 
       URL‑Muster dürfen nicht im Konflikt mit „<ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
@@ -8033,6 +8033,36 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
 <translation id="6412793408912788345">Einführungsbildschirm für Gemini bei der Anmeldung anzeigen</translation>
 <translation id="6416506846917150119">Wortvorschläge bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6417827417523888006">Mit dieser Richtlinie wird die Liste der Gruppen überschrieben, die der Browser für die Funktion „Gruppe ähnlicher Websites“ verwendet.
+
+Die Richtlinie überschreibt die Richtlinie „<ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />“.
+
+Jede Gruppe aus der Liste der Gruppen ähnlicher Websites muss die Anforderungen einer Gruppe ähnlicher Websites erfüllen.
+Eine Gruppe ähnlicher Websites muss eine primäre Website und mindestens eine Mitgliedswebsite enthalten.
+Sie kann auch eine Liste mit Dienstwebsites, deren Inhaber sie ist, sowie eine Zuordnung einer Website zu allen ihren ccTLD-Varianten enthalten.
+Unter https://github.com/WICG/first-party-sets findest du weitere Informationen dazu, wie Gruppen ähnlicher Websites in <ph name="PRODUCT_NAME" /> verwendet werden.
+
+
+Bei allen Websites in einer Gruppe ähnlicher Websites muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden. Außerdem müssen alle Websites in einer Gruppe ähnlicher Websites eindeutig sein, dürfen also nicht mehrmals in einer Gruppe ähnlicher Websites aufgeführt sein.
+
+Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet der Browser die öffentliche Liste mit Gruppen ähnlicher Websites.
+
+Wenn eine Website einer Gruppe ähnlicher Websites in der <ph name="REPLACEMENTS" />-Liste auch Teil einer Gruppe ähnlicher Websites in der Liste des Browsers ist, wird sie aus der Gruppe ähnlicher Websites des Browsers entfernt.
+Danach wird die Gruppe ähnlicher Websites der Richtlinie zur Liste der Gruppen ähnlicher Websites des Browsers hinzugefügt.
+
+Wenn eine Website einer Gruppe ähnlicher Websites in der <ph name="ADDITIONS" />-Liste auch Teil einer Gruppe ähnlicher Websites in der Liste des Browsers ist, wird die Gruppe ähnlicher Websites des Browsers aktualisiert, damit die neue Gruppe ähnlicher Websites zur Liste des Browsers hinzugefügt werden kann. Nachdem die Liste des Browsers aktualisiert wurde, wird die Gruppe ähnlicher Websites der Richtlinie zur Liste der Gruppen ähnlicher Websites des Browsers hinzugefügt.
+
+Alle Websites in der Liste der Gruppen ähnlicher Websites des Browsers dürfen nur jeweils Teil genau einer Gruppe sein. Dies gilt auch für die <ph name="REPLACEMENTS" />-Liste und die <ph name="ADDITIONS" />-Liste. Eine Website darf außerdem nicht gleichzeitig auf der <ph name="REPLACEMENTS" />-Liste und der <ph name="ADDITIONS" />-Liste stehen.
+
+Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in Gruppen ähnlicher Websites in diesen Listen verwendet werden.
+
+Alle in dieser Richtlinie angegebenen Gruppen müssen gültige Gruppen ähnlicher Websites sein. Andernfalls wird ein entsprechender Fehler ausgegeben.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung von Gruppen ähnlicher Websites eingestellt.</translation>
 <translation id="6419001911253110938">Anzeigen des Einführungsbildschirms für KI-Funktionen während der Sitzung bei der Anmeldung aktivieren</translation>
 <translation id="6421254653839955267">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.
 
@@ -8292,7 +8322,7 @@ Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmä
 <translation id="6563458316362153786">802.11r Fast Transition aktivieren</translation>
 <translation id="6568020959511014866">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites Nutzer nicht um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Ist dies nicht der Fall, werden die persönlichen Einstellungen des Nutzers verwendet.
 
       URL‑Muster dürfen nicht im Konflikt mit „<ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
@@ -9821,7 +9851,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 <translation id="7615139766238160758">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die Websites angegeben werden, denen automatisch Zugriff auf lokale Drucker über die WebPrinting API gewährt wird.
 Gültige Muster sind auf isolierte Web-Apps beschränkt.
 
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
+Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Ist dies nicht der Fall, werden die persönlichen Einstellungen des Nutzers verwendet.
 
 URL‑Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
@@ -11420,6 +11450,15 @@ Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiv
 <translation id="8734543507835977857">Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge zu Beginn der Sitzung starten</translation>
 <translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="873800217865395140">Häufigkeit der Erhebung der Websitetelemetrie in Millisekunden.</translation>
+<translation id="8742596277791362306">Mit dieser Richtlinie lässt sich die Aktivierung der Funktion für Gruppen ähnlicher Websites verwalten.
+
+Die Richtlinie überschreibt die Richtlinie „<ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />“.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites aktiviert.
+
+Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites deaktiviert.
+
+Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung von Gruppen ähnlicher Websites eingestellt.</translation>
 <translation id="8743149927570551353">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Tool „Inhaltsübertragung“ verfügbar ist</translation>
 <translation id="8743902569031401303">Safe Browsing-Umfragen zulassen</translation>
 <translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.

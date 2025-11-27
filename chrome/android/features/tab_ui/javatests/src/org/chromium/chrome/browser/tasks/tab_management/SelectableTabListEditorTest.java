@@ -222,7 +222,8 @@ public class SelectableTabListEditorTest {
                                     mEdgeToEdgeSupplier,
                                     CreationMode.FULL_SCREEN,
                                     /* undoBarExplicitTrigger= */ null,
-                                    /* componentName= */ null);
+                                    /* componentName= */ null,
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

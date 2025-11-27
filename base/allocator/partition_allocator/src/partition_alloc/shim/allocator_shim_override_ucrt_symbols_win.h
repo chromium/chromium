@@ -53,6 +53,70 @@ SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
   return ShimCppNewNoThrow(size);
 }
 
+// Although `operator delete(void*)` is redirected to free(),
+// `operator delete` overloads with `size_t` (sized) and `std::align_val_t`
+// (aligned) must be explicitly overridden here to pass this information to
+// PartitionAlloc.
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p, size_t size) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSize(p, size);
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p, size_t size) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSize(p, size);
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p,
+                                        size_t size,
+                                        std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSizeAndAlignment(p, size, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                          size_t size,
+                                          std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithSizeAndAlignment(p, size, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p,
+                                        std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                          std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
 extern "C" {
 
 // This ".h" file is not a header, but a source file meant to be included only

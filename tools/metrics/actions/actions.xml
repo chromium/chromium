@@ -3494,6 +3494,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Actor.Ui.TaskNudge.{NudgeText}.Click">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Task Nudge when it is shown (this
+    currently happens when a Task is interrupted).
+  </description>
+  <token key="NudgeText">
+    <variant name="CompleteTasks"
+        summary="Task Nudge text shown when a task is complete."/>
+    <variant name="MultipleTasksNeedAttention"
+        summary="Task Nudge text shown when multiple tasks need attention"/>
+    <variant name="NeedsAttention"
+        summary="Task Nudge text shown when one task needs attention."/>
+  </token>
+</action>
+
 <action name="AddAddressManually_AddressSaved">
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -6860,6 +6878,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user clicks on the Buy Now, Pay Later (BNPL) issuer terms
     preference on the BNPL setting page.
+  </description>
+</action>
+
+<action name="Bnpl_ToggledOff">
+  <owner>viplavkadam@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <description>
+    Recorded when the user clicks on the BNPL toggle on the Pay Later settings
+    page, switching it from the on state to the off state.
+  </description>
+</action>
+
+<action name="Bnpl_ToggledOn">
+  <owner>viplavkadam@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <description>
+    Recorded when the user clicks on the BNPL toggle on the Pay Later settings
+    page, switching it from the off state to the on state.
   </description>
 </action>
 
@@ -13854,6 +13890,14 @@ should be able to be added at any place in this file.
   <description>
     User performed an action in the tasks glanceables. This aggregates all user
     actions that the user can perform intaskss glanceable.
+  </description>
+</action>
+
+<action name="Glic.CookieSynchronizer.Timeout">
+  <owner>perrier@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <description>
+    Logged anytime the Glic CookieSyncronizer timeout is reached.
   </description>
 </action>
 
@@ -48433,6 +48477,17 @@ should be able to be added at any place in this file.
   <description>
     User added a tab into a SavedTabGroup, for example by clicking on a link
     that opens a new tab or by manually adding a new tab into the group.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_TabGroupSubmenu_Opened">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking the 'Open group' menu item that
+    appears in the submenu or context menu for a tab group. This can appear in
+    several places, but one such location is the tab groups submenu within the
+    app menu.
   </description>
 </action>
 

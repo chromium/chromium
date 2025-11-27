@@ -400,6 +400,9 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
       }
     }
 
+    // TODO(celestepan): If an item was placed into an earlier track opening as
+    // a result of dense-packing, the auto-placement cursor should not be moved.
+    //
     // Update auto-placement cursor after we have determined the item's final
     // placement.
     running_positions.UpdateAutoPlacementCursor(masonry_item.resolved_position,

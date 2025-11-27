@@ -60,6 +60,7 @@ public abstract class DisplayUtil {
     /** Change the UI scaling factor on automotive devices for testing. */
     public static void setUiScalingFactorForAutomotiveForTesting(float scalingFactor) {
         sUiScalingFactorForAutomotiveForTesting = scalingFactor;
+        ResettersForTesting.register(() -> sUiScalingFactorForAutomotiveForTesting = null);
     }
 
     public static void setCurrentSmallestScreenWidthForTesting(int smallestScreenWidth) {
@@ -70,11 +71,6 @@ public abstract class DisplayUtil {
     public static void setIsOnDefaultDisplayForTesting(boolean value) {
         sIsOnDefaultDisplayForTesting = value;
         ResettersForTesting.register(() -> sIsOnDefaultDisplayForTesting = null);
-    }
-
-    /** Reset the UI scaling factor on automotive devices to the default value. */
-    public static void resetUiScalingFactorForAutomotiveForTesting() {
-        sUiScalingFactorForAutomotiveForTesting = null;
     }
 
     /**
@@ -167,7 +163,7 @@ public abstract class DisplayUtil {
      * @param displayMetrics The DisplayMetrics object to modify in-place.
      */
     public static void forcedScaleUpDisplayMetrics(float density, DisplayMetrics displayMetrics) {
-        float scaling = density / displayMetrics.density;
+        final float scaling = density / displayMetrics.density;
         displayMetrics.density *= scaling;
         displayMetrics.xdpi *= scaling;
         displayMetrics.ydpi *= scaling;
@@ -176,23 +172,30 @@ public abstract class DisplayUtil {
     /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
      *
-     * @param displayMetrics The DisplayMetrics to scale up density for.
-     * @return The DisplayMetrics that was scaled up.
+     * <p>This function modifies the passed-in {@link DisplayMetrics} object in-place.
+     *
+     * @param displayMetrics The DisplayMetrics object to modify in-place.
      */
-    public static DisplayMetrics scaleUpDisplayMetricsForAutomotive(
+    public static void scaleUpDisplayMetricsForAutomotive(
             Context context, DisplayMetrics displayMetrics) {
-        int adjustedDensity = getUiDensityForAutomotive(context, displayMetrics.densityDpi);
-        return scaleUpDisplayMetrics(adjustedDensity, displayMetrics);
+        final int adjustedDensity = getUiDensityForAutomotive(context, displayMetrics.densityDpi);
+        scaleUpDisplayMetrics(adjustedDensity, displayMetrics);
     }
 
-    private static DisplayMetrics scaleUpDisplayMetrics(
-            int adjustedDensity, DisplayMetrics displayMetrics) {
-        float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
+    /**
+     * Forces a {@link DisplayMetrics} object to a new densityDpi, scaling related DPI values.
+     *
+     * <p>This function modifies the passed-in {@link DisplayMetrics} object in-place.
+     *
+     * @param adjustedDensity The new target densityDpi to set.
+     * @param displayMetrics The DisplayMetrics object to modify in-place.
+     */
+    private static void scaleUpDisplayMetrics(int adjustedDensity, DisplayMetrics displayMetrics) {
+        final float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
         displayMetrics.density *= scaling;
         displayMetrics.densityDpi = adjustedDensity;
         displayMetrics.xdpi *= scaling;
         displayMetrics.ydpi *= scaling;
-        return displayMetrics;
     }
 
     /**
@@ -339,11 +342,7 @@ public abstract class DisplayUtil {
     /** Change the UI scaling factor on XR devices for testing. */
     static void setUiScalingFactorForXrForTesting(float scalingFactor) {
         sUiScalingFactorForXrForTesting = scalingFactor;
-    }
-
-    /** Reset the UI scaling factor on XR devices to the default value. */
-    static void resetUiScalingFactorForXrForTesting() {
-        sUiScalingFactorForXrForTesting = null;
+        ResettersForTesting.register(() -> sUiScalingFactorForXrForTesting = null);
     }
 
     private static float getUiScalingFactorForXrFromResource(Context context) {
@@ -380,15 +379,15 @@ public abstract class DisplayUtil {
     /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for XR devices.
      *
+     * <p>This function modifies the passed-in {@link DisplayMetrics} object in-place.
+     *
      * @param context The context used to retrieve the scale value from {@link Resources}.
-     * @param displayMetrics The DisplayMetrics whose density is to be scaled up.
-     * @return The DisplayMetrics that was scaled up.
+     * @param displayMetrics The DisplayMetrics object to modify in-place.
      */
-    public static DisplayMetrics scaleUpDisplayMetricsForXr(
-            Context context, DisplayMetrics displayMetrics) {
-        int adjustedDensity = getUiDensityForXr(context, displayMetrics.densityDpi);
+    public static void scaleUpDisplayMetricsForXr(Context context, DisplayMetrics displayMetrics) {
+        final int adjustedDensity = getUiDensityForXr(context, displayMetrics.densityDpi);
 
-        return scaleUpDisplayMetrics(adjustedDensity, displayMetrics);
+        scaleUpDisplayMetrics(adjustedDensity, displayMetrics);
     }
 
     /**
@@ -426,7 +425,7 @@ public abstract class DisplayUtil {
      */
     public static @Nullable Pair<DisplayAndroid, Rect> convertGlobalDipToLocalPxCoordinates(
             Rect globalDipCoordinates) {
-        DisplayAndroid display =
+        final DisplayAndroid display =
                 DisplayAndroidManager.getInstance().getDisplayMatching(globalDipCoordinates);
 
         if (display == null) {

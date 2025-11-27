@@ -39,6 +39,7 @@ constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kInitSchema_CreateTableBlobs,
     Query::kIndex_ResourcesCacheKeyHashDoomed,
     Query::kIndex_LiveResourcesLastUsed,
+    Query::kIndex_LiveResourcesHints,
     Query::kIndex_BlobsResIdStart,
 });
 
@@ -160,6 +161,9 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateEntryHeaderAndLastUsed_UpdateResourceAndHints,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kWriteEntryData_UpdateResource,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
@@ -207,9 +211,12 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
             "`--SCAN resources USING "
             "COVERING INDEX index_live_resources_last_used_bytes_usage"},
-           {Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
+           {Query::kLoadInMemoryIndex_SelectCacheKeyHashFromLiveResources,
             "`--SCAN resources USING COVERING INDEX "
-            "index_resources_cache_key_hash_doomed"}});
+            "index_resources_cache_key_hash_doomed"},
+           {Query::kLoadInMemoryIndex_SelectHintsFromLiveResources,
+            "`--SCAN resources USING COVERING INDEX "
+            "index_live_resources_hints"}});
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
   for (const auto& it : kAllQueriesAndPlans) {

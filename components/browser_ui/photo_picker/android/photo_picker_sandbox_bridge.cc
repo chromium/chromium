@@ -16,7 +16,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/ImageDecoder_jni.h"
 
-void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
+static void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
   sandbox::SeccompStarterAndroid starter(
       base::android::android_info::sdk_int());
 

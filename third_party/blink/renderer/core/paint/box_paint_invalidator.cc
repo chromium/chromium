@@ -8,12 +8,35 @@
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
 namespace blink {
+
+namespace {
+
+bool BorderShapeExtendsBeyondBorderBox(const LayoutBox& box) {
+  if (!box.StyleRef().HasBorderShape()) {
+    return false;
+  }
+
+  PhysicalRect border_rect = box.PhysicalBorderBoxRect();
+  std::optional<BorderShapeReferenceRects> reference_rects =
+      ComputeBorderShapeReferenceRects(border_rect, box.StyleRef(), box);
+  const PhysicalRect outer_reference_rect =
+      reference_rects ? reference_rects->outer : border_rect;
+  const PhysicalRect inner_reference_rect =
+      reference_rects ? reference_rects->inner : border_rect;
+  PhysicalRect bounding_rect = BorderShapePainter::BoundingRect(
+      box.StyleRef(), border_rect, outer_reference_rect, inner_reference_rect);
+  return !border_rect.Contains(bounding_rect);
+}
+
+}  // namespace
 
 bool BoxPaintInvalidator::HasEffectiveBackground() {
   // The view can paint background not from the style.
@@ -436,6 +459,10 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
 
 bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
   if (box_.HasVisualOverflow() || box_.HasScrollableOverflow()) {
+    return true;
+  }
+
+  if (BorderShapeExtendsBeyondBorderBox(box_)) {
     return true;
   }
 

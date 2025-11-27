@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -107,6 +108,9 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 // to ensure that the form has its own signature.
 [[nodiscard]] FormData CreateTestAddressFormData(
     const char* unique_id = nullptr);
+
+// Returns a `FormData` corresponding to a simple one-time-password form.
+[[nodiscard]] FormData CreateTestOtpFormData(const char* unique_id = nullptr);
 
 // Returns a `FormData` corresponding to a simple sign-up form that also
 // accepts a passkey.
@@ -642,7 +646,7 @@ struct SingleSubmissionKeyMetricExpectations {
 
 void VerifySingleSubmissionKeyMetricExpectations(
     const base::HistogramTester& histogram_tester,
-    absl::string_view form_type_name,
+    std::string_view form_type_name,
     const SingleSubmissionKeyMetricExpectations& expectations);
 
 }  // namespace test

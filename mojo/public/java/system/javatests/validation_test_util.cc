@@ -20,7 +20,7 @@ using base::android::ScopedJavaLocalRef;
 namespace mojo {
 namespace android {
 
-ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
+static ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
     JNIEnv* env,
     const JavaParamRef<jstring>& data_as_string) {
   std::string input =

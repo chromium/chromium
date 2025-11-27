@@ -2196,7 +2196,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
     request_manager->set_auto_response_for_test(
         permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
     request_manager->set_auto_response_prompt_options_for_test(
-        GeolocationPromptOptions{.selected_precise = false});
+        GeolocationPromptOptions{.selected_accuracy =
+                                     GeolocationAccuracy::kApproximate});
 
     base::RunLoop run_loop;
     base::MockOnceCallback<void(content::PermissionResult)> callback;

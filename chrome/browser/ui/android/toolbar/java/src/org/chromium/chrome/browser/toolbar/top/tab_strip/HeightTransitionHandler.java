@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -354,6 +355,11 @@ class HeightTransitionHandler {
                     // responses to the change.
                     mTabStripHeight = newHeight;
                 });
+
+        // When isTopControlsRefactorOffsetEnabled is true, the mTabStripTransitionHandler will
+        // drive and handle the transition, so the business logic for mTransitionFinishedObserver
+        // and mTransitionKickoffObserver should be skipped.
+        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) return;
 
         // If the browser control is performing an browser initiated animation, we should update the
         // view margins right away. This will make sure the toolbar stays in the same place with

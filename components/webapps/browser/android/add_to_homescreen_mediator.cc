@@ -35,7 +35,7 @@ const int kDataTimeoutInMilliseconds = 8000;
 }  // namespace
 
 // static
-jlong JNI_AddToHomescreenMediator_Initialize(
+static jlong JNI_AddToHomescreenMediator_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_ref,
     const JavaParamRef<jobject>& java_web_contents) {

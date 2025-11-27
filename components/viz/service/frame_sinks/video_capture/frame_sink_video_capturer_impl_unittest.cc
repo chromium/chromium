@@ -288,8 +288,9 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
       // Setting some default usage in order to get a mappable shared image.
       const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      const auto si_format = GetSharedImageFormat(
-          VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
+      const auto si_format =
+          media::VideoPixelFormatToSharedImageFormat(info->pixel_format)
+              .value();
       const auto si_size = GetBufferSizeInPixelsForVideoPixelFormat(
           info->pixel_format, info->coded_size);
       // Create a mappable shared image.

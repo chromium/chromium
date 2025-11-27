@@ -20,7 +20,6 @@
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
@@ -76,9 +75,6 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
 
   void BookmarkBarStateChanged(BookmarkBar::AnimateChangeType change_type);
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
@@ -125,7 +121,6 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   std::unique_ptr<WebUIBrowserBookmarkBarPageHandler>
       bookmark_bar_page_handler_;
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Remote<webui_browser::mojom::Page> page_;
   mojo::Receiver<webui_browser::mojom::PageHandlerFactory>

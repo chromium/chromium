@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -421,10 +422,12 @@ bool TreeScope::HasAdoptedStyleSheets() const {
 
 void TreeScope::StyleSheetWasAdded(CSSStyleSheet* sheet) {
   GetDocument().GetStyleEngine().AdoptedStyleSheetAdded(*this, sheet);
+  probe::DidModifyAdoptedStyleSheets(&RootNode());
 }
 
 void TreeScope::StyleSheetWasRemoved(CSSStyleSheet* sheet) {
   GetDocument().GetStyleEngine().AdoptedStyleSheetRemoved(*this, sheet);
+  probe::DidModifyAdoptedStyleSheets(&RootNode());
 }
 
 // We pass TreeScope to the bindings array to be informed via set and delete

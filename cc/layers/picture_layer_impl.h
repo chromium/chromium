@@ -331,9 +331,7 @@ class CC_EXPORT PictureLayerImpl
   float ideal_source_scale_key() const {
     return std::max(ideal_source_scale_.x(), ideal_source_scale_.y());
   }
-  float ideal_contents_scale_key() const {
-    return std::max(ideal_contents_scale_.x(), ideal_contents_scale_.y());
-  }
+  float GetIdealContentsScaleKey() const override;
   float raster_source_scale_key() const {
     return std::max(raster_source_scale_.x(), raster_source_scale_.y());
   }

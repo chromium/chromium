@@ -17,16 +17,11 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class LensOverlayController;
 class LensSearchController;
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace lens {
 
@@ -73,13 +68,6 @@ class LensSidePanelUntrustedUI
       mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver);
 
   // Instantiates the implementor of the
-  // color_change_listener::mojom::PageHandler mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
-  // Instantiates the implementor of the
   // help_bubble::mojom::HelpBubbleHandlerFactory mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
@@ -124,8 +112,6 @@ class LensSidePanelUntrustedUI
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) override;
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<lens::mojom::LensSidePanelPageHandlerFactory>
       lens_side_panel_page_factory_receiver_{this};

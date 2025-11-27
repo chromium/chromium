@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -93,7 +94,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
      * Overrides the result of {@link #checkAutofocusAllowedWithHardwareKeyboard()} for testing
      * purposes.
      */
-    public static @Nullable Boolean sIsHardwareKeyboardAttachedForTesting;
+    private static @Nullable Boolean sIsHardwareKeyboardAttachedForTesting;
 
     private static final int AUTOFOCUS_PREDICTION_AVERAGE_KEYBOARD_HEIGHT_PERCENT = 42;
     private static final int AUTOFOCUS_PREDICTION_MAX_NTP_TEXT_HIDDEN_PERCENT = 25;
@@ -518,5 +519,11 @@ public class IncognitoNtpOmniboxAutofocusManager {
         if (sInstanceForTesting != null) {
             sInstanceForTesting.updateAutofocusEnabledState(enabled);
         }
+    }
+
+    public static void setIsHardwareKeyboardAttachedForTesting(Boolean isAttached) {
+        Boolean oldValue = sIsHardwareKeyboardAttachedForTesting;
+        sIsHardwareKeyboardAttachedForTesting = isAttached;
+        ResettersForTesting.register(() -> sIsHardwareKeyboardAttachedForTesting = oldValue);
     }
 }

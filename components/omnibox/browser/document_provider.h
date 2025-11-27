@@ -10,6 +10,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_DOCUMENT_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -98,7 +99,7 @@ class DocumentProvider : public AutocompleteProvider {
   // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
   // Resets the backoff state on DocumentSuggestionsService to false.
   void ResetBackoffState();

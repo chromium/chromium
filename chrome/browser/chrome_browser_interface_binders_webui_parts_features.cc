@@ -140,7 +140,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsFeatures(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
 #if BUILDFLAG(ENABLE_COMPOSE)
   registry.ForWebUI<ComposeUntrustedUI>()
-      .Add<color_change_listener::mojom::PageHandler>()
       .Add<compose::mojom::ComposeSessionUntrustedPageHandlerFactory>();
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 }

@@ -4,6 +4,7 @@
 
 #include "components/sharing_message/sharing_message_sender.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"

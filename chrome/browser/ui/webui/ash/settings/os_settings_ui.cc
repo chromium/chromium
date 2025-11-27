@@ -74,7 +74,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -426,12 +425,6 @@ void OSSettingsUI::BindInterface(
     shortcut_input_provider->TieProviderToWidget(widget);
   }
   shortcut_input_provider->BindInterface(std::move(receiver));
-}
-
-void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

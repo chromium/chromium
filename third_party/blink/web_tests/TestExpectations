@@ -1272,6 +1272,8 @@ crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
 crbug.com/448472314 external/wpt/css/css-anchor-position/anchor-scroll-chained-003.html [ Failure ]
+crbug.com/457967584 external/wpt/css/css-anchor-position/anchored-transition-display-none-001.html [ Pass Timeout ]
+crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 
@@ -1323,9 +1325,6 @@ crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-fl
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
-
-# CSS counters scope tests to be fixed with new implementation.
-crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
 
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
@@ -3185,9 +3184,6 @@ crbug.com/454945074 external/wpt/webdriver/tests/classic/execute_script/node.py 
 
 # Unstable duration in assertion ouptput
 crbug.com/454945814 external/wpt/html/webappapis/timers/timer-nesting-not-inherited-in-microtask.html [ Failure ]
-
-crbug.com/457527725 external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
-crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
 
 crbug.com/457475594 external/wpt/document-picture-in-picture/closes-on-navigation-or-destroy.https.html [ Timeout ]
 crbug.com/457475594 external/wpt/document-picture-in-picture/pip-resize.https.html [ Timeout ]
@@ -9368,9 +9364,6 @@ crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-v
 crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-cover-img.html [ Failure Pass ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
 
-# Gardener 2024-11-14
-crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
-
 # Gardener 2024-11-18
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
@@ -9902,6 +9895,13 @@ crbug.com/457578724 [ Win11-arm64 ] external/wpt/webxr/xrView_visibility_mask_ch
 crbug.com/444447168 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
 crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
 
+# UsePersistentCacheForCodeCache test failures.
+crbug.com/455909145 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
+crbug.com/455909145 [ Mac ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure Pass ]
+crbug.com/455909145 [ Win ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
+crbug.com/455909145 [ Mac ] wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
+crbug.com/455909145 [ Win ] wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
+
 # Gardener 2025-11-11
 crbug.com/40516274 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
 crbug.com/40516274 [ Win ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
@@ -9911,9 +9911,6 @@ crbug.com/40516274 [ Win11-arm64 ] images/color-profile-reflection.html [ Failur
 crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
 
 crbug.com/414792736 http/tests/devtools/filtered-item-selection-dialog-rendering.js [ Failure Pass ]
-
-# Gardener 2025-11-20
-crbug.com/462129672 [ Linux ] external/wpt/css/css-anchor-position/anchored-transition-display-none-001.html [ Timeout ]
 
 # Temporarily disable RAB/GSAB tests till V8 change to enable the feature and pass tests is landed.
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
@@ -9934,6 +9931,9 @@ crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.worker.html [ Failure Pass ]
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.html [ Failure Pass ]
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
+
+crbug.com/414792736 http/tests/devtools/components/utilities-highlight-results.js [ Failure Pass ]
+crbug.com/414792736 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]

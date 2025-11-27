@@ -29,6 +29,8 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/http/http_cache.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "url/gurl.h"
 
@@ -38,7 +40,6 @@ namespace content {
 
 namespace {
 
-constexpr char kPrefix[] = "_key";
 constexpr char kSeparator[] = " \n";
 
 // In this and `CheckValidContext` it's expected to receive valid URLs that can
@@ -61,10 +62,15 @@ void CheckValidResource(const GURL& resource_url,
       resource_url_is_chrome_or_chrome_untrusted ||
       blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.GetScheme()));
 
-  // The chrome and chrome-untrusted schemes are only used with the WebUI
-  // code cache type.
-  DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
-            cache_type == GeneratedCodeCache::kWebUIJavaScript);
+  if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // The chrome and chrome-untrusted schemes are only used with the WebUI code
+    // cache type when PersistentCache is not used. Otherwise, PersistentCache
+    // segments WebUI from non-WebUI in multiple ways to prevent privilege
+    // escalation, using both `GetCacheId` and
+    // `CheckSecurityForAccessingCodeCacheData`.
+    DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
+              cache_type == GeneratedCodeCache::kWebUIJavaScript);
+  }
 }
 
 void CheckValidContext(const GURL& origin_lock,
@@ -83,10 +89,15 @@ void CheckValidContext(const GURL& origin_lock,
                origin_lock.GetScheme())) &&
           !url::Origin::Create(origin_lock).opaque()));
 
-  // The chrome and chrome-untrusted schemes are only used with the WebUI
-  // code cache type.
-  DCHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
-            cache_type == GeneratedCodeCache::kWebUIJavaScript);
+  if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // The chrome and chrome-untrusted schemes are only used with the WebUI code
+    // cache type when PersistentCache is not used. Otherwise, PersistentCache
+    // segments WebUI from non-WebUI in multiple ways to prevent privilege
+    // escalation, using both `GetCacheId` and
+    // `CheckSecurityForAccessingCodeCacheData`.
+    DCHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
+              cache_type == GeneratedCodeCache::kWebUIJavaScript);
+  }
 }
 
 // Generates the cache key for the given |resource_url|, |origin_lock| and
@@ -220,11 +231,7 @@ std::string GeneratedCodeCache::GetResourceKey(
     GeneratedCodeCache::CodeCacheType cache_type) {
   CheckValidResource(resource_url, cache_type);
 
-  return base::StrCat(
-      {// Add a prefix _ so it can't be parsed as a valid URL.
-       kPrefix,
-       // Remove reference, username and password sections of the URL.
-       net::SimplifyUrlForRequest(resource_url).spec()});
+  return blink::UrlToCodeCacheKey(resource_url);
 }
 
 // static
@@ -275,7 +282,7 @@ bool GeneratedCodeCache::IsValidHeader(
 }
 
 std::string GeneratedCodeCache::GetResourceURLFromKey(const std::string& key) {
-  constexpr size_t kPrefixStringLen = std::size(kPrefix) - 1;
+  constexpr size_t kPrefixStringLen = std::size(blink::kCodeCacheKeyPrefix) - 1;
   // |key| may not have a prefix and separator (e.g. for deduplicated entries).
   // In that case, return an empty string.
   const size_t separator_index = key.find(kSeparator);

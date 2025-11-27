@@ -41,6 +41,9 @@ source_set("optimization_guide") {
   ]
   if (is_android) {
     public_deps += [ "//chrome/browser/bookmarks/android" ]
+  } else {
+    sources += [ "legion_model_execution_fetcher.h" ]
+    public_deps += [ "//components/legion" ]
   }
 }
 
@@ -81,7 +84,11 @@ source_set("impl") {
       "//chrome/browser/optimization_guide/android:jni_headers",
     ]
   } else {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    sources += [ "legion_model_execution_fetcher.cc" ]
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/legion",
+    ]
   }
 }
 

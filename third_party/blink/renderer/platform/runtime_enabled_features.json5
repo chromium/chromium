@@ -605,12 +605,6 @@
       status: "stable",
     },
     {
-      // Fix Asymmetric word navigation behavior on Windows when punctuation follows whitespace
-      // See https://crbug.com/40252703
-      name: "AsymmetricWordBoundaryFix",
-      status: "stable",
-    },
-    {
       // When enabled, perform async IPCs from CookieJar::SetCookie to the
       // network service.
       name: "AsyncSetCookie",
@@ -977,6 +971,10 @@
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",
       base_feature_status: "enabled",
+    },
+    {
+      name: "CheckableInputTypeLayoutInline",
+      status: "stable",
     },
     {
       // If focus is not at canonical position then spellcheck should be deactivated.
@@ -1536,6 +1534,8 @@
     },
     {
       // https://chromestatus.com/feature/5261280285949952
+      // TODO(vmpstr): Rename this flag to OversrollGestures when the CSS
+      // implementation is removed.
       name: "CSSOverscrollGestures",
       status: "test",
     },
@@ -2709,7 +2709,7 @@
     {
       // Tracking bug for the implementation: https://crbug.com/430204832
       name: "GeolocationElement",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
@@ -3242,7 +3242,7 @@
       // Enables mirroring for stretchy and large MathML operators when
       // the text direction is right to left.
       name: "MathMLOperatorRTLMirroring",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enables MathML ancestor context preservation during copy-paste
@@ -4399,9 +4399,9 @@
     },
     {
       // Spec: https://wicg.github.io/sanitizer-api/
-      // Tracking bug: crbug.com/356601280
+      // Tracking bug: crbug.com/40138584
       name: "SanitizerAPI",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
@@ -5125,6 +5125,11 @@
       depends_on: ["TextareaLineEndingsAsBr"],
     },
     {
+      // crbug.com/461332428
+      name: "TextCombineNoSideways",
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },
@@ -5807,6 +5812,12 @@
       name: "WebGPUExperimentalFeatures",
       status: "experimental",
       public: true,
+    },
+    {
+      name: "WebGPUImmediatesFeature",
+      status: "experimental",
+      public: true,
+      implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
       // https://chromestatus.com/feature/5110223547269120

@@ -121,7 +121,6 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
             mToolbar.removeMenuItem(R.id.search_menu_id);
         }
 
-        // TODO(crbug.com/41412009): Pass the visible group to the toolbar during initialization.
         mToolbar.initializeSearchView(
                 mSearchDelegate, R.string.download_manager_search, R.id.search_menu_id);
 

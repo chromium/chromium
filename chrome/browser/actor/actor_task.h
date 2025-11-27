@@ -32,8 +32,10 @@
 class Profile;
 namespace actor {
 
-class ExecutionEngine;
+class ActionTrackerForMetrics;
 class ActorKeyedService;
+class ExecutionEngine;
+
 namespace ui {
 class UiEventDispatcher;
 }
@@ -264,6 +266,8 @@ class ActorTask {
 
   // The time at which the task was completed or cancelled.
   base::Time end_time_;
+
+  std::unique_ptr<ActionTrackerForMetrics> action_tracker_for_metrics_;
 
   // There are multiple possible execution engines. For now we only support
   // ExecutionEngine.

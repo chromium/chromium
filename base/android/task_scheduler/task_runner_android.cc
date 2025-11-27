@@ -84,9 +84,9 @@ void RunJavaTask(jint task_index) {
 
 }  // namespace
 
-jlong JNI_TaskRunnerImpl_Init(JNIEnv* env,
-                              jint task_runner_type,
-                              jint task_traits) {
+static jlong JNI_TaskRunnerImpl_Init(JNIEnv* env,
+                                     jint task_runner_type,
+                                     jint task_traits) {
   TaskRunnerAndroid* task_runner =
       TaskRunnerAndroid::Create(task_runner_type, task_traits).release();
   return reinterpret_cast<intptr_t>(task_runner);

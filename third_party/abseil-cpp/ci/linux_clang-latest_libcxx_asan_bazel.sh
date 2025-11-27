@@ -81,6 +81,7 @@ for std in ${STD}; do
           --action_env=\"CPLUS_INCLUDE_PATH=/opt/llvm/libcxx/include/c++/v1\" \
           --compilation_mode=\"${compilation_mode}\" \
           --copt=\"${exceptions_mode}\" \
+          --copt=\"-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG\" \
           --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
           --copt=\"-fsanitize=address\" \
           --copt=\"-fsanitize=${UBSAN_CHECKS}\" \

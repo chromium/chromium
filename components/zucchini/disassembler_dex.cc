@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 #include <optional>
@@ -15,6 +16,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -256,18 +258,17 @@ class InstructionParser {
   // lookup.
   const dex::Instruction* FindDalvikInstruction(uint8_t opcode) {
     static bool is_init = false;
-    static const dex::Instruction* instruction_table[256];
+    static std::array<const dex::Instruction*, 256> instruction_table;
     if (!is_init) {
       is_init = true;
-      std::fill(std::begin(instruction_table), std::end(instruction_table),
-                nullptr);
+      std::ranges::fill(instruction_table, nullptr);
       for (const dex::Instruction& instr : dex::kByteCode) {
-        std::fill(UNSAFE_TODO(instruction_table + instr.opcode),
-                  UNSAFE_TODO(instruction_table + instr.opcode + instr.variant),
-                  &instr);
+        std::ranges::fill(
+            base::span(instruction_table).subspan(instr.opcode, instr.variant),
+            &instr);
       }
     }
-    return UNSAFE_TODO(instruction_table[opcode]);
+    return instruction_table[opcode];
   }
 
   InstructionParser() = default;
@@ -314,6 +315,14 @@ class InstructionParser {
         return false;
       }
       // Update boundary between instructions and payload.
+      //
+      // `ConstBufferView` (i.e. `zucchini::internal::BufferViewBase`) is an
+      // unsafe class, and should be removed or reimplemented based on
+      // `base::span` for example. Then, this UNSAFE_TODO should be naturally
+      // gone.
+      // SAFETY: It's ensured by the if statement above that
+      // `unsafe_payload_rel_units * kInstrUnitSize` is in bounds for `insns_`
+      // without causing overflow.
       const ConstBufferView::const_iterator payload_it = UNSAFE_TODO(
           insns_.begin() + unsafe_payload_rel_units * kInstrUnitSize);
       payload_boundary_ = std::min(payload_boundary_, payload_it);
@@ -1803,21 +1812,28 @@ bool DisassemblerDex::ParseHeader() {
   decltype(dex::MapList::size) list_size = 0;
   if (!source.GetValue(&list_size) || list_size > dex::kMaxItemListSize)
     return false;
-  const auto* item_list = source.GetArray<const dex::MapItem>(list_size);
-  if (!item_list)
+  const auto* item_list_ptr = source.GetArray<const dex::MapItem>(list_size);
+  if (!item_list_ptr) {
     return false;
+  }
+  // `BufferSource` (i.e. `zucchini::internal::BufferViewBase`) is an unsafe
+  // class, and should be removed or reimplemented based on `base::span` for
+  // example. Then, this UNSAFE_TODO should be naturally gone.
+  base::span<const dex::MapItem> item_list =
+      UNSAFE_TODO(base::span(item_list_ptr, list_size));
 
   // Read and validate map list, ensuring that required item types are present.
   // GetItemBaseSize() should have an entry for each item.
-  for (offset_t i = 0; i < list_size; ++i) {
-    const dex::MapItem* item = &UNSAFE_TODO(item_list[i]);
-    // Reject unreasonably large |item->size|.
-    size_t item_size = GetItemBaseSize(item->type);
-    // Confusing name: |item->size| is actually the number of items.
-    if (!image_.covers_array(item->offset, item->size, item_size))
+  for (const dex::MapItem& item : item_list) {
+    // Reject unreasonably large |item.size|.
+    size_t item_size = GetItemBaseSize(item.type);
+    // Confusing name: |item.size| is actually the number of items.
+    if (!image_.covers_array(item.offset, item.size, item_size)) {
       return false;
-    if (!map_item_map_.insert(std::make_pair(item->type, item)).second)
+    }
+    if (!map_item_map_.insert(std::make_pair(item.type, &item)).second) {
       return false;  // A given type must appear at most once.
+    }
   }
 
   // Make local copies of main map items.

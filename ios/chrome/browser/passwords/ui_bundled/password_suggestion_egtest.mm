@@ -13,7 +13,9 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_traits_overrider.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/base/apple/url_conversions.h"
@@ -53,7 +56,7 @@ UIViewController* TopPresentedViewController() {
 }
 
 // Returns the matcher for the use password button.
-id<GREYMatcher> UseSuggestedPasswordButton() {
+id<GREYMatcher> UseGeneratedPasswordButton() {
   return chrome_test_util::StaticTextWithAccessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD));
 }
@@ -89,9 +92,18 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   // Clear password store to make sure that the sheet can be displayed in the
   // test.
   [PasswordSettingsAppInterface clearPasswordStores];
+
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupUserActionTester]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseUserActionTester]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [ChromeEarlGrey clearUserPrefWithName:
                       prefs::kIosPasswordGenerationBottomSheetDismissCount];
   // The test may leave stored crendentials behind so clear them.
@@ -160,7 +172,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
   [[EarlGrey
       selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
@@ -181,9 +193,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       performAction:grey_tap()];
 
   [self verifyNewPasswordFieldsHaveBeenFilled];
@@ -194,7 +206,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [self loadSignupAutofocusPage];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 }
 
 // Tests that the keyboard appears if the "Use Keyboard" button is
@@ -206,13 +218,26 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
   [[EarlGrey
       selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Proactive.DismissWithButton"],
+      @"Incorrect user action count for DismissWithButton");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Proactive.Refocus"],
+      @"Incorrect user action count for Refocus");
 }
 
 // Tests that the bottom sheet does not show after it has been
@@ -254,9 +279,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       performAction:grey_tap()];
 
   [self verifyNewPasswordFieldsHaveBeenFilled];
@@ -271,9 +296,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       performAction:grey_tap()];
 
   [self verifyNewPasswordFieldsHaveBeenFilled];
@@ -287,7 +312,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
 
   // Change trait collection to use accessibility large content size.
   ScopedTraitOverrider overrider(TopPresentedViewController());
@@ -297,17 +322,41 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
   // Verify that the "Use Suggested Password" and "Use Keyboard" buttons are
   // still visible.
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey
       selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       performAction:grey_tap()];
 
   [self verifyNewPasswordFieldsHaveBeenFilled];
+
+  // Verify metrics.
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:1
+                             forBucket:2
+                          forHistogram:@"PasswordManager."
+                                       @"PasswordDropdownItemSelected"],
+      @"Incorrect histogram count for PasswordDropdownItemSelected");
+
+  // Verify actions.
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Proactive.Present"],
+      @"Incorrect user action count for Present");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Proactive.Accept"],
+      @"Incorrect user action count for Accept");
 }
 
 // Tests that the bottom sheet does not show if the user isn't signed in.
@@ -330,8 +379,8 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+      waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
+  [[EarlGrey selectElementWithMatcher:UseGeneratedPasswordButton()]
       performAction:grey_tap()];
   [self verifyNewPasswordFieldsHaveBeenFilled];
 
@@ -346,6 +395,22 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   id<GREYMatcher> suggest_password_chip =
       grey_accessibilityLabel(@"Suggest strong password");
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
+
+  // Verify that the "Present" action and dropdown selection metric were only
+  // recorded once as the second time the sheet wasn't presented. Verify
+  // metrics.
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:1
+                             forBucket:2
+                          forHistogram:@"PasswordManager."
+                                       @"PasswordDropdownItemSelected"],
+      @"Incorrect histogram count for PasswordDropdownItemSelected");
+  GREYAssertNil(
+      [MetricsAppInterface
+            expectCount:1
+          forUserAction:@"IOS.PasswordManager.PasswordGenerationSheet."
+                        @"Proactive.Present"],
+      @"Incorrect user action count for Present");
 }
 
 @end

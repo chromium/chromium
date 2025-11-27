@@ -5679,9 +5679,9 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   }
 
   CHECK_EQ(resource_provider->GetType(),
-           CanvasResourceProvider::ResourceProviderType::kBitmap);
-  CanvasResourceProviderBitmap* resource_provider_bitmap =
-      static_cast<CanvasResourceProviderBitmap*>(resource_provider);
+           CanvasResourceProvider::ResourceProviderType::kExternalBitmap);
+  CanvasResourceProviderExternalBitmap* resource_provider_bitmap =
+      static_cast<CanvasResourceProviderExternalBitmap*>(resource_provider);
 
   return resource_provider_bitmap->DoExternalDrawAndSnapshot(
       [&](MemoryManagedPaintCanvas& canvas) {
@@ -8812,7 +8812,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     temp = CreateResourceProviderForVideoFrame(
         size, format, alpha_type, color_space, raster_context_provider);
   } else {
-    temp = CanvasResourceProvider::CreateBitmapProvider(
+    temp = CanvasResourceProvider::CreateExternalBitmapProvider(
         size, format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kNo);
   }

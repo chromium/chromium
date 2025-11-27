@@ -21,13 +21,6 @@ constexpr float kMaxMarginInlineEndToFontSizeRatio = 3.0;
 
 // Helpers to get svg icon. We can use DEFINE_STATIC_LOCAL as all the icons are
 // using a single thread.
-const String& SpinningIconSVG() {
-  DEFINE_STATIC_LOCAL(
-      const String, kSpinningIconSVG,
-      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_SPIN_SVG)));
-  return kSpinningIconSVG;
-}
-
 const String& LocationPreciseIconSVG() {
   DEFINE_STATIC_LOCAL(const String, svg,
                       (UncompressResourceAsASCIIString(
@@ -75,30 +68,18 @@ HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
 }
 
 void HTMLPermissionIconElement::SetIcon(PermissionName permission_type,
-                                        bool is_precise_location,
-                                        VisualState visual_state) {
+                                        bool is_precise_location) {
   // We need `PostTask` here because creating a new element (the svg instead of
   // setInnerHtml) starts dispatching events and it hits a DCHECK.
   GetDocument()
       .GetTaskRunner(TaskType::kInternalDefault)
       ->PostTask(FROM_HERE, BindOnce(&HTMLPermissionIconElement::SetIconImpl,
                                      WrapWeakPersistent(this), permission_type,
-                                     is_precise_location, visual_state));
+                                     is_precise_location));
 }
 
 void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
-                                            bool is_precise_location,
-                                            VisualState visual_state) {
-  if (permission_type == PermissionName::GEOLOCATION) {
-    if (visual_state == VisualState::kWaiting) {
-      SetInnerHTMLWithoutTrustedTypes(SpinningIconSVG());
-    } else {
-      SetInnerHTMLWithoutTrustedTypes(
-          is_precise_location ? LocationPreciseIconSVG() : LocationIconSVG());
-    }
-    return;
-  }
-
+                                            bool is_precise_location) {
   if (is_static_icon_set_) {
     return;
   }
@@ -114,6 +95,11 @@ void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
     }
     case PermissionName::WEB_APP_INSTALLATION: {
       SetInnerHTMLWithoutTrustedTypes(InstallIconSVG());
+      break;
+    }
+    case PermissionName::GEOLOCATION: {
+      SetInnerHTMLWithoutTrustedTypes(
+          is_precise_location ? LocationPreciseIconSVG() : LocationIconSVG());
       break;
     }
     default:

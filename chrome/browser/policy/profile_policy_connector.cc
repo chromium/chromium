@@ -410,7 +410,6 @@ void ProfilePolicyConnector::Init(
     // the user supplied is not a device-local account user or not in demo mode.
     std::string user_id = user->GetAccountId().GetUserEmail();
     if (ash::demo_mode::IsDemoAccountSignInEnabled()) {
-      // TODO(crbug.com/355043200): Figure out if it is safe to do so.
       std::vector<DeviceLocalAccount> device_local_accounts =
           GetDeviceLocalAccounts(ash::CrosSettings::Get());
       CHECK_EQ(device_local_accounts.size(), 1u);

@@ -181,8 +181,7 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
   std::sort(tab_indices.begin(), tab_indices.end());
   if (group_id.has_value()) {
     // No-op if the specified tab group does not exist.
-    // TODO(crbug.com/460650221): Add a quick test for this.
-    if (!tab_strip_->group_model()->GetTabGroup(*group_id)) {
+    if (!tab_strip_->group_model()->ContainsTabGroup(*group_id)) {
       return std::nullopt;
     }
 

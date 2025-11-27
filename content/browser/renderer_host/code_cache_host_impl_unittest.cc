@@ -14,15 +14,18 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "net/base/features.h"
 #include "net/http/http_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,19 +126,19 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheNoCachingWhenNoProperIsolation) {
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
           // No way to confirm right away but storing should fail when
           // !IsSitePerProcessOrStricter().
-          host.DidGenerateCacheableMetadata(
+          host->DidGenerateCacheableMetadata(
               blink::mojom::CodeCacheType::kJavascript, url, response_time,
               data.Clone());
 
           if (IsSitePerProcessOrStricter()) {
             // No data was stored so fetching fails.
-            host.FetchCachedCode(
+            host->FetchCachedCode(
                 blink::mojom::CodeCacheType::kJavascript, url,
                 base::BindOnce(
                     [&](base::OnceClosure quit_closure,
@@ -149,7 +152,7 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheNoCachingWhenNoProperIsolation) {
                     quit_closure));
           } else {
             // Fetching of stored data succeeds.
-            host.FetchCachedCode(
+            host->FetchCachedCode(
                 blink::mojom::CodeCacheType::kJavascript, url,
                 base::BindOnce(
                     [&](base::Time expected_response_time,
@@ -197,11 +200,11 @@ TEST_P(CodeCacheHostImplTest,
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               locked_process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
-          host.DidGenerateCacheableMetadata(
+          host->DidGenerateCacheableMetadata(
               blink::mojom::CodeCacheType::kJavascript, url, response_time,
               data.Clone());
         }));
@@ -215,13 +218,13 @@ TEST_P(CodeCacheHostImplTest,
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               unlocked_process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
           // Unlocked process cannot see the data stored by the locked process,
           // even with the same NIK.
-          host.FetchCachedCode(
+          host->FetchCachedCode(
               blink::mojom::CodeCacheType::kJavascript, url,
 
               base::BindOnce(
@@ -237,7 +240,7 @@ TEST_P(CodeCacheHostImplTest,
 
           // Store some other data to attempt to retrieve it from the locked
           // process.
-          host.DidGenerateCacheableMetadata(
+          host->DidGenerateCacheableMetadata(
               blink::mojom::CodeCacheType::kJavascript, url,
               other_response_time, other_data.Clone());
         }));
@@ -252,13 +255,13 @@ TEST_P(CodeCacheHostImplTest,
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               locked_process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
           // Locked process cannot see the data stored by the unlocked process
           // and sees its own copy, even with the same NIK.
-          host.FetchCachedCode(
+          host->FetchCachedCode(
               blink::mojom::CodeCacheType::kJavascript, url,
 
               base::BindOnce(
@@ -303,15 +306,15 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
-          host.DidGenerateCacheableMetadata(
+          host->DidGenerateCacheableMetadata(
               blink::mojom::CodeCacheType::kJavascript, url, response_time,
               data.Clone());
 
-          host.FetchCachedCode(
+          host->FetchCachedCode(
               blink::mojom::CodeCacheType::kJavascript, url,
 
               base::BindOnce(
@@ -347,10 +350,10 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
     GeneratedCodeCacheContext::RunOrPostTask(
         generated_code_cache_context_.get(), FROM_HERE,
         base::BindLambdaForTesting([&]() {
-          CodeCacheHostImpl host(
+          auto host = CodeCacheHostImpl::Create(
               process_id, generated_code_cache_context_, nik,
               blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-          host.FetchCachedCode(
+          host->FetchCachedCode(
               blink::mojom::CodeCacheType::kJavascript, original_resource_url,
 
               base::BindOnce(
@@ -366,6 +369,136 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
         }));
     runloop.Run();
   }
+}
+
+// Tests that a WebUI page does not see a resource cached by an open web site.
+TEST_P(CodeCacheHostImplTest, WebUiObliviousToOpenWeb) {
+  base::RunLoop run_loop;
+
+  // The URL of a resource loaded by both a site on the one web and a WebUI
+  // page.
+  const GURL resource_url("https://best.web.site.com/script.js");
+
+  // State for a site on the open web that loads the above resource.
+  static constexpr int kOpenWebProcessId = 12;
+  const GURL open_web_site("https://best.web.site.com/");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  // State for a WebUI page that also loads the above resource.
+  static constexpr int kWebUiProcessId = 13;
+  const GURL web_ui_site("chrome://some.chrome.page");
+  SetupRendererWithLock(kWebUiProcessId, web_ui_site);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        // Create the open web's cache and put the resource into it.
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        open_web_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+
+        // Create a WebUI page's cache and make sure the resource is absent.
+        auto web_ui_host = CodeCacheHostImpl::Create(
+            kWebUiProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_ui_site},
+                                     net::SchemefulSite{web_ui_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(web_ui_site)));
+        web_ui_host->FetchCachedCode(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::BindLambdaForTesting([&](base::Time found_response_time,
+                                           mojo_base::BigBuffer found_data) {
+              EXPECT_EQ(found_response_time, base::Time());
+              EXPECT_EQ(found_data.size(), 0U);
+              run_loop.Quit();
+            }));
+      }));
+
+  run_loop.Run();
+}
+
+// Tests that a page on the open web can't access resources cached for a WebUI
+// page.
+TEST_P(CodeCacheHostImplTest, OpenWebObliviousToWebUi) {
+  base::RunLoop run_loop;
+
+  // The URL of a resource loaded by a WebUI page.
+  const GURL resource_url("chrome://settings/settings.js");
+
+  // State for a WebUI page that loads the above resource.
+  static constexpr int kWebUiProcessId = 12;
+  const GURL web_ui_site("chrome://settings");
+  SetupRendererWithLock(kWebUiProcessId, web_ui_site);
+
+  // State for a site on the open web that wants to modify the cached data for
+  // the above resource.
+  static constexpr int kOpenWebProcessId = 13;
+  const GURL open_web_site("https://somewhere.com");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        // Create the WebUI page's cache and put the resource into it.
+        auto web_ui_host = CodeCacheHostImpl::Create(
+            kWebUiProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_ui_site},
+                                     net::SchemefulSite{web_ui_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(web_ui_site)));
+        const base::Time web_ui_resource_time = base::Time::Now();
+        const auto resource_data = base::byte_span_from_cstring("hi");
+        web_ui_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            web_ui_resource_time, mojo_base::BigBuffer(resource_data));
+
+        // Create the open web site's cache and make sure the resource is
+        // absent.
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        base::test::TestFuture<base::Time, mojo_base::BigBuffer> fetch_future;
+        open_web_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                       resource_url,
+                                       fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+        EXPECT_EQ(fetch_future.Get<1>().size(), 0U);
+        fetch_future.Clear();
+
+        {
+          mojo::FakeMessageDispatchContext dispatch_context;
+          // Insert into the open web site's cache in an attempt to corrupt the
+          // cached data for the WebUI page.
+          open_web_host->DidGenerateCacheableMetadata(
+              blink::mojom::CodeCacheType::kJavascript, resource_url,
+              base::Time::Now(),
+              mojo_base::BigBuffer(base::byte_span_from_cstring("nyuknyuk")));
+        }
+        // Verify that the WebUI page sees its own cached data if WebUI caching
+        // is enabled or nothing otherwise.
+        web_ui_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                     resource_url, fetch_future.GetCallback());
+        if (base::FeatureList::IsEnabled(features::kWebUICodeCache)) {
+          EXPECT_EQ(fetch_future.Get<0>(), web_ui_resource_time);
+          EXPECT_EQ(base::span(fetch_future.Get<1>()), resource_data);
+        } else {
+          EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+          EXPECT_EQ(base::span(fetch_future.Get<1>()).size(), 0U);
+        }
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

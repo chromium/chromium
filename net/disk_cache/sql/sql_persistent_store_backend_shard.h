@@ -66,12 +66,14 @@ class SqlPersistentStore::BackendShard {
   void UpdateEntryLastUsedByResId(ResId res_id,
                                   base::Time last_used,
                                   ErrorCallback callback);
-  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                    ResId res_id,
-                                    base::Time last_used,
-                                    scoped_refptr<net::IOBuffer> buffer,
-                                    int64_t header_size_delta,
-                                    ErrorCallback callback);
+  void UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      ResId res_id,
+      base::Time last_used,
+      const std::optional<MemoryEntryDataHints>& new_hints,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta,
+      ErrorCallback callback);
   void WriteEntryData(const CacheEntryKey& key,
                       ResId res_id,
                       int64_t old_body_end,
@@ -109,6 +111,20 @@ class SqlPersistentStore::BackendShard {
   int64_t GetSizeOfAllEntries() const;
 
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
+
+  // Updates the in-memory index with the given hints for the specified entry.
+  void SetInMemoryEntryDataHints(ResId res_id, MemoryEntryDataHints hints);
+
+  // Retrieves the hints for the specified entry from the in-memory index, if
+  // available.
+  std::optional<MemoryEntryDataHints> GetInMemoryEntryDataHints(
+      CacheEntryKey::Hash key_hash) const;
+
+  // Tries to find a single resource ID for the given key hash in the in-memory
+  // index of this shard. Returns the resource ID if the index is available and
+  // contains a unique entry for the hash.
+  std::optional<ResId> TryGetSingleResIdFromInMemoryIndex(
+      CacheEntryKey::Hash key_hash) const;
 
   void LoadInMemoryIndex(ErrorCallback callback);
 
@@ -183,6 +199,14 @@ class SqlPersistentStore::BackendShard {
   // A list of resource IDs for entries that were doomed in a previous session
   // and are scheduled for deletion.
   ResIdList to_be_deleted_res_ids_;
+
+  // True while the in-memory index is being loaded from the database.
+  bool loading_index_ = false;
+
+  // A list of resource IDs of entries that are doomed during the in-memory
+  // index is being loaded. Once loading is complete, these entries are removed
+  // from the newly loaded index to ensure consistency.
+  ResIdList pending_doomed_res_ids_;
 
   bool strict_corruption_check_enabled_ = false;
 

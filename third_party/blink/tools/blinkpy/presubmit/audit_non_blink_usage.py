@@ -2792,6 +2792,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/loader/code_cache_util.cc',
+            'third_party/blink/public/common/loader/code_cache_util.h',
+        ],
+        'allowed': [
+            'GURL',
+            'net::SimplifyUrlForRequest',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/inspector/thread_debugger_common_impl.cc',
         ],
         'allowed': [

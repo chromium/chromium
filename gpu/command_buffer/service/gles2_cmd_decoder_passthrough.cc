@@ -202,16 +202,11 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
 
 void RequestExtensions(gl::GLApi* api,
                        const gfx::ExtensionSet& requestable_extensions,
-                       base::span<const char* const> extensions_to_request,
-                       size_t spanification_suspected_redundant_count) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_count == extensions_to_request.size(),
-        base::NotFatalUntil::M143);
-  for (size_t i = 0; i < spanification_suspected_redundant_count; i++) {
-    if (gfx::HasExtension(requestable_extensions, extensions_to_request[i])) {
+                       base::span<const char* const> extensions_to_request) {
+  for (auto* extension : extensions_to_request) {
+    if (gfx::HasExtension(requestable_extensions, extension)) {
       // Request the intersection of the two sets │
-      api->glRequestExtensionANGLEFn(extensions_to_request[i]);
+      api->glRequestExtensionANGLEFn(extension);
     }
   }
 }
@@ -873,8 +868,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
         "GL_ANGLE_vulkan_image",
     };
     RequestExtensions(api(), requestable_extensions,
-                      kRequiredFunctionalityExtensions,
-                      std::size(kRequiredFunctionalityExtensions));
+                      kRequiredFunctionalityExtensions);
 
     if (request_optional_extensions_) {
       static constexpr const char* kOptionalFunctionalityExtensions[] = {
@@ -914,8 +908,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
           "NV_EGL_stream_consumer_external",
       };
       RequestExtensions(api(), requestable_extensions,
-                        kOptionalFunctionalityExtensions,
-                        std::size(kOptionalFunctionalityExtensions));
+                        kOptionalFunctionalityExtensions);
     }
 
     context->ReinitializeDynamicBindings();

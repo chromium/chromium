@@ -186,9 +186,11 @@ FontFace* FontFace::Create(ExecutionContext* context,
   return font_face;
 }
 
-FontFace* FontFace::Create(Document* document,
-                           const StyleRuleFontFace* font_face_rule,
-                           bool is_user_style) {
+FontFace* FontFace::Create(
+    Document* document,
+    const CascadeLayered<const StyleRuleFontFace>& layered_font_face_rule,
+    bool is_user_style) {
+  const StyleRuleFontFace* font_face_rule = layered_font_face_rule.value;
   const CSSPropertyValueSet& properties = font_face_rule->Properties();
 
   // Obtain the font-family property and the src property. Both must be defined.
@@ -203,7 +205,7 @@ FontFace* FontFace::Create(Document* document,
   }
 
   FontFace* font_face = MakeGarbageCollected<FontFace>(
-      document->GetExecutionContext(), font_face_rule, is_user_style);
+      document->GetExecutionContext(), layered_font_face_rule, is_user_style);
   font_face->SetFamilyValue(*family);
 
   if (font_face->SetPropertyFromStyle(properties,
@@ -238,7 +240,7 @@ FontFace* FontFace::Create(Document* document,
 }
 
 FontFace::FontFace(ExecutionContext* context,
-                   const StyleRuleFontFace* style_rule,
+                   const CascadeLayered<const StyleRuleFontFace>& style_rule,
                    bool is_user_style)
     : ActiveScriptWrappable<FontFace>({}),
       ExecutionContextClient(context),

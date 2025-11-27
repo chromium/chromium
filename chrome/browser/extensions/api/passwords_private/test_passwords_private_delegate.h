@@ -124,6 +124,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   void SetProfile(Profile* profile);
   void SetAccountStorageEnabled(bool enabled);
+  void SetShouldShowAccountStorageSettingToggle(bool enabled);
   void AddCompromisedCredential(int id);
   void SetSavedPasswordsPresenter(
       std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter);

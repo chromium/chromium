@@ -8,7 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_consumer.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 
 namespace password_manager {
 class SavedPasswordsPresenter;
@@ -18,11 +22,25 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+// Protocol for the Mediator to request UI actions from the Coordinator.
+@protocol CredentialExportMediatorDelegate <NSObject>
+
+// Asks the delegate to fetch security domain secrets. This is only called if
+// passkeys are detected in the export list.
+- (void)fetchSecurityDomainSecretsWithCompletion:
+    (void (^)(NSArray<NSData*>*))completion;
+
+@end
+
 // Mediator for the credential exchange export flow.
-@interface CredentialExportMediator : NSObject
+@interface CredentialExportMediator
+    : NSObject <CredentialExportViewControllerPresentationDelegate>
 
 // The consumer that receives updates about the credentials.
 @property(nonatomic, weak) id<CredentialExportConsumer> consumer;
+
+// Delegate of the mediator.
+@property(nonatomic, weak) id<CredentialExportMediatorDelegate> delegate;
 
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
@@ -31,10 +49,6 @@ class PasskeyModel;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Called when the user confirms the export flow.
-- (void)startExportWithSecurityDomainSecrets:
-    (NSArray<NSData*>*)securityDomainSecrets API_AVAILABLE(ios(26.0));
 
 @end
 

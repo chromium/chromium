@@ -41,18 +41,21 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         public final CharSequence nameMidSentence;
         public final boolean allowed;
         public final @StringRes int warningTextResource;
+        public final boolean requested;
 
         public PermissionObject(
                 int type,
                 CharSequence name,
                 CharSequence nameMidSentence,
                 boolean allowed,
-                int warningTextResource) {
+                int warningTextResource,
+                boolean requested) {
             this.type = type;
             this.name = name;
             this.nameMidSentence = nameMidSentence;
             this.allowed = allowed;
             this.warningTextResource = warningTextResource;
+            this.requested = requested;
         }
     }
 
@@ -60,6 +63,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private final PageInfoRowView mRowView;
     private final String mTitle;
     private final String mPageUrl;
+    private boolean mHasRequestedNotificationsPermission;
     private boolean mHasSoundPermission;
     private boolean mHasAutoPictureInPicturePermission;
     private boolean mDataIsStale;
@@ -101,6 +105,9 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
         fragmentArgs.putBoolean(
                 SingleWebsiteSettings.EXTRA_SHOW_AUTO_PIP, mHasAutoPictureInPicturePermission);
+        fragmentArgs.putBoolean(
+                SingleWebsiteSettings.EXTRA_SHOW_REQUESTED_NOTIFICATIONS_PERMISSION,
+                mHasRequestedNotificationsPermission);
 
         mSubPage =
                 (SingleWebsiteSettings)
@@ -145,6 +152,9 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                     break;
                 case ContentSettingsType.AUTO_PICTURE_IN_PICTURE:
                     mHasAutoPictureInPicturePermission = true;
+                    break;
+                case ContentSettingsType.NOTIFICATIONS:
+                    mHasRequestedNotificationsPermission = permission.requested;
                     break;
                 default:
                     break;

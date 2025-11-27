@@ -13,7 +13,7 @@
 namespace payments {
 
 // static
-base::android::ScopedJavaLocalRef<jstring>
+static base::android::ScopedJavaLocalRef<jstring>
 JNI_SslValidityChecker_GetInvalidSslCertificateErrorMessage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
@@ -26,7 +26,7 @@ JNI_SslValidityChecker_GetInvalidSslCertificateErrorMessage(
 }
 
 // static
-jboolean JNI_SslValidityChecker_IsValidPageInPaymentHandlerWindow(
+static jboolean JNI_SslValidityChecker_IsValidPageInPaymentHandlerWindow(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   // SslValidityChecker checks for null `web_contents` parameter.

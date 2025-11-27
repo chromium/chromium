@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
+#include "services/preferences/tracked/features.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace {
@@ -407,7 +408,9 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
     // Clear the mirrored pref to eliminate future mismatch.
     pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
   } else {  // Tampering detected.
-    if (!base::IsEnterpriseDevice()) {
+    if (!base::IsEnterpriseDevice() ||
+        base::FeatureList::IsEnabled(
+            tracked::kEnableEncryptedTrackedPrefOnEnterprise)) {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kMirrorCheckReset;
       pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
       // Clear the mirrored pref to eliminate future mismatch.

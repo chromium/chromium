@@ -55,7 +55,12 @@ bool StringMatchesFilter(const std::string& string, const std::string& filter) {
 
 std::string PromptOptionsToString(PromptOptions prompt_options) {
   if (auto* v = std::get_if<GeolocationPromptOptions>(&prompt_options)) {
-    return v->selected_precise ? "precise" : "approximate";
+    switch (v->selected_accuracy) {
+      case GeolocationAccuracy::kPrecise:
+        return "precise";
+      case GeolocationAccuracy::kApproximate:
+        return "approximate";
+    }
   }
   return std::string();
 }

@@ -1752,8 +1752,18 @@ TEST_F(StoragePartitionCodeCacheTest, ClearWasmCodeCache) {
 
 class StoragePartitionCodeCacheWithWebUiTest
     : public RenderViewHostTestHarness {
+ protected:
+  StoragePartitionCodeCacheWithWebUiTest() {
+    // TODO(374930286): Remove the PersistentCache carve-out when all other
+    // blockers for caching WebUI resources with PersistentCache are resolved.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWebUICodeCache},
+        /*disabled_features=*/{
+            blink::features::kUsePersistentCacheForCodeCache});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{features::kWebUICodeCache};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(StoragePartitionCodeCacheWithWebUiTest, ClearWebUICodeCache) {

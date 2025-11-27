@@ -39,7 +39,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace commerce {
@@ -154,13 +153,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "deletionToastMessage", IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
-}
-
-void ProductSpecificationsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void ProductSpecificationsUI::BindInterface(

@@ -16242,7 +16242,7 @@ void GLES2DecoderImpl::DoDrawBuffersEXT(GLsizei count,
     }
     api()->glDrawBuffersARBFn(count, safe_bufs.data());
     framebuffer->SetDrawBuffers(
-        count, base::span(safe_bufs).first(static_cast<size_t>(count)));
+        base::span(safe_bufs).first(static_cast<size_t>(count)));
   } else {  // backbuffer
     if (count != 1) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glDrawBuffersEXT",
@@ -16923,7 +16923,7 @@ void GLES2DecoderImpl::DoWindowRectanglesEXT(GLenum mode,
       return;
     }
   }
-  state_.SetWindowRectangles(mode, n, box_copy);
+  state_.SetWindowRectangles(mode, box_copy);
   state_.UpdateWindowRectangles();
 }
 

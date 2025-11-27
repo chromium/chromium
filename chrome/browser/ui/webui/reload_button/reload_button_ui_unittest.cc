@@ -25,7 +25,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace {
 
@@ -135,14 +134,6 @@ TEST_F(ReloadButtonUITest, BindPageHandlerFactory) {
 
   EXPECT_TRUE(factory.is_bound());
   EXPECT_TRUE(factory.is_connected());
-}
-
-// Tests that the BindInterface method for ColorChangeListener works correctly.
-TEST_F(ReloadButtonUITest, BindColorChangeListener) {
-  mojo::Remote<color_change_listener::mojom::PageHandler> remote;
-  ui()->BindInterface(remote.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(remote.is_bound());
-  EXPECT_TRUE(remote.is_connected());
 }
 
 // Tests that the CreatePageHandler method instantiates the page handler.

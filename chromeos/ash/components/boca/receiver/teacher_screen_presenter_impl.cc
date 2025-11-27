@@ -75,6 +75,7 @@ TeacherScreenPresenterImpl::~TeacherScreenPresenterImpl() {
 
 void TeacherScreenPresenterImpl::Start(
     std::string_view receiver_id,
+    std::string_view receiver_name,
     ::boca::UserIdentity teacher_identity,
     const bool is_session_active,
     base::OnceCallback<void(bool)> success_cb,
@@ -89,6 +90,7 @@ void TeacherScreenPresenterImpl::Start(
     return;
   }
   receiver_id_ = receiver_id;
+  receiver_name_ = receiver_name;
   is_session_active_ = is_session_active;
   start_success_cb_ = std::move(success_cb);
   disconnected_cb_ = std::move(disconnected_cb);
@@ -116,6 +118,9 @@ void TeacherScreenPresenterImpl::Stop(
     std::move(success_cb).Run(false);
     return;
   }
+  notification_handler_.HandleScreenShareEndedNotification(
+      message_center::MessageCenter::Get());
+
   if (!IsPresenting()) {
     std::move(success_cb).Run(true);
     return;
@@ -189,6 +194,8 @@ void TeacherScreenPresenterImpl::OnStartReceiverResponse(
     return;
   }
   RecordPresentOwnScreenResult(/* success */ true, is_session_active_);
+  notification_handler_.HandleScreenShareStartedNotification(
+      message_center::MessageCenter::Get(), receiver_name_.value());
   std::move(start_success_cb_).Run(true);
 }
 

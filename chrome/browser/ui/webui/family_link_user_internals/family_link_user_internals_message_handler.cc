@@ -137,6 +137,16 @@ std::string FilteringReasonToString(
   }
   NOTREACHED();
 }
+
+std::string GetHostedDomainString(
+    std::optional<std::string_view> hosted_domain) {
+  if (!hosted_domain.has_value()) {
+    return "UNKNOWN";
+  }
+  return hosted_domain->empty() ? "NO_HOSTED_DOMAIN"
+                                : std::string(*hosted_domain);
+}
+
 }  // namespace
 
 FamilyLinkUserInternalsMessageHandler::FamilyLinkUserInternalsMessageHandler() =
@@ -307,7 +317,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       AddSectionEntry(section_user, "Gaia", account.gaia.ToString());
       AddSectionEntry(section_user, "Email", account.email);
       AddSectionEntry(section_user, "Given name", account.given_name);
-      AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);
+      AddSectionEntry(section_user, "Hosted domain",
+                      GetHostedDomainString(account.GetHostedDomain()));
       AddSectionEntry(section_user, "Locale", account.locale);
       AddSectionEntry(
           section_user, "Is subject to parental controls",

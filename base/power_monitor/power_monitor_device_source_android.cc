@@ -72,11 +72,12 @@ PowerThermalObserver::DeviceThermalState MapToDeviceThermalState(
 // Native implementation of PowerMonitor.java. Note: This will be invoked by
 // PowerMonitor.java shortly after startup to set the correct initial value for
 // "is on battery power."
-void JNI_PowerMonitor_OnBatteryChargingChanged(JNIEnv* env) {
+static void JNI_PowerMonitor_OnBatteryChargingChanged(JNIEnv* env) {
   ProcessPowerEventHelper(PowerMonitorSource::POWER_STATE_EVENT);
 }
 
-void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env, int thermal_status) {
+static void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env,
+                                                    int thermal_status) {
   ProcessThermalEventHelper(MapToDeviceThermalState(thermal_status));
 }
 

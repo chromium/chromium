@@ -33,6 +33,8 @@ class MidiMessageQueue;
 
 namespace content {
 
+class RenderFrameHost;
+
 class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
                                 public midi::mojom::MidiSessionProvider,
                                 public midi::mojom::MidiSession {
@@ -47,6 +49,7 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
   static void BindReceiver(
       int render_process_id,
       midi::MidiService* midi_service,
+      RenderFrameHost* host,
       mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver);
 
   // MidiManagerClient implementation. These methods can be called on any thread

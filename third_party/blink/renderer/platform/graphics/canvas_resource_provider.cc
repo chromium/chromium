@@ -155,8 +155,27 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
   return UnacceleratedSnapshot(orientation);
 }
 
+CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space)
+    : CanvasResourceProvider(kExternalBitmap,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             /*delegate=*/nullptr) {}
+
+scoped_refptr<StaticBitmapImage> CanvasResourceProviderExternalBitmap::Snapshot(
+    ImageOrientation orientation) {
+  TRACE_EVENT0("blink", "CanvasResourceProviderExternalBitmap::Snapshot");
+  return UnacceleratedSnapshot(orientation);
+}
+
 scoped_refptr<StaticBitmapImage>
-CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
+CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   draw_callback(Canvas());
@@ -191,7 +210,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
             &Image::SharedCCDecodeCache(kN32_SkColorType);
 
         canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cache_rgba8, cache_f16, color_space_, format_,
             cc::PlaybackImageProvider::RasterMode::kSoftware);
       }
 
@@ -231,10 +250,22 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   }
 
   DCHECK(!paint_image.IsTextureBacked());
-  scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
-      UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                             orientation);
-  return snapshot;
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                                orientation);
+}
+
+sk_sp<SkSurface> CanvasResourceProviderExternalBitmap::CreateSkSurface() const {
+  TRACE_EVENT0("blink",
+               "CanvasResourceProviderExternalBitmap::CreateSkSurface");
+
+  const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+  const auto props = GetSkSurfaceProps();
+  return SkSurfaces::Raster(info, &props);
+}
+
+void CanvasResourceProviderExternalBitmap::RasterRecord(
+    cc::PaintRecord last_recording) {
+  return UnacceleratedRasterRecord(last_recording);
 }
 
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
@@ -1159,15 +1190,38 @@ void CanvasResourceProviderSharedImage::OnMemoryDump(
   }
 }
 
+std::unique_ptr<CanvasResourceProviderExternalBitmap>
+CanvasResourceProvider::CreateExternalBitmapProvider(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize) {
+  auto provider = std::make_unique<CanvasResourceProviderExternalBitmap>(
+      size, format, alpha_type, color_space);
+  if (provider->IsValid()) {
+    if (should_initialize ==
+        CanvasResourceProvider::ShouldInitialize::kCallClear) {
+      provider->Clear();
+    }
+    // The Clear() call cannot turn a CRPExternalBitmap invalid.
+    CHECK(provider->IsValid());
+    return provider;
+  }
+  return nullptr;
+}
+
 std::unique_ptr<CanvasResourceProviderBitmap>
-CanvasResourceProvider::CreateBitmapProvider(gfx::Size size,
-                                             viz::SharedImageFormat format,
-                                             SkAlphaType alpha_type,
-                                             const gfx::ColorSpace& color_space,
-                                             ShouldInitialize should_initialize,
-                                             Delegate* delegate) {
-  auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      size, format, alpha_type, color_space, delegate);
+CanvasResourceProviderBitmap::CreateBitmapProvider(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize,
+    Delegate* delegate) {
+  auto provider = base::WrapUnique<CanvasResourceProviderBitmap>(
+      new CanvasResourceProviderBitmap(size, format, alpha_type, color_space,
+                                       delegate));
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1881,12 +1935,12 @@ CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateBitmapProvider(
+CanvasResourceProviderBitmap::CreateBitmapProviderForTesting(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
     ShouldInitialize initialize_provider,
     Delegate* delegate) {
-  return CreateBitmapProvider(
+  return CanvasResourceProviderBitmap::CreateBitmapProvider(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
       color_params.GetGfxColorSpace(), initialize_provider, delegate);
 }

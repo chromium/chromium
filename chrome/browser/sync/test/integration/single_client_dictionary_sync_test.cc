@@ -26,11 +26,26 @@ constexpr char kAccountWord[] = "account";
 
 class SingleClientDictionarySyncTest
     : public SyncTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool, SyncTest::SetupSyncMode>> {
  public:
   SingleClientDictionarySyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatureState(
-        syncer::kSpellcheckSeparateLocalAndAccountDictionaries, GetParam());
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    if (std::get<0>(GetParam())) {
+      enabled.push_back(syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
+    } else {
+      disabled.push_back(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
+    }
+    feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return std::get<1>(GetParam());
   }
 
  private:
@@ -52,16 +67,39 @@ IN_PROC_BROWSER_TEST_P(SingleClientDictionarySyncTest, Sanity) {
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(, SingleClientDictionarySyncTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientDictionarySyncTest,
+    testing::Combine(testing::Bool(), GetSyncTestModes()),
+    [](const testing::TestParamInfo<std::tuple<bool, SyncTest::SetupSyncMode>>&
+           info) {
+      // The first param is whether the
+      // kSpellcheckSeparateLocalAndAccountDictionaries feature is enabled.
+      std::string separate_dict_enabled =
+          std::get<0>(info.param) ? "SeparateDict" : "CombinedDict";
+      return separate_dict_enabled + "_" +
+             SetupSyncModeAsString(std::get<1>(info.param));
+    });
 
 class SingleClientDictionaryTransportModeSyncTest
-    : public SingleClientDictionarySyncTest {
+    : public SyncTest,
+      public testing::WithParamInterface<bool> {
  public:
-  SingleClientDictionaryTransportModeSyncTest() {
-    // `kReplaceSyncPromosWithSignInPromos` is required for enabling dictionary
-    // sync in transport mode because it shares the same user toggle as history.
-    feature_list_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+  SingleClientDictionaryTransportModeSyncTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled = {
+        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> disabled;
+    if (GetParam()) {
+      enabled.push_back(syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
+    } else {
+      disabled.push_back(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
+    }
+    feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SyncTest::SetupSyncMode::kSyncTransportOnly;
   }
 
  private:
@@ -88,16 +126,32 @@ IN_PROC_BROWSER_TEST_P(SingleClientDictionaryTransportModeSyncTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          SingleClientDictionaryTransportModeSyncTest,
-                         ::testing::Bool());
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SeparateDict" : "CombinedDict";
+                         });
 
+// The DICTIONARY data type is controlled by a different user-selectable type
+// depending on the kSpellcheckSeparateLocalAndAccountDictionaries feature
+// flag. When the feature is disabled, DICTIONARY is part of the `kPreferences`
+// toggle. When the feature is enabled, it is part of the `kHistory` toggle.
 class SingleClientDictionaryWithoutAccountStorageSyncTest : public SyncTest {
- protected:
+ public:
   SingleClientDictionaryWithoutAccountStorageSyncTest()
       : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitAndDisableFeature(
         syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
   }
+  // This test only runs in Sync-the-feature mode because it tests the behavior
+  // of `kDictionary` being behind the Preferences toggle, which is not relevant
+  // for transport-only mode. For transport-only mode `kDictionary` is behind
+  // the history toggle. This test can be removed once Sync-the-feature is
+  // deprecated.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SyncTest::SetupSyncMode::kSyncTheFeature;
+  }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -110,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithoutAccountStorageSyncTest,
   // DICTIONARY is not behind the history toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -119,21 +173,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithoutAccountStorageSyncTest,
   // DICTIONARY is behind the settings toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 }
 
-class SingleClientDictionaryWithAccountStorageSyncTest : public SyncTest {
- protected:
-  SingleClientDictionaryWithAccountStorageSyncTest()
-      : SyncTest(SINGLE_CLIENT) {}
+class SingleClientDictionaryWithAccountStorageSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+ public:
+  SingleClientDictionaryWithAccountStorageSyncTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled = {
+        syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_list_.InitWithFeatures(enabled, {});
+  }
 
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientDictionaryWithAccountStorageSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
                        ShouldBeBehindHistoryOptIn) {
   ASSERT_TRUE(SetupSync());
 
@@ -142,22 +213,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
   // DICTIONARY is not behind the settings toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
-  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
       syncer::UserSelectableType::kPreferences));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
-  ASSERT_TRUE(GetClient(0)->EnableSyncForType(
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
       syncer::UserSelectableType::kPreferences));
   // DICTIONARY is behind the history toggle.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
-                       ShouldNotUploadLocalWordsToTheAccount) {
+IN_PROC_BROWSER_TEST_P(
+    SingleClientDictionaryWithAccountStorageSyncTest,
+    ShouldNotUploadLocalWordsToTheAccount) {
   ASSERT_TRUE(SetupClients());
   dictionary_helper::LoadDictionaries();
 
@@ -177,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
               UnorderedElementsAre(kLocalWord));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
                        ShouldCleanUpAccountWordsOnDisable) {
   ASSERT_TRUE(SetupClients());
   dictionary_helper::LoadDictionaries();
@@ -201,9 +273,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
               UnorderedElementsAre(kLocalWord, kAccountWord));
 
-  // Disable syncing dictionary, which is behind the preferences toggle.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  // Disable syncing dictionary, which is behind the history toggle.
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   // Account words should be cleared.
@@ -217,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
       dictionary_helper::HasWordInFakeServer(kAccountWord, GetFakeServer()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
                        PRE_ShouldPersistAccountWordsOverRestarts) {
   ASSERT_TRUE(SetupClients());
   dictionary_helper::LoadDictionaries();
@@ -242,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
               UnorderedElementsAre(kLocalWord, kAccountWord));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
                        ShouldPersistAccountWordsOverRestarts) {
   // Mimics network issues on restart.
   GetFakeServer()->SetHttpError(net::HTTP_REQUEST_TIMEOUT);
@@ -263,8 +335,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
   // Clear the error to allow sync to become active again.
   GetFakeServer()->ClearHttpError();
   // Disable syncing dictionary, which is behind the history toggle.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 
   // Account words should be cleared.

@@ -1428,7 +1428,7 @@ void WebGLRenderingContextWebGPUBase::pixelStorei(GLenum pname, GLint param) {
 
 void WebGLRenderingContextWebGPUBase::polygonOffset(GLfloat factor,
                                                     GLfloat units) {
-  driver_gl_.fn.glPolygonModeFn(factor, units);
+  driver_gl_.fn.glPolygonOffsetFn(factor, units);
 }
 
 void WebGLRenderingContextWebGPUBase::readPixels(

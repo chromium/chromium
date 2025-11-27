@@ -84,6 +84,7 @@ source_set("transport_security_state_generated_files") {
   ]
 
   deps = [
+    "//base:build_time",
     "//build:branding_buildflags",
     "//net:net_deps",
     "//net:net_public_deps",

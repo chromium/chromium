@@ -25,35 +25,44 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include <ostream>
+
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-namespace actor {
-
 #if BUILDFLAG(ENABLE_GLIC)
-// Traits for base::ToString(). They can't be nested in the anonymous namespace.
-std::string ToString(features::GlicActorEnterprisePrefDefault value) {
+// Traits for base::ToString(). They need to be in the corresponding namespace
+// of the enums.
+namespace features {
+std::ostream& operator<<(std::ostream& os,
+                         GlicActorEnterprisePrefDefault value) {
   switch (value) {
-    case features::GlicActorEnterprisePrefDefault::kEnabledByDefault:
-      return "enabled_by_default";
-    case features::GlicActorEnterprisePrefDefault::kDisabledByDefault:
-      return "disabled_by_default";
-    case features::GlicActorEnterprisePrefDefault::kForcedDisabled:
-      return "forced_disabled";
+    case GlicActorEnterprisePrefDefault::kEnabledByDefault:
+      return os << "enabled_by_default";
+    case GlicActorEnterprisePrefDefault::kDisabledByDefault:
+      return os << "disabled_by_default";
+    case GlicActorEnterprisePrefDefault::kForcedDisabled:
+      return os << "forced_disabled";
   }
 }
+}  // namespace features
 
-std::string ToString(glic::prefs::GlicActuationOnWebPolicyState value) {
+namespace glic::prefs {
+std::ostream& operator<<(std::ostream& os,
+                         GlicActuationOnWebPolicyState value) {
   switch (value) {
-    case glic::prefs::GlicActuationOnWebPolicyState::kEnabled:
-      return "kEnabled";
-    case glic::prefs::GlicActuationOnWebPolicyState::kDisabled:
-      return "kDisabled";
+    case GlicActuationOnWebPolicyState::kEnabled:
+      return os << "kEnabled";
+    case GlicActuationOnWebPolicyState::kDisabled:
+      return os << "kDisabled";
   }
 }
+}  // namespace glic::prefs
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+namespace actor {
 
 namespace {
 

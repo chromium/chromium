@@ -59,6 +59,8 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
 
   // content::DevToolsManagerDelegate implementation.
   void Inspect(content::DevToolsAgentHost* agent_host) override;
+  scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost(
+      content::DevToolsAgentHost* agent_host) override;
   scoped_refptr<content::DevToolsAgentHost> OpenDevTools(
       content::DevToolsAgentHost* agent_host,
       const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options)

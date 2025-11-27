@@ -317,14 +317,11 @@ TEST_F(URLCanonTest, Scheme) {
   std::string out_str;
 
   for (const auto& scheme_case : scheme_cases) {
-    int url_len = static_cast<int>(strlen(scheme_case.input));
-    Component in_comp(0, url_len);
     Component out_comp;
 
     out_str.clear();
     StdStringCanonOutput output1(&out_str);
-    bool success = CanonicalizeScheme(
-        in_comp.as_string_view_on(scheme_case.input), &output1, &out_comp);
+    bool success = CanonicalizeScheme(scheme_case.input, &output1, &out_comp);
     output1.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
@@ -337,9 +334,7 @@ TEST_F(URLCanonTest, Scheme) {
     StdStringCanonOutput output2(&out_str);
 
     std::u16string wide_input(base::UTF8ToUTF16(scheme_case.input));
-    in_comp.len = static_cast<int>(wide_input.length());
-    success =
-        CanonicalizeScheme(in_comp.AsViewOn(wide_input), &output2, &out_comp);
+    success = CanonicalizeScheme(wide_input, &output2, &out_comp);
     output2.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
@@ -1582,13 +1577,9 @@ TEST_F(URLCanonTest, Query) {
     Component out_comp;
 
     if (query_case.input8) {
-      int len = static_cast<int>(strlen(query_case.input8));
-      Component in_comp(0, len);
       std::string out_str;
-
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(query_case.input8), nullptr,
-                        &output, &out_comp);
+      CanonicalizeQuery(query_case.input8, nullptr, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_case.expected, out_str);
@@ -1690,13 +1681,11 @@ TEST_F(URLCanonTest, Ref) {
 
   // Try one with an embedded NULL. It should be stripped.
   const char null_input[5] = "ab\x00z";
-  Component null_input_component(0, 4);
   Component out_comp;
 
   std::string out_str;
   StdStringCanonOutput output(&out_str);
-  CanonicalizeRef(null_input_component.as_string_view_on(null_input), &output,
-                  &out_comp);
+  CanonicalizeRef(std::string_view(null_input, 4u), &output, &out_comp);
   output.Complete();
 
   EXPECT_EQ(1, out_comp.begin);

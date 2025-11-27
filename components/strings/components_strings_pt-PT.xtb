@@ -1729,7 +1729,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3792826587784915501">Filmes de culto e indie</translation>
 <translation id="3793574014653384240">Números e causas das falhas de sistema que ocorreram recentemente.</translation>
 <translation id="3795624560191557077">Alterou recentemente uma palavra-passe encontrada numa violação de dados pública. Em caso de problemas, o Gestor de Palavras-passe da Google pode ajudar a iniciar sessão.</translation>
-<translation id="3799805948399000906">Tipo de letra solicitado</translation>
+<translation id="3799805948399000906">Tipo de letra pedido</translation>
 <translation id="3800436529451849929">A partir de <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visita frequentemente</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -1988,19 +1988,19 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4219596572397833317">Veja o histórico de preços e outras informações para fazer compras de forma mais inteligente.</translation>
 <translation id="4220128509585149162">Erros</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Passo 1: inicie sessão no portal&lt;/h4&gt;
-    &lt;p&gt;As redes Wi-Fi em locais como cafés ou aeroportos necessitam que inicie sessão. Para ver a página de início de sessão, aceda a uma página cujo endereço contenha o código &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
+    &lt;p&gt;As redes Wi-Fi em locais como cafés ou aeroportos precisam que inicie sessão. Para ver a página de início de sessão, aceda a uma página cujo endereço contenha o código &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Aceda a qualquer Website que comece por &lt;code&gt;http://&lt;/code&gt;, como &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
-    &lt;li&gt;Na página de início de sessão apresentada, inicie sessão para utilizar a Internet.&lt;/li&gt;
+    &lt;li&gt;Na página de início de sessão apresentada, inicie sessão para usar a Internet.&lt;/li&gt;
     &lt;/ol&gt;
-    &lt;h4&gt;Passo 2: abra a página no modo de navegação anónima (apenas no computador)&lt;/h4&gt;
+    &lt;h4&gt;Passo 2: abra a página no Modo de navegação anónima (apenas no computador)&lt;/h4&gt;
     &lt;p&gt;Abra a página que estava a visitar numa janela de navegação anónima.&lt;/p&gt;
-    &lt;p&gt;Se conseguir abrir a página, significa que uma extensão do Chrome não está a funcionar corretamente. Para corrigir o erro, desative a extensão.&lt;/p&gt;
+    &lt;p&gt;Se conseguir abrir a página, isso significa que uma extensão do Chrome não está a funcionar corretamente. Para corrigir o erro, desative a extensão.&lt;/p&gt;
     &lt;h4&gt;Passo 3: atualize o sistema operativo&lt;/h4&gt;
     &lt;p&gt;Certifique-se de que o seu dispositivo está atualizado.&lt;/p&gt;
     &lt;h4&gt;Passo 4: desative temporariamente o antivírus&lt;/h4&gt;
     &lt;p&gt;Este erro é apresentado se tiver um software antivírus que forneça "Proteção HTTPS" ou "Análise de HTTPS". O antivírus impede o Chrome de fornecer segurança.&lt;/p&gt;
-    &lt;p&gt;Para resolver o problema, desative o software antivírus. Se a página funcionar depois de desativar o software, desative-o sempre que utilizar sites seguros.&lt;/p&gt;
+    &lt;p&gt;Para resolver o problema, desative o software antivírus. Se a página funcionar depois de desativar o software, desative-o sempre que usar sites seguros.&lt;/p&gt;
     &lt;p&gt;Lembre-se de ativar novamente o programa antivírus quando terminar.&lt;/p&gt;
     &lt;h4&gt;Passo 5: obtenha ajuda adicional&lt;/h4&gt;
     &lt;p&gt;Se o erro persistir, contacte o proprietário do Website.&lt;/p&gt;</translation>
@@ -2176,6 +2176,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4506599922270137252">Contactar o gestor do sistema</translation>
 <translation id="450710068430902550">Partilha com o gestor</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para traduzir esta página com o Google Tradutor.</translation>
+<translation id="4510703642214459906">Local</translation>
 <translation id="4515275063822566619">Os cartões e os endereços são provenientes do Chrome e da sua Conta Google (<ph name="ACCOUNT_EMAIL" />). Pode geri-los nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Microcarros e subcompactos</translation>
 <translation id="451601984112574365">Verde 3</translation>
@@ -2761,7 +2762,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5481604577800516617">Disposição de janelas e separadores</translation>
 <translation id="5481682542063333508">Oferecer ajuda na escrita</translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
-<translation id="5483838506518938965">O processo está concluído</translation>
+<translation id="5483838506518938965">Está tudo pronto</translation>
 <translation id="5484396522446324950">Estilos</translation>
 <translation id="5485100387355669506">Extra grosso</translation>
 <translation id="5485973315555778056">Computador da nuvem</translation>
@@ -2861,7 +2862,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5630981295558454585">Botão Perguntar ao Google acerca desta página, ative para perguntar ao Google acerca desta página</translation>
 <translation id="5631439013527180824">Token de gestão do dispositivo inválido</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
-<translation id="563324245173044180">Conteúdo fraudulento bloqueado.</translation>
+<translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="563371367637259496">Móvel</translation>
 <translation id="5635478143789726479">Termos de utilização do vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
@@ -3910,7 +3911,7 @@ Detalhes adicionais:
 <translation id="7372526636730851647">Foto (brilhante)</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Processadores de protocolos</translation>
-<translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome quer certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
+<translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é usado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome quer certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nenhum site permitido}=1{1 site permitido}other{# sites permitidos}}</translation>
 <translation id="7375818412732305729">É anexado um ficheiro</translation>
 <translation id="7376031331622621328">Secção inferior do comércio</translation>
@@ -4370,6 +4371,7 @@ Detalhes adicionais:
 <translation id="8077669823243888800">Envelope Chinese n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Carregar ficheiro confidencial?}other{Carregar ficheiros confidenciais?}}</translation>
 <translation id="8079031581361219619">Quer atualizar o site?</translation>
+<translation id="8079591184016291275">Nome do evento</translation>
 <translation id="8079976827192572403">Site perigoso</translation>
 <translation id="8081087320434522107">Veículos de três volumes</translation>
 <translation id="8086429410809447605">Vestuário de senhora</translation>
@@ -4497,7 +4499,7 @@ Detalhes adicionais:
 <translation id="8287123726498397887">Envelope (pré-impresso)</translation>
 <translation id="8288320283441806607">Para usar esta funcionalidade, ative a opção Melhorar as pesquisas e a navegação</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
-<translation id="8289355894181816810">Se não tiver a certeza do que isto significa, contacte o gestor de rede.</translation>
+<translation id="8289355894181816810">Se não tiver a certeza do que isto significa, contacte o administrador da rede.</translation>
 <translation id="829335040383910391">som</translation>
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8297545700510100061">Os cookies e outros dados de sites são usados para memorizar o seu perfil, por exemplo, para iniciar a sua sessão ou personalizar anúncios. Para gerir cookies de todos os sites, veja <ph name="SETTINGS" />.</translation>
@@ -4768,6 +4770,7 @@ Detalhes adicionais:
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">conteúdo incorporado</translation>
 <translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
+<translation id="8758529215314160755">Pode editar o seu nome na sua <ph name="BEGIN_LINK" />Conta Google <ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe, mensagens ou cartões de crédito) quando são enviadas para este site.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>

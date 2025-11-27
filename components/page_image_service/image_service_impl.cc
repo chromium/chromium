@@ -4,6 +4,9 @@
 
 #include "components/page_image_service/image_service_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -85,7 +88,7 @@ class ImageServiceImpl::SuggestEntityImageURLFetcher {
  private:
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body) {
+                         std::optional<std::string> response_body) {
     DCHECK_EQ(loader_.get(), source);
     if (response_code != 200) {
       UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,

@@ -9,7 +9,7 @@ import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/io
 import {findChildText, isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type {AutofillFormData, AutofillFormFieldData, FrameTokenWithPredecessor} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getCanonicalActionForForm, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getFormControlElements, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -107,7 +107,7 @@ export function webFormElementToFormData(
   let iframeElements = extractChildFrames &&
           autofillFormFeaturesApi.getFunction(
               'isAutofillAcrossIframesEnabled')() ?
-      gCrWebLegacy.form.getIframeElements(formElement) :
+      getIframeElements(formElement) :
       [];
 
   // To avoid performance bottlenecks, do not keep child frames if their

@@ -654,20 +654,14 @@ size_t ContextState::GetMaxWindowRectangles() const {
 
 void ContextState::SetWindowRectangles(
     GLenum mode,
-    size_t spanification_suspected_redundant_count,
     base::span<const volatile GLint> box) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_count == box.size() / 4,
-        base::NotFatalUntil::M143);
-  CHECK(box.size() % 4 == 0, base::NotFatalUntil::M143);
+  CHECK(box.size() % 4 == 0);
   window_rectangles_mode = mode;
-  num_window_rectangles = spanification_suspected_redundant_count;
-  DCHECK_LE(spanification_suspected_redundant_count, GetMaxWindowRectangles());
-  if (spanification_suspected_redundant_count) {
-    std::copy(box.data(),
-              box.subspan(spanification_suspected_redundant_count * 4).data(),
-              window_rectangles_.begin());
+  num_window_rectangles = box.size() / 4;
+  DCHECK_LE(static_cast<size_t>(num_window_rectangles),
+            GetMaxWindowRectangles());
+  if (!box.empty()) {
+    std::ranges::copy(box, window_rectangles_.begin());
   }
 }
 

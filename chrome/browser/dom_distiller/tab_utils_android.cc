@@ -28,7 +28,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace android {
 
-void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
+static void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_web_contents,
     const JavaParamRef<jobject>& j_callback) {
@@ -46,7 +46,7 @@ void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
           jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-void JNI_DomDistillerTabUtils_DistillCurrentPage(
+static void JNI_DomDistillerTabUtils_DistillCurrentPage(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_source_web_contents) {
   content::WebContents* source_web_contents =
@@ -54,7 +54,7 @@ void JNI_DomDistillerTabUtils_DistillCurrentPage(
   ::DistillCurrentPage(source_web_contents);
 }
 
-void JNI_DomDistillerTabUtils_DistillAndView(
+static void JNI_DomDistillerTabUtils_DistillAndView(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_source_web_contents,
     const JavaParamRef<jobject>& j_destination_web_contents) {
@@ -65,7 +65,8 @@ void JNI_DomDistillerTabUtils_DistillAndView(
   ::DistillAndView(source_web_contents, destination_web_contents);
 }
 
-std::u16string JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
+static std::u16string
+JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -82,11 +83,11 @@ std::u16string JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
                                   nullptr);
 }
 
-jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {
+static jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {
   return static_cast<jint>(dom_distiller::GetDistillerHeuristicsType());
 }
 
-void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
+static void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
     JNIEnv* env,
     const JavaParamRef<jobject>& delegate,
     const JavaParamRef<jobject>& j_web_contents) {
@@ -99,7 +100,7 @@ void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
           env, delegate));
 }
 
-void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
+static void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_web_contents,
     const JavaParamRef<jobject>& j_callback) {

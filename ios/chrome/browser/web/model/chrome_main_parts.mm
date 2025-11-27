@@ -24,6 +24,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
 #import "build/blink_buildflags.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
@@ -399,8 +400,11 @@ void IOSChromeMainParts::SetUpFieldTrials(
 // This will occur inside //content for blink.
 #if !BUILDFLAG(USE_BLINK)
   // FeatureList requires VariationsIdsProvider to be created.
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
   variations::VariationsIdsProvider::CreateInstance(
-      variations::VariationsIdsProvider::Mode::kUseSignedInState);
+      variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      std::make_unique<base::DefaultClock>());
 #endif
 
   // Initialize FieldTrialList to support FieldTrials that use one-time

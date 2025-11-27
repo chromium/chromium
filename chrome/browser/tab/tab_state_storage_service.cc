@@ -147,6 +147,11 @@ StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
                                       tab_handle_to_storage_id_);
 }
 
+void TabStateStorageService::WaitForAllPendingOperations(
+    base::OnceClosure on_idle) {
+  tab_backend_.WaitForAllPendingOperations(std::move(on_idle));
+}
+
 void TabStateStorageService::Save(const TabInterface* tab) {
   DCHECK(packager_);
 
@@ -220,17 +225,21 @@ void TabStateStorageService::Move(const TabCollection* collection,
                    packager_.get(), &tab_backend_);
 }
 
-void TabStateStorageService::LoadAllNodes(std::string window_tag,
+void TabStateStorageService::LoadAllNodes(const std::string& window_tag,
                                           bool is_off_the_record,
                                           LoadDataCallback callback) {
   tab_backend_.LoadAllNodes(
-      std::move(window_tag), is_off_the_record,
+      window_tag, is_off_the_record,
       base::BindOnce(&TabStateStorageService::OnAllNodesLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TabStateStorageService::ClearState() {
   tab_backend_.ClearAllNodes();
+}
+
+void TabStateStorageService::ClearWindow(const std::string& window_tag) {
+  tab_backend_.ClearWindow(window_tag);
 }
 
 void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,

@@ -80,6 +80,13 @@ class DevToolsFrontend::AgentHostClient
 
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {}
 
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override {
+    if (agent_host_) {
+      agent_host_->DetachClient(this);
+      agent_host_.reset();
+    }
+  }
+
   void Attach() {
     if (agent_host_)
       agent_host_->DetachClient(this);

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h"
+#include "chrome/browser/webauthn/android/credential_sorter_android.h"
 #include "chrome/browser/webauthn/password_credential_fetcher.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -154,8 +155,12 @@ void WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet(
     return;
   }
 
-  std::vector<password_manager::UiCredential> passwords;
-  std::ranges::transform(password_credentials, std::back_inserter(passwords),
+  std::vector<TouchToFillView::Credential> credentials;
+  credentials.reserve(passkey_credentials.size() + password_credentials.size());
+  credentials.insert(credentials.end(), passkey_credentials.begin(),
+                     passkey_credentials.end());
+
+  std::ranges::transform(password_credentials, std::back_inserter(credentials),
                          [=](const auto& password_form) {
                            return password_manager::UiCredential(
                                *password_form,
@@ -173,13 +178,17 @@ void WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet(
         /*grouped_credential_sheet_controller=*/nullptr);
   }
   touch_to_fill_controller_->InitData(
-      passwords, std::move(passkey_credentials),
+      std::move(credentials),
       ContentPasswordManagerDriver::GetForRenderFrameHost(frame_host)
           ->AsWeakPtrImpl());
   bool should_show_hybrid_option = !hybrid_closure_.is_null() && !is_immediate;
   touch_to_fill_controller_->Show(
       std::make_unique<TouchToFillControllerWebAuthnDelegate>(
-          this, should_show_hybrid_option, is_immediate),
+          this,
+          base::BindRepeating<std::vector<TouchToFillView::Credential>(
+              std::vector<TouchToFillView::Credential>, bool)>(
+              webauthn::sorting::SortTouchToFillCredentials),
+          should_show_hybrid_option, is_immediate),
       WebAuthnCredManDelegateFactory::GetFactory(web_contents())
           ->GetRequestDelegate(frame_host));
 }

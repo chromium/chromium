@@ -148,7 +148,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     NUM_TABS,
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
-                    LAST_ACCESSED_TIME);
+                    LAST_ACCESSED_TIME,
+                    /* closedByUser= */ false);
 
     private static final InstanceInfo INSTANCE_INFO_2 =
             new InstanceInfo(
@@ -161,7 +162,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     NUM_TABS,
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
-                    LAST_ACCESSED_TIME);
+                    LAST_ACCESSED_TIME,
+                    /* closedByUser= */ false);
 
     // Other dependencies
     @Mock private Profile mProfile;

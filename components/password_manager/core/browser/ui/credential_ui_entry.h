@@ -157,6 +157,10 @@ struct CredentialUIEntry {
   // only.
   bool hidden = false;
 
+  // The relying party identifier. Used for passkeys only, empty otherwise.
+  // https://w3c.github.io/webauthn/#relying-party-identifier
+  std::string rp_id;
+
   // Information about password insecurities.
   bool IsLeaked() const;
   bool IsPhished() const;

@@ -33,6 +33,8 @@ namespace dbus_xdg {
 
 namespace {
 
+using internal::SystemdUnitStatus;
+
 constexpr char kFakeUnitPath[] = "/fake/unit/path";
 
 std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
@@ -50,11 +52,7 @@ std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
   return response;
 }
 
-class SetSystemdScopeUnitNameForXdgPortalTest : public ::testing::Test {
- public:
-  void SetUp() override { ResetCachedStateForTesting(); }
-  void TearDown() override { ResetCachedStateForTesting(); }
-};
+using SetSystemdScopeUnitNameForXdgPortalTest = ::testing::Test;
 
 TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
   scoped_refptr<dbus::MockBus> bus =
@@ -65,7 +63,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -80,7 +78,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -109,7 +107,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NoSystemdService) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -187,7 +185,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -230,7 +228,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -287,7 +285,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -366,7 +364,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -475,7 +473,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 

@@ -64,8 +64,11 @@ class TouchToFillDelegate {
   // sheet.
   virtual void LoyaltyCardSuggestionSelected(
       const LoyaltyCard& loyalty_card) = 0;
-  virtual void OnDismissed(bool dismissed_by_user) = 0;
-  virtual void OnErrorOkPressed() = 0;
+
+  // Called when the TTF bottom sheet is dismissed. `dismissed_by_user` is true
+  // if the user explicitly dismissed the sheet (e.g. by swiping it away).
+  // `should_reshow` is true if the bottom sheet is eligible to be reshown.
+  virtual void OnDismissed(bool dismissed_by_user, bool should_reshow) = 0;
   virtual void OnBnplIssuerSuggestionSelected(const std::string& issuer_id) = 0;
 
   virtual void LogMetricsAfterSubmission(

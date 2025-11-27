@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1133,10 +1134,16 @@ void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
 std::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
     const std::string& formatted_date,
     const base::Time now) {
+  std::vector<std::string> parts = base::SplitString(
+      formatted_date, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parts.size() != 3) {
+    return std::nullopt;
+  }
+
   int year, month, day_of_month;
-  // sscanf will ignore trailing garbage, but we don't need to be strict here.
-  if (UNSAFE_TODO(sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
-                         &day_of_month)) != 3) {
+  if (!base::StringToInt(parts[0], &year) ||
+      !base::StringToInt(parts[1], &month) ||
+      !base::StringToInt(parts[2], &day_of_month)) {
     return std::nullopt;
   }
 

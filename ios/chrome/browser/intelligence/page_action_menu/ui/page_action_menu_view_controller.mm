@@ -754,7 +754,7 @@ const CGFloat kDividerWidth = 1.0;
   for (PageActionMenuFeature* feature in activeFeatures) {
     UIView* featureRow = [self createFeatureRowWithData:feature];
     [_featureRowsStackView addArrangedSubview:featureRow];
-    [_featureRowsStackView setCustomSpacing:kStackViewMargins
+    [_featureRowsStackView setCustomSpacing:kFeatureRowVerticalPadding
                                   afterView:featureRow];
     lastView = featureRow;
   }
@@ -907,9 +907,13 @@ const CGFloat kDividerWidth = 1.0;
       break;
   }
 
+  BOOL hasNavigation = (feature.actionType == PageActionMenuSettingsAction ||
+                        feature.featureType == PageActionMenuPriceTracking);
+  CGFloat rowHeight = hasNavigation ? kSmallButtonHeight : kFeatureRowHeight;
+
   [NSLayoutConstraint activateConstraints:@[
     [containerView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kFeatureRowHeight],
+        constraintGreaterThanOrEqualToConstant:rowHeight],
 
     [stackView.leadingAnchor
         constraintEqualToAnchor:containerView.leadingAnchor
@@ -1177,7 +1181,7 @@ const CGFloat kDividerWidth = 1.0;
         constraintEqualToAnchor:containerView.bottomAnchor],
 
     [containerView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kFeatureRowHeight],
+        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
 
   UIStackView* labelsStack = buttonContentStack.arrangedSubviews[1];

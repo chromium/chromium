@@ -10,7 +10,7 @@
 
 namespace android_webview {
 
-void JNI_VariationsTestUtils_DisableSignatureVerificationForTesting(
+static void JNI_VariationsTestUtils_DisableSignatureVerificationForTesting(
     JNIEnv* env) {
   AwFeatureListCreator::DisableSignatureVerificationForTesting();
 }

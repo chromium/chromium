@@ -25,7 +25,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
 
@@ -260,13 +259,6 @@ void DataSharingUI::ShowErrorDialog(int status_code) {
   if (delegate_) {
     delegate_->ShowErrorDialog(status_code);
   }
-}
-
-void DataSharingUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void DataSharingUI::CreatePageHandler(

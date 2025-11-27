@@ -6,14 +6,18 @@
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class TabStripModel;
 
 // Manages the core logic for the Reading Mode feature.
 //
@@ -22,11 +26,12 @@
 //
 // It acts as the primary entry point for all Reading Mode commands and is
 // responsible for orchestrating the display of the Reading Mode UI.
-class ReadAnythingController {
+class ReadAnythingController : public TabStripModelObserver,
+                               content::WebContentsObserver {
  public:
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
-  ~ReadAnythingController();
+  ~ReadAnythingController() override;
 
   enum class PresentationState {
     kInactive,
@@ -58,9 +63,28 @@ class ReadAnythingController {
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
   GetOrCreateWebUIWrapper();
 
+  // Getter for has_shown_ui_. This is used by RM host views to
+  // determine if the Reading Mode is ready to be shown, or if it should wait
+  // for a notification that it is ready.
+  bool has_shown_ui() const { return has_shown_ui_; }
+
   void SetWebUIWrapperForTest(
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           web_ui_wrapper);
+
+  // Test function while OnTabStripModelChanged events are implemented.
+  // TODO(crbug.com/463732840): Remove this function once the
+  // OnTabStripModelChanged events are implemented.
+  bool isActiveTab();
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection_change) override;
+
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   // Returns the SidePanelUI for the active tab if it can be shown.
@@ -72,6 +96,13 @@ class ReadAnythingController {
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
       web_ui_wrapper_;
+
+  // Keeps track of whether the tab is active.
+  // TODO(crbug.com/463732840): Detemrine if this variable is needed once the
+  // OnTabStripModelChanged events are implemented.
+  bool is_active_tab_ = false;
+
+  bool has_shown_ui_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

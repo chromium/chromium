@@ -14,7 +14,6 @@ import "url/mojom/url.mojom";
 // This struct holds the information from PerformanceServerTiming that needs
 // to be passed between processes. This is currently used to send timing
 // information about cross-process iframes for window.performance.
-// Note: Please update CrossThreadCopier whenever a new field is added.
 // See https://w3c.github.io/server-timing/#the-performanceservertiming-interface
 struct ServerTimingInfo {
   // Server specific metric name. Corresponds to |name| in
@@ -43,7 +42,6 @@ enum CacheState {
 // This struct holds the information from PerformanceResourceTiming that needs
 // to be passed between processes. This is currently used to send timing
 // information about cross-process iframes for window.performance.
-// Note: Please update CrossThreadCopier whenever a new field is added.
 struct ResourceTimingInfo {
 
   // The name to associate with the performance entry. For iframes, this is

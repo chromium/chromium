@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 
-jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
+static jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
     JNIEnv* env,
     jboolean is_internal_backend_present) {
   return password_manager_android_util::IsPasswordManagerAvailable(

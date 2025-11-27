@@ -147,6 +147,18 @@ IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, EventTicket) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, TransitTicket) {
+  optimization_guide::proto::WalletablePass pass;
+  auto* transit_ticket = pass.mutable_transit_ticket();
+  transit_ticket->set_agency_name("Metro Transit");
+  transit_ticket->set_origin("KGX");
+  transit_ticket->set_destination("YRK");
+  transit_ticket->set_date_of_travel("2025-12-25");
+
+  mock_controller()->SetUpAndShowSaveBubble(pass, base::DoNothing());
+  ShowAndVerifyUi();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     WalletablePassSaveBubbleViewBrowserTest,

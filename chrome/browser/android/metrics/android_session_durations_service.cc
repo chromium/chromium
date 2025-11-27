@@ -213,7 +213,7 @@ void AndroidSessionDurationsService::RestoreIncognitoSession(
 // Returns a java object consisting of data required to restore the service.
 // This function only covers Incognito profiles.
 // static
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
     JNIEnv* env,
     Profile* profile) {
@@ -234,7 +234,8 @@ JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
 // Restores the service from an archived android object.
 // This function only covers Incognito profiles.
 // static
-void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServiceState(
+static void
+JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServiceState(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaParamRef<jobject>& j_duration_service) {

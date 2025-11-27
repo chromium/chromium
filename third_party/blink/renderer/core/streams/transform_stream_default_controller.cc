@@ -107,14 +107,8 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
 
   ScriptPromise<IDLUndefined> Run(
       ScriptState* script_state,
-      int spanification_suspected_redundant_argc,
       base::span<v8::Local<v8::Value>> argv) override {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(
-        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
-        base::NotFatalUntil::M143);
-    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
     v8::Isolate* isolate = script_state->GetIsolate();
     v8::TryCatch try_catch(isolate);
 
@@ -373,7 +367,7 @@ ScriptPromise<IDLUndefined> TransformStreamDefaultController::PerformTransform(
   // needs to be returned to the outer scope.
   ScriptState::EscapableScope scope(script_state);
   ScriptPromise<IDLUndefined> transform_promise =
-      controller->transform_algorithm_->Run(script_state, 1,
+      controller->transform_algorithm_->Run(script_state,
                                             base::span_from_ref(chunk));
   DCHECK(!transform_promise.IsEmpty());
 

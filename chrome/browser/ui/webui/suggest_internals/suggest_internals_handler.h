@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/search_engines/template_url.h"
@@ -57,19 +58,19 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
   void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
-      const std::unique_ptr<std::string>& response_body) override;
+      base::optional_ref<std::string> response_body) override;
 
   // RemoteSuggestionsService::Delegate:
   void OnRequestCompleted(const network::SimpleURLLoader* source,
                           const int response_code,
-                          std::unique_ptr<std::string> response_body,
+                          std::optional<std::string> response_body,
                           RemoteSuggestionsService::CompletionCallback
                               completion_callback) override;
   void OnIndexedRequestCompleted(
       const int request_index,
       const network::SimpleURLLoader* source,
       const int response_code,
-      std::unique_ptr<std::string> response_body,
+      std::optional<std::string> response_body,
       RemoteSuggestionsService::IndexedCompletionCallback completion_callback)
       override;
 

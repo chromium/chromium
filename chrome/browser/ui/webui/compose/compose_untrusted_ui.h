@@ -18,11 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 class ComposeUntrustedUI;
 
@@ -50,10 +45,6 @@ class ComposeUntrustedUI
       mojo::PendingReceiver<
           compose::mojom::ComposeSessionUntrustedPageHandlerFactory> factory);
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
-
   void set_triggering_web_contents(content::WebContents* web_contents) {
     triggering_web_contents_ = web_contents->GetWeakPtr();
   }
@@ -71,7 +62,6 @@ class ComposeUntrustedUI
   mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandlerFactory>
       session_handler_factory_{this};
 
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   base::WeakPtr<content::WebContents> triggering_web_contents_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

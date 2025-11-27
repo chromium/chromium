@@ -461,7 +461,7 @@ namespace signin {
 // |expiration_time_secs| param is the number of seconds (NOT milliseconds)
 // after the Unix epoch when the token is scheduled to expire.
 // It is set to 0 if there's no known expiration time.
-void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
+static void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaParamRef<jstring>& authToken,
     const jlong expiration_time_secs,

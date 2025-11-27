@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -128,6 +129,11 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
+  base::UmaHistogramBoolean(
+      base::StrCat({"ContextualTasks.AiResponse.UserAction.LinkClicked.",
+                    (tab ? "Panel" : "Tab")}),
+      true);
+
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
@@ -186,10 +192,8 @@ void ContextualTasksUiService::OnThreadLinkClicked(
                                    std::move(contextual_task_contents));
 
   // Open the side panel.
-  // TODO: This currently should be passed the bounds of the
-  // contents_container_view from BrowserView, though the view is not accessible
-  // from here. This API could be changed to simply accept the web_contents.
-  ContextualTasksSidePanelCoordinator::From(browser.get())->Show();
+  ContextualTasksSidePanelCoordinator::From(browser.get())
+      ->Show(/*transition_from_tab=*/true);
 }
 
 bool ContextualTasksUiService::HandleNavigation(
@@ -273,12 +277,52 @@ GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
   return url;
 }
 
-GURL ContextualTasksUiService::GetInitialUrlForTask(const base::Uuid& uuid) {
+std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
+    const base::Uuid& uuid) {
   auto it = task_id_to_creation_url_.find(uuid);
   if (it != task_id_to_creation_url_.end()) {
     return it->second;
   }
-  return GURL();
+  return std::nullopt;
+}
+
+void ContextualTasksUiService::GetThreadUrlFromTaskId(
+    const base::Uuid& task_id,
+    base::OnceCallback<void(GURL)> callback) {
+  context_controller_->GetTaskById(
+      task_id, base::BindOnce(
+                   [](base::WeakPtr<ContextualTasksUiService> service,
+                      base::OnceCallback<void(GURL)> callback,
+                      std::optional<ContextualTask> task) {
+                     if (!service) {
+                       std::move(callback).Run(GURL());
+                       return;
+                     }
+
+                     GURL url = service->GetDefaultAiPageUrl();
+                     if (!task) {
+                       std::move(callback).Run(url);
+                       return;
+                     }
+
+                     std::optional<Thread> thread = task->GetThread();
+                     if (!thread) {
+                       std::move(callback).Run(url);
+                       return;
+                     }
+
+                     // Attach the thread ID and the most recent turn ID to the
+                     // URL. A query parameter needs to be present, but its
+                     // value is not used for continued threads.
+                     url = net::AppendQueryParameter(url, "q", thread->title);
+                     url = net::AppendQueryParameter(url, "mstk",
+                                                     thread->server_id);
+                     url = net::AppendQueryParameter(
+                         url, "mtid", thread->conversation_turn_id);
+
+                     std::move(callback).Run(url);
+                   },
+                   weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {

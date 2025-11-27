@@ -43,8 +43,8 @@ class PageContentCacheTest : public testing::Test {
  protected:
   PageContentCache* GetOrCreateCache() {
     if (!cache_) {
-      cache_ = std::make_unique<PageContentCache>(os_crypt_async_.get(),
-                                                  temp_dir_.GetPath());
+      cache_ = std::make_unique<PageContentCache>(
+          os_crypt_async_.get(), temp_dir_.GetPath(), base::Days(7));
     }
     return cache_.get();
   }
@@ -152,6 +152,32 @@ TEST_F(PageContentCacheTest, DeleteOldDataOnStartup) {
   task_environment_.RunUntilIdle();
 
   // 5. Verify that the old data is gone and the new data is still there.
+  EXPECT_FALSE(GetContentForTab(1));
+  EXPECT_TRUE(GetContentForTab(2));
+}
+
+TEST_F(PageContentCacheTest, DeleteOldDataWithCustomMaxAge) {
+  // Create a cache with a custom max age of 5 days.
+  cache_ = std::make_unique<PageContentCache>(
+      os_crypt_async_.get(), temp_dir_.GetPath(), base::Days(5));
+
+  // Add data that is 6 days old (should be deleted).
+  GetOrCreateCache()->CachePageContent(1, GURL("https://old.com/"),
+                                       base::Time::Now() - base::Days(6),
+                                       base::Time::Now(), TestContent("old"));
+
+  // Add data that is 4 days old (should be kept).
+  GetOrCreateCache()->CachePageContent(2, GURL("https://new.com/"),
+                                       base::Time::Now() - base::Days(4),
+                                       base::Time::Now(), TestContent("new"));
+
+  ASSERT_TRUE(GetContentForTab(1));
+  ASSERT_TRUE(GetContentForTab(2));
+
+  // Trigger the deletion task.
+  task_environment_.FastForwardBy(base::Seconds(26));
+
+  // Verify old data is gone and new data remains.
   EXPECT_FALSE(GetContentForTab(1));
   EXPECT_TRUE(GetContentForTab(2));
 }

@@ -58,7 +58,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @After
     public void tearDown() {
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(null);
         setAccessibilityEnabled(false);
     }
 
@@ -175,7 +175,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     public void whenHardwareKeyboardAttached_andWithHardwareKeyboardEnabled_autofocusSucceeds() {
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = true;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(true);
 
         final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
         verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
@@ -186,7 +186,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     public void whenHardwareKeyboardNotAttached_andWithHardwareKeyboardEnabled_autofocusFails() {
-        IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = false;
+        IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(false);
 
         final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
         verifyOmniboxFocusAndKeyboardVisibility(false, incognitoNtpTab);

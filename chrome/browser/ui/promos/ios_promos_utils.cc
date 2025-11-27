@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -28,6 +29,9 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_names.h"
 #include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
@@ -229,6 +233,30 @@ bool IsUserActiveOnIOS(Profile* profile) {
       return true;
     }
   }
+  return false;
+}
+
+bool IsUserActiveOnAndroid(Profile* profile) {
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  if (!device_info_sync_service) {
+    return false;
+  }
+
+  syncer::DeviceInfoTracker* device_info_tracker =
+      device_info_sync_service->GetDeviceInfoTracker();
+  if (!device_info_tracker) {
+    return false;
+  }
+
+  for (const syncer::DeviceInfo* device_info :
+       device_info_tracker->GetAllDeviceInfo()) {
+    if (device_info->os_type() == syncer::DeviceInfo::OsType::kAndroid &&
+        IsRecent(device_info->last_updated_timestamp(), kActiveUserRecency)) {
+      return true;
+    }
+  }
+
   return false;
 }
 

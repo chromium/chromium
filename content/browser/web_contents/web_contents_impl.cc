@@ -12133,7 +12133,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       std::move(prerender_navigation_handle_callback),
       base::WrapRefCounted(
           static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get())),
-      allow_reuse);
+      allow_reuse,
+      /*form_submission=*/false);
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else

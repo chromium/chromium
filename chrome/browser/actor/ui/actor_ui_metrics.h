@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 
 namespace actor::ui {
@@ -18,6 +19,10 @@ void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership);
 
 // Logs a click on the task icon.
 void LogTaskIconClick();
+
+// Logs a click on the task nudge.
+// This fails if the nudge is in the default state.
+void LogTaskNudgeClick(ActorTaskNudgeState nudge_state);
 
 // Records web content attachment for the actuating tab.
 void RecordActuatingTabWebContentsAttached();

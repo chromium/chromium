@@ -1732,7 +1732,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Gaia.PasswordFlow" enum="BooleanStartedCompleted"
-    expires_after="2025-06-01">
+    expires_after="2026-11-25">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -1740,6 +1740,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     on each password entry on the Gaia page. &quot;Completed&quot; is recorded
     when Gaia authentication succeeds. Note: this is not recorded for SAML
     flows.
+
+    Warning: this histogram was expired from 2025-06-01 to 2025-11-25; data may
+    be missing.
   </summary>
 </histogram>
 

@@ -173,7 +173,9 @@ bool TabStateStorageDatabase::OpenTransaction::IsValid(
 
 TabStateStorageDatabase::TabStateStorageDatabase(
     const base::FilePath& profile_path)
-    : profile_path_(profile_path), db_(sql::Database::Tag("TabStateStorage")) {}
+    : profile_path_(profile_path),
+      db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
+          sql::Database::Tag("TabStateStorage")) {}
 
 TabStateStorageDatabase::~TabStateStorageDatabase() = default;
 
@@ -330,7 +332,7 @@ bool TabStateStorageDatabase::CloseTransaction(
 }
 
 std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
-    std::string window_tag,
+    const std::string& window_tag,
     bool is_off_the_record) {
   std::vector<NodeState> entries;
   static constexpr char kSelectAllNodesSql[] =
@@ -354,6 +356,15 @@ void TabStateStorageDatabase::ClearAllNodes() {
   static constexpr char kDeleteAllNodesSql[] = "DELETE FROM nodes";
   sql::Statement delete_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllNodesSql));
+  delete_statement.Run();
+}
+
+void TabStateStorageDatabase::ClearWindow(const std::string& window_tag) {
+  static constexpr char kDeleteWindowSql[] =
+      "DELETE FROM nodes WHERE window_tag = ?";
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteWindowSql));
+  delete_statement.BindString(0, window_tag);
   delete_statement.Run();
 }
 

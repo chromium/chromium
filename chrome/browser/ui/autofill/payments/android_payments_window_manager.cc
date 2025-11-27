@@ -86,7 +86,8 @@ void AndroidPaymentsWindowManager::WebContentsDestroyed() {
       if (payments_autofill_client &&
           payments_autofill_client->GetTouchToFillPaymentMethodController()) {
         payments_autofill_client->GetTouchToFillPaymentMethodController()
-            ->OnDismissed(/*env=*/nullptr, /*dismissed_by_user=*/true);
+            ->OnDismissed(/*env=*/nullptr, /*dismissed_by_user=*/true,
+                          /*should_reshow=*/true);
       }
       break;
     case FlowType::kVcn3ds:

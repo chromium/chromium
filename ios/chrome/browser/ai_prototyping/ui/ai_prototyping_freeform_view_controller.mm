@@ -29,6 +29,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   UITextField* _queryField;
   UISwitch* _includePageContextSwitch;
   UISwitch* _uploadMQLSSwitch;
+  UISwitch* _storePageContextSwitch;
   UISlider* _temperatureSlider;
   UILabel* _temperatureLabel;
   UITextView* _responseContainer;
@@ -115,6 +116,27 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   uploadMQLSSwitchContainer.axis = UILayoutConstraintAxisHorizontal;
   uploadMQLSSwitchContainer.spacing = kButtonStackViewSpacing;
   uploadMQLSSwitchContainer.alignment = UIStackViewAlignmentCenter;
+
+  // Store page context on device switch.
+  _storePageContextSwitch = [[UISwitch alloc] init];
+  _storePageContextSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _storePageContextSwitch.on = NO;
+
+  UILabel* storePageContextSwitchLabel = [[UILabel alloc] init];
+  storePageContextSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  storePageContextSwitchLabel.numberOfLines = 0;
+  storePageContextSwitchLabel.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_STORE_PAGE_CONTEXT_SWITCH);
+
+  UIStackView* storePageContextSwitchContainer =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        _storePageContextSwitch, storePageContextSwitchLabel
+      ]];
+  storePageContextSwitchContainer.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  storePageContextSwitchContainer.axis = UILayoutConstraintAxisHorizontal;
+  storePageContextSwitchContainer.spacing = kButtonStackViewSpacing;
+  storePageContextSwitchContainer.alignment = UIStackViewAlignmentCenter;
 
   // Temperature slider.
   _temperatureSlider = [[UISlider alloc] init];
@@ -212,7 +234,8 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,
     _modelPickerButton, switchContainer, uploadMQLSSwitchContainer,
-    temperatureContainer, buttonStackView, _responseContainer
+    storePageContextSwitchContainer, temperatureContainer, buttonStackView,
+    _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -264,6 +287,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
                         systemInstructions:_systemInstructionsField.text
                         includePageContext:_includePageContextSwitch.isOn
                               uploadToMQLS:_uploadMQLSSwitch.isOn
+                          storePageContext:_storePageContextSwitch.isOn
                                temperature:_temperatureSlider.value
                                      model:_currentModelPicked];
 }

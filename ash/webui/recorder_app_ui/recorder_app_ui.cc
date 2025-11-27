@@ -240,14 +240,6 @@ RecorderAppUI::~RecorderAppUI() {
 }
 
 void RecorderAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void RecorderAppUI::BindInterface(
     mojo::PendingReceiver<recorder_app::mojom::PageHandler> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

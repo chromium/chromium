@@ -325,7 +325,7 @@ std::unique_ptr<HttpResponse> HandleCriticalClientHintsHeaderResponse(
 }  // namespace
 
 // static
-ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
+static ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
     JNIEnv* env) {
   std::vector<int64_t> handlers = {
       reinterpret_cast<int64_t>(&HandleClickRedirect),

@@ -66,7 +66,6 @@ bool BundleUtils::HasAnyInstalledSplits() {
 void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
                                                 const std::string& partition,
                                                 const std::string& split_name) {
-  // TODO(crbug.com/40656179): Remove this tolerance.
   std::string library_path = ResolveLibraryPath(library_name, split_name);
   if (library_path.empty()) {
     return nullptr;

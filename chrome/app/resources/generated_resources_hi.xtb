@@ -1653,6 +1653,7 @@
 <translation id="2104166991923847969">हॉटस्पॉट को अपने-आप बंद करें</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> छिपा दिया गया है</translation>
 <translation id="2106439768713835453">ऐप्लिकेशन का ऑडियो भी शेयर करें</translation>
+<translation id="2107359546799360577">JavaScript ऑप्टिमाइज़ेशन की सुविधा बंद है.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> पहले जांच की गई</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फ़ोन नंबर}one{# फ़ोन नंबर}other{# फ़ोन नंबर}}</translation>
 <translation id="2109384632594340939">प्रोफ़ाइल फ़ोटो</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2390782873446084770">वाई-फ़ाई सिंक</translation>
 <translation id="2391419135980381625">स्टैंडर्ड फ़ॉन्ट</translation>
 <translation id="2391805183137601570">Steam खोलें</translation>
+<translation id="239185270194776190">Gemini के साथ चल रही आपकी बातचीत दूसरी विंडो में मौजूद है. उसे यहां लाने के लिए, साइड पैनल पर कहीं भी क्लिक करें.</translation>
 <translation id="2392369802118427583">सक्रिय करें</translation>
 <translation id="2393136602862631930">अपने Chromebook पर <ph name="APP_NAME" /> सेट अप करें</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex की शर्तों का कॉन्टेंट</translation>
@@ -3441,7 +3443,6 @@
 <translation id="3346306152660142597">एआई की मदद से, इस पेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="3347086966102161372">इमेज के पते को कॉपी करें</translation>
 <translation id="3348038390189153836">निकालने योग्‍य डिवाइस का पता चला</translation>
-<translation id="3348131053948466246">सुझाए गए इमोजी. नेविगेट करने के लिए, ऊपर या नीचे वाला तीर का निशान दबाएं. इमोजी डालने के लिए enter दबाएं.</translation>
 <translation id="3348973040180736882">डीकंप्रेस किया जा रहा है</translation>
 <translation id="3349933790966648062">मेमोरी फ़ुटप्रिंट</translation>
 <translation id="3350450887151703713">10 सेकंड फिर से चलाएं</translation>
@@ -4281,6 +4282,7 @@
 <translation id="3893536212201235195">अपनी सुलभता सेटिंग पढ़ें और उसमें बदलाव करें</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
+<translation id="3893858854379998374">अपने खाते में बुकमार्क सेव करने के लिए, इस्तेमाल न किए जा रहे बुकमार्क मिटाएं</translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
 <translation id="3895076768659607631">सर्च इंजन &amp;प्रबंधित करें...</translation>
 <translation id="3895090224522145010">Kerberos टिकट भेजने वाले उपयोगकर्ता का नाम</translation>
@@ -5005,6 +5007,7 @@
 <translation id="4405781821077215583">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को छोटा या बड़ा करता है</translation>
 <translation id="4406308048672435032">इस टैब को बंद किया जा सकता है या पूरी सूची को फिर से देखने के लिए, इसे रीफ़्रेश किया जा सकता है</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
+<translation id="4406963243402726564">सेव नहीं किया गया डेटा</translation>
 <translation id="4408599188496843485">स&amp;हायता</translation>
 <translation id="4409271659088619928">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू होता है, तो अपना खोज इतिहास मिटाने के लिए निर्देश देखें.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{आपका एडमिन, <ph name="APP0_NAME" /> की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर सकता है. रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना मिलेगी.}=2{आपका एडमिन, <ph name="APP0_NAME" /> और <ph name="APP1_NAME" /> की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर सकता है. रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना मिलेगी.}=3{आपका एडमिन, <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, और 1 अन्य ऐप्लिकेशन की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर सकता है. रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना मिलेगी.}one{आपका एडमिन, <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, और # अन्य ऐप्लिकेशन की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर सकता है. रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना मिलेगी.}other{आपका एडमिन, <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, और # अन्य ऐप्लिकेशन की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर सकता है. रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना मिलेगी.}}</translation>
@@ -6647,7 +6650,6 @@
 <translation id="5563234215388768762">Google पर खोजें या कोई यूआरएल टाइप करें</translation>
 <translation id="5563824734298958390">क्या आपको टैब ग्रुप से बाहर निकलना है?</translation>
 <translation id="5564450015351086922">iOS पर Google Lens को आज़माएं</translation>
-<translation id="5565579144504951367">अब आपका हार्डवेयर सेट अप करने के लिए तैयार है</translation>
 <translation id="5565735124758917034">सक्रिय</translation>
 <translation id="5568069709869097550">साइन इन नहीं किया जा सकता</translation>
 <translation id="5568525251731145240">क्या आपको <ph name="SITE_NAME" />, इसके तहत आने वाली सभी साइटों, और इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटानी हैं?</translation>

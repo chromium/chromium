@@ -57,18 +57,21 @@ class SaveUpdateAddressProfileMessageController {
                           save_address_profile_callback,
                       PrimaryActionCallback primary_action_callback);
   bool IsMessageDisplayed();
+
+  void OnPrimaryActionForTest();
+
+  void DismissMessageForTest(messages::DismissReason reason);
+
+  messages::MessageWrapper* GetMessageForTest();
+
+ private:
+  void DismissMessage();
+
   // Called in response to user clicking the primary button.
   void OnPrimaryAction();
   // Called whenever the message is dismissed (e.g. after timeout or because the
   // user already accepted or declined the message).
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
-
-  void DismissMessageForTest(messages::DismissReason reason);
-
- private:
-  friend class SaveUpdateAddressProfileMessageControllerTest;
-
-  void DismissMessage();
 
   void RunSaveAddressProfileCallback(
       AutofillClient::AddressPromptUserDecision decision);

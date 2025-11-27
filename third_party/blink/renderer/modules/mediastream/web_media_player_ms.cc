@@ -80,12 +80,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<viz::SurfaceId>
-    : public CrossThreadCopierPassThrough<viz::SurfaceId> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 enum class RendererReloadAction {

@@ -267,14 +267,10 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     CreateTwoTabs(true /* focus_tab_strip */, &first_lifecycle_unit,
                   &second_lifecycle_unit);
 
-    // Advance time so tabs are urgent discardable.
-    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
-
     // Detach the non-active tab. Verify that it can no longer be discarded.
-    ExpectCanDiscardTrueAllReasons(first_lifecycle_unit);
     std::unique_ptr<tabs::TabModel> detached_tab =
         tab_strip_model_->DetachTabAtForInsertion(0);
-    ExpectCanDiscardFalseTrivialAllReasons(first_lifecycle_unit);
+    EXPECT_FALSE(first_lifecycle_unit->Discard(reason));
 
     // Create a second tab strip.
     TestTabStripModelDelegate other_tab_strip_model_delegate;
@@ -293,14 +289,13 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     // Insert the tab into the second tab strip without focusing it. Verify that
     // it can be discarded.
     other_tab_strip_model.AppendTab(std::move(detached_tab), false);
-    ExpectCanDiscardTrueAllReasons(first_lifecycle_unit);
 
     EXPECT_EQ(LifecycleUnitState::ACTIVE, first_lifecycle_unit->GetState());
     EXPECT_CALL(tab_observer_,
                 MockOnLifecycleUnitStateChanged(
                     first_lifecycle_unit, ::mojom::LifecycleUnitState::ACTIVE,
                     ::mojom::LifecycleUnitState::DISCARDED, reason));
-    first_lifecycle_unit->Discard(reason);
+    EXPECT_TRUE(first_lifecycle_unit->Discard(reason));
 
     ::testing::Mock::VerifyAndClear(&tab_observer_);
 
@@ -321,9 +316,6 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
         tab_strip_model_->GetWebContentsAt(0);
     content::WebContentsTester::For(initial_web_contents)
         ->SetLastActiveTimeTicks(kDummyLastActiveTime);
-
-    // Advance time so tabs are urgent discardable.
-    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
 
     // Discard the tab.
     EXPECT_EQ(LifecycleUnitState::ACTIVE,
@@ -352,9 +344,6 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
                   &foreground_lifecycle_unit);
     content::WebContents* initial_web_contents =
         tab_strip_model_->GetWebContentsAt(0);
-
-    // Advance time so tabs are urgent discardable.
-    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
 
     // Discard the tab.
     EXPECT_EQ(LifecycleUnitState::ACTIVE,
@@ -416,9 +405,6 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     tab_strip_model_->AppendWebContents(std::move(third_web_contents), true);
     ::testing::Mock::VerifyAndClear(&source_observer_);
     EXPECT_TRUE(source_->GetTabLifecycleUnitExternal(raw_third_web_contents));
-
-    // Advance time so tabs are urgent discardable.
-    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
 
     // Discard both tabs in the split.
     EXPECT_EQ(LifecycleUnitState::ACTIVE, first_lifecycle_unit->GetState());
@@ -486,9 +472,6 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
                   &foreground_lifecycle_unit);
     content::WebContents* initial_web_contents =
         tab_strip_model_->GetWebContentsAt(0);
-
-    // Advance time so tabs are urgent discardable.
-    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
 
     // Discard the tab.
     EXPECT_EQ(LifecycleUnitState::ACTIVE,

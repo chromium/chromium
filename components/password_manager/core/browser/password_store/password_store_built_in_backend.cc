@@ -89,8 +89,10 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(os_crypt_async_);
 
-  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  background_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunnerForResource(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          login_db->db_path());
   DCHECK(background_task_runner_);
   helper_ = std::make_unique<LoginDatabaseAsyncHelper>(
       std::move(login_db), base::SequencedTaskRunner::GetCurrentDefault(),

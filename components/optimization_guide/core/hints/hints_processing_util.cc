@@ -135,8 +135,6 @@ std::string GetStringNameForOptimizationType(
       return "AutofillAblationSitesList6";
     case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST:
       return "AmountExtractionAllowlist";
-    case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
-      return "AutofillPredictionImprovementsAllowlist";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM:
       return "BuyNowPayLaterAllowlistAffirmDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP:
@@ -215,6 +213,8 @@ std::string GetStringNameForOptimizationType(
       return "WalletablePassDetectionBoardingPassAllowlist";
     case proto::OptimizationType::READER_MODE_ELIGIBLE:
       return "ReaderModeEligible";
+    case proto::OptimizationType::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST:
+      return "AutofillActorIframeOriginAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

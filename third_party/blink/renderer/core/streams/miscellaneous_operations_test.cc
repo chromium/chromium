@@ -39,7 +39,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNoMethod) {
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  auto promise = algo->Run(scope.GetScriptState(), 0, {});
+  auto promise = algo->Run(scope.GetScriptState(), {});
   ASSERT_FALSE(promise.IsEmpty());
   ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
@@ -57,7 +57,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  auto promise = algo->Run(scope.GetScriptState(), 0, {});
+  auto promise = algo->Run(scope.GetScriptState(), {});
   ASSERT_FALSE(promise.IsEmpty());
   ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
@@ -98,7 +98,6 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
     V8TestingScope* scope,
     const char* function_definition,
     v8::MaybeLocal<v8::Value> extra_arg = v8::MaybeLocal<v8::Value>(),
-    int argc = 0,
     base::span<v8::Local<v8::Value>> argv = {}) {
   String js = String("({start: ") + function_definition + "})" + '\0';
   ScriptValue underlying_value =
@@ -107,7 +106,7 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope->GetScriptState(), underlying_object, "start",
       "underlyingSource.start", extra_arg, ASSERT_NO_EXCEPTION);
-  auto promise = algo->Run(scope->GetScriptState(), argc, argv);
+  auto promise = algo->Run(scope->GetScriptState(), argv);
   EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
   return promise.V8Promise()->Result();
 }
@@ -133,10 +132,9 @@ bool CreateFromFunctionAndGetSuccess(
     V8TestingScope* scope,
     const char* function_definition,
     v8::MaybeLocal<v8::Value> extra_arg = v8::MaybeLocal<v8::Value>(),
-    int argc = 0,
     base::span<v8::Local<v8::Value>> argv = {}) {
   auto result = CreateFromFunctionAndGetResult(scope, function_definition,
-                                               extra_arg, argc, argv);
+                                               extra_arg, argv);
   if (!result->IsBoolean()) {
     return false;
   }
@@ -164,7 +162,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmPassOneArg) {
   v8::Local<v8::Value> argv[] = {v8::Number::New(scope.GetIsolate(), 10)};
   EXPECT_TRUE(CreateFromFunctionAndGetSuccess(
       &scope, "(...args) => args.length === 1 && args[0] === 10",
-      EmptyExtraArg(), 1, argv));
+      EmptyExtraArg(), argv));
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmPassBoth) {
@@ -175,7 +173,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmPassBoth) {
   EXPECT_TRUE(CreateFromFunctionAndGetSuccess(
       &scope,
       "(...args) => args.length === 2 && args[0] === 10 && args[1] === 5",
-      extra_arg, 1, argv));
+      extra_arg, argv));
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNoMethod) {

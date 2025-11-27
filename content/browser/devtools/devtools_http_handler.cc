@@ -46,10 +46,10 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/io_buffer.h"
-#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -71,9 +71,6 @@ extern const int kCcompressedProtocolJSON;
 namespace content {
 
 namespace {
-
-const base::FilePath::CharType kDevToolsActivePortFileName[] =
-    FILE_PATH_LITERAL("DevToolsActivePort");
 
 const char kDevToolsHandlerThreadName[] = "Chrome_DevToolsHandlerThread";
 
@@ -391,6 +388,13 @@ static bool TimeComparator(scoped_refptr<DevToolsAgentHost> host1,
 }
 
 // DevToolsHttpHandler -------------------------------------------------------
+
+net::IPEndPoint DevToolsHttpHandler::GetServerIpAddress() const {
+  if (server_ip_address_) {
+    return *server_ip_address_;
+  }
+  return net::IPEndPoint();
+}
 
 DevToolsHttpHandler::~DevToolsHttpHandler() {
   if (delegate_ &&

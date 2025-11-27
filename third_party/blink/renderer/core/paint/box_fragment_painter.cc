@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
@@ -75,6 +77,29 @@
 namespace blink {
 
 namespace {
+
+Path ComputeBorderShapeOuterPath(const ComputedStyle& style,
+                                 const PhysicalRect& rect,
+                                 const LayoutObject& layout_object) {
+  std::optional<BorderShapeReferenceRects> shape_ref_rects =
+      ComputeBorderShapeReferenceRects(rect, style, layout_object);
+  PhysicalRect outer_reference_rect =
+      shape_ref_rects ? shape_ref_rects->outer : rect;
+  return BorderShapePainter::OuterPath(style, outer_reference_rect);
+}
+
+PhysicalRect ComputeBorderShapeBox(const ComputedStyle& style,
+                                   const PhysicalRect& rect,
+                                   const LayoutObject& layout_object) {
+  std::optional<BorderShapeReferenceRects> shape_ref_rects =
+      ComputeBorderShapeReferenceRects(rect, style, layout_object);
+  PhysicalRect outer_reference_rect =
+      shape_ref_rects ? shape_ref_rects->outer : rect;
+  PhysicalRect inner_reference_rect =
+      shape_ref_rects ? shape_ref_rects->inner : rect;
+  return BorderShapePainter::BoundingRect(style, rect, outer_reference_rect,
+                                          inner_reference_rect);
+}
 
 inline bool HasSelection(const LayoutObject* layout_object) {
   return layout_object->GetSelectionState() != SelectionState::kNone;
@@ -2322,7 +2347,13 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
             physical_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
       skip_children = true;
     }
-    if (!skip_children && style.HasBorderRadius()) {
+    // Also check border-shape and border-radius clipping.
+    if (style.HasBorderShape()) {
+      PhysicalRect rect(physical_offset, size);
+      const Path outer_path = ComputeBorderShapeOuterPath(
+          style, rect, *box_fragment_.GetLayoutObject());
+      skip_children = !hit_test.location.Intersects(outer_path);
+    } else if (style.HasBorderRadius()) {
       PhysicalRect bounds_rect(physical_offset, size);
       skip_children = !hit_test.location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
@@ -2346,9 +2377,18 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     }
   }
 
-  if (style.HasBorderRadius() &&
-      HitTestClippedOutByBorder(hit_test.location, physical_offset))
+  // Check border-shape and border-radius clipping.
+  if (style.HasBorderShape()) {
+    PhysicalRect rect(physical_offset, size);
+    const Path outer_path = ComputeBorderShapeOuterPath(
+        style, rect, *box_fragment_.GetLayoutObject());
+    if (!hit_test.location.Intersects(outer_path)) {
+      return false;
+    }
+  } else if (style.HasBorderRadius() &&
+             HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
     return false;
+  }
 
   bool pointer_events_bounding_box = false;
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.phase);
@@ -2402,6 +2442,12 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     // snap, but matches to legacy and fixes crbug.com/976606.
     if (fragment.IsInlineBox())
       bounds_rect = PhysicalRect(ToPixelSnappedRect(bounds_rect));
+    // Include border-shape overflow in hit test area.
+    if (style.HasBorderShape()) [[unlikely]] {
+      const PhysicalRect border_shape_box = ComputeBorderShapeBox(
+          style, bounds_rect, *box_fragment_.GetLayoutObject());
+      bounds_rect.UniteEvenIfEmpty(border_shape_box);
+    }
     if (hit_test.location.Intersects(bounds_rect)) {
       // We set offset in container block instead of offset in |fragment| like
       // |BoxFragmentPainter::HitTestTextFragment()|.

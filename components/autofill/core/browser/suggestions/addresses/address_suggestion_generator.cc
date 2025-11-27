@@ -15,6 +15,8 @@
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -538,6 +540,34 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
       return trigger_field.value() == profile.text;
     });
     CHECK(!profiles_to_suggest.empty());
+  }
+  if (trigger_field.is_autofilled() && profiles_to_suggest.size() > 1) {
+    // This is just a simulation of the logic behind the feature flag in order
+    // to understand the reason behind the CHECK failure. Profiles are copied so
+    // that the ones used for suggestions are not modified and the branch
+    // effectively remains a functional no-op.
+    std::vector<ProfileWithText> profiles_to_suggest_copy = profiles_to_suggest;
+    const size_t size_before_filter = profiles_to_suggest.size();
+    std::erase_if(profiles_to_suggest_copy,
+                  [&](const ProfileWithText& profile) {
+                    return trigger_field.value() == profile.text;
+                  });
+    if (profiles_to_suggest_copy.empty()) {
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_size",
+                              field_types.size());
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_contains",
+                              field_types.contains(trigger_field_type));
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_type",
+                              base::to_underlying(trigger_field_type));
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "size_before_filter",
+                              size_before_filter);
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_value_size",
+                              trigger_field.value().size());
+      SCOPED_CRASH_KEY_NUMBER(
+          "Autofill", "trigger_field_form_ctrl_type",
+          base::to_underlying(trigger_field.form_control_type()));
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // Do not show more than `kMaxDisplayedAddressSuggestions` suggestions since

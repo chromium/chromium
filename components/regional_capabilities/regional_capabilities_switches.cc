@@ -52,4 +52,10 @@ BASE_FEATURE(kDynamicProfileCountry,
 BASE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWaffleRestrictToAssociatedCountries,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStrictAssociatedCountriesCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

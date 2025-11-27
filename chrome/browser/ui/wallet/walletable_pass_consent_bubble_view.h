@@ -42,9 +42,9 @@ class WalletablePassConsentBubbleView : public WalletablePassBubbleViewBase {
 
   int GetHeaderImageResourceId() const;
 
-  void OnLearnMoreClicked();
-
   optimization_guide::proto::PassCategory pass_category_;
+
+  base::WeakPtr<WalletablePassConsentBubbleController> controller_;
 };
 
 }  // namespace wallet

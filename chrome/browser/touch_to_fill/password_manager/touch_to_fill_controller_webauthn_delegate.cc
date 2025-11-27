@@ -5,7 +5,8 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h"
 
 #include <algorithm>
-#include <vector>
+#include <utility>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -18,11 +19,15 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using Credential = TouchToFillView::Credential;
+
 TouchToFillControllerWebAuthnDelegate::TouchToFillControllerWebAuthnDelegate(
     CredentialReceiver* receiver,
+    SortingCallback sort_credentials_callback,
     bool should_show_hybrid_option,
     bool is_immediate)
     : credential_receiver_(receiver),
+      sort_credentials_callback_(std::move(sort_credentials_callback)),
       should_show_hybrid_option_(should_show_hybrid_option),
       is_immediate_(is_immediate) {}
 
@@ -30,8 +35,7 @@ TouchToFillControllerWebAuthnDelegate::
     ~TouchToFillControllerWebAuthnDelegate() = default;
 
 void TouchToFillControllerWebAuthnDelegate::OnShow(
-    base::span<const password_manager::UiCredential> credentials,
-    base::span<password_manager::PasskeyCredential> webauthn_credentials) {}
+    base::span<const Credential> credentials) {}
 
 void TouchToFillControllerWebAuthnDelegate::OnCredentialSelected(
     const password_manager::UiCredential& credential,
@@ -96,6 +100,18 @@ bool TouchToFillControllerWebAuthnDelegate::
     ShouldShowNoPasskeysSheetIfRequired() {
   return webauthn::WebAuthnCredManDelegate::CredManMode() ==
          webauthn::WebAuthnCredManDelegate::kNonGpmPasskeys;
+}
+
+std::optional<std::vector<Credential>>
+TouchToFillControllerWebAuthnDelegate::SortCredentials(
+    base::span<const Credential> credentials) {
+  if (sort_credentials_callback_.is_null() || !is_immediate_) {
+    return std::nullopt;
+  }
+  std::vector<Credential> credentials_copy(credentials.begin(),
+                                           credentials.end());
+  return sort_credentials_callback_.Run(std::move(credentials_copy),
+                                        is_immediate_);
 }
 
 gfx::NativeView TouchToFillControllerWebAuthnDelegate::GetNativeView() {

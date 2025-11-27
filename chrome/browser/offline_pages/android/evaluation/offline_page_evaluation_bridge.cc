@@ -59,7 +59,7 @@ const char kNativeTag[] = "OPNative";
 const base::FilePath::CharType kTestRequestQueueDirname[] =
     FILE_PATH_LITERAL("Offline Pages/test_request_queue");
 
-void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(
+static void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(
     JNIEnv* env,
     const JavaRef<jobject>& j_result_obj,
     const std::vector<OfflinePageItem>& offline_pages) {
@@ -76,7 +76,7 @@ void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(
   }
 }
 
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_OfflinePageEvaluationBridge_ToJavaSavePageRequest(
     JNIEnv* env,
     const SavePageRequest& request) {
@@ -86,7 +86,7 @@ JNI_OfflinePageEvaluationBridge_ToJavaSavePageRequest(
       request.client_id().id);
 }
 
-ScopedJavaLocalRef<jobjectArray>
+static ScopedJavaLocalRef<jobjectArray>
 JNI_OfflinePageEvaluationBridge_CreateJavaSavePageRequests(
     JNIEnv* env,
     std::vector<std::unique_ptr<SavePageRequest>> requests) {

@@ -105,7 +105,6 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.total_probe_length.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_and.load(), ~size_t{});
-  EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
   EXPECT_EQ(info.max_reserve.load(), 0);
   EXPECT_GE(info.create_time, test_start);
   EXPECT_EQ(info.weight, test_stride);
@@ -122,7 +121,6 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   info.total_probe_length.store(1, std::memory_order_relaxed);
   info.hashes_bitwise_or.store(1, std::memory_order_relaxed);
   info.hashes_bitwise_and.store(1, std::memory_order_relaxed);
-  info.hashes_bitwise_xor.store(1, std::memory_order_relaxed);
   info.max_reserve.store(1, std::memory_order_relaxed);
   info.create_time = test_start - absl::Hours(20);
 
@@ -139,7 +137,6 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.total_probe_length.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_and.load(), ~size_t{});
-  EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
   EXPECT_EQ(info.max_reserve.load(), 0);
   EXPECT_EQ(info.weight, 2 * test_stride);
   EXPECT_EQ(info.inline_element_size, test_element_size);
@@ -186,17 +183,14 @@ TEST(HashtablezInfoTest, RecordInsertMiss) {
   EXPECT_EQ(info.max_probe_length.load(), 6);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x0000FF00);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x0000FF00);
-  EXPECT_EQ(info.hashes_bitwise_xor.load(), 0x0000FF00);
   RecordInsertMissSlow(&info, 0x000FF000, 4 * kProbeLength);
   EXPECT_EQ(info.max_probe_length.load(), 6);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x0000F000);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x000FFF00);
-  EXPECT_EQ(info.hashes_bitwise_xor.load(), 0x000F0F00);
   RecordInsertMissSlow(&info, 0x00FF0000, 12 * kProbeLength);
   EXPECT_EQ(info.max_probe_length.load(), 12);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x00000000);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x00FFFF00);
-  EXPECT_EQ(info.hashes_bitwise_xor.load(), 0x00F00F00);
 }
 
 TEST(HashtablezInfoTest, RecordErase) {

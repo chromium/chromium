@@ -38,6 +38,7 @@
 #include "cc/slim/layer.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/events_helper.h"
+#include "components/input/features.h"
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
@@ -1425,9 +1426,18 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
 
   const float y_offset_pix =
       host()->delegate()->GetCurrentTouchSequenceYOffset();
+
+  std::optional<std::unique_ptr<ui::MotionEventAndroid>> motion_event_android =
+      std::nullopt;
+  if (input::features::kForwardEventsSeenOnBrowserToViz.Get()) {
+    motion_event_android =
+        static_cast<const ui::MotionEventAndroidJava&>(event).CreateFor(
+            gfx::PointF(event.GetX(0), event.GetY(0)));
+  }
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
       event.GetRawDownTime(), GetFrameSinkId(), y_offset_pix,
-      view_.GetDipScale(), browser_would_have_handled));
+      view_.GetDipScale(), browser_would_have_handled,
+      std::move(motion_event_android)));
 }
 
 bool RenderWidgetHostViewAndroid::IsMojoRIRDelegateConnectionSetup() {

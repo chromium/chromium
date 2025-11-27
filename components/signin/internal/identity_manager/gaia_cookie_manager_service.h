@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -183,7 +184,7 @@ class GaiaCookieManagerService
 
     // Called back from SimpleURLLoader.
     void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                           std::unique_ptr<std::string> body);
+                           std::optional<std::string> body);
 
     // Any fetches still ongoing after this call are considered timed out.
     void Timeout();
@@ -323,7 +324,6 @@ class GaiaCookieManagerService
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiLoginDelegateForPartition() override;
-  bool CanBindCookiesForPartition() override;
 
   // Helper method to initialize listed accounts ids.
   void InitializeListedAccountsIds();

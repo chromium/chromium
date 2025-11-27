@@ -6,8 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
-#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
 
@@ -41,9 +41,12 @@ void RecordExtractionAndCachingStatus(
 
 PageContentCacheHandler::PageContentCacheHandler(
     os_crypt_async::OSCryptAsync* os_crypt_async,
-    const base::FilePath& profile_path)
-    : page_content_cache_(
-          std::make_unique<PageContentCache>(os_crypt_async, profile_path)) {}
+    const base::FilePath& profile_path,
+    base::TimeDelta max_context_age)
+    : page_content_cache_(std::make_unique<PageContentCache>(os_crypt_async,
+                                                             profile_path,
+                                                             max_context_age)) {
+}
 
 PageContentCacheHandler::~PageContentCacheHandler() = default;
 

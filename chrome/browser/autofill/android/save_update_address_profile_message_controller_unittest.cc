@@ -165,7 +165,7 @@ void SaveUpdateAddressProfileMessageControllerTest::
 
 messages::MessageWrapper*
 SaveUpdateAddressProfileMessageControllerTest::GetMessageWrapper() {
-  return controller_.message_.get();
+  return controller_.GetMessageForTest();
 }
 
 // Tests that the save message properties (title, description with profile

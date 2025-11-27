@@ -30,8 +30,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/metrics/field_trial_params.h"
-
 namespace safe_browsing {
 
 // Container for a map of features to values, which enforces behavior

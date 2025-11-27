@@ -4,6 +4,9 @@
 
 #include "chrome/browser/global_features.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -11,12 +14,14 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "media/base/media_switches.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 // This causes a gn error on Android builds, because gn does not understand
@@ -122,8 +127,13 @@ void GlobalFeatures::InitCoreFeatures() {
             &ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled)));
   }
 #endif
+
   optimization_guide_global_feature_ =
       std::make_unique<optimization_guide::OptimizationGuideGlobalFeature>();
+
+  if (IsAudioProcessMlModelUsageEnabled()) {
+    audio_process_ml_model_forwarder_ = AudioProcessMlModelForwarder::Create();
+  }
 
   if (base::FeatureList::IsEnabled(
           safe_browsing::kRelaunchNotificationForAdvancedProtection)) {
@@ -149,6 +159,7 @@ void GlobalFeatures::Shutdown() {
   }
   synthetic_trial_manager_.reset();
 #endif
+  audio_process_ml_model_forwarder_.reset();
   optimization_guide_global_feature_.reset();
 
   application_advanced_protection_status_detector_.reset();

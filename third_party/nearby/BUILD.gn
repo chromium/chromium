@@ -125,6 +125,11 @@ source_set("connections_implementation_ble_advertisement") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+config("connections_implementation_temporary_unused_result_suppression") {
+  # TODO(crbug.com/463698813): Clean up, re-enable.
+  cflags = [ "-Wno-unused-result" ]
+}
+
 source_set("connections_implementation") {
   # TODO(crbug.com/415053888): Remove once usage of the deprecated version of
   # BluetoothUtils::ToString and BluetoothUtils::FromString have been removed.
@@ -251,6 +256,7 @@ source_set("connections_implementation") {
   configs += [
     "//build/config/compiler:unnecessary_virtual_specifier_warning",
     "//build/config/compiler:no_chromium_code",
+    ":connections_implementation_temporary_unused_result_suppression",
   ]
 }
 

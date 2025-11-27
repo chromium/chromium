@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -15,6 +16,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "third_party/icu/source/i18n/unicode/dtptngen.h"
+#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
 
@@ -43,6 +47,34 @@ std::u16string DateInfo::GetDate(std::u16string_view format) const {
     return {};
   }
   return data_util::FormatDate(date_, format);
+}
+
+std::u16string DateInfo::GetIcuDate(std::u16string_view format,
+                                    std::string_view locale) const {
+  if (date_.day == 0 || date_.month == 0 || date_.year == 0) {
+    return {};
+  }
+
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale icu_locale(std::string(locale).c_str());
+  if (icu_locale.isBogus()) {
+    return {};
+  }
+  icu::SimpleDateFormat formatter(icu::UnicodeString::readOnlyAlias(format),
+                                  icu_locale, status);
+  if (U_FAILURE(status)) {
+    return {};
+  }
+  formatter.setTimeZone(*icu::TimeZone::getGMT());
+  icu::UnicodeString date_string;
+  base::Time::Exploded exploded = {
+      .year = date_.year, .month = date_.month, .day_of_month = date_.day};
+  base::Time time;
+  if (!base::Time::FromUTCExploded(base::Time::Exploded{exploded}, &time)) {
+    return {};
+  }
+  formatter.format(time.InMillisecondsFSinceUnixEpoch(), date_string);
+  return base::i18n::UnicodeStringToString16(date_string);
 }
 
 }  // namespace autofill

@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
+#include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {
@@ -50,6 +54,17 @@ base::WeakPtr<WalletablePassBubbleControllerBase>
 WalletablePassConsentBubbleController::
     GetWalletablePassBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<WalletablePassConsentBubbleController>
+WalletablePassConsentBubbleController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void WalletablePassConsentBubbleController::OnLearnMoreClicked() {
+  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+    chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
+  }
 }
 
 }  // namespace wallet

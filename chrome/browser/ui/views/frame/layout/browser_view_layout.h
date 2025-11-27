@@ -61,6 +61,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<MultiContentsView> multi_contents_view = nullptr;
   raw_ptr<SidePanel> toolbar_height_side_panel = nullptr;
   raw_ptr<SidePanel> contents_height_side_panel = nullptr;
+  raw_ptr<views::View> side_panel_animation_content = nullptr;
 
   // TODO(crbug.com/424236535): These can be removed once `SideBySide` is
   // launched.
@@ -125,6 +126,12 @@ class BrowserViewLayout : public views::LayoutManager {
   }
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     views_.bookmark_bar = bookmark_bar;
+  }
+  void set_side_panel_animation_content(views::View* contents_to_animate) {
+    views_.side_panel_animation_content = contents_to_animate;
+  }
+  views::View* side_panel_animation_content() {
+    return views_.side_panel_animation_content;
   }
 
   // views::LayoutManager overrides:

@@ -12,7 +12,7 @@ import os
 import re
 import sys
 import copy
-from typing import List, Dict, Set, Union
+from typing import List, Dict, Iterable, Set, Union
 from pathlib import Path
 import hashlib
 import shlex
@@ -694,6 +694,34 @@ def write_blueprint_key_value(output,
            for line in (value if isinstance(value, list) else [value]))))
 
 
+def sorted_cflags(cflags_object: Iterable[str]) -> list[str]:
+  """Sorts cflags.
+
+  Some cflags are order-dependent (critically, `-U` flags and `-D` flags must
+  have their relative order maintained if they reference the same macro name).
+  This version of `sorted` respects that.
+  """
+
+  # Key creation here is a bit subtle.
+  #
+  # Basically, all `-D` and `-U` macros are trimmed to their macro names (plus
+  # a leading `-D`, regardless of the original prefix). This relies on
+  # Python's `sorted` function keeping a stable order, so an original `-UFOO
+  # -DFOO=1 -UFOO` remains in that same relative order in the output.
+  def flag_to_key(cflag: str) -> str:
+    key = cflag
+    if key.startswith("-U"):
+      key = f"-D{key[2:]}"
+
+    if key.startswith("-D"):
+      # Remove any value this is set to, so that doesn't mess with
+      # ordering.
+      key = key.split("=", 1)[0]
+    return key
+
+  return sorted(cflags_object, key=flag_to_key)
+
+
 class Module:
   """A single module (e.g., cc_binary, cc_test) in a blueprint."""
 
@@ -730,19 +758,19 @@ class Module:
       self._output_field(nested_out, 'static_libs')
       self._output_field(nested_out, 'whole_static_libs')
       self._output_field(nested_out, 'header_libs')
-      self._output_field(nested_out, 'cflags')
+      self._output_field(nested_out, 'cflags', is_cflags_like=True)
       self._output_field(nested_out, 'stl')
-      self._output_field(nested_out, 'cppflags')
+      self._output_field(nested_out, 'cppflags', is_cflags_like=True)
       self._output_field(nested_out, 'include_dirs')
       self._output_field(nested_out, 'generated_headers')
       self._output_field(nested_out, 'export_generated_headers')
-      self._output_field(nested_out, 'ldflags')
+      self._output_field(nested_out, 'ldflags', is_cflags_like=True)
       self._output_field(nested_out, 'compile_multilib')
       self._output_field(nested_out, 'stem')
       self._output_field(nested_out, "edition")
       self._output_field(nested_out, 'cfgs')
       self._output_field(nested_out, 'features')
-      self._output_field(nested_out, 'flags', False)
+      self._output_field(nested_out, 'flags', sort=False)
       self._output_field(nested_out, 'rustlibs')
       self._output_field(nested_out, 'proc_macros')
 
@@ -756,8 +784,12 @@ class Module:
                       output,
                       name,
                       sort=True,
-                      list_to_multiline_string=False):
+                      list_to_multiline_string=False,
+                      is_cflags_like=False):
       value = getattr(self, name)
+      if sort and is_cflags_like:
+        value = sorted_cflags(value)
+        sort = False
       return write_blueprint_key_value(
           output,
           name,
@@ -896,7 +928,7 @@ class Module:
     self._output_field(output, 'export_static_lib_headers')
     self._output_field(output, 'export_header_lib_headers')
     self._output_field(output, 'defaults')
-    self._output_field(output, 'cflags')
+    self._output_field(output, 'cflags', is_cflags_like=True)
     self._output_field(output, 'include_dirs')
     self._output_field(output, 'local_include_dirs')
     self._output_field(output, 'header_libs')
@@ -912,8 +944,8 @@ class Module:
     self._output_field(output, 'test_config')
     self._output_field(output, 'proto')
     self._output_field(output, 'linker_scripts')
-    self._output_field(output, 'ldflags')
-    self._output_field(output, 'cppflags')
+    self._output_field(output, 'ldflags', is_cflags_like=True)
+    self._output_field(output, 'cppflags', is_cflags_like=True)
     self._output_field(output, 'unstable')
     self._output_field(output, 'path')
     self._output_field(output, 'libs')
@@ -984,8 +1016,12 @@ class Module:
                     output,
                     name,
                     sort=True,
-                    list_to_multiline_string=False):
+                    list_to_multiline_string=False,
+                    is_cflags_like=False):
     value = getattr(self, name)
+    if sort and is_cflags_like:
+      value = sorted_cflags(value)
+      sort = False
     return write_blueprint_key_value(
         output,
         name,
@@ -2577,6 +2613,16 @@ def create_jni_zero_proxy_only_module(jni_zero_generator_module):
 
 def _get_cflags(cflags, defines):
   cflags = [flag for flag in cflags if flag in cflag_allowlist]
+
+  # Android _may_ set a platform default for _LIBCPP_HARDENING_MODE. If that
+  # conflicts with the level specified on this target, we'll get build errors.
+  #
+  # Allow Android's default to apply to builds where we don't specify one, but
+  # prefer our default for builds that do.
+  libcpp_hardening_flag = "_LIBCPP_HARDENING_MODE"
+  if any(define.startswith(libcpp_hardening_flag) for define in defines):
+    cflags.append(f"-U{libcpp_hardening_flag}")
+
   # Consider proper allowlist or denylist if needed
   cflags.extend(["-D%s" % define.replace("\"", "\\\"") for define in defines])
   return cflags

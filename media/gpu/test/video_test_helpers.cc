@@ -706,9 +706,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    std::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(layout_->format());
-    if (!buffer_format) {
+    std::optional<viz::SharedImageFormat> si_format =
+        media::VideoPixelFormatToSharedImageFormat(layout_->format());
+    if (!si_format) {
       LOG(ERROR) << "Unexpected format: " << layout_->format();
       return nullptr;
     }
@@ -716,9 +716,8 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = test_sii_->CreateSharedImage(
-        {viz::GetSharedImageFormat(*buffer_format), layout_->coded_size(),
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "AlignedDataHelper"},
+        {*si_format, layout_->coded_size(), gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "AlignedDataHelper"},
         gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         std::move(dup_handle));

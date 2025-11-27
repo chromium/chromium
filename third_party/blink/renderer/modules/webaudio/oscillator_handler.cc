@@ -41,21 +41,12 @@ float DetuneToFrequencyMultiplier(float detune_value) {
 // Clamp the frequency value to lie with Nyquist frequency. For NaN, arbitrarily
 // clamp to +Nyquist.
 void ClampFrequency(base::span<float> frequency,
-                    int spanification_suspected_redundant_frames_to_process,
                     float nyquist) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_frames_to_process ==
-            static_cast<int>(frequency.size()),
-        base::NotFatalUntil::M143);
-  for (int k = 0; k < spanification_suspected_redundant_frames_to_process;
-       ++k) {
-    float f = frequency[k];
-
+  for (float& f : frequency) {
     if (std::isnan(f)) {
-      frequency[k] = nyquist;
+      f = nyquist;
     } else {
-      frequency[k] = ClampTo(f, -nyquist, nyquist);
+      f = ClampTo(f, -nyquist, nyquist);
     }
   }
 }
@@ -349,8 +340,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   }
 
   if (has_sample_accurate_values) {
-    ClampFrequency(phase_increments, frames_to_process,
-                   Context()->sampleRate() / 2);
+    ClampFrequency(phase_increments, Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
     vector_math::Vsmul(phase_increments.data(), 1, &final_scale,
                        phase_increments.data(), 1, frames_to_process);
@@ -503,8 +493,7 @@ double OscillatorHandler::ProcessKRate(int n,
   float frequency = frequency_->FinalValue();
   const float detune_scale = DetuneToFrequencyMultiplier(detune_->FinalValue());
   frequency *= detune_scale;
-  ClampFrequency(base::span_from_ref(frequency), 1,
-                 Context()->sampleRate() / 2);
+  ClampFrequency(base::span_from_ref(frequency), Context()->sampleRate() / 2);
   periodic_wave_->WaveDataForFundamentalFrequency(
       frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
 
@@ -733,8 +722,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     float detune = detune_->FinalValue();
     float detune_scale = DetuneToFrequencyMultiplier(detune);
     frequency *= detune_scale;
-    ClampFrequency(base::span_from_ref(frequency), 1,
-                   Context()->sampleRate() / 2);
+    ClampFrequency(base::span_from_ref(frequency), Context()->sampleRate() / 2);
     periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
                                                     higher_wave_data,
                                                     table_interpolation_factor);

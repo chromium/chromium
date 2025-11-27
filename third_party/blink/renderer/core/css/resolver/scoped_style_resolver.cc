@@ -31,6 +31,7 @@
 #include "base/types/zip.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -65,7 +66,7 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 }
 
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
+  const HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (const auto& rule : keyframes_rules) {
     AddKeyframeStyle(rule);
@@ -89,12 +90,13 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   Document& document = GetTreeScope().GetDocument();
   CSSFontSelector* css_font_selector =
       document.GetStyleEngine().GetFontSelector();
-  const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
+  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(&document, font_face_rule,
                                                false /* is_user_style */)) {
-      css_font_selector->GetFontFaceCache()->Add(font_face_rule, font_face);
+      css_font_selector->GetFontFaceCache()->Add(font_face_rule.value,
+                                                 font_face);
     }
   }
   if (font_face_rules.size()) {
@@ -194,11 +196,13 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     return nullptr;
   }
 
-  return it->value.Get();
+  const CascadeLayered<StyleRuleKeyframes>& layered_keyframes = it->value;
+  return layered_keyframes.value.Get();
 }
 
-void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
-  AtomicString name = rule->GetName();
+void ScopedStyleResolver::AddKeyframeStyle(
+    const CascadeLayered<StyleRuleKeyframes>& rule) {
+  AtomicString name = rule.value->GetName();
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(name);
   if (it == keyframes_rule_map_.end() ||
@@ -208,14 +212,14 @@ void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
 }
 
 bool ScopedStyleResolver::KeyframeStyleShouldOverride(
-    const StyleRuleKeyframes* new_rule,
-    const StyleRuleKeyframes* existing_rule) const {
-  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed()) {
-    return existing_rule->IsVendorPrefixed();
+    const CascadeLayered<StyleRuleKeyframes>& new_rule,
+    const CascadeLayered<StyleRuleKeyframes>& existing_rule) const {
+  if (new_rule.value->IsVendorPrefixed() !=
+      existing_rule.value->IsVendorPrefixed()) {
+    return existing_rule.value->IsVendorPrefixed();
   }
-  return !cascade_layer_map_ || cascade_layer_map_->CompareLayerOrder(
-                                    existing_rule->GetCascadeLayer(),
-                                    new_rule->GetCascadeLayer()) <= 0;
+  return CascadeLayerMap::CompareLayerOrder(cascade_layer_map_, existing_rule,
+                                            new_rule) <= 0;
 }
 
 Element& ScopedStyleResolver::InvalidationRootForTreeScope(
@@ -357,14 +361,15 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
     return;
   }
 
-  const HeapVector<Member<StyleRuleFontFeatureValues>>
+  const HeapVector<CascadeLayered<StyleRuleFontFeatureValues>>&
       font_feature_values_rules = rule_set.FontFeatureValuesRules();
-  for (auto& rule : font_feature_values_rules) {
+  for (auto& layered_rule : font_feature_values_rules) {
+    StyleRuleFontFeatureValues* rule = layered_rule.value;
+    const CascadeLayer* layer = layered_rule.layer;
     for (auto& font_family : rule->GetFamilies()) {
       unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-      if (cascade_layer_map_ && rule->GetCascadeLayer() != nullptr) {
-        layer_order =
-            cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
+      if (cascade_layer_map_ && layer != nullptr) {
+        layer_order = cascade_layer_map_->GetLayerOrder(*layer);
       }
       auto key = String(font_family).FoldCase();
       auto add_result =

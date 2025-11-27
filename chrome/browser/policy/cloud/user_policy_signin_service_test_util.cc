@@ -60,6 +60,7 @@ void FakeUserPolicySigninService::FetchPolicyForSignedInUser(
     const std::vector<std::string>& user_affiliation_ids,
     scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
     PolicyFetchCallback callback) {
+  policy_fetched_ = true;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

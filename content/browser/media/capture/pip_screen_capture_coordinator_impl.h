@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/unguessable_token.h"
 #include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/capture_util_mac.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
@@ -26,6 +27,10 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
     // shown, or nullopt when it is closed.
     virtual void OnPipWindowIdChanged(
         std::optional<NativeWindowId> new_pip_window_id) = 0;
+    // Called when the list of captures changes.
+    virtual void OnCapturesChanged(
+        const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
+            captures) = 0;
   };
 
   ~PipScreenCaptureCoordinatorImpl();
@@ -41,6 +46,9 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
 
   std::optional<NativeWindowId> PipWindowId() const;
 
+  void AddCapture(PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info);
+  void RemoveCapture(const base::UnguessableToken& session_id);
+
   std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy();
 
   void AddObserver(Observer* observer);
@@ -54,6 +62,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
 
   std::optional<NativeWindowId> pip_window_id_;
   base::ObserverList<Observer> observers_;
+  std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures_;
   base::WeakPtrFactory<PipScreenCaptureCoordinatorImpl> weak_factory_{this};
 };
 

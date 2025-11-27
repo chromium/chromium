@@ -47,10 +47,11 @@ void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
 void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
                                                        bool enabled);
 
-// Populates account info with a `given_name` and other fake data needed for a
-// valid `AccountInfo` structure.
-void PopulateAccountInfoWithName(AccountInfo& info,
-                                 const std::string& given_name);
+// Returns `info` copy with populated `given_name` and other fake data needed
+// for a valid `AccountInfo` structure.
+[[nodiscard]] AccountInfo PopulateAccountInfoWithName(
+    const AccountInfo& info,
+    const std::string& given_name);
 
 // Updates manual block/allow list with a given host.
 // e.g. SetManualFilterForHost(profile, "www.example.com", false) adds the

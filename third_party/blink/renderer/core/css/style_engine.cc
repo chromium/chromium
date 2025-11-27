@@ -37,6 +37,7 @@
 #include "base/rand_util.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
@@ -3395,12 +3396,12 @@ bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
     return false;
   }
 
-  const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
+  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(document_, font_face_rule,
                                                true /* is_user_style */)) {
-      font_selector_->GetFontFaceCache()->Add(font_face_rule, font_face);
+      font_selector_->GetFontFaceCache()->Add(font_face_rule.value, font_face);
     }
   }
   if (resolver_ && font_face_rules.size()) {
@@ -3410,15 +3411,16 @@ bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
 }
 
 void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
+  const HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (unsigned i = 0; i < keyframes_rules.size(); ++i) {
     AddUserKeyframeStyle(keyframes_rules[i]);
   }
 }
 
-void StyleEngine::AddUserKeyframeStyle(StyleRuleKeyframes* rule) {
-  AtomicString animation_name(rule->GetName());
+void StyleEngine::AddUserKeyframeStyle(
+    const CascadeLayered<StyleRuleKeyframes>& rule) {
+  AtomicString animation_name(rule.value->GetName());
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
   if (it == keyframes_rule_map_.end() ||
@@ -3428,14 +3430,14 @@ void StyleEngine::AddUserKeyframeStyle(StyleRuleKeyframes* rule) {
 }
 
 bool StyleEngine::UserKeyframeStyleShouldOverride(
-    const StyleRuleKeyframes* new_rule,
-    const StyleRuleKeyframes* existing_rule) const {
-  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed()) {
-    return existing_rule->IsVendorPrefixed();
+    const CascadeLayered<StyleRuleKeyframes>& new_rule,
+    const CascadeLayered<StyleRuleKeyframes>& existing_rule) const {
+  if (new_rule.value->IsVendorPrefixed() !=
+      existing_rule.value->IsVendorPrefixed()) {
+    return existing_rule.value->IsVendorPrefixed();
   }
-  return !user_cascade_layer_map_ || user_cascade_layer_map_->CompareLayerOrder(
-                                         existing_rule->GetCascadeLayer(),
-                                         new_rule->GetCascadeLayer()) <= 0;
+  return CascadeLayerMap::CompareLayerOrder(user_cascade_layer_map_,
+                                            existing_rule, new_rule) <= 0;
 }
 
 void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
@@ -3478,21 +3480,18 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
 void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
                                    const RuleSet& rule_set,
                                    bool is_user_style) {
-  const HeapVector<Member<StyleRuleProperty>> property_rules =
-      rule_set.PropertyRules();
-  for (unsigned i = 0; i < property_rules.size(); ++i) {
-    StyleRuleProperty* rule = property_rules[i];
-    AtomicString name(rule->GetName());
+  for (const CascadeLayered<StyleRuleProperty>& rule :
+       rule_set.PropertyRules()) {
+    AtomicString name(rule.value->GetName());
 
     PropertyRegistration* registration =
         PropertyRegistration::MaybeCreateForDeclaredProperty(GetDocument(),
-                                                             name, *rule);
+                                                             name, *rule.value);
     if (!registration) {
       continue;
     }
 
-    auto priority =
-        cascade_map.GetPriority(is_user_style, rule->GetCascadeLayer());
+    auto priority = cascade_map.GetPriority(is_user_style, rule.layer);
     if (!cascade_map.AddAndCascade(name, priority)) {
       continue;
     }
@@ -3513,7 +3512,8 @@ StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
     return nullptr;
   }
 
-  return it->value.Get();
+  const CascadeLayered<StyleRuleKeyframes>& layered_rule = it->value;
+  return layered_rule.value;
 }
 
 StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(

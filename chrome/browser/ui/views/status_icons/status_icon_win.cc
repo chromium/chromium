@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -113,7 +114,7 @@ void StatusIconWin::SetToolTip(const std::u16string& tool_tip) {
   // Create the icon.
   NOTIFYICONDATA icon_data = InitIconData();
   icon_data.uFlags = NIF_TIP;
-  UNSAFE_TODO(wcscpy_s(icon_data.szTip, base::as_wcstr(tool_tip)));
+  base::wcslcpy(icon_data.szTip, base::as_wcstr(tool_tip));
   BOOL result = Shell_NotifyIcon(NIM_MODIFY, &icon_data);
   if (!result) {
     LOG(WARNING) << "Unable to set tooltip for status tray icon";
@@ -128,8 +129,8 @@ void StatusIconWin::DisplayBalloon(
   NOTIFYICONDATA icon_data = InitIconData();
   icon_data.uFlags = NIF_INFO;
   icon_data.dwInfoFlags = NIIF_INFO;
-  UNSAFE_TODO(wcscpy_s(icon_data.szInfoTitle, base::as_wcstr(title)));
-  UNSAFE_TODO(wcscpy_s(icon_data.szInfo, base::as_wcstr(contents)));
+  base::wcslcpy(icon_data.szInfoTitle, base::as_wcstr(title));
+  base::wcslcpy(icon_data.szInfo, base::as_wcstr(contents));
   icon_data.uTimeout = 0;
 
   if (!icon.isNull()) {

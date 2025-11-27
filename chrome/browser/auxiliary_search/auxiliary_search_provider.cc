@@ -225,7 +225,8 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
 }
 
 // static
-jlong JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env, Profile* profile) {
+static jlong JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
+                                                     Profile* profile) {
   DCHECK(profile);
 
   return reinterpret_cast<intptr_t>(

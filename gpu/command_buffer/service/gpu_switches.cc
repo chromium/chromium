@@ -48,9 +48,6 @@ const char kForceMaxTextureSize[] = "force-max-texture-size";
 // Sets the maximum size of the in-memory gpu program cache, in kb
 const char kGpuProgramCacheSizeKb[]         = "gpu-program-cache-size-kb";
 
-// Disables the GPU shader on disk cache.
-const char kDisableGpuShaderDiskCache[]     = "disable-gpu-shader-disk-cache";
-
 // Simulates shared textures when share groups are not available. Not available
 // everywhere.
 const char kEnableThreadedTextureMailboxes[] =

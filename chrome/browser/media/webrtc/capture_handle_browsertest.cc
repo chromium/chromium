@@ -668,8 +668,16 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 }
 
+// TODO(https://crbug.com/448444706): failing on linux-msan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_SelfCaptureSanityWhenNotPermitted \
+  DISABLED_SelfCaptureSanityWhenNotPermitted
+#else
+#define MAYBE_SelfCaptureSanityWhenNotPermitted \
+  SelfCaptureSanityWhenNotPermitted
+#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
-                       SelfCaptureSanityWhenNotPermitted) {
+                       MAYBE_SelfCaptureSanityWhenNotPermitted) {
   TabInfo tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {kArbitraryOrigin},
                         /*self_capture=*/true);

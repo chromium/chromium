@@ -13,7 +13,7 @@
 using content::BrowserThread;
 
 // static
-void JNI_NotificationTriggerScheduler_TriggerNotifications(JNIEnv* env) {
+static void JNI_NotificationTriggerScheduler_TriggerNotifications(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   NotificationTriggerScheduler::TriggerNotifications();
 }

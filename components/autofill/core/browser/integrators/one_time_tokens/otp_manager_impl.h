@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
@@ -70,8 +71,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // a new token is received.
   void OnOneTimeTokenReceived(
       one_time_tokens::OneTimeTokenSource,
-      std::variant<one_time_tokens::OneTimeToken,
-                   one_time_tokens::OneTimeTokenRetrievalError>);
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>
+          token_or_error);
 
   // Callback for `OtpPhishGuardDelegate::StartOtpPhishGuardCheck`.
   void MaybeShowOtpSuggestions(one_time_tokens::OneTimeToken token,

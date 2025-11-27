@@ -44,7 +44,9 @@ DevToolsConnectionDialog::DevToolsConnectionDialog(
           .SetTitle(
               l10n_util::GetStringUTF16(IDS_DEV_TOOLS_CONNECTION_DIALOG_TITLE))
           .AddParagraph(
-              ui::DialogModelLabel(IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE))
+              ui::DialogModelLabel(IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE_PART_1))
+          .AddParagraph(
+            ui::DialogModelLabel(IDS_DEV_TOOLS_CONNECTION_DIALOG_MESSAGE_PART_2))
           .AddOkButton(base::BindOnce(&DevToolsConnectionDialog::OnAccept,
                                       base::Unretained(this)),
                        ui::DialogModel::Button::Params()

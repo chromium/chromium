@@ -258,13 +258,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       uint32_t texture_target,
       bool is_software = false);
 
-  static scoped_refptr<ClientSharedImage> CreateForTesting(
-      const Mailbox& mailbox,
-      const SharedImageMetadata& metadata,
-      const SyncToken& sync_token,
-      gfx::BufferUsage buffer_usage,
-      scoped_refptr<SharedImageInterfaceHolder> sii_holder);
-
   // Used to control execution of `MapAsync()` completion callbacks. On a
   // `MapAsync()` invocation the completion callback will be passed to this
   // callback, which can execute it as the test requires.
