@@ -533,7 +533,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     "src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    ":chrome_test_java_org.chromium.chrome.browser.tabmodel",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
