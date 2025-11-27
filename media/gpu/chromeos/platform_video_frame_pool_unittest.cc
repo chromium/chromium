@@ -38,9 +38,7 @@ CroStatus::Or<scoped_refptr<FrameResource>> CreateGpuMemoryBufferFrameResource(
     base::TimeDelta timestamp) {
   constexpr gfx::BufferUsage kBufferUsage = gfx::BufferUsage::GPU_READ;
 
-  std::optional<gfx::BufferFormat> gfx_format =
-      VideoPixelFormatToGfxBufferFormat(format);
-  DCHECK(gfx_format);
+  DCHECK(VideoPixelFormatToSharedImageFormat(format));
   scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap =
       CreateMockNativePixmapDmaBuf(format, coded_size, modifier);
 
