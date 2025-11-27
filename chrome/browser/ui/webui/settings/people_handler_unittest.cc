@@ -1586,7 +1586,9 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
       kManagedEmail, ConsentLevel::kSignin);
   SetExplicitSignin(true);
   // Make the account managed and disallow signout.
-  account.hosted_domain = "managedchrome.com";
+  account = AccountInfo::Builder(account)
+                .SetHostedDomain("managedchrome.com")
+                .Build();
   AccountCapabilitiesTestMutator(&account.capabilities)
       .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account);
