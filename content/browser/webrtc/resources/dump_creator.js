@@ -118,13 +118,14 @@ export class DumpCreator {
   async onDownloadInternals_() {
     const useCompression =
         document.getElementById('dump-checkbox').checked;
+    // Preferably we get the full version information.
     const uaData = await navigator.userAgentData
         .getHighEntropyValues(['fullVersionList']);
     const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
       'UserAgent': navigator.userAgent,
-      'UserAgentData': uaData.fullVersionList,
+      'UserAgentData': uaData,
     };
     const textBlob =
         new Blob([JSON.stringify(dumpObject, null, 1)],
