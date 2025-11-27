@@ -392,22 +392,19 @@ export class SettingsYourSavedInfoPageElement extends
       map.set(
           routes.YOUR_SAVED_INFO_CONTACT_INFO.path, '#addressesManagerButton');
     }
-
+    if (routes.YOUR_SAVED_INFO_IDENTITY_DOCS) {
+      map.set(
+          routes.YOUR_SAVED_INFO_IDENTITY_DOCS.path, '#identityManagerButton');
+    }
+    if (routes.YOUR_SAVED_INFO_TRAVEL) {
+      map.set(routes.YOUR_SAVED_INFO_TRAVEL.path, '#travelManagerButton');
+    }
     return map;
   }
 
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
-    const ids = [
-      'contactInfo',
-      // <if expr="is_win or is_macosx">
-      'passkeys',
-      // </if>
-      'payments',
-    ];
-    assert(ids.includes(childViewId));
-
-    let triggerId: string|null = null;
+    let triggerId: string;
     switch (childViewId) {
       case 'contactInfo':
         triggerId = 'addressesManagerButton';
@@ -420,12 +417,15 @@ export class SettingsYourSavedInfoPageElement extends
       case 'payments':
         triggerId = 'paymentManagerButton';
         break;
-      default:
+      case 'identityDocs':
+        triggerId = 'identityManagerButton';
         break;
+      case 'travel':
+        triggerId = 'travelManagerButton';
+        break;
+      default:
+        throw new Error(`Unrecognized child view ID: ${childViewId}`);
     }
-
-    assert(triggerId);
-
     const control =
         this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
     assert(control);
