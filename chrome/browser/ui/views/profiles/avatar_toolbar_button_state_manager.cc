@@ -1194,7 +1194,7 @@ class PasskeyStateProvider : public StateProvider,
 
   std::u16string GetAvatarTooltipText() const final {
     return passkey_manager_observation_.GetSource()
-        ->GetPasskeyErrorProfilePillTitle();
+        ->GetPasskeyErrorProfileMenuDetails();
   }
 
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const override {
