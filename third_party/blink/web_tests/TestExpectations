@@ -9897,10 +9897,7 @@ crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/we
 
 # UsePersistentCacheForCodeCache test failures.
 crbug.com/455909145 [ Linux ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
-crbug.com/455909145 [ Mac ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure Pass ]
 crbug.com/455909145 [ Win ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure ]
-crbug.com/455909145 [ Mac ] wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
-crbug.com/455909145 [ Win ] wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
 
 # Gardener 2025-11-11
 crbug.com/40516274 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
@@ -9931,9 +9928,6 @@ crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.worker.html [ Failure Pass ]
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.html [ Failure Pass ]
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
-
-crbug.com/414792736 http/tests/devtools/components/utilities-highlight-results.js [ Failure Pass ]
-crbug.com/414792736 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
