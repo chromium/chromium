@@ -24,15 +24,6 @@
 
 namespace cast_channel {
 
-// Enforce nonce checking when enabled.
-// If disabled, the nonce value returned from the device is not checked against
-// the one sent to the device. As a result, the nonce can be empty and omitted
-// from the signature. This allows backwards compatibility with legacy Cast
-// receivers.
-BASE_FEATURE(kEnforceNonceChecking,
-             "CastNonceEnforced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enforce the use of SHA256 digest for signatures.
 // If disabled, the device may respond with a signature with SHA1 digest even
 // though a signature with SHA256 digest was requested in the challenge. This
@@ -267,12 +258,6 @@ AuthResult AuthContext::VerifySenderNonce(
     } else {
       RecordNonceStatus(CastNonceStatus::kMismatch);
       success.set_flag(CastChannelFlag::kSenderNonceMismatch);
-    }
-    if (base::FeatureList::IsEnabled(kEnforceNonceChecking)) {
-      AuthResult failure = AuthResult("Sender nonce mismatched.",
-                                      AuthResult::ERROR_SENDER_NONCE_MISMATCH);
-      failure.CopyFlagsFrom(success);
-      return failure;
     }
   } else {
     RecordNonceStatus(CastNonceStatus::kMatch);

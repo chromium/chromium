@@ -279,41 +279,7 @@ TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {
   EXPECT_EQ(kFlagsAcceptedWithMissingCRL, result.flags);
 }
 
-TEST_F(CastAuthUtilTest, VerifySenderNonceMatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
-  AuthContext context = AuthContext::Create();
-  AuthResult result = context.VerifySenderNonce(context.nonce());
-  EXPECT_TRUE(result.success());
-  EXPECT_EQ(kCastChannelFlagsNone, result.flags);
-}
 
-TEST_F(CastAuthUtilTest, VerifySenderNonceMismatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
-  AuthContext context = AuthContext::Create();
-  std::string received_nonce = "test2";
-  EXPECT_NE(received_nonce, context.nonce());
-  AuthResult result = context.VerifySenderNonce(received_nonce);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_SENDER_NONCE_MISMATCH, result.error_type);
-  EXPECT_EQ(
-      static_cast<CastChannelFlags>(CastChannelFlag::kSenderNonceMismatch),
-      result.flags);
-}
-
-TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
-  AuthContext context = AuthContext::Create();
-  std::string received_nonce;
-  EXPECT_FALSE(context.nonce().empty());
-  AuthResult result = context.VerifySenderNonce(received_nonce);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_SENDER_NONCE_MISMATCH, result.error_type);
-  EXPECT_EQ(static_cast<CastChannelFlags>(CastChannelFlag::kSenderNonceMissing),
-            result.flags);
-}
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
   auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
