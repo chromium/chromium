@@ -80,6 +80,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   BOOL _showsGradientView;
   // The width layout guide for the content.
   UILayoutGuide* _widthLayoutGuide;
+  // The constraint for the content view height.
+  NSLayoutConstraint* _contentViewHeightConstraint;
 }
 
 - (instancetype)init {
@@ -139,6 +141,13 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+
+  // Update the content view height constraint to account for the adjusted
+  // content inset (e.g. navigation bar).
+  _contentViewHeightConstraint.constant =
+      -(_scrollView.adjustedContentInset.top +
+        _scrollView.adjustedContentInset.bottom);
+
   [self updateGradientVisibility];
 }
 
@@ -511,10 +520,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
   // Ensures the content view either fills the scroll view (for short content)
   // or expands to enable scrolling (for long content).
-  NSLayoutConstraint* contentViewHeightConstraint = [_contentView.heightAnchor
-      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor
-                                  constant:-[self contentViewBottomInset]];
-  contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
+  _contentViewHeightConstraint = [_contentView.heightAnchor
+      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor];
+  _contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
   _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
       constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
@@ -533,7 +541,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
         constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
     [_actionStackView.trailingAnchor
         constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
-    contentViewHeightConstraint,
+    _contentViewHeightConstraint,
     _actionStackBottomConstraint,
     _actionStackSafeAreaBottomConstraint,
   ]];
