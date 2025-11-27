@@ -67,6 +67,9 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   void ShouldShowAccountStorageSettingToggle(
       ShouldShowAccountStorageSettingToggleCallback callback) override;
 
+  void SwitchBiometricAuthBeforeFillingState(
+      SwitchBiometricAuthBeforeFillingStateCallback callback) override;
+
  private:
   password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
 

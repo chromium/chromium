@@ -273,6 +273,17 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
+       SwitchBiometricAuthBeforeFillingState_CallsDelegate) {
+  base::test::TestFuture<bool> future;
+  EXPECT_FALSE(test_delegate().get_authenticator_interaction_status());
+
+  handler().SwitchBiometricAuthBeforeFillingState(future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(test_delegate().get_authenticator_interaction_status());
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
        IsAccountStorageEnabled_ReturnsCorrectValue) {
   // Set the delegate to return true.
   test_delegate().SetAccountStorageEnabled(true);
