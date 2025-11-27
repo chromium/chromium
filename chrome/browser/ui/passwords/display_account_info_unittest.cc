@@ -25,22 +25,13 @@ class DisplayAccountInfoTest : public testing::Test {
     sync_service_.SetSignedOut();
   }
 
-  void SignInWithoutSync() {
+  void SignIn() {
     AccountInfo account_info =
         identity_test_environment_.MakePrimaryAccountAvailable(
             kTestEmail, signin::ConsentLevel::kSignin);
     account_info.full_name = kTestFullName;
     identity_test_environment_.UpdateAccountInfoForAccount(account_info);
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
-  }
-
-  void SignInWithSync() {
-    AccountInfo account_info =
-        identity_test_environment_.MakePrimaryAccountAvailable(
-            kTestEmail, signin::ConsentLevel::kSync);
-    account_info.full_name = kTestFullName;
-    identity_test_environment_.UpdateAccountInfoForAccount(account_info);
-    sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   }
 
   // Must only be called when there is a signed-in account.
@@ -78,7 +69,7 @@ TEST_F(DisplayAccountInfoTest, SignedOut) {
 }
 
 TEST_F(DisplayAccountInfoTest, SignedInWithPasswordsEnabled) {
-  SignInWithoutSync();
+  SignIn();
 
   std::optional<AccountInfo> account_info =
       GetAccountInfoForPasswordMessages(sync_service(), identity_manager());
@@ -89,30 +80,7 @@ TEST_F(DisplayAccountInfoTest, SignedInWithPasswordsEnabled) {
 }
 
 TEST_F(DisplayAccountInfoTest, SignedInWithPasswordsDisabled) {
-  SignInWithoutSync();
-  sync_service()->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, false);
-
-  EXPECT_EQ(
-      GetAccountInfoForPasswordMessages(sync_service(), identity_manager()),
-      std::nullopt);
-  EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),
-            std::string());
-}
-
-TEST_F(DisplayAccountInfoTest, SyncingWithPasswordsEnabled) {
-  SignInWithSync();
-
-  std::optional<AccountInfo> account_info =
-      GetAccountInfoForPasswordMessages(sync_service(), identity_manager());
-  ASSERT_TRUE(account_info.has_value());
-  EXPECT_EQ(account_info->email, kTestEmail);
-  EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),
-            kTestEmail);
-}
-
-TEST_F(DisplayAccountInfoTest, SyncingWithPasswordsDisabled) {
-  SignInWithSync();
+  SignIn();
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
 
@@ -124,7 +92,7 @@ TEST_F(DisplayAccountInfoTest, SyncingWithPasswordsDisabled) {
 }
 
 TEST_F(DisplayAccountInfoTest, NonDisplayableEmail) {
-  SignInWithSync();
+  SignIn();
   SetCanDisplaySignedInAccountEmail(false);
 
   EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),

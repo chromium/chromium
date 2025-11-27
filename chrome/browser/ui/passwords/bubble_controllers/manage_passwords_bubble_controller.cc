@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -164,6 +165,10 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
       return SyncState::kNotActive;
     case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        return SyncState::kActiveWithAccountPasswords;
+      }
       return sync_service->IsSyncFeatureEnabled()
                  ? SyncState::kActiveWithSyncFeatureEnabled
                  : SyncState::kActiveWithAccountPasswords;

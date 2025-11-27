@@ -32,7 +32,8 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
  public:
   enum class SyncState {
     kNotActive,
-    kActiveWithSyncFeatureEnabled,
+    kActiveWithSyncFeatureEnabled,  // TODO(crbug.com/417950948): Remove after
+                                    // deprecating sync feature.
     kActiveWithAccountPasswords,
   };
 
