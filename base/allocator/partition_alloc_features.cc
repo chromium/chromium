@@ -386,4 +386,6 @@ BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
+BASE_FEATURE(kPartitionAllocFreeWithSize, FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace base::features

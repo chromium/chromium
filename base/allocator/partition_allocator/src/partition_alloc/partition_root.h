@@ -216,6 +216,8 @@ struct PartitionOptions {
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
+
+  EnableToggle free_with_size = kDisabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -299,6 +301,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
     std::ptrdiff_t metadata_offset_ = 0;
 #endif
+
+    bool enable_free_with_size = false;
   };
 
   Settings settings;
@@ -1510,6 +1514,10 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
 template <FreeFlags flags>
 PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInline(void* object,
                                                         size_t size) {
+  if (!settings.enable_free_with_size) {
+    FreeInline<flags>(object);
+    return;
+  }
   // The correct PartitionRoot might not be deducible if the |object| originates
   // from an override hook.
   bool early_return = FreeProlog<flags>(object, this);

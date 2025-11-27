@@ -685,7 +685,8 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-    EventuallyZeroFreedMemory eventually_zero_freed_memory) {
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    EnableFreeWithSize enable_free_with_size) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
@@ -724,6 +725,10 @@ void ConfigurePartitions(
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
+        opts.free_with_size =
+            enable_free_with_size
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
         return opts;
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
