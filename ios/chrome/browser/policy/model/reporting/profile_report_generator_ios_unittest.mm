@@ -18,7 +18,6 @@
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
-#import "components/enterprise/browser/reporting/report_generation_config.h"
 #import "components/enterprise/browser/reporting/report_type.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #import "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -210,7 +209,6 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
         test_future;
     generator_.MaybeGenerate(path, ReportType::kFull,
-                             SecuritySignalsMode::kSignalsAttached,
                              test_future.GetCallback());
     auto report = test_future.Take();
 

@@ -105,14 +105,8 @@ void ChromeProfileRequestGenerator::Generate(
   auto request = std::make_unique<ReportRequest>(ReportType::kProfileReport);
   request->GetChromeProfileReportRequest().set_report_type(
       GetReportTypeFromSignalsMode(generation_config.security_signals_mode));
-
-  bool is_signals_only = generation_config.security_signals_mode ==
-                         SecuritySignalsMode::kSignalsOnly;
-  bool policies_enabled =
-      enterprise_signals::features::IsPolicyDataCollectionEnabled();
-
-  // Early Exit since it's a Signals-Only report with no policies.
-  if (is_signals_only && !policies_enabled) {
+  if (generation_config.security_signals_mode ==
+      SecuritySignalsMode::kSignalsOnly) {
     return OnBaseReportsReady(std::move(request), std::move(callback),
                               generation_config,
                               std::make_unique<em::BrowserReport>(),
@@ -128,23 +122,18 @@ void ChromeProfileRequestGenerator::Generate(
                             weak_ptr_factory_.GetWeakPtr(), std::move(request),
                             std::move(callback), generation_config)));
 
-  if (is_signals_only) {
-    barrier_callback.Run(std::make_unique<em::BrowserReport>());
-  } else {
-    browser_report_generator_.Generate(
-        ReportType::kProfileReport,
-        base::BindOnce(
-            [](std::unique_ptr<em::BrowserReport> browser_report)
-                -> std::variant<std::unique_ptr<em::BrowserReport>,
-                                std::unique_ptr<em::ChromeUserProfileInfo>> {
-              return std::move(browser_report);
-            })
-            .Then(barrier_callback));
-  }
+  browser_report_generator_.Generate(
+      ReportType::kProfileReport,
+      base::BindOnce(
+          [](std::unique_ptr<em::BrowserReport> browser_report)
+              -> std::variant<std::unique_ptr<em::BrowserReport>,
+                              std::unique_ptr<em::ChromeUserProfileInfo>> {
+            return std::move(browser_report);
+          })
+          .Then(barrier_callback));
 
   profile_report_generator_.MaybeGenerate(
       profile_path_, ReportType::kProfileReport,
-      generation_config.security_signals_mode,
       base::BindOnce(
           [](std::unique_ptr<em::ChromeUserProfileInfo> profile_report)
               -> std::variant<std::unique_ptr<em::BrowserReport>,

@@ -10,14 +10,11 @@ namespace enterprise_reporting {
 // Set of triggers which the service uses as hook to trigger a security report.
 // This enum should be kept in sync with the `SecurityReportTrigger` enum in
 // tools/metrics/histograms/metadata/enterprise/enums.xml.
-// LINT.IfChange(SecurityReportTrigger)
 enum class SecurityReportTrigger {
   kTimer = 0,
   kCookieChange = 1,
-  kPolicyChange = 2,
-  kMaxValue = kPolicyChange
+  kMaxValue = kCookieChange
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:SecurityReportTrigger)
 
 // Service in charge of the scheduling, and triggering, generation and upload of
 // user security signals reports.

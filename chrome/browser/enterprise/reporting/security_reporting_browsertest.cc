@@ -9,7 +9,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
@@ -26,10 +25,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/common/platform_utils.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
-#include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -103,7 +100,7 @@ void CheckReportMatchSignal(std::string report_value,
 
 class SecurityReportingBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  protected:
   SecurityReportingBrowserTest() {
     management_mixin_ = ManagementContextMixin::Create(
@@ -113,9 +110,6 @@ class SecurityReportingBrowserTest
             .is_cloud_machine_managed = is_device_managed(),
             .affiliated = is_affiliated(),
         });
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kPolicyDataCollectionEnabled,
-        is_policy_collection_enabled());
   }
 
   void SetUp() override {
@@ -261,17 +255,6 @@ class SecurityReportingBrowserTest
         enterprise::ProfileIdServiceFactory::GetForProfile(browser()->profile())
             ->GetProfileId()
             .value());
-    if (profile_type ==
-        em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS) {
-      if (is_policy_collection_enabled()) {
-        EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
-      } else {
-        EXPECT_EQ(chrome_user_profile_info.chrome_policies_size(), 0);
-      }
-
-    } else {
-      EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
-    }
   }
 
   void VerifyDeviceIdentifierAsyncSignal(
@@ -360,7 +343,6 @@ class SecurityReportingBrowserTest
 
   bool is_device_managed() { return testing::get<0>(GetParam()); }
   bool is_affiliated() { return testing::get<1>(GetParam()); }
-  bool is_policy_collection_enabled() { return testing::get<2>(GetParam()); }
 
   bool can_collect_pii_signals() {
     return is_device_managed() && is_affiliated();
@@ -380,7 +362,6 @@ class SecurityReportingBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
 };
@@ -453,15 +434,13 @@ INSTANTIATE_TEST_SUITE_P(
     ManagedDeviceCase,
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(true),
-                     /*is_affiliated=*/testing::Bool(),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*is_affiliated=*/testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedDeviceCase,
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(false),
-                     /*is_affiliated=*/testing::Values(false),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*is_affiliated=*/testing::Values(false)));
 
 // Test that confirms the correct form of reports are being triggered.
 // Collection contexts such as management state don't affect the expectations so
@@ -539,7 +518,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SecurityReportTriggerBrowserTest,
     testing::Combine(/*is_device_managed*/ ::testing::Values(false),
-                     /*is_affiliated*/ ::testing::Values(false),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*is_affiliated*/ ::testing::Values(false)));
 
 }  // namespace enterprise_reporting
