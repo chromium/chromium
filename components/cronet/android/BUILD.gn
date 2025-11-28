@@ -247,13 +247,6 @@ source_set("cronet_static") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-config("hide_all_but_jni_onload_and_cronet") {
-  _version_script = "android_only_jni_onload_and_cronet_exports.lst"
-  inputs = [ _version_script ]
-  ldflags =
-      [ "-Wl,--version-script=" + rebase_path(_version_script, root_out_dir) ]
-}
-
 _cronet_shared_lib_name = "cronet.$chrome_version_full"
 
 shared_library("cronet") {
@@ -264,8 +257,6 @@ shared_library("cronet") {
     "//base",
     "//net",
   ]
-  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  configs += [ ":hide_all_but_jni_onload_and_cronet" ]
 }
 
 sizes_test("cronet_sizes") {
