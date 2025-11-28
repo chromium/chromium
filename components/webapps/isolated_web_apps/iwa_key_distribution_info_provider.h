@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
 namespace base {
 class FilePath;
@@ -58,8 +59,6 @@ class IwaKeyDistributionInfoProvider {
   using ManagedAllowlist = base::flat_set<std::string>;
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
-  using KeyDistributionData =
-      std::tuple<KeyRotations, SpecialAppPermissions, ManagedAllowlist>;
 
   using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
       base::PassKey<IwaKeyDistributionInfoProvider>)>;
@@ -68,23 +67,6 @@ class IwaKeyDistributionInfoProvider {
    public:
     virtual void OnComponentUpdateSuccess(bool is_preloaded) {}
     virtual void OnComponentUpdateError(IwaComponentUpdateError error) {}
-  };
-
-  struct ComponentData {
-    ComponentData(base::Version version,
-                  KeyRotations key_rotations,
-                  SpecialAppPermissions special_app_permissions,
-                  ManagedAllowlist managed_allowlist,
-                  bool is_preloaded);
-    ~ComponentData();
-    ComponentData(const ComponentData&);
-
-    base::Version version;
-    KeyRotations key_rotations;
-    SpecialAppPermissions special_app_permissions;
-    ManagedAllowlist managed_allowlist;
-
-    bool is_preloaded = false;
   };
 
   static IwaKeyDistributionInfoProvider& GetInstance();
@@ -150,10 +132,38 @@ class IwaKeyDistributionInfoProvider {
   base::OneShotEvent& OnMaybeDownloadedComponentDataReady();
 
   std::optional<bool> IsPreloadedForTesting() const;
-  void SetComponentDataForTesting(ComponentData component_data);
+  void SetComponentDataForTesting(base::Version component_version,
+                                  bool is_preloaded,
+                                  IwaKeyDistribution component_data);
 
  private:
   IwaKeyDistributionInfoProvider();
+
+  struct Data {
+    Data(KeyRotations key_rotations,
+         SpecialAppPermissions special_app_permissions,
+         ManagedAllowlist managed_allowlist);
+    ~Data();
+    Data(const Data&);
+
+    KeyRotations key_rotations;
+    SpecialAppPermissions special_app_permissions;
+    ManagedAllowlist managed_allowlist;
+    // TODO(crbug.com/432446316): Implement the blocklist
+  };
+
+  struct Component {
+    Component(base::Version version, bool is_preloaded, Data data);
+    ~Component();
+    Component(const Component&);
+
+    // Metadata
+    base::Version version;
+    bool is_preloaded;
+
+    // All data that comes from the component
+    Data data;
+  };
 
   // Posts `MaybeQueueComponentUpdate()` onto `any_data_ready_` once.
   void PostMaybeQueueComponentUpdateOnceOnDataReady();
@@ -167,16 +177,21 @@ class IwaKeyDistributionInfoProvider {
   //    loaded in this case.
   void MaybeQueueComponentUpdate();
 
-  void OnKeyDistributionDataLoaded(
+  void OnKeyDistributionDataFileLoaded(
       const base::Version& version,
       bool is_preloaded,
-      base::expected<KeyDistributionData, IwaComponentUpdateError>);
+      base::expected<IwaKeyDistribution, IwaComponentUpdateError>);
+
+  base::expected<Data, IwaComponentUpdateError> ParseKeyDistributionData(
+      const IwaKeyDistribution& key_distribution);
 
   void DispatchComponentUpdateSuccess(bool is_preloaded);
 
   void DispatchComponentUpdateError(IwaComponentUpdateError error);
 
   void SignalOnDataReady(bool is_preloaded);
+
+  KeyDistributionComponentSource GetComponentDataSource() const;
 
   // Will be signalled once any component version (regardless of whether
   // preloaded or downloaded) is loaded.
@@ -192,7 +207,7 @@ class IwaKeyDistributionInfoProvider {
 
   QueueOnDemandUpdateCallback queue_on_demand_update_;
 
-  std::optional<ComponentData> data_;
+  std::optional<Component> component_;
   base::ObserverList<Observer> observers_;
   bool skip_managed_checks_for_testing_ = false;
 };

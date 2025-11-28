@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
@@ -77,6 +78,135 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
 };
 
 }  // namespace
+
+base::expected<void, IwaComponentUpdateError> KeyDistributionComponent::
+    KeyDistributionComponent::UploadFromComponentFolder() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return UpdateKeyDistributionInfo(version, component_data);
+}
+
+void KeyDistributionComponent::KeyDistributionComponent::
+    InjectComponentDataDirectly() {
+  IwaKeyDistributionInfoProvider::GetInstance().SetComponentDataForTesting(
+      version, is_preloaded, component_data);
+}
+
+KeyDistributionComponentBuilder::KeyDistributionComponentBuilder(
+    const base::Version& component_version)
+    : component_(/*version=*/component_version,
+                 /*is_preloaded=*/false,
+                 /*data=*/IwaKeyDistribution{}) {}
+
+KeyDistributionComponentBuilder::~KeyDistributionComponentBuilder() = default;
+
+KeyDistributionComponentBuilder&
+KeyDistributionComponentBuilder::AddToKeyRotations(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    std::optional<std::vector<uint8_t>> expected_key) & {
+  IwaKeyRotations::KeyRotationInfo kr_info_proto;
+  if (expected_key.has_value()) {
+    kr_info_proto.set_expected_key(base::Base64Encode(*expected_key));
+  }
+  (*component_.component_data.mutable_key_rotation_data()
+        ->mutable_key_rotations())[web_bundle_id.id()] =
+      std::move(kr_info_proto);
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::AddToKeyRotations(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    std::optional<std::vector<uint8_t>> expected_key) && {
+  return std::move(AddToKeyRotations(web_bundle_id, std::move(expected_key)));
+}
+
+KeyDistributionComponentBuilder&
+KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    SpecialAppPermissions special_app_permissions) & {
+  IwaSpecialAppPermissions_SpecialAppPermissions special_app_permissions_proto;
+  special_app_permissions_proto.mutable_multi_screen_capture()
+      ->set_skip_capture_started_notification(
+          special_app_permissions.skip_capture_started_notification);
+
+  (*component_.component_data.mutable_special_app_permissions_data()
+        ->mutable_special_app_permissions())[web_bundle_id.id()] =
+      std::move(special_app_permissions_proto);
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    SpecialAppPermissions special_app_permissions) && {
+  return std::move(
+      AddToSpecialAppPermissions(web_bundle_id, special_app_permissions));
+}
+
+KeyDistributionComponentBuilder& KeyDistributionComponentBuilder::WithBlocklist(
+    const std::vector<web_package::SignedWebBundleId>& bundle_ids) & {
+  // TODO(crbug.com/432446316): Implement the blocklist
+  NOTIMPLEMENTED();
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::WithBlocklist(
+    const std::vector<web_package::SignedWebBundleId>& bundle_ids) && {
+  // TODO(crbug.com/432446316): Implement the blocklist
+  NOTIMPLEMENTED();
+  return std::move(*this);
+}
+
+KeyDistributionComponentBuilder&
+KeyDistributionComponentBuilder::AddToBlocklist(
+    const web_package::SignedWebBundleId& bundle_id) & {
+  // TODO(crbug.com/432446316): Implement the blocklist
+  NOTIMPLEMENTED();
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::AddToBlocklist(
+    const web_package::SignedWebBundleId& bundle_id) && {
+  // TODO(crbug.com/432446316): Implement the blocklist
+  NOTIMPLEMENTED();
+  return std::move(*this);
+}
+
+KeyDistributionComponentBuilder&
+KeyDistributionComponentBuilder::WithManagedAllowlist(
+    const std::vector<web_package::SignedWebBundleId>& bundle_ids) & {
+  for (const auto& bundle_id : bundle_ids) {
+    (*component_.component_data.mutable_iwa_access_control()
+          ->mutable_managed_allowlist())[bundle_id.id()] = {};
+  }
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::WithManagedAllowlist(
+    const std::vector<web_package::SignedWebBundleId>& bundle_ids) && {
+  return std::move(WithManagedAllowlist(bundle_ids));
+}
+
+KeyDistributionComponentBuilder&
+KeyDistributionComponentBuilder::AddToManagedAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id) & {
+  (*component_.component_data.mutable_iwa_access_control()
+        ->mutable_managed_allowlist())[web_bundle_id.id()] = {};
+  return *this;
+}
+
+KeyDistributionComponentBuilder&&
+KeyDistributionComponentBuilder::AddToManagedAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id) && {
+  return std::move(AddToManagedAllowlist(web_bundle_id));
+}
+
+KeyDistributionComponent KeyDistributionComponentBuilder::Build() && {
+  return std::move(component_);
+}
 
 base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,

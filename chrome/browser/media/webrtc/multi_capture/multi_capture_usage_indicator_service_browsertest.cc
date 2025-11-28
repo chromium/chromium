@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -185,19 +186,13 @@ class MultiCaptureUsageIndicatorBrowserTestBase
   void SetSkipNotificationsAllowlist() {
     web_app::IwaKeyDistributionInfoProvider::SpecialAppPermissions
         special_app_permissions;
+    auto component_builder =
+        web_app::test::KeyDistributionComponentBuilder(base::Version("1.0.0"));
     for (const auto& skipping_app : skip_notification_apps_) {
-      special_app_permissions[skipping_app.bundle_id.id()] = {
-          .skip_capture_started_notification = true};
+      component_builder.AddToSpecialAppPermissions(
+          skipping_app.bundle_id, {.skip_capture_started_notification = true});
     }
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()
-        .SetComponentDataForTesting(
-            web_app::IwaKeyDistributionInfoProvider::ComponentData(
-                /*version=*/base::Version("1.0.0"),
-                /*key_rotations=*/{},
-                /*special_app_permissions=*/
-                special_app_permissions,
-                /*managed_allowlist=*/{},
-                /*special_app_permissions=*/true));
+    std::move(component_builder).Build().InjectComponentDataDirectly();
   }
 
   const web_app::WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
