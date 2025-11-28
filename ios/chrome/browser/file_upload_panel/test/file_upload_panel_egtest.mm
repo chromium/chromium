@@ -4,6 +4,8 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
+#import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/download/model/download_app_interface.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -37,7 +39,8 @@ std::string GetTestPageHtml(const std::string& input_element_attributes,
           let html = '';
           if (files.length > 0) {
             for (const file of files) {
-              html += `<p>Name: ${file.name}, Size: ${file.size}, Type: ${file.type}</p>`;
+              html += `<p>Name: ${file.name}, ` +
+                      `Path: ${file.webkitRelativePath}</p>`;
             }
           } else {
             html = 'No file selected.';
@@ -74,10 +77,14 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
         GetTestPageHtml("capture=\"user\"", "File input with capture", true);
   } else if (request.relative_url == "/accept_image") {
     page_content = GetTestPageHtml("accept=\"image/*\"", "", true);
+  } else if (request.relative_url == "/accept_text") {
+    page_content = GetTestPageHtml("accept=\".txt\"", "", true);
   } else if (request.relative_url == "/accept_video") {
     page_content = GetTestPageHtml("accept=\"video/*\"", "", true);
   } else if (request.relative_url == "/directory") {
     page_content = GetTestPageHtml("webkitdirectory", "", true);
+  } else if (request.relative_url == "/single") {
+    page_content = GetTestPageHtml("", "Single file input", true);
   } else {
     page_content = GetTestPageHtml("multiple", "File input", true);
   }
@@ -93,9 +100,30 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 // Test case for the file upload panel UI.
 @interface FileUploadPanelTestCase : ChromeTestCase
 
+// Loads a test URL with the given `path`, waits for `text` to be visible in
+// the web view, and then taps the file input element.
+- (void)loadURLAndTapInputWithPath:(const std::string&)path
+                       waitForText:(const std::string&)text;
+
+// Opens the file picker and navigates to the downloads directory.
+- (void)openFilePickerAndNavigateToDownloads;
+
+// Waits for the SubmittedFileCount histogram to be recorded with the given
+// `expectedCount`.
+- (void)waitForSubmittedFileCount:(int)expectedCount;
+
+// Waits for `fileCount` files to be present in the downloads directory.
+- (void)waitForFileCountInDownloadsDirectory:(int)fileCount;
+
+// Returns the first cell in `app` whose identifier starts with `prefix`.
+- (XCUIElement*)cellWithIdentifierPrefix:(NSString*)prefix
+                                   inApp:(XCUIElement*)app;
+
 @end
 
-@implementation FileUploadPanelTestCase
+@implementation FileUploadPanelTestCase {
+  BOOL _isCameraAvailable;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -108,14 +136,168 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&TestPageResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [DownloadAppInterface deleteDownloadsDirectory];
+  [self waitForFileCountInDownloadsDirectory:0];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
+  _isCameraAvailable = [UIImagePickerController
+      isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+  [self checkAndAcceptSystemDialog];
+  _isCameraAvailable = [UIImagePickerController
+      isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
 }
 
 - (void)tearDownHelper {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
+}
+
+- (void)checkAndAcceptSystemDialog {
+  // Allow system permission if shown.
+  NSError* systemAlertFoundError = nil;
+  [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
+      assertWithMatcher:grey_nil()
+                  error:&systemAlertFoundError];
+  if (systemAlertFoundError) {
+    NSError* acceptAlertError = nil;
+    [self grey_acceptSystemDialogWithError:&acceptAlertError];
+    GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
+                  acceptAlertError);
+  }
+}
+
+- (void)loadURLAndTapInputWithPath:(const std::string&)path
+                       waitForText:(const std::string&)text {
+  GURL url = path.empty() ? self.testServer->base_url()
+                          : self.testServer->GetURL(path);
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:text];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+}
+
+// Taps on `element` using coordinates to bypass "isHittable" check.
+- (void)forceTap:(XCUIElement*)element {
+  GREYAssertNotNil(element, @"Element cannot be nil.\n%@", element);
+  XCUICoordinate* coordinate =
+      [element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  [coordinate tap];
+}
+
+- (void)openFilePickerAndNavigateToDownloads {
+  // Interact with the out-of-process file picker.
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  GREYAssertTrue([serviceApp waitForState:XCUIApplicationStateRunningForeground
+                                  timeout:30],
+                 @"File picker did not launch");
+
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    // Tapping Browse twice to navigate to the root.
+    XCUIElement* browseButton = serviceApp.buttons[@"Browse"].firstMatch;
+    [browseButton tap];
+    GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                       base::test::ios::kWaitForActionTimeout,
+                       ^{
+                         return browseButton.isSelected;
+                       }),
+                   @"Browse button did not become selected.");
+    [browseButton tap];
+    XCUIElement* onMyiPhone = serviceApp.cells[@"On My iPhone"].firstMatch;
+    GREYAssertTrue([onMyiPhone waitForExistenceWithTimeout:10],
+                   @"'On My iPhone' not found.");
+    [self forceTap:onMyiPhone];
+  } else {
+    XCUIElement* onMyiPad =
+        serviceApp.cells[@"DOC.sidebar.item.On My iPad"].firstMatch;
+    GREYAssertTrue([onMyiPad waitForExistenceWithTimeout:10],
+                   @"'On My iPad' not found.");
+    [self forceTap:onMyiPad];
+  }
+
+  // Once the root directory is visible, select the Downloads folder which is
+  // represented by a cell with an ID starting with "ios_chrome_eg2tests".
+  XCUIElement* targetCell =
+      [self cellWithIdentifierPrefix:@"ios_chrome_eg2tests" inApp:serviceApp];
+  [self forceTap:targetCell];
+}
+
+// Waits for the SubmittedFileCount histogram to be recorded with the given
+// `expectedCount`.
+- (void)waitForSubmittedFileCount:(int)expectedCount {
+  __block NSError* error = nil;
+  BOOL success = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^{
+        error = [MetricsAppInterface
+             expectCount:1
+               forBucket:expectedCount
+            forHistogram:@"IOS.FileUploadPanel.SubmittedFileCount"];
+        return error == nil;
+      });
+  GREYAssertTrue(
+      success,
+      @"Histogram IOS.FileUploadPanel.SubmittedFileCount not recorded "
+      @"correctly with count %d: %@",
+      expectedCount, error);
+}
+
+// Waits for `fileCount` files to be present in the downloads directory.
+- (void)waitForFileCountInDownloadsDirectory:(int)fileCount {
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForFileOperationTimeout,
+          ^{
+            return [DownloadAppInterface fileCountInDownloadsDirectory] ==
+                   fileCount;
+          }),
+      @"Timed out waiting for %d files.", fileCount);
+}
+
+// Returns the first cell in `app` whose identifier starts with `prefix`.
+- (XCUIElement*)cellWithIdentifierPrefix:(NSString*)prefix
+                                   inApp:(XCUIElement*)app {
+  NSPredicate* predicate =
+      [NSPredicate predicateWithFormat:@"identifier BEGINSWITH %@", prefix];
+  return [app.cells matchingPredicate:predicate].firstMatch;
+}
+
+// Taps on `cell` until it is selected, with a maximum of 3 taps.
+- (void)tapCellUntilSelected:(XCUIElement*)cell inApp:(XCUIApplication*)app {
+  GREYAssertTrue([cell waitForExistenceWithTimeout:10], @"'Cell not found:\n%@",
+                 cell);
+  for (int i = 0; i < 3; i++) {
+    [self forceTap:cell];
+    // Wait for the cell to become selected.
+    BOOL selected =
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+          return cell.exists && cell.isSelected;
+        });
+    if (selected) {
+      return;
+    }
+  }
+  GREYAssertTrue(cell.isSelected, @"Cell not selected after 3 taps.");
+}
+
+// Taps on `element` until it is not hittable, with a maximum of 3 taps.
+- (void)tapElementUntilNotHittable:(XCUIElement*)element
+                             inApp:(XCUIApplication*)app {
+  GREYAssertTrue([element waitForExistenceWithTimeout:10],
+                 @"'Element not found:\n%@", element);
+  for (int i = 0; i < 3; i++) {
+    [self forceTap:element];
+    // Wait for the element to disappear.
+    BOOL nonExistent =
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+          return !element.exists;
+        });
+    if (nonExistent) {
+      return;
+    }
+  }
+  GREYAssertFalse(element.exists, @"Element still exists after 3 taps.");
 }
 
 // Tests that the file upload panel context menu appears and contains expected
@@ -125,14 +307,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Test entry point and context menu variant histograms.
   NSError* error = nil;
@@ -143,10 +318,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       forHistogram:@"IOS.FileUploadPanel.EntryPointVariant"];
   chrome_test_util::GREYAssertErrorNil(error);
 
-  const BOOL isCameraAvailable = [UIImagePickerController
-      isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
   const auto expectedContextMenuVariant =
-      isCameraAvailable
+      _isCameraAvailable
           ? FileUploadPanelContextMenuVariant::
                 kPhotoPickerAndCameraAndFilePicker
           : FileUploadPanelContextMenuVariant::kPhotoPickerAndFilePicker;
@@ -165,7 +338,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
   // Test camera action variant histogram.
   error = [MetricsAppInterface
-       expectCount:isCameraAvailable ? 1 : 0
+       expectCount:_isCameraAvailable ? 1 : 0
          forBucket:static_cast<int>(
                        FileUploadPanelCameraActionVariant::kPhotoAndVideo)
       forHistogram:@"IOS.FileUploadPanel.CameraActionVariant"];
@@ -174,7 +347,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   // Test that expected elements are present.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
@@ -183,8 +356,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       selectElementWithMatcher:
           chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
               IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL)]
-      assertWithMatcher:isCameraAvailable ? grey_sufficientlyVisible()
-                                          : grey_nil()];
+      assertWithMatcher:_isCameraAvailable ? grey_sufficientlyVisible()
+                                           : grey_nil()];
 }
 
 // Tests that the file upload panel can be dismissed and shown again.
@@ -193,24 +366,17 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
-
-  // Tap the file input to show the panel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
   // Tap somewhere else to dismiss the panel.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
   NSError* error = nil;
   error = [MetricsAppInterface
@@ -229,14 +395,14 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                         selectorWithElementID:kFileInputElementID])];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
   // Tap somewhere else to dismiss the panel.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
   // Check that the metric was recorded twice.
   error = [MetricsAppInterface
@@ -258,19 +424,12 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  if (![UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (!_isCameraAvailable) {
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/capture_user");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input with capture"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/capture_user"
+                       waitForText:"File input with capture"];
 
   // Verify camera is shown by waiting for the camera view controller container.
   id<GREYMatcher> matcher =
@@ -313,19 +472,11 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  if (![UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (!_isCameraAvailable) {
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/accept_image");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:""];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/accept_image" waitForText:""];
 
   // Verify the label.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
@@ -357,19 +508,11 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  if (![UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (!_isCameraAvailable) {
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/accept_video");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:""];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/accept_video" waitForText:""];
 
   // Verify the label.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
@@ -402,14 +545,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
 
-  GURL url = self.testServer->GetURL("/directory");
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:""];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"/directory" waitForText:""];
 
   // Test entry point histogram.
   NSError* error = [MetricsAppInterface
@@ -426,19 +562,12 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Choose File" action.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)]
+                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)]
       performAction:grey_tap()];
 
   // Test context menu action variant histogram.
@@ -456,14 +585,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the "Photo Library" action.
   [[EarlGrey selectElementWithMatcher:
@@ -492,19 +614,11 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  if (![UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (!_isCameraAvailable) {
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
-  GURL url = self.testServer->base_url();
-  [ChromeEarlGrey loadURL:url];
-  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
-
-  // Tap the file input.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElement([ElementSelector
-                        selectorWithElementID:kFileInputElementID])];
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
 
   // Tap the camera action.
   [[EarlGrey
@@ -541,8 +655,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
   }
-  if (![UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (!_isCameraAvailable) {
     EARL_GREY_TEST_SKIPPED(@"Camera not available on device, skipping.");
   }
 
@@ -559,18 +672,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   id<GREYMatcher> matcher =
       grey_kindOfClassName(@"CAMCameraViewControllerContainerView");
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:matcher];
-
-  // Allow system permission if shown.
-  NSError* systemAlertFoundError = nil;
-  [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
-      assertWithMatcher:grey_nil()
-                  error:&systemAlertFoundError];
-  if (systemAlertFoundError) {
-    NSError* acceptAlertError = nil;
-    [self grey_acceptSystemDialogWithError:&acceptAlertError];
-    GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
-                  acceptAlertError);
-  }
+  [self checkAndAcceptSystemDialog];
 
   // Take photo and check histograms.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"PhotoCapture")]
@@ -582,15 +684,416 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
   [ChromeEarlGrey waitForWebStateContainingText:"Name: image.jpg"];
 
-  NSError* error =
-      [MetricsAppInterface expectCount:1
-                             forBucket:1  // 1 for success
-                          forHistogram:@"IOS.FileUploadPanel.CameraResult"];
+  [self waitForSubmittedFileCount:1];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface expectCount:1
+                                 forBucket:1  // 1 for success
+                              forHistogram:@"IOS.FileUploadPanel.CameraResult"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that cancelling the file picker logs the correct metric.
+- (void)testFilePickerCancel {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  GURL url = self.testServer->GetURL("/directory");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:""];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  // Interact with the out-of-process file picker.
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  GREYAssertTrue([serviceApp waitForState:XCUIApplicationStateRunningForeground
+                                  timeout:30],
+                 @"File picker did not launch");
+
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    // Tapping Browse twice to navigate to the root, otherwise the Cancel button
+    // will not be visible for the next step.
+    XCUIElement* browseButton = serviceApp.buttons[@"Browse"].firstMatch;
+    [browseButton tap];
+    GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                       base::test::ios::kWaitForActionTimeout,
+                       ^{
+                         return browseButton.isSelected;
+                       }),
+                   @"Browse button did not become selected.");
+    [browseButton tap];
+  }
+
+  [self forceTap:serviceApp.buttons[@"Cancel"].firstMatch];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:0];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:0  // 0 for false (cancelled)
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  // The other new histograms should not be recorded.
+  error = [MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"IOS.FileUploadPanel.FilePicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+  error = [MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:
+              @"IOS.FileUploadPanel.SecurityScopedResource.AccessState"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that picking a directory logs the success metrics.
+// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
+// re-enable test when it has been fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFilePickerDirectorySelectionSuccess \
+  FLAKY_testFilePickerDirectorySelectionSuccess
+#else
+#define MAYBE_testFilePickerDirectorySelectionSuccess \
+  testFilePickerDirectorySelectionSuccess
+#endif
+- (void)MAYBE_testFilePickerDirectorySelectionSuccess {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  // Create a fake file.
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"download.jpg"
+                                                     content:@"fake jpeg data"];
+  [self waitForFileCountInDownloadsDirectory:1];
+
+  GURL url = self.testServer->GetURL("/directory");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithElementID:kFileInputElementID]];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  [self openFilePickerAndNavigateToDownloads];
+
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  GREYAssertTrue([serviceApp.buttons[@"Open"] waitForExistenceWithTimeout:10],
+                 @"'Open' button not found.");
+  [self tapElementUntilNotHittable:serviceApp.buttons[@"Open"].firstMatch
+                             inApp:serviceApp];
+
+  // Check that the selected directory is "Documents" which is the real name of
+  // the Downloads folder when checking the path.
+  [ChromeEarlGrey waitForWebStateContainingText:"Path: Documents"];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:1];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for true (success)
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.Result"];
   chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface
        expectCount:1
          forBucket:1
-      forHistogram:@"IOS.FileUploadPanel.SubmittedFileCount"];
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FileUploadPanelSecurityScopedResourceAccessState::
+                           kStartedAndStopped)
+      forHistogram:@"IOS.FileUploadPanel.SecurityScopedResource.AccessState"];
+  chrome_test_util::GREYAssertErrorNil(error);
+  error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:
+              @"IOS.FileUploadPanel.SecurityScopedResource.AccessState"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that picking a single file logs the success metrics.
+// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
+// re-enable test when it has been fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFilePickerSingleFileSelectionSuccess \
+  FLAKY_testFilePickerSingleFileSelectionSuccess
+#else
+#define MAYBE_testFilePickerSingleFileSelectionSuccess \
+  testFilePickerSingleFileSelectionSuccess
+#endif
+- (void)MAYBE_testFilePickerSingleFileSelectionSuccess {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  // Create test files.
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"file1.txt"
+                                                     content:@"data1"];
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"file2.txt"
+                                                     content:@"data2"];
+  [self waitForFileCountInDownloadsDirectory:2];
+
+  GURL url = self.testServer->GetURL("/single");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithElementID:kFileInputElementID]];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  // Tap the "Choose File" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  [self openFilePickerAndNavigateToDownloads];
+
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  // Select the file.
+  XCUIElement* fileCell = [self cellWithIdentifierPrefix:@"file1"
+                                                   inApp:serviceApp];
+  GREYAssertTrue([fileCell waitForExistenceWithTimeout:10],
+                 @"'file1.txt' button not hittable.");
+  [self tapElementUntilNotHittable:fileCell inApp:serviceApp];
+
+  // Check that the selected file is reported correctly.
+  [ChromeEarlGrey waitForWebStateContainingText:"Name: file1.txt"];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:1];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for true (success)
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that the `accept` attribute for images correctly disables non-matching
+// files.
+// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
+// re-enable test when it has been fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFilePickerAcceptAttributeImage \
+  FLAKY_testFilePickerAcceptAttributeImage
+#else
+#define MAYBE_testFilePickerAcceptAttributeImage \
+  testFilePickerAcceptAttributeImage
+#endif
+- (void)MAYBE_testFilePickerAcceptAttributeImage {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  // Create test files.
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"image.jpg"
+                                                     content:@"jpeg data"];
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"document.txt"
+                                                     content:@"text data"];
+  [self waitForFileCountInDownloadsDirectory:2];
+
+  GURL url = self.testServer->GetURL("/accept_image");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithElementID:kFileInputElementID]];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  // Tap the "Choose File" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  [self openFilePickerAndNavigateToDownloads];
+
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  // Check that the non-image file is disabled and the image file is enabled.
+  GREYAssertFalse([[self cellWithIdentifierPrefix:@"document"
+                                            inApp:serviceApp] isEnabled],
+                  @"document.txt should be disabled");
+  XCUIElement* imageCell = [self cellWithIdentifierPrefix:@"image"
+                                                    inApp:serviceApp];
+  GREYAssertTrue([imageCell isEnabled], @"image.jpg should be enabled");
+
+  // Select the image file.
+  [self tapElementUntilNotHittable:imageCell inApp:serviceApp];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Name: image.jpg"];
+}
+
+// Tests that the `accept` attribute for video correctly disables non-matching
+// files.
+// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
+// re-enable test when it has been fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFilePickerAcceptAttributeVideo \
+  FLAKY_testFilePickerAcceptAttributeVideo
+#else
+#define MAYBE_testFilePickerAcceptAttributeVideo \
+  testFilePickerAcceptAttributeVideo
+#endif
+- (void)MAYBE_testFilePickerAcceptAttributeVideo {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  // Create test files.
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"image.jpg"
+                                                     content:@"jpeg data"];
+  [DownloadAppInterface createDownloadsDirectoryFileWithName:@"video.mov"
+                                                     content:@"video data"];
+  [self waitForFileCountInDownloadsDirectory:2];
+
+  GURL url = self.testServer->GetURL("/accept_video");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithElementID:kFileInputElementID]];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  // Tap the "Choose File" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  [self openFilePickerAndNavigateToDownloads];
+
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  // Check that the non-video file is disabled and the video file is enabled.
+  XCUIElement* videoCell = [self cellWithIdentifierPrefix:@"video"
+                                                    inApp:serviceApp];
+  GREYAssertTrue([videoCell isEnabled], @"video.mov should be enabled");
+  GREYAssertFalse([[self cellWithIdentifierPrefix:@"image"
+                                            inApp:serviceApp] isEnabled],
+                  @"image.jpg should be disabled");
+
+  // Select the video file.
+  [self tapElementUntilNotHittable:videoCell inApp:serviceApp];
+
+  // Check that the selected file is reported correctly.
+  [ChromeEarlGrey waitForWebStateContainingText:"Name: video.mov"];
+}
+
+// Tests that picking multiple files logs the success metrics.
+// TODO(crbug.com/464179603): Disabled on simulator because of an iOS bug,
+// re-enable test when it has been fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFilePickerMultipleFileSelectionSuccess \
+  DISABLED_testFilePickerMultipleFileSelectionSuccess
+#else
+#define MAYBE_testFilePickerMultipleFileSelectionSuccess \
+  testFilePickerMultipleFileSelectionSuccess
+#endif
+- (void)MAYBE_testFilePickerMultipleFileSelectionSuccess {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  // Create test files.
+  for (int i = 1; i <= 5; i++) {
+    [DownloadAppInterface
+        createDownloadsDirectoryFileWithName:[NSString
+                                                 stringWithFormat:@"file%d.txt",
+                                                                  i]
+                                     content:[NSString
+                                                 stringWithFormat:@"data%d",
+                                                                  i]];
+  }
+  [self waitForFileCountInDownloadsDirectory:5];
+
+  GURL url = self.testServer->base_url();
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithElementID:kFileInputElementID]];
+
+  // Tap the file input to show the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+
+  // Tap the "Choose File" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  [self openFilePickerAndNavigateToDownloads];
+
+  XCUIApplication* serviceApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.DocumentManagerUICore.Service"];
+  // Select multiple files.
+  for (int i = 1; i <= 5; i++) {
+    XCUIElement* fileCell =
+        [self cellWithIdentifierPrefix:[NSString stringWithFormat:@"file%d", i]
+                                 inApp:serviceApp];
+    [self tapCellUntilSelected:fileCell inApp:serviceApp];
+  }
+  [self tapElementUntilNotHittable:serviceApp.buttons[@"Open"].firstMatch
+                             inApp:serviceApp];
+
+  // Check that the selected files are reported correctly.
+  for (int i = 1; i <= 5; i++) {
+    [ChromeEarlGrey waitForWebStateContainingText:base::StringPrintf(
+                                                      "Name: file%d.txt", i)];
+  }
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:5];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for true (success)
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:5
+      forHistogram:@"IOS.FileUploadPanel.FilePicker.FileCount"];
   chrome_test_util::GREYAssertErrorNil(error);
 }
 

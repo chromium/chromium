@@ -10,8 +10,19 @@
 // EG test app interface managing the download feature.
 @interface DownloadAppInterface : NSObject
 
+// Deletes the entire downloads directory.
++ (void)deleteDownloadsDirectory;
+
 // Deletes the file named `fileName` in the downloads directory.
 + (void)deleteDownloadsDirectoryFileWithName:(NSString*)fileName;
+
+// Creates a file named `fileName` in the downloads directory with the given
+// `content`.
++ (void)createDownloadsDirectoryFileWithName:(NSString*)fileName
+                                     content:(NSString*)content;
+
+// Returns the number of files in the downloads directory.
++ (int)fileCountInDownloadsDirectory;
 
 @end
 

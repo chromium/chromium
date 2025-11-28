@@ -29,6 +29,10 @@ API_AVAILABLE(ios(18.4))
 @property(nonatomic, readonly) ChooseFileCaptureType eventCaptureType;
 // Media types accepted by the file upload element.
 @property(nonatomic, readonly) NSSet<NSString*>* acceptedMediaTypes;
+// Document types accepted by the file upload element i.e. only folders if
+// `allowsDirectorySelection` is YES, or `acceptedMediaTypes` if it is not
+// empty, or all files types otherwise.
+@property(nonatomic, readonly) NSArray<UTType*>* acceptedDocumentTypes;
 // Media types available for the camera and accepted by the file upload element.
 @property(nonatomic, readonly)
     NSArray<NSString*>* acceptedMediaTypesAvailableForCamera;
@@ -45,6 +49,8 @@ API_AVAILABLE(ios(18.4))
 @property(nonatomic, readonly) BOOL allowsMediaSelection;
 // Whether the page allows the selection a directory.
 @property(nonatomic, readonly) BOOL allowsDirectorySelection;
+// Whether the page allows multiple selection.
+@property(nonatomic, readonly) BOOL allowsMultipleSelection;
 
 // Initializes the file upload panel and binds it to `controller`.
 - (instancetype)initWithChooseFileController:(ChooseFileController*)controller

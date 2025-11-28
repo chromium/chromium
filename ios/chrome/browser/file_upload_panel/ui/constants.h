@@ -46,4 +46,14 @@ enum class FileUploadPanelContextMenuActionVariant {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSFileUploadPanelContextMenuActionVariant)
 
+// LINT.IfChange(FileUploadPanelSecurityScopedResourceAccessState)
+// States of security scoped resource access.
+// Used for histograms, do not reorder.
+enum class FileUploadPanelSecurityScopedResourceAccessState {
+  kStartedAndStopped = 0,
+  kStartFailed = 1,
+  kMaxValue = kStartFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSFileUploadPanelSecurityScopedResourceAccessState)
+
 #endif  // IOS_CHROME_BROWSER_FILE_UPLOAD_PANEL_UI_CONSTANTS_H_

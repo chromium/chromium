@@ -52,6 +52,9 @@ TEST_F(FileUploadPanelMediatorTest, ControllerDestroyed) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
     OCMExpect([handler_ hideFileUploadPanel]);
     controller_.reset();
     EXPECT_OCMOCK_VERIFY(handler_);
@@ -70,6 +73,9 @@ TEST_F(FileUploadPanelMediatorTest, ShouldShowCamera) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
 
     id mockImagePicker = OCMClassMock([UIImagePickerController class]);
     OCMStub([mockImagePicker
@@ -94,6 +100,9 @@ TEST_F(FileUploadPanelMediatorTest, ShouldShowCamera_CameraNotAvailable) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
 
     id mockImagePicker = OCMClassMock([UIImagePickerController class]);
     OCMStub([mockImagePicker
@@ -119,6 +128,9 @@ TEST_F(FileUploadPanelMediatorTest, ShouldNotShowCamera) {
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_FALSE(mediator.shouldShowCamera);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -136,6 +148,9 @@ TEST_F(FileUploadPanelMediatorTest, PreferredCameraDeviceUser) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_EQ(UIImagePickerControllerCameraDeviceFront,
               mediator.preferredCameraDevice);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -153,6 +168,9 @@ TEST_F(FileUploadPanelMediatorTest, PreferredCameraDeviceEnvironment) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_EQ(UIImagePickerControllerCameraDeviceRear,
               mediator.preferredCameraDevice);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -168,6 +186,9 @@ TEST_F(FileUploadPanelMediatorTest, AdjustCaptureTypeToAvailableDevices) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
 
     id mockImagePicker = OCMClassMock([UIImagePickerController class]);
     OCMStub(
@@ -201,6 +222,10 @@ TEST_F(FileUploadPanelMediatorTest, AllowsImageAndVideoSelection) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_TRUE(mediator.allowsImageSelection);
     EXPECT_TRUE(mediator.allowsVideoSelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    NSArray<UTType*>* expectedTypes = @[ UTTypeJPEG, UTTypeMPEG4Movie ];
+    EXPECT_NSEQ(expectedTypes, mediator.acceptedDocumentTypes);
   }
 }
 
@@ -218,6 +243,9 @@ TEST_F(FileUploadPanelMediatorTest, DoesNotAllowVideoSelection) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_TRUE(mediator.allowsImageSelection);
     EXPECT_FALSE(mediator.allowsVideoSelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeJPEG ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -235,6 +263,9 @@ TEST_F(FileUploadPanelMediatorTest, DoesNotAllowImageSelection) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_FALSE(mediator.allowsImageSelection);
     EXPECT_TRUE(mediator.allowsVideoSelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeMPEG4Movie ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -253,6 +284,9 @@ TEST_F(FileUploadPanelMediatorTest, DoesNotAllowMediaSelection) {
     EXPECT_FALSE(mediator.allowsImageSelection);
     EXPECT_FALSE(mediator.allowsVideoSelection);
     EXPECT_FALSE(mediator.allowsMediaSelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypePDF ], mediator.acceptedDocumentTypes);
   }
 }
 
@@ -263,6 +297,9 @@ TEST_F(FileUploadPanelMediatorTest, SubmitImageSelectionFromCamera) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
     UIImage* image = ImageWithColor([UIColor redColor]);
     ASSERT_TRUE(image);
 
@@ -295,6 +332,9 @@ TEST_F(FileUploadPanelMediatorTest, DisconnectSubmitsSelection) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
     EXPECT_FALSE(controller_->HasSubmittedSelection());
     [mediator disconnect];
     EXPECT_TRUE(controller_->HasSubmittedSelection());
@@ -309,6 +349,9 @@ TEST_F(FileUploadPanelMediatorTest, SubmittedFileCountHistogramCancel) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
 
     // Test with 0 files (cancel).
     [mediator cancelFileSelection];
@@ -323,6 +366,9 @@ TEST_F(FileUploadPanelMediatorTest, SubmittedFileCountHistogramSubmit) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
 
     // Test with 2 files.
     NSArray* fileURLs = @[
@@ -332,5 +378,133 @@ TEST_F(FileUploadPanelMediatorTest, SubmittedFileCountHistogramSubmit) {
     [mediator submitFileSelection:fileURLs];
     histogram_tester_.ExpectUniqueSample(
         "IOS.FileUploadPanel.SubmittedFileCount", 2, 1);
+  }
+}
+
+// Tests that `allowsMultipleSelection` returns true when multiple files are
+// allowed.
+TEST_F(FileUploadPanelMediatorTest, AllowsMultipleSelection) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetWebState(web_state_.get())
+                                .SetAllowMultipleFiles(true)
+                                .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    EXPECT_TRUE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
+  }
+}
+
+// Tests that `allowsMultipleSelection` returns false when multiple files are
+// not allowed.
+TEST_F(FileUploadPanelMediatorTest, DoesNotAllowMultipleSelection) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetWebState(web_state_.get())
+                                .SetAllowMultipleFiles(false)
+                                .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
+  }
+}
+
+// Tests that `acceptedDocumentTypes` returns only folders when directory
+// selection is allowed.
+TEST_F(FileUploadPanelMediatorTest, AcceptedDocumentTypesForDirectory) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetWebState(web_state_.get())
+                                .SetOnlyAllowDirectory(true)
+                                .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    NSArray<UTType*>* expectedTypes = @[ UTTypeFolder ];
+    EXPECT_NSEQ(expectedTypes, mediator.acceptedDocumentTypes);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_TRUE(mediator.allowsDirectorySelection);
+  }
+}
+
+// Tests that `acceptedDocumentTypes` returns all item types when no specific
+// MIME types are accepted.
+TEST_F(FileUploadPanelMediatorTest, AcceptedDocumentTypesEmpty) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event =
+        ChooseFileEvent::Builder().SetWebState(web_state_.get()).Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    NSArray<UTType*>* expectedTypes = @[ UTTypeItem ];
+    EXPECT_NSEQ(expectedTypes, mediator.acceptedDocumentTypes);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+  }
+}
+
+// Tests that `acceptedDocumentTypes` returns the correct UTTypes for the given
+// MIME types.
+TEST_F(FileUploadPanelMediatorTest, AcceptedDocumentTypes) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event =
+        ChooseFileEvent::Builder()
+            .SetWebState(web_state_.get())
+            .SetAcceptMimeTypes({"image/jpeg", "application/pdf"})
+            .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    NSArray<UTType*>* expectedTypes = @[ UTTypeJPEG, UTTypePDF ];
+    EXPECT_NSEQ(expectedTypes, mediator.acceptedDocumentTypes);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+  }
+}
+
+// Tests that `allowsDirectorySelection` returns true when directory selection
+// is allowed.
+TEST_F(FileUploadPanelMediatorTest, AllowsDirectorySelection) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetWebState(web_state_.get())
+                                .SetOnlyAllowDirectory(true)
+                                .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    EXPECT_TRUE(mediator.allowsDirectorySelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_NSEQ(@[ UTTypeFolder ], mediator.acceptedDocumentTypes);
+  }
+}
+
+// Tests that `allowsDirectorySelection` returns false when directory selection
+// is not allowed.
+TEST_F(FileUploadPanelMediatorTest, DoesNotAllowDirectorySelection) {
+  if (@available(iOS 18.4, *)) {
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetWebState(web_state_.get())
+                                .SetOnlyAllowDirectory(false)
+                                .Build();
+    controller_ = std::make_unique<FakeChooseFileController>(event);
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+    EXPECT_FALSE(mediator.allowsDirectorySelection);
+    EXPECT_FALSE(mediator.allowsMultipleSelection);
+    EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
   }
 }

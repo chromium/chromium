@@ -151,6 +151,7 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   ChooseFileCaptureType _eventCaptureType;
   NSSet<NSString*>* _acceptedMediaTypes;
   NSArray<NSString*>* _acceptedMediaTypesAvailableForCamera;
+  NSArray<UTType*>* _acceptedDocumentTypes;
 }
 
 #pragma mark - Initialization
@@ -202,6 +203,34 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   return _acceptedMediaTypes;
 }
 
+- (NSArray<UTType*>*)acceptedDocumentTypes {
+  if (!_acceptedDocumentTypes) {
+    if (self.allowsDirectorySelection) {
+      // If the input allows directory selection, then folders should be the
+      // only accepted document type.
+      _acceptedDocumentTypes = @[ UTTypeFolder ];
+    } else if (self.acceptedMediaTypes.count == 0) {
+      // If the list of accepted media types is empty, then any document type
+      // can be selected.
+      _acceptedDocumentTypes = @[ UTTypeItem ];
+    } else {
+      // If directories cannot be selected and the list of accepted media types
+      // is not empty, then the accepted document types are the accepted media
+      // types.
+      NSMutableArray<UTType*>* acceptedDocumentTypes = [NSMutableArray array];
+      for (NSString* acceptedMediaTypeIdentifier in self.acceptedMediaTypes) {
+        UTType* acceptedMediaType =
+            [UTType typeWithIdentifier:acceptedMediaTypeIdentifier];
+        if (acceptedMediaType) {
+          [acceptedDocumentTypes addObject:acceptedMediaType];
+        }
+      }
+      _acceptedDocumentTypes = acceptedDocumentTypes;
+    }
+  }
+  return _acceptedDocumentTypes;
+}
+
 - (NSArray<NSString*>*)acceptedMediaTypesAvailableForCamera {
   if (!_acceptedMediaTypesAvailableForCamera) {
     _acceptedMediaTypesAvailableForCamera =
@@ -243,6 +272,10 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
 
 - (BOOL)allowsDirectorySelection {
   return self.event.only_allow_directory;
+}
+
+- (BOOL)allowsMultipleSelection {
+  return self.event.allow_multiple_files;
 }
 
 #pragma mark - Public

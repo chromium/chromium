@@ -2781,6 +2781,9 @@
       <message name="IDS_IOS_FEED_SWIPE_IPH" desc="Text for the in-product help bubble highlighting scrolling on the Feed.">
         You can swipe up to see more content tailored to you.
       </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL" desc="Title for a multiple files chooser button used in HTML forms. [iOS only]">
+        Choose Files
+      </message>
       <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL" desc="Title for a single file chooser button used in HTML forms. [iOS only]">
         Choose File
       </message>
