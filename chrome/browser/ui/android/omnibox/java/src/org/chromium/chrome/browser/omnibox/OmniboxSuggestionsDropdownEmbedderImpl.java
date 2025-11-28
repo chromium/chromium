@@ -286,8 +286,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             paddingRight = 0;
         }
 
-        int overlayKeyboardHeight = mKeyboardHeightSupplier.get();
-        int keyboardHeight = overlayKeyboardHeight;
+        int keyboardHeight = mKeyboardHeightSupplier.get();
 
         int windowHeight;
         if (DeviceInfo.isAutomotive()
@@ -324,18 +323,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         int windowSpace =
                 Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
 
-        // Calculate height of content covered by overlay keyboard.
-        // In "overlay" mode (overlayKeyboardHeight > 0), the content view is not resized, so we
-        // subtract the full physical keyboard height (`keyboardHeight`).
-        // In "resizing" mode (overlayKeyboardHeight == 0), the content view is already shrunk, so
-        // we subtract 0 as keyboard not covering the content.
-        int contentHeightCoveredByKeyboard = overlayKeyboardHeight > 0 ? keyboardHeight : 0;
-
         // If content view is null, then omnibox might not be in the activity content.
         int contentSpace =
                 contentView == null
                         ? Integer.MAX_VALUE
-                        : contentView.getMeasuredHeight() - contentHeightCoveredByKeyboard;
+                        : contentView.getMeasuredHeight() - keyboardHeight;
         int height;
         if (controlsPosition == ControlsPosition.BOTTOM) {
             height = Math.min(windowSpace, contentSpace) - mAnchorView.getMeasuredHeight();

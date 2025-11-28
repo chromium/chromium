@@ -278,6 +278,8 @@ public class ToolbarPositionControllerTest {
     private Context mContext;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowing =
             new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<Boolean> mIsIncognitoNtpShowing =
+            new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing =
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsOmniboxFocused =
@@ -360,6 +362,7 @@ public class ToolbarPositionControllerTest {
                         mBrowserControlsSizer,
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowing,
+                        mIsIncognitoNtpShowing,
                         mIsTabSwitcherShowing,
                         mIsOmniboxFocused,
                         mIsFormFieldFocused,
