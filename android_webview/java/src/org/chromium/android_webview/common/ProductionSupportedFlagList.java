@@ -1040,9 +1040,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.USE_SHARED_REBIND_SERVICE_CONNECTION,
                 "Use a shared service connection to apply service group importance changes."),
         Flag.baseFeature(
-                "SubframePriorityContribution",
-                "Stops priority contributions from subframes in back-forward cache."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_RENDERING_HEURISTIC,
                 "Apply smoothing Skia options when WebView detects it's running on a TV device."),
         Flag.baseFeature(
