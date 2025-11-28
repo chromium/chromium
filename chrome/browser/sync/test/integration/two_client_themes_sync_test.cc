@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -17,20 +18,45 @@ using themes_helper::UsingCustomTheme;
 using themes_helper::UsingDefaultTheme;
 using themes_helper::UsingSystemTheme;
 
-class TwoClientThemesSyncTest : public SyncTest {
+class TwoClientThemesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientThemesSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientThemesSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                syncer::kSeparateLocalAndAccountThemes,
+                                // `kEnablePreferencesAccountStorage` is used to
+                                // enable themes in transport
+                                // mode alongside some other data types.
+                                switches::kEnablePreferencesAccountStorage},
+          /*disabled_features=*/{});
+    }
+  }
 
   TwoClientThemesSyncTest(const TwoClientThemesSyncTest&) = delete;
   TwoClientThemesSyncTest& operator=(const TwoClientThemesSyncTest&) = delete;
 
   ~TwoClientThemesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientThemesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 // Starts with default themes, then sets up sync and uses it to set all
 // profiles to use a custom theme.  Does not actually install any themes, but
 // instead verifies the custom theme is pending for install.
-IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientThemesSyncTest,
                        E2E_ENABLED(DefaultThenSyncCustom)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -53,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
 
 // Starts with custom themes, then sets up sync and uses it to set all profiles
 // to the system theme.
-IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientThemesSyncTest,
                        E2E_ENABLED(CustomThenSyncNative)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -74,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
 
 // Starts with custom themes, then sets up sync and uses it to set all profiles
 // to the default theme.
-IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientThemesSyncTest,
                        E2E_ENABLED(CustomThenSyncDefault)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
@@ -96,8 +122,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
 //
 // Most other tests have significant coverage of model association.  This test
 // is intended to test steady-state scenarios.
-IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
-                       E2E_ENABLED(CycleOptions)) {
+IN_PROC_BROWSER_TEST_P(TwoClientThemesSyncTest, E2E_ENABLED(CycleOptions)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
