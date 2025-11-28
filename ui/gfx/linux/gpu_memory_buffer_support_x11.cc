@@ -125,16 +125,17 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     gfx::BufferUsage usage) {
-  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   if (!device_) {
     LOG(ERROR) << "Can't create buffer -- gbm  device is missing.";
     return nullptr;
   }
-  if (!base::Contains(supported_configs_,
-                      gfx::BufferUsageAndFormat(usage, buffer_format))) {
+  if (!base::Contains(
+          supported_configs_,
+          gfx::BufferUsageAndFormat(
+              usage, viz::SharedImageFormatToBufferFormat(format)))) {
     LOG(ERROR) << "Can't create buffer -- unsupported config: usage="
                << gfx::BufferUsageToString(usage)
-               << ", format=" << gfx::BufferFormatToString(buffer_format);
+               << ", format=" << format.ToString();
     return nullptr;
   }
 
@@ -142,12 +143,11 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
       base::debug::AllocateCrashKeyString("buffer_usage_and_format",
                                           base::debug::CrashKeySize::Size64);
   std::string buffer_usage_and_format =
-      gfx::BufferFormatToString(buffer_format) + std::string(",") +
-      gfx::BufferUsageToString(usage);
+      format.ToString() + std::string(",") + gfx::BufferUsageToString(usage);
   base::debug::ScopedCrashKeyString scoped_crash_key(crash_key_string,
                                                      buffer_usage_and_format);
 
-  return device_->CreateBuffer(GetFourCCFormatFromBufferFormat(buffer_format),
+  return device_->CreateBuffer(GetFourCCFormatFromSharedImageFormat(format),
                                size, BufferUsageToGbmFlags(usage));
 }
 
