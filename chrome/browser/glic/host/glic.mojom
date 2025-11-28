@@ -83,7 +83,6 @@ enum WebUiState {
   // Web view is displayed.
   kReady = 8,
   // Glic is unresponsive. Currently this will show the same UI as kError.
-  // TODO(crbug.com/394162784): create an unresponsive UI.
   kUnresponsive = 9,
   // Sign in panel is displayed.
   kSignIn = 10,
