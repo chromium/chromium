@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "components/tabs/public/tab_interface.h"
@@ -59,6 +60,9 @@ class WalletablePassBubbleControllerBase
   void SetCallback(
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
 
+  // Sets whether the bubble should be reshown when the tab is activated.
+  void SetReshowOnActivation(bool reshow);
+
   void QueueOrShowBubble(bool force_show = false);
 
   void ResetBubbleViewAndInformBubbleManager();
@@ -68,6 +72,8 @@ class WalletablePassBubbleControllerBase
  private:
   tabs::TabInterface& tab() { return tab_.get(); }
 
+  void OnTabActivated(tabs::TabInterface* tab);
+
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<WalletablePassBubbleViewBase> bubble_view_ = nullptr;
 
@@ -75,6 +81,11 @@ class WalletablePassBubbleControllerBase
   const raw_ref<tabs::TabInterface> tab_;
 
   WalletablePassClient::WalletablePassBubbleResultCallback callback_;
+
+  // If true, the bubble will be reshown when the tab is activated.
+  bool reshow_bubble_on_activation_ = false;
+
+  base::CallbackListSubscription tab_activation_subscription_;
 };
 
 }  // namespace wallet

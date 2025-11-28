@@ -35,7 +35,11 @@ WalletablePassClient::WalletablePassBubbleResult GetResult(
 
 WalletablePassBubbleControllerBase::WalletablePassBubbleControllerBase(
     tabs::TabInterface* tab)
-    : tab_(CHECK_DEREF(tab)) {}
+    : tab_(CHECK_DEREF(tab)) {
+  tab_activation_subscription_ = tab->RegisterDidActivate(
+      base::BindRepeating(&WalletablePassBubbleControllerBase::OnTabActivated,
+                          base::Unretained(this)));
+}
 
 WalletablePassBubbleControllerBase::~WalletablePassBubbleControllerBase() =
     default;
@@ -82,6 +86,16 @@ void WalletablePassBubbleControllerBase::OnBubbleClosed(
     }
   }
 
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities) &&
+      reshow_bubble_on_activation_) {
+    // If the bubble is closed because the user clicked a link that opened a new
+    // tab, we want to reshow the bubble when the user returns to this tab.
+    // In this case, we don't run the callback yet.
+    ResetBubbleViewAndInformBubbleManager();
+    return;
+  }
+
   if (callback_) {
     std::move(callback_).Run(GetResult(reason));
   }
@@ -122,6 +136,20 @@ void WalletablePassBubbleControllerBase::
     }
   }
   bubble_view_ = nullptr;
+}
+
+void WalletablePassBubbleControllerBase::SetReshowOnActivation(bool reshow) {
+  reshow_bubble_on_activation_ = reshow;
+}
+
+void WalletablePassBubbleControllerBase::OnTabActivated(
+    tabs::TabInterface* tab) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities) &&
+      reshow_bubble_on_activation_) {
+    reshow_bubble_on_activation_ = false;
+    QueueOrShowBubble();
+  }
 }
 
 }  // namespace wallet

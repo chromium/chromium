@@ -5221,6 +5221,7 @@ if (!is_android) {
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
+        "../browser/ui/wallet/walletable_pass_bubble_controller_browsertest.cc",
         "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]

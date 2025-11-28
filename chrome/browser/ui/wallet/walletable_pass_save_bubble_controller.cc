@@ -85,6 +85,7 @@ WalletablePassSaveBubbleController::
 
 void WalletablePassSaveBubbleController::OnGoToWalletClicked() {
   if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+    SetReshowOnActivation(true);
     ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
   }
 }
