@@ -86,8 +86,6 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Cancels the prerender that is prerendering the given
   // `canonical_search_url`.
-  // TODO(crbug.com/40214220): Use the creator's address to identify the
-  // owner that can cancels the corresponding prerendering?
   void StopPrerenderSearchResult(const GURL& canonical_search_url);
 
   // The entry of direct url input prerender.
