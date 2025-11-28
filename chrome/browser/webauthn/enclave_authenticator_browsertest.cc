@@ -1023,6 +1023,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Ensure the security domain secret is redacted from logs.
   EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"secret\": \"[redacted]\""));
+
+  // Verify the secret was redacted when being sent for wrapping.
+  EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"key\": \"[redacted]\""));
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
@@ -3257,6 +3260,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
     second_manager.ChangePIN(newpin, "rapt", change_future.GetCallback());
     EXPECT_TRUE(change_future.Wait());
     ASSERT_TRUE(change_future.Get());
+
+    // Verify the PIN claim key was redacted.
+    EXPECT_THAT(GetDeviceLog(),
+                testing::HasSubstr("\"pin_claim_key\": \"[redacted]\""));
   }
 
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);

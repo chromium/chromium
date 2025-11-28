@@ -677,7 +677,9 @@ void BuildCommandRequestBody(
 
 cbor::Value RedactEnclaveRequest(const cbor::Value& cbor) {
   return fido_parsing_utils::RedactCbor(
-      cbor, std::array{fido_parsing_utils::ToCborVector("secret")});
+      cbor, std::array{fido_parsing_utils::ToCborVector(kRequestSecretKey),
+                       fido_parsing_utils::ToCborVector(kWrappingKeyToWrap),
+                       fido_parsing_utils::ToCborVector(kClaimKey)});
 }
 
 cbor::Value RedactEnclaveResponse(const cbor::Value& cbor) {
