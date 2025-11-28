@@ -63,6 +63,7 @@ UIImage* GetEnterpriseIcon() {
 
 SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
                                                Browser* browser) {
+  CHECK(identity, base::NotFatalUntil::M151);
   // Retrieve necessary services and profile information.
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* auth_service =

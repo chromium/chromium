@@ -110,38 +110,52 @@
 
 #pragma mark - Private
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// Whether the identity confirmation snackbar should be shown. If not, the
+// reason why it should not. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
 // LINT.IfChange
 enum class IdentityConfirmationSnackbarDecision {
+  // The snackbar should be shown.
   kShouldShow = 0,
+  // The user is signed-out, so no identity to display.
   kDontShowNoAccount = 1,
+  // The user has a single account on the device, so no need to remind them that
+  // they are currently using this account.
   kDontShowSingleAccount = 2,
+  // The user has a personal account, and `self` is not executing on top of
+  // Bling Start. Then no need to display a identity reminder.
   kDontShowNotOnStartPage = 3,
+  // The reminder was shown recently, no need to show it again.
   kDontShowShownRecently = 4,
+  // The reminder was shown enough time already, we won’t display it anymore.
   kDontShowImpressionLimitReached = 5,
+  // Not used anymore.
   kDontShowFeatureDisabled = 6,
   kMaxValue = kDontShowFeatureDisabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
+// Whether the identity snackbar should be displayed. If not, the reason for it
+// not to be displayed.
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // As the user is signed-out, don’t show the identity snackbar.
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
       signin::GetIdentitiesOnDevice(profile);
   if ([identitiesOnDevice count] <= 1) {
+    // As the user has a single account on the device, it’s not necessary to
+    // remind them which account they are currently using.
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
   // For non-managed accounts, show the snackbar only on top of Bling Start.
   if (!authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin) &&
@@ -189,6 +203,8 @@ enum class IdentityConfirmationSnackbarDecision {
   return IdentityConfirmationSnackbarDecision::kShouldShow;
 }
 
+// Checks whether the identity confirmation snackbar should be displayed, log
+// the decision and its reason, and display it if it’s relevant.
 - (void)maybeShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   IdentityConfirmationSnackbarDecision decision =
       [self shouldShowIdentityConfirmationSnackbarWithBrowser:browser];
@@ -203,13 +219,14 @@ enum class IdentityConfirmationSnackbarDecision {
   [self showSnackbarMessageWithBrowser:browser];
 }
 
+// Shows a snackbar reminding the user which account Chrome is currently using.
 - (void)showSnackbarMessageWithBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  DCHECK(systemIdentity);
+  CHECK(systemIdentity, base::NotFatalUntil::M151);
 
   SnackbarMessage* message =
       CreateIdentitySnackbarMessage(systemIdentity, browser);

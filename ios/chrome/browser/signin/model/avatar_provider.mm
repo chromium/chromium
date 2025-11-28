@@ -11,9 +11,10 @@ namespace signin {
 
 UIImage* AvatarProvider::GetIdentityAvatar(id<SystemIdentity> identity,
                                            IdentityAvatarSize avatar_size) {
+  CHECK(identity, base::NotFatalUntil::M151);
   ResizedAvatarCache* avatar_cache =
       GetAvatarCacheForIdentityAvatarSize(avatar_size);
-  DCHECK(avatar_cache);
+  CHECK(avatar_cache, base::NotFatalUntil::M151);
   return [avatar_cache resizedAvatarForIdentity:identity];
 }
 
@@ -34,7 +35,7 @@ ResizedAvatarCache* AvatarProvider::GetAvatarCacheForIdentityAvatarSize(
       avatar_cache = &large_avatar_cache_;
       break;
   }
-  DCHECK(avatar_cache);
+  CHECK(avatar_cache, base::NotFatalUntil::M151);
   if (!*avatar_cache) {
     *avatar_cache =
         [[ResizedAvatarCache alloc] initWithIdentityAvatarSize:avatar_size];
