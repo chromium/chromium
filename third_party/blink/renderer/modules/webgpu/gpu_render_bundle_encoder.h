@@ -61,11 +61,20 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
     GetHandle().InsertDebugMarker(label.c_str());
   }
   void setImmediates(uint32_t range_offset,
-                     base::span<const uint8_t> data,
+                     const DOMArrayBufferBase* data,
                      uint64_t data_offset,
                      ExceptionState& exception_state);
   void setImmediates(uint32_t range_offset,
-                     base::span<const uint8_t> data,
+                     const DOMArrayBufferBase* data,
+                     uint64_t data_offset,
+                     uint64_t size,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
+                     uint64_t data_offset,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
                      uint64_t data_offset,
                      uint64_t size,
                      ExceptionState& exception_state);
