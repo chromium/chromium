@@ -4,7 +4,7 @@
 
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -245,8 +245,11 @@ function detachListeners(rendererIds: number[], refocus: boolean): void {
   }
 }
 
-gCrWebLegacy.bottomSheet = {
-  attachListeners,
-  detachListeners,
-  refocusLastBlurredElement,
-};
+const bottomSheetApi = new CrWebApi();
+
+bottomSheetApi.addFunction('attachListeners', attachListeners);
+bottomSheetApi.addFunction('detachListeners', detachListeners);
+bottomSheetApi.addFunction(
+    'refocusLastBlurredElement', refocusLastBlurredElement);
+
+gCrWeb.registerApi('bottomSheet', bottomSheetApi);
