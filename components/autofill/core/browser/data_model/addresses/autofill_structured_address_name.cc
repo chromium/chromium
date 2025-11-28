@@ -122,14 +122,15 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
   auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
   DCHECK(pattern_provider);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
-    return {pattern_provider->GetRegEx(RegEx::kParseLastName)};
-  }
-
   // Check if the name has the characteristics of an Hispanic/Latinx name.
   if (HasHispanicLatinxNameCharacteristics(base::UTF16ToUTF8(GetValue()))) {
     return {pattern_provider->GetRegEx(RegEx::kParseHispanicLastName)};
   }
+
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    return {pattern_provider->GetRegEx(RegEx::kParseLastName)};
+  }
+
   return {pattern_provider->GetRegEx(RegEx::kParseLastNameIntoSecondLastName)};
 }
 

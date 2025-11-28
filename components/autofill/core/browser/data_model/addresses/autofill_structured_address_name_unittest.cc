@@ -122,8 +122,9 @@ INSTANTIATE_TEST_SUITE_P(
         LastNameParserTestRecord{"van de Velde", "van de", "Velde", "", "",
                                  "Velde"},
         LastNameParserTestRecord{"ter Horst", "ter", "Horst", "", "", "Horst"},
-        LastNameParserTestRecord{"von Ruiz y Picasso", "von", "Ruiz y Picasso",
-                                 "Ruiz", "y", "Picasso"}));
+        LastNameParserTestRecord{"de la Ruiz y Picasso", "",
+                                 "de la Ruiz y Picasso", "de la Ruiz", "y",
+                                 "Picasso"}));
 
 class AutofillStructuredNameParseFullNameTest
     : public testing::TestWithParam<NameParserTestRecord> {};
@@ -195,10 +196,17 @@ INSTANTIATE_TEST_SUITE_P(
         NameParserTestRecord{"Pablo Ruiz y Picasso", "Pablo", "",
                              "Ruiz y Picasso", "", "Ruiz y Picasso", "Ruiz",
                              "y", "Picasso"},
-        // Hispanic/Latinx name with last name prefix.
-        NameParserTestRecord{"Pablo von Ruiz y Picasso", "Pablo", "",
-                             "von Ruiz y Picasso", "von", "Ruiz y Picasso",
-                             "Ruiz", "y", "Picasso"},
+        // Hispanic/Latinx name with last name prefix. Note that in hispanic
+        // names last name prefix should not be captured as a standalone type.
+        NameParserTestRecord{"Pablo de la Ruiz y Picasso", "Pablo", "",
+                             "de la Ruiz y Picasso", "", "de la Ruiz y Picasso",
+                             "de la Ruiz", "y", "Picasso"},
+        // Hispanic/Latinx name with last name prefix. Note that in hispanic
+        // names last name prefix should not be captured as a standalone type.
+        NameParserTestRecord{"Pablo Diego de la Ruiz y Picasso", "Pablo Diego",
+                             "", "de la Ruiz y Picasso", "",
+                             "de la Ruiz y Picasso", "de la Ruiz", "y",
+                             "Picasso"},
         // Name with multiple middle names.
         NameParserTestRecord{"George Walker Junior Bush", "George",
                              "Walker Junior", "Bush", "", "Bush", "", "",
