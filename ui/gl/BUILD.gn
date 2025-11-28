@@ -228,7 +228,7 @@ component("gl") {
       "//ui/base:features",
       "//ui/base/x",
       "//ui/events/platform/x11",
-      "//ui/gfx/linux:gpu_memory_buffer_support_x11",
+      "//ui/gfx/linux:gbm_support_x11",
     ]
 
     if (!use_static_angle) {

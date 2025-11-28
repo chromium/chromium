@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
+#include "ui/gfx/linux/gbm_support_x11.h"
 
 #include <fcntl.h>
 #include <xcb/xcb.h>
@@ -52,22 +52,26 @@ std::unique_ptr<ui::GbmDevice> CreateX11GbmDevice() {
 
   // Obtain an authenticated DRM fd.
   auto reply = dri3.Open({connection->default_root(), 0}).Sync();
-  if (!reply)
+  if (!reply) {
     return nullptr;
+  }
 
   base::ScopedFD fd(HANDLE_EINTR(dup(reply->device_fd.get())));
-  if (!fd.is_valid())
+  if (!fd.is_valid()) {
     return nullptr;
-  if (HANDLE_EINTR(fcntl(fd.get(), F_SETFD, FD_CLOEXEC)) == -1)
+  }
+  if (HANDLE_EINTR(fcntl(fd.get(), F_SETFD, FD_CLOEXEC)) == -1) {
     return nullptr;
+  }
 
   return ui::CreateGbmDevice(fd.release());
 }
 
 std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
     ui::GbmDevice* device) {
-  if (!device)
+  if (!device) {
     return {};
+  }
 
   std::vector<gfx::BufferUsageAndFormat> configs;
   for (gfx::BufferUsage usage : {
@@ -110,18 +114,18 @@ std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
 }  // namespace
 
 // static
-GpuMemoryBufferSupportX11* GpuMemoryBufferSupportX11::GetInstance() {
-  static base::NoDestructor<GpuMemoryBufferSupportX11> instance;
+GBMSupportX11* GBMSupportX11::GetInstance() {
+  static base::NoDestructor<GBMSupportX11> instance;
   return instance.get();
 }
 
-GpuMemoryBufferSupportX11::GpuMemoryBufferSupportX11()
+GBMSupportX11::GBMSupportX11()
     : device_(CreateX11GbmDevice()),
       supported_configs_(CreateSupportedConfigList(device_.get())) {}
 
-GpuMemoryBufferSupportX11::~GpuMemoryBufferSupportX11() = default;
+GBMSupportX11::~GBMSupportX11() = default;
 
-std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
+std::unique_ptr<GbmBuffer> GBMSupportX11::CreateBuffer(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     gfx::BufferUsage usage) {
@@ -151,13 +155,12 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
                                size, BufferUsageToGbmFlags(usage));
 }
 
-bool GpuMemoryBufferSupportX11::CanCreateBufferForFormat(
-    viz::SharedImageFormat format) {
+bool GBMSupportX11::CanCreateBufferForFormat(viz::SharedImageFormat format) {
   return device_ && device_->CanCreateBufferForFormat(
                         GetFourCCFormatFromSharedImageFormat(format));
 }
 
-std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBufferFromHandle(
+std::unique_ptr<GbmBuffer> GBMSupportX11::CreateBufferFromHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {

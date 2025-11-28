@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_LINUX_GPU_MEMORY_BUFFER_SUPPORT_X11_H_
-#define UI_GFX_LINUX_GPU_MEMORY_BUFFER_SUPPORT_X11_H_
+#ifndef UI_GFX_LINUX_GBM_SUPPORT_X11_H_
+#define UI_GFX_LINUX_GBM_SUPPORT_X11_H_
 
 #include <memory>
 #include <vector>
@@ -25,9 +25,9 @@ class GbmDevice;
 
 // Obtains and holds a GbmDevice for creating GbmBuffers.  Maintains a list of
 // supported buffer configurations.
-class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
+class COMPONENT_EXPORT(GBM_SUPPORT_X11) GBMSupportX11 {
  public:
-  static GpuMemoryBufferSupportX11* GetInstance();
+  static GBMSupportX11* GetInstance();
 
   std::unique_ptr<GbmBuffer> CreateBuffer(viz::SharedImageFormat format,
                                           const gfx::Size& size,
@@ -39,18 +39,17 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
       viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle);
 
-  ~GpuMemoryBufferSupportX11();
+  ~GBMSupportX11();
 
-  GpuMemoryBufferSupportX11(const GpuMemoryBufferSupportX11&) = delete;
-  GpuMemoryBufferSupportX11& operator=(const GpuMemoryBufferSupportX11&) =
-      delete;
+  GBMSupportX11(const GBMSupportX11&) = delete;
+  GBMSupportX11& operator=(const GBMSupportX11&) = delete;
 
   bool has_gbm_device() const { return device_ != nullptr; }
 
  private:
-  friend class base::NoDestructor<GpuMemoryBufferSupportX11>;
+  friend class base::NoDestructor<GBMSupportX11>;
 
-  GpuMemoryBufferSupportX11();
+  GBMSupportX11();
 
   const std::unique_ptr<GbmDevice> device_;
   const std::vector<gfx::BufferUsageAndFormat> supported_configs_;
@@ -58,4 +57,4 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
 
 }  // namespace ui
 
-#endif  // UI_GFX_LINUX_GPU_MEMORY_BUFFER_SUPPORT_X11_H_
+#endif  // UI_GFX_LINUX_GBM_SUPPORT_X11_H_

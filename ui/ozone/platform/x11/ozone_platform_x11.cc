@@ -26,7 +26,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
+#include "ui/gfx/linux/gbm_support_x11.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/atom_cache.h"
@@ -217,7 +217,7 @@ class OzonePlatformX11 : public OzonePlatform,
     static OzonePlatform::PlatformRuntimeProperties properties;
 
     if (has_initialized_gpu() &&
-        ui::GpuMemoryBufferSupportX11::GetInstance()->has_gbm_device()) {
+        ui::GBMSupportX11::GetInstance()->has_gbm_device()) {
       // This property is set when the GetPlatformRuntimeProperties is
       // called on the gpu process side.
       properties.supports_native_pixmaps = true;
@@ -292,7 +292,7 @@ class OzonePlatformX11 : public OzonePlatform,
     InitializeCommon(params);
     if (params.enable_native_gpu_memory_buffers) {
       base::ThreadPool::PostTask(FROM_HERE, base::BindOnce([]() {
-                                   ui::GpuMemoryBufferSupportX11::GetInstance();
+                                   ui::GBMSupportX11::GetInstance();
                                  }));
     }
     // In single process mode either the UI thread will create an event source

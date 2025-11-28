@@ -10,7 +10,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/linux/gbm_buffer.h"
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
+#include "ui/gfx/linux/gbm_support_x11.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -218,8 +218,8 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
-  auto buffer = ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(
-      format, size, usage);
+  auto buffer =
+      ui::GBMSupportX11::GetInstance()->CreateBuffer(format, size, usage);
   if (buffer) {
     gfx::NativePixmapHandle handle = buffer->ExportHandle();
     if (handle.planes.empty()) {
@@ -236,8 +236,7 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
 
 bool X11SurfaceFactory::CanCreateNativePixmapForFormat(
     viz::SharedImageFormat format) {
-  return ui::GpuMemoryBufferSupportX11::GetInstance()->CanCreateBufferForFormat(
-      format);
+  return ui::GBMSupportX11::GetInstance()->CanCreateBufferForFormat(format);
 }
 
 scoped_refptr<gfx::NativePixmap>
@@ -247,9 +246,8 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
     viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
-  auto buffer =
-      ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBufferFromHandle(
-          size, format, std::move(handle));
+  auto buffer = ui::GBMSupportX11::GetInstance()->CreateBufferFromHandle(
+      size, format, std::move(handle));
   if (buffer) {
     gfx::NativePixmapHandle buffer_handle = buffer->ExportHandle();
     if (buffer_handle.planes.empty()) {
@@ -267,8 +265,7 @@ X11SurfaceFactory::GetSupportedFormatsForTexturing() const {
   for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
     const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
     auto format = viz::GetSharedImageFormat(buffer_format);
-    if (ui::GpuMemoryBufferSupportX11::GetInstance()->CanCreateBufferForFormat(
-            format)) {
+    if (ui::GBMSupportX11::GetInstance()->CanCreateBufferForFormat(format)) {
       supported_buffer_formats.push_back(buffer_format);
     }
   }

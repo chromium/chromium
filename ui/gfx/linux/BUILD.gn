@@ -49,10 +49,10 @@ source_set("gbm") {
 }
 
 if (ozone_platform_x11) {
-  component("gpu_memory_buffer_support_x11") {
+  component("gbm_support_x11") {
     sources = [
-      "gpu_memory_buffer_support_x11.cc",
-      "gpu_memory_buffer_support_x11.h",
+      "gbm_support_x11.cc",
+      "gbm_support_x11.h",
     ]
     deps = [
       ":drm",
