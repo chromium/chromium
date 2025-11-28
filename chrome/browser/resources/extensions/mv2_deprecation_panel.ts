@@ -400,7 +400,6 @@ export class ExtensionsMv2DeprecationPanelElement extends
             'Extensions.Mv2Deprecation.Disabled.DismissedForExtension');
         break;
       case Mv2ExperimentStage.UNSUPPORTED:
-        // TODO(crbug.com/339061151): Handle button for this stage.
         assertNotReached();
     }
 
