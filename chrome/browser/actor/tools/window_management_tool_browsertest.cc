@@ -7,12 +7,10 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -48,32 +46,41 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
   }
 };
 
-class NewWindowObserver : public BrowserListObserver {
+class NewWindowObserver : public BrowserCollectionObserver {
  public:
-  NewWindowObserver() { BrowserList::AddObserver(this); }
-  ~NewWindowObserver() override { BrowserList::RemoveObserver(this); }
-  void OnBrowserAdded(Browser* browser) override { added_browser_ = browser; }
-  Browser* added_browser() const { return added_browser_; }
+  explicit NewWindowObserver(Profile* profile) {
+    profile_browser_collection_observation_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile));
+  }
+  ~NewWindowObserver() override = default;
+
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    created_browser_ = browser;
+  }
+
+  BrowserWindowInterface* created_browser() const { return created_browser_; }
 
  private:
-  raw_ptr<Browser> added_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> created_browser_ = nullptr;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      profile_browser_collection_observation_{this};
 };
 
 // Ensure CreateWindow creates a new window and makes it the active window.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
-  const size_t initial_browser_count = chrome::GetTotalBrowserCount();
+  const size_t initial_browser_count = GetAllBrowserWindowInterfaces().size();
 
-  NewWindowObserver new_window_observer;
+  NewWindowObserver new_window_observer(GetProfile());
 
   std::unique_ptr<ToolRequest> action = MakeCreateWindowRequest();
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  BrowserWindowInterface* new_window = new_window_observer.added_browser();
+  BrowserWindowInterface* new_window = new_window_observer.created_browser();
   EXPECT_TRUE(new_window);
 
-  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(initial_browser_count + 1, GetAllBrowserWindowInterfaces().size());
   ui_test_utils::WaitForBrowserSetLastActive(
       new_window->GetBrowserForMigrationOnly());
   EXPECT_EQ(new_window, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
@@ -83,14 +90,17 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
 // acting tab set.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
                        CreateWindowAddsTab) {
-  NewWindowObserver new_window_observer;
+  NewWindowObserver new_window_observer(GetProfile());
 
   std::unique_ptr<ToolRequest> action = MakeCreateWindowRequest();
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(new_window_observer.added_browser()->GetTabStripModel()->count(),
+  EXPECT_EQ(new_window_observer.created_browser()
+                ->GetFeatures()
+                .tab_strip_model()
+                ->count(),
             1);
   EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
 }
@@ -105,15 +115,17 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 
   // Create a new window and so its tab is added to the acting set.
   {
-    NewWindowObserver new_window_observer;
+    NewWindowObserver new_window_observer(GetProfile());
 
     std::unique_ptr<ToolRequest> action = MakeCreateWindowRequest();
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
-    first_new_window_tab =
-        new_window_observer.added_browser()->GetTabStripModel()->GetActiveTab();
+    first_new_window_tab = new_window_observer.created_browser()
+                               ->GetFeatures()
+                               .tab_strip_model()
+                               ->GetActiveTab();
   }
 
   // Create another new window; its tab should not be added to the acting set
@@ -131,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 
 // Ensure CloseWindow closes the window with the given ID.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
-  const size_t initial_browser_count = chrome::GetTotalBrowserCount();
+  const size_t initial_browser_count = GetAllBrowserWindowInterfaces().size();
   BrowserWindowInterface* initial_active_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
@@ -140,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   ActResultFuture create_result;
   actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
   ExpectOkResult(create_result);
-  ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(initial_browser_count + 1, GetAllBrowserWindowInterfaces().size());
 
   // Close the new window.
   const int32_t window_id_to_close =
@@ -151,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   actor_task().Act(ToRequestList(close_action), close_result.GetCallback());
   ExpectOkResult(close_result);
 
-  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(initial_browser_count, GetAllBrowserWindowInterfaces().size());
   ui_test_utils::WaitForBrowserSetLastActive(
       initial_active_browser->GetBrowserForMigrationOnly());
   EXPECT_EQ(initial_active_browser,
@@ -165,12 +177,12 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 
   // Create a new window to close.
   {
-    NewWindowObserver new_window_observer;
+    NewWindowObserver new_window_observer(GetProfile());
     std::unique_ptr<ToolRequest> create_action = MakeCreateWindowRequest();
     ActResultFuture create_result;
     actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
     ExpectOkResult(create_result);
-    new_window = new_window_observer.added_browser();
+    new_window = new_window_observer.created_browser();
   }
 
   ASSERT_EQ(actor_task().GetTabs().size(), 1ul);
@@ -197,29 +209,31 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 // Ensure ActivateWindow activates the window with the given ID.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
                        MAYBE_ActivateWindow) {
-  Browser* initial_window = browser();
+  BrowserWindowInterface* initial_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   // Create a new window, which should become active.
-  NewWindowObserver new_window_observer;
+  NewWindowObserver new_window_observer(GetProfile());
   std::unique_ptr<ToolRequest> create_action = MakeCreateWindowRequest();
   ActResultFuture create_result;
   actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
   ExpectOkResult(create_result);
 
-  BrowserWindowInterface* new_window = new_window_observer.added_browser();
+  BrowserWindowInterface* new_window = new_window_observer.created_browser();
   ASSERT_NE(new_window, initial_window);
   ui_test_utils::WaitForBrowserSetLastActive(
       new_window->GetBrowserForMigrationOnly());
 
   // Activate the original window.
   std::unique_ptr<ToolRequest> activate_action =
-      MakeActivateWindowRequest(initial_window->session_id().id());
+      MakeActivateWindowRequest(initial_window->GetSessionID().id());
   ActResultFuture activate_result;
   actor_task().Act(ToRequestList(activate_action),
                    activate_result.GetCallback());
   ExpectOkResult(activate_result);
 
-  ui_test_utils::WaitForBrowserSetLastActive(initial_window);
+  ui_test_utils::WaitForBrowserSetLastActive(
+      initial_window->GetBrowserForMigrationOnly());
   EXPECT_EQ(initial_window,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
