@@ -244,16 +244,14 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void restoreTabStateForUrl(String url) {
-        // TODO(https://crbug.com/448151052): Synchronously allows a Tab to restore and jump the
-        // queue if it has a matching URL. Used for view intents that target a specific URL. We
-        // should restructure the restore batching to allow this to happen.
+        if (mTabRestorer == null) return;
+        mTabRestorer.restoreTabStateForUrl(url);
     }
 
     @Override
     public void restoreTabStateForId(int id) {
-        // TODO(https://crbug.com/448151052): Synchronously allows a Tab to restore and jump the
-        // queue if it has a matching tab id. Used for view intents that target a specific tab id.
-        // We should restructure the restore batching to allow this to happen.
+        if (mTabRestorer == null) return;
+        mTabRestorer.restoreTabStateForId(id);
     }
 
     @Override
@@ -308,13 +306,13 @@ public class TabStateStore implements TabPersistentStore {
     @Override
     public void pauseSaveTabList() {
         // TODO(https://crbug.com/448151052): This should freeze saves for the collection tree until
-        // resumed.
+        // resumed. If we have proper batching it might not be necessary to pause.
     }
 
     @Override
     public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
         // TODO(https://crbug.com/448151052): This should catch up on saves for the collection tree
-        // after a pause.
+        // after a pause. If we have proper batching it might not be necessary to pause.
     }
 
     @Override

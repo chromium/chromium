@@ -27,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /** Manages the tab restoration process after loading tabs from storage. */
 @NullMarked
@@ -87,6 +88,13 @@ class TabRestorer {
     private @Nullable StorageLoadedData mData;
 
     /**
+     * Track the index we are restoring the next tab from. This is done globally so that {@link
+     * #restoreTabStateForUrl(String)} and {@link #restoreTabStateForId(int)} can exclude tabs that
+     * have already been restored.
+     */
+    private int mIndex;
+
+    /**
      * @param delegate The delegate to notify when the tab restorer for certain events.
      * @param tabCreatorManager The tab creator manager to use to create tabs.
      */
@@ -131,6 +139,36 @@ class TabRestorer {
 
         mState = State.RESTORING;
         restoreActiveTab();
+    }
+
+    /**
+     * If a tab with the matching URL exists in the remaining tabs to restore this will immediately
+     * restore that tab. This is relatively expensive as it requires parsing the entire tab state
+     * for each tab. Note that this does not consider already restored tabs. Restoration will resume
+     * normally after this, but if a tab was restored by this method it will not be restored a
+     * second time.
+     *
+     * @param url The URL to restore the tab state for.
+     */
+    public void restoreTabStateForUrl(String url) {
+        restoreTabStateByPredicate(
+                loadedTabState -> {
+                    var contentsState = loadedTabState.tabState.contentsState;
+                    return contentsState != null
+                            && url.equals(contentsState.getVirtualUrlFromState());
+                });
+    }
+
+    /**
+     * If a tab with the matching ID exists in the remaining tabs to restore this will immediately
+     * restore that tab. Note that this does not consider already restored tabs. Restoration will
+     * resume normally after this, but if a tab was restored by this method it will not be restored
+     * a second time.
+     *
+     * @param tabId The tab ID to restore the tab state for.
+     */
+    public void restoreTabStateForId(@TabId int tabId) {
+        restoreTabStateByPredicate(loadedTabState -> loadedTabState.tabId == tabId);
     }
 
     /**
@@ -180,11 +218,28 @@ class TabRestorer {
         mData = null;
     }
 
+    private void restoreTabStateByPredicate(Predicate<LoadedTabState> predicate) {
+        if (mData == null
+                || mState == State.CANCELLED
+                || mState == State.FINISHING
+                || mState == State.FINISHED) {
+            return;
+        }
+
+        LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
+        for (int i = mIndex; i < loadedTabStates.length; i++) {
+            LoadedTabState loadedTabState = loadedTabStates[i];
+            if (!mTabIdsToIgnore.contains(loadedTabState.tabId) && predicate.test(loadedTabState)) {
+                mTabIdsToIgnore.add(loadedTabState.tabId);
+                restoreTab(loadedTabState, i, /* isIncognito= */ false, /* isActive= */ false);
+                return;
+            }
+        }
+    }
+
     /**
      * Restores the active tab from {@code data}. Will post a task to restore the next batch if
      * there are more tabs to restore otherwise will signal the end of restoration.
-     *
-     * @param data The data to restore tabs from.
      */
     private void restoreActiveTab() {
         if (mState == State.CANCELLED) return;
@@ -212,11 +267,7 @@ class TabRestorer {
             return;
         }
         mTabIdsToIgnore.add(activeTabState.tabId);
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () ->
-                        restoreNextBatchOfTabs(
-                                /* startIndex= */ 0, /* batchSize= */ RESTORE_BATCH_SIZE));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::restoreNextBatchOfTabs);
     }
 
     /**
@@ -247,37 +298,30 @@ class TabRestorer {
     /**
      * Restores the next batch of tabs from {@code mData}. Will post a task to restore the next
      * batch if there are more tabs to restore otherwise will signal the end of restoration.
-     *
-     * @param startIndex The index of the first tab to restore.
-     * @param batchSize The maximum number of tabs to restore in a single batch.
      */
-    private void restoreNextBatchOfTabs(int startIndex, int batchSize) {
-        assert startIndex >= 0;
-        assert batchSize > 0;
+    private void restoreNextBatchOfTabs() {
         if (mState == State.CANCELLED) return;
         assert mState == State.RESTORING;
 
+        int batchSize = RESTORE_BATCH_SIZE;
+
         assert mData != null;
         LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
-        int i = startIndex;
         int finalIndex = loadedTabStates.length;
 
-        while (batchSize > 0 && i < finalIndex) {
-            LoadedTabState loadedTabState = loadedTabStates[i];
+        while (batchSize > 0 && mIndex < finalIndex) {
+            LoadedTabState loadedTabState = loadedTabStates[mIndex];
             if (!mTabIdsToIgnore.contains(loadedTabState.tabId)) {
                 // TODO(https://crbug.com/451614469): Handle incognito.
-                restoreTab(loadedTabState, i, /* isIncognito= */ false, /* isActive= */ false);
+                restoreTab(loadedTabState, mIndex, /* isIncognito= */ false, /* isActive= */ false);
             }
 
-            i++;
+            mIndex++;
             batchSize--;
         }
 
-        int nextStartIndex = i;
-        if (nextStartIndex < finalIndex) {
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> restoreNextBatchOfTabs(nextStartIndex, RESTORE_BATCH_SIZE));
+        if (mIndex < finalIndex) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::restoreNextBatchOfTabs);
         } else {
             postTaskToFinish();
         }
