@@ -2619,10 +2619,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   cell.userInteractionEnabled =
       (item.type != BookmarksHomeItemTypeMessage &&
        item.type != BookmarksHomeItemTypeBatchUploadRecommendation);
-  if (item.type == BookmarksHomeItemTypeBatchUploadRecommendation) {
-    cell.separatorInset =
-        UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
-  }
 
   if (item.type == BookmarksHomeItemTypeBookmark) {
     BookmarksHomeNodeItem* nodeItem =
