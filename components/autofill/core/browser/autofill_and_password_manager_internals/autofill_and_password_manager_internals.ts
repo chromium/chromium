@@ -598,6 +598,7 @@ function setUpScopeCheckboxes() {
     {id: 'FastCheckout', uncheckedByDefault: true},
     {id: 'TouchToFill'},
     {id: 'AutofillAi'},
+    {id: 'AutofillActor'},
   ];
   for (const scope of SCOPES) {
     const input = createCheckbox(scope);

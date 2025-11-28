@@ -33,10 +33,12 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
@@ -176,8 +178,11 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
 // TODO(crbug.com/455788947): Check that address Autofill is not turned off.
 [[nodiscard]] std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
     base::span<const FieldGlobalId> fields,
-    const AutofillManager& autofill_manager) {
+    const AutofillManager& autofill_manager,
+    LogManager* log_manager) {
   if (fields.empty()) {
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "No fields were provided to GetAddressSuggestions.";
     return {};
   }
 
@@ -185,6 +190,9 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
   const FormStructure* const form_structure =
       autofill_manager.FindCachedFormById(fields[0]);
   if (!form_structure) {
+    LOG_AF(log_manager)
+        << LoggingScope::kAutofillActor
+        << "Could not find form structure for first trigger field.";
     return {};
   }
   const FormData& form = form_structure->ToFormData();
@@ -266,8 +274,12 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
 // TODO(crbug.com/455788947): Improve suggestion generation.
 [[nodiscard]] std::vector<ActorSuggestionWithFillData> GetCreditCardSuggestions(
     base::span<const FieldGlobalId> fields,
-    const AutofillManager& autofill_manager) {
+    const AutofillManager& autofill_manager,
+    LogManager* log_manager) {
   if (fields.empty()) {
+    LOG_AF(log_manager)
+        << LoggingScope::kAutofillActor
+        << "No fields were provided to GetCreditCardSuggestions.";
     return {};
   }
 
@@ -284,6 +296,9 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
     const FormStructure* const form_structure =
         autofill_manager.FindCachedFormById(field);
     if (!form_structure) {
+      LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                          << "Could not find form structure for field: "
+                          << field;
       return {};
     }
 
@@ -307,6 +322,9 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
         autofill_manager.FindCachedFormById(updated_fields[0]);
     autofill_field_for_labels = form_structure->GetFieldById(updated_fields[0]);
     if (!autofill_field_for_labels) {
+      LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                          << "Could not find field for field: "
+                          << updated_fields[0];
       return {};
     }
   }
@@ -430,16 +448,20 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   using enum ActorFormFillingError;
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_client = GetAutofillManager(tab);
-  if (!maybe_client.has_value()) {
+      maybe_manager = GetAutofillManager(tab);
+  if (!maybe_manager.has_value()) {
     std::move(callback_with_metrics)
-        .Run(base::unexpected(maybe_client.error()));
+        .Run(base::unexpected(maybe_manager.error()));
     return;
   }
-  const AutofillManager& autofill_manager = maybe_client.value();
+  AutofillManager& autofill_manager = maybe_manager.value();
+  LogManager* const log_manager =
+      autofill_manager.client().GetCurrentLogManager();
 
   // Fill requests should not be empty.
   if (fill_requests.empty()) {
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "Fill requests are empty.";
     std::move(callback_with_metrics).Run(base::unexpected(kOther));
     return;
   }
@@ -457,33 +479,43 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       case FormFillingRequest_RequestedData_WORK_ADDRESS: {
         if (!base::FeatureList::IsEnabled(
                 ::features::kActorFormFillingServiceEnableAddress)) {
+          LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                              << "Actor is disabled for address autofill.";
           std::move(callback_with_metrics)
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
         }
-        data = GetAddressSuggestions(representative_fields, autofill_manager);
+        data = GetAddressSuggestions(representative_fields, autofill_manager,
+                                     log_manager);
         break;
       }
       case FormFillingRequest_RequestedData_CREDIT_CARD: {
         if (!base::FeatureList::IsEnabled(
                 ::features::kActorFormFillingServiceEnableCreditCard)) {
+          LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                              << "Actor is disabled for credit card autofill.";
           std::move(callback_with_metrics)
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
         }
-        data =
-            GetCreditCardSuggestions(representative_fields, autofill_manager);
+        data = GetCreditCardSuggestions(representative_fields, autofill_manager,
+                                        log_manager);
         break;
       }
-      default:
+      default: {
         // Invalid request type.
+        LOG_AF(log_manager)
+            << LoggingScope::kAutofillActor << "The request type is invalid.";
         std::move(callback_with_metrics).Run(base::unexpected(kOther));
         return;
+      }
     }
 
     // For now, we require that every form is fillable.
     // TODO(crbug.com/455788947): Consider weakening this condition.
     if (data.empty()) {
+      LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                          << "No suggestions were generated.";
       std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
       return;
     }
@@ -528,18 +560,22 @@ void ActorFormFillingServiceImpl::FillSuggestions(
   using enum ActorFormFillingError;
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_client = GetAutofillManager(tab);
-  if (!maybe_client.has_value()) {
-    post_error(FROM_HERE, maybe_client.error());
+      maybe_manager = GetAutofillManager(tab);
+  if (!maybe_manager.has_value()) {
+    post_error(FROM_HERE, maybe_manager.error());
     return;
   }
-  BrowserAutofillManager& autofill_manager = maybe_client.value();
+  BrowserAutofillManager& autofill_manager = maybe_manager.value();
+  LogManager* const log_manager =
+      autofill_manager.client().GetCurrentLogManager();
 
   // All suggestion ids must have been generated by this service.
   if (!std::ranges::all_of(
           chosen_suggestions,
           [&](ActorSuggestionId id) { return fill_data_.contains(id); },
           &ActorFormFillingSelection::selected_suggestion_id)) {
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "A suggestion id is invalid.";
     post_error(FROM_HERE, kOther);
     return;
   }
@@ -561,6 +597,9 @@ void ActorFormFillingServiceImpl::FillSuggestions(
       } else {
         // TODO(crbug.com/455788947): Consider being more lenient and complying
         // with partial form fills.
+        LOG_AF(log_manager)
+            << LoggingScope::kAutofillActor
+            << "Could not find form structure for field: " << field_id;
         post_error(FROM_HERE, kNoForm);
         return;
       }
