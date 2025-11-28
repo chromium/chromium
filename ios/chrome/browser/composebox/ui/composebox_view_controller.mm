@@ -6,20 +6,47 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 /// The padding for the close button.
+const CGFloat kCloseButtonTopMargin = 7.0f;
 const CGFloat kCloseButtonDefaultPadding = 10.0f;
 /// The horizontal and bottom padding for the input plate container.
 const CGFloat kInputPlatePadding = 10.0f;
+const CGFloat kInputPlateTrailingPadding = 8.0f;
 const CGFloat kInputPlateTopPadding = 4.0f;
 /// The size for the close button.
-const CGFloat kCloseButtonSize = 34.0f;
+const CGFloat kCloseButtonSize = 30.0f;
 /// The alpha for the close button.
 const CGFloat kCloseButtonAlpha = 0.6f;
+/// The image for the close button.
+UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor.tertiaryLabelColor colorWithAlphaComponent:kCloseButtonAlpha],
+    backgroundColor
+  ];
+
+  if (highlighted) {
+    palette = @[
+      [UIColor.tertiaryLabelColor colorWithAlphaComponent:0.3],
+      [backgroundColor colorWithAlphaComponent:0.6]
+    ];
+  }
+
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+
+  return SymbolWithPalette(DefaultSymbolWithConfiguration(
+                               kXMarkCircleFillSymbol, symbolConfiguration),
+                           palette);
+}
+
 }  // namespace
 
 @implementation ComposeboxViewController {
@@ -54,21 +81,27 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   self.view.backgroundColor = _theme.composeboxBackgroundColor;
 
   // Close button.
-  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIColor* closeButtonbackgroundColor = _theme.inputPlateBackgroundColor;
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration plainButtonConfiguration];
+  config.image = CloseButtonImage(closeButtonbackgroundColor, NO);
+  config.contentInsets = NSDirectionalEdgeInsetsZero;
+  _closeButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kCloseButtonSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-  UIImage* buttonImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration),
-                        @[
-                          [[UIColor tertiaryLabelColor]
-                              colorWithAlphaComponent:kCloseButtonAlpha],
-                          _theme.inputPlateBackgroundColor
-                        ]);
-  [_closeButton setImage:buttonImage forState:UIControlStateNormal];
+  _closeButton.configuration = config;
+  _closeButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    BOOL isHighlighted = button.state == UIControlStateHighlighted;
+    updatedConfig.image =
+        CloseButtonImage(closeButtonbackgroundColor, isHighlighted);
+    button.configuration = updatedConfig;
+    CGFloat scale = isHighlighted ? 0.95 : 1.0;
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       button.transform =
+                           CGAffineTransformMakeScale(scale, scale);
+                     }];
+  };
 
   [_closeButton addTarget:self
                    action:@selector(closeButtonTapped)
@@ -168,7 +201,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
     case ComposeboxInputPlatePosition::kTop: {
       _constraintToCloseButton = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.leadingAnchor
-                         constant:-kInputPlatePadding];
+                         constant:-kInputPlateTrailingPadding];
       auto constraintToMargin = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.trailingAnchor
                          constant:0];
@@ -177,8 +210,8 @@ const CGFloat kCloseButtonAlpha = 0.6f;
         _constraintToCloseButton,
         constraintToMargin,
         [_closeButton.topAnchor
-            constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:kCloseButtonDefaultPadding],
+            constraintEqualToAnchor:_inputViewController.view.topAnchor
+                           constant:kCloseButtonTopMargin],
         [_omniboxPopupContainer.topAnchor
             constraintEqualToAnchor:_inputViewController.view.bottomAnchor],
         [_omniboxPopupContainer.leadingAnchor

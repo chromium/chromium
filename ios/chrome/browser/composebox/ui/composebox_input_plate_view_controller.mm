@@ -38,7 +38,8 @@ NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 NSString* const kMainSectionIdentifier = @"MainSection";
 
 /// The corner radius for the input plate container.
-const CGFloat kInputPlateCornerRadius = 22.0f;
+const CGFloat kInputPlateCornerRadiusCompact = 22.0f;
+const CGFloat kInputPlateCornerRadius = 30.0f;
 /// The shadow opacity for the input plate container.
 const float kInputPlateShadowOpacity = 0.2f;
 /// The shadow radius for the input plate container.
@@ -55,8 +56,7 @@ const CGFloat kAIMButtonWidth = 122.0f;
 const CGFloat kButtonsCompactSpacing = 4.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing between the Lens and Voice buttons.
-const CGFloat kShortcutsSpacing = 24.0f;
-const CGFloat kShortcutsSpacingCompact = 16.0f;
+const CGFloat kShortcutsSpacing = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
@@ -75,8 +75,9 @@ const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonHeight = 32.0f;
 /// The dimension of the send button.
-const CGFloat kSendButtonDimension = 32.0f;
-
+const CGFloat kSendButtonDimension = 36.0f;
+/// The dimension of the button stack view.
+const CGFloat kButtonStackViewDimension = 36.0f;
 /// The duration for the glow effect.
 const CGFloat kGlowEffectDuration = 0.9;
 /// The width of the glow effect border.
@@ -90,6 +91,29 @@ const CGFloat kFadeViewWidth = 30.0f;
 
 /// The size of the close icon in the context indicator buttons.
 const CGFloat kCloseIndicatorSize = 10.0f;
+
+/// The image for the send button.
+UIImage* SendButtonImage(BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor colorNamed:kSolidWhiteColor], [UIColor colorNamed:kBlue500Color]
+  ];
+
+  if (highlighted) {
+    palette = @[
+      [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.6],
+      [[UIColor colorNamed:kBlue500Color] colorWithAlphaComponent:0.6]
+    ];
+  }
+
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSendButtonDimension
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+
+  return SymbolWithPalette(
+      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
+      palette);
+}
 }  // namespace
 
 @interface ComposeboxInputPlateViewController () <
@@ -722,7 +746,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   [NSLayoutConstraint activateConstraints:@[
     [_aimButton.titleLabel.trailingAnchor
         constraintEqualToAnchor:_aimButtonXIndicator.leadingAnchor
-                       constant:-4],
+                       constant:-6],
     [_aimButton.titleLabel.centerYAnchor
         constraintEqualToAnchor:_aimButtonXIndicator.centerYAnchor],
   ]];
@@ -766,18 +790,26 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 /// Returns the send button.
 - (UIButton*)createSendButton {
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.image = SendButtonImage(/*highlighted=*/NO);
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
+
   UIButton* sendButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
-      configurationWithPointSize:24
-                          weight:UIImageSymbolWeightSemibold];
-
-  UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config), @[
-        [UIColor colorNamed:kSolidWhiteColor],
-        [UIColor colorNamed:kBlue500Color]
-      ]);
-  [sendButton setImage:image forState:UIControlStateNormal];
+  sendButton.configuration = buttonConfig;
+  sendButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    BOOL isHighlighted = button.state == UIControlStateHighlighted;
+    updatedConfig.image = SendButtonImage(isHighlighted);
+    button.configuration = updatedConfig;
+    CGFloat scale = isHighlighted ? 0.95 : 1.0;
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       button.transform =
+                           CGAffineTransformMakeScale(scale, scale);
+                     }];
+  };
 
   [sendButton addTarget:self
                  action:@selector(sendButtonTapped)
@@ -789,14 +821,14 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 /// Returns the microphone button.
 - (UIButton*)createMicrophoneButton {
-  UIButton* micButton = [self
-      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                                       kSymbolActionPointSize)];
+  UIButton* micButton =
+      [self createButtonWithImage:CustomSymbolWithPointSize(
+                                      kVoiceSymbol, kSymbolActionPointSize)];
+  micButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
   [micButton addTarget:self
                 action:@selector(micButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
-  AddSizeConstraints(micButton,
-                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
   return micButton;
 }
 
@@ -805,12 +837,11 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   UIButton* lensButton = [self
       createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
                                                       kSymbolActionPointSize)];
+  lensButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   [lensButton addTarget:self
                  action:@selector(lensButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
 
-  AddSizeConstraints(lensButton,
-                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
   return lensButton;
 }
 
@@ -843,7 +874,10 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonsStackView.spacing = kButtonsStackViewSpacing;
   buttonsStackView.alignment = UIStackViewAlignmentFill;
-
+  [NSLayoutConstraint activateConstraints:@[
+    [buttonsStackView.heightAnchor
+        constraintEqualToConstant:kButtonStackViewDimension]
+  ]];
   return buttonsStackView;
 }
 
@@ -1091,10 +1125,12 @@ const CGFloat kCloseIndicatorSize = 10.0f;
     _inputPlateStackView.spacing = 0;
     [_inputPlateStackView setCustomSpacing:kButtonsCompactSpacing
                                  afterView:_plusButton];
-    [_inputPlateStackView setCustomSpacing:kShortcutsSpacingCompact
+    [_inputPlateStackView setCustomSpacing:kShortcutsSpacing
                                  afterView:_micButton];
     _bottomPaddingConstraint.constant =
         -kInputPlateStackViewVerticalCompactPadding;
+    _inputPlateContainerView.layer.cornerRadius =
+        kInputPlateCornerRadiusCompact;
   } else {
     UIView* toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
@@ -1103,6 +1139,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
 
     _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
+    _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
   }
 }
 
