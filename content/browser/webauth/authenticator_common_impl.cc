@@ -1054,6 +1054,7 @@ bool AuthenticatorCommonImpl::IsFocused() const {
 void AuthenticatorCommonImpl::MakeCredential(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    blink::mojom::PaymentOptionsPtr payment_options,
     MakeCredentialCallback callback) {
   base::RecordAction(base::UserMetricsAction("WebAuthn.MakeCredential.Start"));
   callback = base::BindOnce(
@@ -1137,7 +1138,8 @@ void AuthenticatorCommonImpl::MakeCredential(
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck,
               weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
-              std::move(options), is_cross_origin_iframe));
+              std::move(options), std::move(payment_options),
+              is_cross_origin_iframe));
 
   // If `remote_validation` is nullptr then the request may already have
   // completed.
@@ -1150,6 +1152,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
     RequestKey request_key,
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    blink::mojom::PaymentOptionsPtr payment_options,
     bool is_cross_origin_iframe,
     blink::mojom::AuthenticatorStatus rp_id_validation_result) {
   if (!CheckRequestKey(request_key)) {
@@ -1343,8 +1346,9 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
     client_data_json_params.is_cross_origin_iframe =
         !options->remote_desktop_client_override->same_origin_with_ancestors;
   }
-  req_state_->client_data_json =
-      BuildClientDataJson(std::move(client_data_json_params));
+  req_state_->client_data_json = BuildClientDataJsonWithPayment(
+      std::move(client_data_json_params), std::move(payment_options),
+      /*payment_rp=*/"");
 
   req_state_->ctap_request = device::CtapMakeCredentialRequest(
       req_state_->client_data_json, options->relying_party, options->user,

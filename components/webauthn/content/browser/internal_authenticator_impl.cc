@@ -49,6 +49,7 @@ void InternalAuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {
   authenticator_common_->MakeCredential(effective_origin_, std::move(options),
+                                        std::move(payment_),
                                         std::move(callback));
 }
 

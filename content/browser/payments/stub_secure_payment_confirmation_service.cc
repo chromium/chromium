@@ -61,6 +61,7 @@ void StubSecurePaymentConfirmationService::MakePaymentCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakePaymentCredentialCallback callback) {
   authenticator_common_impl_->MakeCredential(origin(), std::move(options),
+                                             /*payment_options=*/nullptr,
                                              std::move(callback));
 }
 

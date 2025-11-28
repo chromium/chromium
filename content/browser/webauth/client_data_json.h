@@ -19,8 +19,10 @@ CONTENT_EXPORT std::string BuildClientDataJson(
     webauthn::ClientDataJsonParams params);
 
 // Same as BuildClientDataJson above, but with payment data.
-// The 'payment_options' and 'payment_rp' arguments are only used if
+// The 'payment_options' and 'payment_rp' arguments are used if the
 // `params.type` is `kPaymentGet`.
+// The browser bound key in the 'payment_options' argument is used if the
+// `params.type` is `kWebAuthnCreate`.
 CONTENT_EXPORT std::string BuildClientDataJsonWithPayment(
     webauthn::ClientDataJsonParams params,
     blink::mojom::PaymentOptionsPtr payment_options,
