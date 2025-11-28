@@ -12183,6 +12183,7 @@ from previous Chrome versions.
   <int value="-716422020" label="CrosContentAdjustedRefreshRate:enabled"/>
   <int value="-716272467" label="AssistantAppSupport:disabled"/>
   <int value="-716205693" label="LensOverlayForceEmptyCsbQuery:disabled"/>
+  <int value="-715889960" label="PermissionsAndroidClapperQuiet:enabled"/>
   <int value="-715865629" label="HideShelfControlsInTabletMode:enabled"/>
   <int value="-715733307" label="force-effective-connection-type"/>
   <int value="-715552057" label="GridLayoutForNtpShortcuts:disabled"/>
@@ -14678,6 +14679,7 @@ from previous Chrome versions.
       label="PrivateNetworkAccessForWorkersWarningOnly:enabled"/>
   <int value="165962668" label="EnablePreferencesAccountStorage:enabled"/>
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
+  <int value="168052820" label="PermissionsAndroidClapperQuiet:disabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
   <int value="168955875" label="FullscreenAnimateTabs:disabled"/>
