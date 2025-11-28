@@ -4,6 +4,9 @@
 
 #import "ios/web/webui/url_fetcher_block_adapter.h"
 
+#import <optional>
+#import <string>
+
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "services/network/public/cpp/resource_request.h"
@@ -36,13 +39,13 @@ void URLFetcherBlockAdapter::Start() {
 }
 
 void URLFetcherBlockAdapter::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::string response;
   if (!response_body) {
     DLOG(WARNING) << "String for resource URL not found "
                   << url_loader_->GetFinalURL();
   } else {
-    response = *response_body;
+    response = std::move(response_body).value();
   }
 
   url_loader_.reset();

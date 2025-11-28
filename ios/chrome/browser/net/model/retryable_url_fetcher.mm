@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/net/model/retryable_url_fetcher.h"
 
 #import <memory>
+#import <optional>
+#import <string>
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -15,7 +17,7 @@
 #import "url/gurl.h"
 
 @interface RetryableURLFetcher ()
-- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body;
+- (void)urlFetchDidComplete:(std::optional<std::string>)response_body;
 @end
 
 @implementation RetryableURLFetcher {
@@ -55,8 +57,8 @@
 
     _simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         _shared_url_loader_factory.get(),
-        base::BindOnce(^(std::unique_ptr<std::string> response) {
-          [self urlFetchDidComplete:std::forward<std::unique_ptr<std::string>>(
+        base::BindOnce(^(std::optional<std::string> response) {
+          [self urlFetchDidComplete:std::forward<std::optional<std::string>>(
                                         response)];
         }));
   } else {
@@ -70,7 +72,7 @@
   return _backoffEntry ? _backoffEntry->failure_count() : 0;
 }
 
-- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body {
+- (void)urlFetchDidComplete:(std::optional<std::string>)response_body {
   if (!response_body && _backoffEntry) {
     _backoffEntry->InformOfRequest(false);
     double nextRetry = _backoffEntry->GetTimeUntilRelease().InSecondsF();

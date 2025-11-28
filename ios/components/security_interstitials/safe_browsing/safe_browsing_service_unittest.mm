@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <optional>
+#import <string>
+
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
@@ -736,7 +739,7 @@ TEST_F(SafeBrowsingServiceTest, PersistentCookies) {
   base::RunLoop run_loop2;
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       safe_browsing_service_->GetURLLoaderFactory().get(),
-      base::BindLambdaForTesting([&](std::unique_ptr<std::string> body) {
+      base::BindLambdaForTesting([&](std::optional<std::string> body) {
         EXPECT_NE(std::string::npos, body->find(cookie));
         run_loop2.Quit();
       }));
@@ -783,7 +786,7 @@ TEST_F(SafeBrowsingServiceTest, ClearCookies) {
   base::RunLoop run_loop3;
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       safe_browsing_service_->GetURLLoaderFactory().get(),
-      base::BindLambdaForTesting([&](std::unique_ptr<std::string> body) {
+      base::BindLambdaForTesting([&](std::optional<std::string> body) {
         EXPECT_NE(std::string::npos, body->find(cookie));
         run_loop3.Quit();
       }));
@@ -804,7 +807,7 @@ TEST_F(SafeBrowsingServiceTest, ClearCookies) {
   base::RunLoop run_loop5;
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       safe_browsing_service_->GetURLLoaderFactory().get(),
-      base::BindLambdaForTesting([&](std::unique_ptr<std::string> body) {
+      base::BindLambdaForTesting([&](std::optional<std::string> body) {
         EXPECT_EQ(std::string::npos, body->find(cookie));
         run_loop5.Quit();
       }));
@@ -830,7 +833,7 @@ TEST_F(SafeBrowsingServiceTest, NonEmptyUserAgent) {
   base::RunLoop run_loop;
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       safe_browsing_service_->GetURLLoaderFactory().get(),
-      base::BindLambdaForTesting([&](std::unique_ptr<std::string> body) {
+      base::BindLambdaForTesting([&](std::optional<std::string> body) {
         EXPECT_FALSE(body->empty());
         run_loop.Quit();
       }));

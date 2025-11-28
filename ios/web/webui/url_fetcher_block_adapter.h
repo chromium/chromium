@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
@@ -42,7 +44,7 @@ class URLFetcherBlockAdapter {
   GURL getUrl() { return url_; }
 
  protected:
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
  private:
   // The URL to fetch.

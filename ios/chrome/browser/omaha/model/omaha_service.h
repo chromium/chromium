@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -149,7 +150,7 @@ class OmahaService {
   void ResyncTimerIfNeeded();
 
   // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Returns whether Omaha is enabled for this build variant.
   static bool IsEnabled();

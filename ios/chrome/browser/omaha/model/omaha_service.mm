@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <optional>
+#import <string>
 #import <utility>
 
 #import "base/functional/bind.h"
@@ -898,8 +900,7 @@ void OmahaService::PersistStates() {
   });
 }
 
-void OmahaService::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+void OmahaService::OnURLLoadComplete(std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   // Reset the loader.
   url_loader_.reset();
