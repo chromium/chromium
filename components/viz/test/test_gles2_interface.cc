@@ -433,10 +433,6 @@ void TestGLES2Interface::set_support_texture_norm16(bool support) {
   test_capabilities_.texture_norm16 = support;
 }
 
-void TestGLES2Interface::set_gpu_rasterization(bool gpu_rasterization) {
-  test_capabilities_.gpu_rasterization = gpu_rasterization;
-}
-
 void TestGLES2Interface::set_max_texture_size(int size) {
   test_gl_capabilities_.max_texture_size = size;
   test_capabilities_.max_texture_size = size;
