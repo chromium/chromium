@@ -22,6 +22,8 @@ public final class FullscreenSigninConfig {
     public final @DrawableRes int logoId;
     public final boolean shouldDisableSignin;
 
+    public static final String DISMISS_TEXT_NOT_INITIALIZED = "";
+
     /**
      * Constructor of FullscreenSigninConfig.
      *
@@ -42,7 +44,8 @@ public final class FullscreenSigninConfig {
             boolean shouldDisableSignin) {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
-        assert !TextUtils.isEmpty(dismissText);
+        // TODO(crbug.com/464416507): Restore the assert that dismissText is not empty once
+        // the FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT flag is cleaned up.
         this.title = title;
         this.subtitle = subtitle;
         this.dismissText = dismissText;

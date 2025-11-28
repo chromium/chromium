@@ -42,6 +42,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -279,6 +281,7 @@ public class FullscreenSigninMediator
                         && UserPrefs.get(profile).getBoolean(Pref.SIGNIN_ALLOWED)
                         && !mConfig.shouldDisableSignin;
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
+        updateDimissText();
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         if (isSigninSupported) {
@@ -307,6 +310,21 @@ public class FullscreenSigninMediator
         mModel.set(
                 FullscreenSigninProperties.FOOTER_STRING,
                 getFooterString(isMetricsReportingDisabledByPolicy));
+    }
+
+    private void updateDimissText() {
+        // TODO(crbug.com/464416507): Remove this method once the
+        // FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT flag is cleaned up.
+        if (FullscreenSigninConfig.DISMISS_TEXT_NOT_INITIALIZED.equals(mConfig.dismissText)) {
+            final int secondaryButtonTextId =
+                    SigninFeatureMap.isEnabled(
+                                    SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+                            ? R.string.signin_fre_stay_signed_out_button
+                            : R.string.signin_fre_dismiss_button;
+            mModel.set(
+                    FullscreenSigninProperties.DISMISS_BUTTON_STRING,
+                    mContext.getString(secondaryButtonTextId));
+        }
     }
 
     void onAccountAdded(String accountEmail) {
