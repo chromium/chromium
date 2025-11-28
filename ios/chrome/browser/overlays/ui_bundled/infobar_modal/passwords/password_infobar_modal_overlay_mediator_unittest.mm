@@ -80,7 +80,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingToAccount) {
   InitInfobar(kAccount);
 
-  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kUsername, consumer_.originalUsername);
   EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
   EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(
@@ -102,7 +102,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingToAccount) {
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingLocally) {
   InitInfobar();
 
-  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kUsername, consumer_.originalUsername);
   EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
   EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING),

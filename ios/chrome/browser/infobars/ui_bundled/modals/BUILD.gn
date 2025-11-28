@@ -5,6 +5,8 @@
 source_set("modals") {
   sources = [
     "infobar_modal_delegate.h",
+    "infobar_password_container_view_controller.h",
+    "infobar_password_container_view_controller.mm",
     "infobar_password_modal_consumer.h",
     "infobar_password_modal_delegate.h",
     "infobar_password_table_view_controller.h",
@@ -44,6 +46,7 @@ source_set("modals") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
   ]

@@ -11,7 +11,7 @@
     : NSObject <InfobarPasswordModalConsumer>
 // Allow read access to values passed to InfobarPasswwordModalConsumer
 // interface.
-@property(nonatomic, copy) NSString* username;
+@property(nonatomic, copy) NSString* originalUsername;
 @property(nonatomic, copy) NSString* maskedPassword;
 @property(nonatomic, copy) NSString* unmaskedPassword;
 @property(nonatomic, copy) NSString* detailsTextMessage;
