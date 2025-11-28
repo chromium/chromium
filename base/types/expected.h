@@ -306,7 +306,7 @@ class [[nodiscard, gsl::Owner]] expected final {
   // Deviation from the Standard, which allows implicit conversions as long as U
   // is implicitly convertible to T: Chromium additionally requires that U is
   // not implicitly convertible to E.
-  template <typename U = T>
+  template <typename U = std::remove_cv_t<T>>
     requires(internal::IsValidValueConstruction<T, E, U>)
   explicit(!std::convertible_to<U, T> || std::convertible_to<U, E>)
       // NOLINTNEXTLINE(google-explicit-constructor)
@@ -362,7 +362,7 @@ class [[nodiscard, gsl::Owner]] expected final {
       : impl_(kErrTag, il, std::forward<Args>(args)...) {}
 
   // [expected.object.assign], assignment
-  template <typename U = T>
+  template <typename U = std::remove_cv_t<T>>
     requires(internal::IsValueAssignment<T, E, U>)
   constexpr expected& operator=(U&& v) noexcept {
     emplace(std::forward<U>(v));
@@ -435,7 +435,7 @@ class [[nodiscard, gsl::Owner]] expected final {
   constexpr E&& error() && noexcept { return std::move(error()); }
   constexpr const E&& error() const&& noexcept { return std::move(error()); }
 
-  template <typename U>
+  template <typename U = std::remove_cv_t<T>>
   constexpr T value_or(U&& v) const& noexcept {
     static_assert(std::copy_constructible<T>,
                   "expected<T, E>::value_or: T must be copy constructible");
@@ -444,7 +444,7 @@ class [[nodiscard, gsl::Owner]] expected final {
     return has_value() ? value() : static_cast<T>(std::forward<U>(v));
   }
 
-  template <typename U>
+  template <typename U = std::remove_cv_t<T>>
   constexpr T value_or(U&& v) && noexcept {
     static_assert(std::move_constructible<T>,
                   "expected<T, E>::value_or: T must be move constructible");
@@ -454,7 +454,7 @@ class [[nodiscard, gsl::Owner]] expected final {
                        : static_cast<T>(std::forward<U>(v));
   }
 
-  template <typename G>
+  template <typename G = E>
   constexpr E error_or(G&& e) const& noexcept {
     static_assert(std::copy_constructible<E>,
                   "expected<T, E>::error_or: E must be copy constructible");
@@ -463,7 +463,7 @@ class [[nodiscard, gsl::Owner]] expected final {
     return has_value() ? static_cast<E>(std::forward<G>(e)) : error();
   }
 
-  template <typename G>
+  template <typename G = E>
   constexpr E error_or(G&& e) && noexcept {
     static_assert(std::move_constructible<E>,
                   "expected<T, E>::error_or: E must be move constructible");
