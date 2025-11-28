@@ -39,6 +39,11 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to rewrite the credit card trigger field to the first
+// credit card number field in the same section.
+BASE_FEATURE(kAutofillActorRewriteCreditCardTriggerField,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether all import tasks are suppressed when an Actor task is
 // active on the tab in question. This also suppresses silent updates and
 // saving to Autocomplete.

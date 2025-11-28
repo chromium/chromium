@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -31,12 +32,14 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -142,7 +145,11 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
   // TODO(crbug.com/455788947): Add the network/card art icon to the
   // ActorSuggestion.
   ActorSuggestion actor_suggestion;
-  actor_suggestion.title = base::UTF16ToUTF8(suggestion.main_text.value);
+  std::vector<std::u16string> title_components = {suggestion.main_text.value};
+  base::Extend(title_components, suggestion.minor_texts,
+               &Suggestion::Text::value);
+  actor_suggestion.title =
+      base::UTF16ToUTF8(base::JoinString(title_components, u" "));
   actor_suggestion.details =
       (!suggestion.labels.empty() && !suggestion.labels[0].empty())
           ? base::UTF16ToUTF8(suggestion.labels[0][0].value)
@@ -217,10 +224,41 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
   return result;
 }
 
+// Returns the first credit card number field in the same section as
+// `initial_trigger_field` that has a safe origin. An origin is considered safe
+// if it has the same origin as the initial trigger field or the origin is
+// explicitly allowlisted.
+std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
+    const AutofillOptimizationGuideDecider* decider,
+    const FormStructure& form,
+    const FieldGlobalId& trigger_field_id) {
+  const AutofillField* const trigger_field =
+      form.GetFieldById(trigger_field_id);
+  if (!trigger_field) {
+    return std::nullopt;
+  }
+  const Section& section = trigger_field->section();
+  auto it = std::ranges::find_if(
+      form.fields(), [&](const std::unique_ptr<AutofillField>& field) {
+        if (field->section() != section) {
+          return false;
+        }
+        if (field->Type().GetCreditCardType() != CREDIT_CARD_NUMBER) {
+          return false;
+        }
+        const url::Origin& origin = field->origin();
+        return origin.IsSameOriginWith(trigger_field->origin()) ||
+               (decider &&
+                decider->IsIframeUrlAllowlistedForActor(origin.GetURL()));
+      });
+
+  return it == form.fields().end() ? std::optional<FieldGlobalId>()
+                                   : (*it)->global_id();
+}
+
 // Generates credit card suggestions and the data needed for filling them.
 //
 // Note that this is a preliminary version with the following traits:
-// - Only the first entry in `fields` is used for generating suggestions.
 // - VCN and BNPL suggestions are not supported.
 // - No optimizations for CVCs (e.g. searching the last 4 digits in the DOM)
 //   exist.
@@ -233,24 +271,52 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
     return {};
   }
 
-  // For now, we simply take the first field.
-  const FormStructure* const form_structure =
-      autofill_manager.FindCachedFormById(fields[0]);
-  if (!form_structure) {
-    return {};
+  std::vector<FieldGlobalId> updated_fields;
+  updated_fields.reserve(fields.size());
+  // The field that we use to generate suggestion labels. We apply the following
+  // logic:
+  // - If `kAutofillActorRewriteCreditCardTriggerField` is enabled, we choose
+  //   the first (safe) credit card number field that is in one of the sections
+  //   represented by `fields`.
+  // - Otherwise, we fall back to the first field that was passed in.
+  const AutofillField* autofill_field_for_labels = nullptr;
+  for (const FieldGlobalId& field : fields) {
+    const FormStructure* const form_structure =
+        autofill_manager.FindCachedFormById(field);
+    if (!form_structure) {
+      return {};
+    }
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillActorRewriteCreditCardTriggerField)) {
+      std::optional<FieldGlobalId> safe_credit_card_number_field =
+          GetSafeCreditCardNumberField(
+              autofill_manager.client().GetAutofillOptimizationGuideDecider(),
+              *form_structure, field);
+      updated_fields.push_back(safe_credit_card_number_field.value_or(field));
+      if (safe_credit_card_number_field && !autofill_field_for_labels) {
+        autofill_field_for_labels =
+            form_structure->GetFieldById(*safe_credit_card_number_field);
+      }
+    } else {
+      updated_fields.push_back(field);
+    }
   }
-  const AutofillField* const autofill_field =
-      form_structure->GetFieldById(fields[0]);
-  if (!autofill_field) {
-    return {};
+  if (!autofill_field_for_labels) {
+    const FormStructure* const form_structure =
+        autofill_manager.FindCachedFormById(updated_fields[0]);
+    autofill_field_for_labels = form_structure->GetFieldById(updated_fields[0]);
+    if (!autofill_field_for_labels) {
+      return {};
+    }
   }
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
-      autofill_manager.client(), *autofill_field,
+      autofill_manager.client(), *autofill_field_for_labels,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/{},
-      autofill_field->Type().GetCreditCardType(),
+      autofill_field_for_labels->Type().GetCreditCardType(),
       /*should_show_scan_credit_card=*/false, summary,
       /*is_card_number_field_empty=*/true);
   std::erase_if(suggestions, [](const Suggestion& s) {
@@ -264,7 +330,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
                                          .payments_data_manager();
   for (const Suggestion& s : suggestions) {
     if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
-            GetActorCreditCardSuggestion(paydm, fields, s)) {
+            GetActorCreditCardSuggestion(paydm, updated_fields, s)) {
       result.emplace_back(*std::move(actor_suggestion));
     }
   }

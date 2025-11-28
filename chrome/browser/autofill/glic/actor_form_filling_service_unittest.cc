@@ -46,10 +46,13 @@ using ::base::test::ErrorIs;
 using ::base::test::HasValue;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::EndsWith;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Matcher;
@@ -65,7 +68,7 @@ using FillSuggestionsFuture =
     base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
 
 [[nodiscard]] Matcher<ActorSuggestion> NonEmptyActorSuggestion() {
-  return AllOf(Field(&ActorSuggestion::title, Not(IsEmpty())),
+  return AnyOf(Field(&ActorSuggestion::title, Not(IsEmpty())),
                Field(&ActorSuggestion::details, Not(IsEmpty())));
 }
 
@@ -425,6 +428,82 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
                                kActorFormFillingSuccessForMetrics,
                                histogram_tester);
 }
+
+// Tests that our suggestion generation simulates triggering on the credit card
+// number field even if the triggering field passed by the model is a different
+// one as long as kAutofillActorRewriteCreditCardTriggerField is enabled.
+TEST_F(ActorFormFillingServiceTest, CreditCardFormWithNumberField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillActorRewriteCreditCardTriggerField);
+  const CreditCard card = test::GetCreditCard();
+  ASSERT_THAT(base::UTF16ToUTF8(card.number()), EndsWith("1111"));
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  // The suggestion title should contain the last four digits of the credit card
+  // number.
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(Field(
+                  &ActorFormFillingRequest::suggestions,
+                  Each(Field(&ActorSuggestion::title, HasSubstr("1111")))))));
+}
+
+class ActorFormFillingServiceWithOptimizationGuideTest
+    : public ActorFormFillingServiceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsIframeUrlAllowlisted() const { return GetParam(); }
+};
+
+// Tests that we only switch the trigger field to a credit card number field of
+// different origin if the origin of the number field is allowlisted.
+TEST_P(ActorFormFillingServiceWithOptimizationGuideTest,
+       CreditCardFormWithNumberFieldAndIframe) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillActorRewriteCreditCardTriggerField};
+  const CreditCard card = test::GetCreditCard();
+  ASSERT_THAT(base::UTF16ToUTF8(card.number()), EndsWith("1111"));
+  payments_data_manager().AddCreditCard(card);
+
+  const auto origin1 = url::Origin::Create(GURL("https://aaaa.com"));
+  const auto origin2 = url::Origin::Create(GURL("https://bbbb.com"));
+  FormData form = SeeForm(
+      {.fields = {{.server_type = CREDIT_CARD_NAME_FULL, .origin = origin1},
+                  {.server_type = CREDIT_CARD_NUMBER, .origin = origin2},
+                  {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                   .origin = origin2}}});
+
+  EXPECT_CALL(*client().GetAutofillOptimizationGuideDecider(),
+              IsIframeUrlAllowlistedForActor(origin2.GetURL()))
+      .WillRepeatedly(Return(IsIframeUrlAllowlisted()));
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+
+  // The suggestion title should contain the last four digits of the credit card
+  // number only if the iframe origin is allowlisted.
+  auto expected_result = IsIframeUrlAllowlisted()
+                             ? Matcher<std::string>(HasSubstr("1111"))
+                             : Matcher<std::string>(Not(HasSubstr("1111")));
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(Field(
+                  &ActorFormFillingRequest::suggestions,
+                  Each(Field(&ActorSuggestion::title, expected_result))))));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ActorFormFillingServiceWithOptimizationGuideTest,
+                         ::testing::Bool());
 
 // Tests that filling a credit card after fetching it from the server works.
 TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {

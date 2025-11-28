@@ -62,6 +62,8 @@ struct ActorSuggestion {
   std::optional<gfx::Image> icon;
 };
 
+std::ostream& operator<<(std::ostream& os, const ActorSuggestion& suggestion);
+
 // A request to fill a form, containing the requested data type and available
 // suggestions.
 struct ActorFormFillingRequest {
@@ -78,6 +80,9 @@ struct ActorFormFillingRequest {
   RequestedData requested_data;
   std::vector<ActorSuggestion> suggestions;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const ActorFormFillingRequest& request);
 
 // Represents the suggestion that the user selected to be filled.
 struct ActorFormFillingSelection {

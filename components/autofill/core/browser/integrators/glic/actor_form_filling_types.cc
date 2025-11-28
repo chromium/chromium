@@ -31,6 +31,12 @@ ActorSuggestion::ActorSuggestion(ActorSuggestion&&) = default;
 ActorSuggestion& ActorSuggestion::operator=(ActorSuggestion&&) = default;
 ActorSuggestion::~ActorSuggestion() = default;
 
+std::ostream& operator<<(std::ostream& os, const ActorSuggestion& suggestion) {
+  return os << "ActorSuggestion(id=" << suggestion.id
+            << ", title=" << suggestion.title
+            << ", details=" << suggestion.details << ")";
+}
+
 ActorFormFillingRequest::ActorFormFillingRequest() = default;
 ActorFormFillingRequest::ActorFormFillingRequest(
     const ActorFormFillingRequest&) = default;
@@ -41,6 +47,16 @@ ActorFormFillingRequest::ActorFormFillingRequest(ActorFormFillingRequest&&) =
 ActorFormFillingRequest& ActorFormFillingRequest::operator=(
     ActorFormFillingRequest&&) = default;
 ActorFormFillingRequest::~ActorFormFillingRequest() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const ActorFormFillingRequest& request) {
+  os << "ActorFormFillingRequest(requested_data=" << request.requested_data
+     << ", suggestions=[";
+  for (const auto& suggestion : request.suggestions) {
+    os << suggestion << ", ";
+  }
+  return os << "])";
+}
 
 ActorFormFillingSelection::ActorFormFillingSelection() = default;
 
