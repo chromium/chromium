@@ -30,6 +30,7 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_metrics.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -208,9 +209,14 @@ result.links = linksArray;
   // The current PageContext instance's metrics logger. Only created when async
   // tasks execution is started.
   PageContextWrapperMetrics* _pageContextMetrics;
+
+  // Configuration for page context extraction. Using optional avoids using
+  // the constructor.
+  std::optional<PageContextWrapperConfig> _config;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
+                          config:(PageContextWrapperConfig)config
               completionCallback:
                   (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
                       completionCallback {
@@ -220,6 +226,7 @@ result.links = linksArray;
   if (self) {
     _asyncTasksToComplete = 0;
     _webState = webState->GetWeakPtr();
+    _config = config;
     _completionCallback = std::move(completionCallback);
 
     // Create the PageContext proto/object.
@@ -228,6 +235,15 @@ result.links = linksArray;
     _pageContext->set_title(base::UTF16ToUTF8(_webState->GetTitle()));
   }
   return self;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback {
+  return [self initWithWebState:webState
+                         config:PageContextWrapperConfigBuilder().Build()
+             completionCallback:std::move(completionCallback)];
 }
 
 - (void)dealloc {
@@ -492,7 +508,7 @@ result.links = linksArray;
   std::string nonce = base::Token::CreateRandom().ToString();
   bool includeAnchors = IsPageContextAnchorTagsEnabled();
 
-  if (base::FeatureList::IsEnabled(kPageContextExtractorRefactored)) {
+  if (_config->use_refactored_extractor()) {
     // Use the new way for extracting context.
 
     // Callback to aggregate values from the JS execution.

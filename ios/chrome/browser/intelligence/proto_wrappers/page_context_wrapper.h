@@ -9,9 +9,10 @@
 
 #import <memory>
 
-#import "base/functional/callback_forward.h"
+#import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 
 namespace base {
 class TimeDelta;
@@ -55,12 +56,18 @@ using PageContextWrapperCallbackResponse =
 // disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
-// Initializer which takes everything needed to construct the PageContext proto
-// as arguments.
+// Initializer with a PageContextWrapperConfig.
 - (instancetype)initWithWebState:(web::WebState*)webState
+                          config:(PageContextWrapperConfig)config
               completionCallback:
                   (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
                       completionCallback NS_DESIGNATED_INITIALIZER;
+
+// Initializer with the default config.
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 

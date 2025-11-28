@@ -27,6 +27,8 @@ source_set("proto_wrappers") {
   sources = [
     "page_context_wrapper.h",
     "page_context_wrapper.mm",
+    "page_context_wrapper_config.h",
+    "page_context_wrapper_config.mm",
     "tab_organization_request_wrapper.h",
     "tab_organization_request_wrapper.mm",
   ]
