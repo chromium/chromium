@@ -329,8 +329,8 @@ INSTANTIATE_TEST_SUITE_P(
                                       : "_DisabledForCustomPassphrase");
     });
 
-// TODO(336993637): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/336993637): Flaky on Android, Mac ASan.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define MAYBE_Passphrase DISABLED_Passphrase
 #else
 #define MAYBE_Passphrase Passphrase
