@@ -332,7 +332,23 @@ public class ToolbarProgressBarTest {
 
         mProgressBar.onAndroidControlsVisibilityChanged(View.VISIBLE);
         assertEquals(View.VISIBLE, mProgressBar.getVisibility());
+        // Animating view should say invisible since pulse animation is not running. Otherwise
+        // the composited progress bar can get covered up by this view.
+        assertEquals(View.INVISIBLE, mProgressBarAnimatingView.getVisibility());
+    }
+
+    @Test
+    @Feature({"Android-Progress-Bar"})
+    @SmallTest
+    public void testProgressBarHideWithBrowserControls_duringIndeterminateAnimation() {
+        mProgressBar.start();
+        mProgressBar.startIndeterminateAnimationForTesting();
         assertEquals(View.VISIBLE, mProgressBarAnimatingView.getVisibility());
+        mProgressBar.onAndroidControlsVisibilityChanged(View.INVISIBLE);
+        assertEquals(View.INVISIBLE, mProgressBarAnimatingView.getVisibility());
+        mProgressBar.onAndroidControlsVisibilityChanged(View.VISIBLE);
+        assertEquals(View.VISIBLE, mProgressBarAnimatingView.getVisibility());
+        mProgressBar.finish(false);
     }
 
     @Test

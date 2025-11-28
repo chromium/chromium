@@ -453,7 +453,18 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     public void setVisibility(int visibility) {
         // Hide the progress bar if it is being forced externally.
         super.setVisibility(visibility);
-        if (mAnimatingView != null) mAnimatingView.setVisibility(visibility);
+        if (mAnimatingView != null) {
+            boolean shouldUpdateAnimatingView = true;
+            if (shouldAnimateCompositedLayer()
+                    && visibility == VISIBLE
+                    && !mAnimatingView.isRunning()) {
+                shouldUpdateAnimatingView = false;
+            }
+
+            if (shouldUpdateAnimatingView) {
+                mAnimatingView.setVisibility(visibility);
+            }
+        }
     }
 
     /**

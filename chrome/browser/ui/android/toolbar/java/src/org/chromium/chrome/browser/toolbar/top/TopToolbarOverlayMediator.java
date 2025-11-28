@@ -281,7 +281,8 @@ public class TopToolbarOverlayMediator {
                     public void onControlsPositionChanged(int controlsPosition) {
                         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                             updateOffsetTag(mBrowserControlsOffsetTagsInfo);
-                            if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
+                            if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser
+                                    .isEnabled()) {
                                 updateProgress();
                             }
                         }
