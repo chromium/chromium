@@ -6581,10 +6581,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic)},
-    {"enable-aria-element-reflection",
-     flag_descriptions::kAriaElementReflectionName,
-     flag_descriptions::kAriaElementReflectionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableAriaElementReflection)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-cros-autocorrect-params-tuning",
      flag_descriptions::kAutocorrectParamsTuningName,

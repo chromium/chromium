@@ -254,11 +254,6 @@ inline constexpr char kAnnotatorModeName[] = "Enable annotator tool";
 inline constexpr char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
 
-inline constexpr char kAriaElementReflectionName[] =
-    "Enable ARIA element reflection";
-inline constexpr char kAriaElementReflectionDescription[] =
-    "Enable setting ARIA relationship attributes that reference other elements "
-    "directly without an IDREF";
 
 inline constexpr char kAutoRevokeSuspiciousNotificationName[] =
     "Auto-revoke suspicious notification";

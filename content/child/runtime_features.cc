@@ -191,8 +191,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
           {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
            raw_ref(features::kUseAXPositionForDocumentMarkers)},
-          {wf::EnableAOMAriaRelationshipProperties,
-           raw_ref(features::kEnableAriaElementReflection)},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableAudioOutputDevices,
            raw_ref(features::kAAudioPerStreamDeviceSelection)},

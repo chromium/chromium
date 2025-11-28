@@ -127,10 +127,6 @@ AX_BASE_EXPORT bool IsAccessibilityLanguageDetectionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
 AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
 
-// Support aria element reflection. For example:
-//     element.ariaActiveDescendantElement = child;
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAriaElementReflection);
-AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
 
 // Turn on browser vocalization of 'descriptions' tracks.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kTextBasedAudioDescription);

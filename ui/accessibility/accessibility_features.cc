@@ -149,10 +149,6 @@ bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {
       ::features::kExtensionManifestV3NetworkSpeechSynthesis);
 }
 
-BASE_FEATURE(kEnableAriaElementReflection, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAriaElementReflectionEnabled() {
-  return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
-}
 
 BASE_FEATURE(kTextBasedAudioDescription, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsTextBasedAudioDescriptionEnabled() {
