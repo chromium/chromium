@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivati
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -65,6 +66,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
+    private final SnackbarManager mSnackbarManager;
 
     public FuseboxCoordinator(
             Context context,
@@ -75,12 +77,14 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
-                    autocompleteRequestTypeSupplier) {
+                    autocompleteRequestTypeSupplier,
+            SnackbarManager snackbarManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileObservableSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
+        mSnackbarManager = snackbarManager;
 
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -164,7 +168,8 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier);
+                        mOnCompactModeChangedSupplier,
+                        mSnackbarManager);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }

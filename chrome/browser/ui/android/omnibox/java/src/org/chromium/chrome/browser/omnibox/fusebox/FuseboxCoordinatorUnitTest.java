@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -82,6 +83,7 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private ActivityController<TestActivity> mActivityController;
     private WindowAndroid mWindowAndroid;
@@ -132,7 +134,8 @@ public class FuseboxCoordinatorUnitTest {
                         mLocationBarDataProvider,
                         mTabModelSelectorSupplier,
                         mTemplateUrlServiceSupplier,
-                        mAutocompleteRequestTypeSupplier);
+                        mAutocompleteRequestTypeSupplier,
+                        mSnackbarManager);
 
         // By default, make the mediator available.
         mCoordinator.setMediatorForTesting(mMediator);

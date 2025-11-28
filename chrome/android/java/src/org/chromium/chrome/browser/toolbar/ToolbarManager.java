@@ -163,6 +163,7 @@ import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoord
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.VisibilityDelegate;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
@@ -189,6 +190,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -827,11 +829,12 @@ public class ToolbarManager
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable MultiInstanceManager multiInstanceManager,
             ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            MenuButtonCoordinator.@Nullable VisibilityDelegate menuButtonVisibilityDelegate,
+            @Nullable VisibilityDelegate menuButtonVisibilityDelegate,
             TopControlsStacker topControlsStacker,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
-            PageZoomManager pageZoomManager) {
+            PageZoomManager pageZoomManager,
+            SnackbarManager snackbarManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -1244,6 +1247,7 @@ public class ToolbarManager
                                 : 0;
                     };
 
+            View bottomContainerView = mActivity.findViewById(R.id.bottom_container);
             // TODO(crbug.com/448691376): Change LocationBarCoordinator profileSupplier argument to
             // Supplier<@Nullable Profile> and updated the rest of the code.
             // TODO(crbug.com/448691376): Change LocationBarCoordinator modalDialogManagerSupplier
@@ -1289,7 +1293,9 @@ public class ToolbarManager
                                     mActivity, mIsCustomTab),
                             pageZoomManager,
                             TabFavicon::getBitmap,
-                            multiInstanceManager);
+                            multiInstanceManager,
+                            snackbarManager,
+                            bottomContainerView);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);

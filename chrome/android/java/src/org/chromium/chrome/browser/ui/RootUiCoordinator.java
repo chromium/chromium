@@ -1793,7 +1793,8 @@ public class RootUiCoordinator
                             mTopControlsStacker,
                             mTopInsetCoordinatorSupplier,
                             mXrSpaceModeObservableSupplier,
-                            mPageZoomManager);
+                            mPageZoomManager,
+                            mSnackbarManagerSupplier.get());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

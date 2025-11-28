@@ -382,7 +382,9 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* isToolbarPositionCustomizationEnabled= */ false,
                         /* pageZoomManager= */ null,
                         TabFavicon::getBitmap,
-                        /* multiInstanceManager= */ null);
+                        /* multiInstanceManager= */ null,
+                        mSnackbarManager,
+                        findViewById(R.id.bottom_container));
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         assumeNonNull(mLocationBarCoordinator.getOmniboxStub()).addUrlFocusChangeListener(this);

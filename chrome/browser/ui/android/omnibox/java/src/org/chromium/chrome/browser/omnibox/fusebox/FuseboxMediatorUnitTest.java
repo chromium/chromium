@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -71,6 +72,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -99,8 +101,10 @@ public class FuseboxMediatorUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
+    @Mock private SnackbarManager mSnackbarManager;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
+    @Captor private ArgumentCaptor<IntentCallback> mIntentCallbackCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private Context mContext;
@@ -147,7 +151,8 @@ public class FuseboxMediatorUnitTest {
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier);
+                        mOnCompactModeChangedSupplier,
+                        mSnackbarManager);
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
@@ -174,22 +179,30 @@ public class FuseboxMediatorUnitTest {
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier);
+                        mOnCompactModeChangedSupplier,
+                        mSnackbarManager);
     }
 
-    private void addAttachment(String title) {
-        addAttachment(title, "token-" + title);
+    private void addTabAttachment(String title) {
+        addAttachment(title, "token-" + title, FuseboxAttachmentType.ATTACHMENT_TAB);
     }
 
-    private void addAttachment(String title, String token) {
-        Tab mockTab = mock(Tab.class);
-        when(mockTab.getTitle()).thenReturn(title);
-        when(mockTab.getId()).thenReturn(0);
-        when(mockTab.getWebContents())
-                .thenReturn(null); // This will trigger addTabContextFromCache path
-        when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
-        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
-        mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
+    private void addAttachment(
+            String title, String token, @FuseboxAttachmentType int attachmentType) {
+        if (attachmentType == FuseboxAttachmentType.ATTACHMENT_TAB) {
+            Tab mockTab = mock(Tab.class);
+            when(mockTab.getTitle()).thenReturn(title);
+            when(mockTab.getId()).thenReturn(0);
+            when(mockTab.getWebContents())
+                    .thenReturn(null); // This will trigger addTabContextFromCache path
+            when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
+            when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
+            mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
+        } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE
+                || attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+            doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
+            mAttachments.add(FuseboxAttachment.forFile(null, title, "image/", new byte[0]));
+        }
     }
 
     private void addTabAttachment(Tab tab) {
@@ -368,7 +381,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
-        addAttachment("title");
+        addTabAttachment("title");
 
         mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, true);
@@ -469,7 +482,8 @@ public class FuseboxMediatorUnitTest {
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier);
+                        mOnCompactModeChangedSupplier,
+                        mSnackbarManager);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);
@@ -564,7 +578,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void getAttachmentTokens_returnsTokensAfterAddingAttachment() {
-        addAttachment("test");
+        addTabAttachment("test");
 
         var tokens = mMediator.getAttachmentTokens();
         assertNotNull(tokens);
@@ -574,7 +588,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void getAttachmentTokens_returnsEmptyListAfterRemovingAllAttachments() {
-        addAttachment("test");
+        addTabAttachment("test");
 
         // Verify attachment was added
         assertNotNull(mMediator.getAttachmentTokens());
@@ -590,8 +604,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void getAttachmentTokens_returnsMultipleTokensInOrder() {
-        addAttachment("tab1");
-        addAttachment("tab2");
+        addTabAttachment("tab1");
+        addTabAttachment("tab2");
 
         var tokens = mMediator.getAttachmentTokens();
         assertNotNull(tokens);
@@ -733,6 +747,27 @@ public class FuseboxMediatorUnitTest {
         assertEquals(2, preselectedIds.size());
         assertTrue(preselectedIds.contains(101));
         assertTrue(preselectedIds.contains(102));
+    }
+
+    @Test
+    public void testMaxAttachments() {
+        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+            addAttachment("title", "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
+        }
+
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
+
+        Tab tab1 = mockTab(101, true);
+        Tab tab2 = mockTab(102, false);
+        Tab tab3 = mockTab(103, true);
+        Tab tab4 = mockTab(104, false);
+        Set<Integer> newlySelectedIds = new HashSet<>();
+        newlySelectedIds.add(102);
+        newlySelectedIds.add(103);
+        newlySelectedIds.add(104);
+        mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
+        verify(mSnackbarManager).showSnackbar(any());
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
     }
 
     @Test

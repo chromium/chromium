@@ -27,6 +27,8 @@ import java.util.function.Predicate;
  */
 @NullMarked
 public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
+
+    static final int MAX_ATTACHMENTS = 10;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
 
@@ -64,8 +66,10 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
      *
      * @param attachment The attachment to add
      */
-    public void add(FuseboxAttachment attachment) {
-        if (mComposeBoxQueryControllerBridge == null) return;
+    public boolean add(FuseboxAttachment attachment) {
+        if (mComposeBoxQueryControllerBridge == null || getRemainingAttachments() == 0) {
+            return false;
+        }
 
         // Start session if this is the first attachment
         if (isEmpty()) mComposeBoxQueryControllerBridge.notifySessionStarted();
@@ -74,12 +78,19 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         if (!attachment.uploadToBackend(mComposeBoxQueryControllerBridge)) {
             // Upload failed, abandon session if we just started it
             if (isEmpty()) mComposeBoxQueryControllerBridge.notifySessionAbandoned();
-            return;
+            return false;
         }
 
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
         attachment.setOnRemoveCallback(() -> remove(attachment));
         super.add(attachment);
+        return true;
+    }
+
+    @Override
+    public void add(ListItem item) {
+        throw new IllegalArgumentException(
+                "Use the boolean add() version to ensure capacity constraints are respected.");
     }
 
     /**
@@ -197,5 +208,9 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
             }
         }
         return null;
+    }
+
+    private int getRemainingAttachments() {
+        return MAX_ATTACHMENTS - size();
     }
 }

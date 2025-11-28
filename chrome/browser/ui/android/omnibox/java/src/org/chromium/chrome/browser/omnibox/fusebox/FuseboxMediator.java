@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -83,6 +85,8 @@ public class FuseboxMediator {
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private boolean mUseCompactUi;
+    private final SnackbarManager mSnackbarManager;
+    private final Snackbar mAttachmentLimitSnackbar;
 
     FuseboxMediator(
             Context context,
@@ -95,7 +99,8 @@ public class FuseboxMediator {
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
-            ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier) {
+            ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier,
+            SnackbarManager snackbarManager) {
         mContext = context;
         mProfile = profile;
         mWindowAndroid = windowAndroid;
@@ -107,8 +112,17 @@ public class FuseboxMediator {
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
         mOnCompactModeChangedSupplier = onCompactModeChangedSupplier;
+        mSnackbarManager = snackbarManager;
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
+
+        CharSequence snackbarText = context.getText(R.string.fusebox_max_attachments);
+        mAttachmentLimitSnackbar =
+                Snackbar.make(
+                        snackbarText,
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
         mModel.set(FuseboxProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
@@ -288,7 +302,9 @@ public class FuseboxMediator {
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
-        mModelList.add(attachment);
+        if (!mModelList.add(attachment)) {
+            warnForMaxAttachments();
+        }
     }
 
     private void onAttachmentsChanged() {
@@ -362,8 +378,14 @@ public class FuseboxMediator {
         for (int id : newlySelectedTabIds) {
             if (!currentAttachedIds.contains(id)) {
                 Tab tab = tabModelSelector.getTabById(id);
-                mModelList.add(
-                        FuseboxAttachment.forTab(assumeNonNull(tab), mContext.getResources()));
+                boolean addFailed =
+                        !mModelList.add(
+                                FuseboxAttachment.forTab(
+                                        assumeNonNull(tab), mContext.getResources()));
+                if (addFailed) {
+                    warnForMaxAttachments();
+                    break;
+                }
             }
         }
     }
@@ -439,7 +461,9 @@ public class FuseboxMediator {
             i =
                     new Intent(MediaStore.ACTION_PICK_IMAGES)
                             .setType(MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10);
+                            .putExtra(
+                                    MediaStore.EXTRA_PICK_IMAGES_MAX,
+                                    FuseboxAttachmentModelList.MAX_ATTACHMENTS - mModelList.size());
         } else {
             i =
                     new Intent(Intent.ACTION_PICK)
@@ -533,16 +557,21 @@ public class FuseboxMediator {
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private void warnForMaxAttachments() {
+        mSnackbarManager.showSnackbar(mAttachmentLimitSnackbar);
+    }
+
     /**
      * Add an attachment to the Fusebox toolbar.
      *
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
-        maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
-
         // Use FuseboxModelList's unified add method
-        mModelList.add(attachment);
+        if (!mModelList.add(attachment)) {
+            warnForMaxAttachments();
+        }
+        maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

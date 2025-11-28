@@ -359,4 +359,17 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals(0, mFuseboxAttachmentModelList.indexOf(preTokenizedAttachment));
         assertEquals(-1, mFuseboxAttachmentModelList.indexOf(uploadedAttachment));
     }
+
+    @Test
+    public void testMaxAttachments() {
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("pretokenized-token", "uploaded-token");
+        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+            FuseboxAttachment attachment = createTestAttachment("pretokenized");
+            assertTrue(mFuseboxAttachmentModelList.add(attachment));
+        }
+
+        FuseboxAttachment attachment = createTestAttachment("pretokenized");
+        assertFalse(mFuseboxAttachmentModelList.add(attachment));
+    }
 }

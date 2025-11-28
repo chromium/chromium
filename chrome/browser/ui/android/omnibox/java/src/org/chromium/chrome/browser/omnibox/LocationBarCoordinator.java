@@ -19,9 +19,12 @@ import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.WindowInsets;
 
 import androidx.annotation.DrawableRes;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -63,6 +66,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -116,6 +120,7 @@ public class LocationBarCoordinator
     private final LocationBarEmbedder mLocationBarEmbedder;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsToolbarPositionCustomizationEnabled;
+    private final View mBottomContainerView;
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
@@ -222,20 +227,26 @@ public class LocationBarCoordinator
             boolean isToolbarPositionCustomizationEnabled,
             @Nullable PageZoomManager pageZoomManager,
             Function<Tab, @Nullable Bitmap> tabFaviconFunction,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            SnackbarManager snackbarManager,
+            View bottomContainerView) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mLocationBarEmbedder = locationBarEmbedder;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mIsToolbarPositionCustomizationEnabled = isToolbarPositionCustomizationEnabled;
+        mBottomContainerView = bottomContainerView;
         mActivityLifecycleDispatcher.register(this);
         Context context = mLocationBarLayout.getContext();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         mDeferredIMEWindowInsetApplicationCallback =
                 new DeferredIMEWindowInsetApplicationCallback(
-                        () -> mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment());
+                        () -> {
+                            mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment();
+                            updateBottomContainerPosition();
+                        });
         mOmniboxDropdownEmbedderImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
                         mWindowAndroid,
@@ -266,7 +277,8 @@ public class LocationBarCoordinator
                         locationBarDataProvider,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
-                        autocompleteRequestTypeSupplier);
+                        autocompleteRequestTypeSupplier,
+                        snackbarManager);
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
             mFuseboxCoordinator
                     .getOnCompactModeChangedSupplier()
@@ -362,6 +374,8 @@ public class LocationBarCoordinator
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mFuseboxCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(
+                (focused) -> updateBottomContainerPosition());
 
         mLocationBarMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -434,6 +448,22 @@ public class LocationBarCoordinator
         }
         // There is a third possibility: SearchActivityLocationBarLayout extends LocationBarLayout
         // and can be instantiated on phones *or* tablets.
+    }
+
+    private void updateBottomContainerPosition() {
+        var layoutParams = (MarginLayoutParams) mBottomContainerView.getLayoutParams();
+        if (isUrlBarFocused()) {
+            View rootView = mLocationBarLayout.getRootView();
+            WindowInsets windowInsets = rootView.getRootWindowInsets();
+            layoutParams.bottomMargin =
+                    windowInsets == null
+                            ? 0
+                            : WindowInsetsCompat.toWindowInsetsCompat(windowInsets, rootView)
+                                    .getInsets(WindowInsetsCompat.Type.ime())
+                                    .bottom;
+        } else {
+            layoutParams.bottomMargin = 0;
+        }
     }
 
     @Override
