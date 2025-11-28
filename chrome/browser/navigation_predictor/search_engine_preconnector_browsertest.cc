@@ -1108,7 +1108,7 @@ class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
          {{"preconnect_interval", "0"}}},
         {net::features::kSearchEnginePreconnect2,
          {{"FallbackInLowPowerMode", "true"}}},
-        {features::kBindReceiversEverytime, {}}};
+        {features::kRebindPreconnectReceivers, {}}};
     battery::OverrideIsBatterySaverEnabledForTesting(false);
 
     std::vector<base::test::FeatureRef> disabled_features;
