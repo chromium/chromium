@@ -1333,13 +1333,13 @@
         Continue
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_TITLE" desc="Title of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
-        Tips tailored just for you
+        Get Chrome Tips notifications
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_DESCRIPTION" desc="Description of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
-        Get notifications for insights that enhance your experience on Chrome
+        Turn on notifications for useful tips to help you get the best of Chrome
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_BUTTON" desc="Text on the clickable button on the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
-        Enable
+        Notify me
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
