@@ -97,6 +97,7 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   CHECK(profile_);
   CHECK(identity_manager_);
+  CHECK(!history_optin_completed_callback_->is_null());
   if (browser) {
     CHECK(should_close_modal_dialog.has_value());
   }
@@ -162,11 +163,16 @@ void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
 
 void HistorySyncOptinHandler::FinishAndCloseDialog(
     HistorySyncOptinHelper::ScreenChoiceResult result) {
+  // The callback is moved to a local variable to ensure that it can be safely
+  // executed even if `this` is destroyed by `CloseModalSignin()` (this should
+  // not happen as the dialog destruction should be asynchronous).
+  auto callback = std::move(history_optin_completed_callback_);
+
   if (browser_ && should_close_modal_dialog_.value_or(false)) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
-  if (!history_optin_completed_callback_->is_null()) {
-    std::move(history_optin_completed_callback_.value()).Run(result);
+  if (!callback->is_null()) {
+    std::move(callback.value()).Run(result);
   } else {
     // The user may have double-clicked on an action, which could have
     // caused the callback to execute already.
