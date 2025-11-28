@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
  */
@@ -139,4 +141,87 @@ export function getFormControlElements(form: HTMLFormElement|null): Element[] {
 export function getIframeElements(root: Element|null): HTMLIFrameElement[] {
   return Array.from(root?.querySelectorAll('iframe') ?? []) as
       HTMLIFrameElement[];
+}
+
+/**
+ * Returns the field's `id` attribute if not space only; otherwise the
+ * form's |name| attribute if the field is part of a form. Otherwise,
+ * generate a technical identifier
+ *
+ * It is the identifier that should be used for the specified |element| when
+ * storing Autofill data. This identifier will be used when filling the field
+ * to lookup this field. The pair (getFormIdentifier, getFieldIdentifier) must
+ * be unique on the page.
+ * The following elements are considered to generate the identifier:
+ * - the id of the element
+ * - the name of the element if the element is part of a form
+ * - the order of the element in the form if the element is part of the form.
+ * - generate a xpath to the element and use it as an ID.
+ *
+ * Note: if this method returns '', the field will not be accessible and
+ * cannot be autofilled.
+ *
+ * It aims to provide the logic in
+ *     WebString nameForAutofill() const;
+ * in chromium/src/third_party/WebKit/Source/WebKit/chromium/public/
+ *  WebFormControlElement.h
+ *
+ * @param element An element of which the name for Autofill will be
+ *     returned.
+ * @return the name for Autofill.
+ */
+export function getFieldIdentifier(element: Element|null): string {
+  if (!element) {
+    return '';
+  }
+  let trimmedIdentifier: string|null = element.id;
+  if (trimmedIdentifier) {
+    return trim(trimmedIdentifier);
+  }
+  if ('form' in element && element.form) {
+    const form = element.form as HTMLFormElement;
+    // The name of an element is only relevant as an identifier if the element
+    // is part of a form.
+    trimmedIdentifier = 'name' in element ? element.name as string : null;
+    if (trimmedIdentifier) {
+      trimmedIdentifier = trim(trimmedIdentifier);
+      if (trimmedIdentifier!.length > 0) {
+        return trimmedIdentifier!;
+      }
+    }
+
+    const elements = getFormControlElements(form);
+    for (let index = 0; index < elements.length; index++) {
+      if (elements[index] === element) {
+        return kNamelessFieldIDPrefix + index;
+      }
+    }
+  }
+  // Element is not part of a form and has no name or id, or usable attribute.
+  // As best effort, try to find the closest ancestor with an id, then
+  // check the index of the element in the descendants of the ancestors with
+  // the same type.
+  let ancestor: ParentNode|Element|null = element.parentNode;
+  while (ancestor && ancestor instanceof Element &&
+         (!ancestor.hasAttribute('id') || trim(ancestor.id) === '')) {
+    ancestor = ancestor.parentNode;
+  }
+
+  let ancestorId = '';
+  if (!ancestor || !(ancestor instanceof Element)) {
+    ancestor = document.body;
+  }
+  if (ancestor instanceof Element && ancestor.hasAttribute('id')) {
+    ancestorId = '#' + trim(ancestor.id);
+  }
+  const descendants = ancestor.querySelectorAll(element.tagName);
+  let i = 0;
+  for (i = 0; i < descendants.length; i++) {
+    if (descendants[i] === element) {
+      return kNamelessFieldIDPrefix + ancestorId + '~' + element.tagName + '~' +
+          i;
+    }
+  }
+
+  return '';
 }

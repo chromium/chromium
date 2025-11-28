@@ -8,6 +8,7 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formOrFieldsetsToFormData, getFrameUrlOrOrigin, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {getFieldIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -44,7 +45,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
   // The label is not officially part of a form control element; however, the
   // labels for all form control elements are scraped from the DOM and set in
   // form data.
-  field.identifier = gCrWebLegacy.form.getFieldIdentifier(element);
+  field.identifier = getFieldIdentifier(element);
   field.name = gCrWebLegacy.form.getFieldName(element);
 
   // The raw name and id attributes, which may be empty.

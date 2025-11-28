@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -75,7 +75,7 @@ function showBottomSheet(hasUserGesture: boolean): void {
     'frameID': gCrWeb.getFrameId(),
     'formName': getFormIdentifier(form),
     'formRendererID': fillUtil.getUniqueID(form),
-    'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
+    'fieldIdentifier': getFieldIdentifier(field),
     'fieldRendererID': fillUtil.getUniqueID(field),
     'fieldType': fieldType,
     'type': 'focus',

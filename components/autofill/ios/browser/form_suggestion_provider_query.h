@@ -29,7 +29,8 @@ NSString* const kObfuscatedFieldType = @"password";
 @property(readonly, nonatomic) autofill::FormRendererId formRendererID;
 
 // Field HTML 'id' attribute. If missing, its 'name' attribute. If also
-// missing, a unique string path assigned in __gCrWeb.form.getFieldIdentifier.
+// missing, a unique string path assigned in getFieldIdentifier utility
+// function defined in form.ts.
 @property(readonly, nonatomic, copy) NSString* fieldIdentifier;
 
 // Number ID, unique for a frame.
