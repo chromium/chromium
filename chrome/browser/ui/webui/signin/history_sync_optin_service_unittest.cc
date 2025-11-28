@@ -188,7 +188,8 @@ class HistorySyncOptinServiceTestBase : public testing::Test {
             builder.AsPrimary(signin::ConsentLevel::kSignin).Build(email));
 
     if (with_managed_account_info_available) {
-      UpdateAccountManagementInfo(account_info, identity_test_env_adaptor);
+      account_info =
+          UpdateAccountManagementInfo(account_info, identity_test_env_adaptor);
     }
     account_info.full_name = "fullname";
     account_info.given_name = "givenname";
@@ -199,23 +200,20 @@ class HistorySyncOptinServiceTestBase : public testing::Test {
     return account_info;
   }
 
-  void UpdateAccountManagementInfo(
+  AccountInfo UpdateAccountManagementInfo(
       AccountInfo& account_info,
       IdentityTestEnvironmentProfileAdaptor* identity_test_env_adaptor) {
-    std::string hosted_domain;
-    if (account_info.email == kManagedEmail ||
-        account_info.email == kManagedEmail2) {
-      hosted_domain = "example.com";
+    if (account_info.email == kMainEmail) {
+      account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+    } else if (account_info.email == kManagedEmail ||
+               account_info.email == kManagedEmail2) {
+      account_info.hosted_domain = "example.com";
     } else {
-      CHECK_EQ(account_info.email, kMainEmail);
+      NOTREACHED();
     }
-
-    account_info = AccountInfo::Builder(account_info)
-                       .SetHostedDomain(hosted_domain)
-                       .Build();
-
     identity_test_env_adaptor->identity_test_env()->UpdateAccountInfoForAccount(
         account_info);
+    return account_info;
   }
 
   ~HistorySyncOptinServiceTestBase() override = default;
@@ -804,7 +802,8 @@ TEST_P(ManagedDataTypeErrorScreenServiceTest,
           HistorySyncOptinServiceFactory::GetForProfile(new_managed_profile));
   EXPECT_CALL(*new_history_sync_optin_service,
               ShowErrorDialogWithMessage(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs([&future] { future.SetValue(); }));
+      .WillOnce(
+          testing::InvokeWithoutArgs([&future] { future.SetValue(); }));
 
   // Sigin the user to the browser. This triggers the flow to enable tab syncing
   // and shows an error screen (due to syncing disabled by policies).

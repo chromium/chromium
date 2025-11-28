@@ -48,13 +48,11 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
         identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
     ASSERT_FALSE(account_info.IsEmpty());
 
-    account_info = AccountInfo::Builder(account_info)
-                       .SetFullName("John Testing")
-                       .SetGivenName("John")
-                       .SetAvatarUrl("PICTURE_URL")
-                       .SetHostedDomain(std::string())
-                       .SetLocale("en")
-                       .Build();
+    account_info.full_name = "John Testing";
+    account_info.given_name = "John";
+    account_info.picture_url = "PICTURE_URL";
+    account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+    account_info.locale = "en";
     ASSERT_TRUE(account_info.IsValid());
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 

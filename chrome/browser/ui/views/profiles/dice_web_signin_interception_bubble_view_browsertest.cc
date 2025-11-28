@@ -103,17 +103,12 @@ class DiceWebSigninInterceptionBubbleBrowserTest
   WebSigninInterceptor::Delegate::BubbleParameters
   GetTestBubbleParametersWithInterceptType(
       WebSigninInterceptor::SigninInterceptionType intercept_type) {
-    AccountInfo account =
-        AccountInfo::Builder(GaiaId("ID1"), "test1@example.com")
-            .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("ID1")))
-            .Build();
+    AccountInfo account;
+    account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID1"));
     AccountInfo primary_account;
     if (intercept_type !=
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-      primary_account =
-          AccountInfo::Builder(GaiaId("ID2"), "test2@example.com")
-              .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("ID2")))
-              .Build();
+      primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID2"));
     }
 
     ProfileAttributesEntry* entry =

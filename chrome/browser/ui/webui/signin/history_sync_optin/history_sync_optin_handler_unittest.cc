@@ -85,13 +85,12 @@ class HistorySyncOptinHandlerTest : public testing::TestWithParam<bool> {
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         "test@gmail.com", signin::ConsentLevel::kSignin);
 
-    account_info = AccountInfo::Builder(account_info)
-                       .SetFullName("fullname")
-                       .SetGivenName("givenname")
-                       .SetHostedDomain("gmail.com")
-                       .SetAvatarUrl("https://example.com")
-                       .Build();
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.hosted_domain = "gmail.com";
+    account_info.picture_url = "https://example.com";
     CHECK(account_info.IsValid());
+
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
     SyncServiceFactory::GetInstance()->SetTestingFactory(

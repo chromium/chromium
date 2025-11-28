@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
@@ -40,6 +41,8 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -190,14 +193,12 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
 
   // If there is no extended info for the primary account, populate with
   // reasonable defaults.
-  AccountInfo::Builder builder(bubble_parameters_.primary_account);
-  if (!primary_account().GetHostedDomain().has_value()) {
-    builder.SetHostedDomain(std::string());
+  if (primary_account().hosted_domain.empty()) {
+    bubble_parameters_.primary_account.hosted_domain = kNoHostedDomainFound;
   }
   if (primary_account().given_name.empty()) {
-    builder.SetGivenName(primary_account().email);
+    bubble_parameters_.primary_account.given_name = primary_account().email;
   }
-  bubble_parameters_.primary_account = builder.Build();
 
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
@@ -460,9 +461,8 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
   // TODO(crbug.com/425456152): Handle the flex org case when there is no
   // hosted domain for managed accounts.
   std::string manager_domain =
-      (intercepted_account().IsManaged() == signin::Tribool::kTrue &&
-       intercepted_account().GetHostedDomain().has_value())
-          ? std::string(*intercepted_account().GetHostedDomain())
+      intercepted_account().IsManaged() == signin::Tribool::kTrue
+          ? intercepted_account().hosted_domain
           : std::string();
   if (manager_domain.empty()) {
     manager_domain = GetDeviceManagerIdentity().value_or(std::string());
