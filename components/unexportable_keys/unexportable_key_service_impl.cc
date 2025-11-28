@@ -161,8 +161,14 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
-  task_manager_->SignSlowlyAsync(it->second, data, priority,
-                                 std::move(callback));
+
+  // The type expected by the callback
+  using ArgType = ServiceErrorOr<std::vector<uint8_t>>;
+  task_manager_->SignSlowlyAsync(
+      it->second, data, priority,
+      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
+                     service_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
@@ -184,8 +190,13 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
   key_by_key_id_.erase(key_id_it);
   key_id_by_wrapped_key_.erase(wrapped_key_it);
 
-  task_manager_->DeleteSigningKeySlowlyAsync(config_, std::move(wrapped_key),
-                                             priority, std::move(callback));
+  // The type expected by the callback
+  using ArgType = ServiceErrorOr<void>;
+  task_manager_->DeleteSigningKeySlowlyAsync(
+      config_, std::move(wrapped_key), priority,
+      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
+                     service_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::CopyKeyFromOtherService(
@@ -222,8 +233,13 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
   get_all_keys_weak_ptr_factory_.InvalidateWeakPtrs();
   from_wrapped_key_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  task_manager_->DeleteAllSigningKeysSlowlyAsync(config_, priority,
-                                                 std::move(callback));
+  // The type expected by the callback
+  using ArgType = ServiceErrorOr<size_t>;
+  task_manager_->DeleteAllSigningKeysSlowlyAsync(
+      config_, priority,
+      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
+                     service_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 ServiceErrorOr<std::vector<uint8_t>>

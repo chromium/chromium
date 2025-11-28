@@ -132,6 +132,14 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
+  // Generic trampoline that runs the callback only if the WeakPtr used to bind
+  // this method is still valid.
+  template <typename... Args>
+  void RunCallbackIfAlive(base::OnceCallback<void(Args...)> callback,
+                          Args... args) {
+    std::move(callback).Run(std::forward<Args>(args)...);
+  }
+
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
 
   const crypto::UnexportableKeyProvider::Config config_;
@@ -150,6 +158,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       generate_key_weak_ptr_factory_{this};
   base::WeakPtrFactory<UnexportableKeyServiceImpl>
       from_wrapped_key_weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl> service_weak_ptr_factory_{
+      this};
 };
 
 }  // namespace unexportable_keys

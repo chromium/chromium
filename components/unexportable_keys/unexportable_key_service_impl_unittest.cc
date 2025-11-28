@@ -63,6 +63,8 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     service_.emplace(*task_manager_, crypto::UnexportableKeyProvider::Config());
   }
 
+  void DestroyService() { service_ = std::nullopt; }
+
   void DisableKeyProvider() {
     // Using `emplace()` to destroy the existing scoped object before
     // constructing a new one.
@@ -530,6 +532,24 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
   EXPECT_OK(sign_future.Get());
 }
 
+TEST_F(UnexportableKeyServiceImplTest,
+       SignSlowlyAsyncCallbacksIsDroppedOnServiceDestruction) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  std::vector<uint8_t> data = {1, 2, 3};
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
+                            sign_future.GetCallback());
+  DestroyService();
+  EXPECT_FALSE(sign_future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_FALSE(sign_future.IsReady());
+}
+
 TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   UnexportableKeyId fake_key_id;
 
@@ -630,6 +650,27 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKey) {
   // The key should not exist after deletion.
   EXPECT_THAT(service().GetWrappedKey(key_id),
               ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest,
+       DeleteKeySlowlyAsyncCallbackIsDroppedOnServiceDestruction) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  // The key should exist before deletion.
+  ASSERT_OK(service().GetWrappedKey(key_id));
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
+      .WillOnce(Return(true));
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  DestroyService();
+  RunBackgroundTasks();
+  EXPECT_FALSE(delete_future.IsReady());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteNonExistingKey) {
@@ -793,6 +834,38 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
     EXPECT_THAT(service().GetWrappedKey(key_id),
                 ErrorIs(ServiceError::kKeyNotFound));
   }
+}
+
+TEST_F(UnexportableKeyServiceImplTest,
+       DeleteAllKeysSlowlyAsyncCallbackIsDroppedOnServiceDestruction) {
+  // Generate some keys.
+  constexpr size_t kKeysToGenerate = 3;
+  std::vector<UnexportableKeyId> key_ids;
+  for (size_t i = 0; i < kKeysToGenerate; ++i) {
+    base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+    service().GenerateSigningKeySlowlyAsync(
+        kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
+    RunBackgroundTasks();
+    ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+    key_ids.push_back(key_id);
+  }
+
+  // Verify all keys exist.
+  for (const auto& key_id : key_ids) {
+    ASSERT_OK(service().GetWrappedKey(key_id));
+  }
+
+  // Delete all keys.
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly)
+      .WillOnce(Return(kKeysToGenerate));
+
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority,
+                                     delete_all_future.GetCallback());
+
+  DestroyService();
+  RunBackgroundTasks();
+  EXPECT_FALSE(delete_all_future.IsReady());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
