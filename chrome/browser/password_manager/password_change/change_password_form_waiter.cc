@@ -56,13 +56,11 @@ bool IsLikelyChangePasswordForm(
     return false;
   }
 
-  // If there are multiple fields, either confirmation password or the old
-  // password must be present in a change password form.
-  if (parsed_form->form_data.fields().size() > 1 &&
-      !parsed_form->confirmation_password_element_renderer_id &&
-      !parsed_form->password_element_renderer_id &&
-      !parsed_form->username_element_renderer_id) {
-    return false;
+  // Either password confirmation field or old password field is enough to
+  // assume this is a change password form.
+  if (parsed_form->confirmation_password_element_renderer_id ||
+      parsed_form->password_element_renderer_id) {
+    return true;
   }
 
   // If there is a username field, it can't be empty. Websites where username is
